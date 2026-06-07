@@ -1,0 +1,264 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>A self-custody prediction market on ERC-20 outcome tokens</title>
+<meta name="description" content="A prediction market where every share is a plain ERC-20 token in your own wallet, settled by a proof-of-personhood court.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@500;700&family=Newsreader:opsz,wght@6..72,200..700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="assets/styles.css">
+<style>
+  .mint { display: flex; align-items: center; justify-content: center; gap: 1rem; flex-wrap: wrap; }
+  .coin { font-family: var(--mono); font-weight: 700; font-size: 1.05rem; padding: 1rem 1.25rem; border-radius: 14px; border: 1px solid var(--line-strong); background: var(--bg); white-space: nowrap; }
+  .coin.dai { background: #eef1f6; color: #2c313a; }
+  .coin.yes { background: var(--good-soft); color: var(--good); border-color: color-mix(in srgb, var(--good) 30%, transparent); }
+  .coin.no { background: var(--bad-soft); color: var(--bad); border-color: color-mix(in srgb, var(--bad) 30%, transparent); }
+  .stack { display: flex; align-items: center; gap: .6rem; }
+  .stack .plus { font-family: var(--sans); font-weight: 700; color: var(--faint); }
+  .mint-mid { display: flex; flex-direction: column; align-items: center; font-family: var(--sans); font-size: .8rem; font-weight: 600; }
+  .mint-mid .a { color: var(--good); } .mint-mid .b { color: var(--faint); }
+  .splitbar .yes, .splitbar .no { font-family: var(--mono); font-size: .95rem; }
+</style>
+</head>
+<body class="theme-market">
+<div id="progress"></div>
+
+<nav class="sitenav" aria-label="Primary">
+  <div class="sitenav-inner">
+    <a class="brand" href="index.html">DemoThemis<span class="dot">.</span></a>
+    <button class="nav-toggle" type="button" aria-label="Menu" aria-expanded="false">&#9776;</button>
+    <div class="nav-links">
+      <a href="index.html">Home</a>
+      <a href="vision.html">Vision</a>
+      <div class="nav-group">
+        <button class="nav-group-btn" type="button">The mechanism</button>
+        <div class="nav-menu">
+          <a href="juror-court.html"><span class="ch">02</span> The court</a>
+          <a href="hybrid-juror-system.html"><span class="ch">03</span> The hybrid system</a>
+        </div>
+      </div>
+      <div class="nav-group nav-group-end">
+        <button class="nav-group-btn" type="button">The bootstrap</button>
+        <div class="nav-menu">
+          <a href="prediction-market.html"><span class="ch">04</span> The market</a>
+          <a href="hybrid-juror-prediction-market-integration.html"><span class="ch">05</span> The loop</a>
+          <a href="zero-to-one.html"><span class="ch">06</span> Zero to one</a>
+        </div>
+      </div>
+      <a href="compounding.html">Why it compounds</a>
+    </div>
+  </div>
+</nav>
+
+<header class="hero reveal">
+  <p class="kicker">The bootstrap</p>
+  <h1>The market that pays the first judges</h1>
+  <p class="dek">A self-custody prediction market where every share is a plain token, every answer comes from the court, and the trading fees pay the jurors before a single outside customer arrives.</p>
+  <div class="meta">
+    <span class="pill">Market design</span>
+    <span>7 min read</span>
+    <span class="dot">&bull;</span>
+    <span>Act III &middot; Chapter 4 of 7</span>
+  </div>
+</header>
+
+<main class="content wrap">
+
+  <section class="reveal">
+    <p class="takeaway">In one line: a self-custody <a href="https://en.wikipedia.org/wiki/Prediction_market" target="_blank" rel="noopener">prediction market</a> whose shares are plain tokens and whose answers come from the court. It works while it is small, it travels in your wallet, and it can be traded in private, and along the way it pays the court's first judges.</p>
+    <p class="lead">Start with an awkward question. How do you pay a judge before anyone has a dispute?</p>
+    <p>The court from the earlier chapters needs three things to get going, and on day one it has none of them. It needs real questions with real answers, it needs money to pay the people who rule on them, and it needs a stack of settled cases to learn from. A prediction market produces all three as a side effect of people betting, so we build the market first and let it carry the court.</p>
+    <p>The design borrows the good parts of <a href="https://en.wikipedia.org/wiki/Polymarket" target="_blank" rel="noopener">Polymarket</a>, which proved people will trade on-chain, and changes three things it does the hard way: how a market survives when it is small, where the shares live, and who is allowed to see your bet.</p>
+  </section>
+
+  <section class="reveal">
+    <p class="sec-label">Edge one over Polymarket</p>
+    <h2>Your position should live in your wallet</h2>
+    <p>Polymarket positions are conditional tokens that trade through an order book the company runs off-chain. Your position lives on-chain, but the matching engine and the listing decisions sit with one operator. I want a market where a share is a plain ERC-20 token in your own wallet, tradable on any DEX, usable as collateral in any lending pool, with no operator able to freeze or delist it.</p>
+
+    <figure class="diagram reveal">
+      <div class="diagram-inner">
+        <div class="compare">
+          <div class="compare-col bad">
+            <h4>Central order book <span class="tag-bad">Polymarket</span></h4>
+            <ul>
+              <li>One operator runs matching, the interface, and listings.</li>
+              <li>Trading flows through infrastructure you do not control.</li>
+              <li>Access depends on having an account on their site.</li>
+            </ul>
+          </div>
+          <div class="compare-col good">
+            <h4>ERC-20 in your wallet <span class="tag-good">this design</span></h4>
+            <ul>
+              <li>A share is an ordinary token you hold and move yourself.</li>
+              <li>Trade on any DEX; use it as collateral anywhere.</li>
+              <li>No account to open. A wallet is enough.</li>
+            </ul>
+          </div>
+        </div>
+      </div>
+      <figcaption>Where the share lives, and who can touch it. <b>Self-custody means no operator can freeze or delist you.</b></figcaption>
+    </figure>
+  </section>
+
+  <section class="reveal">
+    <p class="sec-label">How it resolves</p>
+    <h2>The hard part is not trading. It is deciding who won</h2>
+    <p>Polymarket leans on a token-weighted vote to settle its markets, and a handful of them have ended in public fights where the biggest holders pushed through a result the users disputed. That is the same weakness the court chapter takes apart, so this market hands every resolution to that court instead. Most questions are not controversial. Anyone can post the answer with a bond, and if nobody challenges it inside a short window it simply settles. Only the contested ones convene a jury. There is no outside data feed to trust and nothing to bribe, because the court is the only resolver and it is made of people.</p>
+    <a class="pair-link" href="juror-court.html">
+      <span>
+        <span class="pl-k">The court behind this market</span>
+        <span class="pl-t">Juror courts without coins</span>
+      </span>
+      <span class="pl-arrow">&rarr;</span>
+    </a>
+  </section>
+
+  <section class="reveal">
+    <p class="sec-label">The shape of it</p>
+    <h2>One DAI in, one YES and one NO out</h2>
+    <p>For a binary question, the contract issues two ERC-20 tokens, YES and NO. Deposit one DAI and you mint one YES and one NO. Hand back one of each and you redeem one DAI. A YES and a NO together are always worth one DAI.</p>
+
+    <figure class="diagram reveal">
+      <div class="diagram-inner">
+        <div class="mint">
+          <div class="coin dai">1 DAI</div>
+          <div class="mint-mid"><span class="a">mint &rarr;</span><span class="b">&larr; redeem</span></div>
+          <div class="stack">
+            <div class="coin yes">1 YES</div>
+            <span class="plus">+</span>
+            <div class="coin no">1 NO</div>
+          </div>
+        </div>
+      </div>
+      <figcaption>The conservation rule. <b>YES + NO = 1 DAI, always.</b></figcaption>
+    </figure>
+
+    <p>Because YES and NO always sum to one DAI, a YES on its own trades somewhere between zero and one, and that price is the crowd's estimate of the probability. Drag the price and watch what the market is saying.</p>
+
+    <div class="widget reveal">
+      <div class="widget-head"><span class="live"></span> Price is probability</div>
+      <div class="controls">
+        <div class="row"><label for="priceSlider">YES price (what the market will pay)</label> <b id="priceOut">$0.62</b></div>
+        <input id="priceSlider" type="range" min="1" max="99" step="1" value="62">
+      </div>
+      <div class="splitbar" style="margin-bottom:1.1rem">
+        <div class="yes" id="barYes" style="width:62%">YES $0.62</div>
+        <div class="no" id="barNo" style="width:38%">NO $0.38</div>
+      </div>
+      <div class="readout">
+        <div class="stat"><div class="k">Implied probability</div><div class="v accent" id="probOut">62%</div></div>
+        <div class="stat"><div class="k">If YES resolves true</div><div class="v" id="payYes">+$0.38</div></div>
+        <div class="stat"><div class="k">Payout multiple on YES</div><div class="v" id="multOut">1.61&times;</div></div>
+      </div>
+      <p style="font-family:var(--sans);font-size:.86rem;color:var(--faint);margin:1rem 0 0">Buy YES at its price; if the answer is YES it redeems for $1.00. Profit and multiple update with the price.</p>
+    </div>
+  </section>
+
+  <section class="reveal">
+    <p class="sec-label">Edge two over Polymarket</p>
+    <h2>It works even while it is small</h2>
+    <p>Put YES and DAI into a standard <a href="https://en.wikipedia.org/wiki/Automated_market_maker" target="_blank" rel="noopener">automated market maker</a> and let people swap. Because the outcome tokens are ordinary ERC-20s, every tool that already exists for ERC-20s works on the first day. A lending market can take YES as collateral. A vault can build a strategy around it. Someone in any country with a wallet can hold it without an account on our site, because there is no account to open.</p>
+    <p>A new market starts thin, and that is exactly where a Polymarket-style order book struggles, because a quiet book has nobody to trade against. A market maker does not care. It always quotes a price, so the first trader can act on day one. A <a href="https://en.wikipedia.org/wiki/Market_maker" target="_blank" rel="noopener">scoring-rule maker</a> keeps that price sane at any size, a shared collateral pool lets many small markets draw on the same depth, and a router mints fresh YES and NO sets on demand. Thin early liquidity is a starting condition here, not a wall.</p>
+
+    <figure class="diagram reveal">
+      <div class="diagram-inner">
+        <div class="flow">
+          <div class="node"><span class="ic">&#128184;</span><span class="lbl">Deposit</span><span class="sub">mint YES + NO</span></div>
+          <span class="arrow">&rarr;</span>
+          <div class="node"><span class="ic">&#128202;</span><span class="lbl">Trade</span><span class="sub">any AMM</span></div>
+          <span class="arrow">&rarr;</span>
+          <div class="node is-accent"><span class="ic">&#9878;</span><span class="lbl">Resolve</span><span class="sub">juror court</span></div>
+          <span class="arrow">&rarr;</span>
+          <div class="node"><span class="ic">&#128176;</span><span class="lbl">Redeem</span><span class="sub">$1 or $0</span></div>
+        </div>
+      </div>
+      <figcaption>The life of a position. <b>The collateral never leaves the contract until a winner withdraws it.</b></figcaption>
+    </figure>
+
+    <p>When the question resolves, the court reports the result. If it is YES, every YES token redeems for one DAI and every NO token goes to zero. Winners withdraw collateral straight from the contract. Nobody has to trust us to pay, because we never held the money. It sat in the contract the entire time.</p>
+  </section>
+
+  <section class="reveal">
+    <p class="sec-label">Why it cannot be bought</p>
+    <h2>Resolution is where manipulation pays best</h2>
+    <p>If you hold a million dollars of NO, you have a million reasons to force the answer to NO. A token-weighted vote lets you turn that money straight into resolution power, which is why those Polymarket fights happened in the first place. A personhood court cuts the wire. You cannot buy the jury, because the jury is people, drawn at random, voting in private, and the panel is different every time. The cost of bending a result stops tracking the size of your bet.</p>
+  </section>
+
+  <section class="reveal">
+    <p class="sec-label">Edge three over Polymarket</p>
+    <h2>Bets nobody can see coming</h2>
+    <p>Because a share is just a token in your wallet, you can buy it from a fresh address and let the trade blend into ordinary on-chain traffic. A large trader can take a position without telegraphing it to everyone else. That privacy is good for traders, and it turns out to be even better for the court that settles them. Hidden informed money means an attacker cannot tell which markets the smart money cares about, so they cannot guess which cases are worth corrupting or which jurors to lean on. The next chapter is entirely about what these private bets are good for.</p>
+    <a class="pair-link" href="hybrid-juror-prediction-market-integration.html">
+      <span>
+        <span class="pl-k">What private markets are good for</span>
+        <span class="pl-t">The court that feeds itself</span>
+      </span>
+      <span class="pl-arrow">&rarr;</span>
+    </a>
+  </section>
+
+  <footer class="endnote reveal">
+    <nav id="series" aria-label="Where you are in the series"></nav>
+    <div class="sitemap">
+      <div class="sitemap-col">
+        <span class="sm-h">I &middot; The promise</span>
+        <a href="vision.html">1. The vision</a>
+      </div>
+      <div class="sitemap-col">
+        <span class="sm-h">II &middot; The mechanism</span>
+        <a href="juror-court.html">2. The court</a>
+        <a href="hybrid-juror-system.html">3. The hybrid system</a>
+      </div>
+      <div class="sitemap-col">
+        <span class="sm-h">III &middot; The bootstrap</span>
+        <a href="prediction-market.html">4. The market</a>
+        <a href="hybrid-juror-prediction-market-integration.html">5. The loop</a>
+        <a href="zero-to-one.html">6. Zero to one</a>
+      </div>
+      <div class="sitemap-col">
+        <span class="sm-h">IV &middot; The payoff</span>
+        <a href="compounding.html">7. Why it compounds</a>
+        <a href="index.html">Home &middot; the map</a>
+      </div>
+    </div>
+    <p class="signoff">Plain tokens in your wallet, answers from a court of people, and the fees that pay them. The rest is plumbing.</p>
+  </footer>
+
+</main>
+
+<script src="assets/common.js"></script>
+<script>
+(function () {
+  "use strict";
+  var slider = document.getElementById("priceSlider");
+  var priceOut = document.getElementById("priceOut");
+  var barYes = document.getElementById("barYes");
+  var barNo = document.getElementById("barNo");
+  var probOut = document.getElementById("probOut");
+  var payYes = document.getElementById("payYes");
+  var multOut = document.getElementById("multOut");
+
+  function money(x) { return "$" + x.toFixed(2); }
+
+  function update() {
+    var c = parseInt(slider.value, 10);      // YES price in cents
+    var yes = c / 100;
+    var no = (100 - c) / 100;
+    priceOut.textContent = money(yes);
+    barYes.style.width = c + "%";
+    barNo.style.width = (100 - c) + "%";
+    barYes.textContent = "YES " + money(yes);
+    barNo.textContent = "NO " + money(no);
+    probOut.textContent = c + "%";
+    payYes.textContent = "+" + money(1 - yes);
+    multOut.innerHTML = (1 / yes).toFixed(2) + "&times;";
+  }
+  slider.addEventListener("input", update);
+  update();
+})();
+</script>
+</body>
+</html>

@@ -1,0 +1,174 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Why it compounds: the parts make each other stronger</title>
+<meta name="description" content="The court, the market, reputation, and personhood were each built for their own job, but each one quietly solves a problem in another. Here is where they reinforce.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@500;700&family=Newsreader:opsz,wght@6..72,200..700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="assets/styles.css">
+<style>
+  .amp { display: flex; flex-wrap: wrap; gap: .55rem; align-items: stretch; justify-content: center; }
+  .amp .node { flex: 1 1 8.5rem; min-width: 8rem; background: var(--accent-soft); border: 1px solid var(--accent); border-radius: 12px; padding: .8rem; text-align: center; font-family: var(--sans); font-weight: 600; font-size: .9rem; color: var(--accent-ink); }
+  .amp .node small { display: block; font-weight: 400; font-size: .74rem; color: var(--muted); margin-top: .2rem; }
+  .amp .ar { align-self: center; color: var(--accent); font-size: 1.3rem; font-weight: 700; }
+  .pairs { display: grid; grid-template-columns: repeat(auto-fit, minmax(15.5rem, 1fr)); gap: 1rem; margin: 1.6rem 0; }
+  .pair { background: var(--surface); border: 1px solid var(--line); border-left: 4px solid var(--accent); border-radius: 12px; padding: 1.1rem 1.2rem; box-shadow: var(--shadow); }
+  .pair .combo { font-family: var(--mono); font-size: .72rem; color: var(--faint); text-transform: uppercase; letter-spacing: .04em; }
+  .pair h3 { color: var(--accent-ink); margin: .3rem 0 .35rem; }
+  .pair p { font-family: var(--sans); font-size: .92rem; line-height: 1.5; color: var(--muted); margin: 0; }
+</style>
+</head>
+<body>
+<div id="progress"></div>
+
+<nav class="sitenav" aria-label="Primary">
+  <div class="sitenav-inner">
+    <a class="brand" href="index.html">DemoThemis<span class="dot">.</span></a>
+    <button class="nav-toggle" type="button" aria-label="Menu" aria-expanded="false">&#9776;</button>
+    <div class="nav-links">
+      <a href="index.html">Home</a>
+      <a href="vision.html">Vision</a>
+      <div class="nav-group">
+        <button class="nav-group-btn" type="button">The mechanism</button>
+        <div class="nav-menu">
+          <a href="juror-court.html"><span class="ch">02</span> The court</a>
+          <a href="hybrid-juror-system.html"><span class="ch">03</span> The hybrid system</a>
+        </div>
+      </div>
+      <div class="nav-group nav-group-end">
+        <button class="nav-group-btn" type="button">The bootstrap</button>
+        <div class="nav-menu">
+          <a href="prediction-market.html"><span class="ch">04</span> The market</a>
+          <a href="hybrid-juror-prediction-market-integration.html"><span class="ch">05</span> The loop</a>
+          <a href="zero-to-one.html"><span class="ch">06</span> Zero to one</a>
+        </div>
+      </div>
+      <a href="compounding.html">Why it compounds</a>
+    </div>
+  </div>
+</nav>
+
+<header class="hero reveal">
+  <p class="kicker">Why it compounds</p>
+  <h1>Why is the whole louder than the parts?</h1>
+  <p class="dek">The court, the market, reputation, and proof of personhood were each built to solve their own problem. The quiet surprise is how often one of them solves a problem in another.</p>
+  <div class="meta">
+    <span class="pill">The payoff</span>
+    <span>6 min read</span>
+    <span class="dot">&bull;</span>
+    <span>Act IV &middot; Chapter 7 of 7</span>
+  </div>
+</header>
+
+<main class="content wrap">
+
+  <section class="reveal">
+    <p class="takeaway">The pieces are not just stacked, they feed each other. <b>The market makes the answers the court needs, the court makes the verdicts apps need, and the apps bring the volume that makes the market deep.</b> Each turn lowers the cost of the next.</p>
+    <p class="lead">A good machine is more than a pile of good parts. The interesting question is whether the parts help each other or just sit next to each other.</p>
+    <p>Across this series, four pieces kept showing up: a court of verified humans, a prediction market, a reputation score, and a one-human-one-account check. Each earned its place on its own. What follows is the part that is easy to miss on a first read, the places where one piece quietly fixes a weakness in another, so the system gets stronger the more of it you switch on.</p>
+
+    <figure class="diagram reveal">
+      <div class="diagram-inner">
+        <div class="amp">
+          <div class="node">More betting<small>public and private</small></div>
+          <span class="ar">&rarr;</span>
+          <div class="node">More known answers<small>settled markets</small></div>
+          <span class="ar">&rarr;</span>
+          <div class="node">A sharper court<small>better calibrated</small></div>
+          <span class="ar">&rarr;</span>
+          <div class="node">Verdicts apps trust<small>portable record</small></div>
+          <span class="ar">&#8635;</span>
+        </div>
+      </div>
+      <figcaption>The same wheel from the loop chapter, one ring wider. <b>Apps that trust the verdicts bring more activity, which feeds the market that feeds the court.</b></figcaption>
+    </figure>
+  </section>
+
+  <section class="reveal">
+    <p class="sec-label">Where the parts meet</p>
+    <h2>Six places one piece rescues another</h2>
+    <p>Read each card as two things that were built separately, and the problem they turn out to solve together.</p>
+
+    <div class="pairs">
+      <div class="pair">
+        <span class="combo">Market + court</span>
+        <h3>The cheap path is the answer machine</h3>
+        <p>The court's optimistic layer settles easy cases when nobody challenges them. Those uncontested settlements are exactly the known answers the court needs to grade its jurors, so the thing that keeps the court honest is a free byproduct of markets closing.</p>
+      </div>
+      <div class="pair">
+        <span class="combo">Court + apps</span>
+        <h3>One verdict, trusted everywhere</h3>
+        <p>A settled case is a plain record any app can read. A seller's history of lost arbitrations follows them to the next marketplace, which is the reason an app that settles in the open beats one that hides its disputes.</p>
+      </div>
+      <div class="pair">
+        <span class="combo">Market + disputes</span>
+        <h3>A dispute is just a market</h3>
+        <p>Will this refund be granted if it goes to arbitration? That is a yes-or-no market. Pricing it, and letting the optimistic layer settle the clear ones, clears most disagreements before a jury is ever drawn, which is where the low overhead comes from.</p>
+      </div>
+      <div class="pair">
+        <span class="combo">Personhood + market</span>
+        <h3>A fair way to fill an empty market</h3>
+        <p>Thin early liquidity is the usual market killer. Because every account is a verified person, you can hand fee rebates to real humans without a bot farm draining them, and even run low-capital one-human-one-vote markets to get a price moving.</p>
+      </div>
+      <div class="pair">
+        <span class="combo">Privacy + court</span>
+        <h3>Private bets hide the target</h3>
+        <p>When informed money is hidden, an attacker cannot tell which markets the sharp traders care about. So they cannot guess which cases are worth corrupting or which jurors are worth leaning on. Privacy for traders becomes armor for the court.</p>
+      </div>
+      <div class="pair">
+        <span class="combo">Bonds + fees</span>
+        <h3>Careless jurors pay the careful ones</h3>
+        <p>A juror who rules badly forfeits part of a bond to those who ruled well, and trading fees top up the pool. Together they pay jurors a real wage without minting a token to do it, which is what keeps the running cost low.</p>
+      </div>
+    </div>
+  </section>
+
+  <section class="reveal">
+    <p class="sec-label">Two more, quietly</p>
+    <h2>The pieces that pull double duty</h2>
+    <p>Two more pairings are worth naming. The market's own categories, like sports or governance or coin prices, map cleanly onto expert subcourts, so the topics people bet on build exactly the pools of specialist jurors a random panel was missing. And the single proof-of-personhood check does two jobs from one registry: it stops a flood of fake jurors in the court and a flood of fake accounts in the market, so one piece of plumbing secures both halves at once.</p>
+    <p>None of these were the reason any single piece was chosen. They are the dividends you collect for having chosen pieces that fit. That is what it means for the whole to be louder than the parts.</p>
+  </section>
+
+  <section class="reveal">
+    <p class="sec-label">The whole thing</p>
+    <h2>One sentence to carry out the door</h2>
+    <p>A court of people that money cannot buy, paid for by a market that mints its own answer keys, producing verdicts portable enough that apps come to depend on them. Start the betting and the court trains itself. Train the court and apps will trust it. Win their trust and the betting deepens. The wheel does not need a push once it is turning.</p>
+    <p>If you jumped straight here, the place to start is <a href="vision.html">the vision</a>, then walk the path from <a href="juror-court.html">the court</a> through <a href="prediction-market.html">the market</a> and <a href="hybrid-juror-prediction-market-integration.html">the loop</a>. If you have read the rest, you have the whole picture now.</p>
+  </section>
+
+  <footer class="endnote reveal">
+    <nav id="series" aria-label="Where you are in the series"></nav>
+    <div class="sitemap">
+      <div class="sitemap-col">
+        <span class="sm-h">I &middot; The promise</span>
+        <a href="vision.html">1. The vision</a>
+      </div>
+      <div class="sitemap-col">
+        <span class="sm-h">II &middot; The mechanism</span>
+        <a href="juror-court.html">2. The court</a>
+        <a href="hybrid-juror-system.html">3. The hybrid system</a>
+      </div>
+      <div class="sitemap-col">
+        <span class="sm-h">III &middot; The bootstrap</span>
+        <a href="prediction-market.html">4. The market</a>
+        <a href="hybrid-juror-prediction-market-integration.html">5. The loop</a>
+        <a href="zero-to-one.html">6. Zero to one</a>
+      </div>
+      <div class="sitemap-col">
+        <span class="sm-h">IV &middot; The payoff</span>
+        <a href="compounding.html">7. Why it compounds</a>
+        <a href="index.html">Home &middot; the map</a>
+      </div>
+    </div>
+    <p class="signoff">Each piece earns its keep alone. Together they pay a dividend none of them could on their own.</p>
+  </footer>
+
+</main>
+
+<script src="assets/common.js"></script>
+</body>
+</html>

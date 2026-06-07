@@ -1,0 +1,218 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Zero to one: how the court gets switched on</title>
+<meta name="description" content="A court needs cases, jurors, and money before any customer arrives. A prediction market provides all three, then the court grows out to real disputes and app integrations.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@500;700&family=Newsreader:opsz,wght@6..72,200..700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="assets/styles.css">
+<style>
+  .coldstart { display: flex; align-items: center; justify-content: center; gap: .7rem; flex-wrap: wrap; font-family: var(--sans); }
+  .coldstart .ring { background: var(--bg); border: 1px solid var(--line-strong); border-radius: 12px; padding: .7rem .9rem; font-weight: 600; font-size: .9rem; text-align: center; }
+  .coldstart .ar { color: var(--accent); font-size: 1.4rem; font-weight: 700; }
+</style>
+</head>
+<body>
+<div id="progress"></div>
+
+<nav class="sitenav" aria-label="Primary">
+  <div class="sitenav-inner">
+    <a class="brand" href="index.html">DemoThemis<span class="dot">.</span></a>
+    <button class="nav-toggle" type="button" aria-label="Menu" aria-expanded="false">&#9776;</button>
+    <div class="nav-links">
+      <a href="index.html">Home</a>
+      <a href="vision.html">Vision</a>
+      <div class="nav-group">
+        <button class="nav-group-btn" type="button">The mechanism</button>
+        <div class="nav-menu">
+          <a href="juror-court.html"><span class="ch">02</span> The court</a>
+          <a href="hybrid-juror-system.html"><span class="ch">03</span> The hybrid system</a>
+        </div>
+      </div>
+      <div class="nav-group nav-group-end">
+        <button class="nav-group-btn" type="button">The bootstrap</button>
+        <div class="nav-menu">
+          <a href="prediction-market.html"><span class="ch">04</span> The market</a>
+          <a href="hybrid-juror-prediction-market-integration.html"><span class="ch">05</span> The loop</a>
+          <a href="zero-to-one.html"><span class="ch">06</span> Zero to one</a>
+        </div>
+      </div>
+      <a href="compounding.html">Why it compounds</a>
+    </div>
+  </div>
+</nav>
+
+<header class="hero reveal">
+  <p class="kicker">Zero to one</p>
+  <h1>How do you pay a judge before anyone needs judging?</h1>
+  <p class="dek">A court is only trusted once it has a track record, but nobody pays for an untested court. The prediction market is the way out of that loop. It hands the court real cases and real money on day one.</p>
+  <div class="meta">
+    <span class="pill">Go to market</span>
+    <span>7 min read</span>
+    <span class="dot">&bull;</span>
+    <span>Act III &middot; Chapter 6 of 7</span>
+  </div>
+</header>
+
+<main class="content wrap">
+
+  <section class="reveal">
+    <p class="takeaway">The plan in one line: <b>the market pays the court's first judges</b> out of trading fees, the judging builds a public track record, and that record is what convinces real apps to route their disputes through it.</p>
+    <p class="lead">Every new court faces the same trap. People will trust it once it has a long record of fair calls. But it cannot build a record until people bring it cases, and they will not bring real cases to a court with no record.</p>
+    <p>Worse, judges want to be paid, and good ones get better only by ruling on real disputes. So on day one you are short of all three things at once: cases, money, and a reason for anyone to believe the verdicts. Subsidies can paper over the money for a while, but a court propped up by a grant that runs out is not a business. You need a source of genuine disputes that pays for itself from the start.</p>
+
+    <figure class="diagram reveal">
+      <div class="diagram-inner">
+        <div class="coldstart">
+          <div class="ring">No track record</div>
+          <span class="ar">&rarr;</span>
+          <div class="ring">No paying cases</div>
+          <span class="ar">&rarr;</span>
+          <div class="ring">No way to pay jurors</div>
+          <span class="ar">&#8635;</span>
+        </div>
+      </div>
+      <figcaption>The cold-start trap. <b>Each missing piece is the reason the next one stays missing.</b></figcaption>
+    </figure>
+  </section>
+
+  <section class="reveal">
+    <p class="sec-label">The way in</p>
+    <h2>The first paying customer is a bet</h2>
+    <p>A <a href="prediction-market.html">prediction market</a> breaks the loop because it manufactures disputes that people will pay to have settled, without waiting for a single outside customer. Someone wants to bet on an election, a match, a price at a given hour. To pay out, the market has to decide what actually happened, and that decision is a dispute with money already riding on it.</p>
+    <p>Run the market on the court and three things fall into place at once. The market needs answers, so the court always has cases. Traders pay fees to bet, so there is money to pay the jurors. And every market that settles leaves behind a known outcome, which is exactly the kind of graded case the court needs to prove and sharpen its jurors. The first chapter of demand is not a marketplace begging for users. It is people who already want to bet, handing the court paid work as a side effect.</p>
+  </section>
+
+  <section class="reveal">
+    <p class="sec-label">Where the money comes from</p>
+    <h2>Fees pay the judges, not a printing press</h2>
+    <p>The pay for jurors comes from two honest sources. Traders pay a small fee on the money flowing through each market, and jurors who rule carelessly forfeit part of their bond to the ones who ruled well. Both are real money from real activity, so the court can pay its people without minting a token whose only job is to subsidize them. Drag the dials below to see how much judging a given amount of betting can fund.</p>
+
+    <div class="widget reveal">
+      <div class="widget-head"><span class="live"></span> Bootstrap economics, illustrative</div>
+      <div class="controls">
+        <div class="row"><label for="zVol">Monthly money settled through markets</label> <b id="zVolOut">$5.0M</b></div>
+        <input id="zVol" type="range" min="100000" max="50000000" step="100000" value="5000000">
+        <div class="row"><label for="zFee">Fee taken on that flow</label> <b id="zFeeOut">1.5%</b></div>
+        <input id="zFee" type="range" min="5" max="30" step="1" value="15">
+      </div>
+      <div class="readout">
+        <div class="stat"><div class="k">Monthly fee revenue</div><div class="v" id="zRev">$75k</div></div>
+        <div class="stat"><div class="k">Goes to the juror pool</div><div class="v accent" id="zPool">$53k</div></div>
+        <div class="stat"><div class="k">Jurors paid a part-time wage</div><div class="v" id="zJur">131</div></div>
+      </div>
+      <p style="font-family:var(--sans);font-size:.86rem;color:var(--faint);margin:1rem 0 0">Illustrative only. Assumes 70% of fees fund juror pay and a part-time juror earns about $400 a month for the cases they catch.</p>
+    </div>
+
+    <p>The point of the dials is not the exact figure, which will move with real data. It is the shape. Pay scales with use rather than with a fundraising round, so a busier court can afford more and better jurors, and a quiet one does not bleed money it does not have.</p>
+  </section>
+
+  <section class="reveal">
+    <p class="sec-label">The climb</p>
+    <h2>Three phases, each standing on the last</h2>
+    <p>The market is the first rung, not the destination. The track record it builds is what lets the court step out into the wider world of disputes, one phase at a time.</p>
+
+    <ol class="stepper reveal">
+      <li>
+        <span class="step-n">1</span>
+        <div class="step-body">
+          <h3>Markets only</h3>
+          <p>The court settles prediction markets and nothing else. Fees pay the jurors, settled markets grade them, and a public history of fair, fast calls starts to pile up. The only users are traders, and they are happy as long as their markets resolve correctly.</p>
+        </div>
+      </li>
+      <li>
+        <span class="step-n">2</span>
+        <div class="step-body">
+          <h3>Open the doors to real disputes</h3>
+          <p>With a record in hand, the court takes outside cases. Small on-chain deals first, where a refund or a release of funds hinges on who was right. An escrow that needs a neutral referee can point at the court's history and trust the answer. Each settled dispute adds to the same record.</p>
+        </div>
+      </li>
+      <li>
+        <span class="step-n">3</span>
+        <div class="step-body">
+          <h3>Become the default</h3>
+          <p>Once enough apps settle through the same court, its verdicts and the reputations behind them turn into a shared trust record any app can read. New apps plug in rather than build their own support desk, and the ones that skip it start to look like they have something to hide. That is the standard the <a href="vision.html">vision</a> described.</p>
+        </div>
+      </li>
+    </ol>
+  </section>
+
+  <section class="reveal">
+    <p class="sec-label">Why not just pay jurors</p>
+    <h2>A subsidy is a countdown, a market is an engine</h2>
+    <p>The obvious shortcut is to skip the market and pay jurors out of a treasury until customers show up. The trouble is that a treasury is a countdown. Spend it and the court goes dark unless paying demand arrived in time, and paying demand is the very thing that takes a track record to earn. You would be racing a clock you set yourself.</p>
+    <p>The market changes the math because it is demand that already exists. People bet whether or not a court needs bootstrapping, so the cases and the fees show up on their own, and the calibration data the court needs to prove itself is a free byproduct of markets settling. The market is not a marketing cost to be burned through. It is the part of the machine that keeps the rest fed.</p>
+  </section>
+
+  <footer class="endnote reveal">
+    <nav id="series" aria-label="Where you are in the series"></nav>
+    <div class="sitemap">
+      <div class="sitemap-col">
+        <span class="sm-h">I &middot; The promise</span>
+        <a href="vision.html">1. The vision</a>
+      </div>
+      <div class="sitemap-col">
+        <span class="sm-h">II &middot; The mechanism</span>
+        <a href="juror-court.html">2. The court</a>
+        <a href="hybrid-juror-system.html">3. The hybrid system</a>
+      </div>
+      <div class="sitemap-col">
+        <span class="sm-h">III &middot; The bootstrap</span>
+        <a href="prediction-market.html">4. The market</a>
+        <a href="hybrid-juror-prediction-market-integration.html">5. The loop</a>
+        <a href="zero-to-one.html">6. Zero to one</a>
+      </div>
+      <div class="sitemap-col">
+        <span class="sm-h">IV &middot; The payoff</span>
+        <a href="compounding.html">7. Why it compounds</a>
+        <a href="index.html">Home &middot; the map</a>
+      </div>
+    </div>
+    <p class="signoff">Pay the first judges out of bets, build a record, and let real disputes follow the proof.</p>
+  </footer>
+
+</main>
+
+<script src="assets/common.js"></script>
+<script>
+(function () {
+  "use strict";
+  var vol = document.getElementById("zVol");
+  var fee = document.getElementById("zFee");
+  if (!vol || !fee) return;
+  var volOut = document.getElementById("zVolOut");
+  var feeOut = document.getElementById("zFeeOut");
+  var rev = document.getElementById("zRev");
+  var pool = document.getElementById("zPool");
+  var jur = document.getElementById("zJur");
+
+  var POOL_SHARE = 0.7;
+  var WAGE = 400;
+
+  function money(n) {
+    if (n >= 1000000) return "$" + (n / 1000000).toFixed(n >= 10000000 ? 0 : 1) + "M";
+    if (n >= 1000) return "$" + Math.round(n / 1000) + "k";
+    return "$" + Math.round(n);
+  }
+
+  function update() {
+    var v = parseInt(vol.value, 10);
+    var f = parseInt(fee.value, 10) / 10; // tenths of a percent
+    volOut.textContent = money(v);
+    feeOut.textContent = f.toFixed(1) + "%";
+    var revenue = v * (f / 100);
+    var poolUsd = revenue * POOL_SHARE;
+    rev.textContent = money(revenue);
+    pool.textContent = money(poolUsd);
+    jur.textContent = Math.round(poolUsd / WAGE).toLocaleString("en-US");
+  }
+  vol.addEventListener("input", update);
+  fee.addEventListener("input", update);
+  update();
+})();
+</script>
+</body>
+</html>

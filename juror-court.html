@@ -1,0 +1,330 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Juror courts without coins</title>
+<meta name="description" content="A proof-of-personhood court for resolving disputes: one human, one vote instead of one token, one vote.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@500;700&family=Newsreader:opsz,wght@6..72,200..700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="assets/styles.css">
+</head>
+<body class="theme-juror">
+<div id="progress"></div>
+
+<nav class="sitenav" aria-label="Primary">
+  <div class="sitenav-inner">
+    <a class="brand" href="index.html">DemoThemis<span class="dot">.</span></a>
+    <button class="nav-toggle" type="button" aria-label="Menu" aria-expanded="false">&#9776;</button>
+    <div class="nav-links">
+      <a href="index.html">Home</a>
+      <a href="vision.html">Vision</a>
+      <div class="nav-group">
+        <button class="nav-group-btn" type="button">The mechanism</button>
+        <div class="nav-menu">
+          <a href="juror-court.html"><span class="ch">02</span> The court</a>
+          <a href="hybrid-juror-system.html"><span class="ch">03</span> The hybrid system</a>
+        </div>
+      </div>
+      <div class="nav-group nav-group-end">
+        <button class="nav-group-btn" type="button">The bootstrap</button>
+        <div class="nav-menu">
+          <a href="prediction-market.html"><span class="ch">04</span> The market</a>
+          <a href="hybrid-juror-prediction-market-integration.html"><span class="ch">05</span> The loop</a>
+          <a href="zero-to-one.html"><span class="ch">06</span> Zero to one</a>
+        </div>
+      </div>
+      <a href="compounding.html">Why it compounds</a>
+    </div>
+  </div>
+</nav>
+
+<header class="hero reveal">
+  <p class="kicker">A new version of UMA</p>
+  <h1>Juror courts without coins</h1>
+  <p class="dek">Decentralized arbitration that resists capture by replacing token stake with proof of personhood. One human, one vote.</p>
+  <div class="meta">
+    <span class="pill">Mechanism design</span>
+    <span>5 min read</span>
+    <span class="dot">&bull;</span>
+    <span>Act II &middot; Chapter 2 of 7</span>
+  </div>
+</header>
+
+<main class="content wrap">
+
+  <aside id="toc" class="toc reveal"></aside>
+
+  <section class="reveal">
+    <p class="lead">Most systems we use to settle disputes on-chain run on tokens. UMA, Kleros, and Augur work in roughly the same way. You stake a token, you vote on the answer, and if your vote lands with the majority you earn a reward.</p>
+    <p>The design rests on one bet from game theory: honest answers are a <em class="q">Schelling point</em>, so rational voters converge on the truth. I have used these systems, and I think the core idea is right. The part that bothers me is the layer underneath.</p>
+  </section>
+
+  <section class="reveal">
+    <p class="sec-label">The weakness</p>
+    <h2>When votes scale with stake, security scales with money</h2>
+    <p>Whoever holds the most tokens holds the most say over what counts as true. We have watched this go wrong already. On Polymarket, large holders moved UMA votes to settle markets that many users said did not match reality.</p>
+    <p>The two pictures below are the same vote under two rules. On the left, weight follows the wallet, so one whale decides the outcome. On the right, every verified human carries the same weight.</p>
+
+    <figure class="diagram reveal">
+      <div class="diagram-inner">
+        <div class="compare">
+          <div class="compare-col bad">
+            <h4>One token, one vote <span class="tag-bad">plutocratic</span></h4>
+            <svg viewBox="0 0 260 130" role="img" aria-label="One voter towers over the rest">
+              <line x1="12" y1="112" x2="248" y2="112" stroke="#d8d2c6" stroke-width="1"/>
+              <rect x="20"  y="96"  width="26" height="16"  rx="3" fill="#c9c3b8"/>
+              <rect x="58"  y="84"  width="26" height="28"  rx="3" fill="#c9c3b8"/>
+              <rect x="96"  y="100" width="26" height="12"  rx="3" fill="#c9c3b8"/>
+              <rect x="134" y="20"  width="26" height="92"  rx="3" fill="#d8553f"/>
+              <rect x="172" y="92"  width="26" height="20"  rx="3" fill="#c9c3b8"/>
+              <rect x="210" y="88"  width="26" height="24"  rx="3" fill="#c9c3b8"/>
+              <text x="147" y="14" text-anchor="middle" font-family="Inter, sans-serif" font-size="10" font-weight="700" fill="#d8553f">whale</text>
+            </svg>
+            <ul>
+              <li>Buy half the supply, own half the votes, on every case, forever.</li>
+              <li>Cost to capture scales with token price, not with honesty.</li>
+            </ul>
+          </div>
+          <div class="compare-col good">
+            <h4>One human, one vote <span class="tag-good">egalitarian</span></h4>
+            <svg viewBox="0 0 260 130" role="img" aria-label="Six voters of equal height">
+              <line x1="12" y1="112" x2="248" y2="112" stroke="#d8d2c6" stroke-width="1"/>
+              <rect x="20"  y="60" width="26" height="52" rx="3" fill="#169d74"/>
+              <rect x="58"  y="60" width="26" height="52" rx="3" fill="#169d74"/>
+              <rect x="96"  y="60" width="26" height="52" rx="3" fill="#169d74"/>
+              <rect x="134" y="60" width="26" height="52" rx="3" fill="#169d74"/>
+              <rect x="172" y="60" width="26" height="52" rx="3" fill="#169d74"/>
+              <rect x="210" y="60" width="26" height="52" rx="3" fill="#169d74"/>
+            </svg>
+            <ul>
+              <li>You cannot buy more humans. Each identity is one verified person.</li>
+              <li>Cost to capture scales with the number of people, which is hard.</li>
+            </ul>
+          </div>
+        </div>
+      </div>
+      <figcaption>Same vote, two Sybil-resistance rules. <b>Stake concentrates power where the money is.</b></figcaption>
+    </figure>
+  </section>
+
+  <section class="reveal">
+    <p class="sec-label">The change</p>
+    <h2>Keep the Schelling vote, replace who gets to cast it</h2>
+    <p>So here is the change I want to make. Keep the Schelling-point vote. Replace the part that decides who gets to vote. Instead of one token one vote, use one human one vote, where each human is verified once through World ID. The mechanism has four parts.</p>
+
+    <ol class="stepper reveal">
+      <li>
+        <span class="step-n">1</span>
+        <div class="step-body">
+          <h3>Optimistic layer for the easy cases</h3>
+          <p>Anyone can assert an answer and post a bond. If nobody challenges within two hours, the answer settles and the bond returns. Most questions are not controversial, so most never reach a jury, and the system stays cheap.</p>
+        </div>
+      </li>
+      <li>
+        <span class="step-n">2</span>
+        <div class="step-body">
+          <h3>Random selection over verified humans</h3>
+          <p>When someone does challenge, the question goes to a jury drawn at random from people who hold a World ID and have opted in as jurors. Jurors do not choose their cases. You cannot volunteer for the one market you want to swing.</p>
+        </div>
+      </li>
+      <li>
+        <span class="step-n">3</span>
+        <div class="step-body">
+          <h3>Private votes that open together</h3>
+          <p>Each juror submits a hash of their vote, then reveals it after the commit window closes. No juror sees another answer before committing, so there is nothing to copy and no bandwagon to join.</p>
+        </div>
+      </li>
+      <li>
+        <span class="step-n">4</span>
+        <div class="step-body">
+          <h3>Coherence rewards and a refundable bond</h3>
+          <p>This is the piece proof of personhood does not hand you for free. World ID shows you are a unique human. It says nothing about whether you will read the case. So each juror posts a small bond, say 20 dollars, refundable. Vote with the majority and you get a fee and your bond back. Vote against it and you forfeit part of the bond to the jurors who were coherent. Now even a one-vote juror has money on the line.</p>
+        </div>
+      </li>
+    </ol>
+
+    <figure class="diagram reveal">
+      <div class="diagram-inner">
+        <div class="flow">
+          <div class="node"><span class="ic">&#9998;</span><span class="lbl">Assert</span><span class="sub">answer + bond</span></div>
+          <span class="arrow">&rarr;</span>
+          <div class="node"><span class="ic">&#9203;</span><span class="lbl">2h window</span><span class="sub">most settle here</span></div>
+          <span class="arrow">&rarr;</span>
+          <div class="node"><span class="ic">&#9889;</span><span class="lbl">Dispute</span><span class="sub">challenger bonds</span></div>
+          <span class="arrow">&rarr;</span>
+          <div class="node is-accent"><span class="ic">&#127922;</span><span class="lbl">Random jury</span><span class="sub">verified humans</span></div>
+          <span class="arrow">&rarr;</span>
+          <div class="node"><span class="ic">&#128274;</span><span class="lbl">Commit / reveal</span><span class="sub">private votes</span></div>
+          <span class="arrow">&rarr;</span>
+          <div class="node"><span class="ic">&#9878;</span><span class="lbl">Resolve</span><span class="sub">reward + slash</span></div>
+        </div>
+      </div>
+      <figcaption>The path of a question. <b>Only disputed answers reach the jury.</b></figcaption>
+    </figure>
+  </section>
+
+  <section class="reveal">
+    <p class="sec-label">Why it holds</p>
+    <h2>You cannot buy more humans</h2>
+    <p>Suppose 10,000 people have opted in and each case draws a panel of 13. To bend one case you need a majority of that panel, drawn from a pool where every identity costs an in-person iris scan, not a token purchase. And you cannot see the panel coming. Try it: corrupt a slice of the pool and watch how little it buys you until you own a large fraction of everyone.</p>
+
+    <div class="widget reveal">
+      <div class="widget-head"><span class="live"></span> Capture simulator</div>
+      <div class="controls">
+        <div class="row"><label for="mSlider">Verified humans you corrupt</label> <b id="mOut">2,000</b></div>
+        <input id="mSlider" type="range" min="0" max="10000" step="50" value="2000">
+      </div>
+      <div class="readout">
+        <div class="stat"><div class="k">Share of pool</div><div class="v" id="fracOut">20%</div></div>
+        <div class="stat"><div class="k">Chance of swinging one case</div><div class="v accent" id="probOut">0.02%</div></div>
+        <div class="stat"><div class="k">Cases swung per 1,000</div><div class="v" id="casesOut">&lt;1</div></div>
+      </div>
+      <p style="font-family:var(--sans);font-size:.86rem;color:var(--faint);margin:1rem 0 0">Pool of 10,000 jurors, panels of 13, majority of 7. Probability is the chance a random panel hands you 7 or more of your bought jurors.</p>
+    </div>
+
+    <figure class="diagram reveal">
+      <div class="diagram-inner">
+        <div class="dotgrid" id="dots" aria-hidden="true"></div>
+        <div style="display:flex;align-items:center;justify-content:space-between;gap:1rem;flex-wrap:wrap">
+          <span style="font-family:var(--sans);font-size:.86rem;color:var(--faint)">13 jurors, drawn at random from the pool. Nobody picks their case.</span>
+          <button class="btn" id="drawBtn" type="button">Draw a new panel</button>
+        </div>
+      </div>
+      <figcaption>A fresh random draw every time. <b>An attacker cannot predict or pick the panel.</b></figcaption>
+    </figure>
+
+    <p>Buying 5,000 verified humans is far more expensive and far more visible than buying half a token supply, and even then you only touch the cases your bought jurors happen to land on.</p>
+  </section>
+
+  <section class="reveal">
+    <p class="sec-label">Honest limits</p>
+    <h2>What this does not fix</h2>
+    <div class="callout reveal">
+      <h3>It depends on World ID</h3>
+      <p>That means depending on one personhood provider with its own central points and privacy questions. I would want the court to accept several kinds of personhood proof over time, not just one.</p>
+    </div>
+    <div class="callout reveal">
+      <h3>It invites apathy</h3>
+      <p>People pulled at random into a technical dispute may not care enough to read the evidence. The fee and the bond push against that, and routing cases to jurors who opted into a matching topic pushes harder.</p>
+    </div>
+    <div class="callout reveal">
+      <h3>It does not create expertise</h3>
+      <p>A random verified human is not a domain expert. For specialized questions I would let jurors register into subcourts, the way Kleros does, and draw each panel from the relevant pool.</p>
+    </div>
+    <p>None of these send me back to tying security to wealth. They are the work that comes after you decide that one human, one vote is the property you actually want.</p>
+  </section>
+
+  <footer class="endnote reveal">
+    <nav id="series" aria-label="Where you are in the series"></nav>
+    <div class="sitemap">
+      <div class="sitemap-col">
+        <span class="sm-h">I &middot; The promise</span>
+        <a href="vision.html">1. The vision</a>
+      </div>
+      <div class="sitemap-col">
+        <span class="sm-h">II &middot; The mechanism</span>
+        <a href="juror-court.html">2. The court</a>
+        <a href="hybrid-juror-system.html">3. The hybrid system</a>
+      </div>
+      <div class="sitemap-col">
+        <span class="sm-h">III &middot; The bootstrap</span>
+        <a href="prediction-market.html">4. The market</a>
+        <a href="hybrid-juror-prediction-market-integration.html">5. The loop</a>
+        <a href="zero-to-one.html">6. Zero to one</a>
+      </div>
+      <div class="sitemap-col">
+        <span class="sm-h">IV &middot; The payoff</span>
+        <a href="compounding.html">7. Why it compounds</a>
+        <a href="index.html">Home &middot; the map</a>
+      </div>
+    </div>
+    <p class="signoff">Replace who is allowed to vote, not why they vote, and the verdict stops tracking who holds the most money.</p>
+  </footer>
+
+</main>
+
+<script src="assets/common.js"></script>
+<script>
+(function () {
+  "use strict";
+  var N = 10000, PANEL = 13, MAJ = 7;
+
+  function lgamma(z) {
+    var g = 7;
+    var c = [0.99999999999980993, 676.5203681218851, -1259.1392167224028,
+      771.32342877765313, -176.61502916214059, 12.507343278686905,
+      -0.13857109526572012, 9.9843695780195716e-6, 1.5056327351493116e-7];
+    if (z < 0.5) return Math.log(Math.PI / Math.sin(Math.PI * z)) - lgamma(1 - z);
+    z -= 1;
+    var x = c[0];
+    for (var i = 1; i < g + 2; i++) x += c[i] / (z + i);
+    var t = z + g + 0.5;
+    return 0.5 * Math.log(2 * Math.PI) + (z + 0.5) * Math.log(t) - t + Math.log(x);
+  }
+  function logChoose(n, k) {
+    if (k < 0 || k > n || n < 0) return -Infinity;
+    return lgamma(n + 1) - lgamma(k + 1) - lgamma(n - k + 1);
+  }
+  // P(>= MAJ of PANEL drawn are among m corrupted), hypergeometric
+  function captureProb(m) {
+    var denom = logChoose(N, PANEL);
+    var sum = 0;
+    for (var i = MAJ; i <= PANEL; i++) {
+      var lt = logChoose(m, i) + logChoose(N - m, PANEL - i) - denom;
+      if (lt > -Infinity) sum += Math.exp(lt);
+    }
+    return Math.min(1, sum);
+  }
+  function fmtPct(p) {
+    var v = p * 100;
+    if (v === 0) return "0%";
+    if (v < 0.01) return "<0.01%";
+    if (v < 1) return v.toFixed(2) + "%";
+    if (v < 10) return v.toFixed(1) + "%";
+    return Math.round(v) + "%";
+  }
+
+  var slider = document.getElementById("mSlider");
+  var mOut = document.getElementById("mOut");
+  var fracOut = document.getElementById("fracOut");
+  var probOut = document.getElementById("probOut");
+  var casesOut = document.getElementById("casesOut");
+
+  function update() {
+    var m = parseInt(slider.value, 10);
+    var p = captureProb(m);
+    mOut.textContent = m.toLocaleString();
+    fracOut.textContent = Math.round((m / N) * 100) + "%";
+    probOut.textContent = fmtPct(p);
+    var cases = p * 1000;
+    casesOut.textContent = cases < 1 ? "<1" : Math.round(cases).toLocaleString();
+  }
+  slider.addEventListener("input", update);
+  update();
+
+  // Sortition dot grid
+  var grid = document.getElementById("dots");
+  var TOTAL = 240;
+  for (var d = 0; d < TOTAL; d++) {
+    var el = document.createElement("span");
+    el.className = "d";
+    grid.appendChild(el);
+  }
+  var cells = grid.querySelectorAll(".d");
+  function draw() {
+    cells.forEach(function (c) { c.classList.remove("on"); });
+    var picked = {};
+    var count = 0;
+    while (count < PANEL) {
+      var idx = Math.floor(Math.random() * TOTAL);
+      if (!picked[idx]) { picked[idx] = true; cells[idx].classList.add("on"); count++; }
+    }
+  }
+  document.getElementById("drawBtn").addEventListener("click", draw);
+  draw();
+})();
+</script>
+</body>
+</html>

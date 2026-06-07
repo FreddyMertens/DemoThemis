@@ -1,0 +1,323 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Continuous peer review for jurors: how many, and how</title>
+<meta name="description" content="Designing a continuous, peer-reviewed juror ranking with escalating suspension, and finding the panel size that makes the review most rigorous.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@500;700&family=Newsreader:opsz,wght@6..72,200..700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="assets/styles.css">
+<style>
+  body.theme-solve { --accent: #2f62cf; --accent-soft: #e6edfa; --accent-ink: #21489c; }
+  .bars { display: flex; align-items: flex-end; gap: 7px; height: 150px; margin: .5rem 0 2rem; }
+  .bars .bar { flex: 1; background: var(--line); border-radius: 6px 6px 0 0; position: relative; transition: height .25s ease, background .25s ease; min-height: 3px; }
+  .bars .bar.sel { background: var(--accent); }
+  .bars .bar .n { position: absolute; bottom: -1.5rem; left: 0; right: 0; text-align: center; font-family: var(--sans); font-size: .72rem; color: var(--faint); }
+  .bars .bar .pv { position: absolute; top: -1.4rem; left: 0; right: 0; text-align: center; font-family: var(--sans); font-size: .68rem; font-weight: 700; color: var(--accent-ink); opacity: 0; transition: opacity .2s; }
+  .bars .bar.sel .pv { opacity: 1; }
+  .cmp-wrap { overflow-x: auto; margin: 1.4rem 0; }
+  .cmp-table { width: 100%; border-collapse: collapse; font-family: var(--sans); font-size: .88rem; min-width: 640px; }
+  .cmp-table th, .cmp-table td { padding: .7rem .55rem; border-bottom: 1px solid var(--line); text-align: left; vertical-align: middle; }
+  .cmp-table thead th { font-size: .74rem; text-transform: uppercase; letter-spacing: .03em; color: var(--faint); font-weight: 700; }
+  .cmp-table td:first-child, .cmp-table th:first-child { font-weight: 600; color: var(--ink); position: sticky; left: 0; background: var(--surface); }
+  .cmp-table tr.win td { background: var(--accent-soft); }
+  .rate { font-weight: 700; font-size: .8rem; padding: .12rem .45rem; border-radius: 6px; white-space: nowrap; }
+  .r-strong { color: #0b6b43; background: #ddf3e9; }
+  .r-mid { color: #7a3c00; background: #fbe7d6; }
+  .r-weak { color: #9a2417; background: #fbe2dd; }
+  .scorepanel { display: flex; gap: 10px; align-items: center; justify-content: center; flex-wrap: wrap; }
+  .scorepanel .j { width: 40px; height: 40px; border-radius: 50%; display: grid; place-items: center; font-family: var(--sans); font-weight: 700; font-size: .8rem; background: var(--accent-soft); color: var(--accent-ink); }
+  .scorepanel .j.you { background: var(--accent); color: #fff; box-shadow: 0 0 0 4px var(--accent-soft); }
+  .scorepanel .br { font-family: var(--sans); font-size: .8rem; color: var(--faint); }
+</style>
+</head>
+<body class="theme-solve">
+<div id="progress"></div>
+
+<nav class="sitenav" aria-label="Primary">
+  <div class="sitenav-inner">
+    <a class="brand" href="index.html">DemoThemis<span class="dot">.</span></a>
+    <button class="nav-toggle" type="button" aria-label="Menu" aria-expanded="false">&#9776;</button>
+    <div class="nav-links">
+      <a href="index.html">Home</a>
+      <a href="vision.html">Vision</a>
+      <div class="nav-group">
+        <button class="nav-group-btn" type="button">The mechanism</button>
+        <div class="nav-menu">
+          <a href="juror-court.html"><span class="ch">02</span> The court</a>
+          <a href="hybrid-juror-system.html"><span class="ch">03</span> The hybrid system</a>
+        </div>
+      </div>
+      <div class="nav-group nav-group-end">
+        <button class="nav-group-btn" type="button">The bootstrap</button>
+        <div class="nav-menu">
+          <a href="prediction-market.html"><span class="ch">04</span> The market</a>
+          <a href="hybrid-juror-prediction-market-integration.html"><span class="ch">05</span> The loop</a>
+          <a href="zero-to-one.html"><span class="ch">06</span> Zero to one</a>
+        </div>
+      </div>
+      <a href="compounding.html">Why it compounds</a>
+    </div>
+  </div>
+</nav>
+
+<header class="hero reveal">
+  <p class="kicker">Mechanism design</p>
+  <h1>Peer review for jurors, done properly</h1>
+  <p class="dek">A continuous, peer-graded ranking with escalating suspension. How many jurors make the review most rigorous, and which scoring system actually works.</p>
+  <div class="meta">
+    <span class="pill">Reputation systems</span>
+    <span>12 min read</span>
+    <span class="dot">&bull;</span>
+    <span>Deep dive &middot; off Chapter 3</span>
+  </div>
+</header>
+
+<main class="content wrap">
+
+  <aside id="toc" class="toc reveal"></aside>
+
+  <section class="reveal">
+    <p class="lead">Start with the objection that sounds decisive. A court staffed by whoever works cheapest will be a court staffed by the worst judges, so the whole game is screening jurors for quality.</p>
+    <p>That objection hides a mistake. It treats cheap labor and weak labor as the same thing, and they are not. Wages track the local cost of living, not the quality of someone's judgment. A careful, literate reasoner in Nairobi or Manila is both inexpensive and entirely capable of the work, so a filter that screens on price is screening on the wrong variable. The honest version of my worry is narrower: this task does need competence, and screening for competence is fair. Your proposal does exactly that, and it does it better than a webcam exam, because it measures judgment from real judging rather than from a one-time test, and it keeps onboarding open and jurors anonymous along the way.</p>
+    <p>So the question stops being whether to screen and becomes how to score. The plan is continuous peer review: every juror carries a quality rank built from how their votes line up with their peers, and a juror who slips below a bar is suspended, for longer each time it happens. Below I work through what that score should actually measure, how many jurors make each review rigorous, the ways it can break, and four ways to build it. There is a clear winner, and I will name it at the end.</p>
+  </section>
+
+  <section class="reveal">
+    <p class="sec-label">What we are measuring</p>
+    <h2>There is no answer key, so peers are the yardstick</h2>
+    <p>The hard part is that the court is the thing that produces the truth. For almost every case there is no external oracle to grade jurors against. The only signal available is agreement: did your vote match what the rest of the panel concluded. That makes this a peer-prediction problem, and it carries three traps that a naive coherence score walks straight into.</p>
+    <p>The first is self-reference. If you score a juror by whether they agreed with a majority they were part of, a decisive vote grades its own homework. The fix is to score each juror against the leave-one-out majority, the verdict formed by everyone else on the panel. The second is herding. If coherence is all that pays, the rational move is to guess what others will say rather than to reason, which collapses the panel onto a focal point that may not be true. The third is the correct contrarian. A juror who is right when the majority is wrong is exactly who you want, yet a flat coherence score punishes them. A system that suspends low-coherence jurors hard will, over time, breed out the independent thinkers and leave a conformist pool that fails on the hard cases. That is the same correlated-error failure that made me wary of a standardizing exam.</p>
+    <p>So the score has to be more careful than raw agreement. Three ingredients fix most of it. Weight each judgment by the margin of the consensus, so dissent on a 12 to 1 verdict counts against you while dissent on a 7 to 6 split barely moves your score, because the case was genuinely close. Vindicate correct contrarians, so that when an appeal overturns a verdict, the jurors who dissented in the original round get credit rather than a penalty. And anchor the whole thing to reality with calibration cases, questions with a known answer, seeded indistinguishably into normal caseloads, which give an absolute quality signal and reveal when the pool as a whole is drifting toward a comfortable but wrong consensus.</p>
+
+    <figure class="diagram reveal">
+      <div class="diagram-inner">
+        <div class="scorepanel">
+          <div class="j you">YOU</div>
+          <span class="br">scored against &rarr;</span>
+          <div class="j">J</div><div class="j">J</div><div class="j">J</div>
+          <div class="j">J</div><div class="j">J</div><div class="j">J</div>
+        </div>
+      </div>
+      <figcaption>Leave-one-out scoring on a panel of seven. <b>You are graded against the other six, never against a verdict you helped cast.</b></figcaption>
+    </figure>
+  </section>
+
+  <section class="reveal">
+    <p class="sec-label">The headline question</p>
+    <h2>How many jurors make the review most rigorous</h2>
+    <p>There are really two sizes hiding in this question, and they pull in different directions. One is how many jurors sit on a case, because that panel is the yardstick every juror is measured against. The other is how many judged cases you need before a juror's rank is trustworthy. Get both right and the review is rigorous. Get either wrong and you are either measuring against a noisy ruler or passing sentence on a tiny sample.</p>
+    <p>Start with the panel. A panel decides by majority, and the Condorcet jury theorem says that as long as the average juror is better than a coin flip, larger panels are more often right. The catch is that the gains saturate fast. With jurors who are individually right 80 percent of the time, a panel of 7 reaches about 96.7 percent, a panel of 9 about 98.0, and a panel of 13 about 99.3. Each extra pair of jurors buys less than the last, while the cost rises in a straight line and resolution slows down. Drag the sliders below and watch the curve flatten.</p>
+
+    <div class="widget reveal">
+      <div class="widget-head"><span class="live"></span> Panel size, accuracy, and scoring power</div>
+      <div class="controls">
+        <div class="row"><label for="pSlider">Individual juror accuracy</label> <b id="pOut">80%</b></div>
+        <input id="pSlider" type="range" min="55" max="99" step="1" value="80">
+        <div class="row"><label for="nSlider">Panel size</label> <b id="nOut">7</b></div>
+        <input id="nSlider" type="range" min="3" max="31" step="2" value="7">
+      </div>
+      <div class="bars" id="barRow" aria-hidden="true"></div>
+      <div class="readout">
+        <div class="stat"><div class="k">Verdict accuracy</div><div class="v accent" id="vOut">96.7%</div></div>
+        <div class="stat"><div class="k">Good vs lazy coherence gap</div><div class="v" id="gapOut">0.37</div></div>
+        <div class="stat"><div class="k">Cases to flag a lazy juror</div><div class="v" id="casesOut">17</div></div>
+      </div>
+      <p style="font-family:var(--sans);font-size:.86rem;color:var(--faint);margin:1rem 0 0">Illustrative. Bars show verdict accuracy from panel of 3 to 15 at the chosen accuracy. The last column is the rolling sample a confident suspension needs.</p>
+    </div>
+
+    <p>The same panel is your measuring instrument, and that sets a floor under how small it can be. Score a juror against only two others and the yardstick itself is a coin toss, so a good juror gets marked wrong by luck and the rank is mostly noise. The yardstick has to be reliable enough that the gap between a careful juror and a lazy one survives the measurement. By the time the panel is right around 97 percent of the time, that gap is wide and clean, and pushing reliability to 99.9 buys almost nothing for scoring while costing real money. The sweet spot where the verdict is a trustworthy ruler, the correct contrarian is still statistically visible, and the bill stays sane sits at about 7 jurors per case for routine matters, rising to 15 or 31 on appeal where the stakes and the doubt are higher.</p>
+    <p>Then the sample. Distinguishing a 90 percent juror from a 75 percent one at sensible confidence takes on the order of 50 to 70 judged cases. Splitting finer, say 85 from 80, runs into the hundreds. The practical reading is that a juror's standing should ride on a rolling window of roughly 50 to 150 recent cases, never on a handful, and that the threshold should be applied to the conservative end of the estimate, the bottom of the confidence interval rather than the point estimate, so that bad luck on a short run does not get someone suspended. New jurors, who have no record yet, start with wide uncertainty and therefore low influence rather than a punishment.</p>
+    <p>One more thing falls out of the curve, and it ties the whole series together. When jurors are weak, say 65 percent each, no feasible panel rescues you: even 31 of them only reach about 96 percent, and the scoring gap stays muddy. When jurors are strong, 7 is plenty and the gap is obvious. So the reputation system and small cheap panels are complements. Filtering for quality is what lets every case be decided well by only seven people. That is the argument for your continuous test, made in numbers.</p>
+  </section>
+
+  <section class="reveal">
+    <p class="sec-label">The loop</p>
+    <h2>What the continuous system looks like in motion</h2>
+    <p>Put the pieces in a cycle. A juror is drawn at random, votes under commit and reveal, and is scored against the leave-one-out majority with the margin and any later appeal taken into account. That score updates a running estimate of their quality, held as a posterior with its uncertainty, not a single number. As long as the conservative end of that estimate stays above the bar, they keep drawing cases. When it drops below, they are suspended, and the next time it happens the suspension is longer. Standing is re-earned by coming back and performing, so the door is never permanently shut by a bad month.</p>
+
+    <figure class="diagram reveal">
+      <div class="diagram-inner">
+        <div class="flow">
+          <div class="node"><span class="ic">&#127922;</span><span class="lbl">Drawn</span><span class="sub">at random</span></div>
+          <span class="arrow">&rarr;</span>
+          <div class="node"><span class="ic">&#128274;</span><span class="lbl">Vote</span><span class="sub">commit / reveal</span></div>
+          <span class="arrow">&rarr;</span>
+          <div class="node is-accent"><span class="ic">&#9878;</span><span class="lbl">Scored</span><span class="sub">vs the other six</span></div>
+          <span class="arrow">&rarr;</span>
+          <div class="node"><span class="ic">&#128200;</span><span class="lbl">Rank updates</span><span class="sub">with uncertainty</span></div>
+          <span class="arrow">&rarr;</span>
+          <div class="node"><span class="ic">&#9203;</span><span class="lbl">Below bar?</span><span class="sub">escalating pause</span></div>
+        </div>
+      </div>
+      <figcaption>The standing of every juror is recomputed from work they already do. <b>No exam, no proctor, no camera.</b></figcaption>
+    </figure>
+  </section>
+
+  <section class="reveal">
+    <p class="sec-label">Stress tests</p>
+    <h2>Walking the failure modes</h2>
+    <p>A mechanism is only as good as its behavior on the awkward cases, so here are the ones that matter and what the design does about each.</p>
+    <p>The unlucky good juror draws a run of genuinely hard cases and dips. The confidence-bound threshold and the 50 to 150 case window absorb this, because a short streak does not move the conservative estimate below the bar. The correct contrarian dissents and is later proven right on appeal: vindication credit turns that from a penalty into a gain, which is the behavior you want to reward, not punish. The new juror has no history, so they enter with low influence and a probation where their votes are watched before they carry full weight, never suspended for a record they have not had a chance to build.</p>
+    <p>The lazy farmer tries to harvest easy coherence by always voting the obvious answer. Random assignment means they cannot pick easy cases, calibration questions catch a juror who is not actually reading, and varying base rates make a fixed default fall apart. The herding pool is the deep one: if most jurors stop reasoning and copy each other, coherence rewards conformity to a possibly wrong focal point. Calibration cases with known answers are the anchor that detects this, because a drifting pool starts failing the questions whose answers are known, and the margin weighting plus contrarian vindication keep independent voices from being scrubbed out. The pool-packing attacker from the earlier note still applies, since your panel share scales with your pool share, but reputation makes it far more expensive: packed identities have to actually perform to keep standing, so a buyer must supply real competence, not just real humans. And in the early days the pool is small and the statistics are thin, which argues for a soft launch that leans on calibration and light weighting before the suspension teeth come in.</p>
+
+    <div class="callout reveal">
+      <h3>The principle under all of it</h3>
+      <p>Never suspend on a point estimate or a small sample, and never let raw agreement be the only thing that pays. Confidence gating protects the good juror, and calibration plus contrarian credit protect the truth from the crowd. Those two guardrails are what separate a fair ranking from a conformity machine.</p>
+    </div>
+  </section>
+
+  <section class="reveal">
+    <p class="sec-label">Four ways to build it</p>
+    <h2>Comparing the systems</h2>
+    <p>There are four serious designs on the table. Relative culling suspends the bottom slice of the ranking on a schedule. The absolute threshold with escalating suspension is your proposal in its plain form: clear a fixed coherence bar or sit out, longer each time. Reputation weighting drops suspension entirely and instead scales each juror's influence by their rank, so weak jurors fade rather than leave. The hybrid keeps your escalating suspension as a confidence-gated floor, layers continuous weighting on top, and adds the calibration anchor, margin weighting, and contrarian credit from the sections above.</p>
+
+    <div class="cmp-wrap reveal">
+      <table class="cmp-table">
+        <thead>
+          <tr>
+            <th>System</th><th>Rigor</th><th>Protects good jurors</th><th>Anti-herding</th><th>Hard to game</th><th>Cost</th><th>Cold start</th><th>Simplicity</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td>Relative culling</td>
+            <td><span class="rate r-mid">Mixed</span></td><td><span class="rate r-weak">Weak</span></td><td><span class="rate r-weak">Weak</span></td><td><span class="rate r-mid">Mixed</span></td><td><span class="rate r-strong">Strong</span></td><td><span class="rate r-weak">Weak</span></td><td><span class="rate r-strong">Strong</span></td>
+          </tr>
+          <tr>
+            <td>Absolute + escalating</td>
+            <td><span class="rate r-mid">Mixed</span></td><td><span class="rate r-mid">Mixed</span></td><td><span class="rate r-weak">Weak</span></td><td><span class="rate r-mid">Mixed</span></td><td><span class="rate r-strong">Strong</span></td><td><span class="rate r-mid">Mixed</span></td><td><span class="rate r-mid">Mixed</span></td>
+          </tr>
+          <tr>
+            <td>Reputation weighting</td>
+            <td><span class="rate r-strong">Strong</span></td><td><span class="rate r-strong">Strong</span></td><td><span class="rate r-mid">Mixed</span></td><td><span class="rate r-mid">Mixed</span></td><td><span class="rate r-strong">Strong</span></td><td><span class="rate r-strong">Strong</span></td><td><span class="rate r-mid">Mixed</span></td>
+          </tr>
+          <tr class="win">
+            <td>Hybrid (recommended)</td>
+            <td><span class="rate r-strong">Strong</span></td><td><span class="rate r-strong">Strong</span></td><td><span class="rate r-strong">Strong</span></td><td><span class="rate r-strong">Strong</span></td><td><span class="rate r-mid">Mixed</span></td><td><span class="rate r-strong">Strong</span></td><td><span class="rate r-weak">Weak</span></td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+
+    <p>Relative culling is the weakest. It always removes someone even when the whole pool is excellent, it punishes the unlucky, and it does nothing about herding. Your absolute threshold is a real improvement, because it is anchored to a fixed standard and it deters the lazy, but on its own it inherits the herding problem and the escalation amplifies any measurement error, so a falsely flagged juror can be pushed into ever longer exiles. Reputation weighting is the gentlest and protects good jurors best, since influence simply fades and nobody is exiled by a bad run, but it never actually removes a bad actor and it lacks a deterrent, so the pool fills with low-weight noise and a packer faces no real cost.</p>
+  </section>
+
+  <section class="reveal">
+    <p class="sec-label">The verdict</p>
+    <h2>The hybrid wins, and it is not especially close</h2>
+    <p>The hybrid is strong on every axis that bears on the actual job, which is producing accurate verdicts while treating jurors fairly. It uses all the information by weighting rather than throwing votes away at a cliff, it protects good jurors by suspending only when the conservative estimate is confidently below the bar, it defends the truth from the crowd with calibration and contrarian credit, and it keeps a real deterrent through your escalating pause. Your proposal is the spine of it. The additions are the guardrails that stop a coherence score from quietly becoming a conformity score.</p>
+    <p>It loses on two things, and I will be straight about them. It is the most complex of the four to build and tune, and it costs more, because seeding calibration cases means paying for some questions whose answers you already know. Neither is fatal. The complexity is a one-time engineering cost against a permanent gain, and the calibration overhead is small, in the range of 5 to 10 percent of cases, which is cheap insurance against the failure that would actually sink the court, a pool that has quietly agreed to be wrong together. The one genuine dependency is a source of ground truth for those calibration questions, which can come from already settled and uncontested cases, from outcomes that appeals later confirmed, and from a small expert-seeded set at launch.</p>
+    <p>So the concrete recommendation. Decide each routine case with 7 jurors, scoring every one against the other 6, and escalate to 15 or 31 on appeal. Hold each juror's quality as a posterior over a rolling window of 50 to 150 cases, weight their influence by it, and suspend only when the lower confidence bound falls under a calibrated bar, with the pause growing each time and decaying as they return and perform. Weight every judgment by the consensus margin, pay contrarians who are vindicated on appeal, and seed 5 to 10 percent calibration cases to keep the whole thing honest. That is the most rigorous peer review I can justify, and it is your idea with the sharp edges filed off.</p>
+  </section>
+
+  <footer class="endnote reveal">
+    <nav id="series" data-parent="hybrid-juror-system.html" data-parent-title="The hybrid system" aria-label="Where you are in the series"></nav>
+    <div class="sitemap">
+      <div class="sitemap-col">
+        <span class="sm-h">I &middot; The promise</span>
+        <a href="vision.html">1. The vision</a>
+      </div>
+      <div class="sitemap-col">
+        <span class="sm-h">II &middot; The mechanism</span>
+        <a href="juror-court.html">2. The court</a>
+        <a href="hybrid-juror-system.html">3. The hybrid system</a>
+      </div>
+      <div class="sitemap-col">
+        <span class="sm-h">III &middot; The bootstrap</span>
+        <a href="prediction-market.html">4. The market</a>
+        <a href="hybrid-juror-prediction-market-integration.html">5. The loop</a>
+        <a href="zero-to-one.html">6. Zero to one</a>
+      </div>
+      <div class="sitemap-col">
+        <span class="sm-h">IV &middot; The payoff</span>
+        <a href="compounding.html">7. Why it compounds</a>
+        <a href="index.html">Home &middot; the map</a>
+      </div>
+    </div>
+    <p class="signoff">Measure judgment from real judging, gate on confidence, and anchor the crowd to a few answers you already know.</p>
+  </footer>
+
+</main>
+
+<script src="assets/common.js"></script>
+<script>
+(function () {
+  "use strict";
+
+  // Verdict accuracy: P(majority correct) for panel n, individual accuracy p.
+  function verdict(n, p) {
+    if (n < 1) return p;
+    var m = Math.floor(n / 2) + 1;
+    var q = 1 - p;
+    var pmf = Math.pow(q, n);
+    var sum = 0;
+    for (var k = 0; k <= n; k++) {
+      if (k >= m) sum += pmf;
+      pmf = pmf * ((n - k) / (k + 1)) * (p / q);
+    }
+    return Math.min(1, Math.max(0, sum));
+  }
+
+  var pS = document.getElementById("pSlider");
+  var nS = document.getElementById("nSlider");
+  var pOut = document.getElementById("pOut");
+  var nOut = document.getElementById("nOut");
+  var vOut = document.getElementById("vOut");
+  var gapOut = document.getElementById("gapOut");
+  var casesOut = document.getElementById("casesOut");
+  var barRow = document.getElementById("barRow");
+
+  var BAR_NS = [3, 5, 7, 9, 11, 13, 15];
+  BAR_NS.forEach(function (bn) {
+    var b = document.createElement("div");
+    b.className = "bar";
+    b.dataset.n = bn;
+    b.innerHTML = '<span class="pv"></span><span class="n">' + bn + '</span>';
+    barRow.appendChild(b);
+  });
+  var bars = barRow.querySelectorAll(".bar");
+
+  function update() {
+    var p = parseInt(pS.value, 10) / 100;
+    var n = parseInt(nS.value, 10);
+    pOut.textContent = parseInt(pS.value, 10) + "%";
+    nOut.textContent = n;
+
+    var V = verdict(n, p);
+    vOut.textContent = (V * 100).toFixed(1) + "%";
+
+    // Leave-one-out yardstick and coherence gap between a good (p) and lazy (0.5) juror.
+    var Vlo = verdict(n - 1, p);
+    var cGood = p * Vlo + (1 - p) * (1 - Vlo);
+    var cLazy = 0.5;
+    var gap = cGood - cLazy;
+    gapOut.textContent = gap.toFixed(2);
+
+    // Sample size to separate the two coherence rates at ~95% confidence.
+    var z = 1.96;
+    if (gap > 0.001) {
+      var num = Math.pow(z * Math.sqrt(cGood * (1 - cGood)) + z * Math.sqrt(0.25), 2);
+      casesOut.textContent = Math.max(1, Math.ceil(num / (gap * gap))).toLocaleString();
+    } else {
+      casesOut.textContent = "\u221e";
+    }
+
+    bars.forEach(function (b) {
+      var bn = parseInt(b.dataset.n, 10);
+      var bv = verdict(bn, p);
+      var h = Math.max(2, ((bv - 0.5) / 0.5) * 100);
+      b.style.height = h + "%";
+      b.querySelector(".pv").textContent = (bv * 100).toFixed(0) + "%";
+      if (bn === n) b.classList.add("sel"); else b.classList.remove("sel");
+    });
+  }
+  pS.addEventListener("input", update);
+  nS.addEventListener("input", update);
+  update();
+})();
+</script>
+</body>
+</html>
