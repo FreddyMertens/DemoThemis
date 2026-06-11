@@ -1,0 +1,705 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Can the gaps be closed? Repairing the court</title>
+<meta name="description" content="A constructive answer to the red team. Your proposed fixes, scored honestly with interactive diagrams, plus the optimal design for each: bigger and parallel panels, jury-run collusion reports without fund limbo, an economic cure for credential rental, and an appeal that a poor dissenter can still win.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@500;700&family=Newsreader:opsz,wght@6..72,200..700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="assets/styles.css">
+<style>
+  .verdict { font-family: var(--sans); font-size: .72rem; font-weight: 700; letter-spacing: .04em; text-transform: uppercase; padding: .2rem .6rem; border-radius: 999px; white-space: nowrap; }
+  .v-good { color: #fff; background: var(--good); }
+  .v-mid { color: #7a3c00; background: #fbe7d6; }
+  .v-high { color: #fff; background: var(--bad); }
+  .callout h3 .verdict { float: right; margin-top: .15rem; }
+  .idea-label, .opt-label { font-family: var(--sans); font-size: .72rem; font-weight: 700; letter-spacing: .07em; text-transform: uppercase; display: inline-flex; align-items: center; gap: .4rem; margin: 0 0 .5rem; }
+  .idea-label { color: var(--muted); }
+  .opt-label { color: var(--accent-ink); }
+  .idea-label::before { content: ""; width: 8px; height: 8px; border-radius: 999px; background: var(--faint); }
+  .opt-label::before { content: ""; width: 8px; height: 8px; border-radius: 2px; background: var(--accent); }
+
+  .seg { display: inline-flex; gap: .3rem; }
+  .seg button { font-family: var(--sans); font-weight: 600; font-size: .85rem; padding: .35rem .75rem; border-radius: 8px; border: 1px solid var(--line-strong); background: var(--bg); color: var(--muted); cursor: pointer; transition: background .12s ease, color .12s ease; }
+  .seg button.active { background: var(--accent-soft); color: var(--accent-ink); border-color: color-mix(in srgb, var(--accent) 35%, transparent); }
+  .toggle-row { display: flex; gap: 1.2rem; flex-wrap: wrap; margin: .2rem 0 0; }
+  .chk { font-family: var(--sans); font-size: .88rem; color: var(--ink-soft); display: flex; align-items: center; gap: .45rem; cursor: pointer; }
+  .chk input { width: 16px; height: 16px; accent-color: var(--accent); }
+  .ctrl-note { font-family: var(--sans); font-size: .78rem; color: var(--faint); margin: .15rem 0 0; }
+
+  .bars { display: flex; flex-direction: column; gap: .6rem; margin-bottom: 1rem; }
+  .barline .bk { font-family: var(--sans); font-size: .82rem; color: var(--muted); margin-bottom: .2rem; display: flex; justify-content: space-between; }
+  .track { height: 28px; border-radius: 8px; background: var(--line); overflow: hidden; border: 1px solid var(--line-strong); }
+  .track > span { display: block; height: 100%; width: 0%; transition: width .25s ease; }
+  .fill-bad { background: linear-gradient(90deg, var(--bad), #7a3c00); }
+  .fill-mid { background: linear-gradient(90deg, #e0883f, var(--bad)); }
+  .fill-good { background: linear-gradient(90deg, var(--good), #0a6157); }
+  .fill-accent { background: linear-gradient(90deg, var(--accent), var(--accent-ink)); }
+
+  /* parallel panels */
+  .panelset { display: flex; gap: .8rem; flex-wrap: wrap; justify-content: center; }
+  .jpanel { border: 1px solid var(--line-strong); border-radius: 12px; padding: .7rem; background: var(--bg); text-align: center; font-family: var(--sans); min-width: 92px; }
+  .jpanel .seats { display: grid; grid-template-columns: repeat(3, 1fr); gap: 4px; margin-bottom: .5rem; }
+  .jpanel .s { width: 14px; height: 14px; border-radius: 50%; background: var(--line-strong); }
+  .jpanel .s.h { background: var(--good); }
+  .jpanel .s.c { background: var(--bad); }
+  .jpanel .tag { font-size: .76rem; font-weight: 700; }
+  .jpanel.agree .tag { color: var(--good); }
+  .jpanel.flip .tag { color: var(--bad); }
+  .alarm { display: flex; align-items: center; gap: .5rem; justify-content: center; font-family: var(--sans); font-weight: 700; font-size: .9rem; color: var(--accent-ink); margin-top: 1rem; }
+
+  /* two-track separation */
+  .tracks { display: grid; grid-template-columns: 1fr 1fr; gap: 1rem; }
+  @media (max-width: 640px) { .tracks { grid-template-columns: 1fr; } }
+  .lane { border-radius: var(--radius); border: 1px solid var(--line); background: var(--surface); padding: 1.1rem 1.2rem; box-shadow: var(--shadow); font-family: var(--sans); }
+  .lane.money { border-top: 3px solid var(--good); }
+  .lane.audit { border-top: 3px solid var(--accent); }
+  .lane h4 { font-family: var(--sans); font-size: .96rem; margin: 0 0 .6rem; }
+  .lane .node { background: var(--bg); border: 1px solid var(--line-strong); border-radius: 9px; padding: .5rem .7rem; font-size: .82rem; color: var(--ink-soft); margin-bottom: .4rem; position: relative; }
+  .lane .node small { color: var(--faint); }
+  .lane .clock { font-size: .78rem; font-weight: 700; margin-top: .5rem; }
+  .lane.money .clock { color: var(--good); }
+  .lane.audit .clock { color: var(--accent-ink); }
+
+  /* escalation ladder */
+  .ladder { display: flex; flex-direction: column; gap: .5rem; }
+  .rung { display: grid; grid-template-columns: 5.5rem 1fr auto; gap: .7rem; align-items: center; font-family: var(--sans); font-size: .85rem; }
+  .rung .lab { font-weight: 700; color: var(--ink-soft); }
+  .rung .meter { height: 22px; border-radius: 6px; background: var(--line); overflow: hidden; border: 1px solid var(--line-strong); }
+  .rung .meter > span { display: block; height: 100%; background: linear-gradient(90deg, var(--bad), #7a3c00); width: 0%; transition: width .25s ease; }
+  .rung .cost { color: var(--faint); font-variant-numeric: tabular-nums; }
+
+  /* balance scale */
+  .scalewrap { display: grid; grid-template-columns: 1fr 1fr; gap: 1rem; align-items: stretch; margin-bottom: 1rem; }
+  .pan { border-radius: 12px; padding: 1rem; text-align: center; font-family: var(--sans); border: 1px solid var(--line-strong); }
+  .pan.left { background: var(--bad-soft); }
+  .pan.right { background: var(--good-soft); }
+  .pan .ttl { font-size: .76rem; letter-spacing: .04em; text-transform: uppercase; color: var(--muted); }
+  .pan .amt { font-size: 1.7rem; font-weight: 700; font-variant-numeric: tabular-nums; margin-top: .3rem; letter-spacing: -.02em; }
+  .pan.left .amt { color: var(--bad); }
+  .pan.right .amt { color: var(--good); }
+
+  /* OR-gate flow */
+  .gate { display: grid; grid-template-columns: 1fr auto 1fr; gap: .7rem; align-items: center; font-family: var(--sans); }
+  .gate .opt { background: var(--bg); border: 1px solid var(--line-strong); border-radius: 10px; padding: .7rem .8rem; font-size: .84rem; }
+  .gate .opt b { display: block; margin-bottom: .15rem; }
+  .gate .ornode { background: var(--accent-soft); color: var(--accent-ink); border: 1px solid var(--accent); border-radius: 999px; width: 2.6rem; height: 2.6rem; display: grid; place-items: center; font-weight: 700; font-size: .8rem; margin: 0 auto; }
+  .gate .result { background: var(--good-soft); border: 1px solid var(--good); border-radius: 10px; padding: .7rem .8rem; font-size: .84rem; color: var(--accent-ink); }
+  @media (max-width: 640px) { .gate { grid-template-columns: 1fr; } }
+</style>
+</head>
+<body>
+<div id="progress"></div>
+
+<nav class="sitenav" aria-label="Primary">
+  <div class="sitenav-inner">
+    <a class="brand" href="index.html">DemoThemis<span class="dot">.</span></a>
+    <button class="nav-toggle" type="button" aria-label="Menu" aria-expanded="false">&#9776;</button>
+    <div class="nav-links">
+      <a href="index.html">Home</a>
+      <a href="vision.html">Vision</a>
+      <div class="nav-group">
+        <button class="nav-group-btn" type="button">The mechanism</button>
+        <div class="nav-menu">
+          <a href="juror-court.html"><span class="ch">02</span> The court</a>
+          <a href="hybrid-juror-system.html"><span class="ch">03</span> The hybrid system</a>
+        </div>
+      </div>
+      <div class="nav-group nav-group-end">
+        <button class="nav-group-btn" type="button">The bootstrap</button>
+        <div class="nav-menu">
+          <a href="prediction-market.html"><span class="ch">04</span> The prediction market</a>
+          <a href="hybrid-juror-prediction-market-integration.html"><span class="ch">05</span> The loop</a>
+          <a href="zero-to-one.html"><span class="ch">06</span> Zero to one</a>
+        </div>
+      </div>
+      <a href="compounding.html">Why it compounds</a>
+      <a href="the-design.html">The blueprint</a>
+      <div class="nav-group nav-group-end">
+        <button class="nav-group-btn" type="button">The review</button>
+        <div class="nav-menu">
+          <a href="breaking-the-court.html"><span class="ch">R1</span> Could you break it?</a>
+          <a href="hardening-the-court.html"><span class="ch">R2</span> Can the gaps be closed?</a>
+          <a href="finishing-the-court.html"><span class="ch">R3</span> How deep do the fixes go?</a>
+          <a href="rebuilding-the-court.html"><span class="ch">R4</span> What deserved to die?</a>
+        </div>
+      </div>
+    </div>
+  </div>
+</nav>
+
+<header class="hero reveal">
+  <p class="kicker">Design response</p>
+  <h1>Can the gaps be closed?</h1>
+  <p class="dek">The red team left four windows open. This is the repair pass. I take your proposed fixes, score each one honestly against the attack it is meant to stop, and name the design I would actually ship.</p>
+  <div class="meta">
+    <span class="pill">Repairs</span>
+    <span>16 min read</span>
+    <span class="dot">&bull;</span>
+    <span>Deep dive &middot; answering Could you break it?</span>
+  </div>
+</header>
+
+<main class="content wrap">
+
+  <aside id="toc" class="toc reveal"></aside>
+
+  <section class="reveal">
+    <p class="lead">Breaking a mechanism takes one good attack. Fixing it means surviving all of them at once. That asymmetry is why the repair half of a red team is the harder half, and it is the half we are in now.</p>
+    <p>You sent a batch of fixes: bigger juries, more of them, an open right to report a suspicious verdict, annual iris re-scans, and a rule that a dispute needs a quorum of verified bettors behind it before it climbs to a fresh panel. Some of these are close to what I would build. One or two help in the way a seatbelt helps a car with no brakes, by softening a crash you should have prevented upstream. The job here is to tell which is which, and to keep score in the open.</p>
+    <p>So every section runs the same way. I state your idea, I show with a diagram or a slider how much of the attack it actually removes, I mark it <span class="verdict v-good">closes it</span>, <span class="verdict v-mid">helps</span>, or <span class="verdict v-high">misses</span>, and then I write down the design I think is optimal. Drag the controls. The numbers are illustrative, the shapes are load-bearing.</p>
+    <p class="takeaway">The route. First, bigger and parallel panels against capture, where your instinct is mostly right. Then your reporting idea, and the fund-limbo it creates if disputes are truly unlimited, which is the one place "no limit" backfires. Then the rented credential, where the honest answer is that prevention is hard and the cure is economic, not technical. Then the appeal quorum, which solves one problem and quietly creates another. <b>I want this thing to work, so I am not going to pretend a fix lands when it half-lands.</b></p>
+  </section>
+
+  <!-- ============ 1: bigger + multiple panels ============ -->
+  <section class="reveal">
+    <p class="sec-label">Open questions 01 and 02</p>
+    <h2>Bigger juries, and many of them</h2>
+    <p>Two of the open windows were about capture: buying a verdict, and coordinating a bloc to win one. Your first lever is the bluntest and, for the bloc, the best. Make the panel bigger. The math from the red team already runs in your favour here. A bloc that owns 12% of the drawing pool wins a 7-seat panel about half a percent of the time, a 15-seat panel a twentieth of that, and a 31-seat panel almost never. Capture odds fall off a cliff as the panel grows, while the cost of growing your bloc only rises in a straight line.</p>
+    <p>One caution, because it matters. Panel size is a variance knob, not a source of security. A bigger panel pulls the verdict harder toward whatever the pool majority actually is. That is a gift when the honest are the majority and a curse the moment they are not. Grow the panel on a pool the attacker already controls and you simply guarantee their win. So bigger panels only work bolted to the draw-concentration cap from the red team, the rule that keeps the effective pool wide instead of letting reputation weighting shrink it to a capturable few.</p>
+
+    <p>Now your second idea, the new one. Hold more than one jury on the same case. Does it help? It does, but not in the way it first looks, and seeing why is the interesting part.</p>
+    <p>Suppose you have a fixed budget of jurors to spend on a case, say 21 of them. You can spend them as one panel of 21, or as three independent panels of 7. For pure accuracy and pure capture resistance, the single panel of 21 is the stronger buy. Pooling all 21 votes into one count is the most accurate use of them, a result that goes back to Condorcet. So if all you want is a hard-to-capture verdict, do not split the jurors up.</p>
+
+    <div class="widget reveal">
+      <div class="widget-head"><span class="live"></span> One big jury, or several small ones?</div>
+      <div class="controls">
+        <div class="row"><label for="m1f">Attacker's share of the effective draw pool</label> <b id="m1fOut">35%</b></div>
+        <input id="m1f" type="range" min="1" max="60" step="1" value="35">
+        <div class="row"><label for="m1n">Seats per panel</label> <b id="m1nOut">7</b></div>
+        <input id="m1n" type="range" min="3" max="21" step="2" value="7">
+        <div class="row"><label for="m1k">Number of parallel panels</label> <b id="m1kOut">3</b></div>
+        <input id="m1k" type="range" min="1" max="7" step="1" value="3">
+      </div>
+      <div class="bars">
+        <div class="barline"><div class="bk"><span>Capture one panel of this size</span><b id="m1q1">&mdash;</b></div><div class="track"><span class="fill-mid" id="m1q1bar"></span></div></div>
+        <div class="barline"><div class="bk"><span>Capture one big panel (all seats pooled)</span><b id="m1big">&mdash;</b></div><div class="track"><span class="fill-bad" id="m1bigbar"></span></div></div>
+        <div class="barline"><div class="bk"><span>Capture every parallel panel (no alarm)</span><b id="m1silent">&mdash;</b></div><div class="track"><span class="fill-good" id="m1silentbar"></span></div></div>
+      </div>
+      <p style="font-family:var(--sans);font-size:.86rem;color:var(--faint);margin:0">Illustrative, large-pool binomial draw. The pooled big panel is the hardest single target. But the bottom bar is the one to watch: to flip the case <em>without tripping a disagreement alarm</em>, an attacker has to capture all of the parallel panels at once, which is far harder than capturing one.</p>
+    </div>
+
+    <p>The bottom bar is where multiple juries earn their keep. Their gift is not a lower capture chance. It is a tripwire. Run three independent panels and let them vote blind to each other, and an attacker who captures only one or two does not win quietly. The panels they failed to capture vote honestly and disagree, and that disagreement is an alarm that does not exist inside a single panel. To win without setting it off, the attacker has to own a majority of every panel at once, which the slider shows collapsing toward zero. The same alarm catches a second thing for free: a genuinely ambiguous question, the kind the market chapter never gave an Invalid outcome to, makes honest panels split too, so cross-panel disagreement is also your ambiguity detector.</p>
+
+    <figure class="diagram reveal">
+      <div class="diagram-inner">
+        <div class="panelset">
+          <div class="jpanel agree"><div class="seats"><span class="s h"></span><span class="s h"></span><span class="s h"></span><span class="s h"></span><span class="s"></span><span class="s h"></span><span class="s h"></span></div><div class="tag">Panel A &middot; YES</div></div>
+          <div class="jpanel agree"><div class="seats"><span class="s h"></span><span class="s h"></span><span class="s"></span><span class="s h"></span><span class="s h"></span><span class="s h"></span><span class="s h"></span></div><div class="tag">Panel B &middot; YES</div></div>
+          <div class="jpanel flip"><div class="seats"><span class="s c"></span><span class="s c"></span><span class="s c"></span><span class="s c"></span><span class="s h"></span><span class="s c"></span><span class="s h"></span></div><div class="tag">Panel C &middot; NO</div></div>
+        </div>
+        <div class="alarm">&#9888; Panels disagree &rarr; escalate and audit the outlier</div>
+      </div>
+      <figcaption>A bloc captured Panel C (red seats). The other two voted honestly and disagree with it. <b>One captured panel cannot hide among honest ones.</b></figcaption>
+    </figure>
+
+    <div class="callout reveal">
+      <p class="opt-label">The design I would ship</p>
+      <h3>Big panels decide, a cheap second panel watches <span class="verdict v-good">closes it</span></h3>
+      <p>Make panel size scale with the value at stake, 7 then 15 then 31, and cap draw concentration so the effective pool stays wide. That is your bigger-jury idea, kept. Then add multiple juries not as the main defence but as a sampled shadow audit: on a random slice of cases, and on every high-value one, draw a second independent panel and compare. Agreement costs you almost nothing and buys confidence. Disagreement beyond chance auto-escalates the case and flags the outlier panel for the collusion audit in the next section. One honest warning that holds for the whole page: none of this touches the bribe a juror can prove they paid off, from open question 01. A provable vote is still sellable no matter how many panels you run. That one needs receipt-free voting, and it is going to keep coming up.</p>
+    </div>
+  </section>
+
+  <!-- ============ 2: reporting + limbo ============ -->
+  <section class="reveal">
+    <p class="sec-label">Your reporting idea, examined</p>
+    <h2>Let anyone report a verdict, but never let the money wait</h2>
+    <p>Your instinct: let anyone in the market open a report on a suspect verdict, lean on the fact that coordinating a bloc of many jurors leaves a paper trail, and put no limit on the right to dispute, because if the complaint is real it will be easy to find and punish. There is a strong version of this and a dangerous version, and they are a hair apart.</p>
+    <p>The strong version is the paper trail. A bloc that votes together across many cases is not invisible. It shows up as a cluster in the vote-correlation data the reputation engine already keeps, agreeing with each other far above the rate that strangers would. A standing right for any verified participant to flag a verdict, plus a forensic look at who-voted-with-whom, is a real deterrent against the sloppy, repeated collusion that the bigger-panel math alone does not stop. Your reporting idea is the natural partner to multiple juries: the panels detect the anomaly, the report and the audit punish it.</p>
+
+    <figure class="diagram reveal">
+      <div class="diagram-inner">
+        <svg viewBox="0 0 320 150" role="img" aria-label="A cluster of jurors voting together stands out from independent jurors" style="width:100%;max-width:420px;display:block;margin:0 auto">
+          <line x1="60" y1="45" x2="95" y2="80" stroke="#d4523c" stroke-width="2"/>
+          <line x1="95" y1="80" x2="55" y2="105" stroke="#d4523c" stroke-width="2"/>
+          <line x1="60" y1="45" x2="55" y2="105" stroke="#d4523c" stroke-width="2"/>
+          <line x1="95" y1="80" x2="100" y2="40" stroke="#d4523c" stroke-width="2"/>
+          <circle cx="60" cy="45" r="9" fill="#d4523c"/>
+          <circle cx="95" cy="80" r="9" fill="#d4523c"/>
+          <circle cx="55" cy="105" r="9" fill="#d4523c"/>
+          <circle cx="100" cy="40" r="9" fill="#d4523c"/>
+          <circle cx="190" cy="40" r="9" fill="#9aa0ab"/>
+          <circle cx="240" cy="70" r="9" fill="#9aa0ab"/>
+          <circle cx="200" cy="110" r="9" fill="#9aa0ab"/>
+          <circle cx="270" cy="115" r="9" fill="#9aa0ab"/>
+          <circle cx="285" cy="50" r="9" fill="#9aa0ab"/>
+          <circle cx="160" cy="95" r="9" fill="#9aa0ab"/>
+          <text x="77" y="135" font-family="Inter, sans-serif" font-size="11" fill="#883c0d" font-weight="700">votes always together</text>
+          <text x="210" y="135" font-family="Inter, sans-serif" font-size="11" fill="#5c6470">independent</text>
+        </svg>
+      </div>
+      <figcaption>Chronic collusion is a clique: the same names agreeing far above chance. <b>Volume is the attacker's friend for landing panels and the auditor's friend for spotting them.</b></figcaption>
+    </figure>
+
+    <p>The dangerous version is the phrase "no limit." Unlimited disputes do not just invite a griefer to stall. They hand the attacker a free re-roll. If each dispute redraws a fresh panel, then a bloc with even a 5% capture chance per draw simply disputes again and again until a roll goes its way. That is the grind-the-dice attack from the red team wearing a procedural costume, and given unlimited tries it succeeds with probability one. Worse, while it grinds, the money it concerns is frozen. A losing whale with a million dollars riding on the answer will happily file forever to keep funds in escrow. As written, "no limit on disputes" breaks both safety and liveness at the same time.</p>
+    <p>The repair is to notice that you have asked one mechanism to do two unrelated jobs. Deciding where the money goes needs to finish on a clock. Deciding whether a juror cheated can take all the time in the world. So split them.</p>
+
+    <div class="widget reveal">
+      <div class="widget-head"><span class="live"></span> Grind forever, or terminate?</div>
+      <div class="controls">
+        <div class="row"><label for="g2f">Attacker's share of the draw pool</label> <b id="g2fOut">25%</b></div>
+        <input id="g2f" type="range" min="1" max="49" step="1" value="25">
+        <div class="row"><label for="g2r">Disputes the attacker is allowed to file</label> <b id="g2rOut">20</b></div>
+        <input id="g2r" type="range" min="1" max="80" step="1" value="20">
+      </div>
+      <div class="bars">
+        <div class="barline"><div class="bk"><span>Unlimited redraws at 7 seats: chance attacker eventually wins</span><b id="g2redraw">&mdash;</b></div><div class="track"><span class="fill-bad" id="g2redrawbar"></span></div></div>
+        <div class="barline"><div class="bk"><span>Finite ladder 7&rarr;15&rarr;31: chance attacker wins the final panel</span><b id="g2esc">&mdash;</b></div><div class="track"><span class="fill-good" id="g2escbar"></span></div></div>
+      </div>
+      <div class="readout">
+        <div class="stat"><div class="k">Redraw: funds finalize?</div><div class="v" id="g2finRe" style="font-size:1.05rem;color:var(--bad)">Never</div></div>
+        <div class="stat"><div class="k">Ladder: funds finalize?</div><div class="v" id="g2finEsc" style="font-size:1.05rem;color:var(--good)">3 rounds</div></div>
+        <div class="stat"><div class="k">Cost to file round 3</div><div class="v accent" id="g2cost">&mdash;</div></div>
+      </div>
+      <p style="font-family:var(--sans);font-size:.86rem;color:var(--faint);margin:1rem 0 0">Each ladder rung must use a strictly larger panel and a bond that multiplies, so the attacker faces worse odds and a bigger bill every round. The redraw bar marches toward 100% as you raise the dispute count. The ladder bar stays pinned low and the case ends.</p>
+    </div>
+
+    <div class="callout reveal">
+      <p class="opt-label">The design I would ship</p>
+      <h3>One bounded ladder for the money, one open ledger for the cheaters <span class="verdict v-good">closes it</span></h3>
+      <p>Disputes that decide funds run on a finite, escalating ladder: 7 then 15 then 31 seats, never a same-size redraw, each rung priced at a multiplying bond forfeited if the challenge fails, each with a hard timeout. The ladder always terminates, the terminal verdict finalizes on-chain, and the winners withdraw. Collusion reports run on a separate track with no time limit at all, exactly your open-ended right to report, but their penalties land on the jurors' staked bonds and reputation, never on the disputants' already-paid escrow. When forensics later proves a verdict was bought, the victim is paid from an insurance pool funded by the slashed colluders, rather than by clawing back a settled payout. So the money is never hostage to the slow investigation, and a proven cheat still loses everything. Your "no limit" survives where it belongs, on the reporting, and disappears where it would have frozen the system, on the settlement.</p>
+    </div>
+
+    <figure class="diagram reveal">
+      <div class="diagram-inner">
+        <div class="tracks">
+          <div class="lane money">
+            <h4>Track one &middot; the money</h4>
+            <div class="node">Challenge on the ladder <small>7 &rarr; 15 &rarr; 31, bond doubles each rung</small></div>
+            <div class="node">Terminal panel decides <small>finite, with timeouts</small></div>
+            <div class="node">Funds finalize and pay out <small>on-chain, irreversible</small></div>
+            <div class="clock">Bounded: hours to days, always ends</div>
+          </div>
+          <div class="lane audit">
+            <h4>Track two &middot; the cheaters</h4>
+            <div class="node">Anyone reports a suspect verdict <small>no limit, ever</small></div>
+            <div class="node">Forensic audit of vote correlations <small>finds the clique</small></div>
+            <div class="node">Slash bonds, ban World IDs, pay victims from the pool <small>jurors pay, escrow never reopens</small></div>
+            <div class="clock">Unbounded: take all the time needed</div>
+          </div>
+        </div>
+      </div>
+      <figcaption>The fix is a separation of duties. <b>Settlement runs on a clock. Justice does not, and it never touches the settled money.</b></figcaption>
+    </figure>
+  </section>
+
+  <!-- ============ 3: credential rental ============ -->
+  <section class="reveal">
+    <p class="sec-label">Open question 03</p>
+    <h2>Renting a face you scanned a year ago</h2>
+    <p>You asked the honest question directly. Is an annual iris re-scan, plus the right to report rented credentials, plus a ban for anyone caught, enough to stop World ID rental? Or is the adversarial nature just too hard to prevent? My answer is that you are right to be skeptical, and the reason is a timing mismatch you can see once it is drawn.</p>
+    <p>The annual re-scan does real work, just not the work you want. Forcing every credential through an Orb once a year kills the farm that hoards thousands of dormant verified accounts, because each one now has to be a real human who shows up annually. That is a strong Sybil-decay tool. But rental does not need a dormant account. A rental lives entirely inside the window. I rent your seat for one month, you re-scanned three months ago and will again in nine, and at no point does the yearly check ever see the renter sitting in your chair. The re-scan proves a human exists. It never proves that human cast this vote.</p>
+
+    <figure class="diagram reveal">
+      <div class="diagram-inner">
+        <svg viewBox="0 0 360 90" role="img" aria-label="A one-year line with one scan at each end and a short rental window in the middle that is never checked" style="width:100%;max-width:460px;display:block;margin:0 auto">
+          <line x1="20" y1="55" x2="340" y2="55" stroke="#ddd6ca" stroke-width="3"/>
+          <circle cx="20" cy="55" r="7" fill="#0f9b70"/>
+          <circle cx="340" cy="55" r="7" fill="#0f9b70"/>
+          <text x="6" y="80" font-family="Inter, sans-serif" font-size="10" fill="#0a6157" font-weight="700">scan</text>
+          <text x="326" y="80" font-family="Inter, sans-serif" font-size="10" fill="#0a6157" font-weight="700">scan</text>
+          <rect x="150" y="40" width="70" height="30" rx="6" fill="#fbe8e2" stroke="#d4523c" stroke-width="1.5"/>
+          <text x="185" y="33" font-family="Inter, sans-serif" font-size="10" fill="#883c0d" font-weight="700" text-anchor="middle">rented</text>
+          <text x="185" y="59" font-family="Inter, sans-serif" font-size="9" fill="#d4523c" text-anchor="middle">never seen</text>
+        </svg>
+      </div>
+      <figcaption>One year, two scans, and a rental that fits neatly between them. <b>A yearly check cannot police a monthly crime.</b></figcaption>
+    </figure>
+
+    <p>So the reporting and the ban catch only the blatant cases, and a careful renter is not blatant. This is why I think prevention by detection alone loses. You cannot reliably catch the act. What you can do is make the act not worth attempting, and that is an economic fix, not a surveillance one. It is the fix you sensed was obvious, so let me name it precisely.</p>
+    <p>A juror seat has to be worth more kept clean than rented out. Think about the two sides of the trade. A renter will pay at most what the seat is worth to them, which is the juror pay they collect by operating it plus whatever a briber adds to swing a target case. The owner, if caught, loses two things: a bond they posted, and the franchise, meaning the stream of future earnings that vanishes when the World ID is banned and its hard-won reputation resets to zero. Renting is irrational for the owner whenever the expected loss outweighs the gain. Run the comparison and a clean result falls out: with no attack in play, no rental price ever clears, because the most a renter pays is the seat's own earnings, while the owner needs that plus the risk premium. Rental only becomes profitable when a briber's bonus for the seat exceeds the expected penalty. So the entire design target is a single inequality.</p>
+
+    <div class="widget reveal">
+      <div class="widget-head"><span class="live"></span> Is renting the seat worth it?</div>
+      <div class="controls">
+        <div class="row"><label for="c3a">What a briber adds for this seat's vote on a target case</label> <b id="c3aOut">$1,500</b></div>
+        <input id="c3a" type="range" min="0" max="10000" step="100" value="1500">
+        <div class="row"><label for="c3d">Chance the owner is caught and banned</label> <b id="c3dOut">8%</b></div>
+        <input id="c3d" type="range" min="1" max="100" step="1" value="8">
+        <div class="row"><label for="c3b">Refundable bond staked to the seat</label> <b id="c3bOut">$500</b></div>
+        <input id="c3b" type="range" min="0" max="10000" step="100" value="500">
+        <div class="row"><label for="c3f">Franchise value (future honest earnings at risk)</label> <b id="c3fOut">$6,000</b></div>
+        <input id="c3f" type="range" min="0" max="30000" step="500" value="6000">
+      </div>
+      <div class="scalewrap">
+        <div class="pan left"><div class="ttl">Briber's offer for the seat</div><div class="amt" id="c3offer">&mdash;</div></div>
+        <div class="pan right"><div class="ttl">Owner's expected loss if caught</div><div class="amt" id="c3pen">&mdash;</div></div>
+      </div>
+      <div class="readout">
+        <div class="stat"><div class="k">Verdict</div><div class="v" id="c3verd" style="font-size:1.1rem">&mdash;</div></div>
+        <div class="stat"><div class="k">Penalty needed to deter</div><div class="v accent" id="c3need">&mdash;</div></div>
+      </div>
+      <p style="font-family:var(--sans);font-size:.86rem;color:var(--faint);margin:1rem 0 0">The rental market dies when the owner's expected loss (bond plus franchise, times the catch rate) clears the briber's offer. Push the bond, the franchise, or detection up, and watch the green pan tip the trade off the table.</p>
+    </div>
+
+    <div class="callout reveal">
+      <p class="opt-label">The design I would ship</p>
+      <h3>Price the seat so renting it never pays <span class="verdict v-good">closes the economics</span> <span class="verdict v-mid">not the act</span></h3>
+      <p>Keep the annual re-scan for what it is good at, decaying dormant Sybils, not as your anti-rental tool. Add the three pieces that move the inequality: a refundable bond staked to each seat, an earned reputation that is non-transferable and resets to zero on a ban so future income is hostage to good behaviour, and your open reporting plus post-payout audit to keep the catch rate credible. The economic cure holds even when detection is weak, because you can raise the bond and the franchise until the penalty beats any plausible bribe. For the residue, the case where a briber's offer is enormous, the only thing that fully shuts the window is making the seat impossible to operate remotely: a liveness check at the moment a juror is drawn, the face-auth the World App can already do, which shrinks the rentable window from a year to a single vote. Detection bans the careless. Economics deters the calculating. Liveness stops the rest. No single one of them is enough, which is the honest answer to your question.</p>
+    </div>
+  </section>
+
+  <!-- ============ 4: appeal quorum ============ -->
+  <section class="reveal">
+    <p class="sec-label">The appeal backstop</p>
+    <h2>An appeal a poor dissenter can still win</h2>
+    <p>The red team left a debt unpaid: expensive appeals price a poor but correct dissenter out of ever being vindicated, and the deepest panel, the one a real attacker aims at, has nothing behind it. Your fix is a quorum. Before a dispute can climb to a fresh panel, require some threshold of World ID verified participants in that market to sign on to the appeal. Does it help? Partly, and the part it gets wrong is the part that matters most, so this one is worth slowing down on.</p>
+    <p>Start with what it gets right, because it is genuinely good. A quorum of verified participants is a brilliant spam filter. It is Sybil-resistant, since one human is one signature, and it has skin in the game, since outsiders cannot brigade a market they never bet in. A lone griefer cannot manufacture support out of nothing, which throttles exactly the endless-dispute attack from the last section. And it socializes the cost: instead of one dissenter funding the whole appeal bond, a coalition splits it, so the per-person price drops as more people join. For the poor dissenter, that is real relief.</p>
+
+    <div class="widget reveal">
+      <div class="widget-head"><span class="live"></span> Does the quorum free the dissenter, or gag them?</div>
+      <div class="controls">
+        <div class="row"><label for="a4bond">Appeal bond to reach the next panel</label> <b id="a4bondOut">$3,000</b></div>
+        <input id="a4bond" type="range" min="200" max="20000" step="100" value="3000">
+        <div class="row"><label for="a4sup">Verified participants who agree the verdict is wrong</label> <b id="a4supOut">40</b></div>
+        <input id="a4sup" type="range" min="1" max="300" step="1" value="40">
+        <div class="row"><label for="a4thr">Quorum threshold to let the appeal proceed</label> <b id="a4thrOut">75</b></div>
+        <input id="a4thr" type="range" min="1" max="300" step="1" value="75">
+      </div>
+      <div class="readout">
+        <div class="stat"><div class="k">Cost per co-signer</div><div class="v accent" id="a4per">&mdash;</div></div>
+        <div class="stat"><div class="k">Mandatory quorum (AND)</div><div class="v" id="a4and" style="font-size:1.05rem">&mdash;</div></div>
+        <div class="stat"><div class="k">Quorum or bond (OR)</div><div class="v" id="a4or" style="font-size:1.05rem">&mdash;</div></div>
+      </div>
+      <p style="font-family:var(--sans);font-size:.86rem;color:var(--faint);margin:1rem 0 0">Slide support below the threshold and watch the mandatory version block the appeal outright. That is the failure mode: the lonelier and more correct the dissenter, the more surely they are silenced.</p>
+    </div>
+
+    <p>Here is the trouble. A correct dissenter is most valuable precisely when they are most alone, because the case you most need to reopen is the one where the whole market got it wrong together. Make the quorum mandatory and you have built a popularity gate on truth: the unpopular-but-right appeal cannot find its co-signers and dies, while you have done nothing for the deepest panel, since the quorum only governs entry to the ladder, not what backs its top rung. You would be filtering appeals by how many people already agree, which is the opposite of what an appeal is for.</p>
+
+    <figure class="diagram reveal">
+      <div class="diagram-inner">
+        <div class="gate">
+          <div style="display:grid;gap:.6rem">
+            <div class="opt"><b>Path A &middot; the bond</b>The dissenter posts the escalating bond alone, refunded with a bonus if they are proven right.</div>
+            <div class="opt"><b>Path B &middot; the quorum</b>Enough verified participants co-sign to share the cost.</div>
+          </div>
+          <div><div class="ornode">OR</div></div>
+          <div class="result"><b>Appeal proceeds.</b> Either path is enough. The lonely dissenter keeps their day in court, the popular appeal gets the cost split, and neither can be blocked by the other being missing.</div>
+        </div>
+      </div>
+      <figcaption>The quorum belongs on an OR gate, never an AND gate. <b>A petition should open a second door, not lock the first one.</b></figcaption>
+    </figure>
+
+    <div class="callout reveal">
+      <p class="opt-label">The design I would ship</p>
+      <h3>Quorum or bond, whichever you have, plus a refund for being right <span class="verdict v-mid">helps, once inverted</span></h3>
+      <p>Use your quorum as an OR condition, not an AND. An appeal proceeds if a threshold of verified participants co-signs, or if the appellant posts the escalating bond on their own. The popular appeal gets its cost socialized and the spam filter still works against griefers, because a lone bad-faith appellant must put real money on the line. The poor honest dissenter is rescued by the other half: a vindication refund, the missing lever from the red team, that returns their bond and pays a bonus from the slashed wrong jurors when the appeal proves them right. So being correct is what makes the appeal affordable after the fact, instead of being popular making it affordable up front. For the deepest panel with no backstop, the answer is not a quorum at all: it is to leave a final, rarely used door open above the 31-seat panel, an optimistic-style challenge where anyone can escalate once more by posting a bond that doubles again, so the terminal panel is never the attacker's safe finish line.</p>
+    </div>
+  </section>
+
+  <!-- ============ 5: the rest ============ -->
+  <section class="reveal">
+    <p class="sec-label">The remaining windows</p>
+    <h2>The rest, answered briefly</h2>
+    <p>Your fixes concentrate on capture, identity, and appeals. The red team raised three more, and they deserve their optimal answer even though you did not ask about them directly, so the repair pass is complete rather than selective.</p>
+    <ol class="stepper reveal">
+      <li>
+        <span class="step-n">4</span>
+        <div class="step-body">
+          <h3>The referee behind the curtain</h3>
+          <p>Name a randomness source nobody can grind, a verifiable random function or a public beacon, so the draw cannot be re-rolled. Then dissolve the trusted engine: panel selection and vote tallying move on-chain, and votes are encrypted to a threshold-decryption committee rather than revealed in the clear, the MACI approach, so the engine never holds the map from a person to a vote that a leak would turn into a target list. This is also the receipt-free voting that open question 01 kept demanding.</p>
+        </div>
+      </li>
+      <li>
+        <span class="step-n">5</span>
+        <div class="step-body">
+          <h3>The assertion nobody is awake to challenge</h3>
+          <p>Pay the watcher. A false assertion forfeits its bond to whoever catches it, which turns watching from a chore into a paid job and answers the verifier's dilemma. And do not canonize every unchallenged answer as a calibration key: curate which settled markets are trusted enough to grade jurors, so a quiet 3am lie cannot both steal a pot and poison the court's tie to reality.</p>
+        </div>
+      </li>
+      <li>
+        <span class="step-n">6</span>
+        <div class="step-body">
+          <h3>The market makers going broke</h3>
+          <p>Pick the trading engine on purpose. Either a bounded-loss market scoring rule with the subsidy written into the budget, or an order book, citing why the automated maker failed for Augur and Polymarket. Add an Invalid outcome for ambiguous questions, which the multiple-juries alarm from section one is already good at detecting. Settle the triple-claimed fee into one budget, and switch collateral to the native USDC the distribution platform actually uses, with sponsored gas for the small juror transactions.</p>
+        </div>
+      </li>
+    </ol>
+    <p>The seventh window, the track record that does not transfer, has no slider fix because it is a scope decision. Say plainly which case classes the court can keep itself honest on, the ones with hard ground truth, and accept that subjective disputes need a different validator than market settlement, judged on a published evidence rubric and procedural review rather than on a known answer that will never arrive. Selling a track record earned on verifiable facts as proof of skill on he-said-she-said is the one claim I would simply retire.</p>
+  </section>
+
+  <!-- ============ close ============ -->
+  <section class="reveal">
+    <p class="sec-label">Where the repairs leave us</p>
+    <h2>Which windows are closed now</h2>
+    <p>Add it up and most of your instincts land. Bigger panels with a draw cap, parallel panels as a tripwire, the two-track split that keeps money moving while cheaters are hunted, the franchise economics that make a rented seat a losing trade, and an OR-gated appeal with a vindication refund, those are not patches. They are close to the designs I would ship. A couple of your ideas needed inverting, the unlimited dispute that had to become unlimited reporting, and the mandatory quorum that had to become an optional one, but the raw material was right.</p>
+    <p>The one thing that survives every fix on this page is the bribe a juror can prove. Receipt-free voting is the through-line, the single upstream change that closes the last window the others only narrow. Build that, and the headline finally earns itself.</p>
+
+    <figure class="diagram reveal">
+      <div class="diagram-inner">
+        <div class="compare">
+          <div class="compare-col good">
+            <h4>Closed by your fixes, tuned <span class="tag-good">shipped</span></h4>
+            <ul>
+              <li>Bloc capture, via stake-scaled panels and a draw cap.</li>
+              <li>Silent collusion, caught by parallel-panel disagreement.</li>
+              <li>Chronic collusion, found by open reports and audits.</li>
+              <li>Fund limbo, ended by a bounded settlement ladder.</li>
+              <li>Credential rental, priced out by bond plus franchise.</li>
+              <li>The poor dissenter, rescued by OR-gate and refund.</li>
+            </ul>
+          </div>
+          <div class="compare-col bad">
+            <h4>Still needs the upstream fix <span class="tag-bad">next</span></h4>
+            <ul>
+              <li>The provable, sellable vote, only receipt-free voting closes it.</li>
+              <li>Vote-time control of a rented seat, needs per-draw liveness.</li>
+              <li>The grindable draw, needs a named VRF or beacon.</li>
+              <li>The trusted engine, needs threshold-encrypted votes.</li>
+              <li>The bleeding market maker, needs a chosen engine and budget.</li>
+              <li>Subjective disputes, need their own validator, not market truth.</li>
+            </ul>
+          </div>
+        </div>
+      </div>
+      <figcaption>The score after the repair pass. <b>The left column is your ideas, tuned and shipped. The right column is the work that is left.</b></figcaption>
+    </figure>
+
+    <p>That is the honest tally. You closed more windows than you left open, and the ones left open all point at the same two upstream changes. A claim that cannot be bought is still reachable from here. It is a much shorter walk than it was a page ago.</p>
+  </section>
+
+  <footer class="endnote reveal">
+    <nav id="series" data-parent="breaking-the-court.html" data-parent-title="Could you break it?" aria-label="Where you are in the series"></nav>
+    <div class="sitemap">
+      <div class="sitemap-col">
+        <span class="sm-h">I &middot; The promise</span>
+        <a href="vision.html">1. The vision</a>
+      </div>
+      <div class="sitemap-col">
+        <span class="sm-h">II &middot; The mechanism</span>
+        <a href="juror-court.html">2. The court</a>
+        <a href="hybrid-juror-system.html">3. The hybrid system</a>
+      </div>
+      <div class="sitemap-col">
+        <span class="sm-h">III &middot; The bootstrap</span>
+        <a href="prediction-market.html">4. The prediction market</a>
+        <a href="hybrid-juror-prediction-market-integration.html">5. The loop</a>
+        <a href="zero-to-one.html">6. Zero to one</a>
+      </div>
+      <div class="sitemap-col">
+        <span class="sm-h">IV &middot; The payoff</span>
+        <a href="compounding.html">7. Why it compounds</a>
+        <a href="the-design.html">8. The blueprint</a>
+        <a href="index.html">Home &middot; the map</a>
+      </div>
+      <div class="sitemap-col">
+        <span class="sm-h">V &middot; The review</span>
+        <a href="breaking-the-court.html">R1. Could you break it?</a>
+        <a href="hardening-the-court.html">R2. Can the gaps be closed?</a>
+        <a href="finishing-the-court.html">R3. How deep do the fixes go?</a>
+        <a href="rebuilding-the-court.html">R4. What deserved to die?</a>
+      </div>
+    </div>
+    <p class="signoff">A red team breaks things to find the seams. A repair pass earns the headline back.</p>
+  </footer>
+
+</main>
+
+<script src="assets/common.js"></script>
+<script>
+// Shared combinatorics for the capture widgets (binomial, large-pool approximation).
+(function () {
+  "use strict";
+  function lgamma(z) {
+    var c = [0.99999999999980993, 676.5203681218851, -1259.1392167224028,
+      771.32342877765313, -176.61502916214059, 12.507343278686905,
+      -0.13857109526572012, 9.9843695780195716e-6, 1.5056327351493116e-7];
+    var g = 7;
+    if (z < 0.5) return Math.log(Math.PI / Math.sin(Math.PI * z)) - lgamma(1 - z);
+    z -= 1;
+    var x = c[0];
+    for (var i = 1; i < g + 2; i++) x += c[i] / (z + i);
+    var t = z + g + 0.5;
+    return 0.5 * Math.log(2 * Math.PI) + (z + 0.5) * Math.log(t) - t + Math.log(x);
+  }
+  function logChoose(n, k) {
+    if (k < 0 || k > n || n < 0) return -Infinity;
+    return lgamma(n + 1) - lgamma(k + 1) - lgamma(n - k + 1);
+  }
+  // P(X >= k) for X ~ Binomial(n, p)
+  function binomTail(n, k, p) {
+    if (p <= 0) return k <= 0 ? 1 : 0;
+    if (p >= 1) return k <= n ? 1 : 0;
+    var s = 0;
+    for (var i = k; i <= n; i++) {
+      s += Math.exp(logChoose(n, i) + i * Math.log(p) + (n - i) * Math.log(1 - p));
+    }
+    return Math.min(1, Math.max(0, s));
+  }
+  // capture = attacker holds a majority of an n-seat panel, share f of pool
+  function panelCapture(n, f) {
+    return binomTail(n, Math.floor(n / 2) + 1, f);
+  }
+  window.__court = { binomTail: binomTail, panelCapture: panelCapture };
+})();
+
+function courtMoney(n) {
+  var sign = n < 0 ? "-" : "";
+  n = Math.abs(Math.round(n));
+  if (n >= 1000000) return sign + "$" + (n / 1000000).toFixed(1) + "M";
+  if (n >= 1000) return sign + "$" + (n / 1000).toFixed(n >= 10000 ? 0 : 1) + "k";
+  return sign + "$" + n;
+}
+function pctText(x) {
+  if (x > 0 && x < 0.001) return "<0.1%";
+  return (x * 100).toFixed(x < 0.1 ? 2 : 1) + "%";
+}
+function barWidth(x) { return Math.max(0, Math.min(100, x * 100)); }
+
+// ============ widget 1: one big jury vs many ============
+(function () {
+  "use strict";
+  var f = document.getElementById("m1f");
+  if (!f) return;
+  var n = document.getElementById("m1n");
+  var k = document.getElementById("m1k");
+  var fOut = document.getElementById("m1fOut");
+  var nOut = document.getElementById("m1nOut");
+  var kOut = document.getElementById("m1kOut");
+  var q1 = document.getElementById("m1q1");
+  var big = document.getElementById("m1big");
+  var silent = document.getElementById("m1silent");
+  var q1bar = document.getElementById("m1q1bar");
+  var bigbar = document.getElementById("m1bigbar");
+  var silentbar = document.getElementById("m1silentbar");
+
+  function update() {
+    var F = parseInt(f.value, 10) / 100;
+    var N = parseInt(n.value, 10);
+    var K = parseInt(k.value, 10);
+    var pc = window.__court.panelCapture(N, F);
+    var pooled = window.__court.panelCapture(N * K, F);
+    var all = Math.pow(pc, K);
+
+    fOut.textContent = parseInt(f.value, 10) + "%";
+    nOut.textContent = N;
+    kOut.textContent = K;
+    q1.textContent = pctText(pc);
+    big.textContent = pctText(pooled);
+    silent.textContent = pctText(all);
+    q1bar.style.width = barWidth(pc) + "%";
+    bigbar.style.width = barWidth(pooled) + "%";
+    silentbar.style.width = barWidth(all) + "%";
+  }
+  [f, n, k].forEach(function (el) { el.addEventListener("input", update); });
+  update();
+})();
+
+// ============ widget 2: grind vs terminate ============
+(function () {
+  "use strict";
+  var f = document.getElementById("g2f");
+  if (!f) return;
+  var r = document.getElementById("g2r");
+  var fOut = document.getElementById("g2fOut");
+  var rOut = document.getElementById("g2rOut");
+  var redraw = document.getElementById("g2redraw");
+  var esc = document.getElementById("g2esc");
+  var redrawbar = document.getElementById("g2redrawbar");
+  var escbar = document.getElementById("g2escbar");
+  var cost = document.getElementById("g2cost");
+  var BASE_BOND = 200;
+
+  function update() {
+    var F = parseInt(f.value, 10) / 100;
+    var R = parseInt(r.value, 10);
+    var q7 = window.__court.panelCapture(7, F);
+    var q31 = window.__court.panelCapture(31, F);
+    var redrawCap = 1 - Math.pow(1 - q7, R);
+
+    fOut.textContent = parseInt(f.value, 10) + "%";
+    rOut.textContent = R;
+    redraw.textContent = pctText(redrawCap);
+    esc.textContent = pctText(q31);
+    redrawbar.style.width = barWidth(redrawCap) + "%";
+    escbar.style.width = barWidth(q31) + "%";
+    // round 3 bond = base doubled twice
+    cost.textContent = courtMoney(BASE_BOND * 4);
+  }
+  [f, r].forEach(function (el) { el.addEventListener("input", update); });
+  update();
+})();
+
+// ============ widget 3: rental economics ============
+(function () {
+  "use strict";
+  var a = document.getElementById("c3a");
+  if (!a) return;
+  var d = document.getElementById("c3d");
+  var b = document.getElementById("c3b");
+  var fr = document.getElementById("c3f");
+  var aOut = document.getElementById("c3aOut");
+  var dOut = document.getElementById("c3dOut");
+  var bOut = document.getElementById("c3bOut");
+  var frOut = document.getElementById("c3fOut");
+  var offer = document.getElementById("c3offer");
+  var pen = document.getElementById("c3pen");
+  var verd = document.getElementById("c3verd");
+  var need = document.getElementById("c3need");
+
+  function update() {
+    var A = parseInt(a.value, 10);
+    var D = parseInt(d.value, 10) / 100;
+    var B = parseInt(b.value, 10);
+    var F = parseInt(fr.value, 10);
+    var penalty = D * (B + F);
+
+    aOut.textContent = courtMoney(A);
+    dOut.textContent = parseInt(d.value, 10) + "%";
+    bOut.textContent = courtMoney(B);
+    frOut.textContent = courtMoney(F);
+    offer.textContent = courtMoney(A);
+    pen.textContent = courtMoney(penalty);
+
+    if (penalty >= A) {
+      verd.innerHTML = '<span class="verdict v-good">Rental dies</span>';
+    } else {
+      verd.innerHTML = '<span class="verdict v-high">Rental clears</span>';
+    }
+    // bond+franchise needed at this detection rate to deter this offer
+    var needed = D > 0 ? A / D : Infinity;
+    need.textContent = needed === Infinity ? "needs detection" : courtMoney(needed);
+  }
+  [a, d, b, fr].forEach(function (el) { el.addEventListener("input", update); });
+  update();
+})();
+
+// ============ widget 4: appeal quorum ============
+(function () {
+  "use strict";
+  var bond = document.getElementById("a4bond");
+  if (!bond) return;
+  var sup = document.getElementById("a4sup");
+  var thr = document.getElementById("a4thr");
+  var bondOut = document.getElementById("a4bondOut");
+  var supOut = document.getElementById("a4supOut");
+  var thrOut = document.getElementById("a4thrOut");
+  var per = document.getElementById("a4per");
+  var andEl = document.getElementById("a4and");
+  var orEl = document.getElementById("a4or");
+
+  function update() {
+    var Bd = parseInt(bond.value, 10);
+    var S = parseInt(sup.value, 10);
+    var T = parseInt(thr.value, 10);
+    var perPerson = Bd / Math.max(1, S);
+    var meets = S >= T;
+
+    bondOut.textContent = courtMoney(Bd);
+    supOut.textContent = S;
+    thrOut.textContent = T;
+    per.textContent = courtMoney(perPerson);
+    andEl.innerHTML = meets
+      ? '<span class="verdict v-good">Proceeds</span>'
+      : '<span class="verdict v-high">Blocked</span>';
+    // OR gate: proceeds either way (bond path always open)
+    orEl.innerHTML = '<span class="verdict v-good">Proceeds</span>';
+  }
+  [bond, sup, thr].forEach(function (el) { el.addEventListener("input", update); });
+  update();
+})();
+</script>
+</body>
+</html>

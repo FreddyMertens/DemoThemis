@@ -1,0 +1,446 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Governance: a for-profit market token and a court vote money cannot buy</title>
+<meta name="description" content="Two tokens, two philosophies. The prediction market is governed like the company it is: one token, one vote, airdropped, openly for profit. The court is governed in verified people, multiplied by service. A constitutional firewall keeps the money from ever reaching the bench.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@500;700&family=Newsreader:opsz,wght@6..72,200..700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="assets/styles.css">
+<style>
+  .seg { display: inline-flex; gap: .3rem; flex-wrap: wrap; }
+  .seg button { font-family: var(--sans); font-weight: 600; font-size: .85rem; padding: .35rem .75rem; border-radius: 8px; border: 1px solid var(--line-strong); background: var(--bg); color: var(--muted); cursor: pointer; transition: background .12s ease, color .12s ease; }
+  .seg button.active { background: var(--accent-soft); color: var(--accent-ink); border-color: color-mix(in srgb, var(--accent) 35%, transparent); }
+  .chip { font-size: .7rem; font-weight: 700; letter-spacing: .03em; text-transform: uppercase; padding: .16rem .5rem; border-radius: 999px; font-family: var(--sans); }
+  .chip.ok { color: #fff; background: var(--good); }
+  .chip.bad { color: #fff; background: var(--bad); }
+  .chip.warn { color: #7a3c00; background: #fbe7d6; }
+
+  .track { height: 28px; border-radius: 8px; background: var(--line); overflow: hidden; border: 1px solid var(--line-strong); }
+  .track > span { display: block; height: 100%; width: 0%; transition: width .25s ease; }
+  .fill-bad { background: linear-gradient(90deg, var(--bad), #7a3c00); }
+  .fill-good { background: linear-gradient(90deg, var(--good), #0a6157); }
+  .fill-accent { background: linear-gradient(90deg, var(--accent), var(--accent-ink)); }
+  .barline { margin-bottom: .6rem; }
+  .barline .bk { font-family: var(--sans); font-size: .82rem; color: var(--muted); margin-bottom: .2rem; display: flex; justify-content: space-between; }
+
+  /* two tokens diagram */
+  .houses { display: grid; grid-template-columns: 1fr minmax(9rem, 11rem) 1fr; gap: .9rem; align-items: stretch; font-family: var(--sans); }
+  @media (max-width: 760px) { .houses { grid-template-columns: 1fr; } }
+  .houses .core { background: var(--accent-soft); border: 1px solid var(--accent); border-radius: 14px; padding: 1rem .8rem; text-align: center; font-weight: 700; color: var(--accent-ink); align-self: center; max-width: 100%; }
+  .houses .core small { display: block; font-weight: 400; font-size: .74rem; color: var(--muted); margin-top: .3rem; }
+  .houses .house { background: var(--surface); border: 1px solid var(--line); border-radius: var(--radius); box-shadow: var(--shadow); padding: 1rem 1.1rem; }
+  .houses .house.biz { border-top: 3px solid var(--good); }
+  .houses .house.civ { border-top: 3px solid var(--accent); }
+  .houses .house h4 { font-size: .95rem; margin: 0 0 .5rem; }
+  .houses .house .inp { font-size: .82rem; color: var(--muted); padding: .25rem 0 .25rem 1.3rem; position: relative; line-height: 1.45; }
+  .houses .house .inp::before { content: "+"; position: absolute; left: .25rem; font-weight: 700; color: var(--accent-ink); }
+  .houses .house .out { margin-top: .5rem; font-size: .8rem; font-weight: 700; color: var(--accent-ink); }
+
+  /* money path */
+  .invoice { display: flex; align-items: center; gap: .55rem; flex-wrap: wrap; justify-content: center; font-family: var(--sans); }
+  .invoice .iv { background: var(--bg); border: 1px solid var(--line-strong); border-radius: 10px; padding: .55rem .8rem; font-size: .84rem; font-weight: 600; text-align: center; }
+  .invoice .iv small { display: block; font-weight: 400; font-size: .72rem; color: var(--faint); }
+  .invoice .iv.first { background: var(--accent-soft); border-color: var(--accent); color: var(--accent-ink); }
+  .invoice .ar { color: var(--accent); font-weight: 700; font-size: 1.15rem; }
+
+  /* values table */
+  .vals-wrap { overflow-x: auto; margin: 1.4rem 0; }
+  .vals { width: 100%; border-collapse: collapse; font-family: var(--sans); font-size: .86rem; min-width: 560px; }
+  .vals th { text-align: left; font-size: .72rem; letter-spacing: .06em; text-transform: uppercase; color: var(--faint); padding: .4rem .55rem; border-bottom: 2px solid var(--line-strong); }
+  .vals td { padding: .55rem .55rem; border-bottom: 1px solid var(--line); vertical-align: top; color: var(--ink-soft); }
+  .vals td:first-child { font-weight: 600; white-space: nowrap; }
+  .vals .param { font-family: var(--mono); font-weight: 700; color: var(--accent-ink); }
+
+  .stat .v { font-size: clamp(1.05rem, 4.2vw, 1.5rem); }
+  .stat .v .chip { white-space: normal; line-height: 1.5; }
+  .ctrl-note { font-family: var(--sans); font-size: .78rem; color: var(--faint); margin: .15rem 0 0; }
+</style>
+</head>
+<body>
+<div id="progress"></div>
+
+<nav class="sitenav" aria-label="Primary">
+  <div class="sitenav-inner">
+    <a class="brand" href="index.html">DemoThemis<span class="dot">.</span></a>
+    <button class="nav-toggle" type="button" aria-label="Menu" aria-expanded="false">&#9776;</button>
+    <div class="nav-links">
+      <a href="index.html">Home</a>
+      <a href="vision.html">Vision</a>
+      <div class="nav-group">
+        <button class="nav-group-btn" type="button">The mechanism</button>
+        <div class="nav-menu">
+          <a href="juror-court.html"><span class="ch">02</span> The court</a>
+          <a href="hybrid-juror-system.html"><span class="ch">03</span> The hybrid system</a>
+        </div>
+      </div>
+      <div class="nav-group nav-group-end">
+        <button class="nav-group-btn" type="button">The bootstrap</button>
+        <div class="nav-menu">
+          <a href="prediction-market.html"><span class="ch">04</span> The prediction market</a>
+          <a href="hybrid-juror-prediction-market-integration.html"><span class="ch">05</span> The loop</a>
+          <a href="zero-to-one.html"><span class="ch">06</span> Zero to one</a>
+        </div>
+      </div>
+      <a href="compounding.html">Why it compounds</a>
+      <a href="the-design.html">The blueprint</a>
+      <a href="governance.html">Governance</a>
+    </div>
+  </div>
+</nav>
+
+<header class="hero reveal">
+  <p class="kicker">Governance</p>
+  <h1>Governance: a for-profit market token and a court vote money cannot buy</h1>
+  <p class="dek">This chapter sets out the prediction market's plain one-token-one-vote plutocracy, built for profit and an airdrop; the court's person-weighted vote that capital cannot concentrate; and the constitutional firewall that keeps the company's money from ever reaching the bench.</p>
+  <div class="meta">
+    <span class="pill">The tokens</span>
+    <span>11 min read</span>
+    <span class="dot">&bull;</span>
+    <span>Act IV &middot; Chapter 9 of 9</span>
+  </div>
+</header>
+
+<main class="content wrap">
+
+  <aside id="toc" class="toc reveal"></aside>
+
+  <section class="reveal">
+    <p class="lead">Two tokens, two philosophies, on purpose. The prediction market is governed like the company it is: one token, one vote, airdropped, openly for profit. The court is governed like the public utility it must be: counted in verified people, multiplied by service. A constitutional firewall keeps the money from ever reaching the bench.</p>
+    <p>The chapters before this one built a verdict nobody can buy. They also left dials everywhere: fees, curation bars, graduation thresholds, juror pay. Somebody has to turn those dials, and whoever turns them can, slowly, un-build everything else.</p>
+    <p>So the design splits the steering wheel in two, and the split follows one question: is the thing being governed a business, or the truth? The prediction market is a business, deliberately. It exists to grow fast, take fees, and bankroll the court, so its token is plain plutocracy: one token, one vote, no personhood required, buyable by anyone with conviction and capital. The court is the truth machine, so its token is the opposite: weight counted in verified people, grown only by serving, immune to wallets. Between them sits a firewall written into the constitution, and the rest of this chapter is the two governments, the wall, and the numbers.</p>
+
+    <figure class="diagram reveal">
+      <div class="diagram-inner">
+        <div class="houses">
+          <div class="house biz">
+            <h4>The prediction market token</h4>
+            <div class="inp">1 token = 1 vote, plain plutocracy, no personhood required</div>
+            <div class="inp">value accrual: the margin voted above the court's invoice</div>
+            <div class="inp">airdropped to early verified traders, then trades freely</div>
+            <p class="out">Turns the business dials: its own margin, curation bar, graduation threshold, treasury and growth spend.</p>
+          </div>
+          <div class="core">The firewall<small>the court's invoice routes first, by constitution; neither token can vote across it</small></div>
+          <div class="house civ">
+            <h4>The court token</h4>
+            <div class="inp">&radic;tokens, per verified person, counted once per World ID</div>
+            <div class="inp">&times; service multiplier: escrow fees paid + reputation-credited cases</div>
+            <div class="inp">capped at 0.5% per person, cast through the locked box</div>
+            <p class="out">Turns the court dials: juror fee, calibration share, ladder rail, windows, treasury.</p>
+          </div>
+        </div>
+      </div>
+      <figcaption>Two governments for two different things. <b>The company can be bought, the bench cannot, and the wall between them has no dial on it.</b></figcaption>
+    </figure>
+  </section>
+
+  <!-- ============ the company token ============ -->
+  <section class="reveal">
+    <p class="sec-label">The company token</p>
+    <h2>Plutocracy, on purpose</h2>
+    <p>Every other page on this site treats one-token-one-vote as the original sin. So say plainly why it is the right government here: plutocracy is only a failure when the thing being governed is supposed to be neutral. The prediction market is not supposed to be neutral. It is supposed to be a company in token form, growing fast, spending aggressively on its own adoption, and generating the revenue that subsidizes the arbitration service. Shareholders with more capital getting more say over a business is not a corruption of anything. It is what a business is, and pretending otherwise would just make the token less investible without making anything fairer.</p>
+    <p>What the token owns is the margin. The base 2% settlement fee and its 70/20/10 split are the court's invoice, constitutional, routed before a cent of profit exists. Above that base, the market token may vote itself a margin of up to one additional point on the fee, and that margin, plus the treasury, is what the token is: a claim on the growth of the busiest product in the system. Launch distribution is built for that growth: a genesis airdrop to early traders, sized by the same daily-net volume metric the old design used, gated by World ID so bot farms cannot farm it, and free-floating afterward, because after the airdrop, money is just money.</p>
+
+    <figure class="diagram reveal">
+      <div class="diagram-inner">
+        <div class="invoice">
+          <div class="iv">Settlement fee<small>2% base + up to 1% voted margin</small></div>
+          <span class="ar">&rarr;</span>
+          <div class="iv first">The court's invoice routes first<small>70% jurors &middot; 20% insurance &middot; 10% operations, constitutional</small></div>
+          <span class="ar">&rarr;</span>
+          <div class="iv">The margin remains<small>to the market treasury and its token holders</small></div>
+        </div>
+      </div>
+      <figcaption>The order of payment is the whole firewall. <b>Profit is defined as whatever is left after the bench is paid, and no vote on either side can reverse the order.</b></figcaption>
+    </figure>
+
+    <p>Now price the worst case, because that is how this site treats every mechanism. Suppose a single whale buys outright control of the market token. What can they actually do? Raise the margin to its 1% cap and tax their own product toward its competitors. Misspend the treasury. Lower the curation bar and embarrass themselves. What they cannot do, at any holding size, is touch a resolution, a juror, an answer key, the windows, the invoice, or the court's parameters, because none of those sit behind this token's vote. A captured company token is a badly run company, and badly run companies are survivable. That bounded blast radius is what makes it safe to let this token be exactly what investors want it to be.</p>
+  </section>
+
+  <!-- ============ the court token ============ -->
+  <section class="reveal">
+    <p class="sec-label">The court token</p>
+    <h2>One person's square root</h2>
+    <p>The court's dials get the opposite government, because here a bought vote is a bought verdict one step removed. Weight in the court house is the square root of your court tokens, counted once per World ID. Square-root voting is an old, beautiful, broken idea: beautiful because voice grows slower than wealth, broken everywhere it has been tried because a whale splits one wallet into a thousand sock puppets and takes the root a thousand times. The math only works if you can count people, and this system can. Link as many wallets as you like; their tokens sum first, and the root applies once, to you. An unverified wallet can hold and trade the token freely but carries zero governance weight until a verified human claims it.</p>
+
+    <div class="widget reveal">
+      <div class="widget-head"><span class="live"></span> The whale and the village</div>
+      <div class="controls">
+        <div class="row"><label for="Q1w">The whale's court tokens</label> <b id="Q1wOut">10,000,000</b></div>
+        <input id="Q1w" type="range" min="4" max="8.5" step="0.05" value="7">
+        <div class="row"><label for="Q1n">Villagers, 5,000 tokens each</label> <b id="Q1nOut">1,000</b></div>
+        <input id="Q1n" type="range" min="50" max="20000" step="50" value="1000">
+        <div class="toggle-row" style="display:flex;gap:1.2rem;flex-wrap:wrap;margin:.2rem 0 0">
+          <label style="font-family:var(--sans);font-size:.88rem;color:var(--ink-soft);display:flex;align-items:center;gap:.45rem;cursor:pointer"><input type="checkbox" id="Q1split" style="width:16px;height:16px;accent-color:var(--accent)"> Whale splits into 1,000 unlinked wallets</label>
+        </div>
+      </div>
+      <div class="barline"><div class="bk"><span>The whale's voice</span><b id="Q1wv">&hellip;</b></div><div class="track"><span class="fill-bad" id="Q1wbar"></span></div></div>
+      <div class="barline"><div class="bk"><span>The village's voice</span><b id="Q1vv">&hellip;</b></div><div class="track"><span class="fill-good" id="Q1vbar"></span></div></div>
+      <div class="readout" style="margin-top:1rem">
+        <div class="stat"><div class="k">Whale's share of this vote</div><div class="v accent" id="Q1share">&hellip;</div></div>
+        <div class="stat"><div class="k">What splitting changes</div><div class="v" id="Q1verd" style="font-size:1.02rem">&hellip;</div></div>
+      </div>
+      <p style="font-family:var(--sans);font-size:.86rem;color:var(--faint);margin:1rem 0 0">Illustrative, multipliers held at 1. Splitting across unlinked wallets zeroes the whale's weight instead of multiplying it, because unverified wallets do not vote and linked wallets sum before the root. The 0.5% per-person cap is not even needed here; it exists for the day a whale is also a heavy user.</p>
+    </div>
+
+    <p>On top of the root sits a multiplier you can only earn by serving the court: 1 plus 1.5 times your escrow fees paid over (fees plus $50), plus 1.5 times your reputation-credited cases over (cases plus 30), saturating at 4. Fees are counted rather than gross escrow precisely so cycling money to yourself through a private room burns 2% per lap, and cases are counted by the credited score the <a href="hybrid-juror-system.html">hybrid system</a> already keeps, so a juror who spam-clicks verdicts earns nothing here. Both inputs decay on a 90-day half-life, the half-saturation points track the live medians, and the result is capped at 0.5% of the house per person. Two boring rules finish the job: tokens must sit linked for 30 days before they count, and the snapshot locks at proposal creation, so a vote cannot be rented the night before the question.</p>
+
+    <div class="widget reveal">
+      <div class="widget-head"><span class="live"></span> Your court weight, computed</div>
+      <div class="controls">
+        <div class="row"><label for="Q2t">Your court tokens (linked, 30 days)</label> <b id="Q2tOut">25,000</b></div>
+        <input id="Q2t" type="range" min="2" max="7" step="0.05" value="4.4">
+        <div class="row"><label for="Q2a">Escrow fees paid, 90-day</label> <b id="Q2aOut">$200</b></div>
+        <input id="Q2a" type="range" min="0" max="2000" step="25" value="200">
+        <div class="row"><label for="Q2b">Reputation-credited cases, window</label> <b id="Q2bOut">30 credited</b></div>
+        <input id="Q2b" type="range" min="0" max="150" step="1" value="30">
+      </div>
+      <div class="readout">
+        <div class="stat"><div class="k">Base: &radic;tokens</div><div class="v" id="Q2base">&hellip;</div></div>
+        <div class="stat"><div class="k">Service multiplier</div><div class="v accent" id="Q2mult">&hellip;</div></div>
+        <div class="stat"><div class="k">Your weight</div><div class="v" id="Q2w">&hellip;</div></div>
+        <div class="stat"><div class="k">Versus the median voter</div><div class="v" id="Q2vs">&hellip;</div></div>
+      </div>
+      <p class="ctrl-note">Court house: multiplier = 1 + 1.5&middot;F/(F+$50 fees) + 1.5&middot;R/(R+30 credited cases), ceiling &times;4.</p>
+      <p style="font-family:var(--sans);font-size:.86rem;color:var(--faint);margin:1rem 0 0">The median voter holds 5,000 tokens at median service, weight about 177. Slide tokens to the top and watch the multiplier matter more than the money: a working juror with modest tokens outvotes a stranger with a fortune.</p>
+    </div>
+  </section>
+
+  <!-- ============ capture ============ -->
+  <section class="reveal">
+    <p class="sec-label">The attack</p>
+    <h2>Pricing the takeover</h2>
+    <p>Buying the market token is allowed, bounded, and boring, so the takeover question that matters is the court's. Suppose 50,000 verified people hold court tokens, a median voter weighs about 177, and you arrive with a war chest. Three ways to spend it.</p>
+
+    <div class="widget reveal">
+      <div class="widget-head"><span class="live"></span> Spend a fortune on the court's vote</div>
+      <div class="controls">
+        <div class="row"><label for="Q3b">Your budget</label> <b id="Q3bOut">$10M</b></div>
+        <input id="Q3b" type="range" min="5" max="9" step="0.05" value="7">
+        <div class="row"><label>Strategy</label> <span class="seg" id="Q3seg"><button data-s="buy" class="active">Buy tokens</button><button data-s="fake">Buy + fake service</button><button data-s="hire">Recruit real humans</button></span></div>
+      </div>
+      <div class="barline"><div class="bk"><span>Share of the court house you control</span><b id="Q3share">&hellip;</b></div><div class="track"><span class="fill-bad" id="Q3bar"></span></div></div>
+      <div class="readout" style="margin-top:1rem">
+        <div class="stat"><div class="k">Fees you burned into the system</div><div class="v" id="Q3fees">&hellip;</div></div>
+        <div class="stat"><div class="k">Verdict</div><div class="v" id="Q3verd" style="font-size:1.02rem">&hellip;</div></div>
+      </div>
+      <p style="font-family:var(--sans);font-size:.86rem;color:var(--faint);margin:1rem 0 0">Illustrative: 50,000 verified holders, token at $0.10, 0.5% per-person cap. Buying alone hits the cap as one person. Faking service pays 2% of every faked escrow dollar into the fee split, where it funds the jurors and the insurance pool. Recruiting means convincing thousands of verified humans, each of whom votes in the locked box and can take your money and vote their own mind.</p>
+    </div>
+
+    <p>The pattern is the court's capture math wearing a different shirt. One person, however rich, is a rounding error by construction: the root, then the cap. Faking service is worse than useless, because every faked dollar pays the fee that funds the thing being attacked. And the only strategy that scales, recruiting real verified people, is the same wall the court built: thousands of humans, each voting a ballot that <a href="juror-court.html">cannot prove how it voted</a>. Court governance ballots run through the same locked box as verdicts, so a vote-buying contract cannot verify delivery here either. The market token needs none of this machinery, and that is not an oversight: buying votes in a plutocracy is just called buying tokens, and the firewall is what makes that shrug affordable.</p>
+  </section>
+
+  <!-- ============ rails ============ -->
+  <section class="reveal">
+    <p class="sec-label">The rails</p>
+    <h2>What a captured vote still could not do</h2>
+    <p>The last defense assumes every other one failed, on either side. Every parameter moves only inside a hard-coded range, every passed proposal waits out a 7-day timelock in public, and the load-bearing rules are not parameters at all. No vote, in either house, at any margin, can reroute the invoice, cross the firewall, make court votes provable, make court weight linear, drop the personhood requirement, reopen settled escrow, or redirect slashes away from the insurance pool. The constitution is the part of the machine with no dial on it.</p>
+
+    <div class="vals-wrap reveal">
+      <table class="vals">
+        <thead><tr><th>Variable</th><th>Value at launch</th><th>Why this value</th></tr></thead>
+        <tbody>
+          <tr><td>Market token vote</td><td><span class="param">1 token = 1 vote</span></td><td>It governs a business, not the truth; plutocracy is the honest government for a profit engine, and the firewall bounds the damage.</td></tr>
+          <tr><td>Market token's reach</td><td>Its margin (<span class="param">0&ndash;1%</span> atop the base fee), curation bar, graduation threshold, treasury</td><td>A captured majority can squeeze its own product, never the court.</td></tr>
+          <tr><td>The airdrop</td><td>Genesis drop to early traders by daily-net volume, World ID gated</td><td>Verified volume cannot be farmed by bots; after the drop, the token floats freely.</td></tr>
+          <tr><td>Court base weight</td><td><span class="param">&radic;tokens</span> per World ID</td><td>Voice grows slower than wealth; personhood makes the root unsplittable.</td></tr>
+          <tr><td>Court service multiplier</td><td><span class="param">1 + 1.5&middot;F/(F+H) + 1.5&middot;R/(R+H)</span>, ceiling &times;4</td><td>Fees are unfakeable spend; credited cases pay nothing for obvious votes, so only quality compounds.</td></tr>
+          <tr><td>Per-person cap</td><td><span class="param">0.5%</span> of the court house</td><td>Even a rich, heavy user stays a rounding error alone; change needs a crowd.</td></tr>
+          <tr><td>Token lock</td><td>30 days before counting; snapshot at proposal (both tokens)</td><td>No rented votes, no buying after the question is asked.</td></tr>
+          <tr><td>Quorum / timelock</td><td>4% of active weight / 7 days (both houses)</td><td>Small enough to function, slow enough to exit or challenge.</td></tr>
+          <tr><td>Court parameter ranges</td><td>juror fee, calibration share 5&ndash;20%, ladder rail &times;1.5&ndash;&times;3, challenge window 2&ndash;48 hours, appeal window 2&ndash;14 days</td><td>A captured vote can lean on a dial, never rip it off the wall.</td></tr>
+          <tr><td>Ballots</td><td>Court: the locked box. Market: ordinary on-chain token vote</td><td>Court votes must be unsellable; market votes are capital, and capital may speak as itself.</td></tr>
+          <tr><td>Constitution</td><td>No dial exists</td><td>The invoice and its 70/20/10 split route first, the firewall stands, court weight stays personal and sublinear, finality holds, slashes go to insurance: permanent.</td></tr>
+        </tbody>
+      </table>
+    </div>
+  </section>
+
+  <!-- ============ supply ============ -->
+  <section class="reveal">
+    <p class="sec-label">The tokens themselves</p>
+    <h2>Where each one comes from, and what each never does</h2>
+    <p>The market token is built to be owned. One billion fixed: 30% to the community through the genesis airdrop and first-year usage streams, 25% to investors on a vest, 25% to the market treasury, 20% to the team over four years with a one-year cliff. It is the instrument for everyone who wants the growth: the airdrop seeds it into the hands of the traders who made the volume, and the float after that is a market like any other. Its claim is the margin and the treasury, and its job is blunt: grow a company fast enough to fund the bench forever.</p>
+    <p>The court token is built to be earned. One billion fixed: half streamed over eight years pro-rata to the same decayed service scores the multiplier reads, a fifth at genesis to the first year's escrow users and jurors, a fifth to a treasury the court house spends through the timelock, a tenth to the builders. It trades freely, because the defense lives in the weight function rather than transfer restrictions, and it never pays anyone. Juror wages, watcher bounties, and insurance payouts all come from the invoice, exactly as the <a href="zero-to-one.html">economics chapter</a> prices them. One token chases profit so the other never has to: the moment the court's token printed salaries, every dial-turn would become a fight over the printer, and the printer is the one machine this design refuses to build on the bench's side of the wall.</p>
+  </section>
+
+  <footer class="endnote reveal">
+    <nav id="series" aria-label="Where you are in the series"></nav>
+    <div class="sitemap">
+      <div class="sitemap-col">
+        <span class="sm-h">I &middot; The promise</span>
+        <a href="vision.html">1. The vision</a>
+      </div>
+      <div class="sitemap-col">
+        <span class="sm-h">II &middot; The mechanism</span>
+        <a href="juror-court.html">2. The court</a>
+        <a href="hybrid-juror-system.html">3. The hybrid system</a>
+      </div>
+      <div class="sitemap-col">
+        <span class="sm-h">III &middot; The bootstrap</span>
+        <a href="prediction-market.html">4. The prediction market</a>
+        <a href="hybrid-juror-prediction-market-integration.html">5. The loop</a>
+        <a href="zero-to-one.html">6. Zero to one</a>
+      </div>
+      <div class="sitemap-col">
+        <span class="sm-h">IV &middot; The payoff</span>
+        <a href="compounding.html">7. Why it compounds</a>
+        <a href="the-design.html">8. The blueprint</a>
+        <a href="governance.html">9. Governance</a>
+        <a href="index.html">Home &middot; the map</a>
+      </div>
+    </div>
+    <p class="signoff">One token chases profit, one counts people, and the wall between them is the part with no dial.</p>
+  </footer>
+
+</main>
+
+<script src="assets/common.js"></script>
+<script>
+function govMoney(n) {
+  if (n >= 1000000) return "$" + (n / 1000000).toFixed(n >= 10000000 ? 0 : 1) + "M";
+  if (n >= 1000) return "$" + (n / 1000).toFixed(n >= 10000 ? 0 : 1) + "k";
+  return "$" + Math.round(n);
+}
+
+// ============ whale vs village ============
+(function () {
+  "use strict";
+  var w = document.getElementById("Q1w");
+  if (!w) return;
+  var n = document.getElementById("Q1n");
+  var split = document.getElementById("Q1split");
+  var wOut = document.getElementById("Q1wOut");
+  var nOut = document.getElementById("Q1nOut");
+  var wv = document.getElementById("Q1wv");
+  var vv = document.getElementById("Q1vv");
+  var wbar = document.getElementById("Q1wbar");
+  var vbar = document.getElementById("Q1vbar");
+  var share = document.getElementById("Q1share");
+  var verd = document.getElementById("Q1verd");
+  var VILLAGER = Math.sqrt(5000);
+
+  function update() {
+    var T = Math.pow(10, parseFloat(w.value));
+    var N = parseInt(n.value, 10);
+    var whale = split.checked ? 0 : Math.sqrt(T);
+    var village = N * VILLAGER;
+    var max = Math.max(whale, village, 1);
+
+    wOut.textContent = Math.round(T).toLocaleString("en-US");
+    nOut.textContent = N.toLocaleString("en-US");
+    wv.textContent = Math.round(whale).toLocaleString("en-US");
+    vv.textContent = Math.round(village).toLocaleString("en-US");
+    wbar.style.width = Math.max(whale / max * 100, whale > 0 ? 1 : 0) + "%";
+    vbar.style.width = Math.max(village / max * 100, 1) + "%";
+    var s = whale + village > 0 ? whale / (whale + village) : 0;
+    share.textContent = (s * 100).toFixed(1) + "%";
+    verd.innerHTML = split.checked
+      ? '<span class="chip ok">Unverified wallets: zero weight</span>'
+      : '<span class="chip warn">One root, counted once</span>';
+  }
+  [w, n].forEach(function (el) { el.addEventListener("input", update); });
+  split.addEventListener("change", update);
+  update();
+})();
+
+// ============ court weight calculator ============
+(function () {
+  "use strict";
+  var t = document.getElementById("Q2t");
+  if (!t) return;
+  var a = document.getElementById("Q2a");
+  var b = document.getElementById("Q2b");
+  var tOut = document.getElementById("Q2tOut");
+  var aOut = document.getElementById("Q2aOut");
+  var bOut = document.getElementById("Q2bOut");
+  var baseEl = document.getElementById("Q2base");
+  var multEl = document.getElementById("Q2mult");
+  var wEl = document.getElementById("Q2w");
+  var vsEl = document.getElementById("Q2vs");
+  var H_F = 50, H_R = 30;
+  var MEDIAN_W = Math.sqrt(5000) * 2.5;
+
+  function update() {
+    var T = Math.pow(10, parseFloat(t.value));
+    var F = parseInt(a.value, 10);
+    var R = parseInt(b.value, 10);
+    var base = Math.sqrt(T);
+    var mult = 1 + 1.5 * F / (F + H_F) + 1.5 * R / (R + H_R);
+    var W = base * mult;
+
+    tOut.textContent = Math.round(T).toLocaleString("en-US");
+    aOut.textContent = govMoney(F);
+    bOut.textContent = R + " credited";
+    baseEl.textContent = Math.round(base).toLocaleString("en-US");
+    multEl.textContent = "×" + mult.toFixed(2);
+    wEl.textContent = Math.round(W).toLocaleString("en-US");
+    vsEl.textContent = (W / MEDIAN_W).toFixed(1) + "×";
+  }
+  [t, a, b].forEach(function (el) { el.addEventListener("input", update); });
+  update();
+})();
+
+// ============ capture sim ============
+(function () {
+  "use strict";
+  var bIn = document.getElementById("Q3b");
+  if (!bIn) return;
+  var seg = document.getElementById("Q3seg");
+  var bOut = document.getElementById("Q3bOut");
+  var shareEl = document.getElementById("Q3share");
+  var bar = document.getElementById("Q3bar");
+  var feesEl = document.getElementById("Q3fees");
+  var verd = document.getElementById("Q3verd");
+  var strat = "buy";
+  var N = 50000, MEDIAN_W = Math.sqrt(5000) * 2.5;
+  var HONEST = N * MEDIAN_W;
+  var PRICE = 0.10, RECRUIT = 2000;
+
+  function update() {
+    var budget = Math.pow(10, parseFloat(bIn.value));
+    bOut.textContent = govMoney(budget);
+    var atk = 0, fees = 0, label = "";
+
+    if (strat === "buy") {
+      var T = budget / PRICE;
+      atk = Math.sqrt(T) * 1;
+      var cap = 0.005 * (HONEST + atk);
+      if (atk > cap) { atk = cap; label = "Capped: one person is 0.5%, full stop."; }
+      else label = "One square root, multiplier 1.";
+    } else if (strat === "fake") {
+      var spend = budget * 0.7, T2 = spend / PRICE;
+      fees = budget * 0.3;
+      atk = Math.sqrt(T2) * 4;
+      var cap2 = 0.005 * (HONEST + atk);
+      if (atk > cap2) { atk = cap2; label = "Maxed multiplier, still one person, still capped."; }
+      else label = "Multiplier ×4, fees burned for it.";
+    } else {
+      var people = Math.floor(budget / RECRUIT);
+      atk = Math.min(people, N) * MEDIAN_W;
+      label = people.toLocaleString("en-US") + " recruits, each free to defect in the locked box.";
+    }
+    var s = atk / (atk + HONEST);
+    shareEl.textContent = (s * 100).toFixed(2) + "%";
+    bar.style.width = Math.min(100, s * 100) + "%";
+    feesEl.textContent = govMoney(fees);
+    verd.innerHTML = s >= 0.5
+      ? '<span class="chip bad">Majority, by hiring a city</span>'
+      : '<span class="chip ok">' + label + '</span>';
+  }
+  Array.prototype.forEach.call(seg.querySelectorAll("button"), function (btn) {
+    btn.addEventListener("click", function () {
+      Array.prototype.forEach.call(seg.querySelectorAll("button"), function (x) { x.classList.remove("active"); });
+      btn.classList.add("active");
+      strat = btn.getAttribute("data-s");
+      update();
+    });
+  });
+  bIn.addEventListener("input", update);
+  update();
+})();
+</script>
+</body>
+</html>

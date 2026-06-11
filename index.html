@@ -3,12 +3,26 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>DemoThemis: an arbitration layer that cannot be bought</title>
-<meta name="description" content="A proof-of-personhood court that settles disputes for the open internet, seeded by a self-custody prediction market. One human, one vote.">
+<title>DemoThemis: a prediction market anyone can open, an arbitration service nobody can buy</title>
+<meta name="description" content="Two products, one machine. A prediction market you can open with pocket change, and an arbitration service run by verified humans that money cannot capture. The prediction market pays the arbitrators, and the arbitrators settle the markets.">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@500;700&family=Newsreader:opsz,wght@6..72,200..700&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="assets/styles.css">
+<style>
+  .products { display: grid; grid-template-columns: 1fr 1fr; gap: 1rem; margin: 1.6rem 0; }
+  @media (max-width: 640px) { .products { grid-template-columns: 1fr; } }
+  .product { border-radius: var(--radius); border: 1px solid var(--line); background: var(--surface); padding: 1.4rem 1.5rem; box-shadow: var(--shadow); font-family: var(--sans); }
+  .product.market { border-top: 3px solid var(--good); }
+  .product.court { border-top: 3px solid var(--accent); }
+  .product .pk { font-size: .72rem; font-weight: 700; letter-spacing: .08em; text-transform: uppercase; color: var(--faint); }
+  .product h3 { margin: .3rem 0 .5rem; font-size: 1.2rem; }
+  .product p { font-size: .92rem; line-height: 1.55; color: var(--muted); margin: 0; }
+  .product p + p { margin-top: .6rem; }
+  .product ol { margin: .4rem 0 0; padding-left: 1.25rem; font-size: .92rem; line-height: 1.55; color: var(--muted); }
+  .product ol li { margin-bottom: .55rem; }
+  .product ol li::marker { font-weight: 700; color: var(--accent-ink); }
+</style>
 </head>
 <body>
 <div id="progress"></div>
@@ -30,39 +44,62 @@
       <div class="nav-group nav-group-end">
         <button class="nav-group-btn" type="button">The bootstrap</button>
         <div class="nav-menu">
-          <a href="prediction-market.html"><span class="ch">04</span> The market</a>
+          <a href="prediction-market.html"><span class="ch">04</span> The prediction market</a>
           <a href="hybrid-juror-prediction-market-integration.html"><span class="ch">05</span> The loop</a>
           <a href="zero-to-one.html"><span class="ch">06</span> Zero to one</a>
         </div>
       </div>
       <a href="compounding.html">Why it compounds</a>
+      <a href="the-design.html">The blueprint</a>
+      <a href="governance.html">Governance</a>
     </div>
   </div>
 </nav>
 
 <header class="hero reveal">
-  <p class="kicker">An arbitration layer for the open internet</p>
-  <h1>What if no dispute could be bought?</h1>
-  <p class="dek">Almost every online deal rests on someone trusted to settle the argument when it goes wrong. We are building that someone as a court of verified humans that money cannot capture, and paying for it with a prediction market.</p>
+  <p class="kicker">What we are building</p>
+  <h1>A prediction market for any question. An arbitration service money can't buy.</h1>
+  <p class="dek">Two products, one engine: a prediction market anyone can open for under a dollar, and an arbitration service built to be the most trusted referee on the internet. The prediction market pays and proves the arbitrators.</p>
   <div class="meta">
     <span class="pill">Start here</span>
-    <span>Seven chapters, four acts</span>
+    <span>Nine chapters, four acts</span>
     <span class="dot">&bull;</span>
-    <span>About a 6 minute tour</span>
+    <span>About a 7 minute tour</span>
   </div>
 </header>
 
 <main class="content wrap">
 
   <section class="reveal">
-    <p class="lead">Think about the last thing you bought from a stranger. A room for the night, a used phone, a ride across town.</p>
-    <p>You did not really trust the stranger. You trusted whoever sat behind them ready to take your side if the deal went bad. A platform that refunds you, a card issuer that claws the money back, a star rating that warns the next person. Pull that referee away and the whole trade stops feeling safe.</p>
-    <p>That referee is the most valuable and least examined part of the internet economy. It is also centralized, expensive, and easy to lean on if you are big enough. This series builds a different one from the ground up, then shows how to switch it on in the real world. The map below is the order to read it in.</p>
+    <p class="sec-label">The products</p>
+    <h2>A prediction market and an arbitration service</h2>
+
+    <div class="products">
+      <div class="product market">
+        <span class="pk">Product one</span>
+        <h3>Prediction market with 5 novel features</h3>
+        <ol>
+          <li>Start a new prediction market instantly, on any topic, with any liquidity, even with less than a dollar.</li>
+          <li>Liquid markets tokenize into ERC-20 YES and NO tokens you self-custody; this lets you provide liquidity and earn interest, post them as collateral, and trade them with leverage.</li>
+          <li>Anyone can open private, invite-only markets and still have a world-class third-party escrow and dispute system: post your side at any odds you name, invite the other side, and the odds stay fixed for everyone who joins.</li>
+          <li>Arbitration not gameable by UMA whales: no chance of getting scammed.</li>
+          <li>With self-custody tokens that stay tradeable during disputes and resolution windows, you can exit the market at any time if there is liquidity. This also means there is no rush to close dispute windows, allowing retroactive changes to resolution windows where necessary.</li>
+        </ol>
+      </div>
+      <div class="product court">
+        <span class="pk">Product two</span>
+        <h3>Arbitration service: the most ambitious human infrastructure ever made</h3>
+        <p>Goal: an arbitration service that handles escrow and arbitration so good that customers will want everything they use to run on it, from Uber to eBay to Airbnb to AdSense, while enabling a new entity to start from scratch and have a world-class, trustable escrow service from day one.</p>
+        <p>How: robust, ungameable mechanics with proof of personhood to overcome the need for plutocracy. The system is initially seeded with data and demand by our prediction market.</p>
+      </div>
+    </div>
+
+    <p>The human layer runs on Worldcoin: a World ID iris scan makes each arbitrator one unique person with one vote, a face check on their own phone confirms presence at every draw, and settlement runs on-chain with gas sponsored for verified humans.</p>
   </section>
 
   <section class="reveal">
     <p class="sec-label">The tour</p>
-    <h2>Seven chapters, in order</h2>
+    <h2>Nine chapters, in order</h2>
 
     <div class="map-grid">
       <a class="map-card" href="vision.html">
@@ -73,32 +110,42 @@
       <a class="map-card" href="juror-court.html">
         <span class="stage">Chapter 02 &middot; The mechanism</span>
         <h3>The court</h3>
-        <p>Swap one token one vote for one human one vote. Why you cannot buy your way to a verdict.</p>
+        <p>One human, one vote, on a flat five-dollar bond. The sealed die, the face check, and the ballot nobody can sell.</p>
       </a>
       <a class="map-card" href="hybrid-juror-system.html">
         <span class="stage">Chapter 03 &middot; The mechanism</span>
         <h3>The hybrid system</h3>
-        <p>How the court sorts good jurors from bad ones without ever knowing the right answer.</p>
+        <p>How the court grades its jurors without knowing the answers, and pays accuracy instead of agreement.</p>
       </a>
       <a class="map-card" href="prediction-market.html">
         <span class="stage">Chapter 04 &middot; The bootstrap</span>
-        <h3>The market</h3>
-        <p>A self-custody prediction market whose shares are plain tokens, settled by the court, that pays the first jurors.</p>
+        <h3>The prediction market</h3>
+        <p>Born as a shared pot with no market maker to bleed, grown into plain tokens you custody yourself.</p>
       </a>
       <a class="map-card" href="hybrid-juror-prediction-market-integration.html">
         <span class="stage">Chapter 05 &middot; The bootstrap</span>
         <h3>The loop</h3>
-        <p>Every settled market hands the court a fresh known answer, so the thing that keeps jurors honest grows on its own.</p>
+        <p>Settled markets become graded answer keys, so the thing that keeps jurors honest grows with use.</p>
       </a>
       <a class="map-card" href="zero-to-one.html">
         <span class="stage">Chapter 06 &middot; The bootstrap</span>
         <h3>Zero to one</h3>
-        <p>How you pay judges before anyone needs judging, and how that grows into disputes for real apps.</p>
+        <p>Free seats, dime markets, and paid watchers from day one. How the machine starts from nothing.</p>
       </a>
       <a class="map-card" href="compounding.html">
         <span class="stage">Chapter 07 &middot; The payoff</span>
         <h3>Why it compounds</h3>
         <p>The pieces feed each other. Each one makes the next cheaper, safer, and harder to copy.</p>
+      </a>
+      <a class="map-card" href="the-design.html">
+        <span class="stage">Chapter 08 &middot; The payoff</span>
+        <h3>The blueprint</h3>
+        <p>Follow one case through the whole machine, lock by lock, dollar by dollar.</p>
+      </a>
+      <a class="map-card" href="governance.html">
+        <span class="stage">Chapter 09 &middot; The payoff</span>
+        <h3>Governance</h3>
+        <p>One token, two ballots: weight is the square root of tokens per verified person, multiplied by use of the product itself.</p>
       </a>
     </div>
   </section>
@@ -106,7 +153,7 @@
   <section class="reveal">
     <p class="sec-label">How to read it</p>
     <h2>Pick a door</h2>
-    <p>If you want the big claim first, start with <a href="vision.html">the vision</a> <span class="tag-level tag-start">start here</span> and follow Next at the foot of each page. If you would rather see the machine before the pitch, open <a href="juror-court.html">the court</a> and read straight through.</p>
+    <p>If you want the big claim first, start with <a href="vision.html">the vision</a> <span class="tag-level tag-start">start here</span> and follow Next at the foot of each page. If you would rather see the machine before the pitch, open <a href="juror-court.html">the court</a> and read straight through. And if you are short on time, <a href="the-design.html">the blueprint</a> is the whole design on one page.</p>
     <p>Every page has a Next link, a progress bar at the top, and a contents list on the longer ones, so you can always tell where you are and how much is left.</p>
   </section>
 
@@ -124,13 +171,15 @@
       </div>
       <div class="sitemap-col">
         <span class="sm-h">III &middot; The bootstrap</span>
-        <a href="prediction-market.html">4. The market</a>
+        <a href="prediction-market.html">4. The prediction market</a>
         <a href="hybrid-juror-prediction-market-integration.html">5. The loop</a>
         <a href="zero-to-one.html">6. Zero to one</a>
       </div>
       <div class="sitemap-col">
         <span class="sm-h">IV &middot; The payoff</span>
         <a href="compounding.html">7. Why it compounds</a>
+        <a href="the-design.html">8. The blueprint</a>
+        <a href="governance.html">9. Governance</a>
         <a href="index.html">Home &middot; the map</a>
       </div>
     </div>

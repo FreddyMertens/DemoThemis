@@ -1,0 +1,957 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>How deep do the fixes go? Round three on the court</title>
+<meta name="description" content="Round three of the court's design review. Pricing the dispute ladder from first principles, a seat deposit the market sets, an honest argument about popular verdicts, and the six remaining locks: receipt-free votes, per-draw liveness, a sealed die, threshold-encrypted tallies, a budgeted market maker, and a validator for subjective disputes.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@500;700&family=Newsreader:opsz,wght@6..72,200..700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="assets/styles.css">
+<style>
+  .verdict { font-family: var(--sans); font-size: .72rem; font-weight: 700; letter-spacing: .04em; text-transform: uppercase; padding: .2rem .6rem; border-radius: 999px; white-space: nowrap; }
+  .v-good { color: #fff; background: var(--good); }
+  .v-mid { color: #7a3c00; background: #fbe7d6; }
+  .v-high { color: #fff; background: var(--bad); }
+  .callout h3 .verdict { float: right; margin-top: .15rem; }
+  .idea-label, .opt-label { font-family: var(--sans); font-size: .72rem; font-weight: 700; letter-spacing: .07em; text-transform: uppercase; display: inline-flex; align-items: center; gap: .4rem; margin: 0 0 .5rem; }
+  .idea-label { color: var(--muted); }
+  .opt-label { color: var(--accent-ink); }
+  .idea-label::before { content: ""; width: 8px; height: 8px; border-radius: 999px; background: var(--faint); }
+  .opt-label::before { content: ""; width: 8px; height: 8px; border-radius: 2px; background: var(--accent); }
+
+  .seg { display: inline-flex; gap: .3rem; flex-wrap: wrap; }
+  .seg button { font-family: var(--sans); font-weight: 600; font-size: .85rem; padding: .35rem .75rem; border-radius: 8px; border: 1px solid var(--line-strong); background: var(--bg); color: var(--muted); cursor: pointer; transition: background .12s ease, color .12s ease; }
+  .seg button.active { background: var(--accent-soft); color: var(--accent-ink); border-color: color-mix(in srgb, var(--accent) 35%, transparent); }
+  .toggle-row { display: flex; gap: 1.2rem; flex-wrap: wrap; margin: .2rem 0 0; }
+  .chk { font-family: var(--sans); font-size: .88rem; color: var(--ink-soft); display: flex; align-items: center; gap: .45rem; cursor: pointer; }
+  .chk input { width: 16px; height: 16px; accent-color: var(--accent); }
+  .ctrl-note { font-family: var(--sans); font-size: .78rem; color: var(--faint); margin: .15rem 0 0; }
+
+  /* lever table */
+  .lever-wrap { overflow-x: auto; }
+  .lever { width: 100%; border-collapse: collapse; font-family: var(--sans); font-size: .86rem; }
+  .lever th { text-align: left; font-size: .72rem; letter-spacing: .06em; text-transform: uppercase; color: var(--faint); padding: .4rem .6rem; border-bottom: 2px solid var(--line-strong); }
+  .lever td { padding: .55rem .6rem; border-bottom: 1px solid var(--line); vertical-align: top; color: var(--ink-soft); }
+  .lever td:first-child { font-weight: 600; white-space: nowrap; }
+  .lever .dim { color: var(--faint); }
+
+  /* ladder rows */
+  .rungrow { display: grid; grid-template-columns: 6.2rem 1fr; gap: .8rem; align-items: start; padding: .8rem 0; border-bottom: 1px solid var(--line); font-family: var(--sans); }
+  .rungrow:last-child { border-bottom: none; }
+  .rungrow .rl { font-weight: 700; font-size: .9rem; color: var(--ink-soft); }
+  .rungrow .rl small { display: block; font-weight: 400; color: var(--faint); font-size: .74rem; }
+  .rungrow .rb { display: flex; flex-wrap: wrap; gap: .45rem .6rem; align-items: center; font-size: .84rem; color: var(--muted); }
+  .rungrow .money { font-weight: 700; font-size: 1.05rem; color: var(--ink); font-variant-numeric: tabular-nums; }
+  .chip { font-size: .7rem; font-weight: 700; letter-spacing: .03em; text-transform: uppercase; padding: .16rem .5rem; border-radius: 999px; }
+  .chip.floorA { color: var(--accent-ink); background: var(--accent-soft); }
+  .chip.floorB { color: #7a3c00; background: #fbe7d6; }
+  .chip.floorC { color: #0a6157; background: var(--good-soft); }
+  .chip.floorM { color: var(--muted); background: var(--line); }
+  .chip.ok { color: #fff; background: var(--good); }
+  .chip.bad { color: #fff; background: var(--bad); }
+
+  /* bond market */
+  .tierbar { display: flex; border-radius: 10px; overflow: hidden; border: 1px solid var(--line-strong); font-family: var(--sans); font-size: .78rem; font-weight: 700; color: #fff; margin-bottom: 1rem; }
+  .tierbar div { padding: .55rem .4rem; text-align: center; }
+  .tierbar .t1 { background: #9aa0ab; }
+  .tierbar .t2 { background: var(--good); }
+  .tierbar .t3 { background: var(--accent); }
+  .tierbar .on { outline: 3px solid var(--accent-ink); outline-offset: -3px; }
+
+  /* receipt test */
+  .stagebox { background: var(--bg); border: 1px solid var(--line-strong); border-radius: 12px; padding: 1rem 1.1rem; font-family: var(--sans); font-size: .9rem; margin-bottom: 1rem; min-height: 6.2rem; }
+  .stagebox .mono { font-family: var(--mono); font-size: .8rem; color: var(--accent-ink); word-break: break-all; }
+  .brstat { display: inline-flex; align-items: center; gap: .5rem; font-family: var(--sans); font-weight: 700; font-size: .9rem; }
+
+  /* mm stepper */
+  .mmbars { display: flex; flex-direction: column; gap: .55rem; margin: 1rem 0; }
+  .mmline .mk { font-family: var(--sans); font-size: .8rem; color: var(--muted); margin-bottom: .2rem; display: flex; justify-content: space-between; }
+  .mmtrack { height: 26px; border-radius: 7px; background: var(--line); overflow: hidden; border: 1px solid var(--line-strong); }
+  .mmtrack > span { display: block; height: 100%; width: 0%; transition: width .3s ease; }
+  .mm-hold { background: #9aa0ab; }
+  .mm-real { background: var(--accent); }
+  .mm-fee { background: var(--good); }
+  .mm-loss { background: var(--bad); }
+  .mmnarr { font-family: var(--sans); font-size: .9rem; color: var(--ink-soft); background: var(--bg); border: 1px solid var(--line-strong); border-radius: 10px; padding: .8rem 1rem; min-height: 4.6rem; }
+
+  /* engine cards */
+  .engines { display: grid; grid-template-columns: repeat(auto-fit, minmax(13rem, 1fr)); gap: 1rem; }
+  .engcard { border-radius: var(--radius); border: 1px solid var(--line); background: var(--surface); padding: 1.1rem 1.2rem; box-shadow: var(--shadow); font-family: var(--sans); }
+  .engcard h4 { font-size: .95rem; margin: 0 0 .5rem; }
+  .engcard p { font-size: .84rem; line-height: 1.5; color: var(--muted); margin: 0 0 .5rem; }
+  .engcard .loss { font-size: .78rem; font-weight: 700; }
+  .engcard.a { border-top: 3px solid var(--bad); }
+  .engcard.b { border-top: 3px solid var(--good); }
+  .engcard.c { border-top: 3px solid var(--accent); }
+  .engcard.a .loss { color: var(--bad); }
+  .engcard.b .loss { color: var(--good); }
+  .engcard.c .loss { color: var(--accent-ink); }
+
+  /* liveness windows */
+  .livewin { display: flex; flex-direction: column; gap: .7rem; font-family: var(--sans); }
+  .lw .lwk { font-size: .82rem; color: var(--muted); margin-bottom: .2rem; display: flex; justify-content: space-between; }
+  .lw .lwt { height: 30px; border-radius: 8px; background: var(--line); border: 1px solid var(--line-strong); overflow: hidden; }
+  .lw .lwt > span { display: block; height: 100%; background: linear-gradient(90deg, var(--bad), #7a3c00); border-radius: 0 8px 8px 0; }
+
+  /* two graders */
+  .graders { display: grid; grid-template-columns: 1fr 1fr; gap: 1rem; }
+  @media (max-width: 640px) { .graders { grid-template-columns: 1fr; } }
+  .grader { border-radius: var(--radius); border: 1px solid var(--line); background: var(--surface); padding: 1.1rem 1.2rem; box-shadow: var(--shadow); font-family: var(--sans); }
+  .grader h4 { font-size: .95rem; margin: 0 0 .6rem; }
+  .grader.obj { border-top: 3px solid var(--good); }
+  .grader.subj { border-top: 3px solid var(--accent); }
+  .grader .gstep { font-size: .84rem; color: var(--muted); padding: .28rem 0 .28rem 1.4rem; position: relative; line-height: 1.45; }
+  .grader .gstep::before { content: "\2193"; position: absolute; left: .2rem; color: var(--faint); }
+  .grader .gstep:first-of-type::before { content: ""; }
+  .grader .gout { margin-top: .55rem; font-weight: 700; font-size: .88rem; }
+  .grader.obj .gout { color: var(--good); }
+  .grader.subj .gout { color: var(--accent-ink); }
+
+  /* popularity chart */
+  .popchart { width: 100%; max-width: 480px; display: block; margin: 0 auto 1rem; }
+  .legend { display: flex; gap: 1.2rem; justify-content: center; font-family: var(--sans); font-size: .8rem; color: var(--muted); margin-bottom: .8rem; flex-wrap: wrap; }
+  .legend i { display: inline-block; width: 14px; height: 4px; border-radius: 2px; vertical-align: middle; margin-right: .35rem; }
+
+  /* keep stat values inside their cards on narrow screens */
+  .stat .v { font-size: clamp(1.1rem, 4.2vw, 1.5rem); }
+  .stat .v .verdict { white-space: normal; line-height: 1.5; }
+</style>
+</head>
+<body>
+<div id="progress"></div>
+
+<nav class="sitenav" aria-label="Primary">
+  <div class="sitenav-inner">
+    <a class="brand" href="index.html">DemoThemis<span class="dot">.</span></a>
+    <button class="nav-toggle" type="button" aria-label="Menu" aria-expanded="false">&#9776;</button>
+    <div class="nav-links">
+      <a href="index.html">Home</a>
+      <a href="vision.html">Vision</a>
+      <div class="nav-group">
+        <button class="nav-group-btn" type="button">The mechanism</button>
+        <div class="nav-menu">
+          <a href="juror-court.html"><span class="ch">02</span> The court</a>
+          <a href="hybrid-juror-system.html"><span class="ch">03</span> The hybrid system</a>
+        </div>
+      </div>
+      <div class="nav-group nav-group-end">
+        <button class="nav-group-btn" type="button">The bootstrap</button>
+        <div class="nav-menu">
+          <a href="prediction-market.html"><span class="ch">04</span> The prediction market</a>
+          <a href="hybrid-juror-prediction-market-integration.html"><span class="ch">05</span> The loop</a>
+          <a href="zero-to-one.html"><span class="ch">06</span> Zero to one</a>
+        </div>
+      </div>
+      <a href="compounding.html">Why it compounds</a>
+      <a href="the-design.html">The blueprint</a>
+      <div class="nav-group nav-group-end">
+        <button class="nav-group-btn" type="button">The review</button>
+        <div class="nav-menu">
+          <a href="breaking-the-court.html"><span class="ch">R1</span> Could you break it?</a>
+          <a href="hardening-the-court.html"><span class="ch">R2</span> Can the gaps be closed?</a>
+          <a href="finishing-the-court.html"><span class="ch">R3</span> How deep do the fixes go?</a>
+          <a href="rebuilding-the-court.html"><span class="ch">R4</span> What deserved to die?</a>
+        </div>
+      </div>
+    </div>
+  </div>
+</nav>
+
+<header class="hero reveal">
+  <p class="kicker">Design response &middot; round three</p>
+  <h1>How deep do the fixes go?</h1>
+  <p class="dek">Your notes came back on the repair pass. Two said ship it, four asked harder questions, and one disagreed with me outright. This page answers all of them, then builds out the six locks that were left as one-line promises.</p>
+  <div class="meta">
+    <span class="pill">Repairs, continued</span>
+    <span>18 min read</span>
+    <span class="dot">&bull;</span>
+    <span>Deep dive &middot; answering Can the gaps be closed?</span>
+  </div>
+</header>
+
+<main class="content wrap">
+
+  <aside id="toc" class="toc reveal"></aside>
+
+  <section class="reveal">
+    <p class="lead">Design reviews converge the way a bell settles after it is struck. The first pass found the cracks. The second pass proposed the welds. This third pass is quieter and harder: pricing the welds, and proving the metal underneath.</p>
+    <p>Two of your verdicts need no reply. Bigger and parallel juries you accepted as is, and paying the optimistic-layer watcher you called perfect, so both are now standing decisions and I will not relitigate them. That leaves four comments that deserve full sections, and your request to open up the six remaining locks from the scorecard. The four comments come first, because two of them change designs on the earlier pages, and one of them is a disagreement I intend to argue rather than dodge.</p>
+    <p class="takeaway">The route. First, the dispute ladder gets priced from first principles, every signal we hold laid on the table. Then your question about a market-set seat deposit, where the answer is yes and the mechanism is fun. Then the popularity argument, where I think you are half right and the half matters. The back half of the page opens the six locks one by one: the sealed die, the locked box, the face check, the bleeding market maker, and the court for questions reality will never grade. <b>Every claim gets a dial you can drag.</b></p>
+  </section>
+
+  <!-- ============ 1: pricing the ladder ============ -->
+  <section class="reveal">
+    <p class="sec-label">Your question 01 &middot; the dispute ladder</p>
+    <h2>What should the next dispute cost?</h2>
+    <p>You asked the right follow-up: the ladder's bonds must grow, fine, but grow how? Doubling was a placeholder. A multiplier pulled from the air is exactly the magic-number habit the project's own notes warn against, so the honest method is to ask what each rung's bond must accomplish, and let the price fall out of the jobs.</p>
+    <p>A rung's bond has three jobs. It must pay for the bigger panel it summons, because an appeal that does not fund its own jurors is a subsidy for whoever appeals most. It must make a dishonest appeal lose money, which means it must outweigh what an attacker expects to win by re-rolling, and that number is the capture probability at the next panel size times the stake. And it must pay rent on the delay it causes, because freezing a million dollars for three days has a price even when the appeal is sincere, and the side that ends up right deserves that rent. Three jobs, three floors. The bond at any rung is simply the highest of the three, and the famous multiplier turns out to be a safety rail you only hit when all three floors sit unusually low.</p>
+
+    <figure class="diagram reveal">
+      <div class="diagram-inner">
+        <div class="flow">
+          <div class="node"><span class="ic">&#9878;</span><span class="lbl">Fund the panel</span><span class="sub">seats &times; juror fee</span></div>
+          <span class="arrow">+</span>
+          <div class="node"><span class="ic">&#127922;</span><span class="lbl">Beat the re-roll</span><span class="sub">capture odds &times; stake</span></div>
+          <span class="arrow">+</span>
+          <div class="node"><span class="ic">&#8987;</span><span class="lbl">Pay the delay</span><span class="sub">stake &times; rate &times; days</span></div>
+          <span class="arrow">&rarr;</span>
+          <div class="node is-accent"><span class="ic">&#9650;</span><span class="lbl">Bond = the highest floor</span><span class="sub">never a magic number</span></div>
+        </div>
+      </div>
+      <figcaption>Three jobs, three floors, one price. <b>Whichever floor is highest sets the rung, and the binding floor changes as the stake and the threat change.</b></figcaption>
+    </figure>
+
+    <p>That covers the cost side. You also said not to neglect anything we have at our disposal, so here is the full inventory of signals the protocol actually holds at appeal time, and what each one is for. Most designs use two of these. We have eight.</p>
+
+    <div class="diagram reveal"><div class="diagram-inner lever-wrap">
+      <table class="lever">
+        <thead><tr><th>Signal we hold</th><th>What it sets</th><th>How</th></tr></thead>
+        <tbody>
+          <tr><td>Escrowed stake</td><td>The deterrence and delay floors</td><td>The one anchor that is expensive to fake, per the design notes. Never key bonds to volume or headcount, which an attacker can spoof.</td></tr>
+          <tr><td>Next panel's size and fee</td><td>The self-funding floor</td><td>Known exactly in advance, so every appeal pays for its own jurors.</td></tr>
+          <tr><td>Pool composition</td><td>The capture odds in the deterrence floor</td><td>Recomputed from the live effective pool, not the headline one.</td></tr>
+          <tr><td>The verdict's margin</td><td>A discount</td><td>A 4 to 3 split is the court admitting doubt. Near-ties escalate cheap or free; a 7 to 0 verdict prices appeals at the full floor.</td></tr>
+          <tr><td>Cross-panel disagreement</td><td>A free escalation</td><td>When shadow panels split, the system itself doubts the verdict. Charging a human to confirm a machine-detected doubt would be absurd.</td></tr>
+          <tr><td>Final market price</td><td>A capped discount</td><td>A verdict of NO on a market that traded at 90 cents YES deserves a cheaper appeal. Cap the discount at half, and use a time-weighted price, because a price can be pushed.</td></tr>
+          <tr><td>Co-signer count</td><td>Who pays, not how much</td><td>Your quorum from round two splits the bond across supporters. It never lowers the total, or popularity would price truth.</td></tr>
+          <tr><td>Vindication record</td><td>The refund after</td><td>A proven-right appellant gets the bond back plus a bonus from the slashed jurors, which is what keeps honest appeals cheap in expectation even when the sticker price is high.</td></tr>
+        </tbody>
+      </table>
+    </div></div>
+
+    <p>Now drag the dials and watch the floors trade places. At small stakes the panel-cost floor binds, because even a tiny attack premium cannot beat the price of seating fifteen jurors. Push the stake up and the deterrence floor takes over, growing with the money on the table. Push the attacker's pool share up and deterrence explodes, exactly as it should. The multiplier rail only matters in the quiet corner where all three floors fall, and there it simply keeps the ladder monotone so a griefer never finds a cheap rung above an expensive one.</p>
+
+    <div class="widget reveal">
+      <div class="widget-head"><span class="live"></span> The ladder, priced by its floors</div>
+      <div class="controls">
+        <div class="row"><label for="L1s">Value at stake in the disputed case</label> <b id="L1sOut">$500k</b></div>
+        <input id="L1s" type="range" min="3" max="7" step="0.05" value="5.7">
+        <div class="row"><label for="L1f">Attacker's share of the effective pool</label> <b id="L1fOut">20%</b></div>
+        <input id="L1f" type="range" min="2" max="45" step="1" value="20">
+        <div class="row"><label for="L1j">Fee paid to each juror per case</label> <b id="L1jOut">$50</b></div>
+        <input id="L1j" type="range" min="10" max="400" step="10" value="50">
+        <div class="row"><label for="L1q">Co-signers splitting an honest appeal</label> <b id="L1qOut">20</b></div>
+        <input id="L1q" type="range" min="1" max="100" step="1" value="20">
+        <div class="toggle-row">
+          <label class="chk"><input type="checkbox" id="L1m" checked> Near-tie verdict below (margin discount applies)</label>
+        </div>
+      </div>
+      <div id="L1rungs"></div>
+      <div class="readout" style="margin-top:1rem">
+        <div class="stat"><div class="k">Honest cost per co-signer, rung 1</div><div class="v accent" id="L1hon">&hellip;</div></div>
+        <div class="stat"><div class="k">Attacker's net at their best rung</div><div class="v" id="L1atk">&hellip;</div></div>
+        <div class="stat"><div class="k">Cost to climb all three rungs</div><div class="v" id="L1total">&hellip;</div></div>
+      </div>
+      <p style="font-family:var(--sans);font-size:.86rem;color:var(--faint);margin:1rem 0 0">Illustrative. Honest cost assumes an 80% chance of vindication with refund and bonus; attacker profit is capture odds at the next panel times stake, minus the bond. Timeouts are three days per rung at an 8% yearly rate. The chips name which floor set each price.</p>
+    </div>
+
+    <div class="callout reveal">
+      <p class="opt-label">The design I would ship</p>
+      <h3>Floors plus discounts, with a monotone rail <span class="verdict v-good">closes it</span></h3>
+      <p>Each rung's bond is the maximum of the three floors, computed at challenge time from the escrowed stake and the live pool, with rate-of-change caps so the price cannot whipsaw between commit and reveal. The margin, panel-disagreement, and capped market-price discounts make doubtful verdicts cheap to appeal, which protects dissent without subsidizing grief. The quorum splits the bill, the vindication bonus refunds the honest, and a times-two rail underneath keeps the ladder monotone in the corner where the floors all sag. Nothing in the schedule is a constant. Everything is a function of something an attacker cannot cheaply fake, which is the standard the project's notes set for every other parameter, now applied to the one that guards the rest.</p>
+    </div>
+  </section>
+
+  <!-- ============ 2: dynamic seat deposit ============ -->
+  <section class="reveal">
+    <p class="sec-label">Your question 02 &middot; the seat deposit</p>
+    <h2>A deposit the market sets, a door anyone can afford</h2>
+    <p>You asked whether the seat deposit can float with demand instead of being a fixed number, while keeping the door cheap to walk through. It can, and the trick is to stop thinking of the bond as a fee and start thinking of it as a license whose size you choose yourself.</p>
+    <p>Tie eligibility to the bond. A seat backed by fifty dollars can be drawn for small-stakes cases only. Back it with five hundred and you become eligible for cases up to a million; the curve is sub-linear, as the design notes demand, so a seat for the biggest cases does not cost a fortune, it costs a serious commitment. Nobody assigns you a tier. You pick your bond the way a craftsman picks which jobs to take, and the protocol simply refuses to draw you above your weight.</p>
+    <p>Demand enters through pay, not through decree. High-stakes cases pay higher juror fees, and those fees are split among however many jurors bonded into that tier. When big cases pile up and few jurors have bonded high, the per-juror pay at the top tier climbs, and that climbing pay is the market's way of asking for more deposits. Jurors bond up to chase it, the premium falls back, and the system clears. No administrator ever sets the number. The deposit is whatever the pay makes worth posting, which is the same market-clearing logic the notes already apply to the juror wage, pointed at the bond.</p>
+
+    <div class="widget reveal">
+      <div class="widget-head"><span class="live"></span> Choose your bond, watch the market answer</div>
+      <div class="controls">
+        <div class="row"><label for="B2b">Your bond</label> <b id="B2bOut">$355</b></div>
+        <input id="B2b" type="range" min="1" max="4" step="0.05" value="2.55">
+        <div class="row"><label for="B2d">High-stakes juror fees flowing per month</label> <b id="B2dOut">$40k</b></div>
+        <input id="B2d" type="range" min="5000" max="150000" step="5000" value="40000">
+        <div class="row"><label for="B2n">Jurors bonded into the top tier</label> <b id="B2nOut">120</b></div>
+        <input id="B2n" type="range" min="10" max="500" step="10" value="120">
+        <div class="toggle-row">
+          <label class="chk"><input type="checkbox" id="B2l"> A bond underwriter posts the capital for you</label>
+        </div>
+      </div>
+      <div class="tierbar" id="B2tiers">
+        <div class="t1" style="flex:1">Starter &middot; cases to $10k</div>
+        <div class="t2" style="flex:1">Standard &middot; to $1M</div>
+        <div class="t3" style="flex:1">Open &middot; any stake</div>
+      </div>
+      <div class="readout">
+        <div class="stat"><div class="k">Eligible case size</div><div class="v" id="B2elig">&hellip;</div></div>
+        <div class="stat"><div class="k">Top-tier pay per juror</div><div class="v accent" id="B2pay">&hellip;</div></div>
+        <div class="stat"><div class="k">Your cost to enter today</div><div class="v" id="B2cost">&hellip;</div></div>
+        <div class="stat"><div class="k">Slashable capital behind your seat</div><div class="v" id="B2sec">&hellip;</div></div>
+      </div>
+      <p style="font-family:var(--sans);font-size:.86rem;color:var(--faint);margin:1rem 0 0">Illustrative. Eligibility grows with the square of the bond, so the bond grows with the square root of the stake, the sub-linear curve from the design notes. When pay per juror runs hot, the market is calling for more bonds; when it runs cold, deposits are oversupplied and the premium fades.</p>
+    </div>
+
+    <p>The underwriter toggle is the answer to your barrier-to-entry worry, and it deserves a sentence of plain speech. A skilled juror in Nairobi with no spare capital should not be locked out of the top tier by a deposit she cannot post. So let a third party post it for her, for a slice of her fees, exactly the way staking pools already back validators they believe in. The underwriter studies her record, prices her risk, and eats the slash if she cheats. Her cost of entry collapses from a lump of capital to a monthly premium, while the slashable capital standing behind her seat is unchanged, because it is the underwriter's. Skin in the game does not care whose skin it is, only that it is attached.</p>
+
+    <div class="callout reveal">
+      <p class="opt-label">The design I would ship</p>
+      <h3>Self-chosen tiers, pay-driven clearing, underwritten entry <span class="verdict v-good">closes it</span></h3>
+      <p>Bond size is the juror's own choice, eligibility scales sub-linearly with it, and the per-tier pay premium is the only signal that moves deposits up or down, computed from escrowed fees, the one input that costs real money to fake. Three guards from the notes carry over unchanged: the bond a juror owes is fixed at the moment they are drawn so nothing can whipsaw mid-case, rate-of-change caps stop flash moves, and a hard floor keeps the bottom tier priced like a sandwich so the door never closes. New jurors start there, and a slice of every fee they earn auto-compounds into their bond until it reaches whatever tier they are aiming for, so the ladder climbs itself. The deposit ends up dynamic, demand-driven, and cheap to start, which is all three of the things you asked for at once.</p>
+    </div>
+  </section>
+
+  <!-- ============ 3: popularity pushback ============ -->
+  <section class="reveal">
+    <p class="sec-label">Your comment 03 &middot; the disagreement</p>
+    <h2>Is the popular verdict the right product?</h2>
+    <p>You pushed back, and I want to take the strong version of your argument seriously before I answer it. The court is a service. Services live on customer satisfaction. If most verified participants in a market are satisfied by a verdict, who am I to call that verdict wrong in the name of some ideal? Protecting a lone dissenter, on this view, is sentimentality dressed up as mechanism design.</p>
+    <p>Here is where I agree. For disputes whose answer is a community standard, was this apartment as described, was this delivery acceptable, the majority's sense of reasonable is not a proxy for the truth. It is the truth. There is no fact of the matter hiding behind the crowd, so optimizing for what most reasonable people would accept is correct, and a popularity signal belongs in the mechanism. Hold that thought, because the final section of this page builds the validator for exactly that class of case.</p>
+    <p>But the markets the court settles in phase one are not that class. They are questions with a checkable answer: who won, what was the price, did it rain. And for that class, satisfaction-of-participants is not just a different goal from accuracy. It is the goal that destroys the product. Follow the money to see why. The participants in a market are not neutral customers. They are the litigants. Every one of them holds a position, and a wrong verdict does not displease the majority, it pays the majority whenever the majority bet wrong. Gate appeals on their satisfaction and you have asked the defendants to vote on the conviction.</p>
+
+    <figure class="diagram reveal">
+      <div class="diagram-inner">
+        <div class="flow">
+          <div class="node"><span class="ic">&#127761;</span><span class="lbl">3am, thin market</span><span class="sub">false answer settles</span></div>
+          <span class="arrow">&rarr;</span>
+          <div class="node"><span class="ic">&#128176;</span><span class="lbl">12 bettors paid by the error</span><span class="sub">satisfied customers</span></div>
+          <span class="arrow">&rarr;</span>
+          <div class="node"><span class="ic">&#128227;</span><span class="lbl">1 trader spots it</span><span class="sub">the only appeal</span></div>
+          <span class="arrow">&rarr;</span>
+          <div class="node is-accent"><span class="ic">&#128683;</span><span class="lbl">Popularity gate: 1 &lt; 12</span><span class="sub">appeal dies, error is canon</span></div>
+        </div>
+      </div>
+      <figcaption>The watchdog scenario from the red team, rerun under your rule. <b>The error's beneficiaries outvote its victim, and the false answer becomes a calibration key that punishes honest jurors.</b></figcaption>
+    </figure>
+
+    <p>And the customer ledger is bigger than this month's bettors. The people the court must satisfy over years are the apps deciding whether to build on its verdicts, and they are buying exactly one property: that the answer tracks reality even when reality is unpopular. The March 2025 oracle fight that motivates this whole project was, in the mechanical sense, a satisfaction win. The side with the most voting weight got the answer it wanted. Everyone else learned the oracle could be leaned on, and that lesson, not the single wrong verdict, is what a resolution layer cannot survive. Drag the slider and watch the trade play out: the popularity-gated court really does keep more participants happy this month, and it bleeds integrations every month after, because each uncorrected error compounds into the track record.</p>
+
+    <div class="widget reveal">
+      <div class="widget-head"><span class="live"></span> Satisfaction today, trust tomorrow</div>
+      <div class="controls">
+        <div class="row"><label for="P3w">How often the market majority is wrong on contested cases</label> <b id="P3wOut">20%</b></div>
+        <input id="P3w" type="range" min="5" max="50" step="1" value="20">
+      </div>
+      <div class="legend"><span><i style="background:var(--bad)"></i>appeals gated by popularity</span><span><i style="background:var(--good)"></i>appeals open to any bonded dissenter</span></div>
+      <svg class="popchart" id="P3chart" viewBox="0 0 320 150" role="img" aria-label="Integrations over 36 months under the two appeal rules"></svg>
+      <div class="readout">
+        <div class="stat"><div class="k">Contested accuracy, gated</div><div class="v" id="P3accA" style="color:var(--bad)">&hellip;</div></div>
+        <div class="stat"><div class="k">Contested accuracy, open</div><div class="v" id="P3accB" style="color:var(--good)">&hellip;</div></div>
+        <div class="stat"><div class="k">Apps at month 36</div><div class="v accent" id="P3apps">&hellip;</div></div>
+      </div>
+      <p style="font-family:var(--sans);font-size:.86rem;color:var(--faint);margin:1rem 0 0">Illustrative toy model. Open appeals correct 85% of wrong majorities; integrations compound with accuracy. The gated court pleases more bettors in any single month, and that is the whole seduction of it.</p>
+    </div>
+
+    <div class="callout reveal">
+      <p class="opt-label">Where this lands</p>
+      <h3>Popularity prioritizes, truth decides, and the subjective class gets its own court <span class="verdict v-mid">half right, and the half matters</span></h3>
+      <p>So my answer to your question is no for verifiable markets and yes for community-standard disputes, and the design follows that split. On verifiable questions, popularity keeps the two jobs it does well, splitting appeal costs through your quorum and fast-tracking which appeals get subsidized attention, while any bonded dissenter alone can still force the climb, because the lone watcher in the diagram is not an ideal, she is the immune system. On subjective questions, where the crowd's sense of reasonable is the standard itself, the validator in the final section grades jurors against exactly that. Customer satisfaction is the right metric precisely where the customer's judgment is the product, and a poison everywhere reality is.</p>
+    </div>
+  </section>
+
+  <!-- ============ 4: sealed die + locked box ============ -->
+  <section class="reveal">
+    <p class="sec-label">Lock 01, 03 and 04 &middot; the referee, fully opened</p>
+    <h2>The sealed die and the locked box</h2>
+    <p>You asked whether my proposal for the referee behind the curtain actually works, which is the right question to ask of anything that sounds like cryptographic magic. The proposal was two devices: a verifiable random function for the draw, and threshold-encrypted votes for the count. Both replace trust with arithmetic, and each kills a different attack from the red team, so I will open them one at a time and tell you exactly where each one's power stops.</p>
+    <p>The die first. The grinding attack worked because the attacker could re-roll the draw, trigger a case, peek at the panel, walk away, try again. A verifiable random function is a die with a tamper-proof seal: the protocol commits in advance to a future, unpredictable seed, a public randomness beacon or a chain VRF, and binds the draw to it plus the case's identity. One case, one roll, and anyone can re-run the math afterward to confirm the roll was honest. The attacker's strategy collapses from re-roll until you win to take what the die gives you, which is the hypergeometric lottery from the first page, the one where a 12% pool share captures half a percent of panels. Is it effective? Against grinding, completely, and that is not a hedge: the entire attack was the re-roll, and the re-roll is gone. What it does not do is shrink the honest capture odds themselves. The die is sealed, not loaded in your favor. Panel size and pool width still do that work.</p>
+    <p>Now the box, because the harder problem was never the draw. It was the receipt. Commit-reveal forces every juror to publish their vote and the secret behind it, which means any juror can prove how they voted to a briber, which means votes are sellable, which was open question 01 and the through-line of every page since. The fix has to make a juror's vote unprovable, even by a juror who is trying to prove it. That sounds impossible. It is merely clever.</p>
+    <p>Votes are encrypted to a key that no single party holds. The key is split among a committee, say nine trustees of whom five must cooperate, and the only thing five trustees can jointly produce is the final tally, never an individual ballot. So far that protects privacy. The receipt-killing trick, borrowed from the MACI design used in Ethereum public-goods funding, is one twist stranger: a juror can secretly replace their voting key at any time. Hand a briber a beautiful cryptographic receipt showing you committed a NO vote, then quietly re-key and vote YES. The receipt still verifies. It is also worthless, and the briber knows it is worthless, because every juror can do this and the briber cannot tell a kept promise from a swapped key. The bribery market does not lose a battle here. It loses the ability to write enforceable contracts, and a market that cannot enforce delivery does not clear. Try it yourself.</p>
+
+    <div class="widget reveal">
+      <div class="widget-head"><span class="live"></span> Sell your vote, if you can</div>
+      <div class="controls">
+        <div class="row"><label>Voting scheme</label> <span class="seg" id="R4seg"><button data-m="cr" class="active">Commit-reveal</button><button data-m="maci">Threshold + re-key</button></span></div>
+      </div>
+      <div class="stagebox" id="R4stage">Pick a scheme, then cast a vote the briber wants and try to collect.</div>
+      <div style="display:flex;gap:.6rem;flex-wrap:wrap;margin-bottom:1rem">
+        <button class="btn" id="R4cast" type="button">Cast the vote the briber asked for</button>
+        <button class="btn" id="R4show" type="button" style="background:var(--bad)" disabled>Show the briber your receipt</button>
+      </div>
+      <div class="readout">
+        <div class="stat"><div class="k">Receipt verifies?</div><div class="v" id="R4ver" style="font-size:1.05rem">&hellip;</div></div>
+        <div class="stat"><div class="k">Briber pays?</div><div class="v" id="R4pay" style="font-size:1.05rem">&hellip;</div></div>
+        <div class="stat"><div class="k">Bribery market</div><div class="v" id="R4mkt" style="font-size:1.05rem">&hellip;</div></div>
+      </div>
+      <p style="font-family:var(--sans);font-size:.86rem;color:var(--faint);margin:1rem 0 0">Under commit-reveal the receipt is proof and the trade clears. Under threshold voting with re-keying, the same receipt proves nothing, because you may have re-keyed one minute later, and no briber pays for maybe.</p>
+    </div>
+
+    <p>So is it actually effective? Against the receipt, yes, and the proof is the briber's own incentive: they will not pay for undeliverable goods. Against the deanonymization database, yes by construction, because no single operator ever holds the juror-to-vote map; reconstructing it takes five colluding trustees, and the trustees are public, bonded, rotated, and individually unable to peek. Honesty also requires me to name the three places the magic stops. If five of nine trustees do collude, individual ballots leak, so the committee needs the same treatment as everything else here, bonds, rotation, and slashing, and the parameter five-of-nine is a dial, not a law. If a seat was rented from day zero, before its first key ever existed, re-keying defends nobody, because the renter holds the only key there ever was; that hole belongs to the next section. And the engineering is heavy, zero-knowledge proofs and coordinated trustees, which is a real cost and the honest price of removing the curtain instead of promising to stand behind it politely.</p>
+
+    <figure class="diagram reveal">
+      <div class="diagram-inner">
+        <div class="flow">
+          <div class="node"><span class="ic">&#128100;</span><span class="lbl">Juror encrypts a vote</span><span class="sub">may re-key anytime</span></div>
+          <span class="arrow">&rarr;</span>
+          <div class="node"><span class="ic">&#128272;</span><span class="lbl">9 trustees hold key shards</span><span class="sub">5 needed, none can peek</span></div>
+          <span class="arrow">&rarr;</span>
+          <div class="node"><span class="ic">&#129518;</span><span class="lbl">Only the tally decrypts</span><span class="sub">zero-knowledge proof attached</span></div>
+          <span class="arrow">&rarr;</span>
+          <div class="node is-accent"><span class="ic">&#9878;</span><span class="lbl">Verdict, no ballots</span><span class="sub">nothing to leak, nothing to sell</span></div>
+        </div>
+      </div>
+      <figcaption>The locked box, end to end. <b>The court learns who won. Nobody, including the jurors themselves, can prove who voted how.</b></figcaption>
+    </figure>
+  </section>
+
+  <!-- ============ 5: per-draw liveness ============ -->
+  <section class="reveal">
+    <p class="sec-label">Lock 02 &middot; vote-time control</p>
+    <h2>A face check the moment you are drawn</h2>
+    <p>The locked box has that one blind spot: a seat rented before its first key existed. Cryptography cannot distinguish the enrolled human from whoever holds the credentials, because to the protocol the credentials are the human. The only thing that can tell them apart is a check that happens at the moment of use, against the body that did the enrolling.</p>
+    <p>That is all per-draw liveness is. When the die selects your seat, your World App asks for the same on-device face match it already performs for sensitive actions, and only a pass unlocks the ballot. The comparison happens on the phone against the locally stored template, so no new biometric database is created anywhere, which matters because building a central face library to protect a court would be trading one deanonymization bomb for another. The design borrows the project's own argument from the exam essay: the camera was the leak there because a stranger watched through it. Here no one watches. The phone checks its own owner and reports one bit, pass or fail.</p>
+
+    <figure class="diagram reveal">
+      <div class="diagram-inner">
+        <div class="livewin">
+          <div class="lw"><div class="lwk"><span>Scan once at enrollment</span><span>rentable forever</span></div><div class="lwt"><span style="width:100%"></span></div></div>
+          <div class="lw"><div class="lwk"><span>Your annual re-scan</span><span>rentable ~364 days a year</span></div><div class="lwt"><span style="width:75%"></span></div></div>
+          <div class="lw"><div class="lwk"><span>Face check at every draw</span><span>rentable for minutes, against the renter's interest</span></div><div class="lwt"><span style="width:2.5%"></span></div></div>
+        </div>
+      </div>
+      <figcaption>The red bar is the window in which someone other than the enrolled human can operate the seat. <b>Each check shrinks it; only the per-draw check shrinks it below the length of a case.</b></figcaption>
+    </figure>
+
+    <p>What does it stop? Remote operation entirely: a credential farmed out to an operator across the world cannot pass a face check it cannot attend, and a hundred seats pointed at one language model all fail at once, which un-collapses the panel independence those seats were faking. What does it not stop? The enrolled human who sits in the chair personally and votes as a briber instructs. No identity check catches a willing body; that case belongs to the economics, the bond and franchise from round two, and to the locked box that makes the bribe unenforceable anyway. The three layers interlock rather than overlap, which is the design's quiet strength: liveness proves the right body, the franchise makes that body expensive to corrupt, and re-keying makes the corruption impossible to verify. An attacker has to beat all three at once, in different domains, per juror, per case.</p>
+    <p>The honest cost is friction. A juror asleep at draw time misses the check, so the draw needs a grace window and a standby seat that activates when one goes silent, the same machinery the non-reveal rules already require. Misses cost the absent juror a small reliability ding rather than a slash, because punishing sleep like treachery is how you empty a pool. None of this is exotic. It is attendance, taken seriously.</p>
+  </section>
+
+  <!-- ============ 6: market maker, slowly ============ -->
+  <section class="reveal">
+    <p class="sec-label">Lock 05 &middot; the engine and the budget</p>
+    <h2>Watch the market maker bleed, in slow motion</h2>
+    <p>You asked for the market maker's problem as a diagram, so here it is as a story you can step through, one trade at a time. The setup: an automated pool quotes prices on a binary market. It starts holding 10,000 YES tokens and $5,000, pricing YES at 50 cents. The question resolves YES at the end. Watch what the pool is holding when the music stops.</p>
+
+    <div class="widget reveal">
+      <div class="widget-head"><span class="live"></span> One market, four trades, one funeral</div>
+      <div style="display:flex;gap:.6rem;flex-wrap:wrap;margin-bottom:1rem">
+        <button class="btn" id="M5next" type="button">Start</button>
+        <button class="btn" id="M5reset" type="button" style="background:var(--faint)">Reset</button>
+      </div>
+      <div class="mmnarr" id="M5narr">Press start. The pool opens with 10,000 YES and $5,000 cash, quoting 50 cents.</div>
+      <div class="mmbars">
+        <div class="mmline"><div class="mk"><span>Pool value if it had never traded</span><b id="M5holdV">$15,000</b></div><div class="mmtrack"><span class="mm-hold" id="M5holdBar" style="width:100%"></span></div></div>
+        <div class="mmline"><div class="mk"><span>Pool value as it actually trades</span><b id="M5realV">$15,000</b></div><div class="mmtrack"><span class="mm-real" id="M5realBar" style="width:100%"></span></div></div>
+        <div class="mmline"><div class="mk"><span>Fees collected</span><b id="M5feeV">$0</b></div><div class="mmtrack"><span class="mm-fee" id="M5feeBar" style="width:0%"></span></div></div>
+        <div class="mmline"><div class="mk"><span>Lost to traders who knew</span><b id="M5lossV">$0</b></div><div class="mmtrack"><span class="mm-loss" id="M5lossBar" style="width:0%"></span></div></div>
+      </div>
+      <div class="readout">
+        <div class="stat"><div class="k">Price now</div><div class="v" id="M5price">50&cent;</div></div>
+        <div class="stat"><div class="k">YES left in pool</div><div class="v" id="M5inv">10,000</div></div>
+        <div class="stat"><div class="k">Net for the market maker</div><div class="v accent" id="M5net">$0</div></div>
+      </div>
+      <p style="font-family:var(--sans);font-size:.86rem;color:var(--faint);margin:1rem 0 0">Illustrative constant-product pool, 1% fee. The pool's fate is set by one asymmetry: it sells YES on the way up to people who know where the price is going, so at resolution it holds the least of exactly the token that pays.</p>
+    </div>
+
+    <p>Step through it and the shape of the wound is plain. The quiet day is fine; balanced flow pays fees and leaves the inventory alone. Then news arrives, and every informed trade pulls winning tokens out of the pool at yesterday's price. The pool never gets to say no, because quoting always is its whole job. By resolution it has sold nearly a third of its YES below value, the fees cover a tenth of the bleed, and the people it sold to were precisely the ones who knew. Uninformed traders flip coins with the pool; informed traders harvest it. The project's privacy feature, hidden zero-knowledge bets, recruits more of the harvesters and hides them until it is too late, which is why I keep calling the maker's loss a design choice rather than bad luck.</p>
+    <p>So the lock is not stop the bleeding, which is impossible while quoting prices to better-informed people. The lock is choose who bleeds, on purpose, in the budget. There are exactly three honest options.</p>
+
+    <div class="diagram reveal"><div class="diagram-inner">
+      <div class="engines">
+        <div class="engcard a">
+          <h4>Passive pool, as drawn above</h4>
+          <p>Anyone supplies liquidity, the pool quotes forever, informed flow drains it. The loss is unbounded in the volume of informed trading and lands on depositors who mostly never modeled it.</p>
+          <p class="loss">Who bleeds: whoever was generous. Budget line: none. Verdict: the one to avoid.</p>
+        </div>
+        <div class="engcard b">
+          <h4>Scoring-rule maker, subsidized</h4>
+          <p>A Hanson-style maker with a liquidity parameter. Its worst-case loss is a known constant set in advance, the price of always-on quotes in thin markets, paid by whoever sponsors the market.</p>
+          <p class="loss">Who bleeds: the sponsor, by a capped amount they signed. Budget line: explicit. Verdict: right for the long tail.</p>
+        </div>
+        <div class="engcard c">
+          <h4>Order book</h4>
+          <p>Professional makers quote at their own risk and price the toxicity into the spread, widening when they smell informed flow. No subsidy needed, but thin markets get thin books.</p>
+          <p class="loss">Who bleeds: pros, knowingly, priced in. Budget line: zero. Verdict: right where volume is deep.</p>
+        </div>
+      </div>
+    </div></div>
+
+    <div class="callout reveal">
+      <p class="opt-label">The design I would ship</p>
+      <h3>Subsidized scoring rule for the tail, order book for the head, one fee budget <span class="verdict v-good">closes it</span></h3>
+      <p>New and thin markets run on the scoring-rule maker, whose bounded loss is written into each market's budget as the cost of existing, funded by its creator the way the integration chapter already has creators seeding pots. Deep markets graduate to an order book where professionals carry the risk at their own price. And the fee, claimed once each by jurors, protocol, and liquidity in the earlier chapters, gets a single printed split, because a budget that does not sum to one is three promises and zero. The bleeding never stops. It just stops being a surprise, which in market design is the entire difference between a subsidy and a collapse.</p>
+    </div>
+  </section>
+
+  <!-- ============ 7: subjective validator ============ -->
+  <section class="reveal">
+    <p class="sec-label">Lock 06 &middot; the last one</p>
+    <h2>A court for questions reality will never grade</h2>
+    <p>Every lock so far protects the same machine: jurors graded against answers reality eventually posts. The last lock exists because phase two walks off the edge of that machine. Was the apartment as described is a question reality will never settle. No closing bell, no final score, no answer key, ever. Run the calibration engine on that and it does not degrade gracefully. It silently grades jurors on agreement with each other, which is a popularity contest wearing accuracy's clothes, and the herding it invites is exactly what the answer keys existed to catch.</p>
+    <p>This is also where your popularity argument comes home, because you were right about this class. When the question is what would a reasonable person call acceptable, the considered judgment of many people is not evidence about the standard. It is the standard. So the subjective court does not pretend an answer key exists. It grades different things, things that exist for every case no matter how unresolvable the question.</p>
+
+    <figure class="diagram reveal">
+      <div class="diagram-inner">
+        <div class="graders">
+          <div class="grader obj">
+            <h4>The objective court, as built</h4>
+            <div class="gstep">A market asks who won the match</div>
+            <div class="gstep">Jurors vote under the locked box</div>
+            <div class="gstep">Reality posts the answer</div>
+            <div class="gstep">Jurors graded against the key</div>
+            <p class="gout">Grade = were you right.</p>
+          </div>
+          <div class="grader subj">
+            <h4>The subjective court, the lock</h4>
+            <div class="gstep">An escrow asks if the work was acceptable</div>
+            <div class="gstep">Both sides file against a published rubric</div>
+            <div class="gstep">Jurors score the rubric items, then the verdict</div>
+            <div class="gstep">Graded on process, calibration, and survival on appeal</div>
+            <p class="gout">Grade = did you judge well, not did you match a key that cannot exist.</p>
+          </div>
+        </div>
+      </div>
+      <figcaption>Two courts, one constitution, different graders. <b>The right question is never "was the juror right," it is "is there a fact to be right about," and the grader follows the answer.</b></figcaption>
+    </figure>
+
+    <p>Three graders replace the answer key, and each one measures something a lazy or captured juror cannot fake for long. Process: every subjective case type ships a published rubric, photos against listing, delivery against spec, and jurors score the items before the verdict, so a ruling that contradicts its own item scores is visible nonsense, appealable on its face. Calibration of a different kind: jurors also predict how the panel will split, and over many cases a juror who reads evidence well predicts distributions well, a trick from peer-prediction mechanisms that extracts signal without any ground truth at all. And survival: the appeal ladder from this page becomes the outcome check of last resort, where a verdict overturned by a larger panel marks down the original jurors, which keeps an outside loop on a court that has no outside answer.</p>
+    <p>One scope sentence, and I mean it as a commitment rather than a caveat. The track record the court earns settling markets is proof of skill at reading verifiable facts, and the pitch should sell it as exactly that, with the subjective court presented as a second product with its own grader and its own record, starting from zero. Borrowing the market court's statistics to sell the escrow court would be the one dishonest sentence in an otherwise honest series, and the cheapest to delete now.</p>
+  </section>
+
+  <!-- ============ close ============ -->
+  <section class="reveal">
+    <p class="sec-label">Where round three leaves us</p>
+    <h2>The bottom of the rabbit hole</h2>
+    <p>Count what is now settled. The ladder is priced by floors instead of vibes, with every discount keyed to a signal an attacker would find expensive to fake. The seat deposit floats on pay, clears like a market, and a juror with no capital can enter underwritten for the cost of a coffee a month. The popularity question got an answer with a seam down the middle: prioritization yes, gatekeeping no, except in the subjective court where the crowd's standard is the product, and that court now has its own graders. The die is sealed, the box is locked, the face check closes the rental window to minutes, and the market maker's bleeding has a name, a cap, and a signature on the budget line.</p>
+    <p>What remains is not design. It is engineering and sequencing: the trustee committee's ceremony, the zero-knowledge circuits, the rubric library, the beacon integration, each one buildable with parts that exist today in other systems. Three pages ago the headline could not survive its own comment section. Now the open items are work orders. That is the entire distance between an idea and a mechanism, and this project has crossed most of it in three rounds of being honestly attacked by its own designer.</p>
+
+    <figure class="diagram reveal">
+      <div class="diagram-inner">
+        <div class="compare">
+          <div class="compare-col good">
+            <h4>Settled this round <span class="tag-good">designed</span></h4>
+            <ul>
+              <li>Dispute bonds priced by three floors plus keyed discounts.</li>
+              <li>Seat deposits set by pay-driven market clearing.</li>
+              <li>Underwritten entry keeps the door at coffee money.</li>
+              <li>Popularity scoped: splits costs, never gates truth.</li>
+              <li>VRF draw and threshold votes, receipts now worthless.</li>
+              <li>Per-draw face check, rental window down to minutes.</li>
+              <li>Maker losses capped and signed in each market's budget.</li>
+              <li>Subjective court graded on rubric, prediction, and appeal.</li>
+            </ul>
+          </div>
+          <div class="compare-col bad">
+            <h4>Now engineering, not argument <span class="tag-bad">build next</span></h4>
+            <ul>
+              <li>Trustee ceremony, rotation, and slashing parameters.</li>
+              <li>Zero-knowledge tally circuits, audited.</li>
+              <li>Beacon choice and draw binding, specified on-chain.</li>
+              <li>Rubric library for the first escrow case types.</li>
+              <li>Fee split published as one budget that sums to one.</li>
+              <li>Grace windows and standby seats for missed face checks.</li>
+            </ul>
+          </div>
+        </div>
+      </div>
+      <figcaption>Round three's ledger. <b>The left column ends the design arguments. The right column is a build list, which is what progress looks like.</b></figcaption>
+    </figure>
+  </section>
+
+  <footer class="endnote reveal">
+    <nav id="series" data-parent="hardening-the-court.html" data-parent-title="Can the gaps be closed?" aria-label="Where you are in the series"></nav>
+    <div class="sitemap">
+      <div class="sitemap-col">
+        <span class="sm-h">I &middot; The promise</span>
+        <a href="vision.html">1. The vision</a>
+      </div>
+      <div class="sitemap-col">
+        <span class="sm-h">II &middot; The mechanism</span>
+        <a href="juror-court.html">2. The court</a>
+        <a href="hybrid-juror-system.html">3. The hybrid system</a>
+      </div>
+      <div class="sitemap-col">
+        <span class="sm-h">III &middot; The bootstrap</span>
+        <a href="prediction-market.html">4. The prediction market</a>
+        <a href="hybrid-juror-prediction-market-integration.html">5. The loop</a>
+        <a href="zero-to-one.html">6. Zero to one</a>
+      </div>
+      <div class="sitemap-col">
+        <span class="sm-h">IV &middot; The payoff</span>
+        <a href="compounding.html">7. Why it compounds</a>
+        <a href="the-design.html">8. The blueprint</a>
+        <a href="index.html">Home &middot; the map</a>
+      </div>
+      <div class="sitemap-col">
+        <span class="sm-h">V &middot; The review</span>
+        <a href="breaking-the-court.html">R1. Could you break it?</a>
+        <a href="hardening-the-court.html">R2. Can the gaps be closed?</a>
+        <a href="finishing-the-court.html">R3. How deep do the fixes go?</a>
+        <a href="rebuilding-the-court.html">R4. What deserved to die?</a>
+      </div>
+    </div>
+    <p class="signoff">Three rounds in, the arguments are ending the only way good ones can: as a build list.</p>
+  </footer>
+
+</main>
+
+<script src="assets/common.js"></script>
+<script>
+// Shared combinatorics (binomial tail) for capture odds.
+(function () {
+  "use strict";
+  function lgamma(z) {
+    var c = [0.99999999999980993, 676.5203681218851, -1259.1392167224028,
+      771.32342877765313, -176.61502916214059, 12.507343278686905,
+      -0.13857109526572012, 9.9843695780195716e-6, 1.5056327351493116e-7];
+    var g = 7;
+    if (z < 0.5) return Math.log(Math.PI / Math.sin(Math.PI * z)) - lgamma(1 - z);
+    z -= 1;
+    var x = c[0];
+    for (var i = 1; i < g + 2; i++) x += c[i] / (z + i);
+    var t = z + g + 0.5;
+    return 0.5 * Math.log(2 * Math.PI) + (z + 0.5) * Math.log(t) - t + Math.log(x);
+  }
+  function logChoose(n, k) {
+    if (k < 0 || k > n || n < 0) return -Infinity;
+    return lgamma(n + 1) - lgamma(k + 1) - lgamma(n - k + 1);
+  }
+  function binomTail(n, k, p) {
+    if (p <= 0) return k <= 0 ? 1 : 0;
+    if (p >= 1) return k <= n ? 1 : 0;
+    var s = 0;
+    for (var i = k; i <= n; i++) {
+      s += Math.exp(logChoose(n, i) + i * Math.log(p) + (n - i) * Math.log(1 - p));
+    }
+    return Math.min(1, Math.max(0, s));
+  }
+  function panelCapture(n, f) { return binomTail(n, Math.floor(n / 2) + 1, f); }
+  window.__court = { binomTail: binomTail, panelCapture: panelCapture };
+})();
+
+function courtMoney(n) {
+  var sign = n < 0 ? "-" : "";
+  n = Math.abs(n);
+  if (n >= 1000000) return sign + "$" + (n / 1000000).toFixed(n >= 10000000 ? 0 : 1) + "M";
+  if (n >= 1000) return sign + "$" + (n / 1000).toFixed(n >= 10000 ? 0 : 1) + "k";
+  return sign + "$" + Math.round(n);
+}
+
+// ============ ladder pricing ============
+(function () {
+  "use strict";
+  var s = document.getElementById("L1s");
+  if (!s) return;
+  var f = document.getElementById("L1f");
+  var j = document.getElementById("L1j");
+  var q = document.getElementById("L1q");
+  var m = document.getElementById("L1m");
+  var sOut = document.getElementById("L1sOut");
+  var fOut = document.getElementById("L1fOut");
+  var jOut = document.getElementById("L1jOut");
+  var qOut = document.getElementById("L1qOut");
+  var rungsEl = document.getElementById("L1rungs");
+  var honEl = document.getElementById("L1hon");
+  var atkEl = document.getElementById("L1atk");
+  var totalEl = document.getElementById("L1total");
+
+  var APR = 0.08, DAYS = 3, SAFETY = 1.5, RAIL = 2, VINDICATE = 0.8, BONUS = 0.2, DISCOUNT = 0.5;
+
+  function update() {
+    var stake = Math.pow(10, parseFloat(s.value));
+    var share = parseInt(f.value, 10) / 100;
+    var fee = parseInt(j.value, 10);
+    var cosign = parseInt(q.value, 10);
+    var nearTie = m.checked;
+
+    sOut.textContent = courtMoney(stake);
+    fOut.textContent = parseInt(f.value, 10) + "%";
+    jOut.textContent = "$" + fee;
+    qOut.textContent = cosign;
+
+    var rungs = [
+      { label: "Rung 1", next: 15, note: "7 → 15 seats" },
+      { label: "Rung 2", next: 31, note: "15 → 31 seats" },
+      { label: "Rung 3", next: 31, note: "final open challenge" }
+    ];
+    var html = "", prevBond = 0, worstAtk = -Infinity, firstBond = 0, totalBond = 0;
+
+    rungs.forEach(function (r, i) {
+      var pCap = window.__court.panelCapture(r.next, share);
+      var floorA = r.next * fee;
+      var floorB = SAFETY * pCap * stake;
+      var floorC = stake * APR * (DAYS / 365);
+      var bond = Math.max(floorA, floorB, floorC);
+      var which = bond === floorB ? ["floorB", "deterrence floor"] : (bond === floorA ? ["floorA", "panel cost floor"] : ["floorC", "delay floor"]);
+      if (i === 0 && nearTie) {
+        // the discount never digs below the deterrence floor
+        var cut = Math.max(floorB, bond * DISCOUNT);
+        which = cut < bond ? [which[0], which[1] + " · near-tie ½ off"]
+          : (bond === floorB ? ["floorB", "deterrence floor · discount floored"] : which);
+        bond = cut;
+      }
+      if (prevBond * RAIL > bond) { bond = prevBond * RAIL; which = ["floorM", "ladder rail ×" + RAIL]; }
+      prevBond = bond;
+      totalBond += bond;
+      if (i === 0) firstBond = bond;
+
+      var atkEV = pCap * stake - bond;
+      if (atkEV > worstAtk) worstAtk = atkEV;
+
+      html += '<div class="rungrow"><div class="rl">' + r.label + '<small>' + r.note + '</small></div>' +
+        '<div class="rb"><span class="money">' + courtMoney(bond) + '</span>' +
+        '<span class="chip ' + which[0] + '">' + which[1] + '</span>' +
+        '<span class="chip ' + (atkEV > 0 ? 'bad">attacker profits ' + courtMoney(atkEV) : 'ok">attacker loses ' + courtMoney(-atkEV)) + '</span></div></div>';
+    });
+    rungsEl.innerHTML = html;
+
+    var honest = (1 - VINDICATE) * firstBond - VINDICATE * BONUS * firstBond;
+    honEl.textContent = courtMoney(Math.max(0, honest) / cosign);
+    atkEl.textContent = courtMoney(worstAtk);
+    atkEl.style.color = worstAtk > 0 ? "var(--bad)" : "var(--good)";
+    totalEl.textContent = courtMoney(totalBond);
+  }
+  [s, f, j, q].forEach(function (el) { el.addEventListener("input", update); });
+  m.addEventListener("change", update);
+  update();
+})();
+
+// ============ bond market ============
+(function () {
+  "use strict";
+  var b = document.getElementById("B2b");
+  if (!b) return;
+  var d = document.getElementById("B2d");
+  var n = document.getElementById("B2n");
+  var l = document.getElementById("B2l");
+  var bOut = document.getElementById("B2bOut");
+  var dOut = document.getElementById("B2dOut");
+  var nOut = document.getElementById("B2nOut");
+  var elig = document.getElementById("B2elig");
+  var pay = document.getElementById("B2pay");
+  var cost = document.getElementById("B2cost");
+  var sec = document.getElementById("B2sec");
+  var tiers = document.getElementById("B2tiers").children;
+  var PREMIUM = 0.03; // monthly underwriting premium
+
+  function update() {
+    var bond = Math.pow(10, parseFloat(b.value));
+    var demand = parseInt(d.value, 10);
+    var jurors = parseInt(n.value, 10);
+
+    // eligibility = 4 * bond^2 (bond grows with sqrt of stake)
+    var eligible = 4 * bond * bond;
+    var tier = eligible >= 1000000 ? 2 : (eligible >= 10000 ? 1 : 0);
+    for (var i = 0; i < 3; i++) tiers[i].classList.toggle("on", i === tier);
+
+    var topPay = demand / jurors;
+
+    bOut.textContent = courtMoney(bond);
+    dOut.textContent = courtMoney(demand);
+    nOut.textContent = jurors.toLocaleString("en-US");
+    elig.textContent = tier === 2 ? "any stake" : "to " + courtMoney(eligible);
+    pay.textContent = courtMoney(topPay) + "/mo";
+    pay.style.color = topPay > 500 ? "var(--bad)" : "var(--accent-ink)";
+    cost.textContent = l.checked ? courtMoney(bond * PREMIUM) + "/mo" : courtMoney(bond) + " up front";
+    sec.textContent = courtMoney(bond) + (l.checked ? " (underwriter's)" : " (yours)");
+  }
+  [b, d, n].forEach(function (el) { el.addEventListener("input", update); });
+  l.addEventListener("change", update);
+  update();
+})();
+
+// ============ popularity chart ============
+(function () {
+  "use strict";
+  var w = document.getElementById("P3w");
+  if (!w) return;
+  var wOut = document.getElementById("P3wOut");
+  var chart = document.getElementById("P3chart");
+  var accA = document.getElementById("P3accA");
+  var accB = document.getElementById("P3accB");
+  var apps = document.getElementById("P3apps");
+  var MONTHS = 36, START = 10;
+
+  function series(acc) {
+    var v = START, out = [v];
+    for (var t = 1; t <= MONTHS; t++) {
+      v = v * (1 + 2.0 * (acc - 0.92));
+      out.push(v);
+    }
+    return out;
+  }
+  function poly(arr, maxY, color) {
+    var pts = arr.map(function (v, i) {
+      var x = 18 + (i / MONTHS) * 290;
+      var y = 138 - (v / maxY) * 124;
+      return x.toFixed(1) + "," + y.toFixed(1);
+    }).join(" ");
+    return '<polyline points="' + pts + '" fill="none" stroke="' + color + '" stroke-width="2.5"/>';
+  }
+  function update() {
+    var wrong = parseInt(w.value, 10) / 100;
+    wOut.textContent = parseInt(w.value, 10) + "%";
+    var aA = 1 - wrong;            // gated: errors stand
+    var aB = 1 - wrong * 0.15;     // open: 85% of errors corrected
+    var sA = series(aA), sB = series(aB);
+    var maxY = Math.max(sB[MONTHS], sA[0], 12) * 1.1;
+    chart.innerHTML =
+      '<line x1="18" y1="138" x2="312" y2="138" stroke="#ddd6ca" stroke-width="1"/>' +
+      '<line x1="18" y1="14" x2="18" y2="138" stroke="#ddd6ca" stroke-width="1"/>' +
+      '<text x="312" y="148" font-family="Inter, sans-serif" font-size="8" fill="#8b919c" text-anchor="end">36 months</text>' +
+      '<text x="14" y="20" font-family="Inter, sans-serif" font-size="8" fill="#8b919c" text-anchor="start">apps</text>' +
+      poly(sA, maxY, "#d4523c") + poly(sB, maxY, "#0f9b70");
+    accA.textContent = Math.round(aA * 100) + "%";
+    accB.textContent = (aB * 100).toFixed(1) + "%";
+    var endA = sA[MONTHS] < 1 ? "<1" : String(Math.round(sA[MONTHS]));
+    apps.textContent = endA + " vs " + Math.round(sB[MONTHS]);
+  }
+  w.addEventListener("input", update);
+  update();
+})();
+
+// ============ receipt test ============
+(function () {
+  "use strict";
+  var seg = document.getElementById("R4seg");
+  if (!seg) return;
+  var stage = document.getElementById("R4stage");
+  var cast = document.getElementById("R4cast");
+  var show = document.getElementById("R4show");
+  var ver = document.getElementById("R4ver");
+  var payEl = document.getElementById("R4pay");
+  var mkt = document.getElementById("R4mkt");
+  var mode = "cr";
+  var castDone = false;
+
+  function toyHash(str) {
+    var h = 7;
+    for (var i = 0; i < str.length; i++) h = (h * 31 + str.charCodeAt(i)) % 2821109907456;
+    return h.toString(36);
+  }
+  function reset() {
+    castDone = false;
+    show.disabled = true;
+    stage.textContent = mode === "cr"
+      ? "Commit-reveal: you will publish hash(vote, salt) now and open it later. Cast when ready."
+      : "Threshold voting: your vote is encrypted to the trustee committee, and you can secretly re-key at any time. Cast when ready.";
+    ver.innerHTML = "&hellip;";
+    payEl.innerHTML = "&hellip;";
+    mkt.innerHTML = "&hellip;";
+  }
+  function doCast() {
+    castDone = true;
+    show.disabled = false;
+    if (mode === "cr") {
+      stage.innerHTML = "You commit NO with salt <span class='mono'>x7f2k</span>. Your commitment is <span class='mono'>" +
+        toyHash("NO|x7f2k") + "</span>. After the reveal, anyone can recompute this from your vote and salt.";
+    } else {
+      stage.innerHTML = "You encrypt NO to the committee key and keep a transcript. One minute later you could re-key and vote YES, and nothing public would change.";
+    }
+  }
+  function doShow() {
+    if (!castDone) return;
+    if (mode === "cr") {
+      stage.innerHTML = "The briber recomputes <span class='mono'>" + toyHash("NO|x7f2k") +
+        "</span> from your revealed vote and salt. It matches the chain. Delivery proven.";
+      ver.innerHTML = '<span class="verdict v-good">Yes, exactly</span>';
+      payEl.innerHTML = '<span class="verdict v-high">Pays in full</span>';
+      mkt.innerHTML = '<span class="verdict v-high">Open for business</span>';
+    } else {
+      stage.innerHTML = "You hand over a flawless transcript of an encrypted NO. The briber checks it, then remembers you can re-key silently. The transcript proves what you sent once, never what counted.";
+      ver.innerHTML = '<span class="verdict v-mid">Proves nothing</span>';
+      payEl.innerHTML = '<span class="verdict v-good">Refuses</span>';
+      mkt.innerHTML = '<span class="verdict v-good">Collapsed</span>';
+    }
+  }
+  Array.prototype.forEach.call(seg.querySelectorAll("button"), function (btn) {
+    btn.addEventListener("click", function () {
+      Array.prototype.forEach.call(seg.querySelectorAll("button"), function (x) { x.classList.remove("active"); });
+      btn.classList.add("active");
+      mode = btn.getAttribute("data-m");
+      reset();
+    });
+  });
+  cast.addEventListener("click", doCast);
+  show.addEventListener("click", doShow);
+  reset();
+})();
+
+// ============ market maker stepper ============
+(function () {
+  "use strict";
+  var next = document.getElementById("M5next");
+  if (!next) return;
+  var resetBtn = document.getElementById("M5reset");
+  var narr = document.getElementById("M5narr");
+  var holdV = document.getElementById("M5holdV"), holdBar = document.getElementById("M5holdBar");
+  var realV = document.getElementById("M5realV"), realBar = document.getElementById("M5realBar");
+  var feeV = document.getElementById("M5feeV"), feeBar = document.getElementById("M5feeBar");
+  var lossV = document.getElementById("M5lossV"), lossBar = document.getElementById("M5lossBar");
+  var priceEl = document.getElementById("M5price"), invEl = document.getElementById("M5inv"), netEl = document.getElementById("M5net");
+
+  var FEE = 0.01, X0 = 10000, Y0 = 5000, K = X0 * Y0;
+  var step, x, y, fees;
+
+  function moveTo(p) {
+    var nx = Math.sqrt(K / p), ny = Math.sqrt(K * p);
+    var dy = ny - y;
+    fees += Math.abs(dy) * FEE;
+    x = nx; y = ny;
+  }
+  function valueAt(p, resolved) {
+    var yesPrice = resolved ? 1 : p;
+    return x * yesPrice + y;
+  }
+  function render(p, resolved) {
+    var hold = X0 * (resolved ? 1 : p) + Y0;
+    var real = valueAt(p, resolved) + fees;
+    var loss = Math.max(0, hold - real + fees) ; // adverse selection before fee offset
+    var MAX = 16000;
+    holdV.textContent = courtMoney(hold);
+    realV.textContent = courtMoney(real);
+    feeV.textContent = courtMoney(fees);
+    lossV.textContent = courtMoney(hold - (real - fees));
+    holdBar.style.width = Math.min(100, hold / MAX * 100) + "%";
+    realBar.style.width = Math.min(100, real / MAX * 100) + "%";
+    feeBar.style.width = Math.min(100, fees / 1500 * 100) + "%";
+    lossBar.style.width = Math.min(100, (hold - (real - fees)) / 1500 * 100) + "%";
+    priceEl.innerHTML = resolved ? "$1.00" : Math.round(p * 100) + "&cent;";
+    invEl.textContent = Math.round(x).toLocaleString("en-US");
+    var net = real - hold;
+    netEl.textContent = courtMoney(net);
+    netEl.style.color = net >= 0 ? "var(--good)" : "var(--bad)";
+    void loss;
+  }
+  var STEPS = [
+    function () {
+      narr.textContent = "A quiet day. Uninformed traders buy and sell in equal measure. The pool earns a little in fees and its inventory ends where it began.";
+      fees += 40;
+      render(0.5, false);
+      next.textContent = "News arrives";
+    },
+    function () {
+      narr.textContent = "A poll lands. Traders who read it know YES is now worth about 75 cents, and they buy YES from the pool all the way up. Every token they take was sold below what they know it is worth.";
+      moveTo(0.75);
+      render(0.75, false);
+      next.textContent = "More news";
+    },
+    function () {
+      narr.textContent = "An exit poll all but settles it. Informed flow pushes the price to 95 cents, draining still more YES from the pool at a discount to the dollar each one is about to be worth.";
+      moveTo(0.95);
+      render(0.95, false);
+      next.textContent = "Resolve the market";
+    },
+    function () {
+      narr.textContent = "YES resolves at one dollar. The pool kept every losing trade and sold off the winners cheap. Fees covered about a tenth of the bleed. The people on the other side were exactly the ones who knew.";
+      render(0.95, true);
+      next.textContent = "Done";
+      next.disabled = true;
+    }
+  ];
+  function reset() {
+    step = 0; x = X0; y = Y0; fees = 0;
+    next.disabled = false;
+    next.textContent = "Start";
+    narr.textContent = "Press start. The pool opens with 10,000 YES and $5,000 cash, quoting 50 cents.";
+    render(0.5, false);
+    feeV.textContent = "$0"; feeBar.style.width = "0%";
+    lossV.textContent = "$0"; lossBar.style.width = "0%";
+    netEl.textContent = "$0"; netEl.style.color = "var(--ink)";
+  }
+  next.addEventListener("click", function () {
+    if (step < STEPS.length) { STEPS[step](); step++; }
+  });
+  resetBtn.addEventListener("click", reset);
+  reset();
+})();
+</script>
+</body>
+</html>

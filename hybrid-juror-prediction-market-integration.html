@@ -3,38 +3,33 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Hybrid Juror + Prediction Market: Calibration via Anonymous Private Bets</title>
-<meta name="description" content="Deep integration concept: Using the hybrid juror reputation system as the resolution layer for a permissionless prediction market, with calibration anchors sourced from anonymous private market bets and objective resolutions.">
+<title>How markets train the court: settled bets become juror answer keys</title>
+<meta name="description" content="Settled markets become graded answer keys, so the thing that keeps jurors honest grows with use instead of running out.">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@500;700&family=Newsreader:opsz,wght@6..72,200..700&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="assets/styles.css">
 <style>
-  .fullsvg { width: 100%; height: auto; display: block; }
-  .arch { display: flex; flex-direction: column; align-items: stretch; gap: .5rem; }
-  .arch .layer { border: 1px solid var(--line-strong); border-radius: 12px; padding: .85rem 1rem; background: var(--bg); text-align: center; font-family: var(--sans); font-weight: 600; font-size: .95rem; }
-  .arch .ar { text-align: center; color: var(--accent); font-size: 1.1rem; line-height: 1; }
-  .arch .engine { border-color: var(--accent); background: var(--accent-soft); }
-  .arch .sub { display: block; font-family: var(--sans); font-size: .8rem; font-weight: 400; color: var(--muted); margin-top: .2rem; }
+  .meter { height: 30px; border-radius: 8px; background: var(--line); overflow: hidden; border: 1px solid var(--line-strong); }
+  .meter > span { display: block; height: 100%; width: 0%; background: linear-gradient(90deg, var(--accent), var(--accent-ink)); transition: width .25s ease; }
+  .meter-cap { font-family: var(--sans); font-size: .8rem; color: var(--faint); margin-top: .4rem; }
+  .chkrow { display: flex; align-items: center; gap: .55rem; font-family: var(--sans); font-size: .9rem; font-weight: 600; padding: .1rem 0 .35rem; }
+  .chkrow input { width: 1.1rem; height: 1.1rem; accent-color: var(--accent); cursor: pointer; margin: 0; }
+  input[type=range]:disabled { opacity: .35; }
+  .exhaust { display: flex; align-items: center; justify-content: center; gap: .7rem; flex-wrap: wrap; font-family: var(--sans); }
+  .exhaust .e { background: var(--bg); border: 1px solid var(--line-strong); border-radius: 12px; padding: .7rem .9rem; font-weight: 600; font-size: .9rem; text-align: center; }
+  .exhaust .e small { display: block; font-weight: 400; font-size: .74rem; color: var(--faint); margin-top: .15rem; }
+  .exhaust .e.key { background: var(--accent-soft); border-color: var(--accent); color: var(--accent-ink); }
+  .exhaust .e.key small { color: var(--accent-ink); opacity: .75; }
+  .exhaust .ar { color: var(--accent); font-size: 1.3rem; font-weight: 700; }
   .cmp-wrap { overflow-x: auto; margin: 1.4rem 0; }
   .cmp-table { width: 100%; border-collapse: collapse; font-family: var(--sans); font-size: .9rem; min-width: 560px; }
   .cmp-table th, .cmp-table td { padding: .7rem .6rem; border-bottom: 1px solid var(--line); text-align: left; vertical-align: top; }
   .cmp-table thead th { font-size: .74rem; text-transform: uppercase; letter-spacing: .03em; color: var(--faint); font-weight: 700; }
   .cmp-table td:first-child { font-weight: 600; color: var(--ink); }
-  .cmp-table .param { font-family: var(--mono); font-weight: 700; color: var(--accent-ink); }
-  .funnel { display: flex; flex-direction: column; align-items: center; gap: .35rem; }
-  .funnel .bar { border-radius: 10px; display: grid; place-items: center; font-family: var(--sans); font-weight: 600; font-size: .9rem; color: #fff; padding: .7rem 1rem; text-align: center; }
-  .wheel { display: flex; flex-wrap: wrap; gap: .5rem; align-items: stretch; justify-content: center; }
-  .wheel .node { flex: 1 1 8.5rem; min-width: 8rem; background: var(--bg); border: 1px solid var(--line); border-radius: 12px; padding: .85rem .8rem; text-align: center; font-family: var(--sans); }
-  .wheel .node .lbl { display: block; font-weight: 600; font-size: .9rem; }
-  .wheel .node .sub { display: block; font-size: .74rem; color: var(--faint); margin-top: .2rem; }
-  .wheel .arrow { align-self: center; color: var(--accent); font-size: 1.2rem; font-weight: 700; }
-  .stream { display: flex; gap: 7px; flex-wrap: wrap; justify-content: center; }
-  .stream .case { width: 48px; height: 34px; border-radius: 7px; background: var(--surface); border: 1px solid var(--line-strong); display: grid; place-items: center; font-family: var(--mono); font-size: .66rem; color: var(--faint); }
-  .stream .case.known { background: var(--accent-soft); border-color: var(--accent); color: var(--accent-ink); font-weight: 700; }
 </style>
 </head>
-<body class="theme-market">
+<body>
 <div id="progress"></div>
 
 <nav class="sitenav" aria-label="Primary">
@@ -54,239 +49,218 @@
       <div class="nav-group nav-group-end">
         <button class="nav-group-btn" type="button">The bootstrap</button>
         <div class="nav-menu">
-          <a href="prediction-market.html"><span class="ch">04</span> The market</a>
+          <a href="prediction-market.html"><span class="ch">04</span> The prediction market</a>
           <a href="hybrid-juror-prediction-market-integration.html"><span class="ch">05</span> The loop</a>
           <a href="zero-to-one.html"><span class="ch">06</span> Zero to one</a>
         </div>
       </div>
       <a href="compounding.html">Why it compounds</a>
+      <a href="the-design.html">The blueprint</a>
+      <a href="governance.html">Governance</a>
     </div>
   </div>
 </nav>
 
 <header class="hero reveal">
-  <p class="kicker">The build sheet</p>
-  <h1>The court that feeds itself</h1>
-  <p class="dek">The juror court needed a steady drip of known answers to stay honest. A prediction market makes them by the thousand, almost for free, as a side effect of people betting. Here is how the two click together.</p>
+  <p class="kicker">The loop</p>
+  <h1>How markets train the court: settled bets become juror answer keys</h1>
+  <p class="dek">Every market that settles on hard fact leaves behind a question with a verified answer. This chapter shows how those settlements are watched, curated into an answer-key library, and used to keep thousands of jurors measurably honest, so the court's calibration grows automatically with betting volume.</p>
   <div class="meta">
-    <span class="pill">Prediction markets</span>
-    <span>11 min read</span>
+    <span class="pill">The flywheel</span>
+    <span>10 min read</span>
     <span class="dot">&bull;</span>
-    <span>Act III &middot; Chapter 5 of 7</span>
+    <span>Act III &middot; Chapter 5 of 9</span>
   </div>
 </header>
 
 <main class="content wrap">
 
+  <aside id="toc" class="toc reveal"></aside>
+
   <section class="reveal">
-    <p class="lead">Here is the one weakness the juror court could never fix from the inside.</p>
-    <p>The <a href="hybrid-juror-system.html">hybrid juror court</a> grades its jurors on how well they agree with their peers. To stop a whole crowd from quietly agreeing on something false, it slips in cases whose answer is already known and watches who gets them right. Those known answers are the court's one rope tied to reality. The trouble is that someone has to keep supplying the rope, and a court working alone runs short fast. Answer keys written by hand are slow to make and quick to run out.</p>
-    <p>So pair the court with a machine that prints known answers as ordinary exhaust. A <a href="https://en.wikipedia.org/wiki/Prediction_market" target="_blank" rel="noopener">prediction market</a> is that machine. People bet on questions the world will settle on its own, and the moment it does, the closed market turns into a graded quiz the court can use. Bolt the two together and each one quietly feeds the other.</p>
+    <p class="sec-label">The problem</p>
+    <h2>The one rope to reality</h2>
+    <p class="lead">The juror court needed a steady drip of known answers to stay honest. A prediction market makes them by the thousand, almost for free, as a side effect of people betting. Here is how the two click together.</p>
+    <p>A school that has lost its answer sheets can still hand out grades. Mark every student against the class average. The marks look precise. They are also untethered, because if the whole class learns the same wrong fact, every exam confirms it.</p>
+    <p>The court runs the same risk. The <a href="hybrid-juror-system.html">hybrid system</a> grades each juror by leave-one-out agreement with their panel, and that is the right everyday ruler, because on most disputes nobody holds a certificate of the truth. But agreement is a relative measurement. It can tell you a juror moved with the room. It cannot tell you the room is still pointed at the world. A pool that slowly absorbed a fashionable error would keep agreeing with itself, scores green, verdicts drifting.</p>
+    <p>So the check has to come from outside the scoring, from questions the jurors did not write and cannot vote on. Where do you find thousands of real questions whose answers arrive from the world itself, on a schedule? You are standing on them. Every market on the platform is a question with money riding on it, and the great majority are questions reality will grade personally: a final score, a price at a fixed minute, an election called by morning. When such a market settles, what it leaves behind is exactly the artifact the court is starving for. A genuine question, argued over by people with stakes, with the world's own answer stapled to it and a timestamp on the staple.</p>
+    <p>Agreement keeps its job. It is the everyday ruler, cheap and always available. The keys are the audit that tells you the ruler has not bent.</p>
+    <p>Nobody is paid to write these exams. They are minted as ordinary exhaust of people betting on things they care about.</p>
 
     <figure class="diagram reveal">
       <div class="diagram-inner">
-        <div class="arch">
-          <div class="layer">Anyone opens a market and seeds it with money<span class="sub">people bet, and the price becomes the crowd's probability</span></div>
-          <div class="ar">&darr;</div>
-          <div class="layer engine">The juror court settles the cases reality cannot<span class="sub">random panels, leave-one-out scoring, margin weight, appeals</span></div>
-          <div class="ar">&darr;</div>
-          <div class="layer">Every settled market becomes a known answer<span class="sub">graded quizzes, slipped invisibly back into juror caseloads</span></div>
-          <div class="ar">&#8635;</div>
-          <p class="feedback" style="text-align:center;font-family:var(--sans);font-size:.82rem;font-style:italic;color:var(--faint);margin:.2rem 0 0">more betting makes more answers, which makes sharper jurors, which makes verdicts worth betting on</p>
+        <div class="exhaust">
+          <div class="e">People bet on a question<small>a pool, opened for a dime</small></div>
+          <span class="ar">&rarr;</span>
+          <div class="e">Reality posts the answer<small>a score, a price, a result</small></div>
+          <span class="ar">&rarr;</span>
+          <div class="e key">A graded question<small>answer attached, timestamped</small></div>
         </div>
       </div>
-      <figcaption>Two machines wired into a loop. <b>The market hands the court a fresh supply of known answers, and the court hands the market verdicts people can trust.</b></figcaption>
+      <figcaption>The prediction market's exhaust stream. <b>Every settled objective market is a question that reality itself has graded.</b></figcaption>
     </figure>
+
+    <p>One stream of these, flowing daily, is the rope that ties the court's scores to the world. The next two sections are about keeping that rope clean, because a grading instrument is only worth what its worst entry is.</p>
   </section>
 
   <section class="reveal">
-    <p class="sec-label">Start here</p>
-    <h2>A price is just a crowd's probability</h2>
-    <p>Strip away the jargon first. A prediction market is a question with a live number attached. Take something with a yes-or-no answer, like will it rain tomorrow, and sell a contract that pays one dollar if the answer turns out yes and nothing if it turns out no. Whatever that contract trades at is the crowd's probability. A contract changing hands at 62 cents is a crowd saying it is about 62 percent sure, and the number twitches the instant anyone learns something new. Prices quietly soak up scattered private knowledge, which is the grain of truth inside the <a href="https://en.wikipedia.org/wiki/Efficient-market_hypothesis" target="_blank" rel="noopener">efficient-market hypothesis</a>.</p>
-
-    <figure class="diagram reveal">
-      <div class="diagram-inner">
-        <div class="splitbar">
-          <div class="yes" style="width:62%">YES &middot; 62&cent;</div>
-          <div class="no" style="width:38%">NO &middot; 38&cent;</div>
-        </div>
-      </div>
-      <figcaption>One market on a yes-or-no question. <b>The price the contract trades at is the crowd betting real money on how likely yes is.</b></figcaption>
-    </figure>
-
-    <p>For there to always be someone on the other side of your bet, whoever opens a market puts up the first pot of money and hands it to an <a href="https://en.wikipedia.org/wiki/Automated_market_maker" target="_blank" rel="noopener">automated market maker</a>, a small program that will always quote a price. The neatest design, the market scoring rule from economist <a href="https://en.wikipedia.org/wiki/Robin_Hanson" target="_blank" rel="noopener">Robin Hanson</a>, rests on a <a href="https://en.wikipedia.org/wiki/Scoring_rule" target="_blank" rel="noopener">proper scoring rule</a> that pays out most when its stated odds are honest, so the maker never runs dry and its running price reads like a real forecast. Anyone can open a market on anything, and the only ticket in is the money they seed it with.</p>
-  </section>
-
-  <section class="reveal">
-    <p class="sec-label">Who decides</p>
-    <h2>Most questions settle without a fight</h2>
-    <p>Now the lucky part. The great majority of things people bet on have a hard answer waiting in the future. A final score, the price of a coin at a fixed minute, who won an election, last month's rainfall. When the moment comes, anyone can post that answer to the market with a bond, which opens a short challenge window. If the answer is obvious, nobody bothers to dispute it, the window closes, and the market pays out on its own. The court has settled the case without a single juror lifting a finger.</p>
-    <p>That cheap path is the same optimistic layer the standalone court runs on, and here it does double duty. An answer that closes unchallenged is, by definition, one everyone agreed was plainly true, which makes it a clean known answer the court can keep for later. Only a thin slice ever get challenged. Those, and only those, reach a jury. The jury is the referee of last resort, not the everyday scorekeeper.</p>
-
-    <figure class="diagram reveal">
-      <div class="diagram-inner">
-        <div class="funnel">
-          <div class="bar" style="width:100%;background:var(--accent)">Every market opened on the platform</div>
-          <div class="ar" style="color:var(--accent)">&darr;</div>
-          <div class="bar" style="width:68%;background:var(--good)">Most settle unchallenged in the optimistic window</div>
-          <div class="ar" style="color:var(--accent)">&darr;</div>
-          <div class="bar" style="width:26%;background:var(--accent-ink)">Only the disputed few are handed to a jury</div>
-        </div>
-      </div>
-      <figcaption>A jury never touches most markets. <b>It only sees the narrow bottom slice the optimistic window could not close.</b></figcaption>
-    </figure>
-  </section>
-
-  <section class="reveal">
-    <p class="sec-label">The referee</p>
-    <h2>When the court does step in</h2>
-    <p>For the cases that reach it, nothing about the original design changes. A random panel of seven jurors is drawn, weighted toward those with the strongest records. Each one locks in a sealed vote and only then reveals it, a <a href="https://en.wikipedia.org/wiki/Commitment_scheme" target="_blank" rel="noopener">commit and reveal</a> step so nobody can copy a neighbour. Each juror is then graded by <a href="hybrid-juror-system.html">leave-one-out coherence</a>, which checks their vote against the others' verdict and never against a tally they helped build. A near-tie barely moves anyone's standing, a lopsided result moves it a lot, and a bonded <a href="https://en.wikipedia.org/wiki/Appeal" target="_blank" rel="noopener">appeal</a> can escalate the case to a larger panel that pays back a lone juror who turns out to have been right.</p>
-
-    <figure class="diagram reveal">
-      <div class="diagram-inner">
-        <div class="flow">
-          <div class="node"><span class="ic">&#9878;</span><span class="lbl">A challenge is filed</span><span class="sub">case enters</span></div>
-          <span class="arrow">&rarr;</span>
-          <div class="node"><span class="ic">&#9861;</span><span class="lbl">Panel of 7 drawn</span><span class="sub">weighted by record</span></div>
-          <span class="arrow">&rarr;</span>
-          <div class="node"><span class="ic">&#9745;</span><span class="lbl">Commit then reveal</span><span class="sub">leave-one-out score</span></div>
-          <span class="arrow">&rarr;</span>
-          <div class="node is-accent"><span class="ic">&#10003;</span><span class="lbl">Verdict</span><span class="sub">margin-weighted update</span></div>
-        </div>
-      </div>
-      <figcaption>The same machine as the standalone court. <b>Appeals widen the panel to 15 then 31 and can vindicate a correct dissenter after the fact.</b></figcaption>
-    </figure>
-  </section>
-
-  <section class="reveal">
-    <p class="sec-label">The payoff</p>
-    <h2>Every settled market is a free answer key</h2>
-    <p>This is where the loop earns its keep. In the standalone court, the secret quizzes had to be written and checked by hand, which made them scarce and slow. On the market they appear on their own. The instant a market resolves against hard <a href="https://en.wikipedia.org/wiki/Ground_truth" target="_blank" rel="noopener">ground truth</a>, an election called or a price confirmed at the closing bell, it turns into a question whose answer is now known for certain. The platform flags it quietly, slips it back into a juror's caseload looking like any other case, and checks whether the juror got it right. The juror cannot tell the graded quiz from a live dispute, which is exactly the point.</p>
-    <p>The supply scales with use rather than with a budget. A court hearing a hundred cases a day mints a thick stream of fresh keys from the markets that closed objectively, while a court writing its own quizzes would still be waiting on its editors. Spend about a tenth of each juror's caseload on these known answers and the whole crowd stays pinned to reality.</p>
-
-    <figure class="diagram reveal">
-      <div class="diagram-inner">
-        <div class="stream">
-          <div class="case">live</div><div class="case">live</div><div class="case known">key</div><div class="case">live</div>
-          <div class="case">live</div><div class="case">live</div><div class="case">live</div><div class="case known">key</div>
-          <div class="case">live</div><div class="case">live</div><div class="case">live</div><div class="case">live</div>
-          <div class="case known">key</div><div class="case">live</div><div class="case">live</div><div class="case">live</div>
-        </div>
-      </div>
-      <figcaption>A juror's caseload. <b>The shaded cases are settled markets with known answers, identical from the inside, quietly scoring the juror against the truth.</b></figcaption>
-    </figure>
-  </section>
-
-  <section class="reveal">
-    <p class="sec-label">The twist</p>
-    <h2>Why the anonymous bets matter most</h2>
-    <p>Plenty of bettors would rather not be watched. Someone with a strong, well-researched view often does not want to broadcast it, because showing your hand moves the price before you have finished buying. So the platform lets bets be placed privately, through <a href="https://en.wikipedia.org/wiki/Zero-knowledge_proof" target="_blank" rel="noopener">zero-knowledge</a> orders that prove a bet is valid without revealing who placed it or how large it is. The privacy is not a frill. It draws in the well-informed money that makes a market's eventual answer worth trusting, and it does so without that money tipping its hand to everyone else.</p>
-    <p>For the court, those bets are close to ideal fuel. They pour informed signal into the events that later become answer keys, and because they never show up in the public flow, no juror or attacker can guess which resolved markets the court will lean on hardest. The blinding the original design worked hard for comes for free. To a juror, a high-stakes private market that just settled looks like any other case on the docket.</p>
-    <p>The real prize is that the answer keys grow with the platform instead of drying up. Drag the dial and watch the court's calibration supply, and the number of jurors it can keep honest, move with the volume.</p>
+    <p class="sec-label">Quality control</p>
+    <h2>Watched windows make clean keys</h2>
+    <p>An answer key is only as trustworthy as the settlement that minted it, so look hard at how a market settles. When the event lands, anyone may assert the outcome by posting a bond, and a 24-hour challenge window opens. If nobody objects, the assertion stands, the pool pays out, and no juror is disturbed. Roughly 95% of markets end exactly this way, quietly, which is what keeps the court small and the fees at 2%.</p>
+    <p>The obvious worry: who is awake at three in the morning, watching the window on a thin market about second-division volleyball? If watching costs more than it pays, a rational watcher stays in bed, and a lie asserted into an empty room sails through.</p>
+    <p>One rule removes the dilemma. A false assertion forfeits its bond to whoever catches it. Not to a burn address, not to the protocol, to the catcher. The challenge window stops being a civic duty and becomes a bounty board, and watching the long tail of thin markets becomes a paid job that bots are happy to work around the clock. Set the dials below, then untick the rule and watch the job, and the coverage, disappear.</p>
 
     <div class="widget reveal">
-      <div class="widget-head"><span class="live"></span> The calibration supply</div>
+      <div class="widget-head"><span class="live"></span> Who is awake to challenge it? Someone paid to be.</div>
       <div class="controls">
-        <div class="row"><label for="volSlider">Objective markets settling per day</label> <b id="volOut">500</b></div>
-        <input id="volSlider" type="range" min="20" max="5000" step="20" value="500">
-        <div class="row"><label for="sampSlider">Share quietly used as answer keys</label> <b id="sampOut">10%</b></div>
-        <input id="sampSlider" type="range" min="3" max="20" step="1" value="10">
+        <div class="chkrow"><input id="w5pay" type="checkbox" checked><label for="w5pay">Bond forfeits to the catcher</label></div>
+        <div class="row"><label for="w5m">Live markets needing a watch this round</label> <b id="w5mOut">800</b></div>
+        <input id="w5m" type="range" min="20" max="5000" step="20" value="800">
+        <div class="row"><label for="w5r">Asserter's bond, paid to the catcher</label> <b id="w5rOut">$250</b></div>
+        <input id="w5r" type="range" min="25" max="1000" step="25" value="250">
+        <div class="row"><label for="w5c">What it costs to watch one market through the window</label> <b id="w5cOut">$2</b></div>
+        <input id="w5c" type="range" min="1" max="50" step="1" value="2">
+        <div class="row"><label for="w5p">Share of assertions that are false</label> <b id="w5pOut">1.0%</b></div>
+        <input id="w5p" type="range" min="1" max="50" step="1" value="10">
+      </div>
+      <div class="meter" style="margin-bottom:.2rem"><span id="w5bar"></span></div>
+      <p class="meter-cap" id="w5barcap">Share of windows a rational watcher covers.</p>
+      <div class="readout" style="margin-top:1rem">
+        <div class="stat"><div class="k">Markets left unwatched</div><div class="v" id="w5un">&hellip;</div></div>
+        <div class="stat"><div class="k">False assertions caught</div><div class="v accent" id="w5slip">&hellip;</div></div>
+        <div class="stat"><div class="k">Lies that would slip through</div><div class="v" id="w5key">&hellip;</div></div>
+      </div>
+      <p style="font-family:var(--sans);font-size:.86rem;color:var(--faint);margin:1rem 0 0">Illustrative. A watcher covers a window only when the expected bounty beats the cost of watching. With the bond flowing to the catcher, even rare lies on thin markets are worth staking out. Untick the rule and the same rational watcher abandons every window.</p>
+    </div>
+
+    <p>The toggle is the whole argument. With the rule on, the defaults show near-full coverage and a zero in the last box, and notice who funds the patrol: the would-be liars themselves, one forfeited bond at a time. The design never asks anyone to be vigilant. It makes vigilance a business.</p>
+    <p>The window is a deliberately unhurried full day. Tokenized positions keep trading while it runs, so nobody is actually waiting, and a lie has to survive every timezone awake instead of one quiet stretch.</p>
+  </section>
+
+  <section class="reveal">
+    <p class="sec-label">The filter</p>
+    <h2>Curated, not collected</h2>
+    <p>Even a cleanly watched settlement is not automatically an exam question. Before a settled market is allowed to grade anyone, it passes through curation, and curation is picky on purpose. A market becomes an answer key only if it carried enough volume for real attention to have been on it, its challenge window ran while watcher coverage was actually live, and it survives a spot-check. Everything else still pays out normally. It just never gets to mark a juror's record.</p>
+    <p>Settled private rooms join the library the same way, by participant consent, and curation prizes them above everything else, because a question that never had a public page is the cleanest test there is. One rule rides along: a juror who was inside the room is never handed its key.</p>
+    <p>That ordering is the safety. Suppose a lie does slip through some unwatched corner, the rare case the last widget let you build. The bettors on that one market are hurt, and the insurance pool exists to compensate proven wrongs. But the lie cannot poison the court, because the library of answer keys is chosen, not automatic, and a thin market with no watchers is precisely the kind the filter throws out. The failure stays local. The instrument stays clean.</p>
+    <p>What does the filter leave behind? Plenty, and the amount is the point.</p>
+
+    <div class="widget reveal">
+      <div class="widget-head"><span class="live"></span> The key supply</div>
+      <div class="controls">
+        <div class="row"><label for="kVol">Objective markets settling per day</label> <b id="kVolOut">400</b></div>
+        <input id="kVol" type="range" min="20" max="2000" step="20" value="400">
+        <div class="row"><label for="kCur">Share that passes curation</label> <b id="kCurOut">20%</b></div>
+        <input id="kCur" type="range" min="5" max="40" step="1" value="20">
       </div>
       <div class="readout">
-        <div class="stat"><div class="k">Answer keys per day</div><div class="v accent" id="keysOut">&mdash;</div></div>
-        <div class="stat"><div class="k">Jurors kept calibrated</div><div class="v" id="jurOut">&mdash;</div></div>
-        <div class="stat"><div class="k">By hand it would be</div><div class="v" id="handOut">&mdash;</div></div>
+        <div class="stat"><div class="k">Answer keys per day</div><div class="v accent" id="kKeys">&hellip;</div></div>
+        <div class="stat"><div class="k">Jurors kept calibrated</div><div class="v" id="kJur">&hellip;</div></div>
+        <div class="stat"><div class="k">Writing keys by hand</div><div class="v" id="kHand">&hellip;</div></div>
       </div>
-      <p style="font-family:var(--sans);font-size:.86rem;color:var(--faint);margin:1rem 0 0">To stay confidently rated, a juror needs a couple of fresh known answers a day. A hand-written set tops out near ten jurors no matter what. The market's own exhaust keeps far more honest, and the busier it gets the more it covers.</p>
+      <p style="font-family:var(--sans);font-size:.86rem;color:var(--faint);margin:1rem 0 0">Assumes a juror needs about two fresh keys a day to hold a confident rating across their rolling 50-to-150 case window, and that a human editorial team can write and verify about twenty keys a day, a ceiling near ten jurors no matter the budget.</p>
     </div>
-  </section>
 
-  <section class="reveal">
-    <p class="sec-label">One case, start to finish</p>
-    <h2>Follow a single market all the way through</h2>
-    <p>Take a real-looking example. Someone opens a market on whether a candidate will win an election, and watch one trip around the loop.</p>
+    <p>Stare at the hand-written column for a second. A court that writes its own exams can keep roughly ten jurors honestly rated, forever, because editors do not scale. A court fed by markets keeps forty rated at modest volume, four hundred at ten times that, and the supply climbs on its own every day betting does. The thing that keeps jurors honest is the one input the platform manufactures faster the more it is used.</p>
 
-    <ol class="stepper">
-      <li><span class="step-n">1</span><div class="step-body"><p>The creator seeds the market with 50,000 in stablecoins and trading begins. Public bets and quiet private ones flow in, and the price drifts to 62 cents, the crowd's live read on a yes.</p></div></li>
-      <li><span class="step-n">2</span><div class="step-body"><p>Election night arrives and the result is plain. Someone posts the winning answer with a bond, nobody bothers to challenge it, and when the window closes the market pays out on its own. No jury is needed, because the answer was never in doubt.</p></div></li>
-      <li><span class="step-n">3</span><div class="step-body"><p>The outcome is now hard fact, and this market drew heavy informed money. So the platform secretly tags it as an answer key, the kind of known case the court uses to stay honest.</p></div></li>
-      <li><span class="step-n">4</span><div class="step-body"><p>That answer key is dropped into jurors' caseloads dressed as an ordinary dispute. None of them can tell it apart from a live one, which keeps the test fair.</p></div></li>
-      <li><span class="step-n">5</span><div class="step-body"><p>Each juror who ruled on it earns a plain right-or-wrong mark, on top of their usual <a href="hybrid-juror-system.html">leave-one-out</a> agreement score, both scaled by how lopsided the verdict was.</p></div></li>
-      <li><span class="step-n">6</span><div class="step-body"><p>Those marks feed each juror's reputation, a <a href="https://en.wikipedia.org/wiki/Beta_distribution" target="_blank" rel="noopener">beta distribution</a> kept over a rolling window with an error bar around it. Jurors who called it right drift up. One who was confidently wrong watches their lower bound slide toward the suspension line.</p></div></li>
-      <li><span class="step-n">7</span><div class="step-body"><p>Reputation then decides who gets drawn next and how loudly their vote counts, up to a cap. Sharper jurors are picked more often, verdicts get better, and more people show up to bet. The loop has come all the way around.</p></div></li>
+    <p>Here is the full path one market walks from pocket change to the library.</p>
+
+    <ol class="stepper reveal">
+      <li>
+        <span class="step-n">1</span>
+        <div class="step-body">
+          <h3>Born for a dime</h3>
+          <p>Someone posts a question about Sunday's final and backs it with their own first bet. The link travels, the pot grows, and the market crosses the volume threshold that says real attention is on it.</p>
+        </div>
+      </li>
+      <li>
+        <span class="step-n">2</span>
+        <div class="step-body">
+          <h3>Reality answers</h3>
+          <p>The final whistle blows. Someone asserts the outcome with a bond, and the 24-hour challenge window opens with that bond hanging over it.</p>
+        </div>
+      </li>
+      <li>
+        <span class="step-n">3</span>
+        <div class="step-body">
+          <h3>The window runs watched</h3>
+          <p>Watchers are staking out the window because catching a lie pays the liar's bond. No challenge lands. The pool pays out pro-rata, the 2% fee is skimmed, and the settlement is logged with its coverage intact.</p>
+        </div>
+      </li>
+      <li>
+        <span class="step-n">4</span>
+        <div class="step-body">
+          <h3>Curation says yes</h3>
+          <p>Enough volume, a clean watched window, and a spot-check that the question meant what it said. The market enters the answer-key library. Most settlements stop one step short, and that is the filter working.</p>
+        </div>
+      </li>
+      <li>
+        <span class="step-n">5</span>
+        <div class="step-body">
+          <h3>The key starts grading</h3>
+          <p>Folded into juror scores beside the leave-one-out marks, the key becomes one more public test the pool either passes or fails. The bettors got their payout days ago. The court keeps the question forever.</p>
+        </div>
+      </li>
     </ol>
+
+    <p>Five steps, no editor, no commission, no budget line. The library writes itself and the filter signs off.</p>
   </section>
 
   <section class="reveal">
-    <p class="sec-label">Under the hood</p>
-    <h2>What it takes to build</h2>
-    <p>None of this needs exotic parts. On-chain, a factory contract spins up each market with its market maker, and a router settles every market through the optimistic layer, escalating only the challenged ones to the contract that draws the panel and records the votes. Private bets live in a shielded pool that accepts <a href="https://en.wikipedia.org/wiki/Zero-knowledge_proof" target="_blank" rel="noopener">zero-knowledge</a> deposits and reports only the aggregate volume, never the identities behind it.</p>
-    <p>Off-chain sits the reputation engine. It keeps each juror's beta distribution and rolling window, watches resolutions for ground truth, decides which settled markets become answer keys, and folds the results back into every score. One guard rail matters more than the rest. Every juror is a verified unique person through <a href="https://en.wikipedia.org/wiki/Proof_of_personhood" target="_blank" rel="noopener">proof of personhood</a> like World ID, so nobody can conjure a thousand fake jurors in a <a href="https://en.wikipedia.org/wiki/Sybil_attack" target="_blank" rel="noopener">Sybil attack</a> and outvote the honest ones.</p>
+    <p class="sec-label">Honest limits</p>
+    <h2>What the keys can and cannot measure</h2>
+    <p>Be precise about what this instrument reads, because it reads one thing superbly and another not at all.</p>
+    <p>What it measures well is the pool. Curated keys are folded into juror scores alongside the leave-one-out agreement marks, which gives the court a measurement no amount of internal coherence could produce: how often its panels land on answers reality later confirmed. If panel verdicts start diverging from the keys across the whole pool, that is drift, caught early and with confidence, the exact failure that agreement-only grading is structurally blind to. Hundreds of keys a day make the test statistically sharp within weeks.</p>
+    <p>What a public key cannot do is trap an individual. A public settlement can be looked up, so a lazy juror who quietly checks one scores correct anyway. Two things close that gap. The first is incentives that bite case by case: scoring credited only above the obvious-vote baseline, reputation driving draw rate and per-case pay, and the flat five-dollar bond sized at the laziness floor, all built in the <a href="hybrid-juror-system.html">hybrid system chapter</a>. The second is a sharper kind of key: the settled private room. Its question and its outcome never appeared on any public page, so when it lands in a juror's docket there is nothing to look up, and anyone who was inside the room is never handed it. Public keys audit the pool. Private keys audit the person.</p>
 
     <div class="cmp-wrap">
       <table class="cmp-table">
-        <thead><tr><th>Piece</th><th>Job</th></tr></thead>
+        <thead><tr><th>The failure</th><th>What catches it</th></tr></thead>
         <tbody>
-          <tr><td>Market factory</td><td>Opens a market and its automated market maker</td></tr>
-          <tr><td>Shielded pool</td><td>Takes anonymous bets, reports only the volume</td></tr>
-          <tr><td>Resolution router</td><td>Settles uncontested answers, escalates challenges to a jury</td></tr>
-          <tr><td>Reputation engine</td><td>Keeps scores, picks the answer keys, draws panels</td></tr>
-          <tr><td>Personhood check</td><td>One real human, one juror seat</td></tr>
+          <tr><td>The whole pool drifts toward a shared error</td><td>Curated answer keys, dozens to hundreds a day, graded in public</td></tr>
+          <tr><td>A juror quietly looks up public answers</td><td>Private-room keys, questions that never had a public page</td></tr>
+          <tr><td>A juror votes the predictable answer without reading</td><td>Baseline-adjusted scoring pays nothing for the obvious vote</td></tr>
+          <tr><td>A juror stops caring</td><td>The flat $5 bond at the laziness floor, where slashes outrun saved effort</td></tr>
+          <tr><td>A juror coasts on an old record</td><td>Reputation over a rolling 50-to-150 case window drives draws and pay</td></tr>
         </tbody>
       </table>
     </div>
 
-    <p>Jurors stay anonymous to each other and to traders. Bettors stay anonymous to the public. Only the reputation engine, behind the curtain, ever ties a juror to a vote to an outcome, and only to keep the score.</p>
+    <p>Keys police the crowd. Incentives police the juror. Two instruments, two failure modes, no gap between them.</p>
   </section>
 
   <section class="reveal">
     <p class="sec-label">The flywheel</p>
-    <h2>Why the loop speeds up</h2>
-    <p>Notice what the loop does to everyone's incentives. A juror's best move is simply to be right, since reputation, and with it the odds of being drawn and the weight of their vote, climbs with accuracy on both real cases and the hidden answer keys. Traders get verdicts they can lean on. The people who open markets and supply liquidity earn fees when those markets settle cleanly, and the protocol takes a cut that pays for the arbitration layer. Everyone wins by making the wheel turn faster.</p>
+    <h2>The wheel</h2>
+    <p>Now stand back and watch it turn. More betting settles more markets, and the curated cut becomes more answer keys. More keys hold more jurors to a confident rating, which raises the floor of every panel drawn. Sharper panels return verdicts the next bettor can rely on, and reliable settlement is the one feature a betting venue cannot fake its way to. So, more betting.</p>
+    <p>The money turns with it. The same settlements that mint the keys pay the 2% fee, and 70% of that fee is juror pay, so the wheel that sharpens the jurors is also the wheel that feeds them.</p>
 
     <figure class="diagram reveal">
       <div class="diagram-inner">
-        <div class="wheel">
-          <div class="node"><span class="lbl">More betting</span><span class="sub">public and private</span></div>
+        <div class="flow">
+          <div class="node"><span class="ic">&#127922;</span><span class="lbl">More betting</span><span class="sub">pools, fees, questions</span></div>
           <span class="arrow">&rarr;</span>
-          <div class="node"><span class="lbl">More settled answers</span><span class="sub">free answer keys</span></div>
+          <div class="node"><span class="ic">&#128273;</span><span class="lbl">More answer keys</span><span class="sub">curated from settlements</span></div>
           <span class="arrow">&rarr;</span>
-          <div class="node"><span class="lbl">Sharper jurors</span><span class="sub">rated faster</span></div>
+          <div class="node"><span class="ic">&#9878;</span><span class="lbl">Sharper jurors</span><span class="sub">rated with confidence</span></div>
           <span class="arrow">&rarr;</span>
-          <div class="node"><span class="lbl">Verdicts worth trusting</span><span class="sub">fewer bad calls</span></div>
+          <div class="node is-accent"><span class="ic">&#10003;</span><span class="lbl">Verdicts worth trusting</span><span class="sub">a public track record</span></div>
           <span class="arrow">&#8635;</span>
         </div>
       </div>
-      <figcaption>Each turn makes the next one easier. <b>More use feeds the court, and a better court pulls in more use.</b></figcaption>
+      <figcaption>Each quarter turn pushes the next. <b>The check that keeps jurors honest grows with use instead of wearing out.</b></figcaption>
     </figure>
 
-    <p>This is a <a href="https://en.wikipedia.org/wiki/Network_effect" target="_blank" rel="noopener">network effect</a> aimed at accuracy rather than mere size. The court that once had to ration its known answers now has more than it can use, and the surplus grows every day the market stays open.</p>
-  </section>
+    <p>And notice what the wheel throws off as it spins: a record. Every curated key is a public test the court either passed or failed, timestamped, free for anyone to recount. Most referees ask to be trusted. This one publishes its own grading, continuously, at the speed of settlement.</p>
+    <p>That record is the product. When an escrow contract, a marketplace, or an ad network decides whether to route its disputes here, the thing it points at is that running public measurement of accuracy, thousands of graded calls and counting. How the court spends that proof to win its first outside customers is <a href="zero-to-one.html">the next chapter</a>.</p>
 
-  <section class="reveal">
-    <p class="sec-label">What it fixes</p>
-    <h2>The old worries, answered</h2>
-    <p>The standalone court came with a short list of nagging weaknesses. Pairing it with a market quietly takes care of most of them.</p>
-
-    <div class="cmp-wrap">
-      <table class="cmp-table">
-        <thead><tr><th>The old worry</th><th>What the pairing does about it</th></tr></thead>
-        <tbody>
-          <tr><td>Too few known answers</td><td>Settled markets mint them by the thousand, scaling with how much the platform is used</td></tr>
-          <tr><td>Answer keys easy to spot</td><td>Anonymous bets bury them in ordinary flow, so a juror cannot tell a quiz from a live case</td></tr>
-          <tr><td>The crowd quietly herding</td><td>Hard market outcomes catch the drift however neatly the jurors agree with each other</td></tr>
-          <tr><td>The juror pool thinning out</td><td>A busy, trusted market draws fresh jurors in and keeps paying them to stay</td></tr>
-          <tr><td>Guesswork on the settings</td><td>Thousands of real resolutions let every threshold be tuned against live data</td></tr>
-        </tbody>
-      </table>
-    </div>
-  </section>
-
-  <section class="reveal">
-    <p class="sec-label">The whole idea</p>
-    <h2>A court that grows its own answer keys</h2>
-    <p>Strip it to one sentence. The juror court was good at judging but hungry for known answers, and a prediction market produces known answers as fast as people are willing to bet. Wire the two together and the court's one scarce ingredient becomes its most abundant one.</p>
-    <p>The three rules the original design stood on all survive. Judge jurors by real judging, move against nobody until the evidence is sure, and anchor the crowd to answers you already hold. The only thing that changes is where those answers come from. They no longer have to be written by hand. They arrive on their own, every time someone bets on a question the world will eventually settle.</p>
+    <a class="pair-link reveal" href="zero-to-one.html">
+      <span>
+        <span class="pl-k">Where the record gets spent</span>
+        <span class="pl-t">Zero to one: switching the court on</span>
+      </span>
+      <span class="pl-arrow">&rarr;</span>
+    </a>
   </section>
 
   <footer class="endnote reveal">
@@ -303,49 +277,110 @@
       </div>
       <div class="sitemap-col">
         <span class="sm-h">III &middot; The bootstrap</span>
-        <a href="prediction-market.html">4. The market</a>
+        <a href="prediction-market.html">4. The prediction market</a>
         <a href="hybrid-juror-prediction-market-integration.html">5. The loop</a>
         <a href="zero-to-one.html">6. Zero to one</a>
       </div>
       <div class="sitemap-col">
         <span class="sm-h">IV &middot; The payoff</span>
         <a href="compounding.html">7. Why it compounds</a>
+        <a href="the-design.html">8. The blueprint</a>
+        <a href="governance.html">9. Governance</a>
         <a href="index.html">Home &middot; the map</a>
       </div>
     </div>
-    <p class="signoff">Let people bet on what the world will answer, and the court that judges the rest never runs short of known answers.</p>
+    <p class="signoff">The court stays tied to reality because answer keys arrive exactly as fast as people bet, and people never stop betting.</p>
   </footer>
 
 </main>
 
 <script src="assets/common.js"></script>
 <script>
+// ============ watcher economics ============
 (function () {
   "use strict";
-  var vol = document.getElementById("volSlider");
-  var samp = document.getElementById("sampSlider");
-  if (!vol || !samp) return;
-  var volOut = document.getElementById("volOut");
-  var sampOut = document.getElementById("sampOut");
-  var keysOut = document.getElementById("keysOut");
-  var jurOut = document.getElementById("jurOut");
-  var handOut = document.getElementById("handOut");
+  var m = document.getElementById("w5m");
+  if (!m) return;
+  var r = document.getElementById("w5r");
+  var c = document.getElementById("w5c");
+  var pf = document.getElementById("w5p");
+  var pay = document.getElementById("w5pay");
+  var mOut = document.getElementById("w5mOut");
+  var rOut = document.getElementById("w5rOut");
+  var cOut = document.getElementById("w5cOut");
+  var pfOut = document.getElementById("w5pOut");
+  var bar = document.getElementById("w5bar");
+  var cap = document.getElementById("w5barcap");
+  var unEl = document.getElementById("w5un");
+  var caughtEl = document.getElementById("w5slip");
+  var slipEl = document.getElementById("w5key");
 
-  var MAINTAIN = 2;   // fresh answer keys a juror needs per day to stay rated
-  var HAND = 20;      // answer keys per day a small human team can curate
+  function fmt(n) {
+    if (n > 0 && n < 10) return n.toFixed(1);
+    return Math.round(n).toLocaleString("en-US");
+  }
 
   function update() {
-    var v = parseInt(vol.value, 10);
-    var s = parseInt(samp.value, 10);
-    volOut.textContent = v.toLocaleString("en-US");
-    sampOut.textContent = s + "%";
-    var keys = Math.round(v * s / 100);
-    keysOut.textContent = keys.toLocaleString("en-US");
-    jurOut.textContent = Math.round(keys / MAINTAIN).toLocaleString("en-US");
-    handOut.textContent = "~" + Math.round(HAND / MAINTAIN);
+    var M = parseInt(m.value, 10);
+    var bond = parseInt(r.value, 10);
+    var R = pay.checked ? bond : 0;
+    var C = parseInt(c.value, 10);
+    var Pf = parseInt(pf.value, 10) / 1000; // slider is in tenths of a percent
+
+    r.disabled = !pay.checked;
+
+    // A watcher covers a window only where the expected bounty beats the cost.
+    var coverage = Math.max(0, Math.min(1, (Pf * R) / C));
+    var unwatched = M * (1 - coverage);
+    var falseAssertions = M * Pf;
+    var caught = falseAssertions * coverage;
+    var slip = falseAssertions - caught;
+
+    mOut.textContent = M.toLocaleString("en-US");
+    rOut.textContent = pay.checked ? "$" + bond : "$0";
+    cOut.textContent = "$" + C;
+    pfOut.textContent = (Pf * 100).toFixed(1) + "%";
+
+    bar.style.width = (coverage * 100).toFixed(0) + "%";
+    cap.textContent = pay.checked
+      ? "Share of windows a rational watcher covers: " + Math.round(coverage * 100) + "%."
+      : "With no bounty, a rational watcher covers 0% of windows. This is the dilemma the rule removes.";
+    unEl.textContent = fmt(unwatched);
+    caughtEl.textContent = fmt(caught);
+    slipEl.textContent = fmt(slip);
   }
-  vol.addEventListener("input", update);
-  samp.addEventListener("input", update);
+  [m, r, c, pf].forEach(function (el) { el.addEventListener("input", update); });
+  pay.addEventListener("change", update);
+  update();
+})();
+
+// ============ key supply ============
+(function () {
+  "use strict";
+  var v = document.getElementById("kVol");
+  if (!v) return;
+  var s = document.getElementById("kCur");
+  var vOut = document.getElementById("kVolOut");
+  var sOut = document.getElementById("kCurOut");
+  var keysEl = document.getElementById("kKeys");
+  var jurEl = document.getElementById("kJur");
+  var handEl = document.getElementById("kHand");
+
+  var NEED = 2;  // fresh keys a juror needs per day to stay confidently rated
+  var HAND = 20; // keys per day a human editorial team can write and verify
+
+  function update() {
+    var V = parseInt(v.value, 10);
+    var S = parseInt(s.value, 10);
+    vOut.textContent = V.toLocaleString("en-US");
+    sOut.textContent = S + "%";
+    var K = Math.round(V * S / 100);
+    keysEl.textContent = K.toLocaleString("en-US");
+    jurEl.textContent = Math.round(K / NEED).toLocaleString("en-US");
+    handEl.textContent = "~" + Math.round(HAND / NEED) + " jurors";
+  }
+  v.addEventListener("input", update);
+  s.addEventListener("input", update);
   update();
 })();
 </script>

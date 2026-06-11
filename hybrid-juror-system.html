@@ -3,67 +3,61 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>The hybrid juror system, in full</title>
-<meta name="description" content="The build sheet for a continuous, peer-reviewed juror reputation system, with the justification for every moving part.">
+<title>How jurors are scored: reputation, pay, and appeals without an answer key</title>
+<meta name="description" content="How the court scores its jurors without knowing the right answers, and pays accuracy instead of agreement.">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@500;700&family=Newsreader:opsz,wght@6..72,200..700&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="assets/styles.css">
 <style>
   body.theme-solve { --accent: #2f62cf; --accent-soft: #e6edfa; --accent-ink: #21489c; }
-  .fullsvg { width: 100%; height: auto; display: block; }
-  .arch { display: flex; flex-direction: column; align-items: stretch; gap: .5rem; }
-  .arch .layer { border: 1px solid var(--line-strong); border-radius: 12px; padding: .85rem 1rem; background: var(--bg); text-align: center; font-family: var(--sans); font-weight: 600; font-size: .95rem; }
-  .arch .ar { text-align: center; color: var(--accent); font-size: 1.1rem; line-height: 1; }
-  .arch .engine { border-color: var(--accent); background: var(--accent-soft); }
-  .arch .engine-title { font-family: var(--sans); font-size: .72rem; font-weight: 700; letter-spacing: .05em; text-transform: uppercase; color: var(--accent-ink); margin-bottom: .55rem; }
-  .arch .engine-row { display: flex; flex-wrap: wrap; align-items: center; justify-content: center; gap: .4rem; }
-  .arch .chip { font-family: var(--mono); font-size: .8rem; font-weight: 700; background: var(--bg); border: 1px solid var(--accent); color: var(--accent-ink); padding: .3rem .55rem; border-radius: 8px; }
-  .arch .chip.anchor { border-style: dashed; }
-  .arch .op { font-family: var(--sans); font-weight: 700; color: var(--accent-ink); }
-  .arch .split { display: flex; gap: .5rem; flex-wrap: wrap; }
-  .arch .split .layer { flex: 1; min-width: 200px; }
-  .arch .feedback { text-align: center; font-family: var(--sans); font-size: .82rem; font-style: italic; color: var(--faint); margin-top: .2rem; }
-  .scorepanel { display: flex; gap: 9px; align-items: center; justify-content: center; flex-wrap: wrap; }
-  .scorepanel .j { width: 42px; height: 42px; border-radius: 50%; display: grid; place-items: center; font-family: var(--sans); font-weight: 700; font-size: .82rem; }
-  .scorepanel .j.yes { background: var(--good-soft); color: var(--good); }
-  .scorepanel .j.no { background: var(--bad-soft); color: var(--bad); }
-  .scorepanel .j.you { background: var(--accent); color: #fff; box-shadow: 0 0 0 4px var(--accent-soft); }
-  .scorepanel .br { font-family: var(--sans); font-size: .82rem; color: var(--faint); }
-  .gate-track { position: relative; height: 64px; border-radius: 10px; background: linear-gradient(90deg, #fbe2dd, #fbe7d6 40%, #ddf3e9); margin: 1.4rem 0 .3rem; }
+
+  /* margin chips for the scoring diagram */
+  .mrow { display: flex; gap: .4rem; flex-wrap: wrap; margin: .2rem 0 .6rem; }
+  .mchip { font-family: var(--mono); font-size: .78rem; font-weight: 700; padding: .25rem .5rem; border-radius: 7px; border: 1px solid var(--line-strong); background: var(--bg); color: var(--muted); }
+  .mchip.hot { background: var(--accent-soft); border-color: var(--accent); color: var(--accent-ink); }
+
+  /* confidence gate */
+  .gate-track { position: relative; height: 64px; border-radius: 10px; background: linear-gradient(90deg, #fbe2dd, #fbe7d6 42%, #ddf3e9 62%); margin: 1.6rem 0 .3rem; }
   .gate-band { position: absolute; top: 12px; bottom: 12px; background: color-mix(in srgb, var(--accent) 26%, transparent); border: 1px solid var(--accent); border-radius: 6px; transition: left .2s, width .2s; }
   .gate-mark { position: absolute; top: 4px; bottom: 4px; width: 3px; background: var(--accent-ink); border-radius: 2px; transition: left .2s; }
   .gate-bar { position: absolute; top: -6px; bottom: -6px; width: 0; border-left: 2px dashed var(--ink); }
-  .gate-bar::after { content: "standard"; position: absolute; top: -1.3rem; left: 4px; font-family: var(--sans); font-size: .68rem; font-weight: 700; color: var(--ink); white-space: nowrap; }
+  .gate-bar::after { content: "the bar: 0.70"; position: absolute; top: -1.3rem; left: 4px; font-family: var(--sans); font-size: .68rem; font-weight: 700; color: var(--ink); white-space: nowrap; }
   .gate-axis { display: flex; justify-content: space-between; font-family: var(--mono); font-size: .72rem; color: var(--faint); }
   .pill-s { font-family: var(--sans); font-weight: 700; font-size: .82rem; padding: .15rem .5rem; border-radius: 6px; }
   .ps-act { color: #0b6b43; background: #ddf3e9; } .ps-build { color: #7a3c00; background: #fbe7d6; } .ps-susp { color: #9a2417; background: #fbe2dd; }
-  .wt { display: flex; gap: 12px; align-items: flex-end; justify-content: center; flex-wrap: wrap; }
-  .wt .chip-w { display: flex; flex-direction: column; align-items: center; gap: .35rem; font-family: var(--sans); font-size: .72rem; color: var(--faint); }
-  .wt .dot { border-radius: 50%; background: var(--accent); }
-  .cmp-wrap { overflow-x: auto; margin: 1.4rem 0; }
-  .cmp-table { width: 100%; border-collapse: collapse; font-family: var(--sans); font-size: .88rem; min-width: 560px; }
-  .cmp-table th, .cmp-table td { padding: .65rem .55rem; border-bottom: 1px solid var(--line); text-align: left; vertical-align: top; }
-  .cmp-table thead th { font-size: .74rem; text-transform: uppercase; letter-spacing: .03em; color: var(--faint); font-weight: 700; }
-  .cmp-table td:first-child { font-weight: 600; color: var(--ink); white-space: nowrap; }
-  .cmp-table .param { font-family: var(--mono); font-weight: 700; color: var(--accent-ink); }
-  .rate { font-weight: 700; font-size: .8rem; padding: .12rem .45rem; border-radius: 6px; white-space: nowrap; }
-  .r-strong { color: #0b6b43; background: #ddf3e9; } .r-mid { color: #7a3c00; background: #fbe7d6; } .r-weak { color: #9a2417; background: #fbe2dd; }
-  .stream { display: flex; gap: 7px; flex-wrap: wrap; justify-content: center; }
-  .stream .case { width: 48px; height: 34px; border-radius: 7px; background: var(--surface); border: 1px solid var(--line-strong); display: grid; place-items: center; font-family: var(--mono); font-size: .7rem; color: var(--faint); }
-  .stream .case.known { background: var(--accent-soft); border-color: var(--accent); color: var(--accent-ink); font-weight: 700; }
-  .coins { display: flex; flex-wrap: wrap; gap: 6px; justify-content: center; }
-  .coins .c { width: 22px; height: 22px; border-radius: 50%; display: grid; place-items: center; font-family: var(--mono); font-size: .62rem; font-weight: 700; }
-  .coins .c.r { background: var(--good-soft); color: var(--good); }
-  .coins .c.w { background: var(--bad-soft); color: var(--bad); }
-  .meter { position: relative; height: 34px; border-radius: 9px; background: var(--bad-soft); overflow: hidden; border: 1px solid var(--line); margin: .2rem 0; }
-  .meter .fill { position: absolute; left: 0; top: 0; bottom: 0; background: var(--good); transition: width .25s ease; }
-  .meter .lab { position: absolute; inset: 0; display: grid; place-items: center; font-family: var(--sans); font-weight: 700; font-size: .9rem; color: var(--ink); }
-  .tug .row2 { display: flex; align-items: center; gap: .7rem; margin: .7rem 0; }
-  .tug .end { font-family: var(--mono); font-weight: 700; font-size: .78rem; width: 30px; text-align: center; color: var(--faint); }
-  .tug .rope { position: relative; flex: 1; height: 10px; border-radius: 6px; background: var(--line-strong); }
-  .tug .knot { position: absolute; top: -7px; width: 10px; height: 24px; border-radius: 3px; background: var(--accent); transform: translateX(-50%); }
-  .tug .res { font-family: var(--sans); font-size: .76rem; width: 92px; color: var(--faint); }
+
+  /* segment buttons + router panel */
+  .seg { display: inline-flex; gap: .3rem; flex-wrap: wrap; }
+  .seg button { font-family: var(--sans); font-weight: 600; font-size: .85rem; padding: .35rem .75rem; border-radius: 8px; border: 1px solid var(--line-strong); background: var(--bg); color: var(--muted); cursor: pointer; transition: background .12s ease, color .12s ease; }
+  .seg button.active { background: var(--accent-soft); color: var(--accent-ink); border-color: color-mix(in srgb, var(--accent) 35%, transparent); }
+  .routepanel { background: var(--bg); border: 1px solid var(--line-strong); border-radius: 12px; padding: 1rem 1.1rem; font-family: var(--sans); font-size: .9rem; min-height: 8.5rem; }
+  .routepanel .rt { font-weight: 700; margin-bottom: .35rem; }
+  .routepanel .rg { color: var(--muted); font-size: .85rem; line-height: 1.55; }
+
+  /* dial table */
+  .dial-wrap { overflow-x: auto; margin: 1.4rem 0; }
+  .dial-table { width: 100%; border-collapse: collapse; font-family: var(--sans); font-size: .88rem; min-width: 520px; }
+  .dial-table th, .dial-table td { padding: .65rem .55rem; border-bottom: 1px solid var(--line); text-align: left; vertical-align: top; }
+  .dial-table thead th { font-size: .74rem; text-transform: uppercase; letter-spacing: .03em; color: var(--faint); font-weight: 700; }
+  .dial-table td:first-child { font-weight: 600; color: var(--ink); white-space: nowrap; }
+  .dial-table .param { font-family: var(--mono); font-weight: 700; color: var(--accent-ink); }
+
+  .stat .v { font-size: clamp(1.05rem, 4.2vw, 1.5rem); }
+
+  /* two clocks */
+  .clocks { display: grid; grid-template-columns: 1fr 1fr; gap: 1rem; }
+  @media (max-width: 640px) { .clocks { grid-template-columns: 1fr; } }
+  .clock { border-radius: var(--radius); border: 1px solid var(--line); background: var(--surface); padding: 1.1rem 1.2rem; box-shadow: var(--shadow); font-family: var(--sans); }
+  .clock.money { border-top: 3px solid var(--good); }
+  .clock.justice { border-top: 3px solid var(--accent); }
+  .clock h4 { font-size: .95rem; margin: 0 0 .6rem; }
+  .clock .step { font-size: .85rem; color: var(--muted); line-height: 1.5; padding: .28rem 0 .28rem 1.4rem; position: relative; }
+  .clock .step::before { content: "\2193"; position: absolute; left: .2rem; color: var(--faint); }
+  .clock .step:first-of-type::before { content: ""; }
+  .clock .ends { margin-top: .55rem; font-weight: 700; font-size: .86rem; }
+  .clock.money .ends { color: var(--good); }
+  .clock.justice .ends { color: var(--accent-ink); }
 </style>
 </head>
 <body class="theme-solve">
@@ -86,25 +80,27 @@
       <div class="nav-group nav-group-end">
         <button class="nav-group-btn" type="button">The bootstrap</button>
         <div class="nav-menu">
-          <a href="prediction-market.html"><span class="ch">04</span> The market</a>
+          <a href="prediction-market.html"><span class="ch">04</span> The prediction market</a>
           <a href="hybrid-juror-prediction-market-integration.html"><span class="ch">05</span> The loop</a>
           <a href="zero-to-one.html"><span class="ch">06</span> Zero to one</a>
         </div>
       </div>
       <a href="compounding.html">Why it compounds</a>
+      <a href="the-design.html">The blueprint</a>
+      <a href="governance.html">Governance</a>
     </div>
   </div>
 </nav>
 
 <header class="hero reveal">
-  <p class="kicker">The build sheet</p>
-  <h1>The hybrid juror system, in full</h1>
-  <p class="dek">How a court can sort its good jurors from its bad ones without ever knowing the right answer. Built up from scratch, in plain English, one idea at a time.</p>
+  <p class="kicker">The hybrid system</p>
+  <h1>How jurors are scored: reputation, pay, and appeals without an answer key</h1>
+  <p class="dek">Most disputes have no answer sheet, so the court cannot simply grade jurors on being right. This chapter explains the scoring system that works anyway: credit only above the obvious vote, reputation with an honest error bar driving pay and case flow, the dispute ladder with its two clocks, and the split between the objective court and the rubric court.</p>
   <div class="meta">
-    <span class="pill">Reputation systems</span>
-    <span>14 min read</span>
+    <span class="pill">Quality assurance</span>
+    <span>11 min read</span>
     <span class="dot">&bull;</span>
-    <span>Act II &middot; Chapter 3 of 7</span>
+    <span>Act II &middot; Chapter 3 of 9</span>
   </div>
 </header>
 
@@ -113,376 +109,198 @@
   <aside id="toc" class="toc reveal"></aside>
 
   <section class="reveal">
-    <p class="lead">Here is a strange question. How do you grade a juror when nobody has the answer key?</p>
-    <p>A court exists to decide things that are not yet settled. So there is no teacher at the front of the room holding the correct answers, no way to mark a juror right or wrong against the truth, because the truth is the thing you are trying to produce. And yet you still want to keep the careful jurors and let go of the careless ones. That sounds impossible. It is not, and the trick behind it is the same trick that lets a crowd at a fair guess the weight of an ox better than most farmers can.</p>
-    <p>This page builds the answer one piece at a time. Three ideas hold the whole thing together, and every block below is one of them wearing a different costume. Judge a juror by their actual judging, never by a one-off test. Punish nobody until the numbers are sure. And quietly slip in a few questions you do know the answer to, so the crowd can never agree its way into a comfortable lie. The diagram is the finished machine. The rest of the page takes it apart.</p>
-
-    <figure class="diagram reveal">
-      <div class="diagram-inner">
-        <div class="arch">
-          <div class="layer in">Random draw from the eligible pool, then a commit and reveal vote</div>
-          <div class="ar">&darr;</div>
-          <div class="layer engine">
-            <div class="engine-title">Scoring engine</div>
-            <div class="engine-row">
-              <span class="chip">leave-one-out coherence</span>
-              <span class="op">&times;</span>
-              <span class="chip">margin weight</span>
-              <span class="op">&plusmn;</span>
-              <span class="chip">appeal vindication</span>
-              <span class="op">vs</span>
-              <span class="chip anchor">calibration anchor</span>
-            </div>
-          </div>
-          <div class="ar">&darr;</div>
-          <div class="layer rep">Reputation posterior, kept over a rolling window of 50 to 150 cases</div>
-          <div class="ar">&darr;</div>
-          <div class="split">
-            <div class="layer out">Influence weight &rarr; feeds future verdicts</div>
-            <div class="layer out">Confidence-gated, escalating suspension</div>
-          </div>
-          <div class="feedback">&#8635; a juror's standing decides whether, and how heavily, they are drawn next</div>
-        </div>
-      </div>
-      <figcaption>The whole machine on one page. <b>Cases go in the top, a graded reputation comes out the bottom, and that reputation loops back to choose the next panel.</b></figcaption>
-    </figure>
-    <p>Do not worry about the middle box yet. By the end of the page every word in it will feel obvious. Start with the question underneath everything.</p>
+    <p class="lead">How a court can sort its good jurors from its bad ones without ever knowing the right answer. Built up from scratch, in plain English, one idea at a time.</p>
+    <p>A teacher grading a quiz holds the answer sheet. A court grading its own jurors holds nothing, because the verdict those jurors just produced is the only answer in the room.</p>
+    <p>That is the strange position <a href="juror-court.html">the court</a> leaves you in. The draw is random, the ballots are encrypted, the bond makes carelessness unprofitable on any single case. But across a thousand cases you still want the careful jurors drawn more and paid more, and the careless ones drawn less, and you want to do that sorting without ever knowing which verdicts were actually correct. The truth is the product. You cannot also use it as the rubric.</p>
   </section>
 
   <section class="reveal">
-    <p class="sec-label">The big idea</p>
-    <h2>Why a crowd can beat its smartest member</h2>
-    <p>In 1906 the statistician <a href="https://en.wikipedia.org/wiki/Francis_Galton" target="_blank" rel="noopener">Francis Galton</a> watched 787 people at a country fair guess the weight of an ox. Almost no one was close. But when he averaged all the guesses, the crowd landed within a pound of the true weight, beating every cattle expert in the room. The mistakes did not vanish. They cancelled. One person guessed too high, another too low, and across hundreds of guesses the errors pulled in opposite directions and erased each other. That is the <a href="https://en.wikipedia.org/wiki/Wisdom_of_the_crowd" target="_blank" rel="noopener">wisdom of the crowd</a>, and it is the engine the whole court runs on.</p>
-
-    <figure class="diagram reveal">
-      <div class="diagram-inner">
-        <svg class="fullsvg" viewBox="0 0 480 200" role="img" aria-label="Individual guesses scattered around the true weight, with their average landing on it">
-          <line x1="240" y1="26" x2="240" y2="150" stroke="var(--good)" stroke-width="2" stroke-dasharray="4 4"/>
-          <text x="240" y="18" text-anchor="middle" font-family="Inter, sans-serif" font-size="11" font-weight="700" fill="var(--good)">true weight</text>
-          <g fill="var(--muted)" opacity=".6">
-            <circle cx="120" cy="60" r="5"/><circle cx="170" cy="92" r="5"/><circle cx="150" cy="120" r="5"/>
-            <circle cx="205" cy="70" r="5"/><circle cx="300" cy="64" r="5"/><circle cx="338" cy="104" r="5"/>
-            <circle cx="360" cy="128" r="5"/><circle cx="92" cy="104" r="5"/><circle cx="262" cy="132" r="5"/>
-            <circle cx="220" cy="108" r="5"/><circle cx="318" cy="86" r="5"/><circle cx="190" cy="56" r="5"/>
-            <circle cx="408" cy="92" r="5"/><circle cx="64" cy="128" r="5"/><circle cx="282" cy="96" r="5"/>
-            <circle cx="138" cy="84" r="5"/><circle cx="356" cy="62" r="5"/><circle cx="248" cy="58" r="5"/>
-          </g>
-          <circle cx="240" cy="120" r="9" fill="var(--accent)"/>
-          <text x="240" y="178" text-anchor="middle" font-family="Inter, sans-serif" font-size="11" font-weight="700" fill="var(--accent-ink)">average of every guess</text>
-          <text x="78" y="150" font-family="JetBrains Mono, monospace" font-size="10" fill="var(--faint)">too low</text>
-          <text x="402" y="150" text-anchor="end" font-family="JetBrains Mono, monospace" font-size="10" fill="var(--faint)">too high</text>
-        </svg>
-      </div>
-      <figcaption>Grey dots are individual guesses, scattered all over. <b>Their average, the blue dot, sits almost exactly on the truth.</b></figcaption>
-    </figure>
-
-    <p>Now swap the ox for a verdict. Instead of guessing a weight, each juror answers yes or no, and instead of being a little high or low, each one is simply right a bit more often than a coin flip. The same cancelling still happens. Stack enough slightly-better-than-random jurors together and the majority is correct almost every time. That result has a name and a date: the <a href="https://en.wikipedia.org/wiki/Condorcet%27s_jury_theorem" target="_blank" rel="noopener">Condorcet jury theorem</a>, proved in 1785. Move the sliders and watch a panel of mediocre jurors turn into a near-perfect verdict.</p>
-
-    <div class="widget reveal">
-      <div class="widget-head"><span class="live"></span> The majority meter</div>
-      <div class="controls">
-        <div class="row"><label for="jqSlider">How often each juror is right, on their own</label> <b id="jqOut">60%</b></div>
-        <input id="jqSlider" type="range" min="50" max="85" step="1" value="60">
-        <div class="row"><label for="npSlider">Jurors on the panel</label> <b id="npOut">7</b></div>
-        <input id="npSlider" type="range" min="1" max="51" step="2" value="7">
-      </div>
-      <div class="coins" id="coinRow" style="margin:.4rem 0 1rem"></div>
-      <div class="meter"><div class="fill" id="majFill"></div><div class="lab" id="majLab">&mdash;</div></div>
-      <p style="font-family:var(--sans);font-size:.86rem;color:var(--faint);margin:1rem 0 0">The green bar is how often the majority of the panel gets the answer right. One juror who is right 60% of the time is barely better than a coin. Seven of them push the majority past 70%, and fifty push it past 90%.</p>
-    </div>
-
-    <p>This is the quiet miracle the court is built on. You do not need geniuses, and you do not need to know who the geniuses are. You only need a pile of ordinary people who lean toward the truth, picked at random so their errors stay independent. That random pick has a name too, <a href="https://en.wikipedia.org/wiki/Sortition" target="_blank" rel="noopener">sortition</a>, and it is how Athens staffed its juries 2,400 years ago.</p>
-  </section>
-
-  <section class="reveal">
-    <p class="sec-label">Block 1</p>
-    <h2>Seven jurors, and nobody grades their own homework</h2>
-    <p>If a bigger crowd is more accurate, why not summon a thousand jurors and settle every case to twelve decimal places? Because the crowd's payoff shrinks fast. Going from one juror to seven buys a huge leap in accuracy. Going from seven to seventy barely nudges it, while the bill and the waiting climb in a straight line the whole way. That pattern, a lot of benefit early and almost none later, is <a href="https://en.wikipedia.org/wiki/Diminishing_returns" target="_blank" rel="noopener">diminishing returns</a>, and seven sits right at the bend.</p>
-    <p>So seven is the everyday panel. When a case is high-stakes or the vote comes back nearly tied, an appeal redraws a larger jury of fifteen, then thirty-one, paying for the last few points of certainty only where they are worth the cost.</p>
-
-    <figure class="diagram reveal">
-      <div class="diagram-inner">
-        <svg class="fullsvg" viewBox="0 0 480 220" role="img" aria-label="Accuracy rising steeply then flattening with panel size, while cost rises in a straight line">
-          <line x1="40" y1="190" x2="466" y2="190" stroke="var(--line-strong)" stroke-width="1.5"/>
-          <line x1="40" y1="190" x2="40" y2="28" stroke="var(--line-strong)" stroke-width="1.5"/>
-          <line x1="120" y1="190" x2="120" y2="40" stroke="var(--ink)" stroke-width="1.4" stroke-dasharray="4 4"/>
-          <path d="M40,150 C110,76 200,58 466,48" fill="none" stroke="var(--accent)" stroke-width="3"/>
-          <path d="M40,184 L466,96" fill="none" stroke="var(--bad)" stroke-width="2" stroke-dasharray="5 4"/>
-          <circle cx="120" cy="72" r="5" fill="var(--accent)"/>
-          <text x="124" y="40" font-family="Inter, sans-serif" font-size="11" font-weight="700" fill="var(--ink)">7 = the knee</text>
-          <text x="250" y="44" font-family="Inter, sans-serif" font-size="11" font-weight="700" fill="var(--accent-ink)">accuracy</text>
-          <text x="300" y="120" font-family="Inter, sans-serif" font-size="11" font-weight="700" fill="var(--bad)">cost and delay</text>
-          <text x="40" y="208" font-family="JetBrains Mono, monospace" font-size="10" fill="var(--faint)">1</text>
-          <text x="120" y="208" text-anchor="middle" font-family="JetBrains Mono, monospace" font-size="10" fill="var(--faint)">7</text>
-          <text x="466" y="208" text-anchor="end" font-family="JetBrains Mono, monospace" font-size="10" fill="var(--faint)">51 jurors</text>
-        </svg>
-      </div>
-      <figcaption>More jurors keep helping, but each one helps less. <b>Seven sits where the accuracy curve has nearly flattened but the bill is still small.</b></figcaption>
-    </figure>
-
-    <p>Now the harder half. That same panel of seven has a second job, and it is the job that makes the whole reputation system possible. The votes that decide the case are also the only ruler you have for grading the jurors, because right and wrong are off the table. All you can measure is whether a juror moved with the room.</p>
-    <p>That sets a trap you have to step around carefully. Picture a four-to-three split. The three on the losing side are only counted wrong because four other people outvoted them, which tells you nothing about who actually had it right. Grade a juror against a verdict their own vote helped create and you are letting a student mark their own exam. The way out is a single rule: pull a juror out of the room before you judge them. Each one is scored against the leave-one-out majority, the answer the other six reach on their own. Match those six independent peers and you have an honest reading of whether a juror tracks the same truth the rest of the room is circling.</p>
-
-    <figure class="diagram reveal">
-      <div class="diagram-inner">
-        <div class="scorepanel">
-          <div class="j you">YOU</div>
-          <span class="br">step out, then read the other six &rarr;</span>
-          <div class="j yes">Y</div><div class="j yes">Y</div><div class="j yes">Y</div>
-          <div class="j yes">Y</div><div class="j no">N</div><div class="j no">N</div>
-        </div>
-      </div>
-      <figcaption>The other six split four to two for yes, with no help from you. <b>Your vote is checked against their answer, never against a tally you were part of.</b></figcaption>
-    </figure>
-  </section>
-
-  <section class="reveal">
-    <p class="sec-label">Block 2</p>
-    <h2>Losing by an inch is not the same as a rout</h2>
-    <p>A flaw sinks the simple version of this idea. If every disagreement is treated the same, the system is lying to itself about evidence. Picture each verdict as a tug-of-war. A seven to nothing result is a total rout, the rope dragged all the way to one side. If you pulled the other way on that case, you almost certainly missed something the whole room could see. A four to three result is the rope barely twitching around the center flag, a near tie that careful people landed on both sides of. Pulling the losing way there says almost nothing about you.</p>
-    <p>So every change to a juror's record is scaled by the margin of the vote. Lopsided verdicts move a reputation a lot, near ties barely move it. That is honest bookkeeping, trusting a clear signal and shrugging off a noisy one. It also kills two temptations at once. There is no reward for copying the crowd on coin-flip cases, since matching a bare majority earns almost nothing. And the careful holdout on a genuinely hard case, the very juror a crude score would chase away, is left alone.</p>
-
-    <figure class="diagram reveal">
-      <div class="diagram-inner">
-        <div class="tug">
-          <div class="row2"><span class="end">no</span><div class="rope"><div style="position:absolute;left:50%;top:-7px;width:2px;height:24px;background:var(--faint);transform:translateX(-50%)"></div><div class="knot" style="left:57%"></div></div><span class="end">yes</span><span class="res" style="width:120px">4&ndash;3, barely counts</span></div>
-          <div class="row2"><span class="end">no</span><div class="rope"><div style="position:absolute;left:50%;top:-7px;width:2px;height:24px;background:var(--faint);transform:translateX(-50%)"></div><div class="knot" style="left:86%"></div></div><span class="end">yes</span><span class="res" style="width:120px">6&ndash;1, counts</span></div>
-          <div class="row2"><span class="end">no</span><div class="rope"><div style="position:absolute;left:50%;top:-7px;width:2px;height:24px;background:var(--faint);transform:translateX(-50%)"></div><div class="knot" style="left:98%"></div></div><span class="end">yes</span><span class="res" style="width:120px">7&ndash;0, full weight</span></div>
-        </div>
-      </div>
-      <figcaption>The further the rope is pulled from the center, the more a disagreement counts. <b>Near the middle, going against the room is nearly free.</b></figcaption>
-    </figure>
-
-    <figure class="diagram reveal">
-      <div class="diagram-inner">
-        <svg class="fullsvg" viewBox="0 0 440 210" role="img" aria-label="Scoring weight rising with consensus margin">
-          <line x1="44" y1="176" x2="420" y2="176" stroke="var(--line-strong)" stroke-width="1.5"/>
-          <line x1="44" y1="176" x2="44" y2="24" stroke="var(--line-strong)" stroke-width="1.5"/>
-          <path d="M44,172 C150,170 250,140 420,46" fill="none" stroke="var(--accent)" stroke-width="3"/>
-          <text x="20" y="34" font-family="Inter, sans-serif" font-size="11" font-weight="700" fill="var(--accent-ink)" transform="rotate(-90 20,34)">weight</text>
-          <text x="58" y="150" font-family="Inter, sans-serif" font-size="11" fill="var(--faint)">&asymp; ignored</text>
-          <text x="300" y="60" font-family="Inter, sans-serif" font-size="11" font-weight="700" fill="var(--accent-ink)">full weight</text>
-          <text x="44" y="196" font-family="JetBrains Mono, monospace" font-size="10" fill="var(--faint)" text-anchor="middle">4&ndash;3</text>
-          <text x="170" y="196" font-family="JetBrains Mono, monospace" font-size="10" fill="var(--faint)" text-anchor="middle">5&ndash;2</text>
-          <text x="296" y="196" font-family="JetBrains Mono, monospace" font-size="10" fill="var(--faint)" text-anchor="middle">6&ndash;1</text>
-          <text x="416" y="196" font-family="JetBrains Mono, monospace" font-size="10" fill="var(--faint)" text-anchor="middle">7&ndash;0</text>
-        </svg>
-      </div>
-      <figcaption>Scoring weight against the consensus margin. <b>Dissent on a split case is nearly free, dissent on a blowout is costly.</b></figcaption>
-    </figure>
-  </section>
-
-  <section class="reveal">
-    <p class="sec-label">Block 3</p>
-    <h2>A reputation is a belief that comes into focus</h2>
-    <p>A juror gets their first case right. Are they good? You have no idea. One correct call is one lucky coin flip. After fifty cases you start to know something, and after a few hundred you know them well. So a reputation here is not a single number stamped on a person. It is a belief about how accurate they are, and like any belief it should be fuzzy when the evidence is thin and sharp when the evidence piles up. Updating a belief by exactly this much with each new fact is the job of <a href="https://en.wikipedia.org/wiki/Bayesian_inference" target="_blank" rel="noopener">Bayesian reasoning</a>, and the shape it tracks for a yes-or-no skill is called a <a href="https://en.wikipedia.org/wiki/Beta_distribution" target="_blank" rel="noopener">beta distribution</a>.</p>
-    <p>Picture a blurry photo coming into focus. A brand-new juror is a wide, low smear spread across the whole range, because their true skill could be almost anything. Each case they judge sharpens the picture a little. The diagram below is one juror photographed again and again, the blur tightening into a clear peak as the cases add up.</p>
-
-    <figure class="diagram reveal">
-      <div class="diagram-inner">
-        <svg class="fullsvg" viewBox="0 0 480 180" role="img" aria-label="One juror's reputation sharpening from a wide blur to a narrow peak as cases accumulate">
-          <line x1="40" y1="140" x2="448" y2="140" stroke="var(--line-strong)" stroke-width="1.5"/>
-          <path d="M80,140 Q240,98 400,140 Z" fill="var(--accent)" opacity=".18"/>
-          <path d="M150,140 Q240,66 330,140 Z" fill="var(--accent)" opacity=".32"/>
-          <path d="M200,140 Q240,34 280,140 Z" fill="var(--accent)" opacity=".7"/>
-          <text x="404" y="120" font-family="Inter, sans-serif" font-size="10" fill="var(--faint)">after 1 case</text>
-          <text x="334" y="78" font-family="Inter, sans-serif" font-size="10" fill="var(--accent-ink)">after 20</text>
-          <text x="244" y="30" font-family="Inter, sans-serif" font-size="10" font-weight="700" fill="var(--accent-ink)">after 150</text>
-          <text x="40" y="160" font-family="JetBrains Mono, monospace" font-size="10" fill="var(--faint)">0.5</text>
-          <text x="440" y="160" text-anchor="end" font-family="JetBrains Mono, monospace" font-size="10" fill="var(--faint)">1.0 accuracy</text>
-        </svg>
-      </div>
-      <figcaption>The same juror, photographed as the cases add up. <b>More evidence does not just raise the guess, it sharpens it.</b></figcaption>
-    </figure>
-
-    <p>Holding three jurors up against a standard line shows why this matters. The newcomer is a wide hump, so the system trusts them a little and punishes them not at all. The strong juror is a narrow peak well above the line. The struggling juror is a narrow peak clearly below it. And because the picture only keeps the last fifty to a hundred and fifty cases, it has a short memory on purpose. A veteran who starts coasting blurs and slides down; someone who had a rough month can sharpen back up. Recent work counts, old work fades.</p>
-
-    <figure class="diagram reveal">
-      <div class="diagram-inner">
-        <svg class="fullsvg" viewBox="0 0 480 210" role="img" aria-label="Three juror reputation distributions against a standard line">
-          <line x1="40" y1="176" x2="448" y2="176" stroke="var(--line-strong)" stroke-width="1.5"/>
-          <line x1="200" y1="30" x2="200" y2="176" stroke="var(--ink)" stroke-width="1.5" stroke-dasharray="4 4"/>
-          <text x="200" y="22" text-anchor="middle" font-family="Inter, sans-serif" font-size="10" font-weight="700" fill="var(--ink)">standard</text>
-          <path d="M96,176 Q216,84 336,176 Z" fill="#9aa3b2" opacity=".5"/>
-          <path d="M112,176 Q150,96 188,176 Z" fill="var(--bad)" opacity=".6"/>
-          <path d="M320,176 Q360,40 400,176 Z" fill="var(--good)" opacity=".65"/>
-          <text x="216" y="120" text-anchor="middle" font-family="Inter, sans-serif" font-size="10" font-weight="700" fill="#5b6473">new</text>
-          <text x="150" y="118" text-anchor="middle" font-family="Inter, sans-serif" font-size="10" font-weight="700" fill="var(--bad)">struggling</text>
-          <text x="360" y="74" text-anchor="middle" font-family="Inter, sans-serif" font-size="10" font-weight="700" fill="var(--good)">strong</text>
-          <text x="44" y="196" font-family="JetBrains Mono, monospace" font-size="10" fill="var(--faint)">0.5</text>
-          <text x="440" y="196" font-family="JetBrains Mono, monospace" font-size="10" fill="var(--faint)" text-anchor="end">1.0 accuracy</text>
-        </svg>
-      </div>
-      <figcaption>Standing as a distribution. <b>The newcomer is uncertain, not condemned, and only confident verdicts trigger action.</b></figcaption>
-    </figure>
-  </section>
-
-  <section class="reveal">
-    <p class="sec-label">Block 4</p>
-    <h2>A louder mic for reliable voices, with a volume cap</h2>
-    <p>If you already believe one juror is right 95 percent of the time and another is barely better than a coin, why hand them an identical say? Tossing that knowledge away at a plain in-or-out line wastes it. So reputation becomes a volume knob. The more reliable a voice, the louder it speaks in the final tally. This is not a guess about fairness. The statistically best way to pool independent yes-or-no opinions is to weight each one by the <a href="https://en.wikipedia.org/wiki/Logit" target="_blank" rel="noopener">log-odds</a> of its reliability, which is the formal version of trust the steady voices more.</p>
-    <p>A knob with no ceiling is dangerous, though. A handful of veterans could crank themselves loud enough to decide cases alone, and the court would slide back into rule by a few, the exact thing <a href="https://en.wikipedia.org/wiki/One_person,_one_vote" target="_blank" rel="noopener">one person, one vote</a> was built to end. So the volume is capped. A reliable juror is heard a little louder than a shaky one, and never loud enough to drown out the room.</p>
-
-    <figure class="diagram reveal">
-      <div class="diagram-inner">
-        <svg class="fullsvg" viewBox="0 0 460 200" role="img" aria-label="Vote weight as volume bars rising with reputation but clipped at a cap">
-          <line x1="40" y1="172" x2="440" y2="172" stroke="var(--line-strong)" stroke-width="1.5"/>
-          <line x1="40" y1="60" x2="440" y2="60" stroke="var(--bad)" stroke-width="1.5" stroke-dasharray="5 4"/>
-          <text x="440" y="52" text-anchor="end" font-family="Inter, sans-serif" font-size="11" font-weight="700" fill="var(--bad)">volume cap</text>
-          <rect x="70" y="132" width="56" height="40" rx="4" fill="var(--accent)" opacity=".45"/>
-          <rect x="166" y="96" width="56" height="76" rx="4" fill="var(--accent)" opacity=".62"/>
-          <rect x="262" y="60" width="56" height="112" rx="4" fill="var(--accent)" opacity=".82"/>
-          <rect x="358" y="60" width="56" height="112" rx="4" fill="var(--accent)" opacity=".82"/>
-          <text x="98" y="190" text-anchor="middle" font-family="JetBrains Mono, monospace" font-size="10" fill="var(--faint)">0.62</text>
-          <text x="194" y="190" text-anchor="middle" font-family="JetBrains Mono, monospace" font-size="10" fill="var(--faint)">0.81</text>
-          <text x="290" y="190" text-anchor="middle" font-family="JetBrains Mono, monospace" font-size="10" fill="var(--faint)">0.94</text>
-          <text x="386" y="190" text-anchor="middle" font-family="JetBrains Mono, monospace" font-size="10" fill="var(--faint)">0.97</text>
-        </svg>
-      </div>
-      <figcaption>Reputation along the bottom, loudness as height. <b>The two strongest jurors both press against the same ceiling, so neither can take over.</b></figcaption>
-    </figure>
-  </section>
-
-  <section class="reveal">
-    <p class="sec-label">Block 5</p>
-    <h2>Innocent until proven careless</h2>
-    <p>Now the dangerous part, removing a juror. Get it wrong in one direction and you exile good people over a bad week. Get it wrong in the other and you keep bad ones forever. Courts already settled the principle long ago: you do not convict on a hunch, you convict only <a href="https://en.wikipedia.org/wiki/Reasonable_doubt" target="_blank" rel="noopener">beyond a reasonable doubt</a>. The same rule applies here. A juror is never suspended for a low best guess. They are suspended only once the entire range of belief about them, the whole error bar, has sunk below the standard. That error bar is a <a href="https://en.wikipedia.org/wiki/Confidence_interval" target="_blank" rel="noopener">confidence interval</a>, and waiting for all of it to clear the line is what keeps one unlucky streak from ending a career. While the bar still straddles the line, the juror is just building a record, drawn less and given a quieter mic, but never punished. Drag the sliders and watch where each juror lands.</p>
-
-    <div class="widget reveal">
-      <div class="widget-head"><span class="live"></span> The confidence gate</div>
-      <div class="controls">
-        <div class="row"><label for="skSlider">True skill of the juror</label> <b id="skOut">88%</b></div>
-        <input id="skSlider" type="range" min="55" max="99" step="1" value="88">
-        <div class="row"><label for="ncSlider">Cases judged so far</label> <b id="ncOut">40</b></div>
-        <input id="ncSlider" type="range" min="5" max="300" step="5" value="40">
-      </div>
-      <div class="gate-track">
-        <div class="gate-band" id="band"></div>
-        <div class="gate-bar" id="bar"></div>
-        <div class="gate-mark" id="mark"></div>
-      </div>
-      <div class="gate-axis"><span>50%</span><span>75%</span><span>100%</span></div>
-      <div class="readout">
-        <div class="stat"><div class="k">Estimate (low to high)</div><div class="v" id="ciOut" style="font-size:1.05rem">&mdash;</div></div>
-        <div class="stat"><div class="k">Status</div><div class="v" id="statusOut" style="font-size:1.05rem"><span class="pill-s ps-build">&mdash;</span></div></div>
-        <div class="stat"><div class="k">Vote weight</div><div class="v accent" id="wtOut">&mdash;</div></div>
-      </div>
-      <p style="font-family:var(--sans);font-size:.86rem;color:var(--faint);margin:1rem 0 0">Standard set at 70%. A juror is suspended only once the whole interval falls below it, which takes a real run of evidence, not a bad day.</p>
-    </div>
-
-    <p>Then there is the question of repeats. A first dip below the line buys a short timeout, about a week. Drop again and the pause grows, then grows more, like a penalty box that remembers how often you have been sent to it. The shape is the point. It stays gentle enough that an honest juror who slipped once pays almost nothing across a whole career, and steep enough that someone who keeps coasting is parked for longer and longer. The door never locks, though. A juror who returns and does well watches the penalty shrink again, so the pool can always refill from people who turned it around.</p>
-
-    <figure class="diagram reveal">
-      <div class="diagram-inner">
-        <svg class="fullsvg" viewBox="0 0 720 200" role="img" aria-label="A juror's reputation over time with escalating suspension bands">
-          <line x1="30" y1="120" x2="700" y2="120" stroke="var(--ink)" stroke-width="1" stroke-dasharray="4 4"/>
-          <text x="30" y="112" font-family="Inter, sans-serif" font-size="10" font-weight="700" fill="var(--ink)">standard</text>
-          <rect x="196" y="30" width="46" height="150" fill="var(--bad)" opacity=".12"/>
-          <rect x="392" y="30" width="92" height="150" fill="var(--bad)" opacity=".15"/>
-          <rect x="588" y="30" width="150" height="150" fill="var(--bad)" opacity=".18"/>
-          <polyline points="30,70 120,60 196,128 242,150 300,90 392,132 484,150 540,86 588,128 700,150" fill="none" stroke="var(--accent)" stroke-width="2.5"/>
-          <text x="219" y="195" text-anchor="middle" font-family="Inter, sans-serif" font-size="10" fill="var(--bad)">1 week</text>
-          <text x="438" y="195" text-anchor="middle" font-family="Inter, sans-serif" font-size="10" fill="var(--bad)">1 month</text>
-          <text x="640" y="195" text-anchor="middle" font-family="Inter, sans-serif" font-size="10" fill="var(--bad)">6 months</text>
-          <text x="60" y="50" font-family="Inter, sans-serif" font-size="10" fill="var(--faint)">reputation</text>
-        </svg>
-      </div>
-      <figcaption>Each dip below the line costs more than the last, then the penalty decays on recovery. <b>Forgiving of a bad week, unforgiving of a pattern.</b></figcaption>
-    </figure>
-  </section>
-
-  <section class="reveal">
-    <p class="sec-label">Block 6</p>
-    <h2>The lone voice that turns out to be right</h2>
-    <p>Every system that scores agreement shares one nightmare, the person who disagrees with everyone and turns out to be right. Score that juror on coherence alone and you punish them for being early, which slowly breeds the independent minds out of the pool. So the court keeps a slower second opinion in reserve. When a case is <a href="https://en.wikipedia.org/wiki/Appeal" target="_blank" rel="noopener">appealed</a>, a larger and more careful panel looks again, and if it overturns the first verdict, the original holdouts were right all along. The system then reaches back in time and rewrites those scores. The juror who dissented has the provisional black mark erased and gets a bonus on top, while the overturned majority takes the margin-weighted hit they earned.</p>
-    <p>This is the move that tips the reward from being popular to being right. A juror who sees what the room missed no longer has to choose between an honest vote and their standing, because the appeal can still prove them correct later. Across many cases that keeps the brave and accurate minority in the pool, rather than quietly teaching everyone to guess whatever the crowd will say.</p>
+    <p class="sec-label">The grader's paradox</p>
+    <h2>Agreement is the wrong thing to pay for</h2>
+    <p>The obvious fix is to grade jurors on agreement: vote with your panel's majority and your score goes up. It is obvious, it is cheap, and it quietly ruins the court. Once agreement is the metric, the smartest strategy is no longer to read the case. It is to guess what the room will say and say it first. Every juror starts voting the safe, popular answer, the panel converges harder, the scores all look wonderful, and the court has stopped measuring anything at all. A wrong verdict that everyone joins is, by this rubric, a perfect day.</p>
+    <p>Herding is not a tail risk. It is the equilibrium, the place the system rolls to and stays.</p>
 
     <figure class="diagram reveal">
       <div class="diagram-inner">
         <div class="flow">
-          <div class="node"><span class="ic">&#9878;</span><span class="lbl">Round one</span><span class="sub">you dissent</span></div>
+          <div class="node"><span class="ic">&#128221;</span><span class="lbl">Grade on agreement</span><span class="sub">match the majority, score rises</span></div>
           <span class="arrow">&rarr;</span>
-          <div class="node"><span class="ic">&#10007;</span><span class="lbl">Marked off</span><span class="sub">provisional</span></div>
+          <div class="node"><span class="ic">&#128584;</span><span class="lbl">Stop reading cases</span><span class="sub">the safe vote beats the honest one</span></div>
           <span class="arrow">&rarr;</span>
-          <div class="node"><span class="ic">&#9851;</span><span class="lbl">Appeal</span><span class="sub">panel of 15</span></div>
+          <div class="node"><span class="ic">&#128101;</span><span class="lbl">Panels converge</span><span class="sub">every split looks lopsided</span></div>
           <span class="arrow">&rarr;</span>
-          <div class="node is-accent"><span class="ic">&#10003;</span><span class="lbl">Vindicated</span><span class="sub">credit + bonus</span></div>
+          <div class="node is-accent"><span class="ic">&#128202;</span><span class="lbl">Scores look perfect</span><span class="sub">the court measures nothing</span></div>
         </div>
       </div>
-      <figcaption>The appeal is a slower, sharper second look. <b>When it sides with the dissenter, the score follows the truth, not the original room.</b></figcaption>
+      <figcaption>The herding loop, four steps from rule to ruin. <b>A court that pays for agreement ends up with flawless scores and no information.</b></figcaption>
     </figure>
+
+    <p>So the design holds the grade to two outside anchors, neither of which a herd can vote its way around. The first is a supply of questions where reality itself eventually publishes the answer: settled markets that pass a curation step become answer keys, and <a href="hybrid-juror-prediction-market-integration.html">the loop chapter</a> shows where that supply comes from. The second anchor is the subject of this page: a scoring rule that refuses to pay for agreement as such, and pays only for the part of a vote that carried information.</p>
   </section>
 
   <section class="reveal">
-    <p class="sec-label">Block 7</p>
-    <h2>A few secret answers keep the whole crowd honest</h2>
-    <p>Agreement has one failure it can never catch by itself. A crowd can slowly drift onto an answer that is comfortable and wrong, and everyone still scores as perfectly coherent while the court hands down a lie. This is ordinary <a href="https://en.wikipedia.org/wiki/Herd_behavior" target="_blank" rel="noopener">herd behavior</a>, and nothing inside a closed loop of mutual agreement can detect it, because the loop only knows whether people agree, never whether they are right. The check has to come from outside.</p>
-    <p>So the court does what a wary teacher does with a class it cannot fully trust. It slips in pop quiz questions it already knows the answers to. These calibration cases look identical to live disputes, so no juror can tell which is which, but their answers are fixed in advance, a patch of <a href="https://en.wikipedia.org/wiki/Ground_truth" target="_blank" rel="noopener">ground truth</a> in a sea of open questions. They give an absolute grade. A juror who flubs the known cases is weak no matter how neatly they agree with the room, and if the whole pool starts missing them, you are watching capture happen live, early enough to step in. The known answers come from cases that settled without challenge, from verdicts that appeals later confirmed, and from a small expert-checked set at launch. Five to ten percent of the caseload is enough to anchor all the rest to reality.</p>
+    <p class="sec-label">The scoring rule</p>
+    <h2>Credit above the obvious</h2>
+    <p>Every case a juror touches is scored by leave-one-out agreement with the rest of the panel. The rule has three moves, and each one closes a door the herd would otherwise walk through.</p>
+
+    <ol class="stepper reveal">
+      <li>
+        <span class="step-n">1</span>
+        <div class="step-body">
+          <h3>Leave one out</h3>
+          <p>Take your vote off the panel and look at what the remaining jurors decided on their own. You are scored against them, not against yourself, so your own ballot can never prop up its own grade. On a 31-seat panel, your reference is the other 30.</p>
+        </div>
+      </li>
+      <li>
+        <span class="step-n">2</span>
+        <div class="step-body">
+          <h3>Subtract the obvious</h3>
+          <p>Before any credit is paid, the score asks what a juror who never opened the file would have guessed. If the rest of the panel split 29 to 2, the headline alone called it, so matching them earns roughly nothing. Credit exists only above that baseline.</p>
+        </div>
+      </li>
+      <li>
+        <span class="step-n">3</span>
+        <div class="step-body">
+          <h3>Weight by margin</h3>
+          <p>A 16 to 15 split means the case was genuinely hard and the prior was a coin flip. Landing on the right side of that earns a lot, and the weighting scales smoothly between the coin flip and the landslide. The score becomes a running answer to one question: how often are you right when being right was difficult?</p>
+        </div>
+      </li>
+    </ol>
+
+    <p>Two jurors can have identical agreement rates and completely different scores.</p>
 
     <figure class="diagram reveal">
       <div class="diagram-inner">
-        <div class="stream">
-          <div class="case">live</div><div class="case">live</div><div class="case known">key</div><div class="case">live</div>
-          <div class="case">live</div><div class="case">live</div><div class="case">live</div><div class="case known">key</div>
-          <div class="case">live</div><div class="case">live</div><div class="case">live</div><div class="case">live</div>
-          <div class="case known">key</div><div class="case">live</div><div class="case">live</div><div class="case">live</div>
+        <div class="compare">
+          <div class="compare-col bad">
+            <h4>Juror A, agrees 90% of the time <span class="tag-bad">no credit</span></h4>
+            <div class="mrow"><span class="mchip">29:2</span><span class="mchip">30:1</span><span class="mchip">27:4</span><span class="mchip">28:3</span><span class="mchip">31:0</span></div>
+            <ul>
+              <li>Every match came on a lopsided panel anyone could call.</li>
+              <li>Baseline eats the credit: the obvious vote predicts these for free.</li>
+              <li>Score after subtraction: a flat line near zero.</li>
+            </ul>
+          </div>
+          <div class="compare-col good">
+            <h4>Juror B, agrees 90% of the time <span class="tag-good">big credit</span></h4>
+            <div class="mrow"><span class="mchip hot">16:15</span><span class="mchip hot">17:14</span><span class="mchip hot">8:7</span><span class="mchip hot">16:15</span><span class="mchip">24:7</span></div>
+            <ul>
+              <li>The matches came on near-ties, where the obvious vote was a coin flip.</li>
+              <li>Margin weighting pays most exactly where guessing pays least.</li>
+              <li>Score after subtraction: a record of real judgment.</li>
+            </ul>
+          </div>
         </div>
-        <svg class="fullsvg" style="margin-top:1.1rem" viewBox="0 0 480 90" role="img" aria-label="Pool accuracy on known-answer cases declining">
-          <line x1="40" y1="74" x2="464" y2="74" stroke="var(--line-strong)" stroke-width="1"/>
-          <polyline points="44,24 110,26 176,30 242,34 308,44 374,58 440,70" fill="none" stroke="var(--bad)" stroke-width="2.5"/>
-          <circle cx="440" cy="70" r="4" fill="var(--bad)"/>
-          <text x="44" y="18" font-family="Inter, sans-serif" font-size="10" fill="var(--faint)">pool accuracy on known answers</text>
-          <text x="446" y="64" font-family="Inter, sans-serif" font-size="10" font-weight="700" fill="var(--bad)" text-anchor="end">drift alarm</text>
-        </svg>
       </div>
-      <figcaption>The shaded cases are secret quizzes with known answers, identical to every other case from the inside. <b>If the crowd's score on them slips, the court catches its own drift before it spreads.</b></figcaption>
+      <figcaption>Same agreement rate, opposite value. <b>The baseline subtraction is what makes reading the case the only strategy that earns.</b></figcaption>
+    </figure>
+
+    <p>Folded into the same score are the answer keys. When a market settles cleanly and the settlement passes curation, the outcome becomes a graded question with a known answer, and jurors who ruled on it are scored against reality instead of against each other. The keys keep the peer score honest: a pool that drifted into a comfortable shared error would keep agreeing with itself, but it cannot keep agreeing with the scoreboard reality posts. The sharpest keys come from settled private markets, questions that never had a public page, so a juror cannot even look them up. <b>Peer agreement above the obvious, anchored by curated keys</b>, is the whole rule. Everything else on this page is plumbing for it.</p>
+  </section>
+
+  <section class="reveal">
+    <p class="sec-label">The reputation dial</p>
+    <h2>A score with an error bar attached</h2>
+    <p>The per-case credits accumulate into a reputation, and the reputation is deliberately not a single number. It is a beta distribution, which is a precise way of saying a best guess plus an honest error bar: a juror at 80% over 12 cases and a juror at 80% over 140 cases have the same average and very different evidence behind it. The system always carries the 95% interval along with the estimate, computed over a rolling window of the last 50 to 150 cases, so a reputation is always recent enough to mean something and old scores cannot coast forever.</p>
+    <p>The dial drives two everyday things. Draw rate: higher-scored jurors are drawn more often, with a hard cap on how concentrated the draw can get, because <a href="juror-court.html">the court's</a> security is the width of its active pool and no scoring rule is allowed to thin it. And per-case pay: the juror fee scales with the score, so accuracy compounds into income. Suspension exists too, but it sits behind a gate, and the gate has an unusual property. It refuses to act on a guess.</p>
+
+    <div class="dial-wrap reveal">
+      <table class="dial-table">
+        <thead>
+          <tr><th>What the dial moves</th><th>The rule</th><th>How fast it bites</th></tr>
+        </thead>
+        <tbody>
+          <tr><td>Draw rate</td><td>Scales with the score, capped so no juror dominates the draw. The largest panels, the <span class="param">31</span> seats, draw only long case histories.</td><td>Continuously, from the first case</td></tr>
+          <tr><td>Per-case pay</td><td>The juror's share of the fee scales with the score.</td><td>Continuously, from the first case</td></tr>
+          <tr><td>Full vote weight</td><td>Granted when the interval sits clear of the line on the high side: <span class="param">lower bound &ge; 0.70</span>.</td><td>Earned over tens of cases</td></tr>
+          <tr><td>Suspension</td><td>Fires only when the whole 95% interval sits below <span class="param">0.70</span>.</td><td>Last, and only on confident evidence</td></tr>
+        </tbody>
+      </table>
+    </div>
+
+    <div class="widget reveal">
+      <div class="widget-head"><span class="live"></span> The confidence gate</div>
+      <div class="controls">
+        <div class="row"><label for="cgAcc">Observed accuracy</label> <b id="cgAccOut">78%</b></div>
+        <input id="cgAcc" type="range" min="50" max="90" step="1" value="78">
+        <div class="row"><label for="cgN">Cases on record</label> <b id="cgNOut">40 cases</b></div>
+        <input id="cgN" type="range" min="5" max="150" step="1" value="40">
+      </div>
+      <div class="gate-track">
+        <div class="gate-band" id="cgBand"></div>
+        <div class="gate-bar" id="cgBar"></div>
+        <div class="gate-mark" id="cgMark"></div>
+      </div>
+      <div class="gate-axis"><span>40%</span><span>70%</span><span>100%</span></div>
+      <div class="readout">
+        <div class="stat"><div class="k">95% interval</div><div class="v" id="cgCI">&hellip;</div></div>
+        <div class="stat"><div class="k">Status</div><div class="v" id="cgStatus"><span class="pill-s ps-build">&hellip;</span></div></div>
+      </div>
+      <p style="font-family:var(--sans);font-size:.86rem;color:var(--faint);margin:1rem 0 0">Suspension fires only when the entire interval sits below the 0.70 bar, which takes confident evidence, not a bad week. The leniency protects honest dissent; in the meantime, pay and vote weight do the everyday work of rewarding accuracy.</p>
+    </div>
+
+    <p>Drag the case slider and watch the band shrink. A juror at 65% over 8 cases straddles the bar from both sides: maybe careless, maybe unlucky, the math honestly cannot tell yet, so the gate does nothing. The same 65% over 140 cases is a different fact entirely. The band has pulled in tight, the whole interval sits under the bar, and the suspension is no longer a judgment call. It is a measurement.</p>
+  </section>
+
+  <section class="reveal">
+    <p class="sec-label">Lenient on purpose</p>
+    <h2>Why the gate waits so long</h2>
+    <p>A stricter gate sounds like higher standards. It is actually a herding machine. If one rough stretch can end a career, the rational juror stops taking positions on hard cases and starts voting whatever the room will obviously say, because the obvious vote is the safe one. You would be paying for accuracy with one hand and punishing independence with the other, and the second instinct wins. So the suspension bar is set low, 0.70, and it acts only when the full interval is below it. A juror has to be confidently, persistently worse than that before the court shows them the door.</p>
+    <p>Leniency at the bottom does not mean softness everywhere. Full vote weight has a stricter bar: the interval has to sit clear of the line on the high side before a juror's ballot counts at full strength, and the pay and draw dials respond to the score continuously. A coasting juror is earning less and being drawn less long before any gate fires, and the flat five-dollar bond is already forfeiting margin-scaled slices on wrong-side votes, every slash flowing to the insurance pool. Low effort becomes unprofitable years before it becomes suspendable. The gate is the last resort, not the incentive.</p>
+    <p>And the design protects its most valuable juror: the one who disagrees with the whole panel and turns out to be right. A wrong-side slash is settled against the post-appeal outcome, not the first verdict. When a 15-seat panel gets it wrong and the 31-seat appeal overturns them, the original dissenter's slash is refunded, the score is recomputed against the corrected outcome, and the overturned majority takes the loss instead. Dissent on a near-tie was already cheap, because the slash scales with margin. Vindicated dissent costs nothing at all, and that arithmetic is what keeps independent minds in the pool.</p>
+  </section>
+
+  <section class="reveal">
+    <p class="sec-label">Disputes</p>
+    <h2>The ladder, and the two clocks</h2>
+    <p>Lose a verdict and still believe you are right? Then climb. An appeal redraws the case at the next panel size, 7 to 15 to 31, never the same size twice, so every retry faces a wider panel and worse odds for whoever is wrong. The price of each rung is not a number anyone picked. It is the highest of three floors computed from the live case: enough to pay the next panel's jurors, enough to beat the value of re-rolling (the attacker's capture odds times the stake at issue), and enough to rent the delay it imposes on everyone's money. A near-tie verdict discounts the climb, because a 16 to 15 split is the court itself admitting doubt, and the discount never dips below the floor that keeps grinding unprofitable.</p>
+    <p>There are two doors onto the ladder. Post the rung's bond alone, or gather a petition from the losing side: at least 5% of its verified humans, each staking a small refundable sliver, so a lone dissenter with conviction can climb solo and a thousand sore losers have to pay sincerity rather than click a button. A failed climb forfeits its bond to the insurance pool. A vindicated one is refunded with a bonus taken from the overturned majority's slashes, which is the same arithmetic that makes honest dissent free in the section above. Each verdict then stays open to appeal for a full week before it hardens: time enough for the slowest petition to gather, and affordable because tokenized positions keep trading while the clock runs.</p>
+    <p>And then the ladder ends, on purpose. The top rung's verdict is final: the pot pays, the tokens redeem, and no later discovery reopens settled money, because escrow that can be reopened forever is escrow nobody can build on. What never ends is the other clock. Anyone, at any time, years later, can report a verdict for collusion; the vote-correlation audit runs, proven cliques lose their bonds and their World IDs, and their victims are made whole from the insurance pool their forfeits filled. Two clocks, deliberately unsynchronized: settlement always finishes, justice never closes, and neither can hold the other hostage.</p>
+
+    <figure class="diagram reveal">
+      <div class="diagram-inner">
+        <div class="clocks">
+          <div class="clock money">
+            <h4>The settlement clock &middot; always ends</h4>
+            <div class="step">Verdict at 7 seats</div>
+            <div class="step">Appeal: bond or loser-side petition, floors price the rung, one week to file</div>
+            <div class="step">15 seats, then 31, never the same size twice</div>
+            <div class="step">Final verdict: the money pays out</div>
+            <p class="ends">Finality in a day uncontested, around nine days contested, never more than a month, and settled escrow never reopens.</p>
+          </div>
+          <div class="clock justice">
+            <h4>The justice clock &middot; never closes</h4>
+            <div class="step">Anyone reports a verdict, anytime, even years later</div>
+            <div class="step">Vote-correlation audit hunts the clique</div>
+            <div class="step">Proven colluders: bonds slashed, World IDs banned</div>
+            <div class="step">Victims paid from the insurance pool</div>
+            <p class="ends">No deadline, and not one settled dollar held hostage.</p>
+          </div>
+        </div>
+      </div>
+      <figcaption>The dispute system is two clocks that refuse to share gears. <b>Money runs on the fast one, accountability runs forever, and a cheater can finish the case yet never outrun the audit.</b></figcaption>
     </figure>
   </section>
 
   <section class="reveal">
-    <p class="sec-label">Why the whole holds</p>
-    <h2>The blocks defend each other</h2>
-    <p>No single block is enough on its own. The strength is that each one covers a hole in another, so every obvious way to cheat the court runs straight into a different part of the design. Read the table as a list of attacks on the left and the piece that blocks each one on the right.</p>
+    <p class="sec-label">Two courts</p>
+    <h2>Two courts, one constitution</h2>
+    <p>Everything above assumes reality will eventually grade the question. Did bitcoin close above $100k, did the package arrive, who won the match: these belong to the objective court, where answer keys accumulate and a lone bonded dissenter can always appeal a panel into a larger one. But some disputes will never get a scoreboard. Was the logo delivered to spec, was the apartment as described. No future fact arrives to settle them, so a court that pretends otherwise is grading its jurors against an answer key that does not exist.</p>
+    <p>The design's answer is a second court rather than a stretched one. The rubric court is a separate product with its own track record, never borrowing the objective court's statistics, because they measure a different skill. It opens narrow, on rubric-checkable cases only: files against a spec, a photo against a listing, where most of the judgment is verification with a thin rim of opinion. Its jurors are graded on three signals that exist without a key: coherence with their own rubric scores, accuracy at predicting how the panel will split, and whether their verdicts survive the appeal ladder. Community-standard cases, the pure reasonable-person disputes, come later, once the narrow court has appeal data behind it. Either way the parties are told the standard up front, before they file. Both courts share the same constitution underneath: the same random draw, the same encrypted ballots, the same ladder. Only the grader changes.</p>
+    <p>Routing between them takes exactly one bit: will reality post the answer? Try it.</p>
 
-    <div class="cmp-wrap reveal">
-      <table class="cmp-table">
-        <thead><tr><th>How it could fail</th><th>What stops it</th></tr></thead>
-        <tbody>
-          <tr><td>A juror grades their own decisive vote</td><td><span class="param">leave-one-out scoring</span></td></tr>
-          <tr><td>The pool herds onto a comfortable wrong answer</td><td><span class="param">calibration anchor</span> + <span class="param">margin weight</span> + <span class="param">vindication</span></td></tr>
-          <tr><td>An unlucky or brand-new juror is exiled</td><td><span class="param">confidence gate</span> + <span class="param">rolling window</span></td></tr>
-          <tr><td>Lazy voters farm easy coherence</td><td><span class="param">random assignment</span> + <span class="param">calibration cases</span></td></tr>
-          <tr><td>A few veterans dominate every verdict</td><td><span class="param">weight cap</span></td></tr>
-          <tr><td>An attacker buys their way into the pool</td><td><span class="param">earned, maintained reputation</span></td></tr>
-          <tr><td>The correct minority is punished for dissent</td><td><span class="param">appeal vindication</span></td></tr>
-        </tbody>
-      </table>
+    <div class="widget reveal">
+      <div class="widget-head"><span class="live"></span> Which court does your question go to?</div>
+      <div class="controls">
+        <div class="row"><label>Pick a case</label> <span class="seg" id="RT1seg">
+          <button data-k="btc" class="active">Did bitcoin close above $100k?</button>
+          <button data-k="logo">Were the logo files delivered to spec?</button>
+          <button data-k="apt">Was the apartment as described?</button>
+        </span></div>
+      </div>
+      <div class="routepanel" id="RT1panel">&hellip;</div>
+      <p style="font-family:var(--sans);font-size:.86rem;color:var(--faint);margin:1rem 0 0">The router is one question deep: will reality post the answer? The court, the grader, and the promise made to the parties all follow from that single bit.</p>
     </div>
-
-    <p>Stack the blocks together and they quietly change what a smart, selfish juror should do. Coherence pays, and the surest way to agree with six independent peers is to actually be right. Copying the crowd stops working, because it earns almost nothing on close cases and gets caught by the secret quizzes on the rest. Honesty is safe, because the gate only bites when the evidence is overwhelming. Going against the room is worth the risk when you are right, because the appeal can still vindicate you. Every shortcut hits a wall, so the move that pays best turns out to be the one you wanted all along: read the case carefully and vote your honest answer. Game theorists call a setup where no player can do better by switching strategy a <a href="https://en.wikipedia.org/wiki/Nash_equilibrium" target="_blank" rel="noopener">Nash equilibrium</a>. This court is rigged so that its equilibrium is the truth.</p>
-  </section>
-
-  <section class="reveal">
-    <p class="sec-label">The settings</p>
-    <h2>Recommended parameters</h2>
-    <p>Concrete starting values, all meant to be tuned against live data rather than treated as fixed.</p>
-
-    <div class="cmp-wrap reveal">
-      <table class="cmp-table">
-        <thead><tr><th>Knob</th><th>Setting</th><th>Reason</th></tr></thead>
-        <tbody>
-          <tr><td>Routine panel</td><td class="param">7 jurors</td><td>Knee of the accuracy curve; a reliable yardstick</td></tr>
-          <tr><td>Appeal panels</td><td class="param">15, then 31</td><td>More rigor where stakes and doubt are higher</td></tr>
-          <tr><td>Reputation</td><td class="param">Beta posterior, 50&ndash;150 cases</td><td>Carries uncertainty; forgets stale behavior</td></tr>
-          <tr><td>Suspension trigger</td><td class="param">lower bound &lt; 0.70</td><td>Acts only on confident evidence</td></tr>
-          <tr><td>Escalation</td><td class="param">1 wk &rarr; 1 mo &rarr; 6 mo, decaying</td><td>Forgives a slip, deters a pattern</td></tr>
-          <tr><td>Influence</td><td class="param">rises to a hard cap</td><td>Rewards quality without letting anyone dominate</td></tr>
-          <tr><td>Calibration</td><td class="param">5&ndash;10% of cases</td><td>Anchors the crowd to known truth</td></tr>
-        </tbody>
-      </table>
-    </div>
-
-    <p>That is the whole machine. The escalating suspension is its spine, and the confidence gate, the margin weighting, the contrarian credit, and the secret quizzes are the four guardrails that keep a coherence score from hardening into a conformity score. It lets anyone join, keeps jurors anonymous, asks nothing of a webcam or a proctor, and gets more accurate the more the court is used. Its one real dependency is a steady trickle of known answers to grade against, and the court produces those itself every time a case settles cleanly. I would build this.</p>
   </section>
 
   <footer class="endnote reveal">
@@ -499,125 +317,94 @@
       </div>
       <div class="sitemap-col">
         <span class="sm-h">III &middot; The bootstrap</span>
-        <a href="prediction-market.html">4. The market</a>
+        <a href="prediction-market.html">4. The prediction market</a>
         <a href="hybrid-juror-prediction-market-integration.html">5. The loop</a>
         <a href="zero-to-one.html">6. Zero to one</a>
       </div>
       <div class="sitemap-col">
         <span class="sm-h">IV &middot; The payoff</span>
         <a href="compounding.html">7. Why it compounds</a>
+        <a href="the-design.html">8. The blueprint</a>
+        <a href="governance.html">9. Governance</a>
         <a href="index.html">Home &middot; the map</a>
       </div>
     </div>
-    <p class="signoff">Measure judgment from judging, act only on confident evidence, and anchor the crowd to answers you already hold.</p>
+    <p class="signoff">A court that pays its jurors for being right, and never merely for agreeing.</p>
   </footer>
 
 </main>
 
 <script src="assets/common.js"></script>
 <script>
+// ============ confidence gate ============
 (function () {
   "use strict";
   var BAR = 0.70, Z = 1.96;
+  var acc = document.getElementById("cgAcc");
+  if (!acc) return;
+  var nIn = document.getElementById("cgN");
+  var accOut = document.getElementById("cgAccOut");
+  var nOut = document.getElementById("cgNOut");
+  var band = document.getElementById("cgBand");
+  var mark = document.getElementById("cgMark");
+  var bar = document.getElementById("cgBar");
+  var ciOut = document.getElementById("cgCI");
+  var statusOut = document.getElementById("cgStatus");
 
-  var sk = document.getElementById("skSlider");
-  var nc = document.getElementById("ncSlider");
-  var skOut = document.getElementById("skOut");
-  var ncOut = document.getElementById("ncOut");
-  var band = document.getElementById("band");
-  var mark = document.getElementById("mark");
-  var bar = document.getElementById("bar");
-  var ciOut = document.getElementById("ciOut");
-  var statusOut = document.getElementById("statusOut");
-  var wtOut = document.getElementById("wtOut");
-
-  function pct(x) { return Math.max(0, Math.min(100, (x - 0.5) / 0.5 * 100)); }
-
-  // Wilson score interval for a proportion phat over n observations.
-  function wilson(phat, n) {
-    var z2 = Z * Z;
-    var denom = 1 + z2 / n;
-    var center = (phat + z2 / (2 * n)) / denom;
-    var half = (Z / denom) * Math.sqrt(phat * (1 - phat) / n + z2 / (4 * n * n));
-    return { lo: Math.max(0, center - half), hi: Math.min(1, center + half) };
-  }
+  // Map a 0.4 to 1.0 score onto the track as a percentage.
+  function pct(x) { return Math.max(0, Math.min(100, (x - 0.4) / 0.6 * 100)); }
 
   function update() {
-    var phat = parseInt(sk.value, 10) / 100;
-    var n = parseInt(nc.value, 10);
-    skOut.textContent = parseInt(sk.value, 10) + "%";
-    ncOut.textContent = n;
+    var p = parseInt(acc.value, 10) / 100;
+    var n = parseInt(nIn.value, 10);
+    accOut.textContent = parseInt(acc.value, 10) + "%";
+    nOut.textContent = n + (n === 1 ? " case" : " cases");
 
-    var ci = wilson(phat, n);
+    // Wilson 95% interval for proportion p over n cases.
+    var z2 = Z * Z;
+    var denom = 1 + z2 / n;
+    var center = (p + z2 / (2 * n)) / denom;
+    var half = (Z / denom) * Math.sqrt(p * (1 - p) / n + z2 / (4 * n * n));
+    var lo = Math.max(0, center - half);
+    var hi = Math.min(1, center + half);
+
     bar.style.left = pct(BAR) + "%";
-    band.style.left = pct(ci.lo) + "%";
-    band.style.width = (pct(ci.hi) - pct(ci.lo)) + "%";
-    mark.style.left = pct(phat) + "%";
-    ciOut.textContent = Math.round(ci.lo * 100) + "% to " + Math.round(ci.hi * 100) + "%";
+    band.style.left = pct(lo) + "%";
+    band.style.width = Math.max(0, pct(hi) - pct(lo)) + "%";
+    mark.style.left = pct(center) + "%";
+    ciOut.textContent = Math.round(lo * 100) + "% to " + Math.round(hi * 100) + "%";
 
-    var status, cls, weight;
-    if (ci.lo >= BAR) {
-      status = "Active"; cls = "ps-act";
-      weight = Math.min(1, Math.max(0, (phat - 0.5) / (0.92 - 0.5)));
-    } else if (ci.hi < BAR) {
-      status = "Suspended"; cls = "ps-susp"; weight = 0;
-    } else {
-      status = "Building record"; cls = "ps-build";
-      weight = 0.5 * Math.min(1, Math.max(0, (phat - 0.5) / (0.92 - 0.5)));
-    }
+    var status, cls;
+    if (center + half < BAR) { status = "Suspended"; cls = "ps-susp"; }
+    else if (center - half >= BAR) { status = "Full weight"; cls = "ps-act"; }
+    else { status = "Building a record"; cls = "ps-build"; }
     statusOut.innerHTML = '<span class="pill-s ' + cls + '">' + status + '</span>';
-    wtOut.textContent = weight === 0 ? "0" : "\u00d7" + weight.toFixed(2);
   }
-  sk.addEventListener("input", update);
-  nc.addEventListener("input", update);
+  acc.addEventListener("input", update);
+  nIn.addEventListener("input", update);
   update();
 })();
 
+// ============ case router ============
 (function () {
   "use strict";
-  var jq = document.getElementById("jqSlider");
-  var np = document.getElementById("npSlider");
-  if (!jq || !np) return;
-  var jqOut = document.getElementById("jqOut");
-  var npOut = document.getElementById("npOut");
-  var coinRow = document.getElementById("coinRow");
-  var majFill = document.getElementById("majFill");
-  var majLab = document.getElementById("majLab");
-
-  // Probability the majority of n jurors is correct, each right with prob p.
-  function majorityRight(p, n) {
-    var q = 1 - p;
-    if (q <= 0) return 1;
-    var term = Math.pow(q, n);
-    var cum = 0;
-    var majK = Math.floor(n / 2) + 1;
-    for (var k = 0; k <= n; k++) {
-      if (k >= majK) cum += term;
-      term = term * ((n - k) / (k + 1)) * (p / q);
-    }
-    return Math.max(0, Math.min(1, cum));
-  }
-
-  function update() {
-    var p = parseInt(jq.value, 10) / 100;
-    var n = parseInt(np.value, 10);
-    jqOut.textContent = parseInt(jq.value, 10) + "%";
-    npOut.textContent = n;
-
-    var green = Math.round(p * n);
-    var html = "";
-    for (var i = 0; i < n; i++) {
-      html += i < green ? '<span class="c r">&#10003;</span>' : '<span class="c w">&times;</span>';
-    }
-    coinRow.innerHTML = html;
-
-    var pm = majorityRight(p, n);
-    majFill.style.width = (pm * 100).toFixed(1) + "%";
-    majLab.textContent = "the majority is right " + Math.round(pm * 100) + "% of the time";
-  }
-  jq.addEventListener("input", update);
-  np.addEventListener("input", update);
-  update();
+  var seg = document.getElementById("RT1seg");
+  if (!seg) return;
+  var panel = document.getElementById("RT1panel");
+  var CONTENT = {
+    btc: '<div class="rt">Objective court.</div><div class="rg">Reality posts the closing price whether anyone likes it or not. The question settles on the bonded assertion layer, escalates to answer-key-graded panels only if challenged, and the settled outcome, once curated, becomes one more calibration key. The parties were promised the checkable truth, and a lone bonded dissenter can always appeal the panel into a larger one.</div>',
+    logo: '<div class="rt">Rubric court, rubric tier.</div><div class="rg">Reality never grades it, but the spec does: file formats, dimensions, deadline, each a checkable rubric item with a thin rim of judgment. Jurors score the items before the verdict, are graded on rubric coherence and on predicting the panel split, and the verdict survives or dies on the appeal ladder. This tier is where the rubric court earns its own track record, kept separate from the objective court&rsquo;s.</div>',
+    apt: '<div class="rt">Rubric court, community-standard tier, opens later.</div><div class="rg">No spec, no key, pure reasonable-person judgment. Here the panel is an honest sample of the community standard itself, and both parties are told exactly that, up front, before they file. This tier stays closed until the rubric tier has thousands of appeal-tested cases proving the graders work.</div>'
+  };
+  function pick(k) { panel.innerHTML = CONTENT[k]; }
+  Array.prototype.forEach.call(seg.querySelectorAll("button"), function (btn) {
+    btn.addEventListener("click", function () {
+      Array.prototype.forEach.call(seg.querySelectorAll("button"), function (b2) { b2.classList.remove("active"); });
+      btn.classList.add("active");
+      pick(btn.getAttribute("data-k"));
+    });
+  });
+  pick("btc");
 })();
 </script>
 </body>

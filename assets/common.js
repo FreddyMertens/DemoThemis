@@ -8,13 +8,24 @@
     { f: "vision.html", t: "The vision", act: "I", actName: "The promise", ch: 1 },
     { f: "juror-court.html", t: "The court", act: "II", actName: "The mechanism", ch: 2 },
     { f: "hybrid-juror-system.html", t: "The hybrid system", act: "II", actName: "The mechanism", ch: 3 },
-    { f: "prediction-market.html", t: "The market", act: "III", actName: "The bootstrap", ch: 4 },
+    { f: "prediction-market.html", t: "The prediction market", act: "III", actName: "The bootstrap", ch: 4 },
     { f: "hybrid-juror-prediction-market-integration.html", t: "The loop", act: "III", actName: "The bootstrap", ch: 5 },
     { f: "zero-to-one.html", t: "Zero to one", act: "III", actName: "The bootstrap", ch: 6 },
-    { f: "compounding.html", t: "Why it compounds", act: "IV", actName: "The payoff", ch: 7 }
+    { f: "compounding.html", t: "Why it compounds", act: "IV", actName: "The payoff", ch: 7 },
+    { f: "the-design.html", t: "The blueprint", act: "IV", actName: "The payoff", ch: 8 },
+    { f: "governance.html", t: "Governance", act: "IV", actName: "The payoff", ch: 9 }
   ];
   var TOTAL = CHAPTERS.length;
   var HOME = { f: "index.html", t: "The map" };
+
+  // The review arc: four rounds of attack and answer, chained after the blueprint.
+  var REVIEWS = [
+    { f: "breaking-the-court.html", t: "Could you break it?" },
+    { f: "hardening-the-court.html", t: "Can the gaps be closed?" },
+    { f: "finishing-the-court.html", t: "How deep do the fixes go?" },
+    { f: "rebuilding-the-court.html", t: "What deserved to die?" }
+  ];
+  var BLUEPRINT = { f: "the-design.html", t: "The blueprint" };
 
   function fileOf(path) {
     var p = (path || "").split("?")[0].split("#")[0].split("/").pop();
@@ -62,15 +73,14 @@
         toggle.setAttribute("aria-expanded", open ? "true" : "false");
       });
     }
-    var gbtn = nav.querySelector(".nav-group-btn");
-    if (gbtn) {
+    Array.prototype.forEach.call(nav.querySelectorAll(".nav-group-btn"), function (gbtn) {
       gbtn.addEventListener("click", function (e) {
         if (window.matchMedia("(max-width: 860px)").matches) {
           e.preventDefault();
           gbtn.parentNode.classList.toggle("open");
         }
       });
-    }
+    });
     Array.prototype.forEach.call(nav.querySelectorAll("a[href]"), function (a) {
       if (fileOf(a.getAttribute("href")) === here) {
         a.classList.add("active");
@@ -95,6 +105,22 @@
 
     var idx = -1;
     for (var i = 0; i < CHAPTERS.length; i++) { if (CHAPTERS[i].f === here) { idx = i; break; } }
+
+    // The review arc: rounds chain into each other, bracketed by the blueprint.
+    var rIdx = -1;
+    for (var r = 0; r < REVIEWS.length; r++) { if (REVIEWS[r].f === here) { rIdx = r; break; } }
+    if (rIdx !== -1) {
+      var rPrev = rIdx > 0 ? REVIEWS[rIdx - 1] : BLUEPRINT;
+      var rNext = rIdx < REVIEWS.length - 1 ? REVIEWS[rIdx + 1] : BLUEPRINT;
+      var rPrevDir = rIdx > 0 ? "&larr; Round " + rIdx : "&larr; The blueprint";
+      var rNextDir = rIdx < REVIEWS.length - 1 ? "Round " + (rIdx + 2) + " &rarr;" : "The blueprint &rarr;";
+      el.innerHTML = '<p class="series-pos">The review &middot; Round ' + (rIdx + 1) + ' of ' + REVIEWS.length + '</p>' +
+        '<div class="series-nav">' +
+        '<a class="prev" href="' + rPrev.f + '"><span class="dir">' + rPrevDir + '</span><span class="ttl">' + rPrev.t + '</span></a>' +
+        '<a class="next" href="' + rNext.f + '"><span class="dir">' + rNextDir + '</span><span class="ttl">' + rNext.t + '</span></a>' +
+        '</div>';
+      return;
+    }
 
     // Deep dive: off the main path, route back to its parent chapter.
     if (idx === -1) {
