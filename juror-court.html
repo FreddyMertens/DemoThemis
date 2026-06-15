@@ -53,6 +53,17 @@
   .seen .row2 { font-size: .86rem; color: var(--muted); line-height: 1.5; padding: .3rem 0 .3rem 1.5rem; position: relative; }
   .seen .pane.vis .row2::before { content: "\1F441"; position: absolute; left: 0; font-size: .8rem; }
   .seen .pane.hid .row2::before { content: "\1F512"; position: absolute; left: 0; font-size: .8rem; }
+
+  .panels { display: flex; flex-wrap: wrap; gap: .7rem; margin-bottom: 1rem; }
+  .ppanel { flex: 1 1 132px; min-width: 116px; border: 1px solid var(--line-strong); border-radius: 10px; padding: .6rem .65rem; background: var(--bg); transition: border-color .15s ease, box-shadow .15s ease; }
+  .ppanel.cap { border-color: var(--bad); box-shadow: 0 0 0 2px color-mix(in srgb, var(--bad) 30%, transparent); }
+  .ppanel.held { border-color: var(--good); }
+  .ppanel .ph { font-family: var(--sans); font-size: .74rem; font-weight: 700; color: var(--muted); display: flex; justify-content: space-between; align-items: center; gap: .4rem; margin-bottom: .45rem; }
+  .ppanel .pv { font-family: var(--mono); font-weight: 700; }
+  .pdots { display: grid; grid-template-columns: repeat(8, 1fr); gap: 3px; }
+  .pdot { aspect-ratio: 1; border-radius: 50%; background: var(--line-strong); }
+  .pdot.col { background: #c79a14; }
+  .mpres { font-family: var(--sans); font-size: .9rem; color: var(--ink-soft); background: var(--bg); border: 1px solid var(--line-strong); border-radius: 10px; padding: .7rem .9rem; margin-bottom: 1rem; min-height: 2.6rem; }
 </style>
 </head>
 <body>
@@ -279,7 +290,41 @@
       <figcaption>The life of a seat, end to end. <b>At no step does more money buy more voice; it buys a larger panel of strangers you still cannot reach.</b></figcaption>
     </figure>
 
-    <p>Stack the locks and re-run the buyer's shopping trip from the top of the page. The verdict has no token to corner. The seats are humans, drawn by a die that rolls once, checked at the door against the body that enrolled, voting ballots that cannot testify. The remaining question is the one a skeptic should ask next: how does the court know which of those humans to trust more over time? That is a grading problem, and it has its own chapter: <a href="hybrid-juror-system.html">the hybrid system</a>, where settled markets become answer keys and reputation is earned the slow way.</p>
+    <p>That is the panel: a jury sized to the case, drawn from a pool no bond is allowed to thin. It is enough for the cases the court hears every day. It is not yet enough for the rare giant, because the rule that panels grow with the pot has a top rung, and the largest prizes sit right on top of it.</p>
+  </section>
+
+  <!-- ============ 7: above the ceiling ============ -->
+  <section class="reveal">
+    <p class="sec-label">The ceiling</p>
+    <h2>What happens above the biggest panel</h2>
+    <p>Panels climb 7, 15, 31, and then they stop. Thirty-one is the largest jury the court will seat, so a five million dollar case and a fifty million dollar case are heard by the same thirty-one strangers. Read that twice, because it is the one spot where the design breaks its own promise. Every other lock grows with the money at stake. This one grows, then flattens, and an attacker reads that flat line as an invitation. They do not care about the thousand small cases. They care about the single giant one parked on the ceiling, where the prize keeps climbing and the jury does not.</p>
+    <p>The obvious patch is a bigger jury, and it is the wrong one. A larger panel is a louder microphone for whoever the pool already leans toward. When the honest jurors are the majority that is a gift; the day a bloc has quietly tilted the pool it is a disaster, because the bigger panel now reports the bloc's answer with more confidence, not less. Size was never the source of safety here. The width of the pool was. So the fix cannot be one larger jury. It has to be more juries.</p>
+    <p>Above a value line, the court stops seating one panel and seats several at once, each drawn fresh by the same sealed die from the same wide pool, all hearing the case together. The verdict stands only if they agree. Picture the attack again under that rule. To bend the outcome you no longer have to win one unlikely lottery. You have to win every lottery in the row, on the same roll, with no chance to try again. Fall short of a majority on any single panel and the disagreement trips an alarm instead of printing a verdict.</p>
+    <p>Here is why that is far more than a small improvement: odds that are merely unlikely become hopeless once you multiply them. Say a pool has thinned enough that a bloc could take one panel a fifth of the time, already a bad day for the court. Two panels at once cut that to one in twenty-five, three to one in a hundred and twenty-five, five to one in three thousand. And since the number of panels is set by the size of the pot, the cost of the attack climbs with the prize again. The dial the ceiling took away is handed back. Drag the bloc's share up into the danger zone below, the pool share where a lone panel really can fall, and watch a capturable jury turn into an uncapturable set.</p>
+
+    <div class="widget reveal">
+      <div class="widget-head"><span class="live"></span> Pricing a takeover above the ceiling</div>
+      <div class="controls">
+        <div class="row"><label>What the case is worth</label> <span class="seg" id="mpseg"><button data-n="1" class="active">up to $250k</button><button data-n="3">$250k to $5M</button><button data-n="5">over $5M</button></span></div>
+        <div class="row"><label for="mpshare">The bloc's share of the senior pool</label> <b id="mpshareOut">45%</b></div>
+        <input id="mpshare" type="range" min="5" max="49" step="1" value="45">
+      </div>
+      <div class="panels" id="mppanels" aria-hidden="true"></div>
+      <div class="mpres" id="mpres">Pick a case size and roll. The attack only works if every panel falls on the same draw.</div>
+      <div style="display:flex;gap:.6rem;flex-wrap:wrap;margin-bottom:1rem">
+        <button class="btn" id="mpdraw" type="button">Draw every panel once</button>
+        <button class="btn" id="mprun" type="button" style="background:var(--accent)">Run 1,000 cases</button>
+      </div>
+      <div class="readout">
+        <div class="stat"><div class="k">One panel falls</div><div class="v" id="mpone">&hellip;</div></div>
+        <div class="stat"><div class="k">All panels, one roll</div><div class="v accent" id="mpall">&hellip;</div></div>
+        <div class="stat"><div class="k">Captured in 1,000 cases</div><div class="v" id="mpsim">&hellip;</div></div>
+      </div>
+      <p style="font-family:var(--sans);font-size:.86rem;color:var(--faint);margin:1rem 0 0">Gold dots are the bloc's seats that landed on a panel; a panel needs 16 of 31 to fall. One panel can get unlucky on a single roll. <b>Asking several to fall on the same roll multiplies long odds into far longer ones.</b></p>
+    </div>
+
+    <p>Two honest notes. The panels are drawn without overlap, so a bloc cannot reuse one corrupted juror across them, which makes the true odds even longer than the plain multiplication above. And owning a majority of every panel inside one short window is the very coordination the encrypted ballot already made unenforceable, since a juror can take the money on all of them and still vote honestly on all of them. Parallel panels do not replace the other locks. They are the floor beneath the tallest cases, the piece that keeps the price of a takeover rising no matter how large the pot grows.</p>
+    <p>Stand back from the whole court. The verdict has no token to corner, the seats are humans drawn by a die that rolls once, the door checks the body that enrolled, the ballots cannot testify, and the largest cases must clear not one jury but a row of them at the same instant. The remaining question is the one a skeptic should ask next: how does the court know which of those humans to trust more over time? That is a grading problem, and it has its own chapter: <a href="hybrid-juror-system.html">the hybrid system</a>, where settled markets become answer keys and reputation is earned the slow way.</p>
   </section>
 
   <footer class="endnote reveal">
@@ -621,6 +666,126 @@ function courtSeg(id, onPick) {
   cast.addEventListener("click", doCast);
   show.addEventListener("click", doShow);
   reset();
+})();
+
+// ============ parallel panels above the ceiling ============
+(function () {
+  "use strict";
+  var wrap = document.getElementById("mppanels");
+  if (!wrap) return;
+  var shareS = document.getElementById("mpshare");
+  var shareOut = document.getElementById("mpshareOut");
+  var drawBtn = document.getElementById("mpdraw");
+  var runBtn = document.getElementById("mprun");
+  var oneEl = document.getElementById("mpone");
+  var allEl = document.getElementById("mpall");
+  var simEl = document.getElementById("mpsim");
+  var resEl = document.getElementById("mpres");
+  var POOL = 600, SEATS = 31, MAJ = 16;
+  var N = 1;
+  var tiles = [];
+
+  function K() { return Math.round(parseInt(shareS.value, 10) / 100 * POOL); }
+
+  function buildPanels() {
+    wrap.innerHTML = "";
+    tiles = [];
+    for (var p = 0; p < N; p++) {
+      var panel = document.createElement("div");
+      panel.className = "ppanel";
+      var head = document.createElement("div");
+      head.className = "ph";
+      var name = document.createElement("span");
+      name.textContent = "Panel " + (p + 1);
+      var verd = document.createElement("span");
+      verd.className = "pv";
+      verd.innerHTML = "&ndash;";
+      head.appendChild(name); head.appendChild(verd);
+      var dots = document.createElement("div");
+      dots.className = "pdots";
+      var ds = [];
+      for (var i = 0; i < SEATS; i++) {
+        var d = document.createElement("div");
+        d.className = "pdot";
+        dots.appendChild(d); ds.push(d);
+      }
+      panel.appendChild(head); panel.appendChild(dots);
+      wrap.appendChild(panel);
+      tiles.push({ box: panel, verd: verd, dots: ds });
+    }
+  }
+  function resetDots() {
+    for (var p = 0; p < tiles.length; p++) {
+      var t = tiles[p];
+      t.box.className = "ppanel";
+      t.verd.innerHTML = "&ndash;";
+      t.verd.style.color = "";
+      for (var i = 0; i < SEATS; i++) t.dots[i].className = "pdot";
+    }
+  }
+  function drawSeats() {
+    var idx = [];
+    for (var i = 0; i < POOL; i++) idx.push(i);
+    for (var j = idx.length - 1; j > 0; j--) {
+      var k = Math.floor(Math.random() * (j + 1));
+      var t = idx[j]; idx[j] = idx[k]; idx[k] = t;
+    }
+    var kk = K();
+    var seats = [];
+    for (var s = 0; s < SEATS; s++) seats.push(idx[s] < kk);
+    return seats;
+  }
+  function drawOnce() {
+    var taken = 0;
+    for (var p = 0; p < N; p++) {
+      var seats = drawSeats();
+      var col = 0, t = tiles[p];
+      for (var i = 0; i < SEATS; i++) {
+        if (seats[i]) col++;
+        t.dots[i].className = "pdot" + (seats[i] ? " col" : "");
+      }
+      var cap = col >= MAJ;
+      if (cap) taken++;
+      t.box.className = "ppanel " + (cap ? "cap" : "held");
+      t.verd.textContent = col + "/" + MAJ;
+      t.verd.style.color = cap ? "var(--bad)" : "var(--good)";
+    }
+    var s = N > 1 ? "s" : "";
+    if (taken === N) {
+      resEl.innerHTML = "Every one of the " + N + " panel" + s + " fell on this roll. <span class=\"verdict v-high\">Verdict bought</span>";
+    } else {
+      resEl.innerHTML = taken + " of " + N + " panel" + s + " fell, so the set disagrees and the case escalates. <span class=\"verdict v-good\">Attack failed</span>";
+    }
+  }
+  function run() {
+    var hits = 0;
+    for (var c = 0; c < 1000; c++) {
+      var all = true;
+      for (var p = 0; p < N; p++) {
+        var seats = drawSeats();
+        var col = 0;
+        for (var i = 0; i < SEATS; i++) if (seats[i]) col++;
+        if (col < MAJ) { all = false; break; }
+      }
+      if (all) hits++;
+    }
+    simEl.textContent = hits.toLocaleString("en-US") + " / 1,000";
+  }
+  function refresh() {
+    shareOut.textContent = parseInt(shareS.value, 10) + "%";
+    var p1 = window.__court.hyperTail(POOL, K(), SEATS, MAJ);
+    oneEl.textContent = pctText(p1);
+    allEl.textContent = pctText(Math.pow(p1, N));
+    simEl.innerHTML = "&hellip;";
+    resEl.textContent = "Pick a case size and roll. The attack only works if every panel falls on the same draw.";
+  }
+
+  courtSeg("mpseg", function (val) { N = val; buildPanels(); refresh(); });
+  shareS.addEventListener("input", function () { resetDots(); refresh(); });
+  drawBtn.addEventListener("click", drawOnce);
+  runBtn.addEventListener("click", run);
+  buildPanels();
+  refresh();
 })();
 </script>
 </body>

@@ -202,7 +202,7 @@
     <p class="sec-label">The reputation dial</p>
     <h2>A score with an error bar attached</h2>
     <p>The per-case credits accumulate into a reputation, and the reputation is deliberately not a single number. It is a beta distribution, which is a precise way of saying a best guess plus an honest error bar: a juror at 80% over 12 cases and a juror at 80% over 140 cases have the same average and very different evidence behind it. The system always carries the 95% interval along with the estimate, computed over a rolling window of the last 50 to 150 cases, so a reputation is always recent enough to mean something and old scores cannot coast forever.</p>
-    <p>The dial drives two everyday things. Draw rate: higher-scored jurors are drawn more often, with a hard cap on how concentrated the draw can get, because <a href="juror-court.html">the court's</a> security is the width of its active pool and no scoring rule is allowed to thin it. And per-case pay: the juror fee scales with the score, so accuracy compounds into income. Suspension exists too, but it sits behind a gate, and the gate has an unusual property. It refuses to act on a guess.</p>
+    <p>The dial drives two everyday things. Draw rate: higher-scored jurors are drawn more often, but never more than three times as often as a newcomer, because <a href="juror-court.html">the court's</a> security is the width of its active pool and no scoring rule is allowed to thin it. And per-case pay: the juror fee scales with the score, so accuracy compounds into income. Pay carries most of the reward on purpose, because a fee that tracks the score motivates without thinning the pool, which lets the draw ceiling stay low. Suspension exists too, but it sits behind a gate, and the gate has an unusual property. It refuses to act on a guess.</p>
 
     <div class="dial-wrap reveal">
       <table class="dial-table">
@@ -210,7 +210,7 @@
           <tr><th>What the dial moves</th><th>The rule</th><th>How fast it bites</th></tr>
         </thead>
         <tbody>
-          <tr><td>Draw rate</td><td>Scales with the score, capped so no juror dominates the draw. The largest panels, the <span class="param">31</span> seats, draw only long case histories.</td><td>Continuously, from the first case</td></tr>
+          <tr><td>Draw rate</td><td>Scales with the score, capped at <span class="param">3&times;</span> a newcomer's rate so no juror dominates the draw. The largest panels, the <span class="param">31</span> seats, draw only long case histories.</td><td>Continuously, from the first case</td></tr>
           <tr><td>Per-case pay</td><td>The juror's share of the fee scales with the score.</td><td>Continuously, from the first case</td></tr>
           <tr><td>Full vote weight</td><td>Granted when the interval sits clear of the line on the high side: <span class="param">lower bound &ge; 0.70</span>.</td><td>Earned over tens of cases</td></tr>
           <tr><td>Suspension</td><td>Fires only when the whole 95% interval sits below <span class="param">0.70</span>.</td><td>Last, and only on confident evidence</td></tr>
