@@ -58,6 +58,15 @@
   .clock .ends { margin-top: .55rem; font-weight: 700; font-size: .86rem; }
   .clock.money .ends { color: var(--good); }
   .clock.justice .ends { color: var(--accent-ink); }
+
+  /* appeal-bond floors */
+  .floors { display: flex; flex-direction: column; gap: .6rem; margin: .3rem 0 1rem; font-family: var(--sans); }
+  .floors .flk { font-size: .82rem; color: var(--muted); margin-bottom: .25rem; display: flex; justify-content: space-between; gap: .6rem; }
+  .floors .flt { height: 26px; border-radius: 7px; background: var(--line); border: 1px solid var(--line-strong); overflow: hidden; }
+  .floors .flt > span { display: block; height: 100%; width: 0; border-radius: 0 7px 7px 0; transition: width .25s ease; }
+  .floors .flt > span.panel { background: linear-gradient(90deg, var(--good), #0a6157); }
+  .floors .flt > span.cap { background: linear-gradient(90deg, var(--accent), var(--accent-ink)); }
+  .bondnote { font-family: var(--sans); font-size: .9rem; color: var(--ink-soft); background: var(--bg); border: 1px solid var(--line-strong); border-radius: 10px; padding: .75rem .95rem; margin-bottom: 1rem; min-height: 2.8rem; }
 </style>
 </head>
 <body class="theme-solve">
@@ -263,10 +272,10 @@
           <div class="clock money">
             <h4>The settlement clock &middot; always ends</h4>
             <div class="step">Verdict at 7 seats</div>
-            <div class="step">Appeal: bond or loser-side petition, floors price the rung, one week to file</div>
+            <div class="step">Appeal: bond or loser-side petition, floors price the rung, one month to file</div>
             <div class="step">15 seats, then 31, never the same size twice</div>
             <div class="step">Final verdict: the money pays out</div>
-            <p class="ends">Finality in a day uncontested, around nine days contested, never more than a month, and settled escrow never reopens.</p>
+            <p class="ends">Finality in a week if unchallenged, a month or two if it is contested, a few months at most when fought to the final panel, and settled escrow never reopens.</p>
           </div>
           <div class="clock justice">
             <h4>The justice clock &middot; never closes</h4>
@@ -280,6 +289,38 @@
       </div>
       <figcaption>The dispute system is two clocks that refuse to share gears. <b>Money runs on the fast one, accountability runs forever, and a cheater can finish the case yet never outrun the audit.</b></figcaption>
     </figure>
+  </section>
+
+  <!-- ============ the price of an appeal ============ -->
+  <section class="reveal">
+    <p class="sec-label">The appeal bond</p>
+    <h2>Why a wider pool makes appeals cheaper</h2>
+    <p>Go back to those three floors for a moment, because one of them should have worried you. Two are plainly small: pay the next panel's jurors, and rent the delay the appeal imposes. The middle one reads differently. The attacker's capture odds times the stake at issue. On a ten-million-dollar case that phrase sounds like a ten-million-dollar bond, a toll only the rich could pay, which would hand the whole ladder to whoever already has the deepest pockets. If that were how it worked, the appeal would become the very thing it exists to prevent. It is the opposite, and the reason is the property the court is already built on.</p>
+    <p>Capture odds are not a fixed number. They are set by the width of the pool. A bloc that is one in a hundred of a wide pool almost never lands a panel majority, so a bond equal to capture odds times the stake is the prize multiplied by a probability the pool has already crushed toward zero. On a healthy pool that middle floor rounds to nothing and drops out, and the rung falls back to the small floor: just cover the next panel. The stake climbs, the panel grows from 7 to 15 to 31, the odds of capturing it collapse faster than the prize rises, and appealing a ten-million-dollar verdict ends up costing about what it takes to pay thirty-one strangers for an afternoon. The wider and safer the court becomes, the cheaper it is to use. For once, security and affordability pull the same way.</p>
+    <p>The floor only wakes up where it should, in a thin pool. A brand-new market with a few hundred active jurors really can be swung by a determined bloc, so there the capture term rises to the prize times that genuine risk, plus a small safety factor, until the attack is not worth trying. Honest appellants in that thin corner pay more too, which is the court being honest: this pool is not yet wide enough to settle that much money for pocket change. Grow it and the cost falls on its own, with no parameter to retune. The bond defends against a bloc up to a set size; anything larger is the work of the parallel panels and the collusion audit, not the price tag. Drag the two sliders and watch the floors trade places.</p>
+
+    <div class="widget reveal">
+      <div class="widget-head"><span class="live"></span> What does it cost to appeal?</div>
+      <div class="controls">
+        <div class="row"><label for="abStake">Money in dispute</label> <b id="abStakeOut">$10,000</b></div>
+        <input id="abStake" type="range" min="0" max="100" step="1" value="40">
+        <div class="row"><label for="abPool">Jurors active in the pool</label> <b id="abPoolOut">5,000</b></div>
+        <input id="abPool" type="range" min="0" max="100" step="1" value="41">
+      </div>
+      <div class="floors">
+        <div class="fl"><div class="flk"><span>Pay the next panel</span><span id="abPanelV">&hellip;</span></div><div class="flt"><span class="panel" id="abPanelBar"></span></div></div>
+        <div class="fl"><div class="flk"><span>Capture floor: odds &times; stake &times; 2</span><span id="abCapV">&hellip;</span></div><div class="flt"><span class="cap" id="abCapBar"></span></div></div>
+      </div>
+      <div class="bondnote" id="abNote">&hellip;</div>
+      <div class="readout">
+        <div class="stat"><div class="k">Panel size</div><div class="v" id="abPanel">&hellip;</div></div>
+        <div class="stat"><div class="k">Capture odds</div><div class="v" id="abOdds">&hellip;</div></div>
+        <div class="stat"><div class="k">You pay to appeal</div><div class="v accent" id="abBond">&hellip;</div></div>
+      </div>
+      <p style="font-family:var(--sans);font-size:.86rem;color:var(--faint);margin:1rem 0 0">The bond you pay is whichever floor is taller. On a wide pool the green floor wins and stays flat and cheap no matter how large the stake; only a thin pool lets the blue capture floor rise.</p>
+    </div>
+
+    <p>One number, set by the width of the pool, doing two jobs at once: pricing an attacker out of the largest cases and letting everyone else onto the ladder for the cost of a panel. The cheapest court to appeal in is the one that is hardest to capture.</p>
   </section>
 
   <section class="reveal">
@@ -405,6 +446,94 @@
     });
   });
   pick("btc");
+})();
+
+// ============ appeal-bond pricing ============
+(function () {
+  "use strict";
+  var stakeS = document.getElementById("abStake");
+  if (!stakeS) return;
+  var poolS = document.getElementById("abPool");
+  var stakeOut = document.getElementById("abStakeOut");
+  var poolOut = document.getElementById("abPoolOut");
+  var panelV = document.getElementById("abPanelV");
+  var capV = document.getElementById("abCapV");
+  var panelBar = document.getElementById("abPanelBar");
+  var capBar = document.getElementById("abCapBar");
+  var note = document.getElementById("abNote");
+  var panelEl = document.getElementById("abPanel");
+  var oddsEl = document.getElementById("abOdds");
+  var bondEl = document.getElementById("abBond");
+
+  var MSTAR = 500, LAMBDA = 2, FEE = 1.5;
+
+  function lgamma(z) {
+    var g = 7, c = [0.99999999999980993, 676.5203681218851, -1259.1392167224028,
+      771.32342877765313, -176.61502916214059, 12.507343278686905,
+      -0.13857109526572012, 9.9843695780195716e-6, 1.5056327351493116e-7];
+    if (z < 0.5) return Math.log(Math.PI / Math.sin(Math.PI * z)) - lgamma(1 - z);
+    z -= 1; var x = c[0];
+    for (var i = 1; i < g + 2; i++) x += c[i] / (z + i);
+    var t = z + g + 0.5;
+    return 0.5 * Math.log(2 * Math.PI) + (z + 0.5) * Math.log(t) - t + Math.log(x);
+  }
+  function logChoose(n, k) {
+    if (k < 0 || k > n || n < 0) return -Infinity;
+    return lgamma(n + 1) - lgamma(k + 1) - lgamma(n - k + 1);
+  }
+  function binomTail(n, k, p) {
+    if (p <= 0) return k <= 0 ? 1 : 0;
+    if (p >= 1) return k <= n ? 1 : 0;
+    var s = 0;
+    for (var i = k; i <= n; i++) s += Math.exp(logChoose(n, i) + i * Math.log(p) + (n - i) * Math.log(1 - p));
+    return Math.min(1, Math.max(0, s));
+  }
+  function money(n) {
+    if (n >= 1e6) return "$" + (n / 1e6).toFixed(n >= 1e7 ? 0 : 1) + "M";
+    if (n >= 1e3) return "$" + (n / 1e3).toFixed(n >= 1e4 ? 0 : 1) + "k";
+    if (n >= 20) return "$" + Math.round(n);
+    return "$" + n.toFixed(2);
+  }
+  function pctTxt(x) {
+    if (x <= 0) return "0%";
+    if (x < 0.0001) return "<0.01%";
+    return (x * 100).toFixed(x < 0.1 ? 2 : 1) + "%";
+  }
+  function stakeVal() { return 100 * Math.pow(10, parseInt(stakeS.value, 10) / 100 * 5); }
+  function poolVal() { return Math.round(1000 * Math.pow(50, parseInt(poolS.value, 10) / 100)); }
+  function panelFor(stake) { return stake < 10000 ? 7 : (stake < 1000000 ? 15 : 31); }
+
+  function update() {
+    var stake = stakeVal();
+    var pool = poolVal();
+    var n = panelFor(stake);
+    var maj = Math.floor(n / 2) + 1;
+    var share = Math.min(1, MSTAR / pool);
+    var odds = binomTail(n, maj, share);
+    var panelCost = n * FEE;
+    var capFloor = LAMBDA * odds * stake;
+    var bond = Math.max(panelCost, capFloor);
+
+    stakeOut.textContent = money(stake);
+    poolOut.textContent = pool.toLocaleString("en-US");
+    panelV.textContent = money(panelCost);
+    capV.textContent = money(capFloor);
+    var mx = Math.max(panelCost, capFloor, 1);
+    panelBar.style.width = Math.max(panelCost / mx * 100, 2) + "%";
+    capBar.style.width = (capFloor > 0 ? Math.max(capFloor / mx * 100, 2) : 0) + "%";
+    panelEl.textContent = n + " seats";
+    oddsEl.textContent = pctTxt(odds);
+    bondEl.textContent = money(bond);
+
+    if (capFloor <= panelCost) {
+      note.innerHTML = "The pool is wide enough that capturing a panel is hopeless, so the capture floor rounds to nothing. The rung drops to the small floor, paying the next panel: <b>" + money(bond) + " to appeal a " + money(stake) + " case</b>.";
+    } else {
+      note.innerHTML = "This pool is thin enough that a bloc could swing a panel, so the capture floor climbs to price the attack out: <b>" + money(bond) + "</b>. Widen the pool and it falls back toward the " + money(panelCost) + " it costs to seat the next panel.";
+    }
+  }
+  stakeS.addEventListener("input", update);
+  poolS.addEventListener("input", update);
+  update();
 })();
 </script>
 </body>
