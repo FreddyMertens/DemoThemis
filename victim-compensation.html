@@ -1,0 +1,565 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Should a court pay its victims? Two attacks people confuse</title>
+<meta name="description" content="A mechanism-design note: the attack that justifies a victim-compensation pool is not juror capture, which prevention already stops, but a data-controller who manufactures a loss with honest jurors. A claimable pool is a honeypot for that attacker, so the court should punish cheats and split their forfeited bonds across the active, high-quality jurors instead.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@500;700&family=Newsreader:opsz,wght@6..72,200..700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="assets/styles.css">
+<style>
+  body.theme-note { --accent: #6d4bd0; --accent-soft: #ece6fb; --accent-ink: #492da4; }
+
+  .verdict { font-family: var(--sans); font-size: .72rem; font-weight: 700; letter-spacing: .04em; text-transform: uppercase; padding: .2rem .6rem; border-radius: 999px; white-space: nowrap; display: inline-block; }
+  .v-good { color: #fff; background: var(--good); }
+  .v-mid { color: #7a3c00; background: #fbe7d6; }
+  .v-high { color: #fff; background: var(--bad); }
+  .stat .v .verdict { white-space: normal; line-height: 1.3; }
+
+  .seg { display: inline-flex; gap: .3rem; flex-wrap: wrap; }
+  .seg button { font-family: var(--sans); font-weight: 600; font-size: .85rem; padding: .35rem .75rem; border-radius: 8px; border: 1px solid var(--line-strong); background: var(--bg); color: var(--muted); cursor: pointer; transition: background .12s ease, color .12s ease; }
+  .seg button.active { background: var(--accent-soft); color: var(--accent-ink); border-color: color-mix(in srgb, var(--accent) 35%, transparent); }
+  .togrow { display: flex; gap: 1.4rem; flex-wrap: wrap; margin: .2rem 0 .4rem; }
+  .togrow .tl { font-family: var(--sans); font-size: .82rem; color: var(--muted); margin-bottom: .3rem; }
+
+  .dnote { font-family: var(--sans); font-size: .92rem; color: var(--ink-soft); background: var(--accent-soft); border: 1px solid color-mix(in srgb, var(--accent) 30%, transparent); border-radius: 10px; padding: .8rem 1rem; margin-top: 1rem; line-height: 1.55; }
+  .dnote b { color: var(--accent-ink); }
+
+  /* capture gauntlet */
+  .gaunt { display: flex; flex-direction: column; gap: .55rem; margin: .2rem 0 1rem; font-family: var(--sans); }
+  .gstep .gk { font-size: .84rem; color: var(--ink-soft); margin-bottom: .25rem; display: flex; justify-content: space-between; gap: .8rem; align-items: baseline; }
+  .gstep .gk .gp { font-family: var(--mono); font-weight: 700; color: var(--accent-ink); white-space: nowrap; }
+  .gtrack { height: 22px; border-radius: 7px; background: var(--line); border: 1px solid var(--line-strong); overflow: hidden; }
+  .gtrack > span { display: block; height: 100%; border-radius: 0 7px 7px 0; background: linear-gradient(90deg, var(--accent), var(--accent-ink)); transition: width .3s ease; min-width: 2px; }
+  .gstep.final .gk { font-weight: 700; color: var(--ink); }
+  .gstep.final .gk .gp { color: #0b6b43; }
+  .gstep.final .gtrack > span { background: linear-gradient(90deg, var(--good), #0a6157); }
+  .gclosed { display: flex; align-items: flex-start; gap: .7rem; background: var(--bg); border: 1px dashed var(--line-strong); border-radius: 10px; padding: .7rem .9rem; font-family: var(--sans); font-size: .88rem; color: var(--muted); line-height: 1.5; margin-bottom: .8rem; }
+  .gclosed .lock { font-size: 1.15rem; flex-shrink: 0; }
+  .gclosed b { color: var(--ink); }
+
+  /* manufactured-victim heist */
+  .heist { display: flex; flex-direction: column; gap: .5rem; margin: .3rem 0 .9rem; }
+  .hstep { display: flex; gap: .7rem; align-items: flex-start; background: var(--bg); border: 1px solid var(--line-strong); border-radius: 10px; padding: .65rem .85rem; font-family: var(--sans); transition: border-color .2s ease, box-shadow .2s ease; }
+  .hstep.lit { border-color: var(--accent); box-shadow: 0 0 0 2px var(--accent-soft); }
+  .hstep .hn { font-family: var(--mono); font-weight: 700; color: var(--accent-ink); font-size: .85rem; flex-shrink: 0; width: 1.3rem; }
+  .hstep .hb { font-size: .88rem; color: var(--ink-soft); line-height: 1.5; }
+  .hstep .hb b { color: var(--ink); }
+  .honest { display: inline-flex; align-items: center; gap: .4rem; font-family: var(--sans); font-size: .78rem; font-weight: 700; color: #0b6b43; background: #ddf3e9; border-radius: 999px; padding: .18rem .55rem; margin-top: .35rem; }
+  .pnl { font-family: var(--sans); font-weight: 700; font-size: 1.4rem; }
+  .pnl.bad { color: var(--bad); }
+  .pnl.good { color: var(--good); }
+
+  /* redistribution pool */
+  .pooldots { display: grid; grid-template-columns: repeat(auto-fill, minmax(13px, 1fr)); gap: 4px; margin: .4rem 0 1rem; }
+  .pdotc { aspect-ratio: 1; border-radius: 50%; background: var(--line-strong); transition: background .25s ease, transform .25s ease; }
+  .pdotc.cheat { background: var(--bad); transform: scale(1.25); }
+  .pdotc.recv { background: var(--good); }
+  .props { display: flex; gap: .5rem; flex-wrap: wrap; margin: .3rem 0 .2rem; }
+  .prop { font-family: var(--sans); font-size: .8rem; font-weight: 600; border-radius: 8px; padding: .35rem .6rem; border: 1px solid var(--line-strong); }
+  .prop.ok { color: #0b6b43; background: #ddf3e9; border-color: #bfe6d4; }
+  .prop.bad { color: #9a2417; background: #fbe2dd; border-color: #f3ccc4; }
+
+  /* longevity sim */
+  .simgrid { display: grid; grid-template-columns: 1fr 1fr; gap: 1rem; margin-bottom: 1rem; }
+  @media (max-width: 620px) { .simgrid { grid-template-columns: 1fr; } }
+  .simcol { border-radius: var(--radius); border: 1px solid var(--line); background: var(--surface); padding: 1.1rem 1.1rem; box-shadow: var(--shadow); font-family: var(--sans); }
+  .simcol.pay { border-top: 3px solid var(--bad); }
+  .simcol.pun { border-top: 3px solid var(--good); }
+  .simcol h4 { font-size: .92rem; margin: 0 0 .8rem; }
+  .simbars { display: flex; align-items: flex-end; gap: 6px; height: 96px; }
+  .simbar { flex: 1; background: var(--line-strong); border-radius: 4px 4px 0 0; transition: height .25s ease; min-height: 3px; }
+  .simcol.pay .simbar { background: color-mix(in srgb, var(--bad) 78%, transparent); }
+  .simcol.pun .simbar { background: color-mix(in srgb, var(--good) 78%, transparent); }
+  .simcap { font-family: var(--mono); font-size: .72rem; color: var(--faint); display: flex; justify-content: space-between; margin-top: .35rem; }
+  .bignum { font-family: var(--sans); font-weight: 700; font-size: 1.7rem; line-height: 1; margin-top: .8rem; }
+  .simcol.pay .bignum { color: var(--bad); }
+  .simcol.pun .bignum { color: var(--good); }
+  .bignum small { display: block; font-weight: 500; font-size: .74rem; color: var(--muted); margin-top: .3rem; letter-spacing: 0; }
+</style>
+</head>
+<body class="theme-note">
+<div id="progress"></div>
+
+<nav class="sitenav" aria-label="Primary">
+  <div class="sitenav-inner">
+    <a class="brand" href="index.html">DemoThemis<span class="dot">.</span></a>
+    <button class="nav-toggle" type="button" aria-label="Menu" aria-expanded="false">&#9776;</button>
+    <div class="nav-links">
+      <a href="index.html">Home</a>
+      <a href="vision.html">Vision</a>
+      <div class="nav-group">
+        <button class="nav-group-btn" type="button">The mechanism</button>
+        <div class="nav-menu">
+          <a href="juror-court.html"><span class="ch">02</span> The court</a>
+          <a href="hybrid-juror-system.html"><span class="ch">03</span> The hybrid system</a>
+        </div>
+      </div>
+      <div class="nav-group nav-group-end">
+        <button class="nav-group-btn" type="button">The bootstrap</button>
+        <div class="nav-menu">
+          <a href="prediction-market.html"><span class="ch">04</span> The prediction market</a>
+          <a href="hybrid-juror-prediction-market-integration.html"><span class="ch">05</span> The loop</a>
+          <a href="zero-to-one.html"><span class="ch">06</span> Zero to one</a>
+        </div>
+      </div>
+      <a href="compounding.html">Why it compounds</a>
+      <a href="the-design.html">The blueprint</a>
+      <a href="governance.html">Governance</a>
+    </div>
+  </div>
+</nav>
+
+<header class="hero reveal">
+  <p class="kicker">Design note</p>
+  <h1>Should a court pay its victims?</h1>
+  <p class="dek">The instinct is to make the wronged whole. This note argues that a pool which pays victims protects no one the court does not already protect, and hands anyone who controls the facts a pot to drain, with honest jurors the whole time. The better design punishes cheats, rewards the accurate, and splits a cheat's forfeited bond across the active, high-quality jurors. Every claim is laid out so you can test it yourself.</p>
+  <div class="meta">
+    <span class="pill">Mechanism design</span>
+    <span>13 min read</span>
+    <span class="dot">&bull;</span>
+    <span>Two attacks, told apart</span>
+  </div>
+</header>
+
+<main class="content wrap">
+
+  <aside id="toc" class="toc reveal"></aside>
+
+  <section class="reveal">
+    <p class="lead">Start with the kindest line in the whole design and watch two very different attackers read it. A court that judges honestly, and on the rare day it is fooled reaches into a fund and makes the loser whole, sounds like justice finished properly. One attacker tries to corrupt the jurors and finds he cannot. The other never touches a juror and walks off with the fund.</p>
+    <p>This note is about telling those two apart, because the design keeps bundling them together, and the bundle is the whole reason the fund looks safe. The claim it argues for sounds harsh and turns out to be the more durable, and in the long run the kinder, design: punish jurors who cheat, reward jurors who are accurate, and run no pool that pays the victims of a bad verdict. Every step has a slider or a switch. The numbers are illustrative, the shapes are the argument.</p>
+  </section>
+
+  <!-- ============ attack one: capture ============ -->
+  <section class="reveal">
+    <p class="sec-label">The attack you imagine</p>
+    <h2>Attack one: bribing the jury, the threat that is already stopped</h2>
+    <p>The attack everyone pictures is capture. Pay off enough jurors, or pack the panel with your own people, until the verdict reads the way you want. If that worked, a court really would need a fund to clean up after it. It does not work, and it is worth seeing exactly why before we mention funds at all, because a verdict that cannot be bought needs no insurance against being bought.</p>
+    <p>To flip a verdict you must own a majority of a randomly drawn panel. You cannot buy the jurors who get drawn, because the sealed re-keyable ballot lets each one take your money and still vote their own mind, with no way for you to check. So you are forced to own the pool itself, and a wide pool turns that into a lottery you lose. On the largest cases several panels must agree at once, which multiplies an already tiny chance. Push the stakes up and the odds get worse for the attacker, not better, because the prize buys a bigger jury and more juries, never an easier one.</p>
+
+    <div class="widget reveal">
+      <div class="widget-head"><span class="live"></span> Can you capture this verdict?</div>
+      <div class="controls">
+        <div class="row"><label for="g1stake">Money at stake in the case</label> <b id="g1stakeOut">&hellip;</b></div>
+        <input id="g1stake" type="range" min="0" max="100" step="1" value="40">
+        <div class="row"><label for="g1pool">Verified jurors in the pool</label> <b id="g1poolOut">&hellip;</b></div>
+        <input id="g1pool" type="range" min="0" max="100" step="1" value="52">
+        <div class="row"><label for="g1bloc">Jurors the attacker has corrupted</label> <b id="g1blocOut">&hellip;</b></div>
+        <input id="g1bloc" type="range" min="0" max="100" step="1" value="58">
+      </div>
+      <div class="gclosed"><span class="lock">&#128274;</span><span><b>Bribing the drawn jurors: closed.</b> The sealed, re-keyable ballot lets a juror take your money and still vote their own mind, with no way for you to check. The only door left is to win the random draw itself.</span></div>
+      <div class="gaunt" id="g1gaunt"></div>
+      <div class="readout">
+        <div class="stat"><div class="k">Panels to capture at once</div><div class="v" id="g1k">&hellip;</div></div>
+        <div class="stat"><div class="k">Chance the verdict is captured</div><div class="v accent" id="g1chance" style="font-size:1.1rem">&hellip;</div></div>
+        <div class="stat"><div class="k">If caught, the cheat loses</div><div class="v" id="g1pun" style="font-size:.95rem;line-height:1.35;color:var(--bad);font-weight:700">&hellip;</div></div>
+      </div>
+      <p style="font-family:var(--sans);font-size:.86rem;color:var(--faint);margin:1rem 0 0">Drag the stakes to the ceiling and the chance only shrinks. <b>Capture is a prevention problem, and prevention solves it without paying anyone a cent.</b></p>
+    </div>
+
+    <p>Nothing in that gauntlet is a payout to a victim. The verdict stays honest because of prevention, the draw and the sealed ballot and the wide pool, with the slash and the lifetime ban waiting for any single juror who sells out anyway. The court's integrity is built in, not insured after the fact. So if a compensation fund is justified, it is not here, propping up the verdict. Hold that thought, because the attacker who actually wants the fund is not trying to corrupt anyone at all.</p>
+  </section>
+
+  <!-- ============ attack two: manufactured victim ============ -->
+  <section class="reveal">
+    <p class="sec-label">The attack you don't</p>
+    <h2>Attack two: the manufactured victim, with every juror honest</h2>
+    <p>Here is the attacker who never appears in the last diagram, because he never goes near a juror. He controls the thing the market is about. Picture a company deciding whether to sell an asset, where he owns both the decision and the moment the world is told. The bet is "will it sell by the end of July," and he is the only person who knows the real answer and its timing.</p>
+    <p>He takes both sides of his own market with two wallets, no identity needed, since betting is open to anyone. The deadline passes with no announcement, so the market settles honestly: no sale was visible, the answer is no, his no wallet collects and his yes wallet loses, and his money round-trips home minus fees. If anyone disputes it, the jurors look at the facts in front of them and rule no, correctly, because on the evidence available they are right. Then he reveals the sale had quietly happened all along, calls that honest no verdict the wrong that hurt the yes side he is still holding, and asks the fund to make him whole. Flip the pool on and off and watch the only number that matters.</p>
+
+    <div class="widget reveal">
+      <div class="widget-head"><span class="live"></span> The manufactured victim</div>
+      <div class="controls">
+        <div class="row"><label for="b1stake">Money the attacker stages on each side</label> <b id="b1stakeOut">&hellip;</b></div>
+        <input id="b1stake" type="range" min="0" max="100" step="1" value="45">
+        <div class="togrow"><div><div class="tl">Does a compensation pool exist?</div><span class="seg" id="b1pooltog"><button data-v="on" class="active">Yes</button><button data-v="off">No</button></span></div></div>
+      </div>
+      <div class="heist" id="b1heist">
+        <div class="hstep"><span class="hn">1</span><span class="hb"><b>Control the event.</b> You decide whether the asset is sold, and when the world finds out. You own the ground truth and its timing.</span></div>
+        <div class="hstep"><span class="hn">2</span><span class="hb"><b>Bet both sides.</b> Two wallets, yes and no, your own money on each. You are hedged, so the bet itself is a wash minus fees.</span></div>
+        <div class="hstep"><span class="hn">3</span><span class="hb"><b>The market settles honestly.</b> No announcement by the deadline, so no wins. Any jurors rule on the visible facts and get it right. <span class="honest">&#10003; jurors corrupted: 0</span></span></div>
+        <div class="hstep"><span class="hn">4</span><span class="hb"><b>Stage the reversal.</b> You reveal the sale happened after all, and present the honest no verdict as the wrong that hurt your yes side.</span></div>
+        <div class="hstep"><span class="hn">5</span><span class="hb" id="b1payline">&hellip;</span></div>
+      </div>
+      <div style="display:flex;gap:.6rem;flex-wrap:wrap;margin-bottom:1rem">
+        <button class="btn" id="b1run" type="button">Run the attack</button>
+      </div>
+      <div class="readout">
+        <div class="stat"><div class="k">Jurors corrupted</div><div class="v" id="b1jurors" style="font-size:1.3rem">0</div></div>
+        <div class="stat"><div class="k">The attacker walks away with</div><div class="v"><span class="pnl" id="b1profit">&hellip;</span></div></div>
+        <div class="stat"><div class="k">For the pool, this is</div><div class="v" id="b1chip" style="font-size:1.05rem">&hellip;</div></div>
+      </div>
+      <div class="dnote" id="b1note">&hellip;</div>
+    </div>
+
+    <p>Read what just happened. Every juror was honest at every step. There was no panel to capture and no ballot to buy, so not one defense from the first diagram even applies. The attacker's entire profit came out of the pool, unlocked by a loss he manufactured by controlling the data and its timing. That is why the gauntlet is beside the point for the fund: the fund's weakness was never dishonest jurors. It is that a pot which pays on a claim of harm can be drained by anyone who can produce the appearance of harm, and a person who controls the facts can produce it at will. Turn the pool off and the same attack earns nothing but a fee bill. The cleanest defense against an attack that needs a pool is to keep no pool.</p>
+    <p>Two smaller locks back this up and are worth stating so the footnote is not hidden. Settled markets never reopen for new evidence, so the September revelation cannot rewrite a July payout. And a market's question should be pinned to a fact that is verifiable by its deadline, so a sale concealed until later correctly resolves no and a late reveal changes nothing. But the load-bearing answer is the simplest one: a fund that pays no claims cannot be farmed by a forged one.</p>
+  </section>
+
+  <!-- ============ where the slash goes ============ -->
+  <section class="reveal">
+    <p class="sec-label">The leftover money</p>
+    <h2>What to do with a caught cheat's bond</h2>
+    <p>Retire the victim fund and a smaller question is left over. A juror who is caught still forfeits a bond, and that money has to go somewhere. Burning it was the tidy answer in a system with its own token, where destroying supply quietly hands value to everyone still holding one. This system settles in DAI, so burning is just setting dollars alight for nobody. The other obvious destinations each switch on a bad incentive, except one. Click through them.</p>
+
+    <div class="widget reveal">
+      <div class="widget-head"><span class="live"></span> Where does a caught cheat's bond go?</div>
+      <div class="controls">
+        <div class="row"><label>Send the forfeited bond to</label> <span class="seg" id="c1seg"><button data-v="all" class="active">Active jurors above the bar</button><button data-v="panel">The winning panel</button><button data-v="victims">The victims</button><button data-v="burn">Destroyed</button></span></div>
+        <div class="row"><label for="c1n">Active jurors in the pool</label> <b id="c1nOut">&hellip;</b></div>
+        <input id="c1n" type="range" min="0" max="100" step="1" value="55">
+      </div>
+      <div class="pooldots" id="c1dots" aria-hidden="true"></div>
+      <div style="display:flex;gap:.6rem;flex-wrap:wrap;margin-bottom:.6rem">
+        <button class="btn" id="c1catch" type="button">Catch a cheat</button>
+      </div>
+      <div class="props" id="c1props"></div>
+      <div class="readout">
+        <div class="stat"><div class="k">Each honest juror receives</div><div class="v accent" id="c1share" style="font-size:1.2rem">&hellip;</div></div>
+        <div class="stat"><div class="k">The forfeited bond</div><div class="v" id="c1bond" style="font-size:1.1rem">$5</div></div>
+      </div>
+      <div class="dnote" id="c1note">&hellip;</div>
+    </div>
+
+    <p>The even split is doing four quiet jobs at once. It cannot be claimed by a stranger, because only a verified, bonded, active juror ever receives it, so it is no honeypot. It pays nothing for any particular verdict, because your share is the same whether you sat the panel, voted yes, or voted no, so it bends no vote. It rewards simply being in the pool, which widens the pool, and pool width is the security parameter the whole court rests on. And because the money comes from the careless and lands on everyone, it runs a steady transfer from the rarely-honest to the usually-honest.</p>
+    <p>The one cost to weigh is that jurors, as a class, now gain a little when slashes happen. But every juror is also a potential slashee, and the triggers are mechanical rules, not a vote, so no one can profitably steer a verdict toward a slash. What is left is punishment recycled into the thing that makes the court strong: a wider, better-paid pool of honest humans. If you want even that mild class incentive gone, send the bonds to the watchers who catch cheats instead, which pays for proven detection and raises the odds the next cheat is caught. Either way, the bond never becomes a pot a stranger can claim.</p>
+  </section>
+
+  <!-- ============ the objection / longevity ============ -->
+  <section class="reveal">
+    <p class="sec-label">But the wronged</p>
+    <h2>Will people trust a court that will not pay them?</h2>
+    <p>This is the fair objection, and it deserves a real answer rather than a brave one. People use an arbitration service because it protects them. Tell them the protocol itself will not make them whole and some of them walk. There are two answers, and the second is the one that should settle it.</p>
+    <p>First, protection can still be bought. It just should not be pooled inside the protocol and paid out on autopilot. An insurer can underwrite the risk as a separate, opt-in product, price it to the real danger, and refuse a claim that smells staged, because a private underwriter has every reason to investigate that a blind protocol fund has none. Insurance as a business someone chooses and pays for is fine. Insurance as a reflex wired into the core, paying any claim that clears a rule, is the honeypot from the second diagram. The difference is who carries the cost of being wrong: an underwriter who can say no, or a shared pool that cannot.</p>
+    <p>Second, and this is the argument that should settle it, a protocol with no pot to chase is attacked less, and a protocol attacked less produces fewer victims in the first place. Compensation treats the harm after it is done. Strength removes the cause. Run the two courts side by side over a few years and the kindest-looking one does worse by the only measure that counts.</p>
+
+    <div class="widget reveal">
+      <div class="widget-head"><span class="live"></span> Which court leaves fewer victims?</div>
+      <div class="controls">
+        <div class="row"><label for="d3pull">How lucrative attackers find the pool</label> <b id="d3pullOut">medium</b></div>
+        <input id="d3pull" type="range" min="0" max="100" step="1" value="55">
+      </div>
+      <div class="simgrid">
+        <div class="simcol pay">
+          <h4>The court that pays victims</h4>
+          <div class="simbars" id="d3payBars"></div>
+          <div class="simcap"><span>year 1</span><span>year 5</span></div>
+          <div class="bignum" id="d3payNum">&hellip;<small>people harmed over five years</small></div>
+        </div>
+        <div class="simcol pun">
+          <h4>The court that only punishes</h4>
+          <div class="simbars" id="d3punBars"></div>
+          <div class="simcap"><span>year 1</span><span>year 5</span></div>
+          <div class="bignum" id="d3punNum">&hellip;<small>people harmed over five years</small></div>
+        </div>
+      </div>
+      <div style="display:flex;gap:.6rem;flex-wrap:wrap;margin-bottom:.4rem">
+        <button class="btn" id="d3run" type="button">Run five years</button>
+      </div>
+      <p style="font-family:var(--sans);font-size:.86rem;color:var(--faint);margin:1rem 0 0">Both courts suffer the same honest mistakes. Only the paying court grows a second source of victims, the people farmed to drain its pool, and that source compounds as word spreads. <b>It compensates some of them and creates more.</b></p>
+    </div>
+
+    <p>The paying court spends five years making some victims whole and manufacturing more of them than it ever pays. The punishing court has nothing worth staging an attack for, so the only victims it ever sees are the honest mistakes, and there are fewer of those because there are fewer attacks. The kindest thing a court can do for victims is to have fewer of them.</p>
+  </section>
+
+  <!-- ============ synthesis ============ -->
+  <section class="reveal">
+    <p class="sec-label">The verdict</p>
+    <h2>Punish the guilty, reward the honest, and keep no vault</h2>
+    <p>A court has two jobs that survive contact with an attacker. Make a bought verdict impossible, and make a careless one expensive. The first diagram showed the first job done by prevention; the slash and the lifetime ban do the second. Both are clean. One pays jurors from fees for honest work, the other takes money from a cheat and spreads it across the honest pool. Neither is a pot a stranger can open with a story.</p>
+    <p>The fund was quietly trying to do a third job, insure against bad verdicts, and the second diagram showed that job is a trap, because the only person with a real motive to collect is the one who manufactured the loss. So the answer to the question in the title is no. Not because victims do not matter, but because the surest way to protect them is a court too solid to be captured and too disciplined to keep a vault that only a fraudster has a reason to visit.</p>
+    <p>One honest line to close on. The design takes exactly this route. No pool pays a victim, the slash and the lifetime ban stay, and a caught cheat's forfeited bond joins the reward pool that pays the active, high-quality jurors. The reasoning above is the why, settled before any pool could grow large enough to be worth draining.</p>
+  </section>
+
+  <footer class="endnote reveal">
+    <div class="sitemap">
+      <div class="sitemap-col">
+        <span class="sm-h">Start</span>
+        <a href="index.html">Home &middot; the map</a>
+        <a href="vision.html">The vision</a>
+      </div>
+      <div class="sitemap-col">
+        <span class="sm-h">The mechanism</span>
+        <a href="juror-court.html">The court</a>
+        <a href="hybrid-juror-system.html">The hybrid system</a>
+      </div>
+      <div class="sitemap-col">
+        <span class="sm-h">The settled design</span>
+        <a href="the-design.html">The blueprint</a>
+        <a href="governance.html">Governance</a>
+      </div>
+    </div>
+    <p class="signoff">A court is safest when none of its money can be claimed by telling a story.</p>
+  </footer>
+
+</main>
+
+<script src="assets/common.js"></script>
+<script>
+function noteMoney(n) {
+  n = Math.round(n);
+  var s = n < 0 ? "-" : "";
+  n = Math.abs(n);
+  if (n >= 1000000) return s + "$" + (n / 1000000).toFixed(1) + "M";
+  if (n >= 1000) return s + "$" + (n / 1000).toFixed(n >= 10000 ? 0 : 1) + "k";
+  return s + "$" + n;
+}
+function noteShare(n) {
+  if (n >= 1) return noteMoney(n);
+  if (n >= 0.01) return "$" + n.toFixed(2);
+  if (n >= 0.0001) return "$" + n.toFixed(4);
+  return "less than a hundredth of a cent";
+}
+function noteSpan(v, lo, hi) { return lo * Math.pow(10, v / 100 * Math.log10(hi / lo)); }
+function noteSeg(id, cb) {
+  var box = document.getElementById(id);
+  if (!box) return;
+  Array.prototype.forEach.call(box.querySelectorAll("button"), function (b) {
+    b.addEventListener("click", function () {
+      Array.prototype.forEach.call(box.querySelectorAll("button"), function (x) { x.classList.remove("active"); });
+      b.classList.add("active");
+      cb(b.getAttribute("data-v"));
+    });
+  });
+}
+
+// ============ attack one: capture gauntlet ============
+(function () {
+  "use strict";
+  var stakeS = document.getElementById("g1stake");
+  if (!stakeS) return;
+  var poolS = document.getElementById("g1pool");
+  var blocS = document.getElementById("g1bloc");
+  var stakeOut = document.getElementById("g1stakeOut");
+  var poolOut = document.getElementById("g1poolOut");
+  var blocOut = document.getElementById("g1blocOut");
+  var gaunt = document.getElementById("g1gaunt");
+  var kEl = document.getElementById("g1k");
+  var chanceEl = document.getElementById("g1chance");
+  var punEl = document.getElementById("g1pun");
+
+  function lgamma(z) {
+    var g = 7, c = [0.99999999999980993, 676.5203681218851, -1259.1392167224028,
+      771.32342877765313, -176.61502916214059, 12.507343278686905,
+      -0.13857109526572012, 9.9843695780195716e-6, 1.5056327351493116e-7];
+    if (z < 0.5) return Math.log(Math.PI / Math.sin(Math.PI * z)) - lgamma(1 - z);
+    z -= 1; var x = c[0];
+    for (var i = 1; i < g + 2; i++) x += c[i] / (z + i);
+    var t = z + g + 0.5;
+    return 0.5 * Math.log(2 * Math.PI) + (z + 0.5) * Math.log(t) - t + Math.log(x);
+  }
+  function lchoose(n, k) { if (k < 0 || k > n || n < 0) return -Infinity; return lgamma(n + 1) - lgamma(k + 1) - lgamma(n - k + 1); }
+  function hyperTail(N, K, n, maj) {
+    K = Math.min(K, N);
+    var lo = Math.max(maj, Math.max(0, n - (N - K))), hi = Math.min(n, K);
+    if (lo > hi) return 0;
+    var d = lchoose(N, n), s = 0;
+    for (var i = lo; i <= hi; i++) s += Math.exp(lchoose(K, i) + lchoose(N - K, n - i) - d);
+    return Math.min(1, Math.max(0, s));
+  }
+  function pct(p) { if (p <= 0) return "0%"; if (p < 0.0001) return "<0.01%"; return (p * 100).toFixed(p < 0.1 ? 2 : 1) + "%"; }
+  function odds(p) {
+    if (p <= 0) return "essentially never";
+    var inv = 1 / p;
+    if (inv >= 1e9) return "1 in " + (inv / 1e9).toFixed(inv >= 1e10 ? 0 : 1) + " billion";
+    if (inv >= 1e6) return "1 in " + (inv / 1e6).toFixed(inv >= 1e7 ? 0 : 1) + " million";
+    return "1 in " + Math.round(inv).toLocaleString("en-US");
+  }
+  function barW(p) { return Math.max(0.6, Math.min(100, p * 100)); }
+  function panelFor(s) { return s < 10000 ? 7 : (s < 1000000 ? 15 : 31); }
+  function panelsFor(s) { return s > 5000000 ? 3 : 1; }
+  function row(label, value, p, cls) {
+    return '<div class="gstep' + (cls ? " " + cls : "") + '"><div class="gk"><span>' + label +
+      '</span><span class="gp">' + value + '</span></div><div class="gtrack"><span style="width:' + barW(p) + '%"></span></div></div>';
+  }
+
+  function update() {
+    var stake = Math.round(noteSpan(parseInt(stakeS.value, 10), 1000, 50000000));
+    var pool = Math.round(noteSpan(parseInt(poolS.value, 10), 500, 100000));
+    var bloc = Math.min(Math.round(pool * 0.6), Math.round(noteSpan(parseInt(blocS.value, 10), 50, 20000)));
+    var n = panelFor(stake), maj = Math.floor(n / 2) + 1, k = panelsFor(stake);
+    var share = bloc / pool, p1 = hyperTail(pool, bloc, n, maj), pf = Math.pow(p1, k);
+
+    stakeOut.textContent = noteMoney(stake);
+    poolOut.textContent = pool.toLocaleString("en-US");
+    blocOut.textContent = bloc.toLocaleString("en-US");
+
+    var html = row("You control " + bloc.toLocaleString("en-US") + " of " + pool.toLocaleString("en-US") + " jurors", (share * 100).toFixed(1) + "%", share, "");
+    html += row("The draw must deal you " + maj + " of " + n + " seats", pct(p1), p1, "");
+    if (k > 1) html += row("All " + k + " parallel panels must fall on one roll", pct(pf), pf, "");
+    html += row("Chance this verdict is captured", odds(pf), pf, "final");
+    gaunt.innerHTML = html;
+
+    kEl.textContent = k;
+    chanceEl.textContent = odds(pf);
+    punEl.textContent = "Bond + World ID, for life";
+  }
+  [stakeS, poolS, blocS].forEach(function (el) { el.addEventListener("input", update); });
+  update();
+})();
+
+// ============ attack two: manufactured victim ============
+(function () {
+  "use strict";
+  var stakeS = document.getElementById("b1stake");
+  if (!stakeS) return;
+  var stakeOut = document.getElementById("b1stakeOut");
+  var profitEl = document.getElementById("b1profit");
+  var chipEl = document.getElementById("b1chip");
+  var jurorsEl = document.getElementById("b1jurors");
+  var payline = document.getElementById("b1payline");
+  var note = document.getElementById("b1note");
+  var runBtn = document.getElementById("b1run");
+  var steps = document.querySelectorAll("#b1heist .hstep");
+  var pool = "on";
+
+  function update() {
+    var S = Math.round(noteSpan(parseInt(stakeS.value, 10), 1000, 1000000));
+    var fees = Math.max(1, Math.round(S * 0.02));
+    var profit = pool === "on" ? (S - fees) : (-fees);
+
+    stakeOut.textContent = noteMoney(S);
+    jurorsEl.textContent = "0";
+    profitEl.textContent = (profit >= 0 ? "+" : "") + noteMoney(profit);
+    profitEl.className = "pnl " + (profit > 0 ? "bad" : "good");
+    chipEl.innerHTML = pool === "on"
+      ? '<span class="verdict v-high">a pool drained</span>'
+      : '<span class="verdict v-good">an attack that fizzles</span>';
+    payline.innerHTML = pool === "on"
+      ? '<b>Bill the fund.</b> A compensation pool exists, so it pays your "wronged" yes side <b>' + noteMoney(S) + '</b>. Your entire profit is the pool\'s money.'
+      : '<b>Bill the fund.</b> No pool exists, so there is nobody to bill. You are out <b>' + noteMoney(fees) + '</b> in fees and nothing else.';
+    note.innerHTML = pool === "on"
+      ? "Every juror was honest at every step; there was no panel to capture and no ballot to buy. The attacker's whole gain, <b>" + noteMoney(profit) + "</b>, is the pool's money, unlocked by a loss he manufactured by controlling the data and its timing. Juror integrity never touched it, because no juror was ever the problem."
+      : "The same attack with no pool. The staged loss has nobody to bill, so the attacker is just out the fees. The vulnerability was never the jurors. It was the pot.";
+  }
+  function run() {
+    for (var i = 0; i < steps.length; i++) steps[i].classList.remove("lit");
+    var j = 0;
+    function lite() { if (j < steps.length) { steps[j].classList.add("lit"); j++; setTimeout(lite, 340); } }
+    lite();
+  }
+  noteSeg("b1pooltog", function (v) { pool = v; update(); });
+  stakeS.addEventListener("input", update);
+  runBtn.addEventListener("click", run);
+  update();
+})();
+
+// ============ redistribution to all jurors ============
+(function () {
+  "use strict";
+  var nS = document.getElementById("c1n");
+  if (!nS) return;
+  var nOut = document.getElementById("c1nOut");
+  var dots = document.getElementById("c1dots");
+  var catchBtn = document.getElementById("c1catch");
+  var shareEl = document.getElementById("c1share");
+  var props = document.getElementById("c1props");
+  var note = document.getElementById("c1note");
+  var dest = "all";
+  var SLASH = 5, CAP = 120, N = 0;
+
+  var INFO = {
+    all: { distort: false, honey: false, waste: false,
+      line: "The bond joins the reward pool, split among the active jurors who clear the quality bar. That same pool is fed by the 20% fee slice and by forfeited dispute and appeal bonds, so it is decoupled from any single verdict and bends no vote. Only a bonded, active juror above the bar can ever receive it, so it is no honeypot. No value is destroyed, and paying for quality work widens and sharpens the pool, which is the court's security." },
+    panel: { distort: true, honey: false, waste: false,
+      line: "Handed to the panel that won the vote. Now your cut depends on being on the winning side, which is a paid reason to convict the dissenter. It quietly turns the court into a machine for punishing minorities." },
+    victims: { distort: false, honey: true, waste: false,
+      line: "Paid to whoever shows they were wronged. That is a claim anyone who controls the facts can manufacture, the honeypot from the second diagram. No amount of juror honesty closes it." },
+    burn: { distort: false, honey: false, waste: true,
+      line: "Destroyed. Free of incentives, but in a DAI-settled system it is dollars set alight for nobody. Burning only redistributes value when a native token's supply shrinks, and there is no token here." }
+  };
+
+  function renderDots() {
+    N = Math.round(noteSpan(parseInt(nS.value, 10), 100, 50000));
+    nOut.textContent = N.toLocaleString("en-US");
+    dots.innerHTML = "";
+    var shown = Math.min(CAP, N);
+    for (var i = 0; i < shown; i++) {
+      var d = document.createElement("div");
+      d.className = "pdotc";
+      dots.appendChild(d);
+    }
+    shareEl.textContent = dest === "victims" || dest === "burn" ? "nothing" : noteShare(SLASH / (dest === "panel" ? 7 : N));
+  }
+  function distribute() {
+    var ds = dots.querySelectorAll(".pdotc");
+    if (!ds.length) return;
+    for (var i = 0; i < ds.length; i++) ds[i].className = "pdotc";
+    var ci = Math.floor(ds.length / 2);
+    ds[ci].className = "pdotc cheat";
+    if (dest === "all") {
+      for (var j = 0; j < ds.length; j++) if (j !== ci) ds[j].classList.add("recv");
+    } else if (dest === "panel") {
+      for (var k = ci - 3; k <= ci + 3; k++) if (k >= 0 && k < ds.length && k !== ci) ds[k].classList.add("recv");
+    }
+  }
+  function renderProps() {
+    var p = INFO[dest];
+    function chip(good, goodText, badText) {
+      return '<span class="prop ' + (good ? "ok" : "bad") + '">' + (good ? "✓ " : "✗ ") + (good ? goodText : badText) + "</span>";
+    }
+    props.innerHTML = chip(!p.distort, "Verdict-neutral", "Distorts verdicts") +
+      chip(!p.honey, "No honeypot", "Becomes a honeypot") +
+      chip(!p.waste, "Keeps the value", "Destroys value");
+    note.textContent = p.line;
+  }
+
+  nS.addEventListener("input", function () { renderDots(); distribute(); });
+  catchBtn.addEventListener("click", distribute);
+  noteSeg("c1seg", function (v) { dest = v; renderDots(); renderProps(); distribute(); });
+  renderDots();
+  renderProps();
+})();
+
+// ============ longevity: fewer victims ============
+(function () {
+  "use strict";
+  var run = document.getElementById("d3run");
+  if (!run) return;
+  var pull = document.getElementById("d3pull");
+  var pullOut = document.getElementById("d3pullOut");
+  var payBars = document.getElementById("d3payBars");
+  var punBars = document.getElementById("d3punBars");
+  var payNum = document.getElementById("d3payNum");
+  var punNum = document.getElementById("d3punNum");
+  var YEARS = 5;
+
+  for (var i = 0; i < YEARS; i++) {
+    payBars.appendChild(document.createElement("div")).className = "simbar";
+    punBars.appendChild(document.createElement("div")).className = "simbar";
+  }
+
+  function series() {
+    var g = 1.25 + (parseInt(pull.value, 10) / 100) * 0.95;
+    var pay = [], pun = [], pc = 0, uc = 0;
+    for (var y = 1; y <= YEARS; y++) {
+      var honest = 4;
+      var attacks = Math.round(2 * Math.pow(g, y - 1));
+      pc += honest + attacks * 3;
+      uc += honest + 1;
+      pay.push(pc); pun.push(uc);
+    }
+    return { pay: pay, pun: pun };
+  }
+  function label(v) { pullOut.textContent = v < 33 ? "low" : (v < 66 ? "medium" : "high"); }
+  function draw() {
+    var s = series();
+    var max = s.pay[YEARS - 1] || 1;
+    var pb = payBars.children, ub = punBars.children;
+    for (var i = 0; i < YEARS; i++) {
+      pb[i].style.height = Math.max(3, s.pay[i] / max * 96) + "px";
+      ub[i].style.height = Math.max(3, s.pun[i] / max * 96) + "px";
+    }
+    payNum.innerHTML = s.pay[YEARS - 1] + "<small>people harmed over five years</small>";
+    punNum.innerHTML = s.pun[YEARS - 1] + "<small>people harmed over five years</small>";
+  }
+  pull.addEventListener("input", function () { label(parseInt(pull.value, 10)); });
+  run.addEventListener("click", draw);
+  label(parseInt(pull.value, 10));
+})();
+</script>
+</body>
+</html>

@@ -108,7 +108,7 @@
   <aside id="toc" class="toc reveal"></aside>
 
   <section class="reveal">
-    <p class="lead">Two tokens, two philosophies, on purpose. The prediction market is governed like the company it is: one token, one vote, airdropped, openly for profit. The court is governed like the public utility it must be: counted in verified people, multiplied by service. A constitutional firewall keeps the money from ever reaching the bench.</p>
+    <p class="lead">Two tokens, two ways of running things, on purpose. The prediction market is governed like the company it is: one token, one vote, given out for free, openly out to make money. The court is governed like the public utility it must be: counted in verified people, multiplied by how much they serve. A firewall written into the rules keeps the money from ever reaching the bench.</p>
     <p>The chapters before this one built a verdict nobody can buy. They also left dials everywhere: fees, curation bars, graduation thresholds, juror pay. Somebody has to turn those dials, and whoever turns them can, slowly, un-build everything else.</p>
     <p>So the design splits the steering wheel in two, and the split follows one question: is the thing being governed a business, or the truth? The prediction market is a business, deliberately. It exists to grow fast, take fees, and bankroll the court, so its token is plain plutocracy: one token, one vote, no personhood required, buyable by anyone with conviction and capital. The court is the truth machine, so its token is the opposite: weight counted in verified people, grown only by serving, immune to wallets. Between them sits a firewall written into the constitution, and the rest of this chapter is the two governments, the wall, and the numbers.</p>
 
@@ -148,7 +148,7 @@
         <div class="invoice">
           <div class="iv">Settlement fee<small>2% base + up to 1% voted margin</small></div>
           <span class="ar">&rarr;</span>
-          <div class="iv first">The court's invoice routes first<small>70% jurors &middot; 20% insurance &middot; 10% operations, constitutional</small></div>
+          <div class="iv first">The court's invoice routes first<small>70% pay &middot; 20% reward pool &middot; 10% operations, constitutional</small></div>
           <span class="ar">&rarr;</span>
           <div class="iv">The margin remains<small>to the market treasury and its token holders</small></div>
         </div>
@@ -226,7 +226,7 @@
         <div class="stat"><div class="k">Fees you burned into the system</div><div class="v" id="Q3fees">&hellip;</div></div>
         <div class="stat"><div class="k">Verdict</div><div class="v" id="Q3verd" style="font-size:1.02rem">&hellip;</div></div>
       </div>
-      <p style="font-family:var(--sans);font-size:.86rem;color:var(--faint);margin:1rem 0 0">Illustrative: 50,000 verified holders, token at $0.10, 0.5% per-person cap. Buying alone hits the cap as one person. Faking service pays 2% of every faked escrow dollar into the fee split, where it funds the jurors and the insurance pool. Recruiting means convincing thousands of verified humans, each of whom votes in the locked box and can take your money and vote their own mind.</p>
+      <p style="font-family:var(--sans);font-size:.86rem;color:var(--faint);margin:1rem 0 0">Illustrative: 50,000 verified holders, token at $0.10, 0.5% per-person cap. Buying alone hits the cap as one person. Faking service pays 2% of every faked escrow dollar into the fee split, where it funds the jurors and the reward pool. Recruiting means convincing thousands of verified humans, each of whom votes in the locked box and can take your money and vote their own mind.</p>
     </div>
 
     <p>The pattern is the court's capture math wearing a different shirt. One person, however rich, is a rounding error by construction: the root, then the cap. Faking service is worse than useless, because every faked dollar pays the fee that funds the thing being attacked. And the only strategy that scales, recruiting real verified people, is the same wall the court built: thousands of humans, each voting a ballot that <a href="juror-court.html">cannot prove how it voted</a>. Court governance ballots run through the same locked box as verdicts, so a vote-buying contract cannot verify delivery here either. The market token needs none of this machinery, and that is not an oversight: buying votes in a plutocracy is just called buying tokens, and the firewall is what makes that shrug affordable.</p>
@@ -236,7 +236,7 @@
   <section class="reveal">
     <p class="sec-label">The rails</p>
     <h2>What a captured vote still could not do</h2>
-    <p>The last defense assumes every other one failed, on either side. Every parameter moves only inside a hard-coded range, every passed proposal waits out a 7-day timelock in public, and the load-bearing rules are not parameters at all. No vote, in either house, at any margin, can reroute the invoice, cross the firewall, make court votes provable, make court weight linear, drop the personhood requirement, reopen settled escrow, or redirect slashes away from the insurance pool. The constitution is the part of the machine with no dial on it.</p>
+    <p>The last defense assumes every other one failed, on either side. Every parameter moves only inside a hard-coded range, every passed proposal waits out a 7-day timelock in public, and the load-bearing rules are not parameters at all. No vote, in either house, at any margin, can reroute the invoice, cross the firewall, make court votes provable, make court weight linear, drop the personhood requirement, reopen settled escrow, or redirect slashes away from the reward pool. The constitution is the part of the machine with no dial on it.</p>
 
     <div class="vals-wrap reveal">
       <table class="vals">
@@ -252,7 +252,7 @@
           <tr><td>Quorum / timelock</td><td>4% of active weight / 7 days (both houses)</td><td>Small enough to function, slow enough to exit or challenge.</td></tr>
           <tr><td>Court parameter ranges</td><td>juror fee, calibration share 5&ndash;20%, ladder rail &times;1.5&ndash;&times;3, challenge window 2&ndash;14 days, appeal window 2&ndash;8 weeks</td><td>A captured vote can lean on a dial, never rip it off the wall.</td></tr>
           <tr><td>Ballots</td><td>Court: the locked box. Market: ordinary on-chain token vote</td><td>Court votes must be unsellable; market votes are capital, and capital may speak as itself.</td></tr>
-          <tr><td>Constitution</td><td>No dial exists</td><td>The invoice and its 70/20/10 split route first, the firewall stands, court weight stays personal and sublinear, finality holds, slashes go to insurance: permanent.</td></tr>
+          <tr><td>Constitution</td><td>No dial exists</td><td>The invoice and its 70/20/10 split route first, the firewall stands, court weight stays personal and sublinear, finality holds, slashes go to the reward pool: permanent.</td></tr>
         </tbody>
       </table>
     </div>
@@ -263,7 +263,7 @@
     <p class="sec-label">The tokens themselves</p>
     <h2>Where each one comes from, and what each never does</h2>
     <p>The market token is built to be owned. One billion fixed: 30% to the community through the genesis airdrop and first-year usage streams, 25% to investors on a vest, 25% to the market treasury, 20% to the team over four years with a one-year cliff. It is the instrument for everyone who wants the growth: the airdrop seeds it into the hands of the traders who made the volume, and the float after that is a market like any other. Its claim is the margin and the treasury, and its job is blunt: grow a company fast enough to fund the bench forever.</p>
-    <p>The court token is built to be earned. One billion fixed: half streamed over eight years pro-rata to the same decayed service scores the multiplier reads, a fifth at genesis to the first year's escrow users and jurors, a fifth to a treasury the court house spends through the timelock, a tenth to the builders. It trades freely, because the defense lives in the weight function rather than transfer restrictions, and it never pays anyone. Juror wages, watcher bounties, and insurance payouts all come from the invoice, exactly as the <a href="zero-to-one.html">economics chapter</a> prices them. One token chases profit so the other never has to: the moment the court's token printed salaries, every dial-turn would become a fight over the printer, and the printer is the one machine this design refuses to build on the bench's side of the wall.</p>
+    <p>The court token is built to be earned. One billion fixed: half streamed over eight years pro-rata to the same decayed service scores the multiplier reads, a fifth at genesis to the first year's escrow users and jurors, a fifth to a treasury the court house spends through the timelock, a tenth to the builders. It trades freely, because the defense lives in the weight function rather than transfer restrictions, and it never pays anyone. Juror wages, watcher bounties, and reward pool payouts all come from the invoice, exactly as the <a href="zero-to-one.html">economics chapter</a> prices them. One token chases profit so the other never has to: the moment the court's token printed salaries, every dial-turn would become a fight over the printer, and the printer is the one machine this design refuses to build on the bench's side of the wall.</p>
   </section>
 
   <footer class="endnote reveal">

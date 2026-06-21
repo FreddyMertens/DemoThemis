@@ -118,16 +118,16 @@
   <aside id="toc" class="toc reveal"></aside>
 
   <section class="reveal">
-    <p class="lead">How a court can sort its good jurors from its bad ones without ever knowing the right answer. Built up from scratch, in plain English, one idea at a time.</p>
-    <p>A teacher grading a quiz holds the answer sheet. A court grading its own jurors holds nothing, because the verdict those jurors just produced is the only answer in the room.</p>
-    <p>That is the strange position <a href="juror-court.html">the court</a> leaves you in. The draw is random, the ballots are encrypted, the bond makes carelessness unprofitable on any single case. But across a thousand cases you still want the careful jurors drawn more and paid more, and the careless ones drawn less, and you want to do that sorting without ever knowing which verdicts were actually correct. The truth is the product. You cannot also use it as the rubric.</p>
+    <p class="lead">A court has to sort its good jurors from its bad ones, and it never learns the right answer to grade them against. Here is how it manages, built from scratch, in plain English, one idea at a time.</p>
+    <p>A teacher grading a quiz holds the answer sheet. A court grading its own jurors holds nothing. The verdict those jurors just produced is the only answer in the room.</p>
+    <p>That is the spot <a href="juror-court.html">the court</a> puts you in. The draw is random, the ballots are encrypted, and the bond makes carelessness a losing bet on any single case. But across a thousand cases you still want the careful jurors drawn more and paid more, and the careless ones drawn less, and you have to sort them without ever learning which verdicts were right. The truth is the product. You cannot also use it as the rubric.</p>
   </section>
 
   <section class="reveal">
     <p class="sec-label">The grader's paradox</p>
     <h2>Agreement is the wrong thing to pay for</h2>
-    <p>The obvious fix is to grade jurors on agreement: vote with your panel's majority and your score goes up. It is obvious, it is cheap, and it quietly ruins the court. Once agreement is the metric, the smartest strategy is no longer to read the case. It is to guess what the room will say and say it first. Every juror starts voting the safe, popular answer, the panel converges harder, the scores all look wonderful, and the court has stopped measuring anything at all. A wrong verdict that everyone joins is, by this rubric, a perfect day.</p>
-    <p>Herding is not a tail risk. It is the equilibrium, the place the system rolls to and stays.</p>
+    <p>The obvious fix is to grade jurors on agreement: vote with your panel's majority and your score goes up. It is cheap, and it quietly ruins the court. Once agreement is the metric, the smart move is not to read the case. It is to guess what the room will say and say it first. Everyone votes the safe, popular answer, the panel converges harder, the scores all look wonderful, and the court has stopped measuring anything. A wrong verdict that everyone joins counts, by this rubric, as a perfect day.</p>
+    <p>Herding is not a rare risk. It is the equilibrium, the place the system rolls to and stays.</p>
 
     <figure class="diagram reveal">
       <div class="diagram-inner">
@@ -144,39 +144,39 @@
       <figcaption>The herding loop, four steps from rule to ruin. <b>A court that pays for agreement ends up with flawless scores and no information.</b></figcaption>
     </figure>
 
-    <p>So the design holds the grade to two outside anchors, neither of which a herd can vote its way around. The first is a supply of questions where reality itself eventually publishes the answer: settled markets that pass a curation step become answer keys, and <a href="hybrid-juror-prediction-market-integration.html">the loop chapter</a> shows where that supply comes from. The second anchor is the subject of this page: a scoring rule that refuses to pay for agreement as such, and pays only for the part of a vote that carried information.</p>
+    <p>So the design ties the grade to two outside anchors, neither of which a herd can vote its way around. The first is a supply of questions where reality eventually publishes the answer: settled markets that pass a curation step become answer keys, and <a href="hybrid-juror-prediction-market-integration.html">the loop chapter</a> shows where that supply comes from. The second anchor is this page: a scoring rule that refuses to pay for agreement itself, and pays only for the part of a vote that carried information.</p>
   </section>
 
   <section class="reveal">
     <p class="sec-label">The scoring rule</p>
     <h2>Credit above the obvious</h2>
-    <p>Every case a juror touches is scored by leave-one-out agreement with the rest of the panel. The rule has three moves, and each one closes a door the herd would otherwise walk through.</p>
+    <p>Every case a juror touches is scored by leave-one-out agreement with the rest of the panel. The rule has three moves, and each one shuts a door the herd would otherwise walk through.</p>
 
     <ol class="stepper reveal">
       <li>
         <span class="step-n">1</span>
         <div class="step-body">
           <h3>Leave one out</h3>
-          <p>Take your vote off the panel and look at what the remaining jurors decided on their own. You are scored against them, not against yourself, so your own ballot can never prop up its own grade. On a 31-seat panel, your reference is the other 30.</p>
+          <p>Take your vote off the panel and look at what the other jurors decided on their own. You are scored against them, not against yourself, so your own ballot can never prop up its own grade. On a 31-seat panel, your reference is the other 30.</p>
         </div>
       </li>
       <li>
         <span class="step-n">2</span>
         <div class="step-body">
           <h3>Subtract the obvious</h3>
-          <p>Before any credit is paid, the score asks what a juror who never opened the file would have guessed. If the rest of the panel split 29 to 2, the headline alone called it, so matching them earns roughly nothing. Credit exists only above that baseline.</p>
+          <p>Before any credit is paid, the score asks what a juror who never opened the file would have guessed. If the rest of the panel split 29 to 2, the headline alone called it, so matching them earns roughly nothing. Credit starts only above that baseline.</p>
         </div>
       </li>
       <li>
         <span class="step-n">3</span>
         <div class="step-body">
           <h3>Weight by margin</h3>
-          <p>A 16 to 15 split means the case was genuinely hard and the prior was a coin flip. Landing on the right side of that earns a lot, and the weighting scales smoothly between the coin flip and the landslide. The score becomes a running answer to one question: how often are you right when being right was difficult?</p>
+          <p>A 16 to 15 split means the case was genuinely hard and a guess was a coin flip. Landing on the right side of that earns a lot, and the weight scales smoothly between the coin flip and the landslide. The score answers one running question: how often are you right when being right was hard?</p>
         </div>
       </li>
     </ol>
 
-    <p>Two jurors can have identical agreement rates and completely different scores.</p>
+    <p>Two jurors can have the same agreement rate and completely different scores.</p>
 
     <figure class="diagram reveal">
       <div class="diagram-inner">
@@ -204,14 +204,14 @@
       <figcaption>Same agreement rate, opposite value. <b>The baseline subtraction is what makes reading the case the only strategy that earns.</b></figcaption>
     </figure>
 
-    <p>Folded into the same score are the answer keys. When a market settles cleanly and the settlement passes curation, the outcome becomes a graded question with a known answer, and jurors who ruled on it are scored against reality instead of against each other. The keys keep the peer score honest: a pool that drifted into a comfortable shared error would keep agreeing with itself, but it cannot keep agreeing with the scoreboard reality posts. The sharpest keys come from settled private markets, questions that never had a public page, so a juror cannot even look them up. <b>Peer agreement above the obvious, anchored by curated keys</b>, is the whole rule. Everything else on this page is plumbing for it.</p>
+    <p>The answer keys fold into the same score. When a market settles cleanly and the settlement passes curation, the outcome becomes a graded question with a known answer, and jurors who ruled on it are scored against reality instead of against each other. The keys keep the peer score honest: a pool that drifted into a comfortable shared error would keep agreeing with itself, but it cannot keep agreeing with the scoreboard reality posts. The sharpest keys come from settled private markets, questions that never had a public page, so a juror cannot even look them up. <b>Peer agreement above the obvious, anchored by curated keys</b>, is the whole rule. Everything else on this page is plumbing for it.</p>
   </section>
 
   <section class="reveal">
     <p class="sec-label">The reputation dial</p>
     <h2>A score with an error bar attached</h2>
-    <p>The per-case credits accumulate into a reputation, and the reputation is deliberately not a single number. It is a beta distribution, which is a precise way of saying a best guess plus an honest error bar: a juror at 80% over 12 cases and a juror at 80% over 140 cases have the same average and very different evidence behind it. The system always carries the 95% interval along with the estimate, computed over a rolling window of the last 50 to 150 cases, so a reputation is always recent enough to mean something and old scores cannot coast forever.</p>
-    <p>The dial drives two everyday things. Draw rate: higher-scored jurors are drawn more often, but never more than three times as often as a newcomer, because <a href="juror-court.html">the court's</a> security is the width of its active pool and no scoring rule is allowed to thin it. And per-case pay: the juror fee scales with the score, so accuracy compounds into income. Pay carries most of the reward on purpose, because a fee that tracks the score motivates without thinning the pool, which lets the draw ceiling stay low. Suspension exists too, but it sits behind a gate, and the gate has an unusual property. It refuses to act on a guess.</p>
+    <p>The per-case credits build into a reputation, and that reputation is deliberately not a single number. It is a beta distribution, which is a precise way of saying a best guess plus an honest error bar: a juror at 80% over 12 cases and a juror at 80% over 140 cases have the same average and very different evidence behind it. The system always carries the 95% interval with the estimate, over a rolling window of the last 50 to 150 cases, so a reputation stays recent enough to mean something and old scores cannot coast forever.</p>
+    <p>The dial drives two everyday things. Draw rate: higher-scored jurors are drawn more often, but never more than three times as often as a newcomer, because <a href="juror-court.html">the court's</a> security is the width of its active pool and no scoring rule may thin it. And per-case pay: the juror fee scales with the score, so accuracy compounds into income. Pay carries most of the reward on purpose, because a fee that tracks the score motivates without thinning the pool, which lets the draw ceiling stay low. Suspension exists too, but it sits behind a gate, and the gate has an unusual rule. It refuses to act on a guess.</p>
 
     <div class="dial-wrap reveal">
       <table class="dial-table">
@@ -248,23 +248,24 @@
       <p style="font-family:var(--sans);font-size:.86rem;color:var(--faint);margin:1rem 0 0">Suspension fires only when the entire interval sits below the 0.70 bar, which takes confident evidence, not a bad week. The leniency protects honest dissent; in the meantime, pay and vote weight do the everyday work of rewarding accuracy.</p>
     </div>
 
-    <p>Drag the case slider and watch the band shrink. A juror at 65% over 8 cases straddles the bar from both sides: maybe careless, maybe unlucky, the math honestly cannot tell yet, so the gate does nothing. The same 65% over 140 cases is a different fact entirely. The band has pulled in tight, the whole interval sits under the bar, and the suspension is no longer a judgment call. It is a measurement.</p>
+    <p>Drag the case slider and watch the band shrink. A juror at 65% over 8 cases straddles the bar from both sides: maybe careless, maybe unlucky, the math honestly cannot tell yet, so the gate does nothing. The same 65% over 140 cases is a different fact. The band has pulled in tight, the whole interval sits under the bar, and the suspension is no longer a judgment call. It is a measurement.</p>
+    <p>Pay does not stop at the per-case fee. The 20% slice of every settlement fee, plus forfeited juror and appeal bonds, gathers into a reward pool that pays out on a regular cycle to jurors who clear the quality bar and were recently active. So a good, active juror earns income beyond the fee on any single case. The pool is decoupled from any one verdict, so it can reward a track record without ever bending a vote.</p>
   </section>
 
   <section class="reveal">
     <p class="sec-label">Lenient on purpose</p>
     <h2>Why the gate waits so long</h2>
-    <p>A stricter gate sounds like higher standards. It is actually a herding machine. If one rough stretch can end a career, the rational juror stops taking positions on hard cases and starts voting whatever the room will obviously say, because the obvious vote is the safe one. You would be paying for accuracy with one hand and punishing independence with the other, and the second instinct wins. So the suspension bar is set low, 0.70, and it acts only when the full interval is below it. A juror has to be confidently, persistently worse than that before the court shows them the door.</p>
-    <p>Leniency at the bottom does not mean softness everywhere. Full vote weight has a stricter bar: the interval has to sit clear of the line on the high side before a juror's ballot counts at full strength, and the pay and draw dials respond to the score continuously. A coasting juror is earning less and being drawn less long before any gate fires, and the flat five-dollar bond is already forfeiting margin-scaled slices on wrong-side votes, every slash flowing to the insurance pool. Low effort becomes unprofitable years before it becomes suspendable. The gate is the last resort, not the incentive.</p>
-    <p>And the design protects its most valuable juror: the one who disagrees with the whole panel and turns out to be right. A wrong-side slash is settled against the post-appeal outcome, not the first verdict. When a 15-seat panel gets it wrong and the 31-seat appeal overturns them, the original dissenter's slash is refunded, the score is recomputed against the corrected outcome, and the overturned majority takes the loss instead. Dissent on a near-tie was already cheap, because the slash scales with margin. Vindicated dissent costs nothing at all, and that arithmetic is what keeps independent minds in the pool.</p>
+    <p>A stricter gate sounds like higher standards. It is really a herding machine. If one rough stretch can end a career, the rational juror stops taking positions on hard cases and votes whatever the room will obviously say, because the obvious vote is the safe one. You would pay for accuracy with one hand and punish independence with the other, and the second instinct wins. So the suspension bar is set low, 0.70, and it acts only when the full interval is below it. A juror has to be confidently, persistently worse than that before the court shows them the door.</p>
+    <p>Leniency at the bottom does not mean softness everywhere. Full vote weight has a stricter bar: the interval has to sit clear of the line on the high side before a juror's ballot counts at full strength, and the pay and draw dials track the score the whole way. A coasting juror earns less and is drawn less long before any gate fires, and the flat five-dollar bond is already forfeiting margin-scaled slices on wrong-side votes, every slash flowing to the reward pool. Low effort turns unprofitable years before it turns suspendable. The gate is the last resort, not the incentive.</p>
+    <p>And the design protects its most valuable juror: the one who disagrees with the whole panel and turns out to be right. A wrong-side slash is settled against the post-appeal outcome, not the first verdict. When a 15-seat panel gets it wrong and the 31-seat appeal overturns them, the original dissenter's slash is refunded, the score is recomputed against the corrected outcome, and the overturned majority takes the loss instead. Dissent on a near-tie was already cheap, because the slash scales with margin. Vindicated dissent costs nothing at all, and that arithmetic keeps independent minds in the pool.</p>
   </section>
 
   <section class="reveal">
     <p class="sec-label">Disputes</p>
     <h2>The ladder, and the two clocks</h2>
     <p>Lose a verdict and still believe you are right? Then climb. An appeal redraws the case at the next panel size, 7 to 15 to 31, never the same size twice, so every retry faces a wider panel and worse odds for whoever is wrong. The price of each rung is not a number anyone picked. It is the highest of three floors computed from the live case: enough to pay the next panel's jurors, enough to beat the value of re-rolling (the attacker's capture odds times the stake at issue), and enough to rent the delay it imposes on everyone's money. A near-tie verdict discounts the climb, because a 16 to 15 split is the court itself admitting doubt, and the discount never dips below the floor that keeps grinding unprofitable.</p>
-    <p>There are two doors onto the ladder. Post the rung's bond alone, or gather a petition from the losing side: at least 5% of its verified humans, each staking a small refundable sliver, so a lone dissenter with conviction can climb solo and a thousand sore losers have to pay sincerity rather than click a button. A failed climb forfeits its bond to the insurance pool. A vindicated one is refunded with a bonus taken from the overturned majority's slashes, which is the same arithmetic that makes honest dissent free in the section above. Each verdict then stays open to appeal for a full week before it hardens: time enough for the slowest petition to gather, and affordable because tokenized positions keep trading while the clock runs.</p>
-    <p>And then the ladder ends, on purpose. The top rung's verdict is final: the pot pays, the tokens redeem, and no later discovery reopens settled money, because escrow that can be reopened forever is escrow nobody can build on. What never ends is the other clock. Anyone, at any time, years later, can report a verdict for collusion; the vote-correlation audit runs, proven cliques lose their bonds and their World IDs, and their victims are made whole from the insurance pool their forfeits filled. Two clocks, deliberately unsynchronized: settlement always finishes, justice never closes, and neither can hold the other hostage.</p>
+    <p>There are two ways onto the ladder. Post the rung's bond alone, or gather a petition from the losing side: at least 5% of its verified humans, each staking a small refundable sliver. So a lone dissenter with conviction can climb solo, and a thousand sore losers have to pay with sincerity rather than a click. A failed climb forfeits its bond to the reward pool. A vindicated one is refunded with a bonus taken from the overturned majority's slashes, the same arithmetic that makes honest dissent free in the section above. Each verdict then stays open to appeal for a full week before it hardens: time enough for the slowest petition to gather, and affordable because tokenized positions keep trading while the clock runs.</p>
+    <p>And then the ladder ends, on purpose. The top rung's verdict is final: the pot pays, the tokens redeem, and no later discovery reopens settled money, because escrow that can be reopened forever is escrow nobody can build on. What never ends is the other clock. Anyone, at any time, years later, can report a verdict for collusion. The vote-correlation audit runs, proven cliques lose their bonds and their World IDs, and those forfeited bonds feed the reward pool. Two clocks, deliberately unsynchronized: settlement always finishes, justice never closes, and neither can hold the other hostage.</p>
 
     <figure class="diagram reveal">
       <div class="diagram-inner">
@@ -282,7 +283,7 @@
             <div class="step">Anyone reports a verdict, anytime, even years later</div>
             <div class="step">Vote-correlation audit hunts the clique</div>
             <div class="step">Proven colluders: bonds slashed, World IDs banned</div>
-            <div class="step">Victims paid from the insurance pool</div>
+            <div class="step">Colluders slashed and banned, their bonds feeding the reward pool</div>
             <p class="ends">No deadline, and not one settled dollar held hostage.</p>
           </div>
         </div>
@@ -295,8 +296,8 @@
   <section class="reveal">
     <p class="sec-label">The appeal bond</p>
     <h2>Why a wider pool makes appeals cheaper</h2>
-    <p>Go back to those three floors for a moment, because one of them should have worried you. Two are plainly small: pay the next panel's jurors, and rent the delay the appeal imposes. The middle one reads differently. The attacker's capture odds times the stake at issue. On a ten-million-dollar case that phrase sounds like a ten-million-dollar bond, a toll only the rich could pay, which would hand the whole ladder to whoever already has the deepest pockets. If that were how it worked, the appeal would become the very thing it exists to prevent. It is the opposite, and the reason is the property the court is already built on.</p>
-    <p>Capture odds are not a fixed number. They are set by the width of the pool. A bloc that is one in a hundred of a wide pool almost never lands a panel majority, so a bond equal to capture odds times the stake is the prize multiplied by a probability the pool has already crushed toward zero. On a healthy pool that middle floor rounds to nothing and drops out, and the rung falls back to the small floor: just cover the next panel. The stake climbs, the panel grows from 7 to 15 to 31, the odds of capturing it collapse faster than the prize rises, and appealing a ten-million-dollar verdict ends up costing about what it takes to pay thirty-one strangers for an afternoon. The wider and safer the court becomes, the cheaper it is to use. For once, security and affordability pull the same way.</p>
+    <p>Go back to those three floors for a moment, because one of them should have worried you. Two are plainly small: pay the next panel's jurors, and rent the delay the appeal imposes. The middle one reads differently. The attacker's capture odds times the stake at issue. On a ten-million-dollar case that sounds like a ten-million-dollar bond, a toll only the rich could pay, which would hand the whole ladder to whoever already has the deepest pockets. If that were how it worked, the appeal would become the very thing it exists to prevent. It is the opposite, and the reason is the property the court is already built on.</p>
+    <p>Capture odds are not a fixed number. They are set by the width of the pool. A bloc that is one in a hundred of a wide pool almost never lands a panel majority, so a bond equal to capture odds times the stake is the prize times a probability the pool has already crushed toward zero. On a healthy pool that middle floor rounds to nothing and drops out, and the rung falls back to the small floor: just cover the next panel. The stake climbs, the panel grows from 7 to 15 to 31, the odds of capturing it collapse faster than the prize rises, and appealing a ten-million-dollar verdict ends up costing about what it takes to pay thirty-one strangers for an afternoon. The wider and safer the court becomes, the cheaper it is to use. For once, security and affordability pull the same way.</p>
     <p>The floor only wakes up where it should, in a thin pool. A brand-new market with a few hundred active jurors really can be swung by a determined bloc, so there the capture term rises to the prize times that genuine risk, plus a small safety factor, until the attack is not worth trying. Honest appellants in that thin corner pay more too, which is the court being honest: this pool is not yet wide enough to settle that much money for pocket change. Grow it and the cost falls on its own, with no parameter to retune. The bond defends against a bloc up to a set size; anything larger is the work of the parallel panels and the collusion audit, not the price tag. Drag the two sliders and watch the floors trade places.</p>
 
     <div class="widget reveal">
@@ -326,8 +327,8 @@
   <section class="reveal">
     <p class="sec-label">Two courts</p>
     <h2>Two courts, one constitution</h2>
-    <p>Everything above assumes reality will eventually grade the question. Did bitcoin close above $100k, did the package arrive, who won the match: these belong to the objective court, where answer keys accumulate and a lone bonded dissenter can always appeal a panel into a larger one. But some disputes will never get a scoreboard. Was the logo delivered to spec, was the apartment as described. No future fact arrives to settle them, so a court that pretends otherwise is grading its jurors against an answer key that does not exist.</p>
-    <p>The design's answer is a second court rather than a stretched one. The rubric court is a separate product with its own track record, never borrowing the objective court's statistics, because they measure a different skill. It opens narrow, on rubric-checkable cases only: files against a spec, a photo against a listing, where most of the judgment is verification with a thin rim of opinion. Its jurors are graded on three signals that exist without a key: coherence with their own rubric scores, accuracy at predicting how the panel will split, and whether their verdicts survive the appeal ladder. Community-standard cases, the pure reasonable-person disputes, come later, once the narrow court has appeal data behind it. Either way the parties are told the standard up front, before they file. Both courts share the same constitution underneath: the same random draw, the same encrypted ballots, the same ladder. Only the grader changes.</p>
+    <p>Everything above assumes reality will eventually grade the question. Did bitcoin close above $100k, did the package arrive, who won the match: these belong to the objective court, where answer keys pile up and a lone bonded dissenter can always appeal a panel into a larger one. But some disputes will never get a scoreboard. Was the logo delivered to spec, was the apartment as described. No future fact arrives to settle them, so a court that pretends otherwise is grading its jurors against an answer key that does not exist.</p>
+    <p>The design's answer is a second court, not a stretched one. The rubric court is a separate product with its own track record, never borrowing the objective court's statistics, because they measure a different skill. It opens narrow, on rubric-checkable cases only: files against a spec, a photo against a listing, where most of the judgment is verification with a thin rim of opinion. Its jurors are graded on three signals that exist without a key: coherence with their own rubric scores, accuracy at predicting how the panel will split, and whether their verdicts survive the appeal ladder. Community-standard cases, the pure reasonable-person disputes, come later, once the narrow court has appeal data behind it. Either way the parties are told the standard up front, before they file. Both courts share the same constitution underneath: the same random draw, the same encrypted ballots, the same ladder. Only the grader changes.</p>
     <p>Routing between them takes exactly one bit: will reality post the answer? Try it.</p>
 
     <div class="widget reveal">

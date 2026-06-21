@@ -101,7 +101,7 @@
 <header class="hero reveal">
   <p class="kicker">The court</p>
   <h1>How the court works: verified human juries that cannot be bribed</h1>
-  <p class="dek">The court decides disputed outcomes with randomly drawn juries of verified humans, one person one vote. This chapter walks through each lock that keeps a verdict unbuyable: the five dollar seat, the random draw nobody can re-roll, the face check at the door, the encrypted ballot no juror can prove, and panels that grow with the stakes.</p>
+  <p class="dek">The court decides disputed outcomes with randomly drawn juries of verified humans, one person one vote. This chapter walks through each lock that keeps a verdict unbuyable: the five dollar seat, the random draw nobody can re-roll, the face check at every draw, the encrypted ballot no juror can prove, and panels that grow with the stakes.</p>
   <div class="meta">
     <span class="pill">The mechanism</span>
     <span>12 min read</span>
@@ -118,7 +118,7 @@
   <section class="reveal">
     <p class="sec-label">The wrong foundation</p>
     <h2>When votes are tokens, verdicts have a price</h2>
-    <p class="lead">Token courts sell the gavel to the deepest pocket. This court seats verified humans instead: a five dollar bond, a die nobody can re-roll, a face check at the door, and a ballot that cannot prove how it voted. Buying it means buying people, one at a time, in the dark.</p>
+    <p class="lead">Token courts sell the gavel to the deepest pocket. This court seats verified humans instead: a five-dollar bond, a die nobody can re-roll, a face check that proves a real person is voting, and a ballot that cannot prove how it voted. Buying it means buying people, one at a time, in the dark.</p>
     <p>Every on-chain court before this one runs on the same quiet rule: stake a token, cast a vote, and the side holding more tokens decides what is true. Read that rule the way an attacker reads it. The verdict has a sticker price, and the sticker price is half the tokens.</p>
     <p>This is not a thought experiment. Large UMA holders have pushed disputed Polymarket resolutions through against what many traders read as plain reality, and the system behaved exactly as designed while they did it. Weight followed the wallet. The court was for sale and somebody shopped.</p>
     <p>So this court swaps the foundation. <b>One human, one vote.</b> Every juror seat is a World ID, an iris-verified proof of personhood that no wallet can mint twice and no exchange can sell in bulk. A verdict is no longer something you buy on a market; it is something you would have to assemble out of bought humans, each recruited separately, each a fresh chance to be caught. Most questions never even reach this room. The <a href="prediction-market.html">market chapter</a> shows how roughly 95% of cases settle themselves through a watched assertion window. The court exists for the contested few, which is exactly why it has to be the hardest thing in the system to corrupt.</p>
@@ -131,7 +131,7 @@
     <h2>The five dollar seat</h2>
     <p>What should a seat on a court like this cost? The instinct says: a lot, make jurors put real money behind their votes. The instinct is wrong, and the reason it is wrong decides the shape of the whole court.</p>
     <p>Start with what the bond is actually for. Bribery is handled by the encrypted ballot below, because a bribe you cannot verify is a bribe you do not pay. Rented seats are handled by the face check. Strip those jobs away and the bond has exactly one left: make careless voting unprofitable. A juror who flips a coin instead of reading the case must lose more to slashes than they collect in fees. That is the whole job, and small jobs have small prices.</p>
-    <p>Put numbers on it. A careless juror differs from a careful one in a single measurable way: they are wrong more often. Say skipping the case file adds thirty extra wrong votes per hundred cases, a wrong-side vote forfeits the bond, and the fee per case is $1.50, which is what 70 cents of every fee dollar from the 2% settlement cut works out to at launch volume. For laziness to lose money, the expected extra slash has to beat the fee: divide the fee by the extra error rate times the slash fraction and you get the floor. $1.50 over 0.30 is five dollars. Not five hundred. And entry on day one costs nothing at all: the protocol fronts the bond for a new juror and their first case fees fill it in. You earn your bond before you ever post it.</p>
+    <p>Put numbers on it. A lazy juror who skips the case file is guessing, so they vote the wrong way far more often than someone who reads it. Say guessing adds thirty extra wrong votes per hundred cases, and remember that a wrong-side vote forfeits the whole bond. The fee per case is $1.50, which is what 70 cents of every fee dollar from the 2% settlement cut works out to at launch volume. So over a hundred cases, laziness earns the fees but loses thirty bonds. For laziness to stop paying, the bond has to make those extra wrong votes cost more than the fees: divide the fee by the extra error rate times the slash fraction and you get the floor. $1.50 over 0.30 is five dollars. Not five hundred. And entry on day one costs nothing: the protocol fronts the five dollars for a new juror and their first case fees pay it back. You earn your bond before you ever post it.</p>
     <p>Why not round up to something impressive anyway? Because past the floor, a bigger bond makes the court less safe. Security here comes from pool width: a coordinated bloc inside a pool of tens of thousands almost never lands a panel majority, while the same bloc inside a thin pool owns the place. Every dollar of bond above the laziness floor buys no additional honesty and silently evicts honest jurors, and the attacker's recruits, who are paid to be there, do not leave. Try to beat the widget.</p>
 
     <div class="widget reveal">
@@ -157,7 +157,7 @@
       <p style="font-family:var(--sans);font-size:.86rem;color:var(--faint);margin:1rem 0 0">Illustrative. Juror turnout falls as the bond rises; the attacker's recruits do not, so their share of a shrinking pool grows. Slide the bond right and watch security get worse as the deposit gets bigger. The sweet spot sits just above the laziness floor and nowhere else.</p>
     </div>
 
-    <p>A court of forty thousand five-dollar jurors beats a court of four hundred two-hundred-dollar jurors against every attack in this chapter, and it is not close. The discipline survives in the slash, not the size: a wrong-side vote forfeits a slice of the bond scaled by how lopsided the verdict was, settled only after appeals finish, refunded in full if a later panel vindicates the vote. Every slashed dollar flows to an insurance pool that pays the victims of proven collusion, never to the winning jurors, so a majority earns nothing extra by convicting its dissenters.</p>
+    <p>A court of forty thousand five-dollar jurors beats a court of four hundred two-hundred-dollar jurors against every attack in this chapter, and it is not close. The discipline survives in the slash, not the size: a wrong-side vote forfeits a slice of the bond scaled by how lopsided the verdict was, settled only after appeals finish, refunded in full if a later panel vindicates the vote. Every slashed dollar flows to the reward pool that pays active, high-quality jurors, never the winning panel, so a majority earns nothing extra by convicting its dissenters.</p>
   </section>
 
   <!-- ============ 3: the sealed die ============ -->
@@ -190,12 +190,12 @@
     <p>Notice what the seal does not do. It does not shrink the honest capture odds; a bloc still owns its fair share of lottery tickets. The die is sealed, not loaded in our favor. Shrinking those odds is the job of pool width, covered above, and panel size, covered below. The locks divide the labor on purpose.</p>
   </section>
 
-  <!-- ============ 4: the face at the door ============ -->
+  <!-- ============ 4: the face check ============ -->
   <section class="reveal">
-    <p class="sec-label">The door</p>
-    <h2>The face at the door</h2>
-    <p>Now a quieter attack. Nothing about an iris scan at enrollment stops a juror from handing their phone, or their login, to someone else afterward. A credential farmed out to an operator across the world is one verified human on paper and zero in the chair. A hundred such seats pointed at one language model would look like a hundred independent jurors and vote like one. Identity checked once is identity rented forever.</p>
-    <p>So the court checks at the moment of use. When the die selects your seat, your World App asks for the same on-device face match it already performs for sensitive actions, on an attested phone, and only a pass unlocks the ballot. The match runs on the phone against the locally stored template and reports one bit, pass or fail; no new biometric database is created anywhere, because building a central face library to protect a court would be trading one privacy bomb for another. An annual re-scan does the slow version of the same job, retiring dormant and abandoned credentials so the pool counts only living, reachable humans. The diagram is the whole argument: each check shrinks the window in which someone other than the enrolled human can operate the seat.</p>
+    <p class="sec-label">The face check</p>
+    <h2>The same person, every time</h2>
+    <p>Now a quieter attack. A one-time iris scan at sign-up does nothing to stop a juror from handing their phone, or their login, to someone else afterward. A credential rented out to an operator across the world is one verified human on paper and zero in the seat. A hundred such seats pointed at one language model would look like a hundred independent jurors and vote like one. Identity checked once is identity rented forever.</p>
+    <p>So the court checks at the moment of voting. When the die picks your seat, your World App runs the same on-device face match it already uses for sensitive actions, on an attested phone, and only a pass unlocks the ballot. The match runs on the phone against the template stored there and reports one bit, pass or fail. No central face database is ever built, because a face library big enough to protect a court would just be a second privacy bomb. An annual re-scan does the slow version of the same job, retiring dead and abandoned credentials so the pool counts only living, reachable humans. The diagram is the whole argument: each check shrinks the window in which someone other than the enrolled human can run the seat.</p>
 
     <figure class="diagram reveal">
       <div class="diagram-inner">
@@ -208,17 +208,17 @@
       <figcaption>The red bar is the window in which someone other than the enrolled human can operate the seat. <b>Each check shrinks it; only the per-draw check shrinks it below the length of a case.</b></figcaption>
     </figure>
 
-    <p>Say plainly what no check can prove: that the human in the chair is voting their own mind. A willing accomplice who sits down personally and votes as instructed passes every face check ever built, because they are exactly who they claim to be. That case is handled by money and mathematics instead. The slash makes obedient wrong votes expensive, and the encrypted ballot in the next section makes the instruction unenforceable, since the accomplice can take the payment and vote however they like with no way for the payer to ever know. A conspiracy that cannot audit its members is not a conspiracy. It is a donation.</p>
-    <p>The honest cost of the door is friction. A juror asleep at draw time misses the check, so every draw carries a grace window and standby seats that activate when one goes silent. A miss costs a small reliability ding, never a slash, because punishing sleep like treachery is how you empty a pool.</p>
+    <p>Say plainly what no check can prove: that the human in the seat is voting their own mind. A willing accomplice who personally sits down and votes as told passes every face check ever built, because they really are who they claim to be. That case is handled by money and math instead. The slash makes obedient wrong votes expensive, and the encrypted ballot in the next section makes the instruction unenforceable, since the accomplice can take the cash and vote however they like with no way for the payer to ever know. A conspiracy that cannot audit its members is not a conspiracy. It is a donation.</p>
+    <p>The honest cost here is friction. A juror asleep at draw time misses the check, so every draw carries a grace window and standby seats that switch on when one goes silent. A miss costs a small reliability ding, never a slash, because punishing sleep like treachery is how you empty a pool.</p>
   </section>
 
   <!-- ============ 5: the ballot nobody can sell ============ -->
   <section class="reveal">
     <p class="sec-label">The ballot</p>
     <h2>The ballot nobody can sell</h2>
-    <p>Imagine a briber with a budget and a list of drawn jurors. They do not need most of the panel, just a majority, and they have one engineering requirement: proof of delivery. Nobody pays for a vote they cannot confirm was cast. That requirement is the whole vulnerability, and the court's answer is to make proof of delivery impossible to manufacture, even by a juror who is trying to sell.</p>
-    <p>The simple scheme would have been commit-and-reveal: publish a hash of your vote now, open it later, let anyone check the two match. We rejected it for one reason the demo below makes physical. It prints receipts. The same hash that proves your honesty to the protocol proves your obedience to a briber, and a voting system that can prove obedience is a voting system with a payment rail bolted on.</p>
-    <p>The court's answer starts from a different question: not how to hide a vote, but how to count votes without ever opening one. Every ballot is encrypted to the court's threshold key, and a juror can silently re-key at any time. Hand a briber a flawless transcript of the encrypted NO they paid for, then re-key a minute later and vote YES. Nothing public changes, the transcript still verifies, and it proves exactly nothing, because every juror has the same trick and the briber knows it. The re-key is only half of it. The encrypted ballots are summed while they stay locked, and the only thing the key ever opens is the final total, with a zero-knowledge proof so anyone can confirm the count is honest. No single ballot is ever opened, by anyone, including the people who run the count. There is no peek to sell, because there is no peek. A bribe that cannot verify delivery is a bribe nobody pays. Try to collect.</p>
+    <p>Picture someone with money who wants to fix a verdict. They already have the list of drawn jurors, and they do not need the whole panel, just a majority. But a buyer pays only for a vote they can confirm was really cast their way. No proof of delivery, no payment. That requirement is the whole weak spot, so the court aims straight at it and makes proving your vote impossible, even for a juror who wants to sell.</p>
+    <p>The simple scheme would have been commit-and-reveal: publish a hash of your vote now, open it later, and let anyone check the two match. We rejected it for one reason the demo below makes physical. It prints a receipt. The same hash that proves your honesty to the protocol proves your obedience to a briber, and a voting system that can prove obedience is a voting system with a payment rail bolted on.</p>
+    <p>The court starts from a different question: not how to hide a vote, but how to count votes without ever opening one. Every ballot is locked with the court's threshold key, and a juror can silently re-key at any time, swapping their locked vote for a new one. So a receipt of an encrypted NO proves nothing: you might have re-keyed to YES a minute later, and nothing public changes. The transcript still verifies and still proves exactly nothing, because every juror has the same trick and the briber knows it. The re-key is only half of it. The locked ballots are added together while they stay locked, and the only thing the key ever opens is the final total, never a single ballot, with a zero-knowledge proof so anyone can confirm the count is honest. No single ballot is ever opened, by anyone, including the people who run the count. There is no peek to sell, because there is no peek. A bribe that cannot confirm delivery is a bribe nobody pays. Try to collect.</p>
 
     <div class="widget reveal">
       <div class="widget-head"><span class="live"></span> Sell your vote, if you can</div>
@@ -238,15 +238,15 @@
       <p style="font-family:var(--sans);font-size:.86rem;color:var(--faint);margin:1rem 0 0">Under commit-reveal the receipt is proof and the trade clears. Under threshold voting with re-keying, the same receipt proves nothing, because you may have re-keyed one minute later, and no briber pays for maybe.</p>
     </div>
 
-    <p>The bribery market does not lose a battle here. It loses the ability to write enforceable contracts, and a market that cannot enforce delivery does not clear at any price.</p>
-    <p>Pin down exactly what a would-be briber is working with, because the design splits the world deliberately. Some things are public on purpose: which pseudonymous seats were drawn for a case has to be visible, or nobody could re-run the beacon's math and confirm the panel was honest. Verifiability costs visibility, and the design pays it. What it never pays with is people. A seat is a World ID pseudonym and a wallet; the scans that prove the human behind it never leave their phone, no biometric library exists, and no record anywhere maps a seat to a name.</p>
+    <p>The bribery market does not lose a fight here. It loses the ability to write a contract it can enforce, and a market that cannot enforce delivery does not clear at any price.</p>
+    <p>Pin down what a briber actually has to work with, because the design splits the world on purpose. Some things are public by design: which pseudonymous seats were drawn for a case has to be visible, or nobody could re-check the draw against the randomness beacon and confirm the panel was honest. Verifiability costs visibility, and the design pays it. What it never pays with is people. A seat is a World ID pseudonym and a wallet. The scans that prove the human behind it never leave their phone, no biometric library exists, and no record anywhere maps a seat to a name.</p>
 
     <figure class="diagram reveal">
       <div class="diagram-inner">
         <div class="seen">
           <div class="pane vis">
             <h4>What a briber can see, on purpose</h4>
-            <div class="row2">The pseudonymous seats drawn for a case, so anyone can audit the draw against the beacon.</div>
+            <div class="row2">The pseudonymous seats drawn for a case, so anyone can audit the draw against the randomness beacon.</div>
             <div class="row2">Each seat's bond, reputation, and slash history, the track record that earns trust.</div>
             <div class="row2">The final tally, with its proof attached.</div>
           </div>
@@ -254,15 +254,15 @@
             <h4>What they can never see</h4>
             <div class="row2">Any juror's name or face. The scans stay on the phone; a seat is a pseudonym.</div>
             <div class="row2">Which way any seat voted, on any case, ever. Only the tally decrypts.</div>
-            <div class="row2">Proof of a purchased vote, even from a juror trying to sell one.</div>
+            <div class="row2">Proof of a bought vote, even from a juror trying to sell one.</div>
           </div>
         </div>
       </div>
-      <figcaption>The deliberate split. <b>A briber gets a list of pseudonyms they can audit and nothing they can buy: no name to find, no vote to verify, no receipt to pay against.</b></figcaption>
+      <figcaption>The split is deliberate. <b>A briber gets a list of pseudonyms they can audit and nothing they can buy: no name to find, no vote to verify, no receipt to pay against.</b></figcaption>
     </figure>
 
-    <p>So the worst a briber can do is shout an offer at a list of pseudonyms, and the worst a juror can do back is take the money and vote however they wanted to anyway. The one privacy a juror must keep themselves is their own: tell the neighborhood you hold a seat and you have spent the anonymity the protocol gave you, the same way any pseudonym is spent.</p>
-    <p>One honest note about the machinery underneath, because this section made a strong promise: that nobody, not even the people who run the count, ever opens a single ballot. Keeping that promise without trusting anyone is the job of a committee, the court's mature state, where the key is split across nine trustees and opening even one ballot would take five of them conspiring at once. Version one ships before that committee exists, on a single bonded, slashable coordinator. It still cannot forge a tally, because the zero-knowledge proof on the count is checked by everyone, but it is the one party holding enough of the key to break a juror's privacy if it ever turned malicious. That is the single trust assumption left in the court, bonded and slashable for as long as it lasts, and retiring it is the whole reason the committee exists. We state the training wheel plainly, because a security argument with a hidden footnote is not a security argument.</p>
+    <p>So the worst a briber can do is shout an offer at a list of pseudonyms, and the worst a juror can do back is take the money and vote however they wanted anyway. The one privacy a juror has to guard themselves is their own: tell the neighborhood you hold a seat and you have spent the anonymity the protocol gave you, the same way any pseudonym is spent.</p>
+    <p>One honest note about the machinery underneath, because this section made a strong promise: that nobody, not even the people running the count, ever opens a single ballot. In the court's mature state, that promise is kept by a committee that splits the threshold key across nine trustees, so opening even one ballot would take five of them conspiring at once. Version one ships before that committee exists, on a single bonded, slashable coordinator. It still cannot forge a tally, because everyone checks the zero-knowledge proof on the count, but it is the one party holding enough of the key to break a juror's privacy if it ever turned malicious. That is the single trust assumption left in the court, bonded and slashable for as long as it lasts, and retiring it is the whole reason the committee exists. We state the training wheel plainly, because a security argument with a hidden footnote is not a security argument.</p>
   </section>
 
   <!-- ============ 6: panels that grow ============ -->
@@ -284,7 +284,7 @@
           <span class="arrow">&rarr;</span>
           <div class="node"><span class="ic">&#128274;</span><span class="lbl">Encrypted vote</span><span class="sub">re-keyable, no receipts</span></div>
           <span class="arrow">&rarr;</span>
-          <div class="node is-accent"><span class="ic">&#9878;</span><span class="lbl">Paid or slashed</span><span class="sub">fees in, slashes to the insurance pool</span></div>
+          <div class="node is-accent"><span class="ic">&#9878;</span><span class="lbl">Paid or slashed</span><span class="sub">fees in, slashes to the reward pool</span></div>
         </div>
       </div>
       <figcaption>The life of a seat, end to end. <b>At no step does more money buy more voice; it buys a larger panel of strangers you still cannot reach.</b></figcaption>
@@ -324,7 +324,7 @@
     </div>
 
     <p>Two honest notes. The panels are drawn without overlap, so a bloc cannot reuse one corrupted juror across them, which makes the true odds even longer than the plain multiplication above. And owning a majority of every panel inside one short window is the very coordination the encrypted ballot already made unenforceable, since a juror can take the money on all of them and still vote honestly on all of them. Parallel panels do not replace the other locks. They are the floor beneath the tallest cases, the piece that keeps the price of a takeover rising no matter how large the pot grows.</p>
-    <p>Stand back from the whole court. The verdict has no token to corner, the seats are humans drawn by a die that rolls once, the door checks the body that enrolled, the ballots cannot testify, and the largest cases must clear not one jury but a row of them at the same instant. The remaining question is the one a skeptic should ask next: how does the court know which of those humans to trust more over time? That is a grading problem, and it has its own chapter: <a href="hybrid-juror-system.html">the hybrid system</a>, where settled markets become answer keys and reputation is earned the slow way.</p>
+    <p>Stand back from the whole court. The verdict has no token to corner, the seats are humans drawn by a die that rolls once, the face check confirms the same person who signed up, the ballots cannot testify, and the largest cases must clear not one jury but a row of them at the same instant. The remaining question is the one a skeptic should ask next: how does the court know which of those humans to trust more over time? That is a grading problem, and it has its own chapter: <a href="hybrid-juror-system.html">the hybrid system</a>, where settled markets become answer keys and reputation is earned the slow way.</p>
   </section>
 
   <footer class="endnote reveal">

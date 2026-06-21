@@ -1,0 +1,17 @@
+{
+  "version": "0.0.1",
+  "configurations": [
+    {
+      "name": "static",
+      "runtimeExecutable": "python",
+      "runtimeArgs": ["-m", "http.server", "8123"],
+      "port": 8123
+    },
+    {
+      "name": "web",
+      "runtimeExecutable": "pnpm",
+      "runtimeArgs": ["-C", "C:\\dev\\DemoThemisMVP\\web", "dev"],
+      "port": 3000
+    }
+  ]
+}
