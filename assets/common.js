@@ -98,22 +98,6 @@
   function renderSeries(el, html) {
     el.classList.add("series-bottom");
     el.innerHTML = html;
-
-    if (here === "index.html") return;
-
-    var main = document.querySelector("main");
-    if (!main) return;
-
-    var top = document.getElementById("series-top");
-    if (!top) {
-      top = document.createElement("nav");
-      top.id = "series-top";
-      top.className = "series-top";
-      top.setAttribute("aria-label", "Chapter navigation");
-      var toc = document.getElementById("toc");
-      main.insertBefore(top, toc || main.firstChild);
-    }
-    top.innerHTML = html;
   }
 
   function initSeries() {
