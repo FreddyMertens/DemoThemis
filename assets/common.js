@@ -91,15 +91,42 @@
   }
 
   // ---- series prev/next ----
+  function seriesCard(cls, item, dir) {
+    return '<a class="' + cls + '" href="' + item.f + '"><span class="dir">' + dir + '</span><span class="ttl">' + item.t + '</span></a>';
+  }
+
+  function renderSeries(el, html) {
+    el.classList.add("series-bottom");
+    el.innerHTML = html;
+
+    if (here === "index.html") return;
+
+    var main = document.querySelector("main");
+    if (!main) return;
+
+    var top = document.getElementById("series-top");
+    if (!top) {
+      top = document.createElement("nav");
+      top.id = "series-top";
+      top.className = "series-top";
+      top.setAttribute("aria-label", "Chapter navigation");
+      var toc = document.getElementById("toc");
+      main.insertBefore(top, toc || main.firstChild);
+    }
+    top.innerHTML = html;
+  }
+
   function initSeries() {
     var el = document.getElementById("series");
     if (!el) return;
 
+    var html;
+
     // Home: a single call to action into chapter one.
     if (here === "index.html") {
-      el.innerHTML = '<p class="series-pos">The story in ' + TOTAL + ' chapters</p>' +
-        '<div class="series-nav"><a class="next" href="' + CHAPTERS[0].f + '">' +
-        '<span class="dir">Start &rarr;</span><span class="ttl">' + CHAPTERS[0].t + '</span></a></div>';
+      html = '<p class="series-pos">The story in ' + TOTAL + ' chapters</p>' +
+        '<div class="series-nav">' + seriesCard("next", CHAPTERS[0], "Start &rarr;") + '</div>';
+      renderSeries(el, html);
       return;
     }
 
@@ -112,37 +139,31 @@
     if (rIdx !== -1) {
       var rPrev = rIdx > 0 ? REVIEWS[rIdx - 1] : BLUEPRINT;
       var rNext = rIdx < REVIEWS.length - 1 ? REVIEWS[rIdx + 1] : BLUEPRINT;
-      var rPrevDir = rIdx > 0 ? "&larr; Round " + rIdx : "&larr; The blueprint";
-      var rNextDir = rIdx < REVIEWS.length - 1 ? "Round " + (rIdx + 2) + " &rarr;" : "The blueprint &rarr;";
-      el.innerHTML = '<p class="series-pos">The review &middot; Round ' + (rIdx + 1) + ' of ' + REVIEWS.length + '</p>' +
-        '<div class="series-nav">' +
-        '<a class="prev" href="' + rPrev.f + '"><span class="dir">' + rPrevDir + '</span><span class="ttl">' + rPrev.t + '</span></a>' +
-        '<a class="next" href="' + rNext.f + '"><span class="dir">' + rNextDir + '</span><span class="ttl">' + rNext.t + '</span></a>' +
-        '</div>';
+      var rPrevDir = rIdx > 0 ? "&larr; Previous round" : "&larr; The blueprint";
+      var rNextDir = rIdx < REVIEWS.length - 1 ? "Next round &rarr;" : "The blueprint &rarr;";
+      html = '<p class="series-pos">The review &middot; Round ' + (rIdx + 1) + ' of ' + REVIEWS.length + '</p>' +
+        '<div class="series-nav">' + seriesCard("prev", rPrev, rPrevDir) + seriesCard("next", rNext, rNextDir) + '</div>';
+      renderSeries(el, html);
       return;
     }
 
     // Deep dive: off the main path, route back to its parent chapter.
     if (idx === -1) {
-      var parent = el.getAttribute("data-parent") || "hybrid-juror-system.html";
-      var ptitle = el.getAttribute("data-parent-title") || "the main thread";
-      el.innerHTML = '<p class="series-pos">A deep dive &middot; off the main path</p>' +
-        '<div class="series-nav">' +
-        '<a class="prev" href="' + parent + '"><span class="dir">&larr; Back to</span><span class="ttl">' + ptitle + '</span></a>' +
-        '<a class="next" href="' + HOME.f + '"><span class="dir">The map &rarr;</span><span class="ttl">All chapters</span></a>' +
-        '</div>';
+      var parent = { f: el.getAttribute("data-parent") || "hybrid-juror-system.html", t: el.getAttribute("data-parent-title") || "the main thread" };
+      html = '<p class="series-pos">A deep dive &middot; off the main path</p>' +
+        '<div class="series-nav">' + seriesCard("prev", parent, "&larr; Back to") + seriesCard("next", HOME, "The map &rarr;") + '</div>';
+      renderSeries(el, html);
       return;
     }
 
     var c = CHAPTERS[idx];
     var prev = idx > 0 ? CHAPTERS[idx - 1] : HOME;
     var next = idx < CHAPTERS.length - 1 ? CHAPTERS[idx + 1] : HOME;
-    var prevDir = idx > 0 ? "&larr; Previous" : "&larr; The map";
-    var nextDir = idx < CHAPTERS.length - 1 ? "Next &rarr;" : "Finish &rarr;";
-    var inner = '<a class="prev" href="' + prev.f + '"><span class="dir">' + prevDir + '</span><span class="ttl">' + prev.t + '</span></a>' +
-      '<a class="next" href="' + next.f + '"><span class="dir">' + nextDir + '</span><span class="ttl">' + next.t + '</span></a>';
-    el.innerHTML = '<p class="series-pos">Act ' + c.act + ' &middot; Chapter ' + c.ch + ' of ' + TOTAL + ' &middot; ' + c.actName + '</p>' +
-      '<div class="series-nav">' + inner + '</div>';
+    var prevDir = idx > 0 ? "&larr; Previous chapter" : "&larr; The map";
+    var nextDir = idx < CHAPTERS.length - 1 ? "Next chapter &rarr;" : "Finish &rarr;";
+    html = '<p class="series-pos">Act ' + c.act + ' &middot; Chapter ' + c.ch + ' of ' + TOTAL + ' &middot; ' + c.actName + '</p>' +
+      '<div class="series-nav">' + seriesCard("prev", prev, prevDir) + seriesCard("next", next, nextDir) + '</div>';
+    renderSeries(el, html);
   }
 
   // ---- in-page table of contents + scroll-spy ----
