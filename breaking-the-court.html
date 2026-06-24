@@ -126,7 +126,7 @@
   <section class="reveal">
     <p class="lead">A lock is only as good as the lockpicker who failed to open it. The same is true of a mechanism. The court's headline is that a verdict cannot be bought, and I think the instinct behind it is correct. So the useful thing I can do is not applaud it. It is to sit on the other side of the table and try to walk out with a verdict anyway.</p>
     <p>What follows is a red-team in seven moves. Most of them are not new to the author. The working notes in <code>toupdate.md</code> already name several of these and sketch a direction, and I will say so at each step, because a fair critique starts from what the designer already knows. The point is to find the gap that is left after those fixes land, and to make each gap concrete enough that you can feel where the floor gives way. Drag the sliders. The numbers are illustrative, but the shapes are real.</p>
-    <p class="takeaway">A quick map. Moves one to four go after the court's anti-capture claim: bribery, collusion, rented identities, and the referee behind the curtain. Move five goes after the cheap path that feeds it. Moves six and seven leave the attacker behind and ask whether the market and the track record even hold up when nobody is cheating. <b>Friendly fire throughout.</b> I want this thing to work.</p>
+    <p class="takeaway">A quick map. Moves one to four go after the court's anti-capture claim: bribery, collusion, rented identities, and the arbiter behind the curtain. Move five goes after the cheap path that feeds it. Moves six and seven leave the attacker behind and ask whether the market and the track record even hold up when nobody is cheating. <b>Friendly fire throughout.</b> I want this thing to work.</p>
   </section>
 
   <!-- ===================== 01 ===================== -->
@@ -263,7 +263,7 @@
   <!-- ===================== 04 ===================== -->
   <section class="reveal">
     <p class="sec-label">Open question 04</p>
-    <h2>The referee behind the curtain</h2>
+    <h2>The arbiter behind the curtain</h2>
     <p>Every security claim so far has rested on two words that the design treats as free: random and anonymous. The panel is drawn at random, so you cannot predict it. The jurors are anonymous, so you cannot find them. Pull the curtain back on how those two words are produced and the same machine answers for both, which is a problem, because if one machine produces them, one machine can withdraw them.</p>
     <p>Take random first. A draw is only unpredictable if the seed behind it is. If the seed comes from something an attacker can nudge or simply wait for, they do not need to win the draw. They re-roll it. Trigger the case at a favourable moment, see the panel, and if it is not yours, trigger again. Without a source of randomness nobody can grind, sortition is theatre.</p>
 
