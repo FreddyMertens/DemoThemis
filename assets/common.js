@@ -16,7 +16,6 @@
     { f: "governance.html", t: "Governance", act: "IV", actName: "The payoff", ch: 9 }
   ];
   var TOTAL = CHAPTERS.length;
-  var HOME = { f: "index.html", t: "The map" };
 
   // The review arc: four rounds of attack and answer, chained after the blueprint.
   var REVIEWS = [
@@ -98,6 +97,34 @@
   function renderSeries(el, html) {
     el.classList.add("series-bottom");
     el.innerHTML = html;
+
+    if (here === "index.html") return;
+
+    var main = document.querySelector("main");
+    if (!main) return;
+
+    var top = document.getElementById("series-top");
+    if (!top) {
+      top = document.createElement("nav");
+      top.id = "series-top";
+      top.className = "series-top";
+      top.setAttribute("aria-label", "Chapter navigation");
+      var toc = document.getElementById("toc");
+      main.insertBefore(top, toc || main.firstChild);
+    }
+    top.innerHTML = html;
+  }
+
+  function findChapterIndex(file) {
+    for (var i = 0; i < CHAPTERS.length; i++) { if (CHAPTERS[i].f === file) return i; }
+    return -1;
+  }
+
+  function chapterNav(pos, prev, next) {
+    var cards = "";
+    if (prev) cards += seriesCard("prev", prev, "&larr; Previous chapter");
+    if (next) cards += seriesCard("next", next, "Next chapter &rarr;");
+    return '<p class="series-pos">' + pos + '</p><div class="series-nav">' + cards + '</div>';
   }
 
   function initSeries() {
@@ -114,39 +141,33 @@
       return;
     }
 
-    var idx = -1;
-    for (var i = 0; i < CHAPTERS.length; i++) { if (CHAPTERS[i].f === here) { idx = i; break; } }
+    var idx = findChapterIndex(here);
 
     // The review arc: rounds chain into each other, bracketed by the blueprint.
     var rIdx = -1;
     for (var r = 0; r < REVIEWS.length; r++) { if (REVIEWS[r].f === here) { rIdx = r; break; } }
     if (rIdx !== -1) {
       var rPrev = rIdx > 0 ? REVIEWS[rIdx - 1] : BLUEPRINT;
-      var rNext = rIdx < REVIEWS.length - 1 ? REVIEWS[rIdx + 1] : BLUEPRINT;
-      var rPrevDir = rIdx > 0 ? "&larr; Previous round" : "&larr; The blueprint";
-      var rNextDir = rIdx < REVIEWS.length - 1 ? "Next round &rarr;" : "The blueprint &rarr;";
-      html = '<p class="series-pos">The review &middot; Round ' + (rIdx + 1) + ' of ' + REVIEWS.length + '</p>' +
-        '<div class="series-nav">' + seriesCard("prev", rPrev, rPrevDir) + seriesCard("next", rNext, rNextDir) + '</div>';
+      var rNext = rIdx < REVIEWS.length - 1 ? REVIEWS[rIdx + 1] : null;
+      html = chapterNav('The review &middot; Round ' + (rIdx + 1) + ' of ' + REVIEWS.length, rPrev, rNext);
       renderSeries(el, html);
       return;
     }
 
     // Deep dive: off the main path, route back to its parent chapter.
     if (idx === -1) {
-      var parent = { f: el.getAttribute("data-parent") || "hybrid-juror-system.html", t: el.getAttribute("data-parent-title") || "the main thread" };
-      html = '<p class="series-pos">A deep dive &middot; off the main path</p>' +
-        '<div class="series-nav">' + seriesCard("prev", parent, "&larr; Back to") + seriesCard("next", HOME, "The map &rarr;") + '</div>';
+      var parent = { f: el.getAttribute("data-parent") || "hybrid-juror-system.html", t: el.getAttribute("data-parent-title") || "The hybrid system" };
+      var pIdx = findChapterIndex(parent.f);
+      var dNext = pIdx !== -1 && pIdx < CHAPTERS.length - 1 ? CHAPTERS[pIdx + 1] : null;
+      html = chapterNav('Chapter navigation', parent, dNext);
       renderSeries(el, html);
       return;
     }
 
     var c = CHAPTERS[idx];
-    var prev = idx > 0 ? CHAPTERS[idx - 1] : HOME;
-    var next = idx < CHAPTERS.length - 1 ? CHAPTERS[idx + 1] : HOME;
-    var prevDir = idx > 0 ? "&larr; Previous chapter" : "&larr; The map";
-    var nextDir = idx < CHAPTERS.length - 1 ? "Next chapter &rarr;" : "Finish &rarr;";
-    html = '<p class="series-pos">Act ' + c.act + ' &middot; Chapter ' + c.ch + ' of ' + TOTAL + ' &middot; ' + c.actName + '</p>' +
-      '<div class="series-nav">' + seriesCard("prev", prev, prevDir) + seriesCard("next", next, nextDir) + '</div>';
+    var prev = idx > 0 ? CHAPTERS[idx - 1] : null;
+    var next = idx < CHAPTERS.length - 1 ? CHAPTERS[idx + 1] : null;
+    html = chapterNav('Act ' + c.act + ' &middot; Chapter ' + c.ch + ' of ' + TOTAL + ' &middot; ' + c.actName, prev, next);
     renderSeries(el, html);
   }
 
