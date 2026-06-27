@@ -27,7 +27,8 @@
   var BLUEPRINT = { f: "the-design.html", t: "The blueprint" };
 
   function fileOf(path) {
-    var clean = (path || "").split("?")[0].split("#")[0].replace(/\/+$/, "");
+    var clean = (path || "").split("?")[0].split("#")[0];
+    if (!clean || /\/$/.test(clean)) return "index.html";
     var p = clean.split("/").pop();
     if (!p) return "index.html";
     if (p.indexOf(".") === -1) return p + ".html";

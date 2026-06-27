@@ -517,7 +517,7 @@
     byId("captureSub").textContent = m.blocCapped ? "bloc of " + num(m.intendedBloc) + " exceeds the " + num(v.jurors) + "-juror pool" : num(m.effectiveBloc) + " effective attackers in " + num(v.jurors) + " jurors";
 
     byId("nodeDemandV").textContent = num(m.courtCases) + " court cases / mo";
-    byId("nodeFeesV").textContent = money(m.feeRevenue) + " fees";
+    byId("nodeFeesV").textContent = money(m.feeRevenue) + " fees · " + money(m.rewardPool) + " rewards";
     byId("nodePayV").textContent = money(m.payPerVote) + " per vote";
     byId("nodeReserveV").textContent = v.lockReserve ? money(m.reserve) + " live" : "disabled";
     byId("nodePoolV").textContent = num(v.jurors) + " active";

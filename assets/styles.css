@@ -270,6 +270,9 @@ figcaption b { color: var(--muted); font-weight: 600; }
 .widget-head { font-family: var(--sans); font-weight: 600; font-size: .82rem; letter-spacing: .1em; text-transform: uppercase; color: var(--accent); margin-bottom: 1rem; display: flex; align-items: center; gap: .5rem; }
 .widget-head .live { width: 7px; height: 7px; border-radius: 50%; background: var(--accent); box-shadow: 0 0 0 0 var(--accent); animation: pulse 2s infinite; }
 @keyframes pulse { 0%{box-shadow:0 0 0 0 color-mix(in srgb,var(--accent) 55%,transparent);} 70%{box-shadow:0 0 0 9px transparent;} 100%{box-shadow:0 0 0 0 transparent;} }
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after { animation-duration: .001ms !important; animation-iteration-count: 1 !important; scroll-behavior: auto !important; transition-duration: .001ms !important; }
+}
 .controls { display: flex; flex-direction: column; gap: .5rem; margin-bottom: 1.2rem; }
 .controls .row { display: flex; justify-content: space-between; align-items: baseline; font-family: var(--sans); font-size: .9rem; }
 .controls .row b { font-size: 1.05rem; font-variant-numeric: tabular-nums; }
