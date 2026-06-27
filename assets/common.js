@@ -231,6 +231,9 @@
   window.addEventListener("scroll", onProgress, { passive: true });
   window.addEventListener("resize", onProgress);
   onProgress();
+  initReveal();
+  initNav();
+  initSeries();
   initToc();
   initToTop();
 })();
