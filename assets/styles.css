@@ -25,6 +25,7 @@
   --sans: "Inter", system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
   --mono: "JetBrains Mono", ui-monospace, "SFMono-Regular", Menlo, monospace;
   --maxw: 44rem;
+  --half-maxw: 22rem;
 }
 
 body.theme-market {
@@ -396,17 +397,20 @@ input[type=range]::-moz-range-thumb { width: 22px; height: 22px; border-radius: 
 .toc li a { text-decoration: none; color: var(--faint); display: block; }
 .toc li a:hover { color: var(--ink); }
 .toc li a.active { color: var(--accent-ink); font-weight: 600; }
-@media (min-width: 1240px) {
-  .toc { position: fixed; top: 5.2rem; left: calc(50% - 22rem - 15.5rem); width: 12rem; max-height: 78vh; overflow: auto; }
+@media (min-width: 1500px) {
+  .toc { position: fixed; top: 5.2rem; left: max(1.25rem, calc(50% - var(--half-maxw) - 15.5rem)); width: 12rem; max-height: 78vh; overflow: auto; }
   .toc ul { margin: .4rem 0 0; padding: 0; border-left: 2px solid var(--line); }
   .toc li a { padding: .3rem .85rem; font-size: .82rem; border-left: 2px solid transparent; margin-left: -2px; }
   .toc li a.active { border-left-color: var(--accent); }
   .toc-title { margin: 0 0 .2rem .85rem; }
 }
-@media (max-width: 1239px) {
+@media (max-width: 1499px) {
   .toc { border: 1px solid var(--line); border-radius: 12px; padding: .85rem 1.1rem; margin: 0 0 2rem; background: var(--surface); }
   .toc ul { margin: .5rem 0 0; padding: 0; columns: 2; column-gap: 1.4rem; }
   .toc li a { font-size: .85rem; color: var(--accent-ink); padding: .22rem 0; }
+}
+@media (max-width: 560px) {
+  .toc ul { columns: 1; }
 }
 
 /* ===== back to top ===== */
