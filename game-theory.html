@@ -19,7 +19,7 @@
     body { --maxw: 76rem; --half-maxw: 38rem; }
     .lab-hero { max-width: 72rem; }
     .lab-hero .dek { max-width: 52rem; }
-    .lab-grid { grid-template-columns: minmax(20rem, .8fr) minmax(0, 1fr) minmax(0, 1fr); gap: 1.25rem; }
+    .lab-grid { grid-template-columns: minmax(18rem, .75fr) minmax(0, 1.4fr) minmax(0, .85fr); gap: 1.25rem; }
     .lab-grid > .panel-card { position: sticky; top: 5.5rem; max-height: calc(100vh - 7rem); overflow-y: auto; }
     .scoreboard { grid-template-columns: repeat(2, minmax(0, 1fr)); }
     .map { grid-template-columns: repeat(2, minmax(0, 1fr)); }
@@ -49,6 +49,7 @@
   .preset:hover { background: var(--accent-soft); color: var(--accent-ink); }
   .scoreboard { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: .65rem; margin-bottom: 1rem; }
   @media (max-width: 760px) { .scoreboard { grid-template-columns: repeat(2, minmax(0, 1fr)); } }
+  @media (max-width: 480px) { .scoreboard { grid-template-columns: 1fr; } }
   .score { background: var(--surface); border: 1px solid var(--line-strong); border-radius: 14px; padding: .85rem .9rem; box-shadow: var(--shadow); }
   .score .k { font-family: var(--sans); font-size: .68rem; letter-spacing: .08em; text-transform: uppercase; color: var(--faint); }
   .score .v { font-family: var(--sans); font-weight: 800; font-size: clamp(1.25rem, 3vw, 1.8rem); line-height: 1.05; font-variant-numeric: tabular-nums; margin-top: .2rem; }
@@ -82,9 +83,8 @@
   .attack-top { display: flex; justify-content: space-between; gap: .6rem; align-items: start; margin-bottom: .35rem; }
   .attack h4 { margin: 0; font-size: .98rem; line-height: 1.2; }
   .attack p { margin: 0; font-size: .82rem; line-height: 1.45; color: var(--muted); }
-  .explain { margin-top: 1rem; background: var(--accent-soft); border: 1px solid color-mix(in srgb, var(--accent) 25%, transparent); border-radius: 14px; padding: 1rem; font-family: var(--sans); }
-  .explain h3 { margin: 0 0 .35rem; font-size: 1.05rem; }
-  .explain p { margin: 0; color: var(--ink-soft); font-size: .9rem; line-height: 1.5; }
+  .attack-explain { display: none; margin-top: .8rem; padding-top: .8rem; border-top: 1px solid var(--line); font-size: .85rem; color: var(--ink-soft); line-height: 1.5; }
+  .attack.active .attack-explain { display: block; }
   .matrix { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: .65rem; margin: 1rem 0; }
   @media (max-width: 820px) { .matrix { grid-template-columns: repeat(2, minmax(0, 1fr)); } }
   @media (max-width: 520px) { .matrix { grid-template-columns: 1fr; } }
@@ -113,7 +113,7 @@
   .assumption-actions button:hover, .assumption-row button:hover { color: var(--accent-ink); background: var(--accent-soft); }
   .assumption-pins { display: grid; gap: .4rem; padding: 0 .9rem .85rem; }
   .assumption-pin { display: flex; justify-content: space-between; gap: .6rem; border: 1px solid var(--line); border-radius: 10px; background: var(--surface); padding: .5rem .6rem; font-size: .74rem; color: var(--muted); }
-  .assumption-groups { display: grid; gap: .7rem; padding: 0 .9rem .9rem; }
+  .assumption-groups { display: grid; grid-template-columns: repeat(auto-fit, minmax(20rem, 1fr)); gap: 1.5rem; padding: 0 1.5rem 1.5rem; }
   .assumption-group { border-top: 1px solid var(--line); padding-top: .7rem; }
   .assumption-group h4 { margin: 0 0 .5rem; font-size: .78rem; letter-spacing: .08em; text-transform: uppercase; color: var(--accent); }
   .assumption-row { display: grid; grid-template-columns: minmax(0, 1fr); gap: .35rem; padding: .65rem 0; border-bottom: 1px solid var(--line); }
@@ -228,6 +228,12 @@
       <span class="lab-status-detail" id="labStatusDetail">No attack clears under current settings.</span>
       <div class="lab-status-clears" id="labStatusClears"></div>
     </div>
+    <div class="scoreboard">
+      <div class="score" id="scoreSafety"><div class="k">Illustrative safety index</div><div class="v" id="safetyOut">&hellip;</div><small id="safetySub">&hellip;</small></div>
+      <div class="score" id="scorePay"><div class="k">Pay pressure</div><div class="v" id="payOut">&hellip;</div><small id="paySub">&hellip;</small></div>
+      <div class="score" id="scoreReserve"><div class="k">Live reserve</div><div class="v" id="reserveOut">&hellip;</div><small id="reserveSub">&hellip;</small></div>
+      <div class="score" id="scoreCapture"><div class="k">Panel capture</div><div class="v" id="captureOut">&hellip;</div><small id="captureSub">&hellip;</small></div>
+    </div>
     <div class="lab-grid" id="labGrid">
       <div class="panel-card">
         <div class="dial-group">
@@ -270,27 +276,9 @@
             <label class="lock"><input id="lockAppeal" type="checkbox" checked><span><b>Priced ladder</b>appeals pay panel, capture, and delay floors</span></label>
           </div>
         </div>
-        <details class="assumption-drawer" id="assumptionDrawer">
-          <summary><span>Advanced assumptions</span><b id="assumptionCount">defaults</b></summary>
-          <p class="assumption-copy">Open the modeling factors behind the illustrative index. Governance is intentionally excluded from this MVP simulation; protocol-critical rules are treated as fixed launch rails here.</p>
-          <div class="assumption-actions">
-            <button type="button" id="resetAssumptions">Reset assumptions</button>
-          </div>
-          <div class="assumption-pins" id="assumptionPins" aria-live="polite"></div>
-          <div class="assumption-groups" id="assumptionGroups"></div>
-          <p class="assumption-copy"><b>Dependency map.</b> Each output below lists the inputs and assumptions that can move it.</p>
-          <div class="dependency-grid" id="dependencyGrid"></div>
-        </details>
       </div>
 
       <div>
-        <div class="scoreboard">
-          <div class="score" id="scoreSafety"><div class="k">Illustrative safety index</div><div class="v" id="safetyOut">&hellip;</div><small id="safetySub">&hellip;</small></div>
-          <div class="score" id="scorePay"><div class="k">Pay pressure</div><div class="v" id="payOut">&hellip;</div><small id="paySub">&hellip;</small></div>
-          <div class="score" id="scoreReserve"><div class="k">Live reserve</div><div class="v" id="reserveOut">&hellip;</div><small id="reserveSub">&hellip;</small></div>
-          <div class="score" id="scoreCapture"><div class="k">Panel capture</div><div class="v" id="captureOut">&hellip;</div><small id="captureSub">&hellip;</small></div>
-        </div>
-
         <div class="board">
           <div class="board-head"><h3>The incentive circuit</h3><span class="chip" id="bottleneckChip">&hellip;</span></div>
           <div class="map">
@@ -308,21 +296,28 @@
 
       <div>
         <div class="attack-grid" id="attackGrid">
-          <div class="attack active" data-attack="bloc"><div class="attack-top"><h4>Bloc capture</h4><span class="chip" id="blocChip">&hellip;</span></div><p id="blocTxt">&hellip;</p></div>
-          <div class="attack" data-attack="bribe"><div class="attack-top"><h4>Verified bribe</h4><span class="chip" id="bribeChip">&hellip;</span></div><p id="bribeTxt">&hellip;</p></div>
-          <div class="attack" data-attack="rental"><div class="attack-top"><h4>Rented seats</h4><span class="chip" id="rentalChip">&hellip;</span></div><p id="rentalTxt">&hellip;</p></div>
-          <div class="attack" data-attack="lazy"><div class="attack-top"><h4>Lazy juror</h4><span class="chip" id="lazyChip">&hellip;</span></div><p id="lazyTxt">&hellip;</p></div>
-          <div class="attack" data-attack="assertion"><div class="attack-top"><h4>False assertion</h4><span class="chip" id="assertionChip">&hellip;</span></div><p id="assertionTxt">&hellip;</p></div>
-          <div class="attack" data-attack="grief"><div class="attack-top"><h4>Appeal griefing</h4><span class="chip" id="griefChip">&hellip;</span></div><p id="griefTxt">&hellip;</p></div>
-          <div class="attack" data-attack="drift"><div class="attack-top"><h4>Juror drift</h4><span class="chip" id="driftChip">&hellip;</span></div><p id="driftTxt">&hellip;</p></div>
-        </div>
-
-        <div class="explain" id="attackExplain" aria-live="polite">
-          <h3 id="attackTitle">Bloc capture</h3>
-          <p id="attackBody">&hellip;</p>
+          <div class="attack active" data-attack="bloc"><div class="attack-top"><h4>Bloc capture</h4><span class="chip" id="blocChip">&hellip;</span></div><p id="blocTxt">&hellip;</p><div class="attack-explain">This attack is sampling math against the draw-eligible pool, not the headline signup count. Reserve burden can thin the retained pool, senior gates can shrink the largest-panel pool, and high-stake cases ask multiple panels to agree at once.</div></div>
+          <div class="attack" data-attack="bribe"><div class="attack-top"><h4>Verified bribe</h4><span class="chip" id="bribeChip">&hellip;</span></div><p id="bribeTxt">&hellip;</p><div class="attack-explain">A bribe needs a receipt. If the ballot can be re-keyed and only the tally decrypts, the juror can take the money and vote any way they want. That weakens the contract the briber wanted to buy.</div></div>
+          <div class="attack" data-attack="rental"><div class="attack-top"><h4>Rented seats</h4><span class="chip" id="rentalChip">&hellip;</span></div><p id="rentalTxt">&hellip;</p><div class="attack-explain">Proof of personhood stops fake identities, not willing humans. The face check narrows the rental window to the moment of voting, where a credential alone is much less useful.</div></div>
+          <div class="attack" data-attack="lazy"><div class="attack-top"><h4>Lazy juror</h4><span class="chip" id="lazyChip">&hellip;</span></div><p id="lazyTxt">&hellip;</p><div class="attack-explain">The live reserve has one job: make skipped effort lose money. It is tied to pending income, so it rises when work piles onto each juror and falls when supply catches up. If the reserve gets too heavy, honest jurors leave and the draw pool shrinks.</div></div>
+          <div class="attack" data-attack="assertion"><div class="attack-top"><h4>False assertion</h4><span class="chip" id="assertionChip">&hellip;</span></div><p id="assertionTxt">&hellip;</p><div class="attack-explain">A sleepy market is safer only if catching the lie pays in expectation and enough watcher capacity exists. The board now prices false-rate, bounty size, market-window load, and watcher capacity together.</div></div>
+          <div class="attack" data-attack="grief"><div class="attack-top"><h4>Appeal griefing</h4><span class="chip" id="griefChip">&hellip;</span></div><p id="griefTxt">&hellip;</p><div class="attack-explain">Appeals must stay possible for sincere losers and expensive for grinders. That is why each rung pays the next panel, prices capture risk, and rents the delay it imposes.</div></div>
+          <div class="attack" data-attack="drift"><div class="attack-top"><h4>Juror drift</h4><span class="chip" id="driftChip">&hellip;</span></div><p id="driftTxt">&hellip;</p><div class="attack-explain">Agreement is not the same as external truth. Only watched, curated public settlements and minimized consented private tests become keys here, so the board does not treat every quiet settlement as a clean exam.</div></div>
         </div>
       </div>
     </div>
+
+    <details class="assumption-drawer" id="assumptionDrawer">
+      <summary><span>Advanced assumptions</span><b id="assumptionCount">defaults</b></summary>
+      <p class="assumption-copy">Open the modeling factors behind the illustrative index. Governance is intentionally excluded from this MVP simulation; protocol-critical rules are treated as fixed launch rails here.</p>
+      <div class="assumption-actions">
+        <button type="button" id="resetAssumptions">Reset assumptions</button>
+      </div>
+      <div class="assumption-pins" id="assumptionPins" aria-live="polite"></div>
+      <div class="assumption-groups" id="assumptionGroups"></div>
+      <p class="assumption-copy"><b>Dependency map.</b> Each output below lists the inputs and assumptions that can move it.</p>
+      <div class="dependency-grid" id="dependencyGrid"></div>
+    </details>
   </section>
 
   <section class="reveal">
@@ -1033,19 +1028,6 @@
     }
   }
 
-  function setExplain() {
-    var copy = {
-      bloc: ["Bloc capture", "This attack is sampling math against the draw-eligible pool, not the headline signup count. Reserve burden can thin the retained pool, senior gates can shrink the largest-panel pool, and high-stake cases ask multiple panels to agree at once."],
-      bribe: ["Verified bribe", "A bribe needs a receipt. If the ballot can be re-keyed and only the tally decrypts, the juror can take the money and vote any way they want. That weakens the contract the briber wanted to buy."],
-      rental: ["Rented seats", "Proof of personhood stops fake identities, not willing humans. The face check narrows the rental window to the moment of voting, where a credential alone is much less useful."],
-      lazy: ["Lazy juror", "The live reserve has one job: make skipped effort lose money. It is tied to pending income, so it rises when work piles onto each juror and falls when supply catches up. If the reserve gets too heavy, honest jurors leave and the draw pool shrinks."],
-      assertion: ["False assertion", "A sleepy market is safer only if catching the lie pays in expectation and enough watcher capacity exists. The board now prices false-rate, bounty size, market-window load, and watcher capacity together."],
-      grief: ["Appeal griefing", "Appeals must stay possible for sincere losers and expensive for grinders. That is why each rung pays the next panel, prices capture risk, and rents the delay it imposes."],
-      drift: ["Juror drift", "Agreement is not the same as external truth. Only watched, curated public settlements and minimized consented private tests become keys here, so the board does not treat every quiet settlement as a clean exam."]
-    };
-    byId("attackTitle").textContent = copy[selectedAttack][0];
-    byId("attackBody").textContent = copy[selectedAttack][1];
-  }
 
   function copyState(v) {
     var out = {};
@@ -1144,7 +1126,6 @@
     setAttacks(v, m);
     setLabStatus(v, m);
     setRanks(m);
-    setExplain();
     setDrivers(v, m);
     setWarnings(v, m);
   }
@@ -1162,7 +1143,10 @@
     var s = sets[name];
     Object.keys(s).forEach(function (k) {
       if (k === "locks") return;
-      if (byId(k)) byId(k).value = s[k];
+      if (byId(k)) {
+        byId(k).value = s[k];
+        updateRangeTrack(byId(k));
+      }
     });
     lockIds.forEach(function (id) { byId(id).checked = s.locks; });
     resetAssumptions(false);
@@ -1170,8 +1154,21 @@
   }
 
   renderAssumptions();
-  byId("resetAssumptions").addEventListener("click", function () { resetAssumptions(true); });
-  ids.concat(lockIds).forEach(function (id) { byId(id).addEventListener("input", update); byId(id).addEventListener("change", update); });
+  function updateRangeTrack(el) {
+    if (el && el.type === "range") {
+      var min = parseFloat(el.min) || 0;
+      var max = parseFloat(el.max) || 100;
+      var val = ((el.value - min) / (max - min)) * 100;
+      el.style.setProperty("--val", val + "%");
+    }
+  }
+  byId("resetAssumptions").addEventListener("click", function () { resetAssumptions(true); Array.prototype.forEach.call(document.querySelectorAll('input[type="range"]'), updateRangeTrack); });
+  ids.concat(lockIds).forEach(function (id) { 
+    var el = byId(id);
+    el.addEventListener("input", function() { updateRangeTrack(el); update(); }); 
+    el.addEventListener("change", update); 
+  });
+  Array.prototype.forEach.call(document.querySelectorAll('input[type="range"]'), updateRangeTrack);
   Array.prototype.forEach.call(document.querySelectorAll(".preset"), function (btn) { btn.addEventListener("click", function () { setPreset(btn.getAttribute("data-preset")); }); });
   function selectAttack(card) {
     selectedAttack = card.getAttribute("data-attack");
