@@ -43,6 +43,7 @@
       <a href="compounding.html">Why it compounds</a>
       <a href="the-design.html">The blueprint</a>
       <a href="governance.html">Governance</a>
+      <a href="game-theory.html">Game lab</a>
     </div>
   </div>
 </nav>
@@ -93,7 +94,7 @@
   <section class="reveal">
     <p class="sec-label">Where the money comes from</p>
     <h2>Fees pay the judges, not a printing press</h2>
-    <p>The pay for jurors comes from honest money. A 2% fee is skimmed from every pool at settlement, split once and printed: 70% to juror pay, 20% to the reward pool that pays active, high-quality jurors, 10% to operations. Careless rulings forfeit a slice of the flat five-dollar seat bond into that same reward pool. No money is printed to pay anyone, nothing is subsidized, and entry costs a juror nothing because the protocol fronts the bond and the first fees fill it in. Drag the dials below to see how much judging a given amount of betting can fund.</p>
+    <p>The pay for jurors comes from use, not a treasury. A 2% fee is skimmed from every pool at settlement, split once and printed: 70% to juror pay, 20% to the reward pool that pays active, high-quality jurors, 10% to operations. That pay pool is then spread across real work and real jurors. More demand with the same jurors raises pay pressure; more jurors spread it out. Careless rulings slash the live reserve built from retained fees. No salary and no entry price are hard-coded. The court breathes with traffic.</p>
 
     <div class="widget reveal">
       <div class="widget-head"><span class="live"></span> Bootstrap economics, illustrative</div>
@@ -102,13 +103,15 @@
         <input id="zVol" type="range" min="100000" max="50000000" step="100000" value="5000000">
         <div class="row"><label for="zFee">Fee taken on that flow</label> <b id="zFeeOut">2.0%</b></div>
         <input id="zFee" type="range" min="5" max="30" step="1" value="20">
+        <div class="row"><label for="zActive">Active jurors available</label> <b id="zActiveOut">2,000</b></div>
+        <input id="zActive" type="range" min="100" max="20000" step="100" value="2000">
       </div>
       <div class="readout">
         <div class="stat"><div class="k">Monthly fee revenue</div><div class="v" id="zRev">$100k</div></div>
         <div class="stat"><div class="k">Goes to the juror pool</div><div class="v accent" id="zPool">$70k</div></div>
-        <div class="stat"><div class="k">Jurors paid a part-time wage</div><div class="v" id="zJur">175</div></div>
+        <div class="stat"><div class="k">Pay pressure per active juror</div><div class="v" id="zJur">&hellip;</div></div>
       </div>
-      <p style="font-family:var(--sans);font-size:.86rem;color:var(--faint);margin:1rem 0 0">Illustrative only. Assumes 70% of fees fund juror pay and a part-time juror earns about $400 a month for the cases they catch.</p>
+      <p style="font-family:var(--sans);font-size:.86rem;color:var(--faint);margin:1rem 0 0">Illustrative only. The last number is not a promised wage; it is the pressure the fee pool puts on juror pay and reserve sizing. Add active jurors and the pressure spreads out.</p>
     </div>
 
     <p>The point of the dials is not the exact figure, which will move with real data. It is the shape. Pay scales with use rather than with a fundraising round, so a busier court can afford more and better jurors, and a quiet one does not bleed money it does not have.</p>
@@ -131,14 +134,14 @@
         <span class="step-n">2</span>
         <div class="step-body">
           <h3>Open the doors to real disputes</h3>
-          <p>With a record in hand, the court takes outside cases. Small on-chain deals first, judged against published checklists in the rubric court, where a refund or a release of funds hinges on whether the work matched the spec. An escrow that needs a neutral arbiter can point at the court's history and trust the answer. Each settled dispute adds to its own record, kept separate from the objective court's, because they measure different skills.</p>
+          <p>With a record in hand, the protocol starts taking outside escrowed deals. Small on-chain work comes first, judged against published checklists in the rubric court, where the funds are already locked and a refund or release hinges on whether the work matched the spec. An app that needs a neutral arbiter routes the deal through DemoThemis instead of promising to obey a verdict later. Each settled dispute adds to its own record, kept separate from the objective court's, because they measure different skills.</p>
         </div>
       </li>
       <li>
         <span class="step-n">3</span>
         <div class="step-body">
           <h3>Become the default</h3>
-          <p>Once enough apps settle through the same court, its verdicts and the reputations behind them turn into shared proof the right parties can verify. New apps plug in rather than build their own support desk, and the ones that skip a neutral arbiter start to look like they have something to hide. That is the standard the <a href="vision.html">vision</a> described.</p>
+          <p>Once enough apps route funds through the same protocol escrow, signed verdict receipts and measured court accuracy become proof the right parties can verify. New apps plug in rather than build their own support desk, and the ones that keep custody inside their own walls start to look like they have something to hide. That is the standard the <a href="vision.html">vision</a> described.</p>
         </div>
       </li>
     </ol>
@@ -188,15 +191,16 @@
   "use strict";
   var vol = document.getElementById("zVol");
   var fee = document.getElementById("zFee");
-  if (!vol || !fee) return;
+  var active = document.getElementById("zActive");
+  if (!vol || !fee || !active) return;
   var volOut = document.getElementById("zVolOut");
   var feeOut = document.getElementById("zFeeOut");
+  var activeOut = document.getElementById("zActiveOut");
   var rev = document.getElementById("zRev");
   var pool = document.getElementById("zPool");
   var jur = document.getElementById("zJur");
 
   var POOL_SHARE = 0.7;
-  var WAGE = 400;
 
   function money(n) {
     if (n >= 1000000) return "$" + (n / 1000000).toFixed(n >= 10000000 ? 0 : 1) + "M";
@@ -209,14 +213,17 @@
     var f = parseInt(fee.value, 10) / 10; // tenths of a percent
     volOut.textContent = money(v);
     feeOut.textContent = f.toFixed(1) + "%";
+    var a = parseInt(active.value, 10);
     var revenue = v * (f / 100);
     var poolUsd = revenue * POOL_SHARE;
+    activeOut.textContent = a.toLocaleString("en-US");
     rev.textContent = money(revenue);
     pool.textContent = money(poolUsd);
-    jur.textContent = Math.round(poolUsd / WAGE).toLocaleString("en-US");
+    jur.textContent = money(poolUsd / Math.max(1, a));
   }
   vol.addEventListener("input", update);
   fee.addEventListener("input", update);
+  active.addEventListener("input", update);
   update();
 })();
 </script>

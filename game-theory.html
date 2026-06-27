@@ -1,0 +1,627 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>The game-theory lab: every DemoThemis variable on one board</title>
+<meta name="description" content="An interactive DemoThemis lab showing how demand, juror supply, pay pressure, live reserve sizing, panels, appeal costs, watchers, answer keys, governance, and attacks interact.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@500;700&family=Newsreader:opsz,wght@6..72,200..700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="assets/styles.css">
+<style>
+  body { --maxw: 54rem; }
+  .lab-hero { max-width: 60rem; }
+  .lab-hero .dek { max-width: 44rem; }
+  .lab-grid { display: grid; grid-template-columns: minmax(15rem, .9fr) minmax(0, 1.35fr); gap: 1rem; align-items: start; }
+  @media (max-width: 880px) { .lab-grid { grid-template-columns: 1fr; } }
+  .panel-card { background: var(--surface); border: 1px solid var(--line-strong); border-radius: var(--radius); box-shadow: var(--shadow); padding: 1rem; }
+  .dial-group { margin-bottom: 1rem; border-bottom: 1px solid var(--line); padding-bottom: .8rem; }
+  .dial-group:last-child { border-bottom: none; margin-bottom: 0; padding-bottom: 0; }
+  .dial-group h3 { font-family: var(--sans); font-size: .82rem; letter-spacing: .08em; text-transform: uppercase; color: var(--accent-ink); margin: 0 0 .55rem; }
+  .dial { margin: .55rem 0; }
+  .dial label { display: flex; justify-content: space-between; gap: .8rem; align-items: baseline; font-family: var(--sans); font-size: .82rem; color: var(--muted); }
+  .dial label b { color: var(--ink); font-variant-numeric: tabular-nums; white-space: nowrap; }
+  .locks { display: grid; grid-template-columns: 1fr; gap: .45rem; }
+  .lock { display: flex; gap: .55rem; align-items: flex-start; font-family: var(--sans); font-size: .82rem; color: var(--muted); line-height: 1.35; background: var(--bg); border: 1px solid var(--line); border-radius: 10px; padding: .55rem .65rem; }
+  .lock input { margin-top: .18rem; }
+  .lock b { display: block; color: var(--ink); }
+  .preset-row { display: flex; flex-wrap: wrap; gap: .45rem; margin-top: .75rem; }
+  .preset { border: 1px solid var(--line-strong); background: var(--surface); border-radius: 999px; padding: .35rem .65rem; font-family: var(--sans); font-weight: 700; font-size: .72rem; color: var(--muted); cursor: pointer; }
+  .preset:hover { background: var(--accent-soft); color: var(--accent-ink); }
+  .scoreboard { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: .65rem; margin-bottom: 1rem; }
+  @media (max-width: 760px) { .scoreboard { grid-template-columns: repeat(2, minmax(0, 1fr)); } }
+  .score { background: var(--surface); border: 1px solid var(--line-strong); border-radius: 14px; padding: .85rem .9rem; box-shadow: var(--shadow); }
+  .score .k { font-family: var(--sans); font-size: .68rem; letter-spacing: .08em; text-transform: uppercase; color: var(--faint); }
+  .score .v { font-family: var(--sans); font-weight: 800; font-size: clamp(1.25rem, 3vw, 1.8rem); line-height: 1.05; font-variant-numeric: tabular-nums; margin-top: .2rem; }
+  .score small { display: block; font-family: var(--sans); color: var(--muted); font-size: .74rem; line-height: 1.35; margin-top: .3rem; }
+  .score.good .v { color: var(--good); }
+  .score.mid .v { color: #9b650f; }
+  .score.bad .v { color: var(--bad); }
+  .board { background: var(--surface); border: 1px solid var(--line-strong); border-radius: var(--radius); box-shadow: var(--shadow-lg); padding: 1rem; }
+  .board-head { display: flex; justify-content: space-between; gap: 1rem; flex-wrap: wrap; align-items: center; margin-bottom: .8rem; }
+  .board-head h3 { font-family: var(--sans); font-size: .86rem; letter-spacing: .09em; text-transform: uppercase; color: var(--accent); margin: 0; }
+  .chip { font-family: var(--sans); font-size: .68rem; font-weight: 800; letter-spacing: .06em; text-transform: uppercase; border-radius: 999px; padding: .18rem .5rem; white-space: nowrap; }
+  .chip.good { color: var(--good); background: var(--good-soft); }
+  .chip.mid { color: #8a5600; background: #f9ead3; }
+  .chip.bad { color: var(--bad); background: var(--bad-soft); }
+  .map { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: .65rem; }
+  @media (max-width: 720px) { .map { grid-template-columns: 1fr; } }
+  .node { position: relative; min-height: 8.2rem; background: var(--bg); border: 1px solid var(--line); border-radius: 14px; padding: .85rem; overflow: hidden; }
+  .node::before { content: attr(data-n); position: absolute; right: .7rem; top: .45rem; font-family: var(--mono); font-size: .68rem; font-weight: 800; color: color-mix(in srgb, var(--accent) 40%, transparent); }
+  .node h4 { margin: 0 1.8rem .35rem 0; font-family: var(--sans); font-size: .92rem; line-height: 1.2; }
+  .node p { margin: 0; font-family: var(--sans); font-size: .78rem; line-height: 1.4; color: var(--muted); }
+  .node b { display: block; margin-top: .6rem; font-family: var(--mono); font-size: .98rem; color: var(--accent-ink); font-variant-numeric: tabular-nums; }
+  .node.good { border-color: color-mix(in srgb, var(--good) 35%, var(--line)); }
+  .node.bad { border-color: color-mix(in srgb, var(--bad) 40%, var(--line)); }
+  .node.mid { border-color: #e4bd7c; }
+  .attack-grid { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: .75rem; margin-top: 1rem; }
+  @media (max-width: 720px) { .attack-grid { grid-template-columns: 1fr; } }
+  .attack { border: 1px solid var(--line); border-radius: 14px; padding: .9rem; background: var(--surface); box-shadow: var(--shadow); font-family: var(--sans); cursor: pointer; transition: transform .14s ease, box-shadow .14s ease, border-color .14s ease; }
+  .attack:hover { transform: translateY(-2px); box-shadow: var(--shadow-lg); }
+  .attack.active { border-color: var(--accent); background: color-mix(in srgb, var(--accent-soft) 55%, var(--surface)); }
+  .attack-top { display: flex; justify-content: space-between; gap: .6rem; align-items: start; margin-bottom: .35rem; }
+  .attack h4 { margin: 0; font-size: .98rem; line-height: 1.2; }
+  .attack p { margin: 0; font-size: .82rem; line-height: 1.45; color: var(--muted); }
+  .explain { margin-top: 1rem; background: var(--accent-soft); border: 1px solid color-mix(in srgb, var(--accent) 25%, transparent); border-radius: 14px; padding: 1rem; font-family: var(--sans); }
+  .explain h3 { margin: 0 0 .35rem; font-size: 1.05rem; }
+  .explain p { margin: 0; color: var(--ink-soft); font-size: .9rem; line-height: 1.5; }
+  .matrix { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: .65rem; margin: 1rem 0; }
+  @media (max-width: 820px) { .matrix { grid-template-columns: repeat(2, minmax(0, 1fr)); } }
+  @media (max-width: 520px) { .matrix { grid-template-columns: 1fr; } }
+  .var-card { background: var(--surface); border: 1px solid var(--line); border-radius: 13px; padding: .85rem; box-shadow: var(--shadow); font-family: var(--sans); }
+  .var-card h3 { margin: 0 0 .3rem; font-size: .92rem; }
+  .var-card p { margin: 0; color: var(--muted); font-size: .8rem; line-height: 1.45; }
+  .formula { font-family: var(--mono); font-size: .82rem; background: var(--bg); border: 1px solid var(--line); border-radius: 10px; padding: .65rem .75rem; color: var(--ink-soft); overflow-x: auto; }
+  .rank-list { display: grid; gap: .55rem; margin-top: .7rem; }
+  .rank { display: grid; grid-template-columns: 8rem 1fr 4.5rem; gap: .6rem; align-items: center; font-family: var(--sans); font-size: .82rem; }
+  .rank .track { height: 9px; border-radius: 999px; background: var(--line); overflow: hidden; }
+  .rank .track span { display: block; height: 100%; width: 0; background: linear-gradient(90deg, var(--accent), var(--accent-ink)); }
+  .rank b { text-align: right; font-variant-numeric: tabular-nums; }
+  .story { display: grid; grid-template-columns: 1fr 1fr; gap: 1rem; }
+  @media (max-width: 720px) { .story { grid-template-columns: 1fr; } }
+  .story-card { border: 1px solid var(--line); border-radius: 14px; background: var(--surface); box-shadow: var(--shadow); padding: 1rem; }
+  .story-card h3 { font-family: var(--sans); font-size: 1rem; margin: 0 0 .4rem; }
+  .story-card p { margin: 0; font-size: .95rem; color: var(--ink-soft); }
+</style>
+</head>
+<body>
+<div id="progress"></div>
+
+<nav class="sitenav" aria-label="Primary">
+  <div class="sitenav-inner">
+    <a class="brand" href="index.html">DemoThemis<span class="dot">.</span></a>
+    <button class="nav-toggle" type="button" aria-label="Menu" aria-expanded="false">&#9776;</button>
+    <div class="nav-links">
+      <a href="index.html">Home</a>
+      <a href="vision.html">Vision</a>
+      <div class="nav-group">
+        <button class="nav-group-btn" type="button">The mechanism</button>
+        <div class="nav-menu">
+          <a href="juror-court.html"><span class="ch">02</span> The court</a>
+          <a href="hybrid-juror-system.html"><span class="ch">03</span> The hybrid system</a>
+        </div>
+      </div>
+      <div class="nav-group nav-group-end">
+        <button class="nav-group-btn" type="button">The bootstrap</button>
+        <div class="nav-menu">
+          <a href="prediction-market.html"><span class="ch">04</span> The prediction market</a>
+          <a href="hybrid-juror-prediction-market-integration.html"><span class="ch">05</span> The loop</a>
+          <a href="zero-to-one.html"><span class="ch">06</span> Zero to one</a>
+        </div>
+      </div>
+      <a href="compounding.html">Why it compounds</a>
+      <a href="the-design.html">The blueprint</a>
+      <a href="governance.html">Governance</a>
+      <a href="game-theory.html">Game lab</a>
+    </div>
+  </div>
+</nav>
+
+<header class="hero lab-hero reveal">
+  <p class="kicker">Interactive lab</p>
+  <h1>The whole protocol as a game board.</h1>
+  <p class="dek">Move demand, juror supply, attacker budget, and the safety locks. The board shows how every live value sets the next one: fees become pay pressure, pay pressure sizes the reserve, reserve plus pool width shapes attacks, and attacks determine whether verdicts stay useful.</p>
+  <div class="meta">
+    <span class="pill">Playable model</span>
+    <span>Off the chapter path</span>
+    <span class="dot">&bull;</span>
+    <span>Built from the current design</span>
+  </div>
+</header>
+
+<main class="content wrap">
+  <aside id="toc" class="toc reveal"></aside>
+
+  <section class="reveal">
+    <p class="sec-label">How to play</p>
+    <h2>There are no magic constants here</h2>
+    <p class="lead">The game is simple: every number either comes from traffic, juror supply, a fee split, or an attacker. If a number cannot explain what it tracks, it does not belong on the board.</p>
+    <p>The lab is not a parameter vote and it is not a promise about launch volumes. It is a map of dependencies. Demand creates fee flow. Fee flow creates juror pay pressure. Pay pressure and unresolved workload create the live reserve. The reserve deters laziness but, if made too heavy, thins the juror pool. Pool width, panel size, sealed randomness, receipt-free ballots, face checks, answer keys, watched assertions, appeal floors, and governance all press on the final question: does a bad strategy make money?</p>
+    <div class="preset-row">
+      <button class="preset" type="button" data-preset="base">Balanced court</button>
+      <button class="preset" type="button" data-preset="cold">Cold start</button>
+      <button class="preset" type="button" data-preset="surge">Demand surge</button>
+      <button class="preset" type="button" data-preset="bloc">Bloc attack</button>
+      <button class="preset" type="button" data-preset="sleepy">Sleepy market</button>
+      <button class="preset" type="button" data-preset="broken">Break the locks</button>
+    </div>
+  </section>
+
+  <section class="reveal">
+    <p class="sec-label">The board</p>
+    <h2>Drag the dials and watch the incentives move</h2>
+    <div class="lab-grid">
+      <div class="panel-card">
+        <div class="dial-group">
+          <h3>Demand</h3>
+          <div class="dial"><label for="flow">Monthly settlement flow <b id="flowOut">&hellip;</b></label><input id="flow" type="range" min="100000" max="50000000" step="100000" value="5000000"></div>
+          <div class="dial"><label for="stake">Typical contested stake <b id="stakeOut">&hellip;</b></label><input id="stake" type="range" min="0" max="100" step="1" value="45"></div>
+          <div class="dial"><label for="challenge">Share that reaches court <b id="challengeOut">&hellip;</b></label><input id="challenge" type="range" min="1" max="25" step="1" value="5"></div>
+          <div class="dial"><label for="lag">Unresolved slash lag <b id="lagOut">&hellip;</b></label><input id="lag" type="range" min="1" max="8" step="1" value="4"></div>
+        </div>
+        <div class="dial-group">
+          <h3>Fee engine</h3>
+          <div class="dial"><label for="fee">Settlement fee <b id="feeOut">&hellip;</b></label><input id="fee" type="range" min="5" max="30" step="1" value="20"></div>
+          <div class="dial"><label for="payShare">Juror pay share <b id="payShareOut">&hellip;</b></label><input id="payShare" type="range" min="55" max="75" step="1" value="70"></div>
+          <div class="dial"><label for="rewardShare">Reward pool share <b id="rewardShareOut">&hellip;</b></label><input id="rewardShare" type="range" min="10" max="25" step="1" value="20"></div>
+        </div>
+        <div class="dial-group">
+          <h3>Juror supply</h3>
+          <div class="dial"><label for="jurors">Active jurors <b id="jurorsOut">&hellip;</b></label><input id="jurors" type="range" min="0" max="100" step="1" value="52"></div>
+          <div class="dial"><label for="skill">Careful juror skill <b id="skillOut">&hellip;</b></label><input id="skill" type="range" min="52" max="88" step="1" value="68"></div>
+          <div class="dial"><label for="careless">Extra wrong-rate from laziness <b id="carelessOut">&hellip;</b></label><input id="careless" type="range" min="10" max="50" step="1" value="25"></div>
+          <div class="dial"><label for="slash">Slash fraction on wrong-side vote <b id="slashOut">&hellip;</b></label><input id="slash" type="range" min="25" max="100" step="5" value="100"></div>
+        </div>
+        <div class="dial-group">
+          <h3>Attack pressure</h3>
+          <div class="dial"><label for="bloc">Coordinated humans <b id="blocOut">&hellip;</b></label><input id="bloc" type="range" min="0" max="6000" step="50" value="300"></div>
+          <div class="dial"><label for="rented">Rented credentials <b id="rentedOut">&hellip;</b></label><input id="rented" type="range" min="0" max="6000" step="50" value="0"></div>
+          <div class="dial"><label for="rerolls">Panel re-roll attempts <b id="rerollsOut">&hellip;</b></label><input id="rerolls" type="range" min="1" max="100" step="1" value="1"></div>
+          <div class="dial"><label for="watchCost">Cost to watch one market <b id="watchCostOut">&hellip;</b></label><input id="watchCost" type="range" min="1" max="60" step="1" value="5"></div>
+        </div>
+        <div class="dial-group">
+          <h3>Locks</h3>
+          <div class="locks">
+            <label class="lock"><input id="lockDraw" type="checkbox" checked><span><b>Sealed draw</b>one case, one randomness beacon roll</span></label>
+            <label class="lock"><input id="lockBallot" type="checkbox" checked><span><b>Receipt-free ballot</b>a briber cannot verify delivery</span></label>
+            <label class="lock"><input id="lockFace" type="checkbox" checked><span><b>Face check</b>rented seats fail at draw time</span></label>
+            <label class="lock"><input id="lockReserve" type="checkbox" checked><span><b>Live reserve</b>carelessness prices itself from pending income</span></label>
+            <label class="lock"><input id="lockKeys" type="checkbox" checked><span><b>Answer keys</b>settled outcomes grade drift</span></label>
+            <label class="lock"><input id="lockWatch" type="checkbox" checked><span><b>Paid watchers</b>false assertions create bounties</span></label>
+            <label class="lock"><input id="lockAppeal" type="checkbox" checked><span><b>Priced ladder</b>appeals pay panel, capture, and delay floors</span></label>
+            <label class="lock"><input id="lockGov" type="checkbox" checked><span><b>Use-weighted governance</b>verified users dilute token weight</span></label>
+          </div>
+        </div>
+      </div>
+
+      <div>
+        <div class="scoreboard">
+          <div class="score" id="scoreSafety"><div class="k">Protocol safety</div><div class="v" id="safetyOut">&hellip;</div><small id="safetySub">&hellip;</small></div>
+          <div class="score" id="scorePay"><div class="k">Pay pressure</div><div class="v" id="payOut">&hellip;</div><small id="paySub">&hellip;</small></div>
+          <div class="score" id="scoreReserve"><div class="k">Live reserve</div><div class="v" id="reserveOut">&hellip;</div><small id="reserveSub">&hellip;</small></div>
+          <div class="score" id="scoreCapture"><div class="k">Panel capture</div><div class="v" id="captureOut">&hellip;</div><small id="captureSub">&hellip;</small></div>
+        </div>
+
+        <div class="board">
+          <div class="board-head"><h3>The incentive circuit</h3><span class="chip" id="bottleneckChip">&hellip;</span></div>
+          <div class="map">
+            <div class="node" id="nodeDemand" data-n="01"><h4>Demand</h4><p>Markets and disputes create settlement flow and court cases.</p><b id="nodeDemandV">&hellip;</b></div>
+            <div class="node" id="nodeFees" data-n="02"><h4>Fee split</h4><p>The settlement fee funds pay, rewards, and operations once.</p><b id="nodeFeesV">&hellip;</b></div>
+            <div class="node" id="nodePay" data-n="03"><h4>Pay pressure</h4><p>Demand divided by active juror supply. This is not a wage promise.</p><b id="nodePayV">&hellip;</b></div>
+            <div class="node" id="nodeReserve" data-n="04"><h4>Reserve</h4><p>Pending juror income divided by careless-error slash pressure.</p><b id="nodeReserveV">&hellip;</b></div>
+            <div class="node" id="nodePool" data-n="05"><h4>Pool width</h4><p>Wide pools make coordinated blocs miss panels.</p><b id="nodePoolV">&hellip;</b></div>
+            <div class="node" id="nodePanel" data-n="06"><h4>Panel</h4><p>Stake selects seat count; skill selects honest majority odds.</p><b id="nodePanelV">&hellip;</b></div>
+            <div class="node" id="nodeWatch" data-n="07"><h4>Assertions</h4><p>False outcomes become bounties for watchers.</p><b id="nodeWatchV">&hellip;</b></div>
+            <div class="node" id="nodeKeys" data-n="08"><h4>Keys</h4><p>Quiet markets and private tests measure juror drift.</p><b id="nodeKeysV">&hellip;</b></div>
+            <div class="node" id="nodeGov" data-n="09"><h4>Governance</h4><p>Verified use turns token weight from a plutocracy into a checked signal.</p><b id="nodeGovV">&hellip;</b></div>
+          </div>
+        </div>
+
+        <div class="attack-grid" id="attackGrid">
+          <div class="attack active" data-attack="bloc"><div class="attack-top"><h4>Bloc capture</h4><span class="chip" id="blocChip">&hellip;</span></div><p id="blocTxt">&hellip;</p></div>
+          <div class="attack" data-attack="bribe"><div class="attack-top"><h4>Verified bribe</h4><span class="chip" id="bribeChip">&hellip;</span></div><p id="bribeTxt">&hellip;</p></div>
+          <div class="attack" data-attack="rental"><div class="attack-top"><h4>Rented seats</h4><span class="chip" id="rentalChip">&hellip;</span></div><p id="rentalTxt">&hellip;</p></div>
+          <div class="attack" data-attack="lazy"><div class="attack-top"><h4>Lazy juror</h4><span class="chip" id="lazyChip">&hellip;</span></div><p id="lazyTxt">&hellip;</p></div>
+          <div class="attack" data-attack="assertion"><div class="attack-top"><h4>False assertion</h4><span class="chip" id="assertionChip">&hellip;</span></div><p id="assertionTxt">&hellip;</p></div>
+          <div class="attack" data-attack="grief"><div class="attack-top"><h4>Appeal griefing</h4><span class="chip" id="griefChip">&hellip;</span></div><p id="griefTxt">&hellip;</p></div>
+          <div class="attack" data-attack="drift"><div class="attack-top"><h4>Juror drift</h4><span class="chip" id="driftChip">&hellip;</span></div><p id="driftTxt">&hellip;</p></div>
+          <div class="attack" data-attack="governance"><div class="attack-top"><h4>Governance whale</h4><span class="chip" id="govChip">&hellip;</span></div><p id="govTxt">&hellip;</p></div>
+        </div>
+
+        <div class="explain" id="attackExplain">
+          <h3 id="attackTitle">Bloc capture</h3>
+          <p id="attackBody">&hellip;</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section class="reveal">
+    <p class="sec-label">Every variable</p>
+    <h2>What sets what</h2>
+    <div class="matrix">
+      <div class="var-card"><h3>Settlement flow</h3><p>External demand. It feeds fee revenue, watcher bounties, answer keys, and the work available to jurors.</p></div>
+      <div class="var-card"><h3>Challenge rate</h3><p>The share of markets that need jurors. Higher challenge rate raises court workload and lowers the number of quiet answer keys.</p></div>
+      <div class="var-card"><h3>Active jurors</h3><p>The supply side. More active jurors spread work, lower per-juror pay pressure, widen the pool, and reduce bloc capture odds.</p></div>
+      <div class="var-card"><h3>Panel size</h3><p>Stake chooses seats. Bigger cases get larger panels, so an attacker must win more draws at once.</p></div>
+      <div class="var-card"><h3>Fee split</h3><p>A routing rule, not a fixed payout. It decides how fee flow becomes pay, rewards, and operations.</p></div>
+      <div class="var-card"><h3>Pay pressure</h3><p>Fee flow divided by casework and active supply. It tells the system how attractive juror work is right now.</p></div>
+      <div class="var-card"><h3>Live reserve</h3><p>Pending income at risk divided by careless-error slash pressure. It rises with workload and falls when supply catches up.</p></div>
+      <div class="var-card"><h3>Reward pool</h3><p>Funded by the fee split and slashes. It pays quality over time instead of paying any one verdict to punish dissent.</p></div>
+      <div class="var-card"><h3>Sealed draw</h3><p>Turns panel selection from grindable retries into one public, verifiable roll bound to the case.</p></div>
+      <div class="var-card"><h3>Receipt-free ballot</h3><p>Destroys the bribe market. If a briber cannot verify delivery, the bribe contract cannot clear.</p></div>
+      <div class="var-card"><h3>Face check</h3><p>Makes a rented credential useless at the exact moment the vote unlocks.</p></div>
+      <div class="var-card"><h3>Answer keys</h3><p>Settled public outcomes and consented private tests give the court an external signal against drift.</p></div>
+      <div class="var-card"><h3>Watchers</h3><p>A false assertion creates a bounty. Coverage rises when the reward beats the cost of staying awake.</p></div>
+      <div class="var-card"><h3>Appeal floor</h3><p>Each rung must pay the next panel, price capture odds, and rent the delay it imposes.</p></div>
+      <div class="var-card"><h3>Petition gate</h3><p>Loser-side signatures price sincerity without letting winners block the only people motivated to appeal.</p></div>
+      <div class="var-card"><h3>Governance</h3><p>Token voice is checked by verified participation and product use, so a pure wallet cannot simply buy the rules.</p></div>
+    </div>
+  </section>
+
+  <section class="reveal">
+    <p class="sec-label">The equations</p>
+    <h2>The shortest version of the math</h2>
+    <div class="story">
+      <div class="story-card">
+        <h3>Economic flow</h3>
+        <p class="formula">fee revenue = settlement flow &times; settlement fee<br>juror pay pool = fee revenue &times; pay share<br>pay pressure = juror pay pool / active jurors</p>
+      </div>
+      <div class="story-card">
+        <h3>Reserve sizing</h3>
+        <p class="formula">reserve unit = pay per vote / (extra wrong-rate &times; slash fraction)<br>live reserve = reserve unit &times; unresolved votes per juror</p>
+      </div>
+      <div class="story-card">
+        <h3>Capture math</h3>
+        <p class="formula">bloc share = coordinated humans / active jurors<br>capture odds = chance a random panel draws a majority from that share<br>sealed draw makes attempts = 1</p>
+      </div>
+      <div class="story-card">
+        <h3>Verdict efficacy</h3>
+        <p class="formula">efficacy rises with juror skill, answer keys, watchers, and governance health<br>efficacy falls with capture odds, enforceable bribes, cheap rentals, lazy profit, and cheap re-rolls</p>
+      </div>
+    </div>
+  </section>
+
+  <section class="reveal">
+    <p class="sec-label">Pressure ranking</p>
+    <h2>The board tells you what is load-bearing</h2>
+    <p>When the model gets stressed, the highest bar below is the thing to fix first. If it is capture, widen the pool or increase panel hardness. If it is drift, you need more keys. If it is laziness, reserve sizing is too weak. If it is assertions, watcher economics are not paying for the night shift.</p>
+    <div class="widget reveal">
+      <div class="widget-head"><span class="live"></span> Live risk ranking</div>
+      <div class="rank-list">
+        <div class="rank"><span>Bloc capture</span><div class="track"><span id="rankCapture"></span></div><b id="rankCaptureV">&hellip;</b></div>
+        <div class="rank"><span>Bribery</span><div class="track"><span id="rankBribe"></span></div><b id="rankBribeV">&hellip;</b></div>
+        <div class="rank"><span>Rental</span><div class="track"><span id="rankRental"></span></div><b id="rankRentalV">&hellip;</b></div>
+        <div class="rank"><span>Laziness</span><div class="track"><span id="rankLazy"></span></div><b id="rankLazyV">&hellip;</b></div>
+        <div class="rank"><span>Assertions</span><div class="track"><span id="rankAssert"></span></div><b id="rankAssertV">&hellip;</b></div>
+        <div class="rank"><span>Appeals</span><div class="track"><span id="rankGrief"></span></div><b id="rankGriefV">&hellip;</b></div>
+        <div class="rank"><span>Drift</span><div class="track"><span id="rankDrift"></span></div><b id="rankDriftV">&hellip;</b></div>
+        <div class="rank"><span>Governance</span><div class="track"><span id="rankGov"></span></div><b id="rankGovV">&hellip;</b></div>
+      </div>
+    </div>
+  </section>
+
+  <section class="reveal">
+    <p class="sec-label">The takeaway</p>
+    <h2>The safe design is the one where bad strategies do not clear</h2>
+    <p>A high reserve is not automatically safer. A high fee is not automatically better. A bigger panel is not free. A stricter gate can make jurors herd. Every value has a job and a cost. The design works when each variable tracks the thing it is meant to track and refuses every other job.</p>
+    <p>The protocol's central loop is this: traffic pays for jurors, jurors settle contested traffic, settled traffic grades jurors, and the grading makes the next verdict harder to buy. The game board above is just that loop with the attackers left on the table.</p>
+  </section>
+
+  <footer class="endnote reveal">
+    <nav id="series" data-parent="the-design.html" data-parent-title="The blueprint" aria-label="Where you are in the series"></nav>
+    <div class="sitemap">
+      <div class="sitemap-col">
+        <span class="sm-h">I &middot; The promise</span>
+        <a href="vision.html">1. The vision</a>
+      </div>
+      <div class="sitemap-col">
+        <span class="sm-h">II &middot; The mechanism</span>
+        <a href="juror-court.html">2. The court</a>
+        <a href="hybrid-juror-system.html">3. The hybrid system</a>
+      </div>
+      <div class="sitemap-col">
+        <span class="sm-h">III &middot; The bootstrap</span>
+        <a href="prediction-market.html">4. The prediction market</a>
+        <a href="hybrid-juror-prediction-market-integration.html">5. The loop</a>
+        <a href="zero-to-one.html">6. Zero to one</a>
+      </div>
+      <div class="sitemap-col">
+        <span class="sm-h">IV &middot; The payoff</span>
+        <a href="compounding.html">7. Why it compounds</a>
+        <a href="the-design.html">8. The blueprint</a>
+        <a href="governance.html">9. Governance</a>
+        <a href="game-theory.html">Interactive game lab</a>
+        <a href="index.html">Home &middot; the map</a>
+      </div>
+    </div>
+    <p class="signoff">Every variable has a job. Every attack tests whether that job was priced correctly.</p>
+  </footer>
+</main>
+
+<script src="assets/common.js"></script>
+<script>
+(function () {
+  "use strict";
+  function byId(id) { return document.getElementById(id); }
+  var ids = ["flow", "stake", "challenge", "lag", "fee", "payShare", "rewardShare", "jurors", "skill", "careless", "slash", "bloc", "rented", "rerolls", "watchCost"];
+  var lockIds = ["lockDraw", "lockBallot", "lockFace", "lockReserve", "lockKeys", "lockWatch", "lockAppeal", "lockGov"];
+  var selectedAttack = "bloc";
+
+  function clamp(x, lo, hi) { return Math.max(lo, Math.min(hi, x)); }
+  function span(v, lo, hi) { return lo * Math.pow(10, (v / 100) * Math.log10(hi / lo)); }
+  function money(n) {
+    var s = n < 0 ? "-" : "";
+    n = Math.abs(n);
+    if (n >= 1000000000) return s + "$" + (n / 1000000000).toFixed(1) + "B";
+    if (n >= 1000000) return s + "$" + (n / 1000000).toFixed(n >= 10000000 ? 0 : 1) + "M";
+    if (n >= 1000) return s + "$" + (n / 1000).toFixed(n >= 10000 ? 0 : 1) + "k";
+    if (n >= 10) return s + "$" + Math.round(n);
+    return s + "$" + n.toFixed(2);
+  }
+  function num(n) { return Math.round(n).toLocaleString("en-US"); }
+  function pct(x) {
+    x = clamp(x, 0, 1);
+    if (x > 0 && x < 0.0001) return "<0.01%";
+    return (x * 100).toFixed(x < .1 ? 2 : 1) + "%";
+  }
+  function riskText(x) { return Math.round(clamp(x, 0, 1) * 100) + "/100"; }
+  function clsRisk(x) { return x < .18 ? "good" : x < .45 ? "mid" : "bad"; }
+  function chip(el, label, state) { el.textContent = label; el.className = "chip " + state; }
+  function scoreClass(el, state) { el.className = "score " + state; }
+  function nodeClass(el, state) { el.className = "node " + state; }
+
+  function lgamma(z) {
+    var c = [0.99999999999980993, 676.5203681218851, -1259.1392167224028, 771.32342877765313, -176.61502916214059, 12.507343278686905, -0.13857109526572012, 9.9843695780195716e-6, 1.5056327351493116e-7];
+    var g = 7;
+    if (z < 0.5) return Math.log(Math.PI / Math.sin(Math.PI * z)) - lgamma(1 - z);
+    z -= 1;
+    var x = c[0];
+    for (var i = 1; i < g + 2; i++) x += c[i] / (z + i);
+    var t = z + g + 0.5;
+    return 0.5 * Math.log(2 * Math.PI) + (z + 0.5) * Math.log(t) - t + Math.log(x);
+  }
+  function logChoose(n, k) {
+    if (k < 0 || k > n || n < 0) return -Infinity;
+    return lgamma(n + 1) - lgamma(k + 1) - lgamma(n - k + 1);
+  }
+  function binomTail(n, k, p) {
+    p = clamp(p, 0, 1);
+    if (p <= 0) return k <= 0 ? 1 : 0;
+    if (p >= 1) return k <= n ? 1 : 0;
+    var s = 0;
+    for (var i = k; i <= n; i++) s += Math.exp(logChoose(n, i) + i * Math.log(p) + (n - i) * Math.log(1 - p));
+    return clamp(s, 0, 1);
+  }
+  function panelFor(stake) { return stake < 10000 ? 7 : stake < 1000000 ? 15 : 31; }
+  function nextPanel(n) { return n < 15 ? 15 : 31; }
+
+  function readState() {
+    var v = {};
+    ids.forEach(function (id) { v[id] = parseFloat(byId(id).value); });
+    lockIds.forEach(function (id) { v[id] = byId(id).checked; });
+    v.flow = parseInt(byId("flow").value, 10);
+    v.stake = span(v.stake, 100, 5000000);
+    v.challenge = v.challenge / 100;
+    v.fee = v.fee / 1000;
+    v.payShare = v.payShare / 100;
+    v.rewardShare = v.rewardShare / 100;
+    v.opsShare = Math.max(0, 1 - v.payShare - v.rewardShare);
+    v.jurors = Math.round(span(v.jurors, 100, 80000));
+    v.skill = v.skill / 100;
+    v.careless = v.careless / 100;
+    v.slash = v.slash / 100;
+    v.watchCost = Math.max(1, v.watchCost);
+    return v;
+  }
+
+  function compute(v) {
+    var totalCases = Math.max(1, v.flow / Math.max(1, v.stake));
+    var courtCases = Math.max(0.01, totalCases * v.challenge);
+    var quietCases = Math.max(0, totalCases - courtCases);
+    var panel = panelFor(v.stake);
+    var majority = Math.floor(panel / 2) + 1;
+    var seatVotes = courtCases * panel;
+    var votesPerJurorMonth = seatVotes / Math.max(1, v.jurors);
+    var pendingVotes = votesPerJurorMonth * (v.lag / 4);
+    var feeRevenue = v.flow * v.fee;
+    var jurorPayPool = feeRevenue * v.payShare;
+    var rewardPool = feeRevenue * v.rewardShare;
+    var payPerVote = jurorPayPool / Math.max(1, seatVotes);
+    var payPressure = jurorPayPool / Math.max(1, v.jurors);
+    var reserveUnit = payPerVote / Math.max(0.001, v.careless * v.slash);
+    var reserve = v.lockReserve ? reserveUnit * Math.max(1, pendingVotes) : 0;
+    var reserveBurden = reserve / Math.max(1, payPressure);
+    var rentedPass = v.lockFace ? Math.round(v.rented * 0.05) : v.rented;
+    var effectiveBloc = Math.min(v.jurors, Math.max(0, v.bloc + rentedPass));
+    var share = effectiveBloc / Math.max(1, v.jurors);
+    var baseCapture = binomTail(panel, majority, share);
+    var attempts = v.lockDraw ? 1 : Math.max(1, v.rerolls);
+    var capture = 1 - Math.pow(1 - baseCapture, attempts);
+    var honestPanel = binomTail(panel, majority, v.skill);
+    var lazyLoss = reserve * v.careless * v.slash;
+    var lazyIncome = payPerVote * Math.max(1, pendingVotes);
+    var lazyMargin = lazyLoss - lazyIncome;
+    var bribeCost = majority * (reserve + payPerVote);
+    var bribeClears = !v.lockBallot && v.stake > bribeCost;
+    var assertionBond = Math.max(v.watchCost * 2, v.stake * 0.02);
+    var watcherDensity = v.lockWatch ? assertionBond / Math.max(1, v.watchCost) : 0;
+    var caughtFalseAssertion = v.lockWatch ? 1 - Math.exp(-watcherDensity / 4) : 0;
+    var falseEscape = 1 - caughtFalseAssertion;
+    var keys = v.lockKeys ? quietCases : 0;
+    var keySignal = v.lockKeys ? 1 - Math.exp(-keys / Math.max(3, v.jurors * 0.04)) : 0;
+    var nextSeats = nextPanel(panel);
+    var panelFloor = nextSeats * payPerVote;
+    var captureFloor = capture * v.stake * 2;
+    var delayFloor = v.stake * 0.005 * v.lag;
+    var appealFloor = v.lockAppeal ? Math.max(panelFloor, captureFloor, delayFloor) : panelFloor * 0.1;
+    var griefBenefit = v.stake * 0.008 * v.lag;
+    var griefClears = griefBenefit > appealFloor;
+    var voterBase = Math.max(100, v.jurors + quietCases);
+    var whaleRaw = 0.55;
+    var citizenWeight = v.lockGov ? Math.sqrt(Math.max(1, voterBase)) : Math.sqrt(Math.max(1, voterBase)) * 0.08;
+    var whaleWeight = Math.sqrt(whaleRaw * 1000000);
+    var whalePower = whaleWeight / (whaleWeight + citizenWeight);
+    var driftRisk = 1 - keySignal;
+    var rentalRisk = rentedPass / Math.max(1, v.jurors);
+    var bribeRisk = bribeClears ? .85 : (v.lockBallot ? .03 : clamp(v.stake / Math.max(1, bribeCost) * .25, .08, .6));
+    var lazyRisk = lazyMargin >= 0 ? .04 : clamp(Math.abs(lazyMargin) / Math.max(1, lazyIncome), .15, .9);
+    var assertionRisk = falseEscape * (1 - v.challenge);
+    var griefRisk = griefClears ? .75 : .06;
+    var govRisk = clamp((whalePower - .45) * 1.5, 0, 1);
+    var captureRisk = clamp(capture, 0, 1);
+    var safety = honestPanel;
+    safety -= captureRisk * .55;
+    safety -= bribeRisk * .16;
+    safety -= rentalRisk * .2;
+    safety -= lazyRisk * .12;
+    safety -= assertionRisk * .1;
+    safety -= griefRisk * .08;
+    safety -= driftRisk * .14;
+    safety -= govRisk * .08;
+    safety = clamp(safety, 0, 1);
+    return { totalCases: totalCases, courtCases: courtCases, quietCases: quietCases, panel: panel, majority: majority, seatVotes: seatVotes, votesPerJurorMonth: votesPerJurorMonth, pendingVotes: pendingVotes, feeRevenue: feeRevenue, jurorPayPool: jurorPayPool, rewardPool: rewardPool, payPerVote: payPerVote, payPressure: payPressure, reserveUnit: reserveUnit, reserve: reserve, reserveBurden: reserveBurden, rentedPass: rentedPass, effectiveBloc: effectiveBloc, share: share, baseCapture: baseCapture, capture: capture, honestPanel: honestPanel, lazyLoss: lazyLoss, lazyIncome: lazyIncome, lazyMargin: lazyMargin, bribeCost: bribeCost, bribeClears: bribeClears, assertionBond: assertionBond, watcherDensity: watcherDensity, caughtFalseAssertion: caughtFalseAssertion, falseEscape: falseEscape, keys: keys, keySignal: keySignal, appealFloor: appealFloor, griefBenefit: griefBenefit, griefClears: griefClears, whalePower: whalePower, risks: { capture: captureRisk, bribe: bribeRisk, rental: rentalRisk, lazy: lazyRisk, assertion: assertionRisk, grief: griefRisk, drift: driftRisk, governance: govRisk }, safety: safety };
+  }
+
+  function setOutputs(v, m) {
+    byId("flowOut").textContent = money(v.flow);
+    byId("stakeOut").textContent = money(v.stake);
+    byId("challengeOut").textContent = pct(v.challenge);
+    byId("lagOut").textContent = v.lag + " weeks";
+    byId("feeOut").textContent = pct(v.fee);
+    byId("payShareOut").textContent = pct(v.payShare);
+    byId("rewardShareOut").textContent = pct(v.rewardShare);
+    byId("jurorsOut").textContent = num(v.jurors);
+    byId("skillOut").textContent = pct(v.skill);
+    byId("carelessOut").textContent = pct(v.careless);
+    byId("slashOut").textContent = pct(v.slash);
+    byId("blocOut").textContent = num(v.bloc);
+    byId("rentedOut").textContent = num(v.rented);
+    byId("rerollsOut").textContent = v.rerolls;
+    byId("watchCostOut").textContent = money(v.watchCost);
+
+    var safetyState = m.safety > .78 ? "good" : m.safety > .55 ? "mid" : "bad";
+    scoreClass(byId("scoreSafety"), safetyState);
+    byId("safetyOut").textContent = Math.round(m.safety * 100);
+    byId("safetySub").textContent = "honest panel " + pct(m.honestPanel) + ", after attack pressure";
+    scoreClass(byId("scorePay"), m.payPressure > 10 ? "good" : m.payPressure > 2 ? "mid" : "bad");
+    byId("payOut").textContent = money(m.payPressure);
+    byId("paySub").textContent = "per active juror from current flow";
+    scoreClass(byId("scoreReserve"), m.lazyMargin >= 0 && m.reserveBurden < 8 ? "good" : m.lazyMargin >= 0 ? "mid" : "bad");
+    byId("reserveOut").textContent = v.lockReserve ? money(m.reserve) : "off";
+    byId("reserveSub").textContent = v.lockReserve ? money(m.reserveUnit) + " per pending vote" : "carelessness has no live price";
+    scoreClass(byId("scoreCapture"), clsRisk(m.capture));
+    byId("captureOut").textContent = pct(m.capture);
+    byId("captureSub").textContent = num(m.effectiveBloc) + " effective attackers in " + num(v.jurors) + " jurors";
+
+    byId("nodeDemandV").textContent = num(m.courtCases) + " court cases / mo";
+    byId("nodeFeesV").textContent = money(m.feeRevenue) + " fees";
+    byId("nodePayV").textContent = money(m.payPerVote) + " per vote";
+    byId("nodeReserveV").textContent = v.lockReserve ? money(m.reserve) + " live" : "disabled";
+    byId("nodePoolV").textContent = num(v.jurors) + " active";
+    byId("nodePanelV").textContent = m.panel + " seats, " + pct(m.honestPanel) + " honest-majority";
+    byId("nodeWatchV").textContent = pct(m.caughtFalseAssertion) + " catch odds";
+    byId("nodeKeysV").textContent = num(m.keys) + " keys / mo";
+    byId("nodeGovV").textContent = pct(1 - m.whalePower) + " non-whale weight";
+
+    nodeClass(byId("nodeDemand"), m.courtCases > 1 ? "good" : "mid");
+    nodeClass(byId("nodeFees"), "good");
+    nodeClass(byId("nodePay"), m.payPressure > 2 ? "good" : "mid");
+    nodeClass(byId("nodeReserve"), m.lazyMargin >= 0 ? "good" : "bad");
+    nodeClass(byId("nodePool"), m.capture < .01 ? "good" : m.capture < .1 ? "mid" : "bad");
+    nodeClass(byId("nodePanel"), m.honestPanel > .85 ? "good" : m.honestPanel > .65 ? "mid" : "bad");
+    nodeClass(byId("nodeWatch"), m.caughtFalseAssertion > .8 ? "good" : m.caughtFalseAssertion > .45 ? "mid" : "bad");
+    nodeClass(byId("nodeKeys"), m.keySignal > .75 ? "good" : m.keySignal > .35 ? "mid" : "bad");
+    nodeClass(byId("nodeGov"), m.whalePower < .45 ? "good" : m.whalePower < .65 ? "mid" : "bad");
+  }
+
+  function setAttack(id, risk, clears, text) {
+    var state = clears ? "bad" : risk > .35 ? "mid" : "good";
+    var label = clears ? "clears" : risk > .35 ? "stressed" : "fails";
+    chip(byId(id + "Chip"), label, state);
+    byId(id + "Txt").textContent = text;
+  }
+
+  function setAttacks(v, m) {
+    setAttack("bloc", m.risks.capture, m.capture > .35, "A bloc owns " + pct(m.share) + " of effective seats; panel capture is " + pct(m.capture) + ".");
+    setAttack("bribe", m.risks.bribe, m.bribeClears, v.lockBallot ? "Receipt-free ballots make paid delivery unverifiable." : "Without receipt-freeness, expected bribe cost is " + money(m.bribeCost) + ".");
+    setAttack("rental", m.risks.rental, m.risks.rental > .25, v.lockFace ? "Face checks shrink " + num(v.rented) + " rented credentials to about " + num(m.rentedPass) + " usable seats." : "Rented credentials enter the draw directly.");
+    setAttack("lazy", m.risks.lazy, m.lazyMargin < 0, m.lazyMargin >= 0 ? "Lazy voting loses about " + money(m.lazyMargin) + " more than it earns." : "Lazy voting keeps about " + money(Math.abs(m.lazyMargin)) + " of unpriced shortcut profit.");
+    setAttack("assertion", m.risks.assertion, m.risks.assertion > .5, v.lockWatch ? "Watcher bounties catch false assertions about " + pct(m.caughtFalseAssertion) + " of the time in this setting." : "No paid watchers means sleeping markets become cheap targets.");
+    setAttack("grief", m.risks.grief, m.griefClears, v.lockAppeal ? "The next rung costs " + money(m.appealFloor) + ", versus delay value around " + money(m.griefBenefit) + "." : "Without the priced ladder, retrying is cheaper than the delay it buys.");
+    setAttack("drift", m.risks.drift, m.keySignal < .25, v.lockKeys ? num(m.keys) + " quiet settlements feed scoring; drift signal is " + pct(m.keySignal) + "." : "With no answer keys, agreement can look like accuracy while the pool drifts.");
+    setAttack("gov", m.risks.governance, m.risks.governance > .5, v.lockGov ? "Verified use leaves the model whale with " + pct(m.whalePower) + " effective weight." : "Without verified-use weighting, token concentration dominates rule changes.");
+  }
+
+  function setRanks(m) {
+    var map = { Capture: "capture", Bribe: "bribe", Rental: "rental", Lazy: "lazy", Assert: "assertion", Grief: "grief", Drift: "drift", Gov: "governance" };
+    Object.keys(map).forEach(function (name) {
+      var r = m.risks[map[name]];
+      byId("rank" + name).style.width = Math.max(1, r * 100) + "%";
+      byId("rank" + name + "V").textContent = riskText(r);
+    });
+    var entries = Object.keys(m.risks).map(function (k) { return { k: k, v: m.risks[k] }; }).sort(function (a, b) { return b.v - a.v; });
+    var top = entries[0];
+    var labels = { capture: "capture", bribe: "bribery", rental: "rental", lazy: "laziness", assertion: "assertions", grief: "appeals", drift: "drift", governance: "governance" };
+    chip(byId("bottleneckChip"), "bottleneck: " + labels[top.k], clsRisk(top.v));
+  }
+
+  function setExplain(v, m) {
+    var copy = {
+      bloc: ["Bloc capture", "This attack is pure sampling math. A thousand coordinated humans are terrifying in a small pool and almost irrelevant in a huge one. The sealed draw matters because it keeps the attacker from filing until the lottery likes them."],
+      bribe: ["Verified bribe", "A bribe needs a receipt. If the ballot can be re-keyed and only the tally decrypts, the juror can take the money and vote any way they want. That destroys the contract the briber wanted to buy."],
+      rental: ["Rented seats", "Proof of personhood stops fake identities, not willing humans. The face check narrows the rental window to the moment of voting, where a credential alone is useless."],
+      lazy: ["Lazy juror", "The live reserve has one job: make skipped effort lose money. It is tied to pending income, so it rises when work piles onto each juror and falls when supply catches up."],
+      assertion: ["False assertion", "A sleepy market is safe only if catching the lie pays. The assertion bond is not symbolic; it is the bounty that staffs the watch window."],
+      grief: ["Appeal griefing", "Appeals must stay possible for sincere losers and expensive for grinders. That is why each rung pays the next panel, prices capture odds, and rents the delay it imposes."],
+      drift: ["Juror drift", "Agreement is not truth. Public settlements and consented private tests give the system external answer keys, so the pool can notice when confident agreement becomes shared error."],
+      governance: ["Governance whale", "The protocol cannot let token weight become the court it replaced. Verified participation and product use turn capital into one input instead of the only input."]
+    };
+    byId("attackTitle").textContent = copy[selectedAttack][0];
+    byId("attackBody").textContent = copy[selectedAttack][1];
+  }
+
+  function update() {
+    var v = readState();
+    var m = compute(v);
+    setOutputs(v, m);
+    setAttacks(v, m);
+    setRanks(m);
+    setExplain(v, m);
+  }
+
+  function setPreset(name) {
+    var sets = {
+      base: { flow: 5000000, stake: 45, challenge: 5, jurors: 52, bloc: 300, rented: 0, rerolls: 1, watchCost: 5, locks: true },
+      cold: { flow: 500000, stake: 35, challenge: 8, jurors: 25, bloc: 120, rented: 0, rerolls: 1, watchCost: 8, locks: true },
+      surge: { flow: 35000000, stake: 58, challenge: 10, jurors: 48, bloc: 500, rented: 0, rerolls: 1, watchCost: 7, locks: true },
+      bloc: { flow: 8000000, stake: 65, challenge: 7, jurors: 40, bloc: 3000, rented: 0, rerolls: 1, watchCost: 5, locks: true },
+      sleepy: { flow: 1200000, stake: 38, challenge: 2, jurors: 45, bloc: 100, rented: 0, rerolls: 1, watchCost: 40, locks: true },
+      broken: { flow: 5000000, stake: 55, challenge: 8, jurors: 35, bloc: 700, rented: 2000, rerolls: 30, watchCost: 25, locks: false }
+    };
+    var s = sets[name];
+    Object.keys(s).forEach(function (k) {
+      if (k === "locks") return;
+      if (byId(k)) byId(k).value = s[k];
+    });
+    lockIds.forEach(function (id) { byId(id).checked = s.locks; });
+    if (name !== "broken") byId("lockGov").checked = true;
+    update();
+  }
+
+  ids.concat(lockIds).forEach(function (id) { byId(id).addEventListener("input", update); byId(id).addEventListener("change", update); });
+  Array.prototype.forEach.call(document.querySelectorAll(".preset"), function (btn) { btn.addEventListener("click", function () { setPreset(btn.getAttribute("data-preset")); }); });
+  Array.prototype.forEach.call(document.querySelectorAll(".attack"), function (card) {
+    card.addEventListener("click", function () {
+      selectedAttack = card.getAttribute("data-attack");
+      Array.prototype.forEach.call(document.querySelectorAll(".attack"), function (x) { x.classList.remove("active"); });
+      card.classList.add("active");
+      update();
+    });
+  });
+  update();
+})();
+</script>
+</body>
+</html>

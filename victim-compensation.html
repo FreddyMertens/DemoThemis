@@ -108,6 +108,7 @@
       <a href="compounding.html">Why it compounds</a>
       <a href="the-design.html">The blueprint</a>
       <a href="governance.html">Governance</a>
+      <a href="game-theory.html">Game lab</a>
     </div>
   </div>
 </nav>
@@ -219,22 +220,22 @@
       <div class="props" id="c1props"></div>
       <div class="readout">
         <div class="stat"><div class="k">Each honest juror receives</div><div class="v accent" id="c1share" style="font-size:1.2rem">&hellip;</div></div>
-        <div class="stat"><div class="k">The forfeited bond</div><div class="v" id="c1bond" style="font-size:1.1rem">$5</div></div>
+        <div class="stat"><div class="k">The forfeited reserve</div><div class="v" id="c1bond" style="font-size:1.1rem">1 unit</div></div>
       </div>
       <div class="dnote" id="c1note">&hellip;</div>
     </div>
 
-    <p>The even split is doing four quiet jobs at once. It cannot be claimed by a stranger, because only a verified, bonded, active juror ever receives it, so it is no honeypot. It pays nothing for any particular verdict, because your share is the same whether you sat the panel, voted yes, or voted no, so it bends no vote. It rewards simply being in the pool, which widens the pool, and pool width is the security parameter the whole court rests on. And because the money comes from the careless and lands on everyone, it runs a steady transfer from the rarely-honest to the usually-honest.</p>
-    <p>The one cost to weigh is that jurors, as a class, now gain a little when slashes happen. But every juror is also a potential slashee, and the triggers are mechanical rules, not a vote, so no one can profitably steer a verdict toward a slash. What is left is punishment recycled into the thing that makes the court strong: a wider, better-paid pool of honest humans. If you want even that mild class incentive gone, send the bonds to the watchers who catch cheats instead, which pays for proven detection and raises the odds the next cheat is caught. Either way, the bond never becomes a pot a stranger can claim.</p>
+    <p>The even split is doing four quiet jobs at once. It cannot be claimed by a stranger, because only a verified, bonded, active juror ever receives it, so it is no honeypot. It pays nothing for any particular verdict, because your share is the same whether you sat the panel, voted yes, or voted no, so it bends no vote. It rewards simply being in the pool, which widens the pool, and pool width is the security parameter the whole court rests on. And because the reserve comes from the careless and lands on everyone, it runs a steady transfer from the rarely-honest to the usually-honest.</p>
+    <p>The one cost to weigh is that jurors, as a class, now gain a little when slashes happen. But every juror is also a potential slashee, and the triggers are mechanical rules, not a vote, so no one can profitably steer a verdict toward a slash. What is left is punishment recycled into the thing that makes the court strong: a wider, better-paid pool of honest humans. If you want even that mild class incentive gone, send forfeits to the watchers who catch cheats instead, which pays for proven detection and raises the odds the next cheat is caught. Either way, the reserve never becomes a pot a stranger can claim.</p>
   </section>
 
   <!-- ============ the objection / longevity ============ -->
   <section class="reveal">
     <p class="sec-label">But the wronged</p>
     <h2>Will people trust a court that will not pay them?</h2>
-    <p>This is the fair objection, and it deserves a real answer rather than a brave one. People use an arbitration service because it protects them. Tell them the protocol itself will not make them whole and some of them walk. There are two answers, and the second is the one that should settle it.</p>
+    <p>This is the fair objection, and it deserves a real answer rather than a brave one. People use protocol escrow because it protects the money in the deal. Tell them there is no extra compensation pot beyond releasing or refunding that escrow and some of them walk. There are two answers, and the second is the one that should settle it.</p>
     <p>First, protection can still be bought. It just should not be pooled inside the protocol and paid out on autopilot. An insurer can underwrite the risk as a separate, opt-in product, price it to the real danger, and refuse a claim that smells staged, because a private underwriter has every reason to investigate that a blind protocol fund has none. Insurance as a business someone chooses and pays for is fine. Insurance as a reflex wired into the core, paying any claim that clears a rule, is the honeypot from the second diagram. The difference is who carries the cost of being wrong: an underwriter who can say no, or a shared pool that cannot.</p>
-    <p>Second, and this is the argument that should settle it, a protocol with no pot to chase is attacked less, and a protocol attacked less produces fewer victims in the first place. Compensation treats the harm after it is done. Strength removes the cause. Run the two courts side by side over a few years and the kindest-looking one does worse by the only measure that counts.</p>
+    <p>Second, and this is the argument that should settle it, a protocol with no compensation pot to chase is attacked less, and a protocol attacked less produces fewer victims in the first place. Compensation treats the harm after it is done. Strength removes the cause. Run the two courts side by side over a few years and the kindest-looking one does worse by the only measure that counts.</p>
 
     <div class="widget reveal">
       <div class="widget-head"><span class="live"></span> Which court leaves fewer victims?</div>
@@ -271,7 +272,7 @@
     <h2>Punish the guilty, reward the honest, and keep no vault</h2>
     <p>A court has two jobs that survive contact with an attacker. Make a bought verdict impossible, and make a careless one expensive. The first diagram showed the first job done by prevention; the slash and the lifetime ban do the second. Both are clean. One pays jurors from fees for honest work, the other takes money from a cheat and spreads it across the honest pool. Neither is a pot a stranger can open with a story.</p>
     <p>The fund was quietly trying to do a third job, insure against bad verdicts, and the second diagram showed that job is a trap, because the only person with a real motive to collect is the one who manufactured the loss. So the answer to the question in the title is no. Not because victims do not matter, but because the surest way to protect them is a court too solid to be captured and too disciplined to keep a vault that only a fraudster has a reason to visit.</p>
-    <p>One honest line to close on. The design takes exactly this route. No pool pays a victim, the slash and the lifetime ban stay, and a caught cheat's forfeited bond joins the reward pool that pays the active, high-quality jurors. The reasoning above is the why, settled before any pool could grow large enough to be worth draining.</p>
+    <p>One honest line to close on. The design takes exactly this route. No pool pays a victim, the slash and the lifetime ban stay, and a caught cheat's forfeited reserve joins the reward pool that pays the active, high-quality jurors. The reasoning above is the why, settled before any pool could grow large enough to be worth draining.</p>
   </section>
 
   <footer class="endnote reveal">
@@ -308,10 +309,10 @@ function noteMoney(n) {
   return s + "$" + n;
 }
 function noteShare(n) {
-  if (n >= 1) return noteMoney(n);
-  if (n >= 0.01) return "$" + n.toFixed(2);
-  if (n >= 0.0001) return "$" + n.toFixed(4);
-  return "less than a hundredth of a cent";
+  if (n >= 1) return n.toFixed(n >= 10 ? 0 : 1) + " units";
+  if (n >= 0.01) return n.toFixed(2) + " units";
+  if (n >= 0.0001) return n.toFixed(4) + " units";
+  return "less than a ten-thousandth of a unit";
 }
 function noteSpan(v, lo, hi) { return lo * Math.pow(10, v / 100 * Math.log10(hi / lo)); }
 function noteSeg(id, cb) {
@@ -395,7 +396,7 @@ function noteSeg(id, cb) {
 
     kEl.textContent = k;
     chanceEl.textContent = odds(pf);
-    punEl.textContent = "Bond + World ID, for life";
+    punEl.textContent = "Reserve + World ID, for life";
   }
   [stakeS, poolS, blocS].forEach(function (el) { el.addEventListener("input", update); });
   update();
@@ -459,11 +460,11 @@ function noteSeg(id, cb) {
   var props = document.getElementById("c1props");
   var note = document.getElementById("c1note");
   var dest = "all";
-  var SLASH = 5, CAP = 120, N = 0;
+  var SLASH = 1, CAP = 120, N = 0;
 
   var INFO = {
     all: { distort: false, honey: false, waste: false,
-      line: "The bond joins the reward pool, split among the active jurors who clear the quality bar. That same pool is fed by the 20% fee slice and by forfeited dispute and appeal bonds, so it is decoupled from any single verdict and bends no vote. Only a bonded, active juror above the bar can ever receive it, so it is no honeypot. No value is destroyed, and paying for quality work widens and sharpens the pool, which is the court's security." },
+      line: "The forfeited reserve joins the reward pool, split among the active jurors who clear the quality bar. That same pool is fed by the 20% fee slice and by forfeited dispute and appeal bonds, so it is decoupled from any single verdict and bends no vote. Only a bonded, active juror above the bar can ever receive it, so it is no honeypot. No value is destroyed, and paying for quality work widens and sharpens the pool, which is the court's security." },
     panel: { distort: true, honey: false, waste: false,
       line: "Handed to the panel that won the vote. Now your cut depends on being on the winning side, which is a paid reason to convict the dissenter. It quietly turns the court into a machine for punishing minorities." },
     victims: { distort: false, honey: true, waste: false,

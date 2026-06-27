@@ -3,8 +3,8 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>DemoThemis: a prediction market anyone can open, an arbitration service nobody can buy</title>
-<meta name="description" content="Two products, one machine. A prediction market you can open with pocket change, and an arbitration service run by verified humans that money cannot capture. The prediction market pays the arbitrators, and the arbitrators settle the markets.">
+<title>DemoThemis: a prediction market anyone can open, protocol escrow nobody can buy</title>
+<meta name="description" content="Two products, one machine. A prediction market you can open with pocket change, and protocol escrow with arbitration run by verified humans that money cannot capture. The prediction market pays the arbitrators, and the arbitrators settle the markets.">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@500;700&family=Newsreader:opsz,wght@6..72,200..700&display=swap" rel="stylesheet">
@@ -54,14 +54,15 @@
       <a href="compounding.html">Why it compounds</a>
       <a href="the-design.html">The blueprint</a>
       <a href="governance.html">Governance</a>
+      <a href="game-theory.html">Game lab</a>
     </div>
   </div>
 </nav>
 
 <header class="hero reveal">
   <p class="kicker">What we are building</p>
-  <h1>A prediction market for any question. An arbitration service money can't buy.</h1>
-  <p class="dek">Two products, one engine: a prediction market anyone can open for under a dollar, and an arbitration service built to be the most trusted arbiter on the internet. The prediction market pays and proves the arbitrators.</p>
+  <h1>A prediction market for any question. Protocol escrow money can't buy.</h1>
+  <p class="dek">Two products, one engine: a prediction market anyone can open for under a dollar, and protocol escrow with arbitration built to be the most trusted arbiter on the internet. The prediction market pays and proves the arbitrators.</p>
   <div class="meta">
     <span class="pill">Start here</span>
     <span>Nine chapters, four acts</span>
@@ -74,10 +75,10 @@
 
   <section class="reveal">
     <p class="sec-label">The products</p>
-    <h2>A prediction market and an arbitration service</h2>
+    <h2>A prediction market and protocol escrow</h2>
 
     <p>Every market ends with a ruling: did the thing happen or not? Polymarket, the biggest prediction market in the world, hands that ruling to a protocol called UMA. Anyone can post a bond and propose an answer. If nobody objects within two hours, it stands. If someone does, UMA's token holders vote on the truth, one token one vote, and voters who side against the majority lose part of their stake. So the rational move is to follow the biggest wallets, and disputed markets have settled against plain reality because of it. Whoever holds enough tokens holds the verdict.</p>
-    <p>Polymarket also picks which markets exist. You cannot open one yourself, keep one private among friends, or post your position as collateral. The five features below are exactly what is missing, and one change unlocks them all: we swap the token vote for a court of verified humans, one person one vote. That is a huge upgrade over UMA, and it turns a betting site into something bigger, an arbitration service anyone can build on.</p>
+    <p>Polymarket also picks which markets exist. You cannot open one yourself, keep one private among friends, or post your position as collateral. The five features below are exactly what is missing, and one change unlocks them all: we swap the token vote for a court of verified humans, one person one vote. That is a huge upgrade over UMA, and it turns a betting site into something bigger: protocol escrow with arbitration built in.</p>
 
     <h3 class="products-title">The two products that make DemoThemis:</h3>
     <div class="products">
@@ -94,9 +95,9 @@
       </div>
       <div class="product court">
         <span class="pk">Product two</span>
-        <h3>Arbitration service: the most ambitious human infrastructure ever made</h3>
-        <p><span class="lab">Goal:</span> an arbitration service that handles escrow and arbitration so good that customers will want everything they use to run on it, from Uber to eBay to Airbnb to AdSense, while enabling a new entity to start from scratch and have a world-class, trustable escrow service from day one.</p>
-        <p><span class="lab">How:</span> robust, ungameable mechanics with proof of personhood to overcome the need for plutocracy. The system is initially seeded with data and demand by our prediction market.</p>
+        <h3>Protocol escrow: the most ambitious human infrastructure ever made</h3>
+        <p><span class="lab">Goal:</span> a protocol escrow and arbitration service so good that customers want every online deal to run through it, from Uber to eBay to Airbnb to AdSense. Apps bring demand and interface; DemoThemis holds the funds, decides disputes, and releases or refunds by rule.</p>
+        <p><span class="lab">How:</span> robust, ungameable mechanics with proof of personhood to overcome the need for plutocracy. The system is initially seeded with data, demand, and escrow volume by our prediction market.</p>
         <p><span class="lab">How we use Worldcoin to make our system work:</span> a World ID iris scan makes each arbitrator one unique person with one vote, a face check on their own phone confirms presence at every draw, and settlement runs on-chain with gas sponsored for verified humans.</p>
       </div>
     </div>
@@ -110,12 +111,12 @@
       <a class="map-card" href="vision.html">
         <span class="stage">Chapter 01 &middot; The promise</span>
         <h3>The vision</h3>
-        <p>Why a good enough arbiter becomes a standard nobody can afford to skip, from spare rooms to ad networks.</p>
+        <p>Why neutral escrow plus a good enough arbiter becomes a standard nobody can afford to skip, from spare rooms to ad networks.</p>
       </a>
       <a class="map-card" href="juror-court.html">
         <span class="stage">Chapter 02 &middot; The mechanism</span>
         <h3>The court</h3>
-        <p>One human, one vote, on a flat five-dollar bond. The sealed die, the face check, and the ballot nobody can sell.</p>
+        <p>One human, one vote, with a live reserve priced by workload. The sealed die, the face check, and the ballot nobody can sell.</p>
       </a>
       <a class="map-card" href="hybrid-juror-system.html">
         <span class="stage">Chapter 03 &middot; The mechanism</span>
@@ -156,6 +157,19 @@
   </section>
 
   <section class="reveal">
+    <p class="sec-label">Interactive lab</p>
+    <h2>Play the whole game board</h2>
+    <p>The chapters explain the machine one lock at a time. The lab puts the locks on one screen. Move demand, active jurors, attacker budget, reserve pressure, watchers, answer keys, appeal floors, and governance resistance, then watch the attack cards flip from clears to fails.</p>
+    <div class="map-grid">
+      <a class="map-card" href="game-theory.html">
+        <span class="stage">Playable model &middot; off the chapter path</span>
+        <h3>The game-theory lab</h3>
+        <p>Every live variable on one interactive board: how values are set, how they feed each other, and which attacks still make money.</p>
+      </a>
+    </div>
+  </section>
+
+  <section class="reveal">
     <p class="sec-label">How to read it</p>
     <h2>Pick a door</h2>
     <p>If you want the big claim first, start with <a href="vision.html">the vision</a> <span class="tag-level tag-start">start here</span> and follow the chapter buttons at the top or foot of each page. If you would rather see the machine before the pitch, open <a href="juror-court.html">the court</a> and read straight through. And if you are short on time, <a href="the-design.html">the blueprint</a> is the whole design on one page.</p>
@@ -185,6 +199,7 @@
         <a href="compounding.html">7. Why it compounds</a>
         <a href="the-design.html">8. The blueprint</a>
         <a href="governance.html">9. Governance</a>
+        <a href="game-theory.html">Interactive game lab</a>
         <a href="index.html">Home &middot; the map</a>
       </div>
     </div>

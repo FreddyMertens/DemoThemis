@@ -4,7 +4,7 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>The complete design: one case from a dime to a verdict</title>
-<meta name="description" content="The settled DemoThemis design, end to end. Markets born with a dime, a court with a sealed die and a locked box, a flat five-dollar juror bond, a dispute ladder priced by floors, and the launch sequence that starts from zero. Drawn so you can follow one case through the whole machine.">
+<meta name="description" content="The settled DemoThemis design, end to end. Markets born with a dime, a court with a sealed die and a locked box, a live juror reserve priced by workload, a dispute ladder priced by floors, and the launch sequence that starts from zero. Drawn so you can follow one case through the whole machine.">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@500;700&family=Newsreader:opsz,wght@6..72,200..700&display=swap" rel="stylesheet">
@@ -86,6 +86,7 @@
       <a href="compounding.html">Why it compounds</a>
       <a href="the-design.html">The blueprint</a>
       <a href="governance.html">Governance</a>
+      <a href="game-theory.html">Game lab</a>
     </div>
   </div>
 </nav>
@@ -124,18 +125,18 @@
         <button class="btn ghost" id="W1reset" type="button">Reset</button>
       </div>
       <div class="pipe" id="W1pipe">
-        <div class="pnode" data-s="1"><span class="pic">&#128172;</span><span><span class="pl">Born as a pool</span><span class="ps"> &middot; post a question, bet a dime, share the link</span></span></div>
+        <div class="pnode" data-s="1"><span class="pic">&#128172;</span><span><span class="pl">Born in escrow</span><span class="ps"> &middot; post a question, lock a dime, share the link</span></span></div>
         <div class="pnode" data-s="2"><span class="pic">&#127919;</span><span><span class="pl">The crowd prices it</span><span class="ps"> &middot; odds are the ratio of the sides, the thin side always pays better</span></span></div>
         <div class="pnode" data-s="3"><span class="pic">&#128276;</span><span><span class="pl">Bonded assertion</span><span class="ps"> &middot; anyone posts the outcome with a bond, a one-week window opens</span></span></div>
         <div class="pnode" data-s="4"><span class="pic">&#9989;</span><span><span class="pl">The quiet path</span><span class="ps"> &middot; unchallenged: pay out, curate an answer key, done</span></span></div>
         <div class="pbranch">&darr; the contested few</div>
-        <div class="pnode court" data-s="5"><span class="pic">&#9878;</span><span><span class="pl">Challenge staked</span><span class="ps"> &middot; the dispute floor is posted, the case enters court</span></span></div>
+        <div class="pnode court" data-s="5"><span class="pic">&#9878;</span><span><span class="pl">Challenge staked</span><span class="ps"> &middot; the dispute floor is posted, the locked case enters court</span></span></div>
         <div class="pnode court" data-s="6"><span class="pic">&#127922;</span><span><span class="pl">The sealed die</span><span class="ps"> &middot; a public beacon draws the panel, one roll, verifiable, ungrindable</span></span></div>
         <div class="pnode court" data-s="7"><span class="pic">&#128100;</span><span><span class="pl">Face check at the door</span><span class="ps"> &middot; each drawn juror proves presence on an attested device</span></span></div>
         <div class="pnode court" data-s="8"><span class="pic">&#128274;</span><span><span class="pl">The locked box</span><span class="ps"> &middot; encrypted ballots, silent re-keying, receipts prove nothing</span></span></div>
         <div class="pnode court" data-s="9"><span class="pic">&#129518;</span><span><span class="pl">Verdict with a proof</span><span class="ps"> &middot; only the tally decrypts, wrong-side slashes feed the reward pool</span></span></div>
         <div class="pnode court" data-s="10"><span class="pic">&#129691;</span><span><span class="pl">The ladder, if climbed</span><span class="ps"> &middot; bond or loser-side petition, panels grow 15 to 31, floors price each rung</span></span></div>
-        <div class="pnode" data-s="11"><span class="pic">&#127937;</span><span><span class="pl">Finality, then memory</span><span class="ps"> &middot; funds pay out and never reopen; reports can slash and ban jurors forever</span></span></div>
+        <div class="pnode" data-s="11"><span class="pic">&#127937;</span><span><span class="pl">Finality, then memory</span><span class="ps"> &middot; protocol escrow pays out and never reopens; reports can slash and ban jurors forever</span></span></div>
       </div>
       <p style="font-family:var(--sans);font-size:.86rem;color:var(--faint);margin:1rem 0 0">The two tracks at the end matter most: settlement runs on a clock and always ends, while justice for bought or lazy jurors has no deadline and never touches settled money.</p>
     </div>
@@ -169,7 +170,7 @@
           <span class="chip lock">sealed die</span>
           <span class="chip lock">face check</span>
           <span class="chip lock">locked box</span>
-          <span class="chip lock">flat $5 bond</span>
+          <span class="chip lock">live reserve</span>
           <span class="chip lock">floor-priced ladder</span>
           <span class="chip lock">loser-side petition</span>
           <span class="chip lock">paid watchers</span>
@@ -217,7 +218,7 @@
         <span class="step-n">1</span>
         <div class="step-body">
           <h3>The first juror pays nothing</h3>
-          <p>Entry is free: the protocol fronts the flat bond, about five dollars, and the juror's first case fees fill it in automatically. You earn your bond before you ever post it. The pool starts wide because nothing is in the way, and width is the security.</p>
+          <p>Entry starts with low capacity instead of a fixed price. A new juror's retained fees build the live reserve automatically, and that reserve grows only as the seat carries more unresolved work. You earn capacity before you expand it. The pool starts wide because nothing is in the way, and width is the security.</p>
         </div>
       </li>
       <li>
@@ -302,17 +303,17 @@
   var nodes = document.querySelectorAll("#W1pipe .pnode");
   var step = 0;
   var STEPS = [
-    "9:00 am. Someone posts a question and bets a dime on YES. The market exists, the dime is the liquidity, and the share link is the marketing department.",
-    "By evening the pot holds $1,400. No one quotes prices; the odds are just the ratio of the two sides, and whichever side is thin pays better, which is what keeps recruiting the other side.",
+    "9:00 am. Someone posts a question and locks a dime on YES. The market exists, the dime is inside protocol escrow, and the share link is the marketing department.",
+    "By evening the escrowed pot holds $1,400. No one quotes prices; the odds are just the ratio of the two sides, and whichever side is thin pays better, which is what keeps recruiting the other side.",
     "The event happens. Anyone may assert the outcome by posting a bond, and a one-week challenge window opens; tokens keep trading right through it. Watching that window is a paid job, because a false assertion forfeits its bond to its catcher.",
-    "Ninety five times out of a hundred, the story ends here: no challenge, the pool pays out pro-rata, and the settled answer joins the curated key library that quietly grades jurors tomorrow.",
-    "Not this time. A challenger stakes the dispute floor, and the case crosses into the court lane.",
-    "A public randomness beacon draws fifteen jurors from a pool tens of thousands wide. One roll, bound to this case, verifiable by anyone afterward, and nothing for an attacker to re-roll.",
+    "Ninety five times out of a hundred, the story ends here: no challenge, protocol escrow pays out pro-rata, and the settled answer joins the curated key library that quietly grades jurors tomorrow.",
+    "Not this time. A challenger stakes the dispute floor, and the locked case crosses into the court lane.",
+    "A public randomness beacon draws fifteen jurors from a pool tens of thousands wide. One roll, bound to this escrowed case, verifiable by anyone afterward, and nothing for an attacker to re-roll.",
     "Each drawn juror clears an on-device face check before the ballot unlocks. A rented seat fails here; a sleeping juror hands off to a standby inside the grace window.",
     "Votes go into the locked box: encrypted ballots a juror can silently re-key, so any receipt shown to a briber proves nothing, and a bribe that cannot verify delivery is a bribe nobody pays.",
-    "Only the tally ever decrypts, with a proof attached. Jurors on the wrong side of a lopsided verdict lose a slice of their flat bond, and every slash flows to the reward pool.",
+    "Only the tally ever decrypts, with a proof attached. Jurors on the wrong side of a lopsided verdict lose a slice of their live reserve, and every slash flows to the reward pool.",
     "The loser can climb: post the floor-priced bond alone, or gather the loser-side petition and split it. The next panel has thirty one seats, the rung above costs more, and the ladder always ends.",
-    "Funds finalize and pay out, permanently. What never closes is the report track: anyone, forever, can flag the verdict, and a proven clique loses bonds, seats, and World IDs, with their forfeited bonds feeding the reward pool. The case itself becomes one more answer key."
+    "Protocol escrow finalizes and pays out, permanently. What never closes is the report track: anyone, forever, can flag the verdict, and a proven clique loses bonds, seats, and World IDs, with their forfeited bonds feeding the reward pool. The case itself becomes one more answer key."
   ];
   function render() {
     nodes.forEach(function (n) {
@@ -351,14 +352,14 @@
       '<div class="stopped"><span class="chip lock">locked box</span> Receipts prove nothing once a juror can silently re-key, so the briber cannot verify delivery, and a bribe market that cannot enforce its contracts does not clear.</div>' +
       '<div class="bill">What it costs them now: they cannot even spend the money. The attack fails at the payment step, before the court notices it exists.</div>',
     bloc: '<div class="plan">The plan: coordinate a thousand real verified humans, behave on cheap cases, defect together on the big one.</div>' +
-      '<div class="stopped"><span class="chip lock">flat $5 bond</span> <span class="chip lock">sealed die</span> The five-dollar bond keeps the pool tens of thousands wide, the die cannot be re-rolled, and stake-scaled panels of 31 make a thousand-person bloc a rounding error. Shadow panels turn any captured panel into an alarm instead of a win.</div>' +
+      '<div class="stopped"><span class="chip lock">live reserve</span> <span class="chip lock">sealed die</span> The reserve prices carelessness without pricing honest jurors out, the die cannot be re-rolled, and stake-scaled panels of 31 make a thousand-person bloc a rounding error. Shadow panels turn any captured panel into an alarm instead of a win.</div>' +
       '<div class="bill">What it costs them now: majority odds measured in millionths per case, plus a correlation fingerprint the report track reads at leisure.</div>',
     renter: '<div class="plan">The plan: rent verified World IDs by the month, point a hundred seats at one model.</div>' +
       '<div class="stopped"><span class="chip lock">face check</span> The ballot only unlocks for the enrolled face, present, on an attested device, at draw time. The rentable window shrinks from a year to minutes, and a hundred seats run by one operator all fail the same check at the same moment.</div>' +
       '<div class="bill">What it costs them now: a physical human per seat per vote, which is no longer renting, it is hiring, visibly, the thing the cost argument always priced correctly.</div>',
     lazy: '<div class="plan">The plan: collect fees forever, vote the obvious answer, never read a case.</div>' +
-      '<div class="stopped"><span class="chip lock">flat $5 bond</span> The bond is sized at the laziness floor: a careless juror’s extra wrong votes forfeit more in slashes than the fees their shortcut earns, and the curated answer keys catch the drift their easy-case agreement used to hide.</div>' +
-      '<div class="bill">What it costs them now: about a week of fees, repeatedly, which is the one arithmetic a shirker respects.</div>',
+      '<div class="stopped"><span class="chip lock">live reserve</span> The reserve is sized at the laziness floor: a careless juror’s extra wrong votes forfeit more in slashes than the income their shortcut earns, and the curated answer keys catch the drift their easy-case agreement used to hide.</div>' +
+      '<div class="bill">What it costs them now: their own pending earnings, repeatedly, which is the one arithmetic a shirker respects.</div>',
     grief: '<div class="plan">The plan: lose, then dispute forever, freezing the pot and grinding fresh panels until one rolls their way.</div>' +
       '<div class="stopped"><span class="chip lock">floor-priced ladder</span> <span class="chip lock">loser-side petition</span> Every rung must use a strictly larger panel at a multiplied, floor-priced bond, so each retry faces worse odds at a higher price, and the ladder ends. The petition is proportional to the losing side and staked, so mass signing costs sincerity.</div>' +
       '<div class="bill">What it costs them now: a geometric bill for a shrinking chance, while the money finalizes on schedule regardless.</div>',

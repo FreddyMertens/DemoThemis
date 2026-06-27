@@ -48,6 +48,7 @@
       <a href="compounding.html">Why it compounds</a>
       <a href="the-design.html">The blueprint</a>
       <a href="governance.html">Governance</a>
+      <a href="game-theory.html">Game lab</a>
     </div>
   </div>
 </nav>
@@ -91,7 +92,7 @@
   <section class="reveal">
     <p class="sec-label">One court, many apps</p>
     <h2>Build the arbiter once, share it everywhere</h2>
-    <p>Now picture the arbiter as a neutral public utility instead of a feature each company rebuilds in private. A court of verified humans, drawn at random, who cannot be bought, settling disputes for anyone who asks. Any app can hand it the hard cases and trust the answer, because the app does not control the court and neither does the other side.</p>
+    <p>Now picture the arbiter as a neutral public utility instead of a feature each company rebuilds in private. A court of verified humans, drawn at random, who cannot be bought, attached to protocol escrow that already holds the money. Any app can route a deal through it and trust the result, because the app does not control the funds, the court, or the other side.</p>
 
     <figure class="diagram reveal">
       <div class="diagram-inner">
@@ -103,29 +104,29 @@
             <div class="chip">An ad network</div>
           </div>
           <span class="ar">&rarr;</span>
-          <div class="core">DemoThemis court<small>verified humans, random panels, private votes</small></div>
+          <div class="core">DemoThemis escrow + court<small>funds locked, random panels, private votes</small></div>
           <span class="ar">&rarr;</span>
-          <div class="rec">A portable record of who was right</div>
+          <div class="rec">A signed verdict and automatic release</div>
         </div>
       </div>
       <figcaption>Many apps, one shared arbiter. <b>The court answers to none of them, which is exactly why all of them can use it.</b></figcaption>
     </figure>
 
-    <p>For a decentralized app this is the missing piece. You can already hold funds in a contract and move tokens without a company in the middle. What you could not do was settle the argument when a deal went sour without handing power back to some central operator. A court that cannot be bought fills that gap, and it does it without every project hiring its own support team and writing its own refund policy. The overhead that each app used to carry alone becomes one shared cost.</p>
+    <p>For a decentralized app this is the missing piece. The app can bring users, evidence, and interface, but the deal funds sit in neutral protocol escrow before anything goes wrong. If a dispute appears, the court decides and the protocol releases or refunds by rule. Trust moves from the app's promise to the escrow itself, and the overhead that each app used to carry alone becomes one shared cost.</p>
   </section>
 
   <section class="reveal">
     <p class="sec-label">The part that compounds</p>
     <h2>The ruling is portable without being public</h2>
-    <p>Here is the turn that makes it more than a cheaper arbiter. A ruling made once can be verified again by the people entitled to rely on it, without turning every dispute into a public file. The court keeps the canonical case record inside the juror system. The parties and the requesting app get a signed verdict receipt. Juror scoring gets only the minimum case data it needs.</p>
-    <p>That is the version of portability worth having. A marketplace can prove it used the shared court, a customer can prove a refund was granted, and an app can rely on a narrow reputation credential when the user or the integration permits it. Public prediction markets still resolve publicly because traders need settlement. Private arbitrations stay private by default. The pressure to adopt comes from verifiable neutrality, not from exposing everyone's dispute history.</p>
+    <p>Here is the turn that makes it more than a cheaper arbiter. A ruling made once can move the locked funds and be verified again by the people entitled to rely on it, without turning every dispute into a public file. The court keeps the canonical case record inside the juror system. The parties and the requesting app get a signed verdict receipt. Juror scoring gets only the minimum case data it needs.</p>
+    <p>That is the version of portability worth having. A marketplace can prove it routed the deal through shared escrow, a customer can prove a refund was granted, and an app can rely on a narrow reputation credential when the user or the integration permits it. Public prediction markets still resolve publicly because traders need settlement. Private arbitrations stay private by default. The pressure to adopt comes from verifiable neutrality and automatic payout, not from exposing everyone's dispute history.</p>
   </section>
 
   <section class="reveal">
     <p class="sec-label">Why a standard, not a feature</p>
     <h2>The padlock, again</h2>
     <p>Web traffic used to travel in the clear. A padlock and the letter "s" in https changed that, not by law but by expectation. Once enough sites were encrypted, the ones that were not started to feel unsafe, and browsers began to say so out loud. The standard won because skipping it became the suspicious choice.</p>
-    <p>A shared, unbuyable court can follow the same path. Early on it is a nice option for a handful of apps. Past some point, settling your disputes through an arbiter no single party controls, with a verdict the right people can verify, becomes the thing a careful customer expects. That is the destination. The rest of this series is the route. It starts with the court itself, then the prediction market that pays for it, then the way the two switch each other on.</p>
+    <p>A shared, unbuyable court can follow the same path. Early on it is a nice option for a handful of apps. Past some point, routing deal funds through escrow no single party controls, with a verdict the right people can verify, becomes the thing a careful customer expects. That is the destination. The rest of this series is the route. It starts with the court itself, then the prediction market that pays for it, then the way the two switch each other on.</p>
   </section>
 
   <footer class="endnote reveal">

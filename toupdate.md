@@ -72,10 +72,10 @@ Fixed absolutes are a design smell. **Express every parameter as a relationship 
 
 ### 2.2 Parameter → relationship
 
-- [ ] **Replace the `$20` bond** in `juror-court.html` (~line 143) with **`bond = f(value at stake)`** + a plain-English explainer.
-  - *Finding:* the bond must make corrupting a juror cost more than the payoff; the payoff scales with stake, so a flat `$20` is fine on a `$50` dispute and absurd on a `$5M` one.
-  - **SUPERSEDED for the JUROR bond.** The final design keeps the juror bond **flat ($5)** on purpose. Its only job is the laziness floor; corrupting a juror is stopped by receipt-freeness + pool width + the permanent World-ID ban, not by bond size, and scaling it up *thins the pool* (the security parameter). This item now applies only to the **dispute/appeal bond** (the three floors, capture-odds × stake × 2) and the **assertion bond**, which are the value-scaled bonds. The juror bond stays flat.
-- [ ] **Make the juror fee/wage a market-clearing price** in `zero-to-one.html` (the `$400/mo`, 70% split, ~lines 107–110) — a two-sided labor price (case demand vs juror supply), not a fixed figure. This is the "based on jury market demand" point.
+- [x] **Replace the fixed juror bond** with a **live reserve** priced from current juror pay pressure, unresolved workload, careless-error rate, and slash fraction.
+  - *Finding:* the juror reserve should police effort, not impress attackers. Bribery is stopped by receipt-freeness, pool width, and accountability; the reserve only has to make carelessness lose money.
+  - The live reserve rises when demand outruns active juror supply and falls when the work spreads across more jurors. No fixed dollar amount survives contact with traffic.
+- [x] **Make juror pay/wage a market-clearing pressure** in `zero-to-one.html` — fee flow divided across active jurors, not a fixed wage target.
 - [ ] **Express slash/reward relative to bond + fee** (not absolute amounts).
 - [ ] **Skill threshold** → relative to **pool skill distribution + panel size** (keep a juror while their marginal contribution to panel accuracy is positive), *not* market demand. The `0.70` is otherwise arbitrary.
 - [ ] **Calibration share** → set by the detection power needed at target confidence vs case volume.

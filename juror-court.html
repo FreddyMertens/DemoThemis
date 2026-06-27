@@ -4,7 +4,7 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>How the court works: verified human juries that cannot be bribed</title>
-<meta name="description" content="The court of verified humans: one human one vote, a flat five-dollar bond, a sealed die, a face check, and a ballot nobody can sell.">
+<meta name="description" content="The court of verified humans: one human one vote, a live reserve priced by workload, a sealed die, a face check, and a ballot nobody can sell.">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@500;700&family=Newsreader:opsz,wght@6..72,200..700&display=swap" rel="stylesheet">
@@ -94,6 +94,7 @@
       <a href="compounding.html">Why it compounds</a>
       <a href="the-design.html">The blueprint</a>
       <a href="governance.html">Governance</a>
+      <a href="game-theory.html">Game lab</a>
     </div>
   </div>
 </nav>
@@ -101,7 +102,7 @@
 <header class="hero reveal">
   <p class="kicker">The court</p>
   <h1>How the court works: verified human juries that cannot be bribed</h1>
-  <p class="dek">The court decides disputed outcomes with randomly drawn juries of verified humans, one person one vote. This chapter walks through each lock that keeps a verdict unbuyable: the five dollar seat, the random draw nobody can re-roll, the face check at every draw, the encrypted ballot no juror can prove, and panels that grow with the stakes.</p>
+  <p class="dek">The court decides disputed outcomes after funds are already locked in protocol escrow, with randomly drawn juries of verified humans, one person one vote. This chapter walks through each lock that keeps a verdict unbuyable: the self-pricing seat, the random draw nobody can re-roll, the face check at every draw, the encrypted ballot no juror can prove, and panels that grow with the stakes.</p>
   <div class="meta">
     <span class="pill">The mechanism</span>
     <span>12 min read</span>
@@ -118,54 +119,54 @@
   <section class="reveal">
     <p class="sec-label">The wrong foundation</p>
     <h2>When votes are tokens, verdicts have a price</h2>
-    <p class="lead">Token courts sell the gavel to the deepest pocket. This court seats verified humans instead: a five-dollar bond, a die nobody can re-roll, a face check that proves a real person is voting, and a ballot that cannot prove how it voted. Buying it means buying people, one at a time, in the dark.</p>
+    <p class="lead">Token courts sell the gavel to the deepest pocket. This court seats verified humans instead: a live reserve priced by workload, a die nobody can re-roll, a face check that proves a real person is voting, and a ballot that cannot prove how it voted. Buying it means buying people, one at a time, in the dark.</p>
     <p>Every on-chain court before this one runs on the same quiet rule: stake a token, cast a vote, and the side holding more tokens decides what is true. Read that rule the way an attacker reads it. The verdict has a sticker price, and the sticker price is half the tokens.</p>
     <p>This is not a thought experiment. Large UMA holders have pushed disputed Polymarket resolutions through against what many traders read as plain reality, and the system behaved exactly as designed while they did it. Weight followed the wallet. The court was for sale and somebody shopped.</p>
     <p>So this court swaps the foundation. <b>One human, one vote.</b> Every juror seat is a World ID, an iris-verified proof of personhood that no wallet can mint twice and no exchange can sell in bulk. A verdict is no longer something you buy on a market; it is something you would have to assemble out of bought humans, each recruited separately, each a fresh chance to be caught. Most questions never even reach this room. The <a href="prediction-market.html">market chapter</a> shows how roughly 95% of cases settle themselves through a watched assertion window. The court exists for the contested few, which is exactly why it has to be the hardest thing in the system to corrupt.</p>
     <p>The rest of this chapter is the pricing-out, lock by lock. Each lock targets a different attacker, and a buyer has to beat all of them at once.</p>
   </section>
 
-  <!-- ============ 2: the five dollar seat ============ -->
+  <!-- ============ 2: the self-pricing seat ============ -->
   <section class="reveal">
     <p class="sec-label">The seat</p>
-    <h2>The five dollar seat</h2>
-    <p>What should a seat on a court like this cost? The instinct says: a lot, make jurors put real money behind their votes. The instinct is wrong, and the reason it is wrong decides the shape of the whole court.</p>
-    <p>Start with what the bond is actually for. Bribery is handled by the encrypted ballot below, because a bribe you cannot verify is a bribe you do not pay. Rented seats are handled by the face check. Strip those jobs away and the bond has exactly one left: make careless voting unprofitable. A juror who flips a coin instead of reading the case must lose more to slashes than they collect in fees. That is the whole job, and small jobs have small prices.</p>
-    <p><b>Let's put numbers on the game mechanics:</b> A lazy juror who skips the case file is guessing, so they vote the wrong way far more often than someone who reads it. Say guessing adds thirty extra wrong votes per hundred cases, and remember that a wrong-side vote forfeits the whole bond. The fee per case is $1.50, which is what 70 cents of every fee dollar from the 2% settlement cut works out to at launch volume. So over a hundred cases, laziness earns the fees but loses thirty bonds. For laziness to stop paying, the bond has to make those extra wrong votes cost more than the fees: divide the fee by the extra error rate times the slash fraction and you get the floor. $1.50 over 0.30 is five dollars. Not five hundred. And entry on day one costs nothing: the protocol fronts the five dollars for a new juror and their first case fees pay it back. You earn your bond before you ever post it.</p>
-    <p>Why not round up to something impressive anyway? Because past the floor, a bigger bond makes the court less safe. Security here comes from pool width: a coordinated bloc inside a pool of tens of thousands almost never lands a panel majority, while the same bloc inside a thin pool owns the place. Every dollar of bond above the laziness floor buys no additional honesty and silently evicts honest jurors, and the attacker's recruits, who are paid to be there, do not leave. Try to beat the widget.</p>
+    <h2>The self-pricing seat</h2>
+    <p>What should a seat on a court like this cost? The instinct says: pick a number high enough to hurt. The instinct is wrong. A fixed price is a guess, and guesses age badly.</p>
+    <p>Start with what the reserve is actually for. Bribery is handled by the encrypted ballot below, because a bribe you cannot verify is a bribe you do not pay. Rented seats are handled by the face check. Strip those jobs away and the reserve has exactly one left: make careless voting unprofitable. A juror who flips a coin instead of reading the case must lose more to slashes than they collect in fees. That is the whole job.</p>
+    <p><b>Let's put numbers on the game mechanics:</b> The court watches three live things: what a juror earns for a vote, how much extra error carelessness creates, and how many unresolved votes that juror is carrying before slashes settle. The required reserve is just income at risk divided by the careless-error penalty. If demand rises faster than active jurors, each juror carries more work and the reserve rises. If more jurors join, the work spreads out and the reserve falls. No one picks a magic dollar amount. The seat prices itself from the court's own traffic.</p>
+    <p>Why not round up to something impressive anyway? Because past the live floor, a bigger reserve makes the court less safe. Security here comes from pool width: a coordinated bloc inside a pool of tens of thousands almost never lands a panel majority, while the same bloc inside a thin pool owns the place. Every unit of reserve above the laziness floor buys no additional honesty and silently evicts honest jurors, while the attacker's recruits, who are paid to be there, do not leave. Try to beat the widget.</p>
 
     <div class="widget reveal">
-      <div class="widget-head"><span class="live"></span> The flat bond, derived then stress-tested</div>
+      <div class="widget-head"><span class="live"></span> The live reserve, derived then stress-tested</div>
       <div class="controls">
-        <div class="row"><label for="F1f">Fee a juror earns per case</label> <b id="F1fOut">$1.50</b></div>
+        <div class="row"><label for="F1f">Pay pressure per pending vote</label> <b id="F1fOut">1.5 units</b></div>
         <input id="F1f" type="range" min="5" max="100" step="5" value="15">
         <div class="row"><label for="F1e">Extra errors from not reading the case</label> <b id="F1eOut">30%</b></div>
         <input id="F1e" type="range" min="10" max="50" step="1" value="30">
         <div class="row"><label for="F1s">Slash taken from a wrong-side vote</label> <b id="F1sOut">100%</b></div>
         <input id="F1s" type="range" min="25" max="100" step="5" value="100">
-        <div class="row"><label for="F1b">Now set the actual flat bond</label> <b id="F1bOut">$5</b></div>
+        <div class="row"><label for="F1b">Now set the live reserve</label> <b id="F1bOut">5 units</b></div>
         <input id="F1b" type="range" min="0" max="200" step="1" value="5">
         <div class="row"><label for="F1m">Coordinated humans an attacker can recruit</label> <b id="F1mOut">300</b></div>
         <input id="F1m" type="range" min="50" max="2000" step="50" value="300">
       </div>
-      <div class="barline"><div class="bk"><span>Jurors who opt in at this bond</span><b id="F1pool">&hellip;</b></div><div class="track"><span class="fill-accent" id="F1poolbar"></span></div></div>
+      <div class="barline"><div class="bk"><span>Jurors who opt in at this reserve</span><b id="F1pool">&hellip;</b></div><div class="track"><span class="fill-accent" id="F1poolbar"></span></div></div>
       <div class="barline"><div class="bk"><span>Attacker's chance of a 15-seat majority</span><b id="F1cap">&hellip;</b></div><div class="track"><span class="fill-bad" id="F1capbar"></span></div></div>
       <div class="readout" style="margin-top:1rem">
-        <div class="stat"><div class="k">Floor that defeats laziness</div><div class="v accent" id="F1min">&hellip;</div></div>
-        <div class="stat"><div class="k">Verdict on your bond</div><div class="v" id="F1verd" style="font-size:1.02rem">&hellip;</div></div>
+        <div class="stat"><div class="k">Reserve floor that defeats laziness</div><div class="v accent" id="F1min">&hellip;</div></div>
+        <div class="stat"><div class="k">Verdict on your reserve</div><div class="v" id="F1verd" style="font-size:1.02rem">&hellip;</div></div>
       </div>
-      <p style="font-family:var(--sans);font-size:.86rem;color:var(--faint);margin:1rem 0 0">Illustrative. Juror turnout falls as the bond rises; the attacker's recruits do not, so their share of a shrinking pool grows. Slide the bond right and watch security get worse as the deposit gets bigger. The sweet spot sits just above the laziness floor and nowhere else.</p>
+      <p style="font-family:var(--sans);font-size:.86rem;color:var(--faint);margin:1rem 0 0">Illustrative. Juror turnout falls as the reserve rises; the attacker's recruits do not, so their share of a shrinking pool grows. Slide the reserve right and watch security get worse as the entry burden gets bigger. The sweet spot sits just above the laziness floor and moves with workload.</p>
     </div>
 
-    <p>A court of forty thousand five-dollar jurors beats a court of four hundred two-hundred-dollar jurors against every attack in this chapter, and it is not close. The discipline survives in the slash, not the size: a wrong-side vote forfeits a slice of the bond scaled by how lopsided the verdict was, settled only after appeals finish, refunded in full if a later panel vindicates the vote. Every slashed dollar flows to the reward pool that pays active, high-quality jurors, never the winning panel, so a majority earns nothing extra by convicting its dissenters.</p>
+    <p>A court with many low-reserve jurors beats a court with a few high-reserve jurors against every attack in this chapter, and it is not close. The discipline survives in the slash, not the headline size: a wrong-side vote forfeits a slice of the reserve scaled by how lopsided the verdict was, settled only after appeals finish, refunded in full if a later panel vindicates the vote. Every slash flows to the reward pool that pays active, high-quality jurors, never the winning panel, so a majority earns nothing extra by convicting its dissenters.</p>
   </section>
 
   <!-- ============ 3: the sealed die ============ -->
   <section class="reveal">
     <p class="sec-label">The draw</p>
     <h2>The sealed die</h2>
-    <p>A wide pool only protects you if the draw out of it is honest. Here is the attack that decides how the draw must work. An attacker with a small bloc of seats does not need to win a fair lottery; they need to stop playing fair lotteries. File the case, peek at the panel, and if it is not stacked with their seats, withdraw and file again. Re-roll until you own the room. Grinding turns a 1% pool share into a certainty, given enough patience, and patience is cheap.</p>
-    <p>The fix is a die with a tamper-proof seal. The draw binds to two things: the case's identity and a public randomness beacon, a service that publishes a fresh, unpredictable value on a fixed schedule that nobody, including us, can steer. One case, one roll. The roll happens after the case is committed, so there is nothing to peek at, and anyone can re-run the math afterward to confirm the panel is exactly what the beacon dictated. One screen rides on top of the roll: a seat whose own wallet holds a position in the disputed market is skipped and redrawn, the way a juror who knows the defendant is sent home. The attacker's strategy collapses from re-roll until you win to take what the die gives you. Watch the difference between those two worlds.</p>
+    <p>A wide pool only protects you if the draw out of it is honest. Here is the integration failure the draw has to survive. Apps bring users and evidence, but they cannot be allowed to choose the case ID, trigger time, cancellation point, or replacement rules in a way that lets them shop for a friendly panel. If a hacked marketplace could lock a deal, infer the panel, abandon it, and try again under a fresh identity or later beacon, a small bloc would stop playing one fair lottery and start grinding many. Grinding turns a 1% pool share into a certainty, given enough chances.</p>
+    <p>The fix is a die with a tamper-proof seal at the protocol boundary. The draw binds to two things the app cannot rewrite: the escrowed case and a public randomness beacon, a service that publishes a fresh, unpredictable value on a fixed schedule that nobody, including us, can steer. One locked escrow, one committed case, one roll. Funds and dispute contents are locked before the panel exists, so there is no panel to shop, and anyone can re-run the math afterward to confirm the panel is exactly what the beacon dictated. One screen rides on top of the roll: a seat whose own wallet holds a position in the disputed market is skipped by deterministic replacement, the way a juror who knows the defendant is sent home. The attacker's strategy collapses from asking the app for another draw to taking what the die gives you. Watch the difference between those two worlds.</p>
 
     <div class="widget reveal">
       <div class="widget-head"><span class="live"></span> One roll versus the grind</div>
@@ -184,7 +185,7 @@
         <div class="stat"><div class="k">Re-rolls to capture</div><div class="v accent" id="g3tries">&hellip;</div></div>
         <div class="stat"><div class="k">Expected re-rolls</div><div class="v" id="g3exp">&hellip;</div></div>
       </div>
-      <p style="font-family:var(--sans);font-size:.86rem;color:var(--faint);margin:1rem 0 0">Gold dots are the attacker's seats. The left button is production: one verifiable roll, bound to the case. The right button is the attack the beacon deletes, kept here so you can see what it was worth. A 20% bloc captures a 7-seat panel in a handful of re-rolls when re-rolling is free, and almost never when it gets exactly one.</p>
+      <p style="font-family:var(--sans);font-size:.86rem;color:var(--faint);margin:1rem 0 0">Gold dots are the attacker's seats. The left button is production: one verifiable roll, bound to the escrowed case. The right button is the integration failure the protocol boundary deletes, kept here so you can see what it was worth. A 20% bloc captures a 7-seat panel in a handful of re-rolls when an app can grind draws, and almost never when it gets exactly one.</p>
     </div>
 
     <p><b>Notice what the seal does not do:</b> It does not shrink the honest capture odds; a bloc still owns its fair share of lottery tickets. The die is sealed, not loaded in our favor. Shrinking those odds is the job of pool width, covered above, and panel size, covered below. The locks divide the labor on purpose.</p>
@@ -429,7 +430,7 @@ function courtSeg(id, onPick) {
   });
 }
 
-// ============ flat bond ============
+// ============ live reserve ============
 (function () {
   "use strict";
   var f = document.getElementById("F1f");
@@ -463,13 +464,13 @@ function courtSeg(id, onPick) {
     var share = Math.min(0.95, bloc / Math.max(bloc, pool));
     var pcap = window.__court.binomTail(15, 8, share);
 
-    fOut.textContent = "$" + fee.toFixed(2);
+    fOut.textContent = fee.toFixed(1) + " units";
     eOut.textContent = parseInt(e.value, 10) + "%";
     sOut.textContent = parseInt(s.value, 10) + "%";
-    bOut.textContent = "$" + bond;
+    bOut.textContent = bond + " units";
     mOut.textContent = bloc.toLocaleString("en-US");
 
-    minEl.textContent = "$" + Math.ceil(bmin);
+    minEl.textContent = Math.ceil(bmin) + " units";
     poolEl.textContent = pool.toLocaleString("en-US");
     poolBar.style.width = Math.max(1, pool / JMAX * 100) + "%";
     capEl.textContent = pctText(pcap);
@@ -478,7 +479,7 @@ function courtSeg(id, onPick) {
     if (bond < bmin) {
       verdEl.innerHTML = '<span class="verdict v-high">Too low: laziness pays</span>';
     } else if (pcap > 0.0001) {
-      verdEl.innerHTML = '<span class="verdict v-high">Too high: pool too thin</span>';
+      verdEl.innerHTML = '<span class="verdict v-high">Too heavy: pool too thin</span>';
     } else if (bond > 4 * bmin) {
       verdEl.innerHTML = '<span class="verdict v-mid">Safe but wasteful</span>';
     } else {
