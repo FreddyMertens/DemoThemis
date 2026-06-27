@@ -60,6 +60,7 @@
   .attack { border: 1px solid var(--line); border-radius: 14px; padding: .9rem; background: var(--surface); box-shadow: var(--shadow); font-family: var(--sans); cursor: pointer; transition: transform .14s ease, box-shadow .14s ease, border-color .14s ease; }
   .attack:hover { transform: translateY(-2px); box-shadow: var(--shadow-lg); }
   .attack.active { border-color: var(--accent); background: color-mix(in srgb, var(--accent-soft) 55%, var(--surface)); }
+  .attack:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
   .attack-top { display: flex; justify-content: space-between; gap: .6rem; align-items: start; margin-bottom: .35rem; }
   .attack h4 { margin: 0; font-size: .98rem; line-height: 1.2; }
   .attack p { margin: 0; font-size: .82rem; line-height: 1.45; color: var(--muted); }
@@ -229,7 +230,7 @@
           <div class="attack" data-attack="governance"><div class="attack-top"><h4>Governance whale</h4><span class="chip" id="govChip">&hellip;</span></div><p id="govTxt">&hellip;</p></div>
         </div>
 
-        <div class="explain" id="attackExplain">
+        <div class="explain" id="attackExplain" aria-live="polite">
           <h3 id="attackTitle">Bloc capture</h3>
           <p id="attackBody">&hellip;</p>
         </div>
@@ -441,7 +442,7 @@
     var capture = 1 - Math.pow(1 - baseCapture, attempts);
     var honestPanel = binomTail(panel, majority, v.skill);
     var lazyLoss = reserve * v.careless * v.slash;
-    var lazyIncome = payPerVote * Math.max(1, pendingVotes);
+    var lazyIncome = payPerVote * Math.max(1, pendingVotes) * 0.5;
     var lazyMargin = lazyLoss - lazyIncome;
     var bribeCost = majority * (reserve + payPerVote);
     var bribeClears = !v.lockBallot && v.stake > bribeCost;
@@ -459,9 +460,9 @@
     var griefBenefit = v.stake * 0.008 * v.lag;
     var griefClears = griefBenefit > appealFloor;
     var voterBase = Math.max(100, v.jurors + quietCases);
-    var whaleRaw = 0.55;
-    var citizenWeight = v.lockGov ? Math.sqrt(Math.max(1, voterBase)) : Math.sqrt(Math.max(1, voterBase)) * 0.08;
-    var whaleWeight = Math.sqrt(whaleRaw * 1000000);
+    var whaleTokens = 550000;
+    var whaleWeight = v.lockGov ? Math.sqrt(whaleTokens) : whaleTokens;
+    var citizenWeight = v.lockGov ? Math.max(1, voterBase) : Math.max(1, voterBase) * 0.08;
     var whalePower = whaleWeight / (whaleWeight + citizenWeight);
     var driftRisk = 1 - keySignal;
     var rentalRisk = rentedPass / Math.max(1, v.jurors);
@@ -481,7 +482,7 @@
     safety -= driftRisk * .14;
     safety -= govRisk * .08;
     safety = clamp(safety, 0, 1);
-    return { totalCases: totalCases, courtCases: courtCases, quietCases: quietCases, panel: panel, majority: majority, seatVotes: seatVotes, votesPerJurorMonth: votesPerJurorMonth, pendingVotes: pendingVotes, feeRevenue: feeRevenue, jurorPayPool: jurorPayPool, rewardPool: rewardPool, payPerVote: payPerVote, payPressure: payPressure, reserveUnit: reserveUnit, reserve: reserve, reserveBurden: reserveBurden, rentedPass: rentedPass, effectiveBloc: effectiveBloc, share: share, baseCapture: baseCapture, capture: capture, honestPanel: honestPanel, lazyLoss: lazyLoss, lazyIncome: lazyIncome, lazyMargin: lazyMargin, bribeCost: bribeCost, bribeClears: bribeClears, assertionBond: assertionBond, watcherDensity: watcherDensity, caughtFalseAssertion: caughtFalseAssertion, falseEscape: falseEscape, keys: keys, keySignal: keySignal, appealFloor: appealFloor, griefBenefit: griefBenefit, griefClears: griefClears, whalePower: whalePower, risks: { capture: captureRisk, bribe: bribeRisk, rental: rentalRisk, lazy: lazyRisk, assertion: assertionRisk, grief: griefRisk, drift: driftRisk, governance: govRisk }, safety: safety };
+    return { totalCases: totalCases, courtCases: courtCases, quietCases: quietCases, panel: panel, majority: majority, seatVotes: seatVotes, votesPerJurorMonth: votesPerJurorMonth, pendingVotes: pendingVotes, feeRevenue: feeRevenue, jurorPayPool: jurorPayPool, rewardPool: rewardPool, payPerVote: payPerVote, payPressure: payPressure, reserveUnit: reserveUnit, reserve: reserve, reserveBurden: reserveBurden, rentedPass: rentedPass, intendedBloc: (v.bloc + rentedPass), blocCapped: ((v.bloc + rentedPass) > v.jurors), effectiveBloc: effectiveBloc, share: share, baseCapture: baseCapture, capture: capture, honestPanel: honestPanel, lazyLoss: lazyLoss, lazyIncome: lazyIncome, lazyMargin: lazyMargin, bribeCost: bribeCost, bribeClears: bribeClears, assertionBond: assertionBond, watcherDensity: watcherDensity, caughtFalseAssertion: caughtFalseAssertion, falseEscape: falseEscape, keys: keys, keySignal: keySignal, appealFloor: appealFloor, griefBenefit: griefBenefit, griefClears: griefClears, whalePower: whalePower, risks: { capture: captureRisk, bribe: bribeRisk, rental: rentalRisk, lazy: lazyRisk, assertion: assertionRisk, grief: griefRisk, drift: driftRisk, governance: govRisk }, safety: safety };
   }
 
   function setOutputs(v, m) {
@@ -513,7 +514,7 @@
     byId("reserveSub").textContent = v.lockReserve ? money(m.reserveUnit) + " per pending vote" : "carelessness has no live price";
     scoreClass(byId("scoreCapture"), clsRisk(m.capture));
     byId("captureOut").textContent = pct(m.capture);
-    byId("captureSub").textContent = num(m.effectiveBloc) + " effective attackers in " + num(v.jurors) + " jurors";
+    byId("captureSub").textContent = m.blocCapped ? "bloc of " + num(m.intendedBloc) + " exceeds the " + num(v.jurors) + "-juror pool" : num(m.effectiveBloc) + " effective attackers in " + num(v.jurors) + " jurors";
 
     byId("nodeDemandV").textContent = num(m.courtCases) + " court cases / mo";
     byId("nodeFeesV").textContent = money(m.feeRevenue) + " fees";
@@ -544,7 +545,7 @@
   }
 
   function setAttacks(v, m) {
-    setAttack("bloc", m.risks.capture, m.capture > .35, "A bloc owns " + pct(m.share) + " of effective seats; panel capture is " + pct(m.capture) + ".");
+    setAttack("bloc", m.risks.capture, m.capture > .35, (m.blocCapped ? "A bloc of " + num(m.intendedBloc) + " outnumbers the " + num(v.jurors) + "-juror pool, so it can reach every seat. " : "A bloc owns " + pct(m.share) + " of effective seats. ") + "Panel capture is " + pct(m.capture) + ".");
     setAttack("bribe", m.risks.bribe, m.bribeClears, v.lockBallot ? "Receipt-free ballots make paid delivery unverifiable." : "Without receipt-freeness, expected bribe cost is " + money(m.bribeCost) + ".");
     setAttack("rental", m.risks.rental, m.risks.rental > .25, v.lockFace ? "Face checks shrink " + num(v.rented) + " rented credentials to about " + num(m.rentedPass) + " usable seats." : "Rented credentials enter the draw directly.");
     setAttack("lazy", m.risks.lazy, m.lazyMargin < 0, m.lazyMargin >= 0 ? "Lazy voting loses about " + money(m.lazyMargin) + " more than it earns." : "Lazy voting keeps about " + money(Math.abs(m.lazyMargin)) + " of unpriced shortcut profit.");
@@ -593,12 +594,12 @@
 
   function setPreset(name) {
     var sets = {
-      base: { flow: 5000000, stake: 45, challenge: 5, jurors: 52, bloc: 300, rented: 0, rerolls: 1, watchCost: 5, locks: true },
-      cold: { flow: 500000, stake: 35, challenge: 8, jurors: 25, bloc: 120, rented: 0, rerolls: 1, watchCost: 8, locks: true },
-      surge: { flow: 35000000, stake: 58, challenge: 10, jurors: 48, bloc: 500, rented: 0, rerolls: 1, watchCost: 7, locks: true },
-      bloc: { flow: 8000000, stake: 65, challenge: 7, jurors: 40, bloc: 3000, rented: 0, rerolls: 1, watchCost: 5, locks: true },
-      sleepy: { flow: 1200000, stake: 38, challenge: 2, jurors: 45, bloc: 100, rented: 0, rerolls: 1, watchCost: 40, locks: true },
-      broken: { flow: 5000000, stake: 55, challenge: 8, jurors: 35, bloc: 700, rented: 2000, rerolls: 30, watchCost: 25, locks: false }
+      base: { flow: 5000000, stake: 45, challenge: 5, lag: 4, fee: 20, payShare: 70, rewardShare: 20, jurors: 52, skill: 68, careless: 25, slash: 100, bloc: 300, rented: 0, rerolls: 1, watchCost: 5, locks: true },
+      cold: { flow: 500000, stake: 35, challenge: 8, lag: 4, fee: 20, payShare: 70, rewardShare: 20, jurors: 25, skill: 60, careless: 30, slash: 100, bloc: 120, rented: 0, rerolls: 1, watchCost: 8, locks: true },
+      surge: { flow: 35000000, stake: 58, challenge: 10, lag: 5, fee: 20, payShare: 70, rewardShare: 20, jurors: 48, skill: 68, careless: 25, slash: 100, bloc: 500, rented: 0, rerolls: 1, watchCost: 7, locks: true },
+      bloc: { flow: 8000000, stake: 65, challenge: 7, lag: 4, fee: 20, payShare: 70, rewardShare: 20, jurors: 40, skill: 68, careless: 25, slash: 100, bloc: 3000, rented: 0, rerolls: 1, watchCost: 5, locks: true },
+      sleepy: { flow: 1200000, stake: 38, challenge: 2, lag: 6, fee: 20, payShare: 70, rewardShare: 20, jurors: 45, skill: 68, careless: 35, slash: 100, bloc: 100, rented: 0, rerolls: 1, watchCost: 40, locks: true },
+      broken: { flow: 5000000, stake: 55, challenge: 8, lag: 6, fee: 20, payShare: 70, rewardShare: 20, jurors: 35, skill: 60, careless: 40, slash: 50, bloc: 700, rented: 2000, rerolls: 30, watchCost: 25, locks: false }
     };
     var s = sets[name];
     Object.keys(s).forEach(function (k) {
@@ -612,12 +613,22 @@
 
   ids.concat(lockIds).forEach(function (id) { byId(id).addEventListener("input", update); byId(id).addEventListener("change", update); });
   Array.prototype.forEach.call(document.querySelectorAll(".preset"), function (btn) { btn.addEventListener("click", function () { setPreset(btn.getAttribute("data-preset")); }); });
+  function selectAttack(card) {
+    selectedAttack = card.getAttribute("data-attack");
+    Array.prototype.forEach.call(document.querySelectorAll(".attack"), function (x) {
+      var on = x === card;
+      x.classList.toggle("active", on);
+      x.setAttribute("aria-pressed", on ? "true" : "false");
+    });
+    update();
+  }
   Array.prototype.forEach.call(document.querySelectorAll(".attack"), function (card) {
-    card.addEventListener("click", function () {
-      selectedAttack = card.getAttribute("data-attack");
-      Array.prototype.forEach.call(document.querySelectorAll(".attack"), function (x) { x.classList.remove("active"); });
-      card.classList.add("active");
-      update();
+    card.setAttribute("role", "button");
+    card.setAttribute("tabindex", "0");
+    card.setAttribute("aria-pressed", card.classList.contains("active") ? "true" : "false");
+    card.addEventListener("click", function () { selectAttack(card); });
+    card.addEventListener("keydown", function (e) {
+      if (e.key === "Enter" || e.key === " " || e.key === "Spacebar") { e.preventDefault(); selectAttack(card); }
     });
   });
   update();
