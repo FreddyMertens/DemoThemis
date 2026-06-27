@@ -15,6 +15,25 @@
   .lab-hero .dek { max-width: 44rem; }
   .lab-grid { display: grid; grid-template-columns: minmax(15rem, .9fr) minmax(0, 1.35fr); gap: 1rem; align-items: start; }
   @media (max-width: 880px) { .lab-grid { grid-template-columns: 1fr; } }
+  @media (min-width: 1100px) {
+    body { --maxw: 76rem; --half-maxw: 38rem; }
+    .lab-hero { max-width: 72rem; }
+    .lab-hero .dek { max-width: 52rem; }
+    .lab-grid { grid-template-columns: minmax(20rem, .8fr) minmax(0, 1fr) minmax(0, 1fr); gap: 1.25rem; }
+    .lab-grid > .panel-card { position: sticky; top: 5.5rem; max-height: calc(100vh - 7rem); overflow-y: auto; }
+    .scoreboard { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+    .map { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+    .attack-grid { grid-template-columns: 1fr; }
+    .matrix { grid-template-columns: repeat(5, minmax(0, 1fr)); }
+    .story { grid-template-columns: repeat(4, 1fr); }
+    .insight-grid { grid-template-columns: 1fr 1fr; }
+    .dependency-grid { grid-template-columns: repeat(3, minmax(0, 1fr)); }
+  }
+  @media (min-width: 1400px) {
+    .scoreboard { grid-template-columns: repeat(4, minmax(0, 1fr)); }
+    .map { grid-template-columns: repeat(4, minmax(0, 1fr)); }
+    .attack-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+  }
   .panel-card { background: var(--surface); border: 1px solid var(--line-strong); border-radius: var(--radius); box-shadow: var(--shadow); padding: 1rem; }
   .dial-group { margin-bottom: 1rem; border-bottom: 1px solid var(--line); padding-bottom: .8rem; }
   .dial-group:last-child { border-bottom: none; margin-bottom: 0; padding-bottom: 0; }
@@ -120,6 +139,21 @@
   .driver-row, .warning-row { border: 1px solid var(--line); border-radius: 10px; background: var(--bg); padding: .55rem .6rem; font-size: .76rem; line-height: 1.35; color: var(--muted); }
   .driver-row b, .warning-row b { display: flex; justify-content: space-between; gap: .6rem; color: var(--ink); font-size: .8rem; margin-bottom: .2rem; }
   .driver-row small { display: block; color: var(--muted); font-size: .72rem; }
+  .lab-status { display: flex; align-items: center; gap: .8rem; padding: .7rem 1rem; border-radius: 14px; font-family: var(--sans); font-weight: 700; font-size: .9rem; margin-bottom: 1rem; transition: background .25s ease, border-color .25s ease, box-shadow .25s ease; border: 1.5px solid var(--line-strong); }
+  .lab-status .lab-status-icon { width: 1.4rem; height: 1.4rem; flex-shrink: 0; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: .85rem; font-weight: 800; }
+  .lab-status .lab-status-label { flex-shrink: 0; letter-spacing: .03em; }
+  .lab-status .lab-status-detail { font-weight: 500; font-size: .8rem; color: var(--muted); }
+  .lab-status.resistant { background: var(--good-soft); border-color: color-mix(in srgb, var(--good) 40%, transparent); }
+  .lab-status.resistant .lab-status-icon { background: var(--good); color: #fff; }
+  .lab-status.resistant .lab-status-label { color: var(--good); }
+  .lab-status.vulnerable { background: var(--bad-soft); border-color: color-mix(in srgb, var(--bad) 45%, transparent); box-shadow: 0 0 0 3px color-mix(in srgb, var(--bad) 12%, transparent); }
+  .lab-status.vulnerable .lab-status-icon { background: var(--bad); color: #fff; }
+  .lab-status.vulnerable .lab-status-label { color: var(--bad); }
+  .lab-status .lab-status-clears { display: flex; flex-wrap: wrap; gap: .35rem; margin-left: auto; }
+  .lab-status .lab-status-clear { font-size: .68rem; font-weight: 800; letter-spacing: .04em; text-transform: uppercase; border-radius: 999px; padding: .15rem .5rem; background: color-mix(in srgb, var(--bad) 15%, transparent); color: var(--bad); border: 1px solid color-mix(in srgb, var(--bad) 25%, transparent); }
+  .lab-grid { transition: box-shadow .3s ease; }
+  .lab-grid.vulnerable { box-shadow: 0 0 0 2px color-mix(in srgb, var(--bad) 30%, transparent); border-radius: var(--radius); }
+  .lab-grid.resistant { box-shadow: 0 0 0 2px color-mix(in srgb, var(--good) 25%, transparent); border-radius: var(--radius); }
 </style>
 </head>
 <body>
@@ -189,7 +223,13 @@
   <section class="reveal">
     <p class="sec-label">The board</p>
     <h2>Drag the dials and watch the incentives move</h2>
-    <div class="lab-grid">
+    <div class="lab-status resistant" id="labStatus">
+      <span class="lab-status-icon" id="labStatusIcon">&#10003;</span>
+      <span class="lab-status-label" id="labStatusLabel">Resistant to exploit</span>
+      <span class="lab-status-detail" id="labStatusDetail">No attack clears under current settings.</span>
+      <div class="lab-status-clears" id="labStatusClears"></div>
+    </div>
+    <div class="lab-grid" id="labGrid">
       <div class="panel-card">
         <div class="dial-group">
           <h3>Demand</h3>
@@ -265,7 +305,9 @@
             <div class="node" id="nodeKeys" data-n="08"><h4>Keys</h4><p>Public outcomes and consented private tests measure juror drift.</p><b id="nodeKeysV">&hellip;</b></div>
           </div>
         </div>
+      </div>
 
+      <div>
         <div class="attack-grid" id="attackGrid">
           <div class="attack active" data-attack="bloc"><div class="attack-top"><h4>Bloc capture</h4><span class="chip" id="blocChip">&hellip;</span></div><p id="blocTxt">&hellip;</p></div>
           <div class="attack" data-attack="bribe"><div class="attack-top"><h4>Verified bribe</h4><span class="chip" id="bribeChip">&hellip;</span></div><p id="bribeTxt">&hellip;</p></div>
@@ -966,6 +1008,32 @@
     chip(byId("bottleneckChip"), "bottleneck: " + labels[top.k], clsRisk(top.v));
   }
 
+  function setLabStatus(v, m) {
+    var clearLabels = { capture: "capture", bribe: "bribery", rental: "rental", lazy: "laziness", assertion: "assertions", grief: "appeals", drift: "drift" };
+    var cleared = Object.keys(m.clears).filter(function (k) { return m.clears[k]; });
+    var status = byId("labStatus");
+    var grid = byId("labGrid");
+    var icon = byId("labStatusIcon");
+    var label = byId("labStatusLabel");
+    var detail = byId("labStatusDetail");
+    var clearsEl = byId("labStatusClears");
+    if (cleared.length > 0) {
+      status.className = "lab-status vulnerable";
+      grid.className = "lab-grid vulnerable";
+      icon.textContent = "!";
+      label.textContent = "Vulnerable to exploit";
+      detail.textContent = cleared.length + (cleared.length === 1 ? " attack clears" : " attacks clear") + " under current settings.";
+      clearsEl.innerHTML = cleared.map(function (k) { return '<span class="lab-status-clear">' + clearLabels[k] + '</span>'; }).join("");
+    } else {
+      status.className = "lab-status resistant";
+      grid.className = "lab-grid resistant";
+      icon.innerHTML = "&#10003;";
+      label.textContent = "Resistant to exploit";
+      detail.textContent = "No attack clears under current settings.";
+      clearsEl.innerHTML = "";
+    }
+  }
+
   function setExplain() {
     var copy = {
       bloc: ["Bloc capture", "This attack is sampling math against the draw-eligible pool, not the headline signup count. Reserve burden can thin the retained pool, senior gates can shrink the largest-panel pool, and high-stake cases ask multiple panels to agree at once."],
@@ -1075,6 +1143,7 @@
     var m = compute(v);
     setOutputs(v, m);
     setAttacks(v, m);
+    setLabStatus(v, m);
     setRanks(m);
     setExplain();
     setDrivers(v, m);
