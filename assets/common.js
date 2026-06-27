@@ -27,8 +27,11 @@
   var BLUEPRINT = { f: "the-design.html", t: "The blueprint" };
 
   function fileOf(path) {
-    var p = (path || "").split("?")[0].split("#")[0].split("/").pop();
-    return (!p) ? "index.html" : p;
+    var clean = (path || "").split("?")[0].split("#")[0].replace(/\/+$/, "");
+    var p = clean.split("/").pop();
+    if (!p) return "index.html";
+    if (p.indexOf(".") === -1) return p + ".html";
+    return p;
   }
   var here = fileOf(location.pathname);
 
@@ -156,7 +159,9 @@
 
     // Deep dive: off the main path, route back to its parent chapter.
     if (idx === -1) {
-      var parent = { f: el.getAttribute("data-parent") || "hybrid-juror-system.html", t: el.getAttribute("data-parent-title") || "The hybrid system" };
+      var parentFile = el.getAttribute("data-parent");
+      if (!parentFile) return;
+      var parent = { f: fileOf(parentFile), t: el.getAttribute("data-parent-title") || "Parent chapter" };
       var pIdx = findChapterIndex(parent.f);
       var dNext = pIdx !== -1 && pIdx < CHAPTERS.length - 1 ? CHAPTERS[pIdx + 1] : null;
       html = chapterNav('Chapter navigation', parent, dNext);
