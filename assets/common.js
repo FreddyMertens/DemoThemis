@@ -214,10 +214,37 @@
     }
   }
 
-  // ---- tooltips ----
-    function initTooltips() {
-    if (typeof ASSUMPTIONS === "undefined") return;
-    ASSUMPTIONS.forEach(function(a) {
+    // ---- tooltips ----
+  function initTooltips() {
+    const MAIN_COPIES = {
+      flow: "The total dollar value of ordinary cases expected to arrive in court each month.",
+      stake: "The typical dollar amount at risk in a contested case.",
+      challenge: "The percentage of total case flow that escalates to court instead of settling quietly.",
+      lag: "The number of weeks an appeal delays final settlement, locking up staked funds.",
+      fee: "The percentage fee taken from settlements to fund juror pay, rewards, and operations.",
+      payShare: "The percentage of the settlement fee distributed directly to jurors as base pay.",
+      rewardShare: "The percentage of the settlement fee distributed to a pool to reward high-quality jurors over time.",
+      jurors: "The total number of active, retained jurors available in the system.",
+      skill: "The probability that a careful juror will vote correctly on a case.",
+      careless: "The extra mistake rate caused by lazy jurors voting randomly or carelessly.",
+      slash: "The percentage of a juror\'s staked funds they lose if they vote on the wrong side.",
+      bloc: "The number of coordinated human attackers trying to capture a panel.",
+      rented: "The number of honest juror accounts that attackers have secretly rented.",
+      rerolls: "The number of times a panel is redrawn to prevent attackers from predicting the outcome.",
+      watchCost: "The dollar cost for an independent watcher to monitor one settlement window.",
+      falseRate: "The percentage of settlements where someone attempts to slip through a false assertion."
+    };
+
+    let allAssumptions = [];
+    if (typeof ASSUMPTIONS !== "undefined") {
+      allAssumptions = allAssumptions.concat(ASSUMPTIONS);
+    }
+    
+    Object.keys(MAIN_COPIES).forEach(function(id) {
+      allAssumptions.push({ id: id, copy: MAIN_COPIES[id] });
+    });
+
+    allAssumptions.forEach(function(a) {
       if (!a.copy) return;
       
       // 1. Add info icon to the label
@@ -241,15 +268,11 @@
         input.removeAttribute("title"); // remove native slow tooltip
         var dial = input.closest('.dial');
         if (dial) {
-          // This allows [data-tooltip]:hover::after to pop up when hovering the slider container
           dial.setAttribute("data-tooltip", a.copy);
-          // Ensure positioning works correctly for the CSS tooltip
           if (getComputedStyle(dial).position === 'static') {
             dial.style.position = 'relative';
           }
         } else {
-          // If not in a .dial, put it on the input directly, but inputs don't support ::after easily.
-          // Wait, range inputs can't have ::after. Wrap it or put it on its parent.
           if (input.parentElement && getComputedStyle(input.parentElement).position === 'static') {
             input.parentElement.style.position = 'relative';
           }
@@ -260,7 +283,6 @@
       }
     });
   }
-
 
   // ---- back to top ----
   function initToTop() {
