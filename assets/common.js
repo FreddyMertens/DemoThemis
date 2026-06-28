@@ -214,6 +214,27 @@
     }
   }
 
+  // ---- tooltips ----
+  function initTooltips() {
+    if (typeof ASSUMPTIONS === "undefined") return;
+    ASSUMPTIONS.forEach(function(a) {
+      if (!a.copy) return;
+      var label = document.querySelector('label[for="' + a.id + '"]');
+      if (label) {
+        var icon = document.createElement("span");
+        icon.className = "info-icon";
+        icon.setAttribute("data-tooltip", a.copy);
+        icon.textContent = "ⓘ";
+        var b = label.querySelector("b");
+        if (b) {
+          label.insertBefore(icon, b);
+        } else {
+          label.appendChild(icon);
+        }
+      }
+    });
+  }
+
   // ---- back to top ----
   function initToTop() {
     var btn = document.createElement("button");
@@ -234,6 +255,7 @@
   initReveal();
   initNav();
   initSeries();
+  initTooltips();
   initToc();
   initToTop();
 })();

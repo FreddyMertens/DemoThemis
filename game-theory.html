@@ -153,6 +153,14 @@
   .lab-grid { transition: box-shadow .3s ease; }
   .lab-grid.vulnerable { box-shadow: 0 0 0 2px color-mix(in srgb, var(--bad) 30%, transparent); border-radius: var(--radius); }
   .lab-grid.resistant { box-shadow: 0 0 0 2px color-mix(in srgb, var(--good) 25%, transparent); border-radius: var(--radius); }
+  
+  .info-icon { display: inline-flex; align-items: center; justify-content: center; width: 1.1rem; height: 1.1rem; border-radius: 50%; background: var(--line); color: var(--ink-soft); font-size: .75rem; font-family: var(--sans); font-weight: 800; cursor: help; margin-left: .4rem; position: relative; font-style: normal; }
+  .info-icon:hover { background: var(--ink); color: #fff; }
+  .info-icon::after { content: attr(data-tooltip); position: absolute; bottom: calc(100% + .5rem); left: 50%; transform: translateX(-50%) translateY(4px); width: max-content; max-width: 220px; padding: .5rem .75rem; background: var(--ink); color: #fff; border-radius: 6px; font-size: .75rem; font-weight: 500; line-height: 1.4; opacity: 0; visibility: hidden; transition: opacity .2s ease, transform .2s ease, visibility .2s; z-index: 100; text-align: center; pointer-events: none; }
+  .info-icon:hover::after { opacity: 1; visibility: visible; transform: translateX(-50%) translateY(0); }
+  .info-icon::before { content: ""; position: absolute; bottom: calc(100% + .2rem); left: 50%; transform: translateX(-50%); border: 5px solid transparent; border-top-color: var(--ink); opacity: 0; visibility: hidden; transition: opacity .2s ease, visibility .2s; z-index: 100; pointer-events: none; }
+  .info-icon:hover::before { opacity: 1; visibility: visible; }
+  .node p { display: none; } /* Hide old paragraph explanations since we moved them to tooltips */
 </style>
 </head>
 <body>
@@ -229,10 +237,10 @@
       <div class="lab-status-clears" id="labStatusClears"></div>
     </div>
     <div class="scoreboard">
-      <div class="score" id="scoreSafety"><div class="k">Illustrative safety index</div><div class="v" id="safetyOut">&hellip;</div><small id="safetySub">&hellip;</small></div>
-      <div class="score" id="scorePay"><div class="k">Pay pressure</div><div class="v" id="payOut">&hellip;</div><small id="paySub">&hellip;</small></div>
-      <div class="score" id="scoreReserve"><div class="k">Live reserve</div><div class="v" id="reserveOut">&hellip;</div><small id="reserveSub">&hellip;</small></div>
-      <div class="score" id="scoreCapture"><div class="k">Panel capture</div><div class="v" id="captureOut">&hellip;</div><small id="captureSub">&hellip;</small></div>
+      <div class="score" id="scoreSafety"><div class="k">Illustrative safety index<span class="info-icon" data-tooltip="An overall health score for the system's launch-stage configuration based on current attack vectors.">ⓘ</span></div><div class="v" id="safetyOut">&hellip;</div><small id="safetySub">&hellip;</small></div>
+      <div class="score" id="scorePay"><div class="k">Pay pressure<span class="info-icon" data-tooltip="The raw settlement demand divided by the retained juror supply. This is not a wage promise.">ⓘ</span></div><div class="v" id="payOut">&hellip;</div><small id="paySub">&hellip;</small></div>
+      <div class="score" id="scoreReserve"><div class="k">Live reserve<span class="info-icon" data-tooltip="Pending income held back for slashes, affecting how many honest jurors can carry the burden.">ⓘ</span></div><div class="v" id="reserveOut">&hellip;</div><small id="reserveSub">&hellip;</small></div>
+      <div class="score" id="scoreCapture"><div class="k">Panel capture<span class="info-icon" data-tooltip="Risk of attackers gaining majority control on a panel given the current eligible draw pool.">ⓘ</span></div><div class="v" id="captureOut">&hellip;</div><small id="captureSub">&hellip;</small></div>
     </div>
     <div class="lab-grid" id="labGrid">
       <div class="panel-card">
@@ -282,14 +290,14 @@
         <div class="board">
           <div class="board-head"><h3>The incentive circuit</h3><span class="chip" id="bottleneckChip">&hellip;</span></div>
           <div class="map">
-            <div class="node" id="nodeDemand" data-n="01"><h4>Demand</h4><p>Escrowed markets and disputes create settlement flow and court cases.</p><b id="nodeDemandV">&hellip;</b></div>
-            <div class="node" id="nodeFees" data-n="02"><h4>Fee split</h4><p>The settlement fee routes value to pay, rewards, and operations once.</p><b id="nodeFeesV">&hellip;</b></div>
-            <div class="node" id="nodePay" data-n="03"><h4>Pay pressure</h4><p>Demand divided by retained juror supply. This is not a wage promise.</p><b id="nodePayV">&hellip;</b></div>
-            <div class="node" id="nodeReserve" data-n="04"><h4>Reserve</h4><p>Pending income is priced, but heavy reserve burden can thin the pool.</p><b id="nodeReserveV">&hellip;</b></div>
-            <div class="node" id="nodePool" data-n="05"><h4>Pool width</h4><p>Retained jurors become the smaller draw-eligible pool attackers must beat.</p><b id="nodePoolV">&hellip;</b></div>
-            <div class="node" id="nodePanel" data-n="06"><h4>Panel</h4><p>Stake selects seats, senior gates, and sometimes parallel panels.</p><b id="nodePanelV">&hellip;</b></div>
-            <div class="node" id="nodeWatch" data-n="07"><h4>Assertions</h4><p>False-rate, bounty size, and watcher capacity decide catch odds.</p><b id="nodeWatchV">&hellip;</b></div>
-            <div class="node" id="nodeKeys" data-n="08"><h4>Keys</h4><p>Public outcomes and consented private tests measure juror drift.</p><b id="nodeKeysV">&hellip;</b></div>
+            <div class="node" id="nodeDemand" data-n="01"><h4>Demand<span class="info-icon" data-tooltip="Escrowed markets and disputes create settlement flow and court cases.">ⓘ</span></h4><p>Escrowed markets and disputes create settlement flow and court cases.</p><b id="nodeDemandV">&hellip;</b></div>
+            <div class="node" id="nodeFees" data-n="02"><h4>Fee split<span class="info-icon" data-tooltip="The settlement fee routes value to pay, rewards, and operations once.">ⓘ</span></h4><p>The settlement fee routes value to pay, rewards, and operations once.</p><b id="nodeFeesV">&hellip;</b></div>
+            <div class="node" id="nodePay" data-n="03"><h4>Pay pressure<span class="info-icon" data-tooltip="Demand divided by retained juror supply. This is not a wage promise.">ⓘ</span></h4><p>Demand divided by retained juror supply. This is not a wage promise.</p><b id="nodePayV">&hellip;</b></div>
+            <div class="node" id="nodeReserve" data-n="04"><h4>Reserve<span class="info-icon" data-tooltip="Pending income is priced, but heavy reserve burden can thin the pool.">ⓘ</span></h4><p>Pending income is priced, but heavy reserve burden can thin the pool.</p><b id="nodeReserveV">&hellip;</b></div>
+            <div class="node" id="nodePool" data-n="05"><h4>Pool width<span class="info-icon" data-tooltip="Retained jurors become the smaller draw-eligible pool attackers must beat.">ⓘ</span></h4><p>Retained jurors become the smaller draw-eligible pool attackers must beat.</p><b id="nodePoolV">&hellip;</b></div>
+            <div class="node" id="nodePanel" data-n="06"><h4>Panel<span class="info-icon" data-tooltip="Stake selects seats, senior gates, and sometimes parallel panels.">ⓘ</span></h4><p>Stake selects seats, senior gates, and sometimes parallel panels.</p><b id="nodePanelV">&hellip;</b></div>
+            <div class="node" id="nodeWatch" data-n="07"><h4>Assertions<span class="info-icon" data-tooltip="False-rate, bounty size, and watcher capacity decide catch odds.">ⓘ</span></h4><p>False-rate, bounty size, and watcher capacity decide catch odds.</p><b id="nodeWatchV">&hellip;</b></div>
+            <div class="node" id="nodeKeys" data-n="08"><h4>Keys<span class="info-icon" data-tooltip="Public outcomes and consented private tests measure juror drift.">ⓘ</span></h4><p>Public outcomes and consented private tests measure juror drift.</p><b id="nodeKeysV">&hellip;</b></div>
           </div>
         </div>
       </div>
