@@ -232,6 +232,10 @@
           label.appendChild(icon);
         }
       }
+      var input = document.getElementById(a.id);
+      if (input && input.type === "range") {
+        input.title = a.copy;
+      }
     });
   }
 
