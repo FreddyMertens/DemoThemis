@@ -260,12 +260,7 @@
       }
     });
   }
-      var input = document.getElementById(a.id);
-      if (input && input.type === "range") {
-        input.title = a.copy;
-      }
-    });
-  }
+
 
   // ---- back to top ----
   function initToTop() {
