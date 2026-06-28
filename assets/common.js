@@ -214,7 +214,7 @@
     }
   }
 
-    // ---- tooltips ----
+      // ---- tooltips ----
   window.initTooltips = function() {
     const MAIN_COPIES = {
       flow: "The total dollar value of ordinary cases expected to arrive in court each month.",
@@ -236,25 +236,27 @@
     };
 
     let allAssumptions = [];
-    if (typeof ASSUMPTIONS !== "undefined") {
-      allAssumptions = allAssumptions.concat(ASSUMPTIONS);
-    }
-    
     Object.keys(MAIN_COPIES).forEach(function(id) {
-      allAssumptions.push({ id: id, copy: MAIN_COPIES[id] });
+      allAssumptions.push({ domId: id, copy: MAIN_COPIES[id] });
     });
+
+    if (typeof ASSUMPTIONS !== "undefined") {
+      ASSUMPTIONS.forEach(function(a) {
+        allAssumptions.push({ domId: "assumption_" + a.id, copy: a.copy });
+      });
+    }
 
     allAssumptions.forEach(function(a) {
       if (!a.copy) return;
       
       // 1. Add info icon to the label
-      var label = document.querySelector('label[for="' + a.id + '"]');
+      var label = document.querySelector('label[for="' + a.domId + '"]');
       if (label) {
         var icon = document.createElement("span");
         icon.className = "info-icon";
         icon.setAttribute("data-tooltip", a.copy);
         icon.textContent = "ⓘ";
-        var b = label.querySelector("b");
+        var b = label.querySelector("b") || label.querySelector("output");
         if (b) {
           label.insertBefore(icon, b);
         } else {
@@ -262,15 +264,16 @@
         }
       }
       
-      // 2. Add exact CSS tooltip directly to the slider wrapper (.dial)
-      var input = document.getElementById(a.id);
+      // 2. Add exact CSS tooltip directly to the slider wrapper (.dial or .assumption-row)
+      var input = document.getElementById(a.domId);
       if (input && input.type === "range") {
         input.removeAttribute("title"); // remove native slow tooltip
-        var dial = input.closest('.dial');
-        if (dial) {
-          dial.setAttribute("data-tooltip", a.copy);
-          if (getComputedStyle(dial).position === 'static') {
-            dial.style.position = 'relative';
+        
+        var wrapper = input.closest('.dial') || input.closest('.assumption-row');
+        if (wrapper) {
+          wrapper.setAttribute("data-tooltip", a.copy);
+          if (getComputedStyle(wrapper).position === 'static') {
+            wrapper.style.position = 'relative';
           }
         } else {
           if (input.parentElement && getComputedStyle(input.parentElement).position === 'static') {
