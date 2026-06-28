@@ -215,10 +215,12 @@
   }
 
   // ---- tooltips ----
-  function initTooltips() {
+    function initTooltips() {
     if (typeof ASSUMPTIONS === "undefined") return;
     ASSUMPTIONS.forEach(function(a) {
       if (!a.copy) return;
+      
+      // 1. Add info icon to the label
       var label = document.querySelector('label[for="' + a.id + '"]');
       if (label) {
         var icon = document.createElement("span");
@@ -232,6 +234,32 @@
           label.appendChild(icon);
         }
       }
+      
+      // 2. Add exact CSS tooltip directly to the slider wrapper (.dial)
+      var input = document.getElementById(a.id);
+      if (input && input.type === "range") {
+        input.removeAttribute("title"); // remove native slow tooltip
+        var dial = input.closest('.dial');
+        if (dial) {
+          // This allows [data-tooltip]:hover::after to pop up when hovering the slider container
+          dial.setAttribute("data-tooltip", a.copy);
+          // Ensure positioning works correctly for the CSS tooltip
+          if (getComputedStyle(dial).position === 'static') {
+            dial.style.position = 'relative';
+          }
+        } else {
+          // If not in a .dial, put it on the input directly, but inputs don't support ::after easily.
+          // Wait, range inputs can't have ::after. Wrap it or put it on its parent.
+          if (input.parentElement && getComputedStyle(input.parentElement).position === 'static') {
+            input.parentElement.style.position = 'relative';
+          }
+          if (input.parentElement) {
+            input.parentElement.setAttribute("data-tooltip", a.copy);
+          }
+        }
+      }
+    });
+  }
       var input = document.getElementById(a.id);
       if (input && input.type === "range") {
         input.title = a.copy;
