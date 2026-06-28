@@ -238,7 +238,7 @@
       <div class="panel-card">
         <div class="dial-group">
           <h3>Demand</h3>
-          <div class="dial"><label for="flow">Monthly settlement flow <b id="flowOut">&hellip;</b></label><input id="flow" type="range" min="100000" max="50000000" step="100000" value="5000000"></div>
+          <div class="dial"><label for="flow">Monthly settlement flow <b id="flowOut">&hellip;</b></label><input id="flow" type="range" min="10000" max="50000000" step="10000" value="5000000"></div>
           <div class="dial"><label for="stake">Typical contested stake <b id="stakeOut">&hellip;</b></label><input id="stake" type="range" min="0" max="100" step="1" value="45"></div>
           <div class="dial"><label for="challenge">Share that reaches court <b id="challengeOut">&hellip;</b></label><input id="challenge" type="range" min="1" max="25" step="1" value="5"></div>
           <div class="dial"><label for="lag">Unresolved slash lag <b id="lagOut">&hellip;</b></label><input id="lag" type="range" min="1" max="8" step="1" value="4"></div>
@@ -254,12 +254,12 @@
           <div class="dial"><label for="jurors">Active jurors <b id="jurorsOut">&hellip;</b></label><input id="jurors" type="range" min="0" max="100" step="1" value="52"></div>
           <div class="dial"><label for="skill">Careful juror skill <b id="skillOut">&hellip;</b></label><input id="skill" type="range" min="52" max="88" step="1" value="68"></div>
           <div class="dial"><label for="careless">Extra wrong-rate from laziness <b id="carelessOut">&hellip;</b></label><input id="careless" type="range" min="10" max="50" step="1" value="25"></div>
-          <div class="dial"><label for="slash">Slash fraction on wrong-side vote <b id="slashOut">&hellip;</b></label><input id="slash" type="range" min="25" max="100" step="5" value="100"></div>
+          <div class="dial"><label for="slash">Slash fraction on wrong-side vote <b id="slashOut">&hellip;</b></label><input id="slash" type="range" min="25" max="100" step="1" value="100"></div>
         </div>
         <div class="dial-group">
           <h3>Attack pressure</h3>
-          <div class="dial"><label for="bloc">Coordinated humans <b id="blocOut">&hellip;</b></label><input id="bloc" type="range" min="0" max="6000" step="50" value="300"></div>
-          <div class="dial"><label for="rented">Rented credentials <b id="rentedOut">&hellip;</b></label><input id="rented" type="range" min="0" max="6000" step="50" value="0"></div>
+          <div class="dial"><label for="bloc">Coordinated humans <b id="blocOut">&hellip;</b></label><input id="bloc" type="range" min="0" max="6000" step="5" value="300"></div>
+          <div class="dial"><label for="rented">Rented credentials <b id="rentedOut">&hellip;</b></label><input id="rented" type="range" min="0" max="6000" step="5" value="0"></div>
           <div class="dial"><label for="rerolls">Panel re-roll attempts <b id="rerollsOut">&hellip;</b></label><input id="rerolls" type="range" min="1" max="100" step="1" value="1"></div>
           <div class="dial"><label for="watchCost">Cost to watch one window <b id="watchCostOut">&hellip;</b></label><input id="watchCost" type="range" min="1" max="60" step="1" value="2"></div>
           <div class="dial"><label for="falseRate">False assertion rate <b id="falseRateOut">&hellip;</b></label><input id="falseRate" type="range" min="1" max="100" step="1" value="10"></div>
