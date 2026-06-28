@@ -215,7 +215,7 @@
   }
 
     // ---- tooltips ----
-  function initTooltips() {
+  window.initTooltips = function() {
     const MAIN_COPIES = {
       flow: "The total dollar value of ordinary cases expected to arrive in court each month.",
       stake: "The typical dollar amount at risk in a contested case.",
@@ -304,7 +304,6 @@
   initReveal();
   initNav();
   initSeries();
-  initTooltips();
   initToc();
   initToTop();
 })();

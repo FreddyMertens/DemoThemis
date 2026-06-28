@@ -449,7 +449,7 @@
   var selectedAttack = "bloc";
   var pinnedAssumptions = {};
   var lastRender = { drivers: "", warnings: "", pins: "" };
-  var ASSUMPTIONS = [
+  window.ASSUMPTIONS = [
     { id: "reserveFloorVotes", category: "Reserve, supply, and laziness", label: "Reserve floor votes", min: 0, max: 3, step: .1, default: 1, low: .3, high: 2, format: "number", confidence: "modeling floor", affects: ["reserve", "lazy", "supply"], copy: "The minimum pending votes per juror we assume exist, even during low volume, for modeling purposes." },
     { id: "reserveElasticity", category: "Reserve, supply, and laziness", label: "Reserve workload elasticity", min: .6, max: 1.4, step: .05, default: 1, low: .8, high: 1.2, format: "mult", confidence: "medium", affects: ["reserve", "lazy", "bribe", "supply"], copy: "How aggressively the required reserve scales up when pending votes pile onto each retained juror." },
     { id: "lazyShortcutShare", category: "Reserve, supply, and laziness", label: "Lazy shortcut income kept", min: .1, max: 1, step: .05, default: .5, low: .25, high: .75, format: "pct", confidence: "low", affects: ["lazy"], copy: "The percentage of normal pay a lazy juror expects to earn while skipping the effort to review the case." },
