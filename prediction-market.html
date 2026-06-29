@@ -353,57 +353,58 @@
     <p>DemoThemis achieves all the features of a centralized parlay without the protocol or a "bookie" ever taking risk, using a native integration of the <b>Conditional Tokens Framework (CTF)</b>.</p>
     <p>By strictly restricting this capability to markets that have already passed the Robustness Lock, we guarantee the underlying tokens are highly liquid. This completely avoids the "ghost town" fragmentation problem that plagues other AMM-based parlay platforms.</p>
 
+    <h3>The UX problem with manual token splitting</h3>
+    <p>In a standard CTF system, building a parlay is an awful experience. To get a $100 payout on a 2-leg parlay, a user must manually deposit $100 to mint 4 exhaustive combinatorial tokens (YES/YES, YES/NO, NO/YES, NO/NO), keep the one they want, and beg the order book to buy the other 3. If there are no buyers, the user gets stuck holding "junk" tokens they never wanted.</p>
+    <p>DemoThemis solves this with <b>Atomic Routing (Fill-or-Kill)</b>. The user simply clicks "Buy Parlay" on a clean bet slip. Under the hood, a single smart contract transaction flash-borrows the money from the order book, mints the tokens, and sells the unwanted ones instantly. If there aren't enough buyers on the order book, the transaction mathematically reverts. You never get stuck holding tokens you don't want.</p>
+
     <div class="widget reveal">
-      <div class="widget-head"><span class="live"></span> Token Splitting (CTF)</div>
-      <div class="pmnarr" id="ctfNarr">Step 1: Deposit $1.00 USDC to mint exhaustive combinatorial tokens. The protocol holds exactly $1 in escrow to pay out the $1 winner. Zero bankruptcy risk.</div>
+      <div class="widget-head"><span class="live"></span> Atomic Routing (Fill-or-Kill)</div>
+      <div class="pmnarr" id="arNarr">You are the bettor. You want to place a $20 parlay on YES_A & YES_B to win $100. Watch how the smart contract abstracts the complexity.</div>
       
       <div style="display:flex; justify-content:center; margin-bottom:1.5rem">
-        <button class="btn" id="ctfDepBtn" onclick="ctfDeposit()" style="padding:1rem 2rem; font-size:1.1rem">Deposit $1.00 USDC</button>
+        <button class="btn" id="arBetBtn" onclick="arExecute()" style="padding:1rem 2rem; font-size:1.1rem; background:var(--accent-ink)">Buy Parlay for $20</button>
       </div>
 
-      <div id="ctfTokens" style="display:none; grid-template-columns:1fr 1fr; gap:1rem; font-family:var(--sans); margin-bottom:1.5rem">
-        <div class="lf-tok yes" id="tokYY"><b>YES_A & YES_B</b><small>Target Parlay</small></div>
-        <div class="lf-tok" style="opacity:0.6" id="tokYN"><b>YES_A & NO_B</b><small>Unwanted</small></div>
-        <div class="lf-tok" style="opacity:0.6" id="tokNY"><b>NO_A & YES_B</b><small>Unwanted</small></div>
-        <div class="lf-tok" style="opacity:0.6" id="tokNN"><b>NO_A & NO_B</b><small>Unwanted</small></div>
+      <div id="arUnderHood" style="display:none; flex-direction:column; gap:.8rem; font-family:var(--sans); font-size:.85rem; color:var(--ink-soft); margin-bottom:1.5rem">
+        <div class="ar-step" id="arStep1" style="padding:.8rem; border-radius:8px; border:1px solid var(--line-strong); background:var(--surface); display:none">
+          <b>1. Order Book Check:</b> Found buyers bidding exactly $80 for the unwanted permutations (YES/NO, NO/YES, NO/NO).
+        </div>
+        <div class="ar-step" id="arStep2" style="padding:.8rem; border-radius:8px; border:1px solid var(--line-strong); background:var(--surface); display:none">
+          <b>2. The Flash Borrow:</b> Contract combines your $20 with the $80 borrowed from the order book.
+        </div>
+        <div class="ar-step" id="arStep3" style="padding:.8rem; border-radius:8px; border:1px solid var(--line-strong); background:var(--surface); display:none">
+          <b>3. CTF Minting:</b> Contract deposits $100 and mints all 4 exhaustive combinatorial tokens.
+        </div>
+        <div class="ar-step" id="arStep4" style="padding:.8rem; border-radius:8px; border:1px solid var(--line-strong); background:var(--good-soft); border-color:var(--good); color:var(--good-ink); display:none">
+          <b>4. Atomic Distribution:</b> The 3 unwanted tokens instantly settle the $80 flash borrow. You receive the 1 Target Parlay token. 
+        </div>
       </div>
 
-      <div id="ctfAction" style="display:none; text-align:center; margin-bottom:1.5rem">
-        <p style="font-family:var(--sans); font-size:.9rem; color:var(--ink-soft); margin-bottom:1rem">Exactly one of these futures MUST happen. To get your parlay, keep the one you want and sell the other three on the open limit order book.</p>
-        <button class="btn" style="background:var(--accent-ink)" id="ctfSellBtn" onclick="ctfSell()">Sell the 3 unwanted tokens for $0.80</button>
-      </div>
-
-      <div class="readout" id="ctfSuccess" style="display:none; background:var(--good-soft); border-color:var(--good); color:var(--good-ink)">
-        <div style="text-align:center; padding:1rem;">
-          <div style="font-weight:700; font-size:1.1rem; margin-bottom:.5rem">Parlay Acquired! Net Cost: $0.20</div>
-          <div style="font-size:.9rem">You bought a 5x multiplier (pays $1.00 if YES/YES hits). No bookie took the risk, and you can cash out early by selling your token on the order book.</div>
+      <div class="readout" id="arSuccess" style="display:none; border-color:var(--accent); background:var(--accent-soft); color:var(--accent-ink)">
+        <div style="text-align:center; padding:1rem; font-weight:600">
+          Transaction Complete in 1 Millisecond
         </div>
       </div>
     </div>
 
     <script>
-      function ctfDeposit() {
-        document.getElementById('ctfDepBtn').style.display = 'none';
-        document.getElementById('ctfTokens').style.display = 'grid';
-        document.getElementById('ctfAction').style.display = 'block';
-        document.getElementById('ctfNarr').textContent = "Step 2: Four tokens minted. Because exactly one token will eventually redeem for $1.00, the protocol is fully collateralized.";
-      }
-      function ctfSell() {
-        document.getElementById('ctfSellBtn').style.display = 'none';
-        document.getElementById('ctfAction').style.display = 'none';
-        document.getElementById('tokYN').style.display = 'none';
-        document.getElementById('tokNY').style.display = 'none';
-        document.getElementById('tokNN').style.display = 'none';
-        document.getElementById('tokYY').style.gridColumn = "1 / -1";
-        document.getElementById('tokYY').style.background = "var(--good)";
-        document.getElementById('tokYY').style.color = "#fff";
-        document.getElementById('tokYY').innerHTML = "<b>YES_A & YES_B</b><small style='color:#fff;opacity:.9'>Your 5x Parlay Ticket</small>";
+      function arExecute() {
+        document.getElementById('arBetBtn').disabled = true;
+        document.getElementById('arBetBtn').style.opacity = '0.5';
+        document.getElementById('arUnderHood').style.display = 'flex';
+        document.getElementById('arNarr').textContent = "Under the hood, a single atomic transaction handles the flash-borrow and token splitting instantly.";
         
-        document.getElementById('ctfSuccess').style.display = 'block';
-        document.getElementById('ctfNarr').textContent = "Step 3: Peer-to-peer trading creates the parlay. The 'live odds' are simply the order book's price.";
+        setTimeout(function() { document.getElementById('arStep1').style.display = 'block'; }, 600);
+        setTimeout(function() { document.getElementById('arStep2').style.display = 'block'; }, 1600);
+        setTimeout(function() { document.getElementById('arStep3').style.display = 'block'; }, 2600);
+        setTimeout(function() { 
+          document.getElementById('arStep4').style.display = 'block'; 
+          document.getElementById('arSuccess').style.display = 'block';
+          document.getElementById('arNarr').textContent = "The bettor gets a seamless DraftKings-style UX, while the protocol guarantees 100% collateralization with zero bankruptcy risk.";
+        }, 3600);
       }
     </script>
-    <p>By leveraging token splitting, DemoThemis acts as an incorruptible escrow rather than a casino. The <b>Live Odds</b> of the parlay are simply the current bids on the limit order book for the combinatorial token. To <b>Cash Out Early</b>, bettors do not ask the house for a buyout; they simply dump their token into the open order book to the highest bidder.</p>
+    <p>By leveraging atomic routing, DemoThemis acts as an incorruptible escrow rather than a casino. The <b>Live Odds</b> of the parlay are simply the current bids on the limit order book for the combinatorial token. To <b>Cash Out Early</b>, bettors do not ask the house for a buyout; they simply dump their token into the open order book to the highest bidder.</p>
   </section>
 
   <section class="reveal">
