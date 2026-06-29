@@ -113,7 +113,8 @@
   .assumption-actions button:hover, .assumption-row button:hover { color: var(--accent-ink); background: var(--accent-soft); }
   .assumption-pins { display: grid; gap: .4rem; padding: 0 .9rem .85rem; }
   .assumption-pin { display: flex; justify-content: space-between; gap: .6rem; border: 1px solid var(--line); border-radius: 10px; background: var(--surface); padding: .5rem .6rem; font-size: .74rem; color: var(--muted); }
-  .assumption-groups { display: grid; grid-template-columns: repeat(auto-fit, minmax(20rem, 1fr)); gap: 1.5rem; padding: 0 1.5rem 1.5rem; }
+  .assumption-groups { display: grid; grid-template-columns: repeat(auto-fit, minmax(18rem, 1fr)); gap: 1.5rem; padding: 0 1.5rem 1.5rem; }
+  @media (max-width: 720px) { .assumption-groups { grid-template-columns: 1fr; padding: 0 .9rem .9rem; gap: 1rem; } }
   .assumption-group { border-top: 1px solid var(--line); padding-top: .7rem; }
   .assumption-group h4 { margin: 0 0 .5rem; font-size: .78rem; letter-spacing: .08em; text-transform: uppercase; color: var(--accent); }
   .assumption-row { display: grid; grid-template-columns: minmax(0, 1fr); gap: .35rem; padding: .65rem 0; border-bottom: 1px solid var(--line); }
@@ -154,7 +155,7 @@
   .lab-grid.vulnerable { box-shadow: 0 0 0 2px color-mix(in srgb, var(--bad) 30%, transparent); border-radius: var(--radius); }
   .lab-grid.resistant { box-shadow: 0 0 0 2px color-mix(in srgb, var(--good) 25%, transparent); border-radius: var(--radius); }
   
-  .info-icon { display: inline-flex; align-items: center; justify-content: center; cursor: help; margin-left: .35rem; color: var(--muted); opacity: 0.6; transition: opacity 0.2s ease, color 0.2s ease; vertical-align: -0.125em; }
+  .info-icon { display: inline-flex; align-items: center; justify-content: center; cursor: pointer; padding: 10px; margin: -10px -10px -10px -2px; color: var(--muted); opacity: 0.6; transition: opacity 0.2s ease, color 0.2s ease; vertical-align: -0.125em; position: relative; z-index: 10; }
   .info-icon:hover { opacity: 1; color: var(--ink); }
   .info-icon svg { width: 15px; height: 15px; }
   .node p { display: none; } /* Hide old paragraph explanations since we moved them to tooltips */
