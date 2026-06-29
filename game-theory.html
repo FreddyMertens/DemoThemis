@@ -1190,10 +1190,6 @@
     update();
   }
   
-    card.addEventListener("keydown", function (e) {
-      if (e.key === "Enter" || e.key === " " || e.key === "Spacebar") { e.preventDefault(); selectAttack(card); }
-    });
-  });
   update();
   if (typeof window.initTooltips === 'function') window.initTooltips();
 })();
