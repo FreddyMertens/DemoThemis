@@ -255,9 +255,18 @@
         var icon = document.createElement("span");
         icon.className = "info-icon";
         icon.setAttribute("data-tooltip", a.copy);
-        icon.innerHTML = `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"></circle><path d="M12 16v-4"></path><path d="M12 8h.01"></path></svg>`;
+        icon.innerHTML = \`<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"></circle><path d="M12 16v-4"></path><path d="M12 8h.01"></path></svg>\`;
+        
         var b = label.querySelector("b") || label.querySelector("output");
-        if (b) {
+        
+        // Group the text node and the icon so they sit together on the left side of the flex container
+        if (b && label.childNodes.length > 0 && label.childNodes[0].nodeType === 3) {
+          var wrapper = document.createElement("span");
+          wrapper.className = "label-text";
+          wrapper.appendChild(label.childNodes[0].cloneNode(true));
+          wrapper.appendChild(icon);
+          label.replaceChild(wrapper, label.childNodes[0]);
+        } else if (b) {
           label.insertBefore(icon, b);
         } else {
           label.appendChild(icon);
