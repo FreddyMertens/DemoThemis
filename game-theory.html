@@ -267,6 +267,7 @@
           <div class="dial"><label for="skill">Careful juror skill <b id="skillOut">&hellip;</b></label><input id="skill" type="range" min="52" max="88" step="1" value="68"></div>
           <div class="dial"><label for="careless">Extra wrong-rate from laziness <b id="carelessOut">&hellip;</b></label><input id="careless" type="range" min="10" max="50" step="1" value="20"></div>
           <div class="dial"><label for="slash">Slash fraction on wrong-side vote <b id="slashOut">&hellip;</b></label><input id="slash" type="range" min="25" max="100" step="1" value="100"></div>
+          <div class="dial"><label for="syntheticTests">Synthetic test cases <b id="syntheticTestsOut">&hellip;</b></label><input id="syntheticTests" type="range" min="0" max="1000" step="10" value="0"></div>
         </div>
         <div class="dial-group">
           <h3>Attack pressure</h3>
@@ -450,7 +451,7 @@
 (function () {
   "use strict";
   function byId(id) { return document.getElementById(id); }
-  var ids = ["flow", "stake", "challenge", "lag", "fee", "payShare", "rewardShare", "jurors", "skill", "careless", "slash", "bloc", "rented", "rerolls", "watchCost", "falseRate"];
+  var ids = ["flow", "stake", "challenge", "lag", "fee", "payShare", "rewardShare", "jurors", "skill", "careless", "slash", "syntheticTests", "bloc", "rented", "rerolls", "watchCost", "falseRate"];
   var lockIds = ["lockDraw", "lockBallot", "lockFace", "lockReserve", "lockKeys", "lockWatch", "lockAppeal"];
   var selectedAttack = "bloc";
   var pinnedAssumptions = {};
@@ -748,6 +749,7 @@
     v.rewardShare = v.rewardShare / 100;
     v.opsShare = Math.max(0, 1 - v.payShare - v.rewardShare);
     v.jurors = Math.round(span(v.jurors, 100, 80000));
+    v.syntheticTests = parseInt(byId("syntheticTests").value, 10);
     v.skill = v.skill / 100;
     v.careless = v.careless / 100;
     v.slash = v.slash / 100;
@@ -816,7 +818,7 @@
     var watchedQuietCases = quietCases * (v.lockWatch ? caughtFalseAssertion : 0);
     var publicKeys = watchedQuietCases * a.keyUsableShare;
     var consentedTests = courtCases * a.consentedTestShare;
-    var keys = v.lockKeys ? publicKeys + consentedTests : 0;
+    var keys = v.lockKeys ? publicKeys + consentedTests + v.syntheticTests : 0;
     var keyScale = Math.max(a.keyScaleFloor, effectiveJurors * a.keyJurorShare);
     var keySignal = v.lockKeys ? 1 - Math.exp(-keys / Math.max(0.1, keyScale)) : 0;
     var effectiveSkill = clamp(v.skill + (keySignal * a.reputationSkillLift) + (supply.rewardSignal * a.rewardSkillLift), 0, 1);
@@ -917,6 +919,7 @@
       watchedQuietCases: watchedQuietCases,
       publicKeys: publicKeys,
       consentedTests: consentedTests,
+      syntheticTests: v.syntheticTests,
       keys: keys,
       keyScale: keyScale,
       keySignal: keySignal,
@@ -943,6 +946,7 @@
     byId("skillOut").textContent = pct(v.skill);
     byId("carelessOut").textContent = pct(v.careless);
     byId("slashOut").textContent = pct(v.slash);
+    byId("syntheticTestsOut").textContent = num(v.syntheticTests);
     byId("blocOut").textContent = num(v.bloc);
     byId("rentedOut").textContent = num(v.rented);
     byId("rerollsOut").textContent = v.rerolls;
@@ -970,7 +974,7 @@
     byId("nodePoolV").innerHTML = `<div class="node-val">${num(m.drawJurors)} <small>drawable</small></div><div class="node-sub">out of <b>${num(m.effectiveJurors)}</b> retained</div>`;
     byId("nodePanelV").innerHTML = `<div class="node-val">${pct(m.honestPanel)} <small>honest majority</small></div><div class="node-sub">across <b>${m.panel}</b> drawn seats${m.parallelPanels > 1 ? " &times; " + m.parallelPanels : ""}</div>`;
     byId("nodeWatchV").innerHTML = `<div class="node-val">${pct(m.caughtFalseAssertion)} <small>catch rate</small></div><div class="node-sub">driven by <b>${m.watcherEVRatio.toFixed(2)}&times;</b> watcher EV</div>`;
-    byId("nodeKeysV").innerHTML = `<div class="node-val">${num(m.keys)} <small>usable keys</small></div><div class="node-sub">from <b>${num(m.publicKeys)}</b> public &amp; <b>${num(m.consentedTests)}</b> test</div>`;
+    byId("nodeKeysV").innerHTML = `<div class="node-val">${num(m.keys)} <small>usable keys</small></div><div class="node-sub">from <b>${num(m.publicKeys)}</b> pub, <b>${num(m.consentedTests)}</b> consent, <b>${num(m.syntheticTests)}</b> synth</div>`;
 
     nodeClass(byId("nodeDemand"), m.courtCases > 1 ? "good" : "mid");
     nodeClass(byId("nodeFees"), m.rewardSignal > .35 ? "good" : "mid");
@@ -999,7 +1003,7 @@
     setAttack("lazy", m.risks.lazy, m.clears.lazy, lazyText);
     setAttack("assertion", m.risks.assertion, m.clears.assertion, v.lockWatch ? "False assertions are expected about " + num(m.expectedFalseAssertions) + " times/month; watcher EV is " + m.watcherEVRatio.toFixed(2) + "× cost and capacity covers " + pct(m.watcherCapacityCoverage) + " of windows." : "No paid watchers means sleeping markets become cheap targets.");
     setAttack("grief", m.risks.grief, m.griefClears, v.lockAppeal ? "The next rung costs " + money(m.appealFloor) + ", versus delay value around " + money(m.griefBenefit) + "." : "Without the priced ladder, retrying is cheaper than the delay it buys.");
-    setAttack("drift", m.risks.drift, m.clears.drift, v.lockKeys ? num(m.publicKeys) + " curated public keys plus " + num(m.consentedTests) + " consented tests feed scoring; drift signal is " + pct(m.keySignal) + "." : "With no answer keys, agreement can look like accuracy while the pool drifts.");
+    setAttack("drift", m.risks.drift, m.clears.drift, v.lockKeys ? num(m.publicKeys) + " curated public keys, " + num(m.consentedTests) + " consented tests, and " + num(m.syntheticTests) + " synthetic tests feed scoring; drift signal is " + pct(m.keySignal) + "." : "With no answer keys, agreement can look like accuracy while the pool drifts.");
   }
 
   function setRanks(m) {
