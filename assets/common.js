@@ -285,6 +285,18 @@
         }
       }
     });
+
+    if (typeof tippy !== 'undefined') {
+      tippy('[data-tooltip]', {
+        content(reference) {
+          return reference.getAttribute('data-tooltip');
+        },
+        theme: 'demothemis',
+        animation: 'shift-away',
+        placement: 'top',
+        maxWidth: 250,
+      });
+    }
   }
 
   // ---- back to top ----

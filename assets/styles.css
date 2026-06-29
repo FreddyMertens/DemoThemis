@@ -474,3 +474,31 @@ a { transition: color .15s ease, text-decoration-color .15s ease; }
 /* nav: clearer current page + smoother hover */
 .nav-links a, .nav-group-btn { transition: color .15s ease, background .15s ease; }
 .nav-links a.active { background: var(--accent-soft); }
+
+
+/* Tippy.js DemoThemis Theme */
+.tippy-box[data-theme~='demothemis'] {
+  background-color: var(--ink, #1a1a1c);
+  color: #fff;
+  border-radius: 6px;
+  font-family: var(--sans, Inter, sans-serif);
+  font-size: 0.75rem;
+  font-weight: 500;
+  line-height: 1.4;
+  padding: 0.3rem 0.2rem;
+  text-align: center;
+  box-shadow: 0 4px 12px rgba(0,0,0,0.25);
+  border: 1px solid rgba(255,255,255,0.1);
+}
+.tippy-box[data-theme~='demothemis'][data-placement^='top'] > .tippy-arrow::before {
+  border-top-color: var(--ink, #1a1a1c);
+}
+.tippy-box[data-theme~='demothemis'][data-placement^='bottom'] > .tippy-arrow::before {
+  border-bottom-color: var(--ink, #1a1a1c);
+}
+.tippy-box[data-theme~='demothemis'][data-placement^='left'] > .tippy-arrow::before {
+  border-left-color: var(--ink, #1a1a1c);
+}
+.tippy-box[data-theme~='demothemis'][data-placement^='right'] > .tippy-arrow::before {
+  border-right-color: var(--ink, #1a1a1c);
+}
