@@ -347,6 +347,66 @@
   </section>
 
   <section class="reveal">
+    <p class="sec-label">Composability</p>
+    <h2>DraftKings parlays, mathematically pure</h2>
+    <p>Bettors love the centralized bookie experience: live fixed odds, concurrent parlays, and early cashouts. But if a decentralized protocol acts as the bookie to quote you a price on a combination of events, it is highly vulnerable to insider knowledge and bankruptcy.</p>
+    <p>DemoThemis achieves all the features of a centralized parlay without the protocol or a "bookie" ever taking risk, using a native integration of the <b>Conditional Tokens Framework (CTF)</b>.</p>
+    <p>By strictly restricting this capability to markets that have already passed the Robustness Lock, we guarantee the underlying tokens are highly liquid. This completely avoids the "ghost town" fragmentation problem that plagues other AMM-based parlay platforms.</p>
+
+    <div class="widget reveal">
+      <div class="widget-head"><span class="live"></span> Token Splitting (CTF)</div>
+      <div class="pmnarr" id="ctfNarr">Step 1: Deposit $1.00 USDC to mint exhaustive combinatorial tokens. The protocol holds exactly $1 in escrow to pay out the $1 winner. Zero bankruptcy risk.</div>
+      
+      <div style="display:flex; justify-content:center; margin-bottom:1.5rem">
+        <button class="btn" id="ctfDepBtn" onclick="ctfDeposit()" style="padding:1rem 2rem; font-size:1.1rem">Deposit $1.00 USDC</button>
+      </div>
+
+      <div id="ctfTokens" style="display:none; grid-template-columns:1fr 1fr; gap:1rem; font-family:var(--sans); margin-bottom:1.5rem">
+        <div class="lf-tok yes" id="tokYY"><b>YES_A & YES_B</b><small>Target Parlay</small></div>
+        <div class="lf-tok" style="opacity:0.6" id="tokYN"><b>YES_A & NO_B</b><small>Unwanted</small></div>
+        <div class="lf-tok" style="opacity:0.6" id="tokNY"><b>NO_A & YES_B</b><small>Unwanted</small></div>
+        <div class="lf-tok" style="opacity:0.6" id="tokNN"><b>NO_A & NO_B</b><small>Unwanted</small></div>
+      </div>
+
+      <div id="ctfAction" style="display:none; text-align:center; margin-bottom:1.5rem">
+        <p style="font-family:var(--sans); font-size:.9rem; color:var(--ink-soft); margin-bottom:1rem">Exactly one of these futures MUST happen. To get your parlay, keep the one you want and sell the other three on the open limit order book.</p>
+        <button class="btn" style="background:var(--accent-ink)" id="ctfSellBtn" onclick="ctfSell()">Sell the 3 unwanted tokens for $0.80</button>
+      </div>
+
+      <div class="readout" id="ctfSuccess" style="display:none; background:var(--good-soft); border-color:var(--good); color:var(--good-ink)">
+        <div style="text-align:center; padding:1rem;">
+          <div style="font-weight:700; font-size:1.1rem; margin-bottom:.5rem">Parlay Acquired! Net Cost: $0.20</div>
+          <div style="font-size:.9rem">You bought a 5x multiplier (pays $1.00 if YES/YES hits). No bookie took the risk, and you can cash out early by selling your token on the order book.</div>
+        </div>
+      </div>
+    </div>
+
+    <script>
+      function ctfDeposit() {
+        document.getElementById('ctfDepBtn').style.display = 'none';
+        document.getElementById('ctfTokens').style.display = 'grid';
+        document.getElementById('ctfAction').style.display = 'block';
+        document.getElementById('ctfNarr').textContent = "Step 2: Four tokens minted. Because exactly one token will eventually redeem for $1.00, the protocol is fully collateralized.";
+      }
+      function ctfSell() {
+        document.getElementById('ctfSellBtn').style.display = 'none';
+        document.getElementById('ctfAction').style.display = 'none';
+        document.getElementById('tokYN').style.display = 'none';
+        document.getElementById('tokNY').style.display = 'none';
+        document.getElementById('tokNN').style.display = 'none';
+        document.getElementById('tokYY').style.gridColumn = "1 / -1";
+        document.getElementById('tokYY').style.background = "var(--good)";
+        document.getElementById('tokYY').style.color = "#fff";
+        document.getElementById('tokYY').innerHTML = "<b>YES_A & YES_B</b><small style='color:#fff;opacity:.9'>Your 5x Parlay Ticket</small>";
+        
+        document.getElementById('ctfSuccess').style.display = 'block';
+        document.getElementById('ctfNarr').textContent = "Step 3: Peer-to-peer trading creates the parlay. The 'live odds' are simply the order book's price.";
+      }
+    </script>
+    <p>By leveraging token splitting, DemoThemis acts as an incorruptible escrow rather than a casino. The <b>Live Odds</b> of the parlay are simply the current bids on the limit order book for the combinatorial token. To <b>Cash Out Early</b>, bettors do not ask the house for a buyout; they simply dump their token into the open order book to the highest bidder.</p>
+  </section>
+
+  <section class="reveal">
     <p class="sec-label">The private room</p>
     <h2>Markets behind an invitation</h2>
     <p>Everything so far has been public: a pool anyone can join, a book anyone can trade. The fourth feature is a room. A private, invite-only market where you set the odds yourself and they never move.</p>
