@@ -74,6 +74,8 @@
   .node-stat { display: flex; align-items: baseline; gap: .4rem; line-height: 1.2; }
   .node-stat .val { font-family: var(--mono); font-size: .98rem; font-weight: 700; color: var(--accent-ink); font-variant-numeric: tabular-nums; }
   .node-stat .lbl { font-family: var(--sans); font-size: .75rem; color: var(--muted); }
+  .node-rel { font-family: var(--sans); font-size: .62rem; color: var(--faint); text-transform: uppercase; letter-spacing: .08em; margin: 0 0 0 .5rem; font-weight: 800; display: flex; align-items: center; gap: .25rem; }
+  .node-rel::before { content: "\\21b3"; font-family: var(--mono); font-size: .8rem; font-weight: 400; line-height: 0; position: relative; top: -.05rem; }
   .node.good { border-color: color-mix(in srgb, var(--good) 35%, var(--line)); }
   .node.bad { border-color: color-mix(in srgb, var(--bad) 40%, var(--line)); }
   .node.mid { border-color: #e4bd7c; }
@@ -965,13 +967,13 @@
     byId("captureSub").textContent = captureBasis + (m.parallelPanels > 1 ? "; " + m.parallelPanels + " parallel panels" : "") + "; finite draw estimate";
 
     byId("nodeDemandV").innerHTML = `<div class="node-stat"><span class="val">${num(m.courtCases)}</span> <span class="lbl">court cases / mo</span></div>`;
-    byId("nodeFeesV").innerHTML = `<div class="node-stat"><span class="val">${money(m.feeRevenue)}</span> <span class="lbl">fees</span></div><div class="node-stat"><span class="val">${money(m.rewardPool)}</span> <span class="lbl">rewards</span></div>`;
-    byId("nodePayV").innerHTML = `<div class="node-stat"><span class="val">${money(m.payPerVote)}</span> <span class="lbl">per vote</span></div><div class="node-stat"><span class="val">${money(m.rewardPerJuror)}</span> <span class="lbl">reward/juror</span></div>`;
-    byId("nodeReserveV").innerHTML = v.lockReserve ? `<div class="node-stat"><span class="val">${money(m.reserve)}</span> <span class="lbl">live</span></div><div class="node-stat"><span class="val">${m.reserveBurden.toFixed(1)}×</span> <span class="lbl">burden</span></div>` : `<div class="node-stat"><span class="val">disabled</span></div>`;
-    byId("nodePoolV").innerHTML = `<div class="node-stat"><span class="val">${num(m.effectiveJurors)}</span> <span class="lbl">retained</span></div><div class="node-stat"><span class="val">${num(m.drawJurors)}</span> <span class="lbl">drawable</span></div>`;
-    byId("nodePanelV").innerHTML = `<div class="node-stat"><span class="val">${m.panel}</span> <span class="lbl">seats${m.parallelPanels > 1 ? " × " + m.parallelPanels : ""}</span></div><div class="node-stat"><span class="val">${pct(m.honestPanel)}</span> <span class="lbl">honest-majority</span></div>`;
-    byId("nodeWatchV").innerHTML = `<div class="node-stat"><span class="val">${pct(m.caughtFalseAssertion)}</span> <span class="lbl">catch rate</span></div><div class="node-stat"><span class="val">${m.watcherEVRatio.toFixed(2)}×</span> <span class="lbl">watcher EV</span></div>`;
-    byId("nodeKeysV").innerHTML = `<div class="node-stat"><span class="val">${num(m.keys)}</span> <span class="lbl">usable keys</span></div><div class="node-stat"><span class="val">${num(m.publicKeys)} + ${num(m.consentedTests)}</span> <span class="lbl">public + tests</span></div>`;
+    byId("nodeFeesV").innerHTML = `<div class="node-stat"><span class="val">${money(m.feeRevenue)}</span> <span class="lbl">total fees</span></div><div class="node-rel">funding</div><div class="node-stat"><span class="val">${money(m.rewardPool)}</span> <span class="lbl">rewards</span></div>`;
+    byId("nodePayV").innerHTML = `<div class="node-stat"><span class="val">${money(m.payPerVote)}</span> <span class="lbl">per vote</span></div><div class="node-rel">plus</div><div class="node-stat"><span class="val">${money(m.rewardPerJuror)}</span> <span class="lbl">reward/juror</span></div>`;
+    byId("nodeReserveV").innerHTML = v.lockReserve ? `<div class="node-stat"><span class="val">${money(m.reserve)}</span> <span class="lbl">withheld live</span></div><div class="node-rel">causing</div><div class="node-stat"><span class="val">${m.reserveBurden.toFixed(1)}×</span> <span class="lbl">burden</span></div>` : `<div class="node-stat"><span class="val">disabled</span></div>`;
+    byId("nodePoolV").innerHTML = `<div class="node-stat"><span class="val">${num(m.effectiveJurors)}</span> <span class="lbl">retained</span></div><div class="node-rel">yielding</div><div class="node-stat"><span class="val">${num(m.drawJurors)}</span> <span class="lbl">drawable</span></div>`;
+    byId("nodePanelV").innerHTML = `<div class="node-stat"><span class="val">${m.panel}</span> <span class="lbl">seats${m.parallelPanels > 1 ? " × " + m.parallelPanels : ""}</span></div><div class="node-rel">having</div><div class="node-stat"><span class="val">${pct(m.honestPanel)}</span> <span class="lbl">honest-majority</span></div>`;
+    byId("nodeWatchV").innerHTML = `<div class="node-stat"><span class="val">${m.watcherEVRatio.toFixed(2)}×</span> <span class="lbl">watcher EV</span></div><div class="node-rel">yielding</div><div class="node-stat"><span class="val">${pct(m.caughtFalseAssertion)}</span> <span class="lbl">catch rate</span></div>`;
+    byId("nodeKeysV").innerHTML = `<div class="node-stat"><span class="val">${num(m.publicKeys)} + ${num(m.consentedTests)}</span> <span class="lbl">public + tests</span></div><div class="node-rel">yielding</div><div class="node-stat"><span class="val">${num(m.keys)}</span> <span class="lbl">usable keys</span></div>`;
 
     nodeClass(byId("nodeDemand"), m.courtCases > 1 ? "good" : "mid");
     nodeClass(byId("nodeFees"), m.rewardSignal > .35 ? "good" : "mid");
