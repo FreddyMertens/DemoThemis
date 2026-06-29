@@ -270,7 +270,7 @@
         </div>
         <div class="dial-group">
           <h3>Attack pressure</h3>
-          <div class="dial"><label for="bloc">Coordinated humans <b id="blocOut">&hellip;</b></label><input id="bloc" type="range" min="0" max="6000" step="5" value="10"></div>
+          <div class="dial"><label for="bloc">Coordinated humans <b id="blocOut">&hellip;</b></label><input id="bloc" type="range" min="0" max="2000" step="5" value="10"></div>
           <div class="dial"><label for="rented">Rented credentials <b id="rentedOut">&hellip;</b></label><input id="rented" type="range" min="0" max="6000" step="5" value="0"></div>
           <div class="dial"><label for="rerolls">Panel re-roll attempts <b id="rerollsOut">&hellip;</b></label><input id="rerolls" type="range" min="1" max="100" step="1" value="1"></div>
           <div class="dial"><label for="watchCost">Cost to watch one window <b id="watchCostOut">&hellip;</b></label><input id="watchCost" type="range" min="1" max="60" step="1" value="1"></div>
@@ -842,7 +842,7 @@
     var assertionRisk = clamp(falseEscape * v.falseRate * a.assertionImpactScale * (1 - v.challenge), 0, 1);
     var griefRisk = griefClears ? .75 : .06;
     var captureRisk = clamp(capture, 0, 1);
-    var clears = { capture: panelShortage || capture > .35, bribe: bribeClears, rental: rentalRisk > .25, lazy: lazyClears, assertion: assertionRisk > .5, grief: griefClears, drift: keySignal < .25 };
+    var clears = { capture: panelShortage || capture > .20, bribe: bribeClears, rental: rentalRisk > .25, lazy: lazyClears, assertion: assertionRisk > .5, grief: griefClears, drift: keySignal < .25 };
     var risks = { capture: captureRisk, bribe: bribeRisk, rental: rentalRisk, lazy: lazyRisk, assertion: assertionRisk, grief: griefRisk, drift: driftRisk };
     var clearSeverity = 0;
     Object.keys(clears).forEach(function (k) { if (clears[k]) clearSeverity = Math.max(clearSeverity, risks[k]); });
