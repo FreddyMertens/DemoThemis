@@ -149,8 +149,7 @@
     <style>
       .lf-offer { background: var(--accent-soft); border: 1px solid var(--accent); border-radius: 10px; padding: .6rem .8rem; font-family: var(--sans); font-size: .84rem; color: var(--accent-ink); font-weight: 600; margin-bottom: .9rem; display: none; }
       .lf-offer small { display: block; font-weight: 400; color: var(--muted); }
-      .lf-prog { height: 26px; border-radius: 8px; background: var(--line); border: 1px solid var(--line-strong); overflow: hidden; margin: .2rem 0 .15rem; }
-      .lf-prog > span { display: block; height: 100%; width: 0%; background: linear-gradient(90deg, var(--accent), var(--accent-ink)); transition: width .3s ease; }
+      .lf-prog { display: flex; gap: 1rem; font-family: var(--sans); font-size: .8rem; color: var(--muted); margin: 1rem 0 .5rem; }
       .lf-k { font-family: var(--sans); font-size: .8rem; color: var(--faint); margin-bottom: 1rem; }
       .lf-tokens { display: none; grid-template-columns: 1fr 1fr 1.4fr; gap: .8rem; font-family: var(--sans); margin-bottom: 1rem; }
       @media (max-width: 640px) { .lf-tokens { grid-template-columns: 1fr; } }
@@ -193,9 +192,12 @@
         <div class="stat"><div class="k">Pot</div><div class="v" id="lfPot">$0.10</div></div>
         <div class="stat"><div class="k">Matched at locked odds</div><div class="v" id="lfLocked">$0</div></div>
       </div>
-      <div class="lf-prog" style="margin-top:1rem"><span id="lfProg"></span></div>
-      <p class="lf-k" id="lfProgK">Volume toward tokenization: $0 of $600 (demo threshold; the live one is set by governance).</p>
-      <p style="font-family:var(--sans);font-size:.86rem;color:var(--faint);margin:0">Post the offer while the pool leans YES and watch routing work: your next YES bet fills at the locked 70 cents first, and only the overflow rides the ratio. Cross the volume bar and the pool grows up on the spot: claims tokenize, the book opens, and nothing about your position changes except how much you can now do with it.</p>
+      <div class="lf-prog" id="lfProg">
+        <div id="chkDis">&#10007; Disagreement Floor</div>
+        <div id="chkMak">&#10007; Maker Depth</div>
+        <div id="chkTim">&#10007; Time Lock</div>
+      </div>
+      <p style="font-family:var(--sans);font-size:.86rem;color:var(--faint);margin:0">Post the offer while the pool leans YES and watch routing work: your next YES bet fills at the locked 70 cents first, and only the overflow rides the ratio. Meet the <b>robustness thresholds</b> and the pool grows up on the spot: claims tokenize, the book opens, and nothing about your position changes except how much you can now do with it.</p>
     </div>
 
     <p>Graduation stops being a phase switch under this rule. The order book that opens at tokenization is not a new market bolted on; it grows out of offers that were standing there from the first hour, now trading tokens instead of escrow slots.</p>
@@ -204,7 +206,112 @@
   <section class="reveal">
     <p class="sec-label">Adulthood</p>
     <h2>Growing up into tokens</h2>
-    <p>Past a volume threshold, a pool grows up. Its claims tokenize into plain YES and NO tokens that land in your own wallet, and an order book opens beside the pool for the professionals: people who want to lock in a price, hedge a book, or trade in and out before resolution, pricing their own risk instead of riding the ratio.</p>
+    <p>An arbitrary volume threshold (like $100,000 total volume) is lazy game theory. A whale could wash-trade both sides of a market just to force it to tokenize, or dump massive capital on a "sure thing" to trigger an order book that opens completely empty.</p>
+    <p>To prevent manipulation, DemoThemis uses a <b>Robustness Strategy</b>. A pool only graduates when it mathematically proves it can sustain an active limit order book by passing three simultaneous checks:</p>
+
+    <div class="widget reveal">
+      <div class="widget-head"><span class="live"></span> The Robustness Lock</div>
+      <div class="pmnarr" id="robNarr">Adjust the market conditions to unlock tokenization.</div>
+      
+      <div style="display:grid; gap:.8rem; font-family:var(--sans); margin-bottom:1rem;">
+        <div style="padding:1rem; border:1px solid var(--line-strong); border-radius:10px; background:var(--surface)">
+          <div style="display:flex; justify-content:space-between; margin-bottom:.5rem; font-size:.9rem; font-weight:600; color:var(--ink)">
+            <span><span class="ic">&#127919;</span> Disagreement Floor</span>
+            <span id="robDisStat" style="color:var(--bad)">&#10007; min(YES, NO) &gt; $5k</span>
+          </div>
+          <p style="font-size:.8rem; color:var(--muted); margin:0 0 .8rem 0">Prevents a lopsided dump on a "sure thing" from triggering an empty order book.</p>
+          <div style="display:flex; gap:.5rem">
+            <button class="btn" onclick="robBet('yes', 2000)">+ $2k YES</button>
+            <button class="btn no" onclick="robBet('no', 2000)">+ $2k NO</button>
+          </div>
+          <div style="margin-top:.8rem; font-size:.8rem; font-weight:600; color:var(--ink-soft)">
+            YES Vol: <span id="robYesVol" style="color:var(--good)">$0</span> &nbsp;&middot;&nbsp; NO Vol: <span id="robNoVol" style="color:var(--bad)">$0</span>
+          </div>
+        </div>
+
+        <div style="padding:1rem; border:1px solid var(--line-strong); border-radius:10px; background:var(--surface)">
+          <div style="display:flex; justify-content:space-between; margin-bottom:.5rem; font-size:.9rem; font-weight:600; color:var(--ink)">
+            <span><span class="ic">&#128202;</span> Maker Depth</span>
+            <span id="robMakStat" style="color:var(--bad)">&#10007; Standing Offers &gt; $1k</span>
+          </div>
+          <p style="font-size:.8rem; color:var(--muted); margin:0 0 .8rem 0">Ensures the order book will have immediate liquidity when it opens.</p>
+          <div style="display:flex; gap:.5rem">
+            <button class="btn" style="background:var(--accent-ink)" onclick="robOffer(500)">Post $500 Offer</button>
+          </div>
+          <div style="margin-top:.8rem; font-size:.8rem; font-weight:600; color:var(--ink-soft)">
+            Standing Offers: <span id="robMakVol" style="color:var(--accent)">$0</span>
+          </div>
+        </div>
+
+        <div style="padding:1rem; border:1px solid var(--line-strong); border-radius:10px; background:var(--surface)">
+          <div style="display:flex; justify-content:space-between; margin-bottom:.5rem; font-size:.9rem; font-weight:600; color:var(--ink)">
+            <span><span class="ic">&#8987;</span> Time-Weighted Lock</span>
+            <span id="robTimStat" style="color:var(--bad)">&#10007; Hold for 24 Hours</span>
+          </div>
+          <p style="font-size:.8rem; color:var(--muted); margin:0 0 .8rem 0">Exposes fake whale liquidity to the public so arbitrageurs can snipe it before graduation.</p>
+          <div style="display:flex; gap:.5rem">
+            <button class="btn ghost" id="robTimeBtn" disabled onclick="robTime()">Advance 24 Hours</button>
+          </div>
+        </div>
+      </div>
+
+      <div class="readout" id="robSuccess" style="display:none; background:var(--good-soft); border-color:var(--good); color:var(--good-ink)">
+        <div style="text-align:center; padding:1rem; font-weight:700; font-size:1.1rem">
+          Market Tokenized & Order Book Opened!
+        </div>
+      </div>
+    </div>
+    
+    <script>
+      let rYes = 0, rNo = 0, rMak = 0, rDisMet = false, rMakMet = false, rDone = false;
+      function robUpdate() {
+        if(rDone) return;
+        document.getElementById('robYesVol').textContent = '$' + (rYes/1000).toFixed(0) + 'k';
+        document.getElementById('robNoVol').textContent = '$' + (rNo/1000).toFixed(0) + 'k';
+        document.getElementById('robMakVol').textContent = '$' + (rMak/1000).toFixed(1) + 'k';
+        
+        rDisMet = Math.min(rYes, rNo) >= 5000;
+        let disStat = document.getElementById('robDisStat');
+        disStat.innerHTML = rDisMet ? '&#10003; Passed' : '&#10007; min(YES, NO) &gt; $5k';
+        disStat.style.color = rDisMet ? 'var(--good)' : 'var(--bad)';
+        
+        rMakMet = rMak >= 1000;
+        let makStat = document.getElementById('robMakStat');
+        makStat.innerHTML = rMakMet ? '&#10003; Passed' : '&#10007; Standing Offers &gt; $1k';
+        makStat.style.color = rMakMet ? 'var(--good)' : 'var(--bad)';
+        
+        let tBtn = document.getElementById('robTimeBtn');
+        if (rDisMet && rMakMet) {
+          tBtn.disabled = false;
+          tBtn.style.background = 'var(--accent)';
+          tBtn.style.color = '#fff';
+        } else {
+          tBtn.disabled = true;
+          tBtn.style.background = 'var(--faint)';
+          tBtn.style.color = 'var(--ink)';
+        }
+      }
+      function robBet(side, amt) {
+        if (side === 'yes') rYes += amt; else rNo += amt;
+        robUpdate();
+      }
+      function robOffer(amt) {
+        rMak += amt;
+        robUpdate();
+      }
+      function robTime() {
+        if (!rDisMet || !rMakMet) return;
+        rDone = true;
+        let timStat = document.getElementById('robTimStat');
+        timStat.innerHTML = '&#10003; Passed';
+        timStat.style.color = 'var(--good)';
+        document.getElementById('robTimeBtn').style.display = 'none';
+        document.getElementById('robSuccess').style.display = 'block';
+        document.getElementById('robNarr').textContent = "All checks passed. The market proved its liquidity without relying on an arbitrary volume number.";
+      }
+    </script>
+
+    <p>If a whale tries to spoof the maker depth by posting massive standing offers on both sides, they are inadvertently acting as a perfect Market Maker. The time lock ensures their capital sits exposed to the public. If they mispriced their odds, organic bettors will snipe them. If they survive the time lock without getting sniped, they have provided exactly the liquidity the order book needed to launch successfully.</p>
 
     <figure class="diagram reveal">
       <div class="diagram-inner">
@@ -213,7 +320,7 @@
           <span class="arrow">&rarr;</span>
           <div class="node"><span class="ic">&#127919;</span><span class="lbl">Pool fills</span><span class="sub">odds = the ratio of sides</span></div>
           <span class="arrow">&rarr;</span>
-          <div class="node"><span class="ic">&#128184;</span><span class="lbl">Volume threshold</span><span class="sub">claims tokenize</span></div>
+          <div class="node"><span class="ic">&#128184;</span><span class="lbl">Robustness threshold</span><span class="sub">claims tokenize</span></div>
           <span class="arrow">&rarr;</span>
           <div class="node is-accent"><span class="ic">&#128202;</span><span class="lbl">Order book opens</span><span class="sub">pros price the risk</span></div>
         </div>
@@ -478,21 +585,34 @@
     else priceEl.innerHTML = Math.round(p * 100) + "&cent; (pool)";
     potEl.textContent = money(Y + N);
     lockedEl.textContent = money(locked);
-    prog.style.width = Math.min(100, vol / THRESH * 100) + "%";
-    progK.textContent = "Volume toward tokenization: " + money(vol) + " of $600 (demo threshold; the live one is set by governance).";
+    var minVol = Math.min(Y, N);
+    var metDis = minVol >= 50; // lower threshold for this simple demo
+    var metMak = offerLive || offerFilled > 0; 
+    
+    document.getElementById("chkDis").innerHTML = metDis ? "<span style='color:var(--good)'>&#10003; Disagreement Floor</span>" : "&#10007; Disagreement Floor";
+    document.getElementById("chkMak").innerHTML = metMak ? "<span style='color:var(--good)'>&#10003; Maker Depth</span>" : "&#10007; Maker Depth";
+    
     if (offerLive && !done) {
       offerEl.style.display = "block";
       offerSub.textContent = money(offerRem()) + " of capacity left at the posted odds";
     } else { offerEl.style.display = "none"; }
   }
   function maybeGraduate() {
-    if (done || vol < THRESH) return;
+    var minVol = Math.min(Y, N);
+    var metDis = minVol >= 50; 
+    var metMak = offerLive || offerFilled > 0;
+    
+    if (done || !(metDis && metMak)) return;
     done = true;
+    
+    // In this simple demo, we auto-pass the Time Lock when the first two hit
+    document.getElementById("chkTim").innerHTML = "<span style='color:var(--good)'>&#10003; Time Lock (Auto)</span>";
+    
     tokens.style.display = "grid";
     bookSub.textContent = offerRem() > 0
       ? "The unfilled " + money(offerRem()) + " of the standing offer just became the book's first resting order."
       : "The offer filled completely on the way up; professionals post the first fresh quotes.";
-    narr.textContent = "The bar fills and the pool grows up on the spot. Every claim tokenizes into ERC-20 YES and NO in the bettors' own wallets, the order book opens beside the pot, and the price you saw is the price the book inherits.";
+    narr.textContent = "The checks pass and the pool grows up on the spot. Every claim tokenizes into ERC-20 YES and NO in the bettors' own wallets, the order book opens beside the pot, and the price you saw is the price the book inherits.";
     [bY, bN, bP, bC].forEach(function (b) { b.disabled = true; });
   }
   function betYes(amt, quiet) {
@@ -539,6 +659,11 @@
   bR.addEventListener("click", function () {
     Y = 0.10; N = 0; vol = 0.10; locked = 0; offerLive = false; offerFilled = 0; done = false;
     tokens.style.display = "none";
+    
+    document.getElementById("chkDis").innerHTML = "&#10007; Disagreement Floor";
+    document.getElementById("chkMak").innerHTML = "&#10007; Maker Depth";
+    document.getElementById("chkTim").innerHTML = "&#10007; Time Lock";
+    
     [bY, bN, bC].forEach(function (b) { b.disabled = false; });
     bP.disabled = false;
     narr.textContent = "A question is posted with a dime on YES. That dime is the market. Bet, post the offer, or call the crowd, and watch it grow up.";
