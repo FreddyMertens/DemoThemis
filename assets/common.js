@@ -264,26 +264,7 @@
         }
       }
       
-      // 2. Add exact CSS tooltip directly to the slider wrapper (.dial or .assumption-row)
-      var input = document.getElementById(a.domId);
-      if (input && input.type === "range") {
-        input.removeAttribute("title"); // remove native slow tooltip
-        
-        var wrapper = input.closest('.dial') || input.closest('.assumption-row');
-        if (wrapper) {
-          wrapper.setAttribute("data-tooltip", a.copy);
-          if (getComputedStyle(wrapper).position === 'static') {
-            wrapper.style.position = 'relative';
-          }
-        } else {
-          if (input.parentElement && getComputedStyle(input.parentElement).position === 'static') {
-            input.parentElement.style.position = 'relative';
-          }
-          if (input.parentElement) {
-            input.parentElement.setAttribute("data-tooltip", a.copy);
-          }
-        }
-      }
+
     });
 
     if (typeof tippy !== 'undefined') {
