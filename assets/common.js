@@ -255,7 +255,7 @@
         var icon = document.createElement("span");
         icon.className = "info-icon";
         icon.setAttribute("data-tooltip", a.copy);
-        icon.textContent = "ⓘ";
+        icon.innerHTML = `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"></circle><path d="M12 16v-4"></path><path d="M12 8h.01"></path></svg>`;
         var b = label.querySelector("b") || label.querySelector("output");
         if (b) {
           label.insertBefore(icon, b);
