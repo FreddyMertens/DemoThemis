@@ -219,7 +219,7 @@
     const MAIN_COPIES = {
       flow: "The total dollar value of ordinary cases expected to arrive in court each month.",
       stake: "The typical dollar amount at risk in a contested case.",
-      challenge: "The percentage of total case flow that escalates to court instead of settling quietly.",
+      challenge: "The percentage of total settlement flow that escalates to court. The rest are 'quiet cases' that settle without jurors but still pay the system fee.",
       lag: "The time delay (in weeks) introduced by appeals, which locks up pending stakes and creates reserve pressure on jurors.",
       fee: "The percentage fee taken from settlements to fund juror pay, rewards, and operations.",
       payShare: "The percentage of the settlement fee distributed directly to jurors as base pay.",

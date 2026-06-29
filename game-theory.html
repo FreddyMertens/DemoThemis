@@ -252,7 +252,7 @@
           <h3>Demand</h3>
           <div class="dial"><label for="flow">Monthly settlement flow <b id="flowOut">&hellip;</b></label><input id="flow" type="range" min="10000" max="50000000" step="10000" value="5000000"></div>
           <div class="dial"><label for="stake">Typical contested stake <b id="stakeOut">&hellip;</b></label><input id="stake" type="range" min="0" max="100" step="1" value="45"></div>
-          <div class="dial"><label for="challenge">Share that reaches court <b id="challengeOut">&hellip;</b></label><input id="challenge" type="range" min="1" max="25" step="1" value="5"></div>
+          <div class="dial"><label for="challenge">Share that reaches court <b id="challengeOut">&hellip;</b></label><input id="challenge" type="range" min="25" max="100" step="1" value="50"></div>
           <div class="dial"><label for="lag">Unresolved slash lag <b id="lagOut">&hellip;</b></label><input id="lag" type="range" min="1" max="8" step="1" value="4"></div>
         </div>
         <div class="dial-group">
@@ -337,7 +337,7 @@
     <h2>What the current board exposes</h2>
     <div class="matrix">
       <div class="var-card"><h3>Settlement flow</h3><p>External demand routed through protocol-held escrow. It feeds fee revenue, watcher bounties, answer keys, and the work available to jurors.</p></div>
-      <div class="var-card"><h3>Challenge rate</h3><p>The share of markets that need jurors. Higher challenge rate raises court workload and lowers the number of quiet answer keys.</p></div>
+      <div class="var-card"><h3>Challenge rate</h3><p>The share of the settlement flow that escalates to court. The rest are "quiet cases" that settle automatically without jurors, but still pay the system fee to subsidize the court.</p></div>
       <div class="var-card"><h3>Active jurors</h3><p>The supply side before reserve burden. Heavy reserves can price some out; rewards and pay can retain them.</p></div>
       <div class="var-card"><h3>Panel size</h3><p>Stake chooses seats. Bigger cases use larger, more senior pools and can require parallel panels.</p></div>
       <div class="var-card"><h3>Fee split</h3><p>A routing rule, not a fixed payout. It decides how fee flow becomes pay, rewards, and operations.</p></div>
