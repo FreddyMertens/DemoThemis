@@ -963,15 +963,14 @@
     byId("captureOut").textContent = pct(m.capture);
     var captureBasis = m.panelShortage ? "eligible draw pool smaller than panel" : (m.blocCapped ? "bloc of " + num(m.intendedBloc) + " exceeds the " + num(m.drawJurors) + "-juror draw pool" : num(m.effectiveBloc) + " effective attackers in " + num(m.drawJurors) + " draw-eligible jurors");
     byId("captureSub").textContent = captureBasis + (m.parallelPanels > 1 ? "; " + m.parallelPanels + " parallel panels" : "") + "; finite draw estimate";
-
-    byId("nodeDemandV").innerHTML = `<div class="node-val">\${num(m.courtCases)} <small>cases</small></div><div class="node-sub">settled per month</div>`;
-    byId("nodeFeesV").innerHTML = `<div class="node-val">\${money(m.feeRevenue)} <small>total fees</small></div><div class="node-sub"><b>\${money(m.rewardPool)}</b> goes to rewards</div>`;
-    byId("nodePayV").innerHTML = `<div class="node-val">\${money(m.payPerVote)} <small>base pay</small></div><div class="node-sub"><b>+\${money(m.rewardPerJuror)}</b> potential reward</div>`;
-    byId("nodeReserveV").innerHTML = v.lockReserve ? `<div class="node-val">\${m.reserveBurden.toFixed(1)}&times; <small>burden</small></div><div class="node-sub">requires locking <b>\${money(m.reserve)}</b> live</div>` : `<div class="node-val">Disabled</div><div class="node-sub">no live penalty</div>`;
-    byId("nodePoolV").innerHTML = `<div class="node-val">\${num(m.drawJurors)} <small>drawable</small></div><div class="node-sub">out of <b>\${num(m.effectiveJurors)}</b> retained</div>`;
-    byId("nodePanelV").innerHTML = `<div class="node-val">\${pct(m.honestPanel)} <small>honest majority</small></div><div class="node-sub">across <b>\${m.panel}</b> drawn seats\${m.parallelPanels > 1 ? ` &times; \${m.parallelPanels}` : ""}</div>`;
-    byId("nodeWatchV").innerHTML = `<div class="node-val">\${pct(m.caughtFalseAssertion)} <small>catch rate</small></div><div class="node-sub">driven by <b>\${m.watcherEVRatio.toFixed(2)}&times;</b> watcher EV</div>`;
-    byId("nodeKeysV").innerHTML = `<div class="node-val">\${num(m.keys)} <small>usable keys</small></div><div class="node-sub">from <b>\${num(m.publicKeys)}</b> public &amp; <b>\${num(m.consentedTests)}</b> test</div>`;
+    byId("nodeDemandV").innerHTML = `<div class="node-val">${num(m.courtCases)} <small>cases</small></div><div class="node-sub">settled per month</div>`;
+    byId("nodeFeesV").innerHTML = `<div class="node-val">${money(m.feeRevenue)} <small>total fees</small></div><div class="node-sub"><b>${money(m.rewardPool)}</b> goes to rewards</div>`;
+    byId("nodePayV").innerHTML = `<div class="node-val">${money(m.payPerVote)} <small>base pay</small></div><div class="node-sub"><b>+${money(m.rewardPerJuror)}</b> potential reward</div>`;
+    byId("nodeReserveV").innerHTML = v.lockReserve ? `<div class="node-val">${m.reserveBurden.toFixed(1)}&times; <small>burden</small></div><div class="node-sub">requires locking <b>${money(m.reserve)}</b> live</div>` : `<div class="node-val">Disabled</div><div class="node-sub">no live penalty</div>`;
+    byId("nodePoolV").innerHTML = `<div class="node-val">${num(m.drawJurors)} <small>drawable</small></div><div class="node-sub">out of <b>${num(m.effectiveJurors)}</b> retained</div>`;
+    byId("nodePanelV").innerHTML = `<div class="node-val">${pct(m.honestPanel)} <small>honest majority</small></div><div class="node-sub">across <b>${m.panel}</b> drawn seats${m.parallelPanels > 1 ? " &times; " + m.parallelPanels : ""}</div>`;
+    byId("nodeWatchV").innerHTML = `<div class="node-val">${pct(m.caughtFalseAssertion)} <small>catch rate</small></div><div class="node-sub">driven by <b>${m.watcherEVRatio.toFixed(2)}&times;</b> watcher EV</div>`;
+    byId("nodeKeysV").innerHTML = `<div class="node-val">${num(m.keys)} <small>usable keys</small></div><div class="node-sub">from <b>${num(m.publicKeys)}</b> public &amp; <b>${num(m.consentedTests)}</b> test</div>`;
 
     nodeClass(byId("nodeDemand"), m.courtCases > 1 ? "good" : "mid");
     nodeClass(byId("nodeFees"), m.rewardSignal > .35 ? "good" : "mid");
