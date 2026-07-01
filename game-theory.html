@@ -267,7 +267,7 @@
           <div class="dial"><label for="skill">Careful juror skill <b id="skillOut">&hellip;</b></label><input id="skill" type="range" min="52" max="88" step="1" value="68"></div>
           <div class="dial"><label for="careless">Extra wrong-rate from laziness <b id="carelessOut">&hellip;</b></label><input id="careless" type="range" min="10" max="50" step="1" value="20"></div>
           <div class="dial"><label for="slash">Slash fraction on wrong-side vote <b id="slashOut">&hellip;</b></label><input id="slash" type="range" min="25" max="100" step="1" value="100"></div>
-          <div class="dial"><label for="syntheticTests">Synthetic test cases <b id="syntheticTestsOut">&hellip;</b></label><input id="syntheticTests" type="range" min="0" max="1000" step="10" value="0"></div>
+          <div class="dial"><label for="syntheticTests">Competency tests <b id="syntheticTestsOut">&hellip;</b></label><input id="syntheticTests" type="range" min="0" max="1000" step="10" value="0"></div>
         </div>
         <div class="dial-group">
           <h3>Attack pressure</h3>
@@ -974,7 +974,7 @@
     byId("nodePoolV").innerHTML = `<div class="node-val">${num(m.drawJurors)} <small>drawable</small></div><div class="node-sub">out of <b>${num(m.effectiveJurors)}</b> retained</div>`;
     byId("nodePanelV").innerHTML = `<div class="node-val">${pct(m.honestPanel)} <small>honest majority</small></div><div class="node-sub">across <b>${m.panel}</b> drawn seats${m.parallelPanels > 1 ? " &times; " + m.parallelPanels : ""}</div>`;
     byId("nodeWatchV").innerHTML = `<div class="node-val">${pct(m.caughtFalseAssertion)} <small>catch rate</small></div><div class="node-sub">driven by <b>${m.watcherEVRatio.toFixed(2)}&times;</b> watcher EV</div>`;
-    byId("nodeKeysV").innerHTML = `<div class="node-val">${num(m.keys)} <small>usable keys</small></div><div class="node-sub">from <b>${num(m.publicKeys)}</b> pub, <b>${num(m.consentedTests)}</b> consent, <b>${num(m.syntheticTests)}</b> synth</div>`;
+    byId("nodeKeysV").innerHTML = `<div class="node-val">${num(m.keys)} <small>usable keys</small></div><div class="node-sub">from <b>${num(m.publicKeys)}</b> pub, <b>${num(m.consentedTests)}</b> consent, <b>${num(m.syntheticTests)}</b> comp</div>`;
 
     nodeClass(byId("nodeDemand"), m.courtCases > 1 ? "good" : "mid");
     nodeClass(byId("nodeFees"), m.rewardSignal > .35 ? "good" : "mid");
@@ -1003,7 +1003,7 @@
     setAttack("lazy", m.risks.lazy, m.clears.lazy, lazyText);
     setAttack("assertion", m.risks.assertion, m.clears.assertion, v.lockWatch ? "False assertions are expected about " + num(m.expectedFalseAssertions) + " times/month; watcher EV is " + m.watcherEVRatio.toFixed(2) + "× cost and capacity covers " + pct(m.watcherCapacityCoverage) + " of windows." : "No paid watchers means sleeping markets become cheap targets.");
     setAttack("grief", m.risks.grief, m.griefClears, v.lockAppeal ? "The next rung costs " + money(m.appealFloor) + ", versus delay value around " + money(m.griefBenefit) + "." : "Without the priced ladder, retrying is cheaper than the delay it buys.");
-    setAttack("drift", m.risks.drift, m.clears.drift, v.lockKeys ? num(m.publicKeys) + " curated public keys, " + num(m.consentedTests) + " consented tests, and " + num(m.syntheticTests) + " synthetic tests feed scoring; drift signal is " + pct(m.keySignal) + "." : "With no answer keys, agreement can look like accuracy while the pool drifts.");
+    setAttack("drift", m.risks.drift, m.clears.drift, v.lockKeys ? num(m.publicKeys) + " curated public keys, " + num(m.consentedTests) + " consented tests, and " + num(m.syntheticTests) + " competency tests feed scoring; drift signal is " + pct(m.keySignal) + "." : "With no answer keys, agreement can look like accuracy while the pool drifts.");
   }
 
   function setRanks(m) {
