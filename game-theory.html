@@ -284,7 +284,7 @@
             <label class="lock"><input id="lockBallot" type="checkbox" checked><span><b>Receipt-free ballot</b>a briber cannot verify delivery</span></label>
             <label class="lock"><input id="lockFace" type="checkbox" checked><span><b>Face check</b>rented seats must survive live checks</span></label>
             <label class="lock"><input id="lockReserve" type="checkbox" checked><span><b>Live reserve</b>carelessness prices itself from pending income</span></label>
-            <label class="lock"><input id="lockKeys" type="checkbox" checked><span><b>Answer keys</b>curated outcomes estimate drift</span></label>
+            <label class="lock"><input id="lockKeys" type="checkbox" checked><span><b>Competency tests</b>curated outcomes estimate drift</span></label>
             <label class="lock"><input id="lockWatch" type="checkbox" checked><span><b>Paid watchers</b>false assertions create bounties</span></label>
             <label class="lock"><input id="lockAppeal" type="checkbox" checked><span><b>Priced ladder</b>appeals pay panel, capture, and delay floors</span></label>
           </div>
@@ -302,7 +302,7 @@
             <div class="node" id="nodePool" data-n="05"><h4>Pool width<span class="info-icon" data-tooltip="The subset of retained jurors who are active and eligible to be drawn. A wider pool is harder for attackers to capture."><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"></circle><path d="M12 16v-4"></path><path d="M12 8h.01"></path></svg></span></h4><p>The subset of retained jurors who are active and eligible to be drawn. A wider pool is harder for attackers to capture.</p><div class="node-stats" id="nodePoolV">&hellip;</div></div>
             <div class="node" id="nodePanel" data-n="06"><h4>Panel<span class="info-icon" data-tooltip="Stake selects seats, senior gates, and sometimes parallel panels."><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"></circle><path d="M12 16v-4"></path><path d="M12 8h.01"></path></svg></span></h4><p>Stake selects seats, senior gates, and sometimes parallel panels.</p><div class="node-stats" id="nodePanelV">&hellip;</div></div>
             <div class="node" id="nodeWatch" data-n="07"><h4>Assertions<span class="info-icon" data-tooltip="False-rate, bounty size, and watcher capacity decide catch odds."><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"></circle><path d="M12 16v-4"></path><path d="M12 8h.01"></path></svg></span></h4><p>False-rate, bounty size, and watcher capacity decide catch odds.</p><div class="node-stats" id="nodeWatchV">&hellip;</div></div>
-            <div class="node" id="nodeKeys" data-n="08"><h4>Keys<span class="info-icon" data-tooltip="Ground-truth &quot;keys&quot; (from public outcomes and private tests) are used to grade jurors and measure overall drift."><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"></circle><path d="M12 16v-4"></path><path d="M12 8h.01"></path></svg></span></h4><p>Ground-truth &quot;keys&quot; (from public outcomes and private tests) are used to grade jurors and measure overall drift.</p><div class="node-stats" id="nodeKeysV">&hellip;</div></div>
+            <div class="node" id="nodeKeys" data-n="08"><h4>Competency tests<span class="info-icon" data-tooltip="Ground-truth &quot;competency tests&quot; (from public outcomes and private tests) are used to grade jurors and measure overall drift."><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"></circle><path d="M12 16v-4"></path><path d="M12 8h.01"></path></svg></span></h4><p>Ground-truth &quot;competency tests&quot; (from public outcomes and private tests) are used to grade jurors and measure overall drift.</p><div class="node-stats" id="nodeKeysV">&hellip;</div></div>
           </div>
         </div>
       </div>
@@ -315,7 +315,7 @@
           <div class="attack" data-attack="lazy"><div class="attack-top"><h4>Lazy juror<span class="info-icon" data-tooltip="The live reserve has one job: make skipped effort lose money. It is tied to pending income, so it rises when work piles onto each juror and falls when supply catches up. If the reserve gets too heavy, honest jurors leave and the draw pool shrinks."><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"></circle><path d="M12 16v-4"></path><path d="M12 8h.01"></path></svg></span></h4><span class="chip" id="lazyChip">&hellip;</span></div><p id="lazyTxt">&hellip;</p></div>
           <div class="attack" data-attack="assertion"><div class="attack-top"><h4>False assertion<span class="info-icon" data-tooltip="A sleepy market is safer only if catching the lie pays in expectation and enough watcher capacity exists. The board now prices false-rate, bounty size, market-window load, and watcher capacity together."><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"></circle><path d="M12 16v-4"></path><path d="M12 8h.01"></path></svg></span></h4><span class="chip" id="assertionChip">&hellip;</span></div><p id="assertionTxt">&hellip;</p></div>
           <div class="attack" data-attack="grief"><div class="attack-top"><h4>Appeal griefing<span class="info-icon" data-tooltip="Appeals must stay possible for sincere losers and expensive for grinders. That is why each rung pays the next panel, prices capture risk, and rents the delay it imposes."><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"></circle><path d="M12 16v-4"></path><path d="M12 8h.01"></path></svg></span></h4><span class="chip" id="griefChip">&hellip;</span></div><p id="griefTxt">&hellip;</p></div>
-          <div class="attack" data-attack="drift"><div class="attack-top"><h4>Juror drift<span class="info-icon" data-tooltip="When jurors stop evaluating evidence and simply vote with the crowd to ensure they get paid. Without injecting known test cases (answer keys) to grade them, the entire court can slowly drift away from objective reality."><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"></circle><path d="M12 16v-4"></path><path d="M12 8h.01"></path></svg></span></h4><span class="chip" id="driftChip">&hellip;</span></div><p id="driftTxt">&hellip;</p></div>
+          <div class="attack" data-attack="drift"><div class="attack-top"><h4>Juror drift<span class="info-icon" data-tooltip="When jurors stop evaluating evidence and simply vote with the crowd to ensure they get paid. Without injecting known test cases (competency tests) to grade them, the entire court can slowly drift away from objective reality."><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"></circle><path d="M12 16v-4"></path><path d="M12 8h.01"></path></svg></span></h4><span class="chip" id="driftChip">&hellip;</span></div><p id="driftTxt">&hellip;</p></div>
         </div>
       </div>
     </div>
@@ -337,7 +337,7 @@
     <p class="sec-label">Visible variables</p>
     <h2>What the current board exposes</h2>
     <div class="matrix">
-      <div class="var-card"><h3>Settlement flow</h3><p>External demand routed through protocol-held escrow. It feeds fee revenue, watcher bounties, answer keys, and the work available to jurors.</p></div>
+      <div class="var-card"><h3>Settlement flow</h3><p>External demand routed through protocol-held escrow. It feeds fee revenue, watcher bounties, competency tests, and the work available to jurors.</p></div>
       <div class="var-card"><h3>Challenge rate</h3><p>The share of the settlement flow that escalates to court. The rest are "quiet cases" that settle automatically without jurors, but still pay the system fee to subsidize the court.</p></div>
       <div class="var-card"><h3>Active jurors</h3><p>The supply side before reserve burden. Heavy reserves can price some out; rewards and pay can retain them.</p></div>
       <div class="var-card"><h3>Panel size</h3><p>Stake chooses seats. Bigger cases use larger, more senior pools and can require parallel panels.</p></div>
@@ -348,7 +348,7 @@
       <div class="var-card"><h3>Sealed draw</h3><p>Turns panel selection from grindable retries into one public, verifiable roll bound to the case.</p></div>
       <div class="var-card"><h3>Receipt-free ballot</h3><p>Weakens the bribe market. If a briber cannot verify delivery, the bribe contract is much harder to enforce.</p></div>
       <div class="var-card"><h3>Face check</h3><p>Narrows a rented credential to a live-person check at the moment the vote unlocks.</p></div>
-      <div class="var-card"><h3>Answer keys</h3><p>Settled public outcomes and consented private tests give the court an external signal against drift.</p></div>
+      <div class="var-card"><h3>Competency tests</h3><p>Settled public outcomes and consented private tests give the court an external signal against drift.</p></div>
       <div class="var-card"><h3>Watchers</h3><p>A false assertion creates a bounty. Coverage needs positive watcher EV and enough capacity for all settlement windows.</p></div>
       <div class="var-card"><h3>Appeal floor</h3><p>Each rung must pay the next panel, price capture odds, and rent the delay it imposes.</p></div>
       <div class="var-card"><h3>Petition gate</h3><p>Loser-side signatures price sincerity without letting winners block the only people motivated to appeal.</p></div>
@@ -373,7 +373,7 @@
       </div>
       <div class="story-card">
         <h3>Illustrative index</h3>
-        <p class="formula">index rises with juror skill, curated keys, paid watchers, and reward-funded retention<br>index falls with active risks, and any attack that clears caps the score</p>
+        <p class="formula">index rises with juror skill, curated tests, paid watchers, and reward-funded retention<br>index falls with active risks, and any attack that clears caps the score</p>
       </div>
     </div>
   </section>
@@ -381,7 +381,7 @@
   <section class="reveal">
     <p class="sec-label">Pressure ranking</p>
     <h2>The board tells you what is stressed</h2>
-    <p>When the model gets stressed, the highest bar below is the first pressure point to inspect. If it is capture, widen the pool or increase panel hardness. If it is drift, you need more keys. If it is laziness, reserve sizing is too weak. If it is assertions, watcher economics are not paying for the night shift.</p>
+    <p>When the model gets stressed, the highest bar below is the first pressure point to inspect. If it is capture, widen the pool or increase panel hardness. If it is drift, you need more competency tests. If it is laziness, reserve sizing is too weak. If it is assertions, watcher economics are not paying for the night shift.</p>
     <div class="widget reveal">
       <div class="widget-head"><span class="live"></span> Live risk ranking</div>
       <div class="rank-list">
@@ -974,7 +974,7 @@
     byId("nodePoolV").innerHTML = `<div class="node-val">${num(m.drawJurors)} <small>drawable</small></div><div class="node-sub">out of <b>${num(m.effectiveJurors)}</b> retained</div>`;
     byId("nodePanelV").innerHTML = `<div class="node-val">${pct(m.honestPanel)} <small>honest majority</small></div><div class="node-sub">across <b>${m.panel}</b> drawn seats${m.parallelPanels > 1 ? " &times; " + m.parallelPanels : ""}</div>`;
     byId("nodeWatchV").innerHTML = `<div class="node-val">${pct(m.caughtFalseAssertion)} <small>catch rate</small></div><div class="node-sub">driven by <b>${m.watcherEVRatio.toFixed(2)}&times;</b> watcher EV</div>`;
-    byId("nodeKeysV").innerHTML = `<div class="node-val">${num(m.keys)} <small>usable keys</small></div><div class="node-sub">from <b>${num(m.publicKeys)}</b> pub, <b>${num(m.consentedTests)}</b> consent, <b>${num(m.syntheticTests)}</b> comp</div>`;
+    byId("nodeKeysV").innerHTML = `<div class="node-val">${num(m.keys)} <small>competency tests</small></div><div class="node-sub">from <b>${num(m.publicKeys)}</b> pub, <b>${num(m.consentedTests)}</b> consent, <b>${num(m.syntheticTests)}</b> comp</div>`;
 
     nodeClass(byId("nodeDemand"), m.courtCases > 1 ? "good" : "mid");
     nodeClass(byId("nodeFees"), m.rewardSignal > .35 ? "good" : "mid");
@@ -1003,7 +1003,7 @@
     setAttack("lazy", m.risks.lazy, m.clears.lazy, lazyText);
     setAttack("assertion", m.risks.assertion, m.clears.assertion, v.lockWatch ? "False assertions are expected about " + num(m.expectedFalseAssertions) + " times/month; watcher EV is " + m.watcherEVRatio.toFixed(2) + "× cost and capacity covers " + pct(m.watcherCapacityCoverage) + " of windows." : "No paid watchers means sleeping markets become cheap targets.");
     setAttack("grief", m.risks.grief, m.griefClears, v.lockAppeal ? "The next rung costs " + money(m.appealFloor) + ", versus delay value around " + money(m.griefBenefit) + "." : "Without the priced ladder, retrying is cheaper than the delay it buys.");
-    setAttack("drift", m.risks.drift, m.clears.drift, v.lockKeys ? num(m.publicKeys) + " curated public keys, " + num(m.consentedTests) + " consented tests, and " + num(m.syntheticTests) + " competency tests feed scoring; drift signal is " + pct(m.keySignal) + "." : "With no answer keys, agreement can look like accuracy while the pool drifts.");
+    setAttack("drift", m.risks.drift, m.clears.drift, v.lockKeys ? num(m.publicKeys) + " curated public markets, " + num(m.consentedTests) + " consented tests, and " + num(m.syntheticTests) + " competency tests feed scoring; drift signal is " + pct(m.keySignal) + "." : "With no competency tests, agreement can look like accuracy while the pool drifts.");
   }
 
   function setRanks(m) {
