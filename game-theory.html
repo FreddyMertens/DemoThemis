@@ -992,14 +992,6 @@
     byId("skillOut").textContent = pct(v.skill);
     byId("carelessOut").textContent = pct(v.careless);
     byId("slashOut").textContent = pct(v.slash);
-    byId(id + "Txt").textContent = text;
-  }
-
-  function setAttacks(v, m) {
-    var blocText = m.panelShortage ? "The drawable pool has only " + num(m.drawJurors) + " seats for a " + m.panel + "-seat panel, so the court cannot safely seat this case." : ((m.blocCapped ? "A bloc of " + num(m.intendedBloc) + " outnumbers the " + num(m.drawJurors) + "-juror draw pool. " : "A bloc owns " + pct(m.share) + " of draw-eligible seats. ") + "Capture is " + pct(m.capture) + (m.parallelPanels > 1 ? " after " + m.parallelPanels + " parallel panels." : " on one panel."));
-    setAttack("bloc", m.risks.capture, m.clears.capture, blocText);
-    setAttack("bribe", m.risks.bribe, m.bribeClears, v.lockBallot ? "Receipt-free ballots make paid delivery unverifiable." : "Without receipt-freeness, expected bribe cost is " + money(m.bribeCost) + ".");
-    setAttack("rental", m.risks.rental, m.clears.rental, v.lockFace ? "Face checks shrink " + num(v.rented) + " rented credentials to about " + num(m.rentedPass) + " usable seats inside a " + num(m.drawJurors) + "-juror draw pool." : "Rented credentials enter the draw directly.");
     var lazyText = m.lazyAtFloor ? "Lazy voting lands right at the reserve floor: the shortcut barely breaks even, so a small reserve change tips it either way." : (m.lazyMargin > 0 ? "Lazy voting loses about " + money(m.lazyMargin) + " more than it earns, so the live reserve prices the shortcut out." : "Lazy voting clears: it keeps about " + money(Math.abs(m.lazyMargin)) + " of unpriced shortcut profit.");
     setAttack("lazy", m.risks.lazy, m.clears.lazy, lazyText);
     setAttack("assertion", m.risks.assertion, m.clears.assertion, v.lockWatch ? "False assertions are expected about " + num(m.expectedFalseAssertions) + " times/month; watcher EV is " + m.watcherEVRatio.toFixed(2) + "× cost and capacity covers " + pct(m.watcherCapacityCoverage) + " of windows." : "No paid watchers means sleeping markets become cheap targets.");
