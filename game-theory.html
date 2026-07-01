@@ -158,11 +158,55 @@
   .lab-grid { transition: box-shadow .3s ease; }
   .lab-grid.vulnerable { box-shadow: 0 0 0 2px color-mix(in srgb, var(--bad) 30%, transparent); border-radius: var(--radius); }
   .lab-grid.resistant { box-shadow: 0 0 0 2px color-mix(in srgb, var(--good) 25%, transparent); border-radius: var(--radius); }
+  @media (max-width: 720px) { .assumption-groups { grid-template-columns: 1fr; padding: 0 .9rem .9rem; gap: 1rem; } }
+  .assumption-group { border-top: 1px solid var(--line); padding-top: .7rem; }
+  .assumption-group h4 { margin: 0 0 .5rem; font-size: .78rem; letter-spacing: .08em; text-transform: uppercase; color: var(--accent); }
+  .assumption-row { display: grid; grid-template-columns: minmax(0, 1fr); gap: .35rem; padding: .65rem 0; border-bottom: 1px solid var(--line); }
+  .assumption-row:last-child { border-bottom: 0; }
+  .assumption-head { display: flex; justify-content: space-between; gap: .75rem; align-items: baseline; }
+  .assumption-head label { font-size: .82rem; font-weight: 800; color: var(--ink); }
+  .assumption-head output { font-family: var(--mono); color: var(--accent-ink); font-size: .78rem; white-space: nowrap; }
+  .assumption-row input[type="range"] { width: 100%; }
+  .assumption-meta { display: flex; flex-wrap: wrap; gap: .35rem; align-items: center; color: var(--muted); font-size: .72rem; line-height: 1.35; }
+  .assumption-meta span { border: 1px solid var(--line); border-radius: 999px; padding: .12rem .4rem; background: var(--surface); }
+  .assumption-controls { display: flex; flex-wrap: wrap; gap: .4rem; align-items: center; color: var(--muted); font-size: .72rem; }
+  .dependency-grid { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: .45rem; padding: 0 .9rem .9rem; }
+  @media (max-width: 620px) { .dependency-grid { grid-template-columns: 1fr; } }
+  .dependency-card { border: 1px solid var(--line); border-radius: 10px; background: var(--surface); padding: .55rem; font-family: var(--sans); }
+  .dependency-card b { display: block; font-size: .78rem; color: var(--ink); margin-bottom: .25rem; }
+  .dependency-card span { color: var(--muted); font-size: .7rem; line-height: 1.35; }
+  .insight-grid { display: grid; grid-template-columns: 1.1fr .9fr; gap: .75rem; margin-top: .9rem; }
+  @media (max-width: 720px) { .insight-grid { grid-template-columns: 1fr; } }
+  .insight-panel { border: 1px solid var(--line); border-radius: 14px; background: var(--surface); box-shadow: var(--shadow); padding: .85rem; font-family: var(--sans); }
+  .insight-panel h3 { margin: 0 0 .45rem; font-size: .86rem; letter-spacing: .08em; text-transform: uppercase; color: var(--accent); }
+  .driver-list, .warning-list { display: grid; gap: .45rem; }
+  .driver-row, .warning-row { border: 1px solid var(--line); border-radius: 10px; background: var(--bg); padding: .55rem .6rem; font-size: .76rem; line-height: 1.35; color: var(--muted); }
+  .driver-row b, .warning-row b { display: flex; justify-content: space-between; gap: .6rem; color: var(--ink); font-size: .8rem; margin-bottom: .2rem; }
+  .driver-row small { display: block; color: var(--muted); font-size: .72rem; }
+  .lab-status { display: flex; align-items: center; gap: .8rem; padding: .7rem 1rem; border-radius: 14px; font-family: var(--sans); font-weight: 700; font-size: .9rem; margin-bottom: 1rem; transition: background .25s ease, border-color .25s ease, box-shadow .25s ease; border: 1.5px solid var(--line-strong); }
+  .lab-status .lab-status-icon { width: 1.4rem; height: 1.4rem; flex-shrink: 0; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: .85rem; font-weight: 800; }
+  .lab-status .lab-status-label { flex-shrink: 0; letter-spacing: .03em; }
+  .lab-status .lab-status-detail { font-weight: 500; font-size: .8rem; color: var(--muted); }
+  .lab-status.resistant { background: var(--good-soft); border-color: color-mix(in srgb, var(--good) 40%, transparent); }
+  .lab-status.resistant .lab-status-icon { background: var(--good); color: #fff; }
+  .lab-status.resistant .lab-status-label { color: var(--good); }
+  .lab-status.vulnerable { background: var(--bad-soft); border-color: color-mix(in srgb, var(--bad) 45%, transparent); box-shadow: 0 0 0 3px color-mix(in srgb, var(--bad) 12%, transparent); }
+  .lab-status.vulnerable .lab-status-icon { background: var(--bad); color: #fff; }
+  .lab-status.vulnerable .lab-status-label { color: var(--bad); }
+  .lab-status .lab-status-clears { display: flex; flex-wrap: wrap; gap: .35rem; margin-left: auto; }
+  .lab-status .lab-status-clear { font-size: .68rem; font-weight: 800; letter-spacing: .04em; text-transform: uppercase; border-radius: 999px; padding: .15rem .5rem; background: color-mix(in srgb, var(--bad) 15%, transparent); color: var(--bad); border: 1px solid color-mix(in srgb, var(--bad) 25%, transparent); }
+  .lab-grid { transition: box-shadow .3s ease; }
+  .lab-grid.vulnerable { box-shadow: 0 0 0 2px color-mix(in srgb, var(--bad) 30%, transparent); border-radius: var(--radius); }
+  .lab-grid.resistant { box-shadow: 0 0 0 2px color-mix(in srgb, var(--good) 25%, transparent); border-radius: var(--radius); }
   
   .info-icon { display: inline-flex; align-items: center; justify-content: center; cursor: pointer; padding: 10px; margin: -10px -10px -10px -2px; color: var(--muted); opacity: 0.6; transition: opacity 0.2s ease, color 0.2s ease; vertical-align: -0.125em; position: relative; z-index: 10; }
   .info-icon:hover { opacity: 1; color: var(--ink); }
   .info-icon svg { width: 15px; height: 15px; }
   .node p { display: none; } /* Hide old paragraph explanations since we moved them to tooltips */
+  
+  .tt-divider { border: 0; border-top: 1px solid color-mix(in srgb, currentColor 15%, transparent); margin: 0.6rem 0; }
+  .tt-math { font-family: var(--mono); font-size: 0.8rem; color: color-mix(in srgb, var(--accent) 70%, #fff); }
+  .tt-live { font-family: var(--mono); font-weight: 800; margin-top: 0.35rem; color: #fff; font-size: 0.85rem; }
   
 </style>
 <link rel="stylesheet" href="https://unpkg.com/tippy.js@6/animations/shift-away.css" />
@@ -931,7 +975,8 @@
       clearSeverity: clearSeverity,
       clearCap: clearCap,
       risks: risks,
-      safety: safety
+      safety: safety,
+      casesPerJuror: seatVotes / Math.max(1, effectiveJurors)
     };
   }
 
@@ -947,51 +992,6 @@
     byId("skillOut").textContent = pct(v.skill);
     byId("carelessOut").textContent = pct(v.careless);
     byId("slashOut").textContent = pct(v.slash);
-    byId("syntheticTestsOut").textContent = num(v.syntheticTests);
-    byId("blocOut").textContent = num(v.bloc);
-    byId("rentedOut").textContent = num(v.rented);
-    byId("rerollsOut").textContent = v.rerolls;
-    byId("watchCostOut").textContent = money(v.watchCost);
-    byId("falseRateOut").textContent = pct(v.falseRate);
-
-    var safetyState = m.safety > .78 ? "good" : m.safety > .55 ? "mid" : "bad";
-    scoreClass(byId("scoreSafety"), safetyState);
-    byId("safetyOut").textContent = Math.round(m.safety * 100);
-    byId("safetySub").textContent = "weighted index, not measured probability; " + (m.clearSeverity > 0 ? "attack-clear cap " + Math.round(m.clearCap * 100) : "honest panel " + pct(m.honestPanel)) + " before final pressure";
-    scoreClass(byId("scorePay"), m.payPressure > 10 ? "good" : m.payPressure > 2 ? "mid" : "bad");
-    byId("payOut").textContent = money(m.payPressure);
-    byId("paySub").textContent = "per retained juror; " + num(m.effectiveJurors) + " retained of " + num(v.jurors);
-    scoreClass(byId("scoreReserve"), m.lazyMargin >= 0 && m.reserveBurden < 20 ? "good" : m.lazyMargin >= 0 ? "mid" : "bad");
-    byId("reserveOut").textContent = v.lockReserve ? money(m.reserve) : "off";
-    byId("reserveSub").textContent = v.lockReserve ? money(m.reserveUnit) + " per priced vote · " + m.reserveBurden.toFixed(1) + "× monthly pay+reward burden" + (m.reserveFloorApplied ? " · floor/elasticity applied" : "") : "carelessness has no live price";
-    scoreClass(byId("scoreCapture"), clsRisk(m.capture));
-    byId("captureOut").textContent = pct(m.capture);
-    var captureBasis = m.panelShortage ? "eligible draw pool smaller than panel" : (m.blocCapped ? "bloc of " + num(m.intendedBloc) + " exceeds the " + num(m.drawJurors) + "-juror draw pool" : num(m.effectiveBloc) + " effective attackers in " + num(m.drawJurors) + " draw-eligible jurors");
-    byId("captureSub").textContent = captureBasis + (m.parallelPanels > 1 ? "; " + m.parallelPanels + " parallel panels" : "") + "; finite draw estimate";
-    byId("nodeDemandV").innerHTML = `<div class="node-val">${num(m.courtCases)} <small>cases</small></div><div class="node-sub">settled per month</div>`;
-    byId("nodeFeesV").innerHTML = `<div class="node-val">${money(m.feeRevenue)} <small>total fees</small></div><div class="node-sub"><b>${money(m.rewardPool)}</b> goes to rewards</div>`;
-    byId("nodePayV").innerHTML = `<div class="node-val">${money(m.payPerVote)} <small>base pay</small></div><div class="node-sub"><b>+${money(m.rewardPerJuror)}</b> potential reward</div>`;
-    byId("nodeReserveV").innerHTML = v.lockReserve ? `<div class="node-val">${m.reserveBurden.toFixed(1)}&times; <small>burden</small></div><div class="node-sub">requires locking <b>${money(m.reserve)}</b> live</div>` : `<div class="node-val">Disabled</div><div class="node-sub">no live penalty</div>`;
-    byId("nodePoolV").innerHTML = `<div class="node-val">${num(m.drawJurors)} <small>drawable</small></div><div class="node-sub">out of <b>${num(m.effectiveJurors)}</b> retained</div>`;
-    byId("nodePanelV").innerHTML = `<div class="node-val">${pct(m.honestPanel)} <small>honest majority</small></div><div class="node-sub">across <b>${m.panel}</b> drawn seats${m.parallelPanels > 1 ? " &times; " + m.parallelPanels : ""}</div>`;
-    byId("nodeWatchV").innerHTML = `<div class="node-val">${pct(m.caughtFalseAssertion)} <small>catch rate</small></div><div class="node-sub">driven by <b>${m.watcherEVRatio.toFixed(2)}&times;</b> watcher EV</div>`;
-    byId("nodeKeysV").innerHTML = `<div class="node-val">${num(m.keys)} <small>competency tests</small></div><div class="node-sub">from <b>${num(m.publicKeys)}</b> pub, <b>${num(m.consentedTests)}</b> consent, <b>${num(m.syntheticTests)}</b> comp</div>`;
-
-    nodeClass(byId("nodeDemand"), m.courtCases > 1 ? "good" : "mid");
-    nodeClass(byId("nodeFees"), m.rewardSignal > .35 ? "good" : "mid");
-    nodeClass(byId("nodePay"), m.payPressure > 2 ? "good" : "mid");
-    nodeClass(byId("nodeReserve"), m.lazyClears ? "bad" : m.reserveBurden > 35 ? "mid" : "good");
-    nodeClass(byId("nodePool"), m.capture < .01 && m.retention > .85 ? "good" : m.capture < .1 && m.retention > .6 ? "mid" : "bad");
-    nodeClass(byId("nodePanel"), m.honestPanel > .85 ? "good" : m.honestPanel > .65 ? "mid" : "bad");
-    nodeClass(byId("nodeWatch"), m.caughtFalseAssertion > .8 ? "good" : m.caughtFalseAssertion > .45 ? "mid" : "bad");
-    nodeClass(byId("nodeKeys"), m.keySignal > .75 ? "good" : m.keySignal > .35 ? "mid" : "bad");
-    syncAssumptionOutputs();
-  }
-
-  function setAttack(id, risk, clears, text) {
-    var state = clears ? "bad" : risk > .35 ? "mid" : "good";
-    var label = clears ? "clears" : risk > .35 ? "stressed" : "fails";
-    chip(byId(id + "Chip"), label, state);
     byId(id + "Txt").textContent = text;
   }
 

@@ -284,7 +284,8 @@
         theme: 'demothemis',
         animation: 'shift-away',
         placement: 'top',
-        maxWidth: 250,
+        maxWidth: 450,
+        allowHTML: true,
       });
     }
   }
