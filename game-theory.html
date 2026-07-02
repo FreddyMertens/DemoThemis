@@ -708,7 +708,6 @@
         var pinLabel = document.createElement("label");
         var pin = document.createElement("input");
         var reset = document.createElement("button");
-        var copy = document.createElement("span");
         row.className = "assumption-row";
         head.className = "assumption-head";
         label.setAttribute("for", "assumption_" + a.id);
@@ -740,10 +739,8 @@
         reset.type = "button";
         reset.textContent = "Reset";
         reset.setAttribute("aria-label", "Reset " + a.label + " assumption");
-        copy.textContent = a.copy;
         controls.appendChild(pinLabel);
         controls.appendChild(reset);
-        controls.appendChild(copy);
         range.addEventListener("input", update);
         range.addEventListener("change", update);
         pin.addEventListener("change", function () { pinnedAssumptions[a.id] = pin.checked; update(); });
