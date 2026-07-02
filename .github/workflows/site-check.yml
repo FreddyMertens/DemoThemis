@@ -1,0 +1,28 @@
+name: Site checks
+
+on:
+  push:
+    branches:
+      - main
+  pull_request:
+
+jobs:
+  site:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Check out repository
+        uses: actions/checkout@v4
+
+      - name: Set up Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: "20"
+
+      - name: Build deploy output
+        run: node tools/build-site.js
+
+      - name: Validate gamelab model
+        run: node tools/validate-gamelab.js
+
+      - name: Smoke test built site
+        run: node tools/smoke-site.js

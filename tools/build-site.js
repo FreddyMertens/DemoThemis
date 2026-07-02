@@ -24,7 +24,13 @@ const publicFiles = [
   "juror-exam-downsides.html",
   "assumptions.js",
   "assets/common.js",
-  "assets/styles.css"
+  "assets/styles.css",
+  "assets/vendor/popper-2.11.8.LICENSE.txt",
+  "assets/vendor/popper-2.11.8.min.js",
+  "assets/vendor/tippy-6.3.7.LICENSE",
+  "assets/vendor/tippy-6.3.7.css",
+  "assets/vendor/tippy-6.3.7.umd.min.js",
+  "assets/vendor/tippy-shift-away-6.3.7.css"
 ];
 
 const internalNamePatterns = [
@@ -58,7 +64,11 @@ function copyFile(file) {
   const to = path.join(outDir, file);
   if (!fs.existsSync(from)) throw new Error(`Missing public source file: ${file}`);
   fs.mkdirSync(path.dirname(to), { recursive: true });
-  fs.copyFileSync(from, to);
+  if (file.endsWith(".html")) {
+    fs.writeFileSync(to, enhanceHtmlMetadata(file, fs.readFileSync(from, "utf8")), "utf8");
+  } else {
+    fs.copyFileSync(from, to);
+  }
 }
 
 function writeFile(file, content) {
@@ -73,6 +83,77 @@ function stripHashAndQuery(value) {
 
 function isExternal(value) {
   return /^(?:[a-z][a-z0-9+.-]*:|\/\/|#|$)/i.test(value);
+}
+
+function pageUrl(file) {
+  return file === "index.html" ? `${siteUrl}/` : `${siteUrl}/${file.replace(/\.html$/i, "")}`;
+}
+
+function escapeAttr(value) {
+  return String(value)
+    .replace(/&/g, "&amp;")
+    .replace(/"/g, "&quot;")
+    .replace(/</g, "&lt;")
+    .replace(/>/g, "&gt;");
+}
+
+function stripTags(value) {
+  return String(value || "").replace(/<[^>]*>/g, "").replace(/\s+/g, " ").trim();
+}
+
+function extractTitle(html, file) {
+  const match = html.match(/<title>([\s\S]*?)<\/title>/i);
+  return stripTags(match ? match[1] : file);
+}
+
+function extractMetaDescription(html) {
+  const namedFirst = html.match(/<meta\s+[^>]*name=["']description["'][^>]*content=["']([^"']*)["'][^>]*>/i);
+  if (namedFirst) return stripTags(namedFirst[1]);
+  const contentFirst = html.match(/<meta\s+[^>]*content=["']([^"']*)["'][^>]*name=["']description["'][^>]*>/i);
+  return stripTags(contentFirst ? contentFirst[1] : "DemoThemis is a proposal for a decentralized court, juror system, and prediction-market bootstrap.");
+}
+
+function hasTag(html, pattern) {
+  return pattern.test(html);
+}
+
+function enhanceHtmlMetadata(file, html) {
+  const title = escapeAttr(extractTitle(html, file));
+  const description = escapeAttr(extractMetaDescription(html));
+  const url = escapeAttr(pageUrl(file));
+  const tags = [];
+
+  if (!hasTag(html, /<link\s+[^>]*rel=["']canonical["']/i)) {
+    tags.push(`<link rel="canonical" href="${url}">`);
+  }
+  if (!hasTag(html, /<meta\s+[^>]*property=["']og:type["']/i)) {
+    tags.push('<meta property="og:type" content="website">');
+  }
+  if (!hasTag(html, /<meta\s+[^>]*property=["']og:site_name["']/i)) {
+    tags.push('<meta property="og:site_name" content="DemoThemis">');
+  }
+  if (!hasTag(html, /<meta\s+[^>]*property=["']og:title["']/i)) {
+    tags.push(`<meta property="og:title" content="${title}">`);
+  }
+  if (!hasTag(html, /<meta\s+[^>]*property=["']og:description["']/i)) {
+    tags.push(`<meta property="og:description" content="${description}">`);
+  }
+  if (!hasTag(html, /<meta\s+[^>]*property=["']og:url["']/i)) {
+    tags.push(`<meta property="og:url" content="${url}">`);
+  }
+  if (!hasTag(html, /<meta\s+[^>]*name=["']twitter:card["']/i)) {
+    tags.push('<meta name="twitter:card" content="summary">');
+  }
+  if (!hasTag(html, /<meta\s+[^>]*name=["']twitter:title["']/i)) {
+    tags.push(`<meta name="twitter:title" content="${title}">`);
+  }
+  if (!hasTag(html, /<meta\s+[^>]*name=["']twitter:description["']/i)) {
+    tags.push(`<meta name="twitter:description" content="${description}">`);
+  }
+
+  if (!tags.length) return html;
+  if (!/<\/head>/i.test(html)) throw new Error(`Missing </head> in public HTML file: ${file}`);
+  return html.replace(/<\/head>/i, `${tags.join("\n")}\n</head>`);
 }
 
 function resolveLocalRef(fromFile, rawRef) {
@@ -128,16 +209,45 @@ function validateNoInternalArtifacts() {
   }
 }
 
+function validateSeoMetadata() {
+  const htmlFiles = publicFiles.filter((file) => file.endsWith(".html"));
+  const missing = [];
+  const required = [
+    { label: "canonical", pattern: /<link\s+[^>]*rel=["']canonical["'][^>]*href=["'][^"']+["']/i },
+    { label: "og:title", pattern: /<meta\s+[^>]*property=["']og:title["'][^>]*content=["'][^"']+["']/i },
+    { label: "og:description", pattern: /<meta\s+[^>]*property=["']og:description["'][^>]*content=["'][^"']+["']/i },
+    { label: "og:url", pattern: /<meta\s+[^>]*property=["']og:url["'][^>]*content=["'][^"']+["']/i },
+    { label: "twitter:card", pattern: /<meta\s+[^>]*name=["']twitter:card["'][^>]*content=["']summary["']/i },
+    { label: "twitter:title", pattern: /<meta\s+[^>]*name=["']twitter:title["'][^>]*content=["'][^"']+["']/i },
+    { label: "twitter:description", pattern: /<meta\s+[^>]*name=["']twitter:description["'][^>]*content=["'][^"']+["']/i }
+  ];
+
+  for (const file of htmlFiles) {
+    const html = fs.readFileSync(path.join(outDir, file), "utf8");
+    for (const item of required) {
+      if (!item.pattern.test(html)) missing.push(`${file}: ${item.label}`);
+    }
+    const canonical = html.match(/<link\s+[^>]*rel=["']canonical["'][^>]*href=["']([^"']+)["']/i);
+    if (canonical && canonical[1] !== pageUrl(file)) {
+      missing.push(`${file}: canonical should be ${pageUrl(file)}, found ${canonical[1]}`);
+    }
+  }
+
+  if (missing.length) {
+    throw new Error(`Build output is missing SEO/social metadata:\n${missing.join("\n")}`);
+  }
+}
+
 function buildSitemap() {
   const urls = publicFiles
     .filter((file) => file.endsWith(".html"))
-    .map((file) => `  <url><loc>${siteUrl}/${file === "index.html" ? "" : file}</loc></url>`)
+    .map((file) => `  <url><loc>${pageUrl(file)}</loc></url>`)
     .join("\n");
   return `<?xml version="1.0" encoding="UTF-8"?>\n<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">\n${urls}\n</urlset>\n`;
 }
 
 function buildHeaders() {
-  return `/*\n  X-Content-Type-Options: nosniff\n  Referrer-Policy: strict-origin-when-cross-origin\n  Permissions-Policy: camera=(), microphone=(), geolocation=(), payment=()\n  X-Frame-Options: DENY\n  Content-Security-Policy: default-src 'self'; img-src 'self' data: https:; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com https://unpkg.com; font-src 'self' https://fonts.gstatic.com; script-src 'self' 'unsafe-inline' https://unpkg.com; connect-src 'self'; frame-ancestors 'none'; base-uri 'self'; form-action 'self'; object-src 'none'\n`;
+  return `/*\n  X-Content-Type-Options: nosniff\n  Referrer-Policy: strict-origin-when-cross-origin\n  Permissions-Policy: camera=(), microphone=(), geolocation=(), payment=()\n  X-Frame-Options: DENY\n  Content-Security-Policy: default-src 'self'; img-src 'self' data: https:; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src 'self' https://fonts.gstatic.com; script-src 'self' 'unsafe-inline'; connect-src 'self'; frame-ancestors 'none'; base-uri 'self'; form-action 'self'; object-src 'none'\n`;
 }
 
 function build404() {
@@ -157,5 +267,6 @@ writeFile("404.html", build404());
 
 validateLinks();
 validateNoInternalArtifacts();
+validateSeoMetadata();
 
 console.log(`Built ${publicFiles.length} public files into ${path.relative(root, outDir) || outDir}`);

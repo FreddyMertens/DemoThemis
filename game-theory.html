@@ -285,7 +285,7 @@
   }
 
   .info-icon { display: inline-flex; align-items: center; justify-content: center; cursor: pointer; padding: 10px; margin: -10px -10px -10px -2px; color: var(--muted); opacity: 0.6; transition: opacity 0.2s ease, color 0.2s ease; vertical-align: -0.125em; position: relative; z-index: 10; }
-  .info-icon:hover { opacity: 1; color: var(--ink); }
+  .info-icon:hover, .info-icon:focus-visible { opacity: 1; color: var(--ink); }
   .info-icon svg { width: 15px; height: 15px; }
   .node p { display: none; } /* Hide old paragraph explanations since we moved them to tooltips */
 
@@ -293,14 +293,12 @@
   .tooltip-container { font-family: var(--sans); text-align: left; padding: 0.25rem; }
   .tooltip-title { font-weight: 800; font-size: 0.85rem; margin-bottom: 0.25rem; color: #fff; text-transform: uppercase; letter-spacing: 0.05em; }
   .tooltip-concept { font-size: 0.8rem; line-height: 1.4; color: rgba(255, 255, 255, 0.9); margin-bottom: 0.4rem; }
-  .tooltip-details { margin-top: 0.4rem; }
-  .tooltip-details summary { font-size: 0.72rem; font-weight: 700; cursor: pointer; color: #38bdf8; outline: none; user-select: none; transition: color 0.15s ease; }
-  .tooltip-details summary:hover { color: #fff; }
+  .tooltip-label { display: block; margin-top: 0.35rem; font-family: var(--sans); font-size: 0.68rem; font-weight: 800; letter-spacing: 0.06em; text-transform: uppercase; color: #38bdf8; }
   .tooltip-math { font-family: var(--mono); font-size: 0.7rem; background: rgba(0, 0, 0, 0.25); padding: 0.25rem 0.45rem; border-radius: 4px; margin: 0.25rem 0; color: #f43f5e; word-break: break-all; white-space: pre-wrap; border: 1px solid rgba(255,255,255,0.05); }
   .tooltip-live { font-family: var(--mono); font-size: 0.7rem; color: rgba(255, 255, 255, 0.7); margin-top: 0.2rem; }
 </style>
-<link rel="stylesheet" href="https://unpkg.com/tippy.js@6/animations/shift-away.css" />
-<link rel="stylesheet" href="https://unpkg.com/tippy.js@6/dist/tippy.css" />
+<link rel="stylesheet" href="assets/vendor/tippy-shift-away-6.3.7.css">
+<link rel="stylesheet" href="assets/vendor/tippy-6.3.7.css">
 </head>
 <body>
 <div id="progress"></div>
@@ -610,8 +608,8 @@
   </footer>
 </main>
 
-<script src="https://unpkg.com/@popperjs/core@2"></script>
-<script src="https://unpkg.com/tippy.js@6"></script>
+<script src="assets/vendor/popper-2.11.8.min.js"></script>
+<script src="assets/vendor/tippy-6.3.7.umd.min.js"></script>
 <script src="assumptions.js"></script>
 <script src="assets/common.js"></script>
 <script>
@@ -1204,21 +1202,40 @@
     nodeClass(byId("nodePanel"), m.honestPanel > .85 ? "good" : m.honestPanel > .65 ? "mid" : "bad");
     nodeClass(byId("nodeKeys"), m.keySignal > .75 ? "good" : m.keySignal > .35 ? "mid" : "bad");
 
+    function tooltipLine(cls, label, text) {
+      var labelEl = document.createElement("span");
+      var valueEl = document.createElement("div");
+      labelEl.className = "tooltip-label";
+      labelEl.textContent = label;
+      valueEl.className = cls;
+      valueEl.textContent = text;
+      return [labelEl, valueEl];
+    }
+    function buildTooltipContent(title, concept, formula, live) {
+      var container = document.createElement("div");
+      var titleEl = document.createElement("div");
+      var conceptEl = document.createElement("div");
+      var formulaParts = tooltipLine("tooltip-math", "Formula", formula);
+      var liveParts = tooltipLine("tooltip-live", "Current values", live);
+      container.className = "tooltip-container";
+      titleEl.className = "tooltip-title";
+      titleEl.textContent = title;
+      conceptEl.className = "tooltip-concept";
+      conceptEl.textContent = concept;
+      container.appendChild(titleEl);
+      container.appendChild(conceptEl);
+      container.appendChild(formulaParts[0]);
+      container.appendChild(formulaParts[1]);
+      container.appendChild(liveParts[0]);
+      container.appendChild(liveParts[1]);
+      return container;
+    }
     function setTippyMath(id, title, concept, formula, live) {
       var el = byId(id);
       if (!el) return;
       var icon = el.querySelector('.info-icon');
       if (icon && icon._tippy) {
-        var htmlContent = '<div class="tooltip-container">' +
-          '<div class="tooltip-title">' + title + '</div>' +
-          '<div class="tooltip-concept">' + concept + '</div>' +
-          '<details class="tooltip-details">' +
-            '<summary>Show math and live values</summary>' +
-            '<div class="tooltip-math">' + formula + '</div>' +
-            '<div class="tooltip-live">' + live + '</div>' +
-          '</details>' +
-        '</div>';
-        icon._tippy.setContent(htmlContent);
+        icon._tippy.setContent(buildTooltipContent(title, concept, formula, live));
       }
     }
 
@@ -1452,14 +1469,20 @@
       icon.textContent = "!";
       label.textContent = "An attack works";
       detail.textContent = cleared.length + (cleared.length === 1 ? " attack can" : " attacks can") + " make money under current settings.";
-      clearsEl.innerHTML = cleared.map(function (k) { return '<span class="lab-status-clear">' + clearLabels[k] + '</span>'; }).join("");
+      clearsEl.replaceChildren();
+      cleared.forEach(function (k) {
+        var pill = document.createElement("span");
+        pill.className = "lab-status-clear";
+        pill.textContent = clearLabels[k];
+        clearsEl.appendChild(pill);
+      });
     } else {
       status.className = "lab-status resistant";
       grid.className = "lab-grid resistant";
-      icon.innerHTML = "&#10003;";
+      icon.textContent = "\u2713";
       label.textContent = "Attacks fail";
       detail.textContent = "No attack makes money under current settings.";
-      clearsEl.innerHTML = "";
+      clearsEl.replaceChildren();
     }
     byId("weakestOut").textContent = m.panel === 31 && weakest.key === "capture" ? "Large-jury eligibility" : attackLabel(weakest.key);
     byId("weakestSub").textContent = riskText(weakest.value) + " risk";
@@ -1656,7 +1679,10 @@
 
   setPreset("base");
   syncAttackSelection();
-  if (typeof window.initTooltips === 'function') window.initTooltips();
+  if (typeof window.initTooltips === 'function') {
+    window.initTooltips();
+    update();
+  }
 })();
 </script>
 </body>

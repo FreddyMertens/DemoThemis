@@ -15,7 +15,7 @@ I did not find exposed API keys, secrets, broken local links, duplicate DOM IDs,
 The largest issues are not "the page is broken." They are:
 
 1. ~~The Netlify deployment previously published the repository root, so internal markdown, QA pages, audit pages, helper scripts, and tooling were publicly accessible.~~ Fixed in the repo by switching Netlify to an allowlisted `dist` build output.
-2. ~~The deployed site lacks common browser security headers~~ and relies on external CDN scripts without SRI. Baseline headers are now generated in the repo; dependency pinning/SRI remains open.
+2. ~~The deployed site lacked common browser security headers and relied on external CDN tooltip scripts without SRI.~~ Baseline headers are generated in the repo, and tooltip dependencies are now vendored locally.
 3. Several pages still make absolute or near-absolute claims such as "money cannot buy" / "cannot be bribed" while other parts of the project correctly admit willing-accomplice limits, settlement curation limits, subjective-dispute boundaries, quorum issues, setup/key-management risks, and centralized-shortcut risks. The centralized-fallback wording has been corrected; remaining work is mostly tone/claim calibration.
 4. ~~The docs did not make the biometric/personhood privacy boundary explicit enough.~~ Fixed: Chapter 2 and the blueprint now state that DemoThemis receives purpose-scoped proofs, not scans, templates, names, or reusable identity handles.
 5. The gamelab is useful as an intuition tool, but it should not be framed as proof of security. It models selected attack paths, not a full adversarial protocol.
@@ -29,14 +29,14 @@ Findings and current status:
 | 3 | Fixed doc issue / future implementation diligence | Protocol/privacy | ~~Biometric/personhood/liveness privacy boundary was not explicit enough in the docs~~ | Docs now state the proof-only/no-biometric-custody boundary; formal privacy threat model remains launch diligence, not a website blocker |
 | 4 | Fixed doc issue / future implementation diligence | Protocol | ~~Docs could imply centralized fallback/admin-key infrastructure~~ | Docs now explicitly reject centralized fallback/admin-key designs; implementation proof remains future build diligence |
 | 5 | Fixed site issue / future hardening | Browser security | ~~Missing CSP, `frame-ancestors`/XFO, Referrer-Policy, Permissions-Policy, and X-Content-Type-Options~~ | Baseline headers fixed in repo; stricter CSP without `unsafe-inline` remains optional hardening |
-| 6 | Remaining site issue | Supply chain | External unpkg scripts/styles use major-version aliases and no SRI | Browser supply-chain risk |
-| 7 | Future hardening | Frontend XSS posture | `allowHTML: true` tooltips and `innerHTML` sinks are safe only because current content is static | Latent XSS risk if content becomes dynamic |
+| 6 | Fixed site issue | Supply chain | ~~External unpkg scripts/styles use major-version aliases and no SRI~~ | Fixed by vendoring exact Popper/Tippy assets locally and removing unpkg from the CSP |
+| 7 | Partial hardening fix | Frontend XSS posture | ~~`allowHTML: true` tooltips and shared `innerHTML` site chrome created a latent XSS path~~ | Shared tooltips now render text only; shared nav/TOC/site chrome now uses DOM APIs. Some static demo calculators still use controlled `innerHTML` for display markup |
 | 8 | Remaining doc issue | Gamelab representation | Gamelab can imply completeness beyond what it models | Misrepresentation risk, not exploit |
-| 9 | Local repo hygiene | Repo hygiene | Many untracked scratch scripts/images in root and weak ignore rules | Accidental commit noise; deploy allowlist reduces production risk |
-| 10 | Partial process fix | Testing/CI | No full-site CI gate for ~~deployment allowlist, headers, links,~~ browser smoke, or content regressions | Build-time allowlist/header/link checks added; CI/browser smoke still open |
-| 11 | Optional polish | Accessibility | ARIA and keyboard-state coverage should be audited, especially interactive controls/tooltips | User experience/compliance risk |
-| 12 | Partial polish fix | SEO/share | No ~~`robots.txt`, sitemap,~~ canonical, OpenGraph, or Twitter metadata | `robots.txt`, `sitemap.xml`, and `404.html` generated; canonical/social metadata still open |
-| 13 | Optional hardening | Performance/resilience | Large standalone pages and CDN enhancements are acceptable but not hardened | Performance/reliability weakness |
+| 9 | Fixed local hygiene issue | Repo hygiene | ~~Many untracked scratch scripts/images in root and weak ignore rules~~ | Root scratch scripts moved into ignored `scratch/`; `.gitignore` now ignores that workspace |
+| 10 | Fixed process issue | Testing/CI | ~~No full-site CI gate for deployment allowlist, headers, links, browser smoke, or content regressions~~ | GitHub Actions now runs build, gamelab validation, and a dependency-free smoke test over public pages, metadata, headers, and blocked internal paths |
+| 11 | Fixed baseline polish | Accessibility | ~~ARIA and keyboard-state coverage needed a pass, especially interactive controls/tooltips~~ | Dropdowns now update `aria-expanded`; tooltip triggers are keyboard-focusable and labeled; gamelab tabs already expose tab state. Formal Lighthouse/screen-reader testing remains optional polish |
+| 12 | Fixed polish issue | SEO/share | ~~No `robots.txt`, sitemap, canonical, OpenGraph, or Twitter metadata~~ | Build now generates `robots.txt`, `sitemap.xml`, `404.html`, canonical URLs, OpenGraph metadata, and Twitter metadata |
+| 13 | Optional hardening | Performance/resilience | Large standalone pages are acceptable but not deeply optimized | Performance/reliability polish |
 
 ## Methodology
 
@@ -332,7 +332,7 @@ This is a static site, so the immediate risk is lower than a logged-in web app. 
 
 Does this expose a vulnerability?
 
-Partly. It is not an active exploit by itself, but it removes defense-in-depth. The most meaningful missing control is CSP, especially combined with external CDN scripts and `allowHTML` tooltip rendering.
+Partly. It is not an active exploit by itself, but it removes defense-in-depth. The most meaningful missing control was CSP, especially when combined with external CDN scripts and HTML-enabled tooltip rendering. Baseline CSP is now generated, tooltip dependencies are local, and tooltips render text rather than HTML.
 
 Implemented fix:
 
@@ -343,21 +343,23 @@ X-Content-Type-Options: nosniff
 Referrer-Policy: strict-origin-when-cross-origin
 Permissions-Policy: camera=(), microphone=(), geolocation=(), payment=()
 X-Frame-Options: DENY
-Content-Security-Policy: default-src 'self'; img-src 'self' data: https:; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com https://unpkg.com; font-src 'self' https://fonts.gstatic.com; script-src 'self' 'unsafe-inline' https://unpkg.com; connect-src 'self'; frame-ancestors 'none'; base-uri 'self'; form-action 'self'; object-src 'none'
+Content-Security-Policy: default-src 'self'; img-src 'self' data: https:; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src 'self' https://fonts.gstatic.com; script-src 'self' 'unsafe-inline'; connect-src 'self'; frame-ancestors 'none'; base-uri 'self'; form-action 'self'; object-src 'none'
 ```
 
 Remaining hardening: the CSP still allows inline scripts/styles because the current pages use inline code. A stronger long-term fix is to move inline scripts to local files and use hashed or nonce-based CSP.
 
-### 8. Medium: External CDN Scripts Use unpkg Without SRI or Pinning in Markup
+### 8. Medium: ~~External CDN Scripts Used unpkg Without SRI or Pinning in Markup~~
+
+Status: fixed in repo. Popper and Tippy are now vendored as exact local assets under `assets/vendor/`, copied into `dist`, and referenced from `game-theory.html`. The generated CSP no longer allows `https://unpkg.com` in `script-src` or `style-src`.
 
 Evidence:
 
-`game-theory.html` loads:
+The previous `game-theory.html` loaded:
 
 - `https://unpkg.com/@popperjs/core@2`
 - `https://unpkg.com/tippy.js@6`
 
-The page also loads Tippy CSS from unpkg.
+The page also loaded Tippy CSS from unpkg.
 
 Why this matters:
 
@@ -367,21 +369,24 @@ Does this expose a vulnerability?
 
 Yes, as a browser supply-chain risk. Current impact is limited because the site has no login/session/private data, but it can still misrepresent content, redirect users, or fingerprint visitors.
 
-Recommended fix:
+Implemented fix:
 
-- Vendor the small JS/CSS dependencies into `assets/vendor/`.
-- Or pin exact URLs and add `integrity` plus `crossorigin="anonymous"`.
-- Add CSP after removing inline script or adding hashes.
-- Consider replacing tooltips with a local lightweight implementation if the dependency is only used for hover content.
+- Vendored `popper-2.11.8.min.js`, `tippy-6.3.7.umd.min.js`, `tippy-6.3.7.css`, and `tippy-shift-away-6.3.7.css`.
+- Included local license files for both packages.
+- Added the vendor assets to `tools/build-site.js`.
+- Removed unpkg from the generated CSP.
+- Added validator checks so unpkg references in the gamelab/shared/build files fail validation.
 
-### 9. Medium: Tooltip HTML Rendering and `innerHTML` Create a Latent XSS Path
+### 9. Medium: ~~Tooltip HTML Rendering and Shared `innerHTML` Created a Latent XSS Path~~
+
+Status: partially fixed in repo. The shared site chrome now builds the chapter navigation, top navigation cards, table of contents, info icons, and back-to-top button with DOM APIs instead of `innerHTML`. Tippy now uses `allowHTML: false`, so `data-tooltip` content is treated as text. Some page-specific static demos still use controlled `innerHTML` for rich display markup; those are lower-risk while inputs remain numeric/static, but should be revisited before any CMS or user-generated content is introduced.
 
 Evidence:
 
-- `assets/common.js` generates navigation/TOC UI with `innerHTML`.
-- `assets/common.js` initializes Tippy with `allowHTML: true`.
+- `assets/common.js` previously generated navigation/TOC UI with `innerHTML`.
+- `assets/common.js` previously initialized Tippy with `allowHTML: true`.
 - Tooltip content comes from `data-tooltip`.
-- `game-theory.html` also sets tooltip content with constructed HTML in gamelab logic.
+- `game-theory.html` still uses controlled `innerHTML` for numeric/model display cards, not for tooltip HTML.
 
 Why this matters:
 
@@ -391,10 +396,16 @@ Does this expose a vulnerability?
 
 Latent only. With current static author-controlled content, I did not find an exploit path from visitor input. With dynamic content, yes, it could become a direct XSS vulnerability.
 
-Recommended fix:
+Implemented fix:
 
-- Set `allowHTML: false` unless rich tooltip markup is truly needed.
-- Build generated UI with DOM APIs instead of string `innerHTML` where practical.
+- Set `allowHTML: false` for Tippy.
+- Rebuilt shared series navigation and table-of-contents rendering with DOM APIs.
+- Rebuilt shared generated info icons with SVG DOM APIs.
+- Replaced the gamelab status-pill HTML join with element creation.
+- Added validator checks that reject `allowHTML: true` and `innerHTML` assignments in `assets/common.js`.
+
+Remaining hardening:
+
 - If HTML is required, sanitize with a trusted sanitizer and define allowed tags/attributes.
 - Add a CSP that would limit script execution even if HTML injection occurs.
 - Treat assumption text as untrusted by default.
@@ -453,7 +464,7 @@ Recommended fix:
 Evidence:
 
 - There is a gamelab validator and now a build-time deploy allowlist/link/header generation check.
-- There is still no package-managed CI setup or browser smoke/content-regression gate.
+- A GitHub Actions workflow now runs the static build, gamelab validator, and built-site smoke test on push and pull request.
 
 Why this matters:
 
@@ -476,11 +487,13 @@ Added:
 - ~~Header check against Netlify preview deploy.~~ Baseline headers are generated into `dist/_headers`; live preview verification still belongs in CI.
 - Secret scan.
 
-### 13. Medium: Root Directory Contains Many Untracked Scratch Files
+### 13. Medium: ~~Root Directory Contained Many Untracked Scratch Files~~
+
+Status: fixed locally. Untracked root scratch scripts were moved into an ignored `scratch/` directory instead of being deleted, and `.gitignore` now ignores that workspace.
 
 Evidence:
 
-The working tree currently contains many untracked root-level helper/scratch files, including:
+The working tree previously contained many untracked root-level helper/scratch files, including:
 
 - `add_main_tooltips.js`
 - `apply_all_tooltips.js`
@@ -499,17 +512,17 @@ The working tree currently contains many untracked root-level helper/scratch fil
 
 Why this matters:
 
-They are not deployed right now because they are untracked. Before the deployment fix, committing them would also have made them production artifacts. The new `dist` allowlist prevents that, but root scratch files still increase accidental commit noise.
+They were not deployed because they were untracked. Before the deployment fix, committing them would also have made them production artifacts. The new `dist` allowlist prevents that, and moving them into ignored `scratch/` removes the day-to-day accidental commit noise.
 
 Does this expose a vulnerability?
 
 Not currently. It is an accidental commit/deploy risk and a maintenance smell.
 
-Recommended fix:
+Implemented fix:
 
-- Move useful scripts into `tools/` with clear names.
-- Delete or archive throwaway scripts.
-- Expand `.gitignore` for local scratch artifacts:
+- Moved untracked root scratch scripts into `scratch/`.
+- Added `scratch/` to `.gitignore`.
+- Kept the previous local scratch patterns:
 
 ```gitignore
 temp*.js
@@ -520,7 +533,7 @@ screenshot.png
 *.bak
 ```
 
-- Prefer a dedicated ignored `scratch/` directory for one-off scripts.
+- Prefer the ignored `scratch/` directory for future one-off scripts.
 
 ### 14. Future Implementation Diligence: Prediction-Market Regulatory Surface
 
@@ -546,13 +559,18 @@ Future implementation diligence:
 - Get counsel before operating, facilitating, or integrating real-money markets.
 - Define the regulatory boundary before any real-money launch.
 
-### 15. Medium-Low: Accessibility Needs a Dedicated Pass
+### 15. Medium-Low: ~~Accessibility Needs a Dedicated Pass~~
+
+Status: fixed at the website baseline level; formal Lighthouse/screen-reader testing remains optional polish.
 
 Evidence:
 
 - The browser crawl did not reveal obvious fatal rendering issues.
 - The project contains interactive controls, nav dropdowns, tooltips, segmented controls, and gamelab panels.
-- Full keyboard/screen-reader behavior was not exhaustively tested.
+- The gamelab tabs already expose tablist, tab, selected state, and panel relationships.
+- Shared dropdown navigation now assigns `aria-haspopup`, `aria-controls`, and live `aria-expanded` state.
+- Tooltip triggers now receive keyboard focus, accessible labels, and non-essential SVGs are hidden from assistive tech.
+- Mobile dropdown menus now remain collapsed until opened instead of exposing hidden menu structure visually.
 
 Why this matters:
 
@@ -560,22 +578,23 @@ Interactive explainers can easily become mouse-first and visually dense. If a re
 
 Does this expose a vulnerability?
 
-No security vulnerability. It is a usability and compliance weakness.
+No security vulnerability. It was a usability and compliance weakness.
 
-Recommended fix:
+Implemented fix:
 
-- Add keyboard-only test cases for the gamelab.
-- Ensure segmented controls use `aria-pressed` or equivalent state.
-- Ensure dropdowns update `aria-expanded`.
-- Ensure tooltip-trigger icons have accessible labels and tooltip content is not the only source of essential information.
-- Run Lighthouse/accessibility checks and manual screen-reader spot checks.
+- Dropdown buttons update `aria-expanded` and expose controlled menu IDs.
+- Tooltip-trigger icons are focusable, labeled, and safe for keyboard users.
+- Gamelab tabs already use `aria-selected` and arrow-key navigation.
+- A future Lighthouse/manual screen-reader pass would still be useful, but this is no longer an obvious website-baseline gap.
 
-### 16. Low-Medium: ~~No `robots.txt`, Sitemap, or 404~~; Canonical/Social Metadata Still Open
+### 16. Low-Medium: ~~No `robots.txt`, Sitemap, 404, Canonical, or Social Metadata~~
+
+Status: fixed in generated build output.
 
 Evidence:
 
 - ~~`robots.txt`, `sitemap.xml`, and `404.html` were not found on the deployed site.~~ They are now generated into `dist`.
-- Static scan did not find canonical, OpenGraph, or Twitter card metadata across pages.
+- ~~Static scan did not find canonical, OpenGraph, or Twitter card metadata across pages.~~ The build step now injects and validates canonical URLs, OpenGraph metadata, and Twitter summary-card metadata for every public HTML page.
 
 Why this matters:
 
@@ -589,8 +608,8 @@ Recommended fix:
 
 - ~~Add `robots.txt`.~~ Done in build output.
 - ~~Add `sitemap.xml`.~~ Done in build output.
-- Add canonical URLs.
-- Add OpenGraph/Twitter metadata for core pages.
+- ~~Add canonical URLs.~~ Done in build output.
+- ~~Add OpenGraph/Twitter metadata for core pages.~~ Done in build output.
 - ~~Add a custom `404.html`.~~ Done in build output.
 - Mark internal/archived pages `noindex` if any remain public.
 
@@ -599,7 +618,7 @@ Recommended fix:
 Evidence:
 
 - Pages are mostly standalone HTML and CSS, with some large page files.
-- Tippy/Popper are loaded from a CDN.
+- Tippy/Popper are now vendored locally under `assets/vendor/`.
 - No obvious browser crash or blank page was observed.
 
 Why this matters:
@@ -608,7 +627,7 @@ This is fine for a static grant/demo site. It becomes weaker as the project grow
 
 Does this expose a vulnerability?
 
-No direct vulnerability. CDN dependence is already covered as a supply-chain issue.
+No direct vulnerability. The previous CDN dependence is now fixed; remaining resilience work is mostly asset hashing/caching and reducing large standalone page complexity if the site grows.
 
 Recommended fix:
 
@@ -675,15 +694,18 @@ The gamelab should frame itself as an adversarial design worksheet. That is a st
 2. ~~Remove QA/audit/helper/markdown files from public production.~~ Fixed by deploy allowlist.
 3. ~~Add deployment artifact allowlist checks.~~ Fixed in `tools/build-site.js`.
 4. ~~Add baseline security headers in Netlify.~~ Fixed via generated `_headers`.
-5. Vendor or pin external dependencies and add SRI if CDN use remains.
+5. ~~Vendor or pin external dependencies and add SRI if CDN use remains.~~ Fixed by vendoring Popper/Tippy locally.
+6. ~~Add CI/smoke checks for the build output.~~ Fixed with `.github/workflows/site-check.yml` and `tools/smoke-site.js`.
+7. ~~Add canonical and social metadata.~~ Fixed in `tools/build-site.js`.
+8. ~~Apply a baseline accessibility pass to nav/tooltips.~~ Fixed in `assets/common.js` and `assets/styles.css`.
 
 ### Remaining Website/Docs Work
 
-6. Replace absolute bribery/security claims with conditional language.
-7. Add a concise public limitations section to the gamelab if the current caveats still feel too light.
-8. Optionally create one canonical threat-model/architecture-boundary page, but keep it scoped to what the docs need to claim.
-9. Optionally add gamelab models for tally setup/key-management failure, answer-key curation stress, identity rental, and appeal griefing if the gamelab is meant to be more than an intuition tool.
-10. Set Tippy `allowHTML` to false where possible and reduce `innerHTML` use.
+9. Replace absolute bribery/security claims with conditional language.
+10. Add a concise public limitations section to the gamelab if the current caveats still feel too light.
+11. Optionally create one canonical threat-model/architecture-boundary page, but keep it scoped to what the docs need to claim.
+12. Optionally add gamelab models for tally setup/key-management failure, answer-key curation stress, identity rental, and appeal griefing if the gamelab is meant to be more than an intuition tool.
+13. ~~Set Tippy `allowHTML` to false where possible and reduce shared `innerHTML` use.~~ Fixed for shared site chrome/tooltips; remaining page-specific `innerHTML` is controlled display markup.
 
 ### Future Product Launch Diligence, Not Required For This Website
 

@@ -71,19 +71,66 @@
     var nav = document.querySelector(".sitenav");
     if (!nav) return;
     var toggle = nav.querySelector(".nav-toggle");
+    function setGroupOpen(group, open) {
+      if (!group) return;
+      var btn = group.querySelector(".nav-group-btn");
+      group.classList.toggle("open", open);
+      if (btn) btn.setAttribute("aria-expanded", open ? "true" : "false");
+    }
+    function closeGroups(except) {
+      Array.prototype.forEach.call(nav.querySelectorAll(".nav-group"), function (group) {
+        if (group !== except) setGroupOpen(group, false);
+      });
+    }
     if (toggle) {
       toggle.addEventListener("click", function () {
         var open = nav.classList.toggle("open");
         toggle.setAttribute("aria-expanded", open ? "true" : "false");
+        if (!open) closeGroups();
       });
     }
-    Array.prototype.forEach.call(nav.querySelectorAll(".nav-group-btn"), function (gbtn) {
+    Array.prototype.forEach.call(nav.querySelectorAll(".nav-group"), function (group, index) {
+      var gbtn = group.querySelector(".nav-group-btn");
+      var menu = group.querySelector(".nav-menu");
+      if (!gbtn || !menu) return;
+      if (!menu.id) menu.id = "nav-menu-" + index;
+      gbtn.setAttribute("aria-haspopup", "true");
+      gbtn.setAttribute("aria-expanded", group.classList.contains("open") ? "true" : "false");
+      gbtn.setAttribute("aria-controls", menu.id);
       gbtn.addEventListener("click", function (e) {
-        if (window.matchMedia("(max-width: 860px)").matches) {
-          e.preventDefault();
-          gbtn.parentNode.classList.toggle("open");
+        e.preventDefault();
+        var open = !group.classList.contains("open");
+        closeGroups(group);
+        setGroupOpen(group, open);
+      });
+      group.addEventListener("focusin", function () {
+        closeGroups(group);
+        setGroupOpen(group, true);
+      });
+      group.addEventListener("focusout", function () {
+        window.setTimeout(function () {
+          if (!group.contains(document.activeElement)) setGroupOpen(group, false);
+        }, 0);
+      });
+      group.addEventListener("mouseenter", function () {
+        if (window.matchMedia("(min-width: 861px)").matches) setGroupOpen(group, true);
+      });
+      group.addEventListener("mouseleave", function () {
+        if (window.matchMedia("(min-width: 861px)").matches && !group.contains(document.activeElement)) {
+          setGroupOpen(group, false);
         }
       });
+    });
+    document.addEventListener("click", function (e) {
+      if (!nav.contains(e.target)) closeGroups();
+    });
+    nav.addEventListener("keydown", function (e) {
+      if (e.key !== "Escape") return;
+      closeGroups();
+      if (toggle && nav.classList.contains("open")) {
+        nav.classList.remove("open");
+        toggle.setAttribute("aria-expanded", "false");
+      }
     });
     Array.prototype.forEach.call(nav.querySelectorAll("a[href]"), function (a) {
       if (fileOf(a.getAttribute("href")) === here) {
@@ -95,13 +142,36 @@
   }
 
   // ---- series prev/next ----
-  function seriesCard(cls, item, dir) {
-    return '<a class="' + cls + '" href="' + item.f + '"><span class="dir">' + dir + '</span><span class="ttl">' + item.t + '</span></a>';
+  function createSeriesCard(cls, item, dir) {
+    var link = document.createElement("a");
+    var direction = document.createElement("span");
+    var title = document.createElement("span");
+    link.className = cls;
+    link.href = item.f;
+    direction.className = "dir";
+    direction.textContent = dir;
+    title.className = "ttl";
+    title.textContent = item.t;
+    link.appendChild(direction);
+    link.appendChild(title);
+    return link;
   }
 
-  function renderSeries(el, html) {
+  function appendSeriesContent(el, pos, links) {
+    var label = document.createElement("p");
+    var nav = document.createElement("div");
+    label.className = "series-pos";
+    label.textContent = pos;
+    nav.className = "series-nav";
+    links.forEach(function (link) {
+      nav.appendChild(createSeriesCard(link.cls, link.item, link.dir));
+    });
+    el.replaceChildren(label, nav);
+  }
+
+  function renderSeries(el, pos, links) {
     el.classList.add("series-bottom");
-    el.innerHTML = html;
+    appendSeriesContent(el, pos, links);
 
     if (here === "index.html") return;
 
@@ -117,7 +187,7 @@
       var toc = document.getElementById("toc");
       main.insertBefore(top, toc || main.firstChild);
     }
-    top.innerHTML = html;
+    appendSeriesContent(top, pos, links);
   }
 
   function findChapterIndex(file) {
@@ -126,23 +196,23 @@
   }
 
   function chapterNav(pos, prev, next) {
-    var cards = "";
-    if (prev) cards += seriesCard("prev", prev, "&larr; Previous chapter");
-    if (next) cards += seriesCard("next", next, "Next chapter &rarr;");
-    return '<p class="series-pos">' + pos + '</p><div class="series-nav">' + cards + '</div>';
+    var links = [];
+    if (prev) links.push({ cls: "prev", item: prev, dir: "\u2190 Previous chapter" });
+    if (next) links.push({ cls: "next", item: next, dir: "Next chapter \u2192" });
+    return { pos: pos, links: links };
   }
 
   function initSeries() {
     var el = document.getElementById("series");
     if (!el) return;
 
-    var html;
+    var nav;
 
     // Home: a single call to action into chapter one.
     if (here === "index.html") {
-      html = '<p class="series-pos">The story in ' + TOTAL + ' chapters</p>' +
-        '<div class="series-nav">' + seriesCard("next", CHAPTERS[0], "Start &rarr;") + '</div>';
-      renderSeries(el, html);
+      renderSeries(el, "The story in " + TOTAL + " chapters", [
+        { cls: "next", item: CHAPTERS[0], dir: "Start \u2192" }
+      ]);
       return;
     }
 
@@ -154,8 +224,8 @@
     if (rIdx !== -1) {
       var rPrev = rIdx > 0 ? REVIEWS[rIdx - 1] : BLUEPRINT;
       var rNext = rIdx < REVIEWS.length - 1 ? REVIEWS[rIdx + 1] : null;
-      html = chapterNav('The review &middot; Round ' + (rIdx + 1) + ' of ' + REVIEWS.length, rPrev, rNext);
-      renderSeries(el, html);
+      nav = chapterNav("The review \u00b7 Round " + (rIdx + 1) + " of " + REVIEWS.length, rPrev, rNext);
+      renderSeries(el, nav.pos, nav.links);
       return;
     }
 
@@ -166,16 +236,16 @@
       var parent = { f: fileOf(parentFile), t: el.getAttribute("data-parent-title") || "Parent chapter" };
       var pIdx = findChapterIndex(parent.f);
       var dNext = pIdx !== -1 && pIdx < CHAPTERS.length - 1 ? CHAPTERS[pIdx + 1] : null;
-      html = chapterNav('Chapter navigation', parent, dNext);
-      renderSeries(el, html);
+      nav = chapterNav("Chapter navigation", parent, dNext);
+      renderSeries(el, nav.pos, nav.links);
       return;
     }
 
     var c = CHAPTERS[idx];
     var prev = idx > 0 ? CHAPTERS[idx - 1] : null;
     var next = idx < CHAPTERS.length - 1 ? CHAPTERS[idx + 1] : null;
-    html = chapterNav('Act ' + c.act + ' &middot; Chapter ' + c.ch + ' of ' + TOTAL + ' &middot; ' + c.actName, prev, next);
-    renderSeries(el, html);
+    nav = chapterNav("Act " + c.act + " \u00b7 Chapter " + c.ch + " of " + TOTAL + " \u00b7 " + c.actName, prev, next);
+    renderSeries(el, nav.pos, nav.links);
   }
 
   // ---- in-page table of contents + scroll-spy ----
@@ -194,9 +264,19 @@
       entries.push({ id: sec.id, text: text });
     });
     if (entries.length < 3) { toc.style.display = "none"; return; }
-    var ul = "";
-    entries.forEach(function (e) { ul += '<li><a href="#' + e.id + '">' + e.text + '</a></li>'; });
-    toc.innerHTML = '<p class="toc-title">On this page</p><ul>' + ul + '</ul>';
+    var title = document.createElement("p");
+    var list = document.createElement("ul");
+    title.className = "toc-title";
+    title.textContent = "On this page";
+    entries.forEach(function (e) {
+      var item = document.createElement("li");
+      var link = document.createElement("a");
+      link.href = "#" + e.id;
+      link.textContent = e.text;
+      item.appendChild(link);
+      list.appendChild(item);
+    });
+    toc.replaceChildren(title, list);
     var linkFor = {};
     Array.prototype.forEach.call(toc.querySelectorAll("a"), function (a) {
       linkFor[a.getAttribute("href").slice(1)] = a;
@@ -214,7 +294,48 @@
     }
   }
 
-      // ---- tooltips ----
+  // ---- tooltips ----
+  function appendInfoSvg(icon) {
+    var svg = document.createElementNS("http://www.w3.org/2000/svg", "svg");
+    var circle = document.createElementNS("http://www.w3.org/2000/svg", "circle");
+    var stem = document.createElementNS("http://www.w3.org/2000/svg", "path");
+    var dot = document.createElementNS("http://www.w3.org/2000/svg", "path");
+    svg.setAttribute("viewBox", "0 0 24 24");
+    svg.setAttribute("fill", "none");
+    svg.setAttribute("stroke", "currentColor");
+    svg.setAttribute("stroke-width", "2");
+    svg.setAttribute("stroke-linecap", "round");
+    svg.setAttribute("stroke-linejoin", "round");
+    svg.setAttribute("aria-hidden", "true");
+    svg.setAttribute("focusable", "false");
+    circle.setAttribute("cx", "12");
+    circle.setAttribute("cy", "12");
+    circle.setAttribute("r", "10");
+    stem.setAttribute("d", "M12 16v-4");
+    dot.setAttribute("d", "M12 8h.01");
+    svg.appendChild(circle);
+    svg.appendChild(stem);
+    svg.appendChild(dot);
+    icon.appendChild(svg);
+  }
+
+  function tooltipAriaLabel(text) {
+    var clean = (text || "").replace(/\s+/g, " ").trim();
+    if (clean.length > 180) clean = clean.slice(0, 177).replace(/\s+\S*$/, "") + "...";
+    return clean ? "More information: " + clean : "More information";
+  }
+
+  function prepareTooltipTrigger(el) {
+    var copy = el.getAttribute("data-tooltip") || el.getAttribute("aria-label") || "";
+    if (!el.hasAttribute("tabindex")) el.setAttribute("tabindex", "0");
+    if (!el.hasAttribute("role")) el.setAttribute("role", "button");
+    if (!el.hasAttribute("aria-label")) el.setAttribute("aria-label", tooltipAriaLabel(copy));
+    Array.prototype.forEach.call(el.querySelectorAll("svg"), function (svg) {
+      svg.setAttribute("aria-hidden", "true");
+      svg.setAttribute("focusable", "false");
+    });
+  }
+
   window.initTooltips = function() {
     const MAIN_COPIES = {
       flow: "The total dollar value of ordinary cases expected to arrive in court each month.",
@@ -255,7 +376,7 @@
         var icon = document.createElement("span");
         icon.className = "info-icon";
         icon.setAttribute("data-tooltip", a.copy);
-        icon.innerHTML = `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"></circle><path d="M12 16v-4"></path><path d="M12 8h.01"></path></svg>`;
+        appendInfoSvg(icon);
         
         var b = label.querySelector("b") || label.querySelector("output");
         
@@ -277,6 +398,7 @@
     });
 
     if (typeof tippy !== 'undefined') {
+      Array.prototype.forEach.call(document.querySelectorAll('[data-tooltip]'), prepareTooltipTrigger);
       tippy('[data-tooltip]', {
         content(reference) {
           return reference.getAttribute('data-tooltip');
@@ -284,8 +406,10 @@
         theme: 'demothemis',
         animation: 'shift-away',
         placement: 'top',
+        trigger: 'mouseenter focus',
+        hideOnClick: true,
         maxWidth: 450,
-        allowHTML: true,
+        allowHTML: false,
       });
     }
   }
@@ -296,7 +420,7 @@
     btn.className = "to-top";
     btn.type = "button";
     btn.setAttribute("aria-label", "Back to top");
-    btn.innerHTML = "&uarr;";
+    btn.textContent = "\u2191";
     document.body.appendChild(btn);
     btn.addEventListener("click", function () { window.scrollTo({ top: 0, behavior: "smooth" }); });
     function vis() { btn.classList.toggle("show", window.scrollY > 700); }

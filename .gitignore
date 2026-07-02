@@ -2,6 +2,7 @@ node_modules/
 .netlify/
 dist/
 windsurf_deployment.yaml
+scratch/
 
 # Local one-off scripts and screenshots from interactive editing sessions.
 temp*.js
