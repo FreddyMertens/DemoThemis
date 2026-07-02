@@ -622,14 +622,22 @@
   };
   var ATTACK_IDS = ["bloc", "bribe", "rental", "lazy", "grief", "drift"];
   var RISK_TO_ATTACK = { capture: "bloc", bribe: "bribe", rental: "rental", lazy: "lazy", grief: "grief", drift: "drift" };
+  var PRESET_CASES = {
+    base: { flow: 5000000, stake: 45, lag: 4, fee: 20, payShare: 70, rewardShare: 20, jurors: 52, skill: 68, careless: 25, slash: 100, bloc: 300, rented: 0, rerolls: 1, locks: true, syntheticTests: 1000 },
+    cold: { flow: 500000, stake: 35, lag: 4, fee: 20, payShare: 70, rewardShare: 20, jurors: 25, skill: 60, careless: 30, slash: 100, bloc: 120, rented: 0, rerolls: 1, locks: true, syntheticTests: 500 },
+    surge: { flow: 35000000, stake: 58, lag: 5, fee: 20, payShare: 70, rewardShare: 20, jurors: 48, skill: 68, careless: 25, slash: 100, bloc: 500, rented: 0, rerolls: 1, locks: true, syntheticTests: 2000 },
+    whale: { flow: 25000000, stake: 90, lag: 5, fee: 20, payShare: 70, rewardShare: 20, jurors: 90, skill: 72, careless: 20, slash: 100, bloc: 1500, rented: 0, rerolls: 1, locks: true, syntheticTests: 1000 },
+    bloc: { flow: 8000000, stake: 65, lag: 4, fee: 20, payShare: 70, rewardShare: 20, jurors: 90, skill: 68, careless: 25, slash: 100, bloc: 3000, rented: 0, rerolls: 1, locks: true, syntheticTests: 1000 },
+    drift: { flow: 1200000, stake: 38, lag: 6, fee: 20, payShare: 70, rewardShare: 20, jurors: 45, skill: 68, careless: 35, slash: 100, bloc: 100, rented: 0, rerolls: 1, locks: true, syntheticTests: 50 }
+  };
   var STRESS_CASES = [
     { id: "current", label: "Current board", note: "The board exactly as set.", apply: function (s) { return s; } },
-    { id: "cold", label: "Cold start", note: "Fewer jurors and fewer calibration tests.", apply: function (s) { s.flow *= .35; s.jurors *= .4; s.syntheticTests *= .35; s.skill -= .03; return s; } },
-    { id: "surge", label: "Demand surge", note: "More work arrives before supply catches up.", apply: function (s) { s.flow *= 3.2; s.lag += 1; s.jurors *= .75; return s; } },
-    { id: "whale", label: "Whale case", note: "Stake jumps into the largest-panel path.", apply: function (s) { s.stake = Math.max(s.stake, 1250000); s.bloc = Math.max(s.bloc, Math.round(s.jurors * .04)); s.assumptions.seniorPoolShare = Math.min(s.assumptions.seniorPoolShare, .35); return s; } },
-    { id: "bloc", label: "Bloc pressure", note: "A larger coordinated group tests draw width.", apply: function (s) { s.bloc = Math.max(s.bloc * 2.2, Math.round(s.jurors * .12)); return s; } },
-    { id: "drift", label: "Juror drift", note: "Calibration supply thins while shortcut pressure rises.", apply: function (s) { s.syntheticTests *= .18; s.assumptions.consentedTestShare = Math.min(s.assumptions.consentedTestShare, .015); s.careless = Math.min(.5, s.careless + .08); return s; } },
-    { id: "appeal", label: "Appeal pressure", note: "Delay value rises; appeal rent and petition pricing must rise with it.", apply: function (s) { s.lag += 2; s.assumptions.griefDelayRate = Math.max(s.assumptions.griefDelayRate, .016); s.assumptions.appealDelayRate = Math.max(s.assumptions.appealDelayRate, .018); s.assumptions.petitionMultiplier = Math.max(s.assumptions.petitionMultiplier, 1.15); return s; } },
+    { id: "cold", label: "Cold start", note: "Fewer jurors and fewer calibration tests.", preset: "cold" },
+    { id: "surge", label: "Demand surge", note: "More work arrives before supply catches up.", preset: "surge" },
+    { id: "whale", label: "Whale case", note: "Stake jumps into the largest-panel path.", preset: "whale" },
+    { id: "bloc", label: "Bloc pressure", note: "A larger coordinated group tests draw width.", preset: "bloc" },
+    { id: "drift", label: "Juror drift", note: "Calibration supply thins while shortcut pressure rises.", preset: "drift" },
+    { id: "appeal", label: "Appeal pressure", note: "Delay value rises; appeal rent and petition pricing must rise with it.", preset: "base", apply: function (s) { s.lag += 2; s.assumptions.griefDelayRate = Math.max(s.assumptions.griefDelayRate, .016); s.assumptions.appealDelayRate = Math.max(s.assumptions.appealDelayRate, .018); s.assumptions.petitionMultiplier = Math.max(s.assumptions.petitionMultiplier, 1.15); return s; } },
     { id: "broken", label: "Break the locks", note: "Failure demo: remove the core safeguards.", sanity: true, apply: function (s) { lockIds.forEach(function (id) { s[id] = false; }); s.rented = Math.max(s.rented, 2000); s.rerolls = Math.max(s.rerolls, 30); s.syntheticTests = 0; return s; } }
   ];
   var pinnedAssumptions = {};
@@ -760,6 +768,31 @@
     var out = {};
     ASSUMPTIONS.forEach(function (a) { out[a.id] = a.default; });
     return out;
+  }
+  function stateFromPreset(name) {
+    var p = PRESET_CASES[name];
+    if (!p) throw new Error("Unknown gamelab preset: " + name);
+    var s = {
+      assumptions: defaultAssumptions(),
+      flow: parseInt(p.flow, 10),
+      stake: span(p.stake, 100, 5000000),
+      lag: p.lag,
+      challenge: 1,
+      fee: p.fee / 1000,
+      payShare: p.payShare / 100,
+      rewardShare: p.rewardShare / 100,
+      opsShare: Math.max(0, 1 - p.payShare / 100 - p.rewardShare / 100),
+      jurors: Math.round(span(p.jurors, 100, 80000)),
+      syntheticTests: p.syntheticTests,
+      skill: p.skill / 100,
+      careless: p.careless / 100,
+      slash: p.slash / 100,
+      bloc: p.bloc,
+      rented: p.rented,
+      rerolls: p.rerolls
+    };
+    lockIds.forEach(function (id) { s[id] = p.locks; });
+    return s;
   }
   function readAssumptions() {
     var out = {};
@@ -1297,7 +1330,9 @@
     };
   }
   function stressState(v, stressCase) {
-    var s = clampModelState(stressCase.apply(copyState(v)));
+    var s = stressCase.preset ? stateFromPreset(stressCase.preset) : copyState(v);
+    if (stressCase.apply) s = stressCase.apply(s);
+    s = clampModelState(s);
     var m = compute(s);
     var state = modelState(m);
     var cleared = state.cleared.map(function (key) { return attackLabel(key); });
@@ -1492,16 +1527,7 @@
   }
 
   function setPreset(name) {
-    var sets = {
-      base: { flow: 5000000, stake: 45, lag: 4, fee: 20, payShare: 70, rewardShare: 20, jurors: 52, skill: 68, careless: 25, slash: 100, bloc: 300, rented: 0, rerolls: 1, locks: true, syntheticTests: 1000 },
-      cold: { flow: 500000, stake: 35, lag: 4, fee: 20, payShare: 70, rewardShare: 20, jurors: 25, skill: 60, careless: 30, slash: 100, bloc: 120, rented: 0, rerolls: 1, locks: true, syntheticTests: 500 },
-      surge: { flow: 35000000, stake: 58, lag: 5, fee: 20, payShare: 70, rewardShare: 20, jurors: 48, skill: 68, careless: 25, slash: 100, bloc: 500, rented: 0, rerolls: 1, locks: true, syntheticTests: 2000 },
-      whale: { flow: 25000000, stake: 90, lag: 5, fee: 20, payShare: 70, rewardShare: 20, jurors: 58, skill: 72, careless: 20, slash: 100, bloc: 1500, rented: 0, rerolls: 1, locks: true, syntheticTests: 1000 },
-      bloc: { flow: 8000000, stake: 65, lag: 4, fee: 20, payShare: 70, rewardShare: 20, jurors: 40, skill: 68, careless: 25, slash: 100, bloc: 3000, rented: 0, rerolls: 1, locks: true, syntheticTests: 1000 },
-      drift: { flow: 1200000, stake: 38, lag: 6, fee: 20, payShare: 70, rewardShare: 20, jurors: 45, skill: 68, careless: 35, slash: 100, bloc: 100, rented: 0, rerolls: 1, locks: true, syntheticTests: 50 },
-      broken: { flow: 5000000, stake: 55, lag: 6, fee: 20, payShare: 70, rewardShare: 20, jurors: 35, skill: 60, careless: 40, slash: 50, bloc: 700, rented: 2000, rerolls: 30, locks: false, syntheticTests: 0 }
-    };
-    var s = sets[name];
+    var s = PRESET_CASES[name];
     Array.prototype.forEach.call(document.querySelectorAll(".preset"), function (btn) {
       btn.classList.toggle("active", btn.getAttribute("data-preset") === name);
     });

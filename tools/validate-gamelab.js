@@ -1,5 +1,6 @@
 const fs = require("fs");
 const path = require("path");
+const vm = require("vm");
 
 const root = path.resolve(__dirname, "..");
 const htmlPath = path.join(root, "game-theory.html");
@@ -29,9 +30,9 @@ function extractRangeInputs(source) {
 }
 
 function extractPresetObject(source) {
-  const match = source.match(/var sets = (\{[\s\S]*?\n\s{4}\});/);
+  const match = source.match(/var PRESET_CASES = (\{[\s\S]*?\n\s{2}\});/);
   if (!match) {
-    fail("Could not find preset object in game-theory.html");
+    fail("Could not find PRESET_CASES object in game-theory.html");
     return {};
   }
   return Function(`"use strict"; return (${match[1]});`)();
@@ -44,6 +45,34 @@ function extractAssumptionList(source) {
     return [];
   }
   return Function(`"use strict"; return (${match[1]});`)();
+}
+
+function loadLabModel(htmlSource, assumptionsSource) {
+  const scripts = [...htmlSource.matchAll(/<script>([\s\S]*?)<\/script>/g)].map((match) => match[1]);
+  const labScript = scripts[scripts.length - 1];
+  if (!labScript) {
+    fail("Could not find gamelab inline script");
+    return null;
+  }
+
+  const patched = labScript.replace(
+    /renderAssumptions\(\);[\s\S]*?if \(typeof window\.initTooltips === 'function'\) window\.initTooltips\(\);\s*\}\)\(\);/,
+    "globalThis.__lab = { PRESET_CASES, stateFromPreset, clampModelState, compute, modelState, attackNarrative, riskText, attackLabel };\n})();"
+  );
+
+  if (patched === labScript) {
+    fail("Could not instrument gamelab model for preset validation");
+    return null;
+  }
+
+  const context = { console, window: {} };
+  context.globalThis = context;
+  vm.createContext(context);
+  vm.runInContext(assumptionsSource, context);
+  vm.runInContext(patched, context);
+
+  if (!context.__lab) fail("Gamelab model did not expose validation hooks");
+  return context.__lab || null;
 }
 
 function checkRangeValue(name, key, value, range) {
@@ -114,6 +143,24 @@ Object.entries(presets).forEach(([name, preset]) => {
     if (ranges[key]) checkRangeValue(name, key, value, ranges[key]);
   });
 });
+
+const labModel = loadLabModel(html, assumptions);
+if (labModel) {
+  Object.keys(presets).forEach((name) => {
+    const state = labModel.clampModelState(labModel.stateFromPreset(name));
+    const model = labModel.compute(state);
+    const verdict = labModel.modelState(model);
+    if (verdict.cleared.length) {
+      fail(`Preset "${name}" allows attacks to clear: ${verdict.cleared.map(labModel.attackLabel).join(", ")}`);
+    }
+    attackIds.forEach((id) => {
+      const narrative = labModel.attackNarrative(state, model, id);
+      if (narrative.clears || narrative.risk > 0.35) {
+        fail(`Preset "${name}" does not beat ${id}: ${narrative.clears ? "clears" : "watch"} at ${labModel.riskText(narrative.risk)}`);
+      }
+    });
+  });
+}
 
 if (
   defaultAssumptions.appealDelayRate * defaultAssumptions.petitionMultiplier <
