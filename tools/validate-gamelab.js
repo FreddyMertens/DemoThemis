@@ -146,6 +146,10 @@ if (/span\([^)]*,\s*100,\s*80000\)|clamp\(s\.jurors,\s*100,\s*80000\)/.test(html
   fail("Gamelab active-juror scale must not exceed 5,000");
 }
 
+if (!/\.attack-line\s*\{[^}]*grid-template-columns:\s*minmax\(0,\s*1fr\)/.test(html)) {
+  fail("Attack-card explanation rows must use a single readable column");
+}
+
 Object.entries(presets).forEach(([name, preset]) => {
   Object.entries(preset).forEach(([key, value]) => {
     if (ranges[key]) checkRangeValue(name, key, value, ranges[key]);

@@ -228,11 +228,11 @@
   .lock span { min-width: 0; }
   .attack { display: grid; gap: .55rem; }
   .attack-top { margin-bottom: 0; }
-  .attack-body { display: grid; gap: .36rem; }
-  .attack-line { display: grid; grid-template-columns: 4.8rem minmax(0, 1fr); gap: .45rem; margin: 0; font-size: .8rem; line-height: 1.35; color: var(--muted); }
-  .attack-line b { color: var(--ink); font-size: .72rem; letter-spacing: .06em; text-transform: uppercase; }
+  .attack-body { display: grid; gap: .55rem; }
+  .attack-line { display: grid; grid-template-columns: minmax(0, 1fr); gap: .12rem; margin: 0; font-size: .8rem; line-height: 1.42; color: var(--muted); }
+  .attack-line b { color: var(--ink); font-size: .68rem; letter-spacing: .07em; text-transform: uppercase; line-height: 1.2; }
   .attack-line b::after { content: ":"; }
-  .attack-line span { min-width: 0; }
+  .attack-line span { min-width: 0; overflow-wrap: anywhere; }
   .attack-margin span { color: var(--accent-ink); font-weight: 750; }
   .stress-hero { display: grid; grid-template-columns: minmax(0, 1fr) minmax(11rem, .32fr); gap: 1rem; align-items: stretch; border: 1px solid var(--line-strong); border-radius: var(--radius); background: var(--surface); box-shadow: var(--shadow); padding: 1rem; margin-bottom: 1rem; }
   .stress-hero h3 { margin: 0 0 .25rem; }
@@ -262,7 +262,6 @@
     .lab-tabs { width: 100%; display: grid; grid-template-columns: repeat(3, 1fr); border-radius: 14px; }
     .lab-tab { border-radius: 10px; padding: .5rem .35rem; }
     .lab-status { grid-template-columns: 1fr; }
-    .attack-line { grid-template-columns: 1fr; gap: .08rem; }
   }
 
   .info-icon { display: inline-flex; align-items: center; justify-content: center; cursor: pointer; padding: 10px; margin: -10px -10px -10px -2px; color: var(--muted); opacity: 0.6; transition: opacity 0.2s ease, color 0.2s ease; vertical-align: -0.125em; position: relative; z-index: 10; }
@@ -1243,8 +1242,8 @@
       return {
         risk: m.risks.capture,
         clears: m.clears.capture,
-        why: m.panelShortage ? "The drawable pool is smaller than the required panel." : num(v.bloc) + " coordinated humans yield about " + num(m.coordinatedReady) + " draw-ready attackers; capture is " + pct(m.capture) + " against " + num(m.drawJurors) + " drawable jurors.",
-        breaks: "the draw pool thins, senior eligibility is too narrow, coordination yield is far higher, or the usable bloc reaches panel-majority odds.",
+        why: m.panelShortage ? "The drawable pool is smaller than the required panel." : num(m.coordinatedReady) + " draw-ready attackers from " + num(v.bloc) + " recruits. Capture is " + pct(m.capture) + " against " + num(m.drawJurors) + " drawable jurors.",
+        breaks: "Needs a thinner pool, narrower senior gate, much higher bloc yield, or panel-majority odds.",
         margin: m.panelShortage ? "short by " + num(m.panel - m.drawJurors) + " drawable seats" : pctMargin(.20 - m.capture)
       };
     }
