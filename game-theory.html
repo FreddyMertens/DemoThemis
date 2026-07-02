@@ -86,9 +86,9 @@
   .node.good { border-color: color-mix(in srgb, var(--good) 35%, var(--line)); }
   .node.bad { border-color: color-mix(in srgb, var(--bad) 40%, var(--line)); }
   .node.mid { border-color: #e4bd7c; }
-  .attack-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(min(100%, 16.5rem), 1fr)); gap: .75rem; margin-top: 1rem; }
+  .attack-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(min(100%, 16.5rem), 1fr)); gap: .75rem; margin-top: 1rem; align-items: start; }
   @media (max-width: 720px) { .attack-grid { grid-template-columns: 1fr; } }
-  .attack { border: 1px solid var(--line); border-radius: 14px; padding: .9rem; background: var(--surface); box-shadow: var(--shadow); font-family: var(--sans); cursor: pointer; transition: transform .14s ease, box-shadow .14s ease, border-color .14s ease; }
+  .attack { align-self: start; border: 1px solid var(--line); border-radius: 14px; padding: .9rem; background: var(--surface); box-shadow: var(--shadow); font-family: var(--sans); cursor: pointer; transition: transform .14s ease, box-shadow .14s ease, border-color .14s ease; }
   .attack:hover { transform: translateY(-2px); box-shadow: var(--shadow-lg); }
   .attack.active { border-color: var(--accent); background: color-mix(in srgb, var(--accent-soft) 55%, var(--surface)); }
   .attack:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
@@ -352,7 +352,7 @@
     <p class="sec-label">Game lab</p>
     <h2>Try to break the court.</h2>
     <p class="lead">You are the attacker for five minutes. Pick a scenario, drag the knobs, and see whether a coordinated group, provable bribe, rented account, lazy vote, delay attack, or crowd-following can make money.</p>
-    <p>The loop is simple: cases create fees, fees pay jurors, paid jurors widen the available jury pool, and a wider pool makes bad strategies harder. This is a sandbox, not a launch forecast or measured failure rate. When something breaks, the cards tell you why; when it holds, Stress test and Assumptions show the settings doing the work.</p>
+    <p>The loop is simple: cases create fees, fees pay jurors, paid jurors widen the available jury pool, and a wider pool makes bad strategies harder. This is a sandbox, not a launch forecast or measured failure rate. When something breaks, the cards tell you why; when it holds, Scenario checks and Assumptions show the settings doing the work.</p>
   </section>
 
   <section class="reveal">
@@ -361,7 +361,7 @@
     <div class="lab-shell">
       <div class="lab-tabs" role="tablist" aria-label="Gamelab views">
         <button class="lab-tab" id="tabBtnPlay" type="button" role="tab" aria-selected="true" aria-controls="tabPlay" data-tab="play">Play</button>
-        <button class="lab-tab" id="tabBtnStress" type="button" role="tab" aria-selected="false" aria-controls="tabStress" data-tab="stress">Stress test</button>
+        <button class="lab-tab" id="tabBtnStress" type="button" role="tab" aria-selected="false" aria-controls="tabStress" data-tab="stress">Scenario checks</button>
         <button class="lab-tab" id="tabBtnUnder" type="button" role="tab" aria-selected="false" aria-controls="tabUnder" data-tab="under">Assumptions</button>
       </div>
 
@@ -374,7 +374,7 @@
           <button class="preset" type="button" data-preset="whale">Huge case</button>
           <button class="preset" type="button" data-preset="bloc">Coordinated attack</button>
           <button class="preset" type="button" data-preset="drift">Crowd-following</button>
-          <span class="preset-note">Failure demo is in Stress test</span>
+          <span class="preset-note">Move sliders or turn off locks to make a scenario fail</span>
         </div>
 
         <div class="lab-status resistant" id="labStatus">
@@ -387,7 +387,7 @@
             </div>
           </div>
           <div class="verdict-metric"><span>Weakest link</span><b id="weakestOut">&hellip;</b><small id="weakestSub">&hellip;</small></div>
-          <div class="verdict-metric"><span>Stress test</span><b id="stressOut">&hellip;</b><small id="stressSub">&hellip;</small></div>
+          <div class="verdict-metric"><span>Scenario checks</span><b id="stressOut">&hellip;</b><small id="stressSub">&hellip;</small></div>
           <div class="verdict-metric"><span>Model confidence</span><b id="confidenceOut">&hellip;</b><small id="confidenceSub">&hellip;</small></div>
         </div>
 
@@ -473,9 +473,9 @@
       <div class="tab-panel" id="tabStress" role="tabpanel" aria-labelledby="tabBtnStress" hidden>
         <div class="stress-hero">
           <div>
-            <p class="sec-label">Stress test</p>
-            <h3 id="stressHeadline">Testing bad-day scenarios</h3>
-            <p id="stressCopy">The lab keeps your current setup and pushes it through cold starts, case surges, huge cases, coordinated attacks, crowd-following, appeal delays, and missing safety locks.</p>
+            <p class="sec-label">Scenario checks</p>
+            <h3 id="stressHeadline">Testing pressure scenarios</h3>
+            <p id="stressCopy">The lab keeps your current setup and compares it with cold starts, case surges, huge cases, coordinated attacks, crowd-following, and appeal delays.</p>
           </div>
           <div class="stress-meter"><b id="stressScore">&hellip;</b><span id="stressWeakest">&hellip;</span></div>
         </div>
@@ -654,8 +654,7 @@
     { id: "whale", label: "Huge case", note: "A large case triggers the hardest jury rules.", preset: "whale" },
     { id: "bloc", label: "Coordinated attack", note: "A larger attacker group tests the available jury pool.", preset: "bloc" },
     { id: "drift", label: "Crowd-following", note: "Accuracy checks thin while shortcuts get more tempting.", preset: "drift" },
-    { id: "appeal", label: "Delay attack", note: "Delay value rises, so appeal costs and sincerity pricing must rise with it.", preset: "base", apply: function (s) { s.lag += 2; s.assumptions.griefDelayRate = Math.max(s.assumptions.griefDelayRate, .016); s.assumptions.appealDelayRate = Math.max(s.assumptions.appealDelayRate, .018); s.assumptions.petitionMultiplier = Math.max(s.assumptions.petitionMultiplier, 1.15); return s; } },
-    { id: "broken", label: "Remove safety locks", note: "Failure demo: remove the core safeguards.", sanity: true, apply: function (s) { lockIds.forEach(function (id) { s[id] = false; }); s.rented = Math.max(s.rented, 2000); s.rerolls = Math.max(s.rerolls, 30); s.syntheticTests = 0; return s; } }
+    { id: "appeal", label: "Delay attack", note: "Delay value rises, so appeal costs and sincerity pricing must rise with it.", preset: "base", apply: function (s) { s.lag += 2; s.assumptions.griefDelayRate = Math.max(s.assumptions.griefDelayRate, .016); s.assumptions.appealDelayRate = Math.max(s.assumptions.appealDelayRate, .018); s.assumptions.petitionMultiplier = Math.max(s.assumptions.petitionMultiplier, 1.15); return s; } }
   ];
   var pinnedAssumptions = {};
   var lastRender = { drivers: "", warnings: "", pins: "" };
@@ -713,7 +712,7 @@
     var cleared = Object.keys(m.clears).filter(function (k) { return m.clears[k]; });
     var top = weakestRisk(m);
     if (cleared.length) return { state: "bad", label: "Works", cleared: cleared, top: top };
-    if (m.safety < .68 || top.value > .35 || m.keys < m.keyScale || m.reserveBurden > 35) return { state: "mid", label: "Watch", cleared: cleared, top: top };
+    if (m.safety < .68 || top.value > .35 || m.keys < m.keyScale || m.reserveBurden > m.reserveBurdenLimit) return { state: "mid", label: "Watch", cleared: cleared, top: top };
     return { state: "good", label: "Passes", cleared: cleared, top: top };
   }
   function weakestRisk(m) {
@@ -880,7 +879,10 @@
       var range = byId("assumption_" + a.id);
       var text = formatAssumption(a, current[a.id]);
       if (output) output.textContent = text;
-      if (range) range.setAttribute("aria-valuetext", text);
+      if (range) {
+        range.setAttribute("aria-valuetext", text);
+        updateRangeTrack(range);
+      }
       if (Math.abs(current[a.id] - a.default) > Math.max(.000001, Math.abs(a.default) * .000001)) changed += 1;
     });
     byId("assumptionCount").textContent = changed ? changed + " changed" : "defaults";
@@ -1117,6 +1119,7 @@
       reserveUnit: reserveUnit,
       reserve: supply.reserve,
       reserveBurden: supply.reserveBurden,
+      reserveBurdenLimit: a.reserveExitBurden,
       rentedPass: rentedPass,
       coordinatedReady: coordinatedReady,
       intendedBloc: intendedBloc,
@@ -1196,7 +1199,7 @@
     nodeClass(byId("nodeDemand"), m.courtCases > 1 ? "good" : "mid");
     nodeClass(byId("nodeFees"), m.rewardSignal > .35 ? "good" : "mid");
     nodeClass(byId("nodePay"), m.payPressure > 2 ? "good" : "mid");
-    nodeClass(byId("nodeReserve"), m.lazyClears ? "bad" : m.reserveBurden > 35 ? "mid" : "good");
+    nodeClass(byId("nodeReserve"), m.lazyClears ? "bad" : m.reserveBurden > m.reserveBurdenLimit ? "mid" : "good");
     nodeClass(byId("nodePool"), m.capture < .01 && m.retention > .85 ? "good" : m.capture < .1 && m.retention > .6 ? "mid" : "bad");
     nodeClass(byId("nodePanel"), m.honestPanel > .85 ? "good" : m.honestPanel > .65 ? "mid" : "bad");
     nodeClass(byId("nodeKeys"), m.keySignal > .75 ? "good" : m.keySignal > .35 ? "mid" : "bad");
@@ -1382,7 +1385,7 @@
   }
   function runStress(v) {
     var rows = STRESS_CASES.map(function (item) { return stressState(v, item); });
-    var core = rows.filter(function (row) { return !row.config.sanity; });
+    var core = rows;
     var held = core.filter(function (row) { return row.state.state !== "bad"; }).length;
     var watch = core.filter(function (row) { return row.state.state === "mid"; }).length;
     var broken = core.filter(function (row) { return row.state.state === "bad"; }).length;
@@ -1406,7 +1409,7 @@
       details.className = "stress-row " + row.state.state;
       if (row.state.state === "bad") details.open = true;
       name.textContent = row.config.label;
-      chip(state, row.config.sanity && row.state.state === "bad" ? "sanity fail" : row.state.label, row.state.state);
+      chip(state, row.state.label, row.state.state);
       note.textContent = row.config.note;
       body.textContent = row.detail;
       summaryEl.appendChild(name);
@@ -1421,13 +1424,13 @@
     var summary = runStress(v);
     var total = summary.core.length;
     var score = summary.held + "/" + total + " held";
-    var sub = summary.broken ? summary.broken + " break" + (summary.broken === 1 ? "" : "s") + ", " + summary.watch + " watch" : (summary.watch ? summary.watch + " watch" : "all core stress cases pass");
+    var sub = summary.broken ? summary.broken + " break" + (summary.broken === 1 ? "" : "s") + ", " + summary.watch + " watch" : (summary.watch ? summary.watch + " watch" : "all scenario checks pass");
     byId("stressOut").textContent = score;
     byId("stressSub").textContent = sub;
     byId("stressScore").textContent = score;
     byId("stressWeakest").textContent = "Closest: " + summary.weakest.config.label + " -> " + attackLabel(summary.weakest.state.top.key);
-    byId("stressHeadline").textContent = summary.broken ? "A bad-day scenario breaks it" : (summary.watch ? "Stress test holds, with watch points" : "Stress test holds across the core cases");
-    byId("stressCopy").textContent = summary.broken ? "At least one realistic bad-day scenario makes an attack work. Open the row to see what needs more margin." : "The current setup survives the core bad-day cases. Watch rows show where the margin is closest.";
+    byId("stressHeadline").textContent = summary.broken ? "A scenario breaks it" : (summary.watch ? "Scenario checks hold, with watch points" : "Scenario checks all pass");
+    byId("stressCopy").textContent = summary.broken ? "At least one scenario makes an attack work. Open the row to see what needs more margin." : "The current setup survives the default pressure scenarios. Watch rows show where the margin is closest.";
     renderStress(summary);
     return summary;
   }

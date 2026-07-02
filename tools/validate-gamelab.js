@@ -121,15 +121,14 @@ attackIds.forEach((id) => {
 
 [
   "STRESS_CASES",
-  "Failure demo is in Stress test",
+  "Move sliders or turn off locks to make a scenario fail",
   "Current setup",
   "Cold start",
   "Case surge",
   "Huge case",
   "Coordinated attack",
   "Crowd-following",
-  "Delay attack",
-  "Remove safety locks"
+  "Delay attack"
 ].forEach((term) => {
   if (!html.includes(term)) fail(`Missing stress-check term: ${term}`);
 });
@@ -137,6 +136,14 @@ attackIds.forEach((id) => {
 if (html.includes('data-preset="broken"')) {
   fail('Broken-locks failure demo must not appear as a normal Try preset');
 }
+
+[
+  "Failure demo",
+  "Remove safety locks",
+  "sanity fail"
+].forEach((term) => {
+  if (html.includes(term)) fail(`Default scenario checks must not include a forced failure demo: ${term}`);
+});
 
 if (!html.includes('id="bloc" type="range" min="0" max="1000"')) {
   fail("Coordinated attackers slider must cap at 1,000");
@@ -148,6 +155,10 @@ if (/span\([^)]*,\s*100,\s*80000\)|clamp\(s\.jurors,\s*100,\s*80000\)/.test(html
 
 if (!/\.attack-line\s*\{[^}]*grid-template-columns:\s*minmax\(0,\s*1fr\)/.test(html)) {
   fail("Attack-card explanation rows must use a single readable column");
+}
+
+if (!/function syncAssumptionOutputs\(\)\s*\{[\s\S]*?updateRangeTrack\(range\)/.test(html)) {
+  fail("Assumption sliders must refresh their filled track when their displayed values sync");
 }
 
 Object.entries(presets).forEach(([name, preset]) => {
@@ -173,7 +184,10 @@ if (labModel) {
     });
     const stress = labModel.runStress(state);
     if (stress.broken) {
-      fail(`Preset "${name}" fails ${stress.broken} core stress case${stress.broken === 1 ? "" : "s"}`);
+      fail(`Preset "${name}" fails ${stress.broken} scenario check${stress.broken === 1 ? "" : "s"}`);
+    }
+    if (stress.watch) {
+      fail(`Preset "${name}" puts ${stress.watch} scenario check${stress.watch === 1 ? "" : "s"} on watch`);
     }
   });
 }
