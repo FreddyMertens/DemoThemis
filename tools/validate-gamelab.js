@@ -57,7 +57,7 @@ function loadLabModel(htmlSource, assumptionsSource) {
 
   const patched = labScript.replace(
     /renderAssumptions\(\);[\s\S]*?if \(typeof window\.initTooltips === 'function'\) window\.initTooltips\(\);\s*\}\)\(\);/,
-    "globalThis.__lab = { PRESET_CASES, stateFromPreset, clampModelState, compute, modelState, attackNarrative, riskText, attackLabel };\n})();"
+    "globalThis.__lab = { PRESET_CASES, stateFromPreset, clampModelState, compute, modelState, runStress, attackNarrative, riskText, attackLabel };\n})();"
   );
 
   if (patched === labScript) {
@@ -138,6 +138,14 @@ if (html.includes('data-preset="broken"')) {
   fail('Broken-locks failure demo must not appear as a normal Try preset');
 }
 
+if (!html.includes('id="bloc" type="range" min="0" max="1000"')) {
+  fail("Coordinated humans slider must cap at 1,000");
+}
+
+if (/span\([^)]*,\s*100,\s*80000\)|clamp\(s\.jurors,\s*100,\s*80000\)/.test(html)) {
+  fail("Gamelab active-juror scale must not exceed 5,000");
+}
+
 Object.entries(presets).forEach(([name, preset]) => {
   Object.entries(preset).forEach(([key, value]) => {
     if (ranges[key]) checkRangeValue(name, key, value, ranges[key]);
@@ -159,6 +167,10 @@ if (labModel) {
         fail(`Preset "${name}" does not beat ${id}: ${narrative.clears ? "clears" : "watch"} at ${labModel.riskText(narrative.risk)}`);
       }
     });
+    const stress = labModel.runStress(state);
+    if (stress.broken) {
+      fail(`Preset "${name}" fails ${stress.broken} core stress case${stress.broken === 1 ? "" : "s"}`);
+    }
   });
 }
 

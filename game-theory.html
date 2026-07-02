@@ -388,7 +388,7 @@
               <div class="dial"><label for="flow">Monthly settlement flow <b id="flowOut">&hellip;</b></label><input id="flow" type="range" min="10000" max="35000000" step="10000" value="100000"></div>
               <div class="dial"><label for="jurors">Active jurors <b id="jurorsOut">&hellip;</b></label><input id="jurors" type="range" min="0" max="100" step="1" value="0"></div>
               <div class="dial"><label for="stake">Typical contested stake <b id="stakeOut">&hellip;</b></label><input id="stake" type="range" min="0" max="100" step="1" value="21"></div>
-              <div class="dial"><label for="bloc">Coordinated humans <b id="blocOut">&hellip;</b></label><input id="bloc" type="range" min="0" max="3000" step="5" value="10"></div>
+              <div class="dial"><label for="bloc">Coordinated humans <b id="blocOut">&hellip;</b></label><input id="bloc" type="range" min="0" max="1000" step="5" value="10"></div>
             </div>
             <div class="dial-group">
               <h3>Protocol locks</h3>
@@ -519,7 +519,7 @@
       </div>
       <div class="story-card">
         <h3>Capture math</h3>
-        <p class="formula">bloc share = coordinated humans / eligible draw pool<br>capture estimate = finite draw chance of a panel majority<br>large stakes automatically require parallel panels</p>
+        <p class="formula">usable bloc = coordinated humans &times; eligibility yield + rented seats that pass checks<br>capture estimate = finite draw chance of a panel majority<br>large stakes automatically require parallel panels</p>
       </div>
       <div class="story-card">
         <h3>Illustrative index</h3>
@@ -605,7 +605,7 @@
   var lockIds = ["lockDraw", "lockBallot", "lockFace", "lockReserve", "lockKeys", "lockAppeal"];
   var selectedAttack = "bloc";
   var ATTACK_DETAILS = {
-    bloc: "Selection risk is governed by the draw-eligible pool, not the headline signup count. More retained jurors, stronger gates, and parallel panels reduce the chance that a coordinated group controls a majority.",
+    bloc: "Selection risk is governed by the draw-eligible pool, not the headline signup count. A recruited bloc still has to stay qualified, accurate enough, active, available, and draw-eligible before it can threaten a panel.",
     bribe: "A bribe is dangerous when the buyer can verify delivery. Receipt-free ballots keep the attacker from proving how a juror voted, so the bribe market loses its enforcement mechanism.",
     rental: "Proof of personhood limits fake accounts, but not willing humans. The face check narrows rented credentials to a live, per-draw check instead of a reusable credential sale.",
     lazy: "Lazy voting is an economic shortcut. The live reserve prices skipped effort by putting pending income at risk, but excessive reserve burden can also push honest jurors out.",
@@ -626,8 +626,8 @@
     base: { flow: 5000000, stake: 45, lag: 4, fee: 20, payShare: 70, rewardShare: 20, jurors: 52, skill: 68, careless: 25, slash: 100, bloc: 300, rented: 0, rerolls: 1, locks: true, syntheticTests: 1000 },
     cold: { flow: 500000, stake: 35, lag: 4, fee: 20, payShare: 70, rewardShare: 20, jurors: 25, skill: 60, careless: 30, slash: 100, bloc: 120, rented: 0, rerolls: 1, locks: true, syntheticTests: 500 },
     surge: { flow: 35000000, stake: 58, lag: 5, fee: 20, payShare: 70, rewardShare: 20, jurors: 48, skill: 68, careless: 25, slash: 100, bloc: 500, rented: 0, rerolls: 1, locks: true, syntheticTests: 2000 },
-    whale: { flow: 25000000, stake: 90, lag: 5, fee: 20, payShare: 70, rewardShare: 20, jurors: 90, skill: 72, careless: 20, slash: 100, bloc: 1500, rented: 0, rerolls: 1, locks: true, syntheticTests: 1000 },
-    bloc: { flow: 8000000, stake: 65, lag: 4, fee: 20, payShare: 70, rewardShare: 20, jurors: 90, skill: 68, careless: 25, slash: 100, bloc: 3000, rented: 0, rerolls: 1, locks: true, syntheticTests: 1000 },
+    whale: { flow: 25000000, stake: 90, lag: 5, fee: 20, payShare: 70, rewardShare: 20, jurors: 100, skill: 72, careless: 20, slash: 100, bloc: 650, rented: 0, rerolls: 1, locks: true, syntheticTests: 1000 },
+    bloc: { flow: 8000000, stake: 65, lag: 4, fee: 20, payShare: 70, rewardShare: 20, jurors: 100, skill: 68, careless: 25, slash: 100, bloc: 1000, rented: 0, rerolls: 1, locks: true, syntheticTests: 1000 },
     drift: { flow: 1200000, stake: 38, lag: 6, fee: 20, payShare: 70, rewardShare: 20, jurors: 45, skill: 68, careless: 35, slash: 100, bloc: 100, rented: 0, rerolls: 1, locks: true, syntheticTests: 50 }
   };
   var STRESS_CASES = [
@@ -651,7 +651,7 @@
     { label: "Pay pressure", deps: "settlement flow, fee split, court workload, retained jurors, reward flow" },
     { label: "Live reserve", deps: "pay per vote, careless wrong-rate, slash fraction, reserve floor, workload elasticity, retained pool" },
     { label: "Effective pool", deps: "active jurors, reserve burden, reward pool, reward retention assumptions" },
-    { label: "Panel capture", deps: "eligible draw pool, senior-pool share, coordinated humans, rented seats, face checks, sealed draw, automatic parallel panels" },
+    { label: "Panel capture", deps: "eligible draw pool, senior-pool share, bloc eligibility yield, rented seats, face checks, sealed draw, automatic parallel panels" },
     { label: "Juror drift", deps: "consented tests, synthetic tests, key scale, reputation lift" },
     { label: "Appeal griefing", deps: "panel floor, capture floor, delay rent, petition multiplier, finality audit drag" }
   ];
@@ -697,12 +697,12 @@
     s.payShare = clamp(s.payShare, .55, .75);
     s.rewardShare = clamp(s.rewardShare, .1, .25);
     s.opsShare = Math.max(0, 1 - s.payShare - s.rewardShare);
-    s.jurors = Math.round(clamp(s.jurors, 100, 80000));
+    s.jurors = Math.round(clamp(s.jurors, 100, 5000));
     s.skill = clamp(s.skill, .52, .88);
     s.careless = clamp(s.careless, .1, .5);
     s.slash = clamp(s.slash, .25, 1);
     s.syntheticTests = Math.round(clamp(s.syntheticTests, 0, 10000) / 50) * 50;
-    s.bloc = Math.round(clamp(s.bloc, 0, 3000) / 5) * 5;
+    s.bloc = Math.round(clamp(s.bloc, 0, 1000) / 5) * 5;
     s.rented = Math.round(clamp(s.rented, 0, 6000) / 5) * 5;
     s.rerolls = Math.round(clamp(s.rerolls, 1, 100));
     ASSUMPTIONS.forEach(function (a) {
@@ -782,7 +782,7 @@
       payShare: p.payShare / 100,
       rewardShare: p.rewardShare / 100,
       opsShare: Math.max(0, 1 - p.payShare / 100 - p.rewardShare / 100),
-      jurors: Math.round(span(p.jurors, 100, 80000)),
+      jurors: Math.round(span(p.jurors, 100, 5000)),
       syntheticTests: p.syntheticTests,
       skill: p.skill / 100,
       careless: p.careless / 100,
@@ -955,7 +955,7 @@
     v.payShare = v.payShare / 100;
     v.rewardShare = v.rewardShare / 100;
     v.opsShare = Math.max(0, 1 - v.payShare - v.rewardShare);
-    v.jurors = Math.round(span(v.jurors, 100, 80000));
+    v.jurors = Math.round(span(v.jurors, 100, 5000));
     v.syntheticTests = parseInt(byId("syntheticTests").value, 10);
     v.skill = v.skill / 100;
     v.careless = v.careless / 100;
@@ -1001,7 +1001,8 @@
     var drawJurors = Math.max(1, Math.round(effectiveJurors * drawPoolShare));
     var panelShortage = drawJurors < panel;
     var rentedPass = v.lockFace ? Math.round(v.rented * a.faceSurvival) : v.rented;
-    var intendedBloc = Math.max(0, v.bloc + rentedPass);
+    var coordinatedReady = Math.round(v.bloc * a.coordinationReadyShare);
+    var intendedBloc = Math.max(0, coordinatedReady + rentedPass);
     var effectiveBloc = Math.min(drawJurors, intendedBloc);
     var share = effectiveBloc / Math.max(1, drawJurors);
     var baseCapture = panelShortage ? 1 : hypergeomTail(drawJurors, effectiveBloc, panel, majority);
@@ -1081,6 +1082,7 @@
       reserve: supply.reserve,
       reserveBurden: supply.reserveBurden,
       rentedPass: rentedPass,
+      coordinatedReady: coordinatedReady,
       intendedBloc: intendedBloc,
       blocCapped: intendedBloc > drawJurors,
       effectiveBloc: effectiveBloc,
@@ -1144,7 +1146,7 @@
     byId("reserveSub").textContent = v.lockReserve ? money(m.reserveUnit) + " per priced vote - " + m.reserveBurden.toFixed(1) + "x monthly pay+reward burden" + (m.reserveFloorApplied ? " - floor/elasticity applied" : "") : "carelessness has no live price";
     scoreClass(byId("scoreCapture"), clsRisk(m.capture));
     byId("captureOut").textContent = pct(m.capture);
-    var captureBasis = m.panelShortage ? "eligible draw pool smaller than panel" : (m.blocCapped ? "bloc of " + num(m.intendedBloc) + " exceeds the " + num(m.drawJurors) + "-juror draw pool" : num(m.effectiveBloc) + " effective attackers in " + num(m.drawJurors) + " draw-eligible jurors");
+    var captureBasis = m.panelShortage ? "eligible draw pool smaller than panel" : (m.blocCapped ? "usable bloc of " + num(m.intendedBloc) + " exceeds the " + num(m.drawJurors) + "-juror draw pool" : num(m.effectiveBloc) + " usable attackers from " + num(v.bloc) + " coordinated humans in " + num(m.drawJurors) + " draw-eligible jurors");
     byId("captureSub").textContent = captureBasis + (m.parallelPanels > 1 ? "; " + m.parallelPanels + " parallel panels" : "") + "; finite draw estimate";
 
     byId("nodeDemandV").innerHTML = `<div class="node-val">${num(m.courtCases)} <small>cases</small></div><div class="node-sub">settled per month</div>`;
@@ -1241,8 +1243,8 @@
       return {
         risk: m.risks.capture,
         clears: m.clears.capture,
-        why: m.panelShortage ? "The drawable pool is smaller than the required panel." : "Capture is " + pct(m.capture) + " against " + num(m.drawJurors) + " drawable jurors.",
-        breaks: "the draw pool thins, senior eligibility is too narrow, or the bloc reaches panel-majority odds.",
+        why: m.panelShortage ? "The drawable pool is smaller than the required panel." : num(v.bloc) + " coordinated humans yield about " + num(m.coordinatedReady) + " draw-ready attackers; capture is " + pct(m.capture) + " against " + num(m.drawJurors) + " drawable jurors.",
+        breaks: "the draw pool thins, senior eligibility is too narrow, coordination yield is far higher, or the usable bloc reaches panel-majority odds.",
         margin: m.panelShortage ? "short by " + num(m.panel - m.drawJurors) + " drawable seats" : pctMargin(.20 - m.capture)
       };
     }
@@ -1484,7 +1486,7 @@
   function setWarnings(v, m) {
     var warnings = [];
     if (m.clearSeverity > 0) addWarning(warnings, "Attack-clear cap active", "At least one attack card clears, so the illustrative index is capped before weights can hide it.");
-    if (m.blocCapped) addWarning(warnings, "Attacker cap active", "Coordinated humans plus rented seats exceed the draw-eligible pool, so capture saturates at pool size.");
+    if (m.blocCapped) addWarning(warnings, "Attacker cap active", "Usable coordinated attackers plus rented seats exceed the draw-eligible pool, so capture saturates at pool size.");
     if (m.panelShortage) addWarning(warnings, "Panel shortage", "The draw-eligible pool is smaller than the panel this case needs.");
     if (m.reserveFloorApplied && v.lockReserve) addWarning(warnings, "Reserve floor/elasticity active", "The live reserve is using the assumption floor or elasticity curve rather than raw pending votes alone.");
     if (m.supplyLoss > 0) addWarning(warnings, "Reserve priced out jurors", num(m.supplyLoss) + " jurors leave in this board because reserve burden beats pay plus reward support.");
