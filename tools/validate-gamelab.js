@@ -92,6 +92,7 @@ attackIds.forEach((id) => {
 
 [
   "STRESS_CASES",
+  "Failure demo lives in Stress",
   "Current board",
   "Cold start",
   "Demand surge",
@@ -103,6 +104,10 @@ attackIds.forEach((id) => {
 ].forEach((term) => {
   if (!html.includes(term)) fail(`Missing stress-check term: ${term}`);
 });
+
+if (html.includes('data-preset="broken"')) {
+  fail('Broken-locks failure demo must not appear as a normal Try preset');
+}
 
 Object.entries(presets).forEach(([name, preset]) => {
   Object.entries(preset).forEach(([key, value]) => {

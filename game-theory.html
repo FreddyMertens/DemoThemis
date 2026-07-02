@@ -48,6 +48,7 @@
   .preset { border: 1px solid var(--line-strong); background: var(--surface); border-radius: 999px; padding: .35rem .65rem; font-family: var(--sans); font-weight: 700; font-size: .72rem; color: var(--muted); cursor: pointer; }
   .preset:hover { background: var(--accent-soft); color: var(--accent-ink); }
   .preset.active { background: var(--accent-soft); color: var(--accent-ink); border-color: color-mix(in srgb, var(--accent) 35%, var(--line-strong)); }
+  .preset-note { font-family: var(--sans); font-size: .72rem; color: var(--faint); }
   .scoreboard { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: .65rem; margin-bottom: 1rem; }
   @media (max-width: 760px) { .scoreboard { grid-template-columns: repeat(2, minmax(0, 1fr)); } }
   @media (max-width: 480px) { .scoreboard { grid-template-columns: 1fr; } }
@@ -356,7 +357,7 @@
           <button class="preset" type="button" data-preset="whale">Whale case</button>
           <button class="preset" type="button" data-preset="bloc">Bloc attack</button>
           <button class="preset" type="button" data-preset="drift">Juror drift</button>
-          <button class="preset" type="button" data-preset="broken">Break the locks</button>
+          <span class="preset-note">Failure demo lives in Stress</span>
         </div>
 
         <div class="lab-status resistant" id="labStatus">
@@ -628,8 +629,8 @@
     { id: "whale", label: "Whale case", note: "Stake jumps into the largest-panel path.", apply: function (s) { s.stake = Math.max(s.stake, 1250000); s.bloc = Math.max(s.bloc, Math.round(s.jurors * .04)); s.assumptions.seniorPoolShare = Math.min(s.assumptions.seniorPoolShare, .35); return s; } },
     { id: "bloc", label: "Bloc pressure", note: "A larger coordinated group tests draw width.", apply: function (s) { s.bloc = Math.max(s.bloc * 2.2, Math.round(s.jurors * .12)); return s; } },
     { id: "drift", label: "Juror drift", note: "Calibration supply thins while shortcut pressure rises.", apply: function (s) { s.syntheticTests *= .18; s.assumptions.consentedTestShare = Math.min(s.assumptions.consentedTestShare, .015); s.careless = Math.min(.5, s.careless + .08); return s; } },
-    { id: "appeal", label: "Appeal pressure", note: "Delay value rises and appeal pricing gets tested.", apply: function (s) { s.lag += 2; s.assumptions.griefDelayRate = Math.max(s.assumptions.griefDelayRate, .016); s.assumptions.appealDelayRate = Math.min(s.assumptions.appealDelayRate, .006); return s; } },
-    { id: "broken", label: "Break the locks", note: "Sanity check: remove the core safeguards.", sanity: true, apply: function (s) { lockIds.forEach(function (id) { s[id] = false; }); s.rented = Math.max(s.rented, 2000); s.rerolls = Math.max(s.rerolls, 30); s.syntheticTests = 0; return s; } }
+    { id: "appeal", label: "Appeal pressure", note: "Delay value rises; appeal rent and petition pricing must rise with it.", apply: function (s) { s.lag += 2; s.assumptions.griefDelayRate = Math.max(s.assumptions.griefDelayRate, .016); s.assumptions.appealDelayRate = Math.max(s.assumptions.appealDelayRate, .018); s.assumptions.petitionMultiplier = Math.max(s.assumptions.petitionMultiplier, 1.15); return s; } },
+    { id: "broken", label: "Break the locks", note: "Failure demo: remove the core safeguards.", sanity: true, apply: function (s) { lockIds.forEach(function (id) { s[id] = false; }); s.rented = Math.max(s.rented, 2000); s.rerolls = Math.max(s.rerolls, 30); s.syntheticTests = 0; return s; } }
   ];
   var pinnedAssumptions = {};
   var lastRender = { drivers: "", warnings: "", pins: "" };
