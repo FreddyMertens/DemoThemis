@@ -121,15 +121,15 @@ attackIds.forEach((id) => {
 
 [
   "STRESS_CASES",
-  "Failure demo lives in Stress",
-  "Current board",
+  "Failure demo is in Stress test",
+  "Current setup",
   "Cold start",
-  "Demand surge",
-  "Whale case",
-  "Bloc pressure",
-  "Juror drift",
-  "Appeal pressure",
-  "Break the locks"
+  "Case surge",
+  "Huge case",
+  "Coordinated attack",
+  "Crowd-following",
+  "Delay attack",
+  "Remove safety locks"
 ].forEach((term) => {
   if (!html.includes(term)) fail(`Missing stress-check term: ${term}`);
 });
@@ -139,7 +139,7 @@ if (html.includes('data-preset="broken"')) {
 }
 
 if (!html.includes('id="bloc" type="range" min="0" max="1000"')) {
-  fail("Coordinated humans slider must cap at 1,000");
+  fail("Coordinated attackers slider must cap at 1,000");
 }
 
 if (/span\([^)]*,\s*100,\s*80000\)|clamp\(s\.jurors,\s*100,\s*80000\)/.test(html)) {
