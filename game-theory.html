@@ -204,10 +204,15 @@
   .info-icon svg { width: 15px; height: 15px; }
   .node p { display: none; } /* Hide old paragraph explanations since we moved them to tooltips */
   
-  .tt-divider { border: 0; border-top: 1px solid color-mix(in srgb, currentColor 15%, transparent); margin: 0.6rem 0; }
-  .tt-math { font-family: var(--mono); font-size: 0.8rem; color: color-mix(in srgb, var(--accent) 70%, #fff); }
-  .tt-live { font-family: var(--mono); font-weight: 800; margin-top: 0.35rem; color: #fff; font-size: 0.85rem; }
-  
+  .tt-divider { border: 0; border-top: 1px solid rgba(255, 255, 255, 0.15); margin: 0.5rem 0; }
+  .tooltip-container { font-family: var(--sans); text-align: left; padding: 0.25rem; }
+  .tooltip-title { font-weight: 800; font-size: 0.85rem; margin-bottom: 0.25rem; color: #fff; text-transform: uppercase; letter-spacing: 0.05em; }
+  .tooltip-concept { font-size: 0.8rem; line-height: 1.4; color: rgba(255, 255, 255, 0.9); margin-bottom: 0.4rem; }
+  .tooltip-details { margin-top: 0.4rem; }
+  .tooltip-details summary { font-size: 0.72rem; font-weight: 700; cursor: pointer; color: #38bdf8; outline: none; user-select: none; transition: color 0.15s ease; }
+  .tooltip-details summary:hover { color: #fff; }
+  .tooltip-math { font-family: var(--mono); font-size: 0.7rem; background: rgba(0, 0, 0, 0.25); padding: 0.25rem 0.45rem; border-radius: 4px; margin: 0.25rem 0; color: #f43f5e; word-break: break-all; white-space: pre-wrap; border: 1px solid rgba(255,255,255,0.05); }
+  .tooltip-live { font-family: var(--mono); font-size: 0.7rem; color: rgba(255, 255, 255, 0.7); margin-top: 0.2rem; }
 </style>
 <link rel="stylesheet" href="https://unpkg.com/tippy.js@6/animations/shift-away.css" />
 <link rel="stylesheet" href="https://unpkg.com/tippy.js@6/dist/tippy.css" />
@@ -994,12 +999,21 @@
     nodeClass(byId("nodePanel"), m.honestPanel > .85 ? "good" : m.honestPanel > .65 ? "mid" : "bad");
     nodeClass(byId("nodeKeys"), m.keySignal > .75 ? "good" : m.keySignal > .35 ? "mid" : "bad");
 
-    function setTippyMath(id, concept, formula, live) {
+    function setTippyMath(id, title, concept, formula, live) {
       var el = byId(id);
       if (!el) return;
       var icon = el.querySelector('.info-icon');
       if (icon && icon._tippy) {
-        icon._tippy.setContent(concept + '<hr class="tt-divider"><div class="tt-math">' + formula + '</div><div class="tt-live">' + live + '</div>');
+        var htmlContent = '<div class="tooltip-container">' +
+          '<div class="tooltip-title">' + title + '</div>' +
+          '<div class="tooltip-concept">' + concept + '</div>' +
+          '<details class="tooltip-details">' +
+            '<summary>Show Math &amp; Live Values</summary>' +
+            '<div class="tooltip-math">' + formula + '</div>' +
+            '<div class="tooltip-live">' + live + '</div>' +
+          '</details>' +
+        '</div>';
+        icon._tippy.setContent(htmlContent);
       }
     }
     
@@ -1008,38 +1022,45 @@
     var feeRev = v.flow * v.fee;
     
     setTippyMath("nodeDemand", 
-      "Escrowed markets and disputes create settlement flow and court cases.", 
-      "Flow / Stake = Total Cases", 
+      "Dispute Demand",
+      "Escrowed smart contracts lock up funds and send disputes to the court. A higher settlement volume increases the court's overall caseload, creating the fee revenue that funds the entire system.", 
+      "Flow / Stake = Case Volume", 
       money(v.flow) + " / " + money(Math.max(1, v.stake)) + " = " + num(totalCases) + " cases/mo"
     );
     setTippyMath("nodeFees", 
-      "The fraction of total flow collected by the protocol to fund jurors and rewards.", 
-      "Flow * Fee = Fee Revenue | Fee Revenue * Reward Share", 
+      "Fee Engine",
+      "The system takes a small cut from every escrowed case to recruit and pay honest jurors. Some goes directly to active juror pay, some to long-term rewards, and some to operations.", 
+      "Flow * Fee % = Fee Revenue | Fee Revenue * Reward Share %", 
       money(v.flow) + " * " + pct(v.fee) + " = " + money(feeRev) + " total | " + money(feeRev) + " * " + pct(v.rewardShare) + " = " + money(m.rewardPool) + " rewards"
     );
     setTippyMath("nodePay", 
-      "The income pressure per retained juror, making the system attractive to new supply.", 
-      "(Fee Revenue * Pay Share) / Retained = Base | (Rewards * Eligible Share) / Retained = Potential", 
+      "Juror Pay Pressure",
+      "The monthly income potential per active juror. Higher pay pressure makes the court attractive to new honest recruits, helping the juror pool grow organically over time.", 
+      "(Fee Revenue * Pay Share %) / Retained Jurors = Base Pay / month", 
       "(" + money(feeRev) + " * " + pct(v.payShare) + ") / " + num(m.effectiveJurors) + " = " + money(m.payPerVote) + " base | (" + money(m.rewardPool) + " * " + pct(as.rewardEligibleShare) + ") / " + num(m.effectiveJurors) + " = +" + money(m.rewardPerJuror) + " potential"
     );
     setTippyMath("nodeReserve", 
-      "Pending income is priced, but heavy reserve burden can thin the pool.", 
-      "Unit * Pending * Slash Mult = Live | Live / Retention Income = Burden", 
+      "Live Reserve",
+      "The collateral active jurors must lock up to cover potential slashings if they vote incorrectly. While it deters laziness, a reserve burden that is too heavy will price out honest jurors and shrink the pool.", 
+      "Pay per Vote / (Carelessness * Slash fraction) = Reserve per active vote", 
       money(m.reserveUnit) + " * " + num(m.votesPerJurorMonth * v.lag) + " * " + v.slash + " = " + money(m.reserve) + " live | " + money(m.reserve) + " / " + money(m.retentionIncome) + " = " + m.reserveBurden.toFixed(1) + "x burden"
     );
     setTippyMath("nodePool", 
-      "The subset of retained jurors who are active and eligible to be drawn. A wider pool is harder for attackers to capture.", 
-      "Base - Supply Loss = Retained | Retained * Retention Rate = Drawable", 
+      "Juror Draw Pool",
+      "The subset of active, drawable jurors currently online. A wider pool is much harder for attackers to capture because drawings are randomized.", 
+      "Total Retained Jurors * Draw-pool share % = Drawable Jurors", 
       num(Math.max(1, v.jurors)) + " - " + num(m.supplyLoss) + " = " + num(m.effectiveJurors) + " retained | " + num(m.effectiveJurors) + " * " + pct(m.retention) + " = " + num(m.drawJurors) + " drawable"
     );
     setTippyMath("nodePanel", 
-      "Stake selects seats, senior gates, and sometimes parallel panels.", 
+      "Active Panel",
+      "The randomized group of jurors drawn to vote on a specific dispute. Larger panels are more expensive but highly secure, making capture mathematically near-impossible if the honest majority is kept high.", 
       "Panel Size Strategy | 1 - hg_cdf(majority, drawPool, attackers, panel) = Honest Majority", 
       m.panel + " base drawn seats | 1 - hg_cdf(" + Math.floor(m.panel/2) + ", " + num(m.drawJurors) + ", " + num(Math.floor(m.effectiveBloc)) + ", " + m.panel + ") = " + pct(m.honestPanel) + " majority"
     );
     setTippyMath("nodeKeys", 
-      "Ground-truth &quot;competency tests&quot; (from consented tests and synthetic tests) are used to grade jurors and measure overall drift.", 
-      "(Court * Consent) + Synthetic = Total Tests", 
+      "Competency Tests",
+      "Hidden test cases with known correct answers injected to grade and calibrate jurors. Without them, jurors have no way of knowing what is correct and will drift toward copying the crowd to guarantee payouts.", 
+      "(Court Cases * Consent Share %) + Synthetic Tests = Calibration Keys", 
       "(" + num(m.courtCases) + " * " + pct(as.consentedTestShare) + ") + " + num(v.syntheticTests) + " = " + num(m.keys)
     );
 
