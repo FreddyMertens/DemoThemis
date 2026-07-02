@@ -61,6 +61,48 @@ const ranges = extractRangeInputs(html);
 const presets = extractPresetObject(html);
 const assumptionList = extractAssumptionList(assumptions);
 const defaultAssumptions = Object.fromEntries(assumptionList.map((item) => [item.id, item.default]));
+const requiredIds = [
+  "tabPlay",
+  "tabStress",
+  "tabUnder",
+  "weakestOut",
+  "weakestSub",
+  "stressOut",
+  "stressSub",
+  "confidenceOut",
+  "confidenceSub",
+  "stressScore",
+  "stressWeakest",
+  "stressHeadline",
+  "stressCopy",
+  "stressList"
+];
+const attackIds = ["bloc", "bribe", "rental", "lazy", "grief", "drift"];
+
+requiredIds.forEach((id) => {
+  if (!html.includes(`id="${id}"`)) fail(`Missing gamelab UX element: #${id}`);
+});
+
+attackIds.forEach((id) => {
+  ["Chip", "Why", "Break", "Margin", "Explain"].forEach((suffix) => {
+    if (!html.includes(`id="${id}${suffix}"`)) fail(`Missing attack card field: #${id}${suffix}`);
+  });
+  if (html.includes(`id="${id}Txt"`)) fail(`Stale attack paragraph remains: #${id}Txt`);
+});
+
+[
+  "STRESS_CASES",
+  "Current board",
+  "Cold start",
+  "Demand surge",
+  "Whale case",
+  "Bloc pressure",
+  "Juror drift",
+  "Appeal pressure",
+  "Break the locks"
+].forEach((term) => {
+  if (!html.includes(term)) fail(`Missing stress-check term: ${term}`);
+});
 
 Object.entries(presets).forEach(([name, preset]) => {
   Object.entries(preset).forEach(([key, value]) => {

@@ -6,6 +6,8 @@ Scope: local repository, deployed Netlify site at https://demothemis.netlify.app
 
 This is a product/security/credibility review, not a formal legal opinion or cryptographic audit. I separated confirmed production breakage from protocol-level risks that become real vulnerabilities only if the system is implemented with money, identity, voting, reputation, or biometric/personhood integrations.
 
+Important scope update: this website is not supposed to be a complete implementation guide. The right standard for these docs is whether they avoid false claims, clearly state the intended architecture, and avoid implying centralized or biometric custody where that is not the plan. Future launch artifacts such as formal threat models, legal review, circuit audits, and full state machines remain important, but they are implementation diligence rather than required website fixes unless the docs misrepresent them.
+
 ## Executive Summary
 
 I did not find exposed API keys, secrets, broken local links, duplicate DOM IDs, parse errors in inline scripts, browser console crashes, or an obvious dead gamelab. The deployed gamelab loads and the local validator passes.
@@ -14,28 +16,27 @@ The largest issues are not "the page is broken." They are:
 
 1. ~~The Netlify deployment previously published the repository root, so internal markdown, QA pages, audit pages, helper scripts, and tooling were publicly accessible.~~ Fixed in the repo by switching Netlify to an allowlisted `dist` build output.
 2. ~~The deployed site lacks common browser security headers~~ and relies on external CDN scripts without SRI. Baseline headers are now generated in the repo; dependency pinning/SRI remains open.
-3. Several pages still make absolute or near-absolute claims such as "money cannot buy" / "cannot be bribed" while other parts of the project correctly admit willing-accomplice limits, answer-key poisoning, subjective disputes, quorum issues, setup/key-management risks, and centralized-shortcut risks. The centralized-fallback wording has been corrected.
-4. The real protocol depends on sensitive primitives: biometric/personhood proof, private voting, reputation, answer keys, appeals, market settlement, and possibly regulated prediction markets. These are not static-site vulnerabilities today, but they are where a real implementation could fail badly.
+3. Several pages still make absolute or near-absolute claims such as "money cannot buy" / "cannot be bribed" while other parts of the project correctly admit willing-accomplice limits, settlement curation limits, subjective-dispute boundaries, quorum issues, setup/key-management risks, and centralized-shortcut risks. The centralized-fallback wording has been corrected; remaining work is mostly tone/claim calibration.
+4. ~~The docs did not make the biometric/personhood privacy boundary explicit enough.~~ Fixed: Chapter 2 and the blueprint now state that DemoThemis receives purpose-scoped proofs, not scans, templates, names, or reusable identity handles.
 5. The gamelab is useful as an intuition tool, but it should not be framed as proof of security. It models selected attack paths, not a full adversarial protocol.
 
-Severity ranking:
+Findings and current status:
 
-| Rank | Severity | Area | Finding | Current vulnerability? |
+| Rank | Classification | Area | Finding | Current status |
 |---:|---|---|---|---|
-| 1 | High | Deployment | ~~Public deployment exposed internal drafts, QA/audit pages, helper scripts, and markdown because `netlify.toml` published `.`~~ | Fixed in repo by publishing an allowlisted `dist` build output; verify after Netlify redeploy |
-| 2 | High | Claims/protocol | Absolute bribery/security claims conflict with acknowledged trust and attack assumptions | Not a code exploit; high credibility/product risk |
-| 3 | High | Protocol/privacy | Biometric/personhood/liveness dependency needs a formal privacy and abuse threat model | Not in static site; would be high-risk in implementation |
-| 4 | High | Protocol | A centralized shortcut for reputation/scoring/draw/answer-key infrastructure could deanonymize or re-centralize the system | Docs now explicitly reject centralized fallback/admin-key designs; implementation threat model still needed |
-| 5 | High | Protocol | Answer-key poisoning, market settlement quality, and subjective dispute handling remain under-specified | Not in static site; protocol integrity risk |
-| 6 | Medium-High | Browser security | ~~Missing CSP, `frame-ancestors`/XFO, Referrer-Policy, Permissions-Policy, and X-Content-Type-Options~~ | Baseline headers fixed in repo; stricter CSP without `unsafe-inline` remains future hardening |
-| 7 | Medium | Supply chain | External unpkg scripts/styles use major-version aliases and no SRI | Yes, browser supply-chain risk |
-| 8 | Medium | Frontend XSS posture | `allowHTML: true` tooltips and `innerHTML` sinks are safe only because current content is static | Latent XSS risk if content becomes dynamic |
-| 9 | Medium | Gamelab representation | Gamelab can imply completeness beyond what it models | Misrepresentation risk, not exploit |
-| 10 | Medium | Repo hygiene | Many untracked scratch scripts/images in root and weak ignore rules | Accidental commit/deploy risk |
-| 11 | Medium | Testing/CI | No full-site CI gate for ~~deployment allowlist, headers, links,~~ browser smoke, or content regressions | Build-time allowlist/header/link checks added; CI/browser smoke still open |
-| 12 | Low-Medium | Accessibility | ARIA and keyboard-state coverage should be audited, especially interactive controls/tooltips | User experience/compliance risk |
-| 13 | Low | SEO/share | No ~~`robots.txt`, sitemap,~~ canonical, OpenGraph, or Twitter metadata | `robots.txt`, `sitemap.xml`, and `404.html` generated; canonical/social metadata still open |
-| 14 | Low | Performance/resilience | Large standalone pages and CDN enhancements are acceptable but not hardened | Performance/reliability weakness |
+| 1 | Fixed site issue | Deployment | ~~Public deployment exposed internal drafts, QA/audit pages, helper scripts, and markdown because `netlify.toml` published `.`~~ | Fixed in repo by publishing an allowlisted `dist` build output; verify after Netlify redeploy |
+| 2 | Remaining doc issue | Claims/protocol | Absolute bribery/security claims may still read stronger than the assumptions support | Not a code exploit; credibility/tone risk |
+| 3 | Fixed doc issue / future implementation diligence | Protocol/privacy | ~~Biometric/personhood/liveness privacy boundary was not explicit enough in the docs~~ | Docs now state the proof-only/no-biometric-custody boundary; formal privacy threat model remains launch diligence, not a website blocker |
+| 4 | Fixed doc issue / future implementation diligence | Protocol | ~~Docs could imply centralized fallback/admin-key infrastructure~~ | Docs now explicitly reject centralized fallback/admin-key designs; implementation proof remains future build diligence |
+| 5 | Fixed site issue / future hardening | Browser security | ~~Missing CSP, `frame-ancestors`/XFO, Referrer-Policy, Permissions-Policy, and X-Content-Type-Options~~ | Baseline headers fixed in repo; stricter CSP without `unsafe-inline` remains optional hardening |
+| 6 | Remaining site issue | Supply chain | External unpkg scripts/styles use major-version aliases and no SRI | Browser supply-chain risk |
+| 7 | Future hardening | Frontend XSS posture | `allowHTML: true` tooltips and `innerHTML` sinks are safe only because current content is static | Latent XSS risk if content becomes dynamic |
+| 8 | Remaining doc issue | Gamelab representation | Gamelab can imply completeness beyond what it models | Misrepresentation risk, not exploit |
+| 9 | Local repo hygiene | Repo hygiene | Many untracked scratch scripts/images in root and weak ignore rules | Accidental commit noise; deploy allowlist reduces production risk |
+| 10 | Partial process fix | Testing/CI | No full-site CI gate for ~~deployment allowlist, headers, links,~~ browser smoke, or content regressions | Build-time allowlist/header/link checks added; CI/browser smoke still open |
+| 11 | Optional polish | Accessibility | ARIA and keyboard-state coverage should be audited, especially interactive controls/tooltips | User experience/compliance risk |
+| 12 | Partial polish fix | SEO/share | No ~~`robots.txt`, sitemap,~~ canonical, OpenGraph, or Twitter metadata | `robots.txt`, `sitemap.xml`, and `404.html` generated; canonical/social metadata still open |
+| 13 | Optional hardening | Performance/resilience | Large standalone pages and CDN enhancements are acceptable but not hardened | Performance/reliability weakness |
 
 ## Methodology
 
@@ -198,7 +199,9 @@ Recommended fix:
 - Tie every strong claim to the relevant assumption set in the gamelab.
 - Keep the red-team honesty from `breaking-the-court.html`, but reflect it in the polished pages.
 
-### 4. High: Biometric / Personhood / Liveness Dependency Is a Serious Privacy and Abuse Surface
+### 4. Fixed Docs / Future Implementation Diligence: Biometric / Personhood / Liveness Privacy Boundary
+
+Status: fixed for this website. Chapter 2 and the blueprint now state the intended proof-only boundary. A formal privacy and abuse threat model remains future launch diligence, not a required pitch-site artifact.
 
 Evidence:
 
@@ -221,19 +224,24 @@ Even if the static site collects no biometric data, the real protocol depends on
 
 Does this expose a vulnerability?
 
-Not on the current static site. In a real implementation, yes: this is a high-risk privacy, safety, legal, and abuse surface. The main vulnerability is not "a hacker steals the static page." The vulnerability is a system architecture that could link identity, voting, reputation, and disputes in a way that harms users or undermines anonymity.
+Not on the current static site. The current docs now make the intended boundary clear: DemoThemis receives purpose-scoped proofs/attestations, not scans, face templates, names, or reusable identity handles. In a real implementation, privacy mistakes would still be high-risk, but that is implementation diligence rather than a current documentation defect.
 
-Recommended fix:
+Doc fix completed:
+
+- ~~Explicitly state what data the project never receives.~~ Added in Chapter 2 and the blueprint; a formal threat model should still restate it.
+
+Future implementation diligence:
 
 - Create a formal privacy threat model before implementation.
 - Define data flows for World ID, face checks, liveness checks, draw eligibility, voting, reputation, appeals, and payouts.
-- ~~Explicitly state what data the project never receives.~~ Added in Chapter 2 and the blueprint; a formal threat model should still restate it.
 - Prefer zero-knowledge/personhood proofs where possible.
 - Avoid central storage of biometric data or persistent face-derived identifiers.
 - Get legal/privacy review before any real user biometric or personhood integration.
-- Keep public claims modest and verifiable.
+- Keep implementation claims modest and verifiable.
 
-### 5. High: Centralized Reputation, Scoring, Draw, and Answer-Key Shortcuts Can Re-Centralize the System
+### 5. Fixed Docs / Future Implementation Diligence: Centralized Shortcuts Can Re-Centralize the System
+
+Status: fixed for this website. The public docs now reject centralized arbitration fallback, admin-key tally designs, and discretionary operator control of panels, scores, or answer-key admission.
 
 Evidence:
 
@@ -256,54 +264,23 @@ If one backend, analytics stack, database, admin key, or operator can link those
 
 Does this expose a vulnerability?
 
-Not in the static site. It is a high-severity architecture vulnerability if implemented without threshold cryptography, zero-knowledge proofs, strict separation of duties, audited logs, and data minimization.
+Not in the static site. The current docs state the correct architectural boundary. In production, any implementation that recreates a linkable backend table or admin-key control plane would still be high-risk, but that is a build/audit concern rather than a remaining docs defect.
 
-Recommended fix:
+Doc fix completed:
+
+- ~~Publish the no-centralized-fallback requirement as a launch blocker, not an upgrade path.~~ Done in the court, blueprint, finishing, and rebuilding pages.
+
+Future implementation diligence:
 
 - Write a protocol-level data-flow diagram for every actor and secret.
 - Decide what must be on-chain, permissionlessly verifiable, encrypted, anonymized, or never stored.
 - Use keyless, distributed, or threshold/MPC setup for privacy-critical roles so no single actor ever holds a usable full secret.
 - Separate draw, vote collection, tallying, scoring, and payout responsibilities.
-- Make deanonymization a first-class failure mode in the gamelab and documentation.
-- ~~Publish the no-centralized-fallback requirement as a launch blocker, not an upgrade path.~~ Done in the court, blueprint, finishing, and rebuilding pages.
+- Make deanonymization a first-class failure mode in implementation review and audits.
 
-### 6. High: Answer-Key Poisoning and Settlement Quality Are Not Fully Solved
+### 6. Future Implementation Diligence: Appeals, Finality, Quorum, and Dissenter Treatment
 
-Evidence:
-
-- `hybrid-juror-system.html` says keys come from settled markets passing curation, but also notes synthetic tests and decentralized governance are TBA.
-- `hybrid-juror-prediction-market-integration.html` says answer keys are curated from settlements and that keys arrive as people bet, which can read more automatic than the actual caveats support.
-- `zero-to-one.html` says every market that settles leaves a known outcome / graded case.
-- `breaking-the-court.html` flags false settlement poisoning.
-
-Why this matters:
-
-If juror quality is scored against bad answer keys, the system trains toward wrongness. Attackers do not need to buy every juror if they can poison calibration data or selectively influence settlement/curation.
-
-Hard cases include:
-
-- Thin markets with low information quality.
-- Ambiguous real-world outcomes.
-- False but unchallenged assertions.
-- Markets resolved by a captured or mistaken oracle.
-- Subjective disputes being treated as objective labels.
-- Public answer banks enabling memorization instead of judgment.
-- Adversaries submitting disputes designed to manipulate future scoring.
-
-Does this expose a vulnerability?
-
-Not today as a static site. In production, yes: answer-key poisoning is a direct protocol integrity vulnerability. It can silently degrade the juror selection/scoring mechanism.
-
-Recommended fix:
-
-- Treat answer keys as adversarial inputs, not automatic truth.
-- Require provenance, curation status, liquidity/participation thresholds, and challenge windows for each key.
-- Separate objective-market keys from subjective-rubric keys.
-- Add holdout tests and private evaluation sets so jurors cannot simply memorize public keys.
-- Model answer-key poisoning in the gamelab as a first-class attack.
-- Avoid saying every settled market becomes truth. Use "eligible candidate key after curation and challenge."
-
-### 7. High: Appeals, Finality, Quorum, and Dissenter Treatment Are Under-Specified
+Status: not a required website fix unless the docs promise finality or appeal behavior more precisely than the design supports.
 
 Evidence:
 
@@ -326,16 +303,16 @@ Key unresolved questions:
 
 Does this expose a vulnerability?
 
-Not in the static site. It becomes a real economic/protocol vulnerability if the court handles valuable disputes before these rules are formalized and tested.
+Not in the static site. It becomes a real economic/protocol vulnerability if the court handles valuable disputes before these rules are formalized and tested. That formalization belongs in the product spec/contracts, not necessarily in this explanatory website.
 
-Recommended fix:
+Future implementation diligence:
 
 - Write a complete appeal state machine.
 - Add explicit griefing and dissenter-protection cases.
 - Simulate quorum failure and appeal spam in the gamelab.
 - Separate "finality for UX" from "finality after cryptographic/economic challenge window."
 
-### 8. Medium-High: ~~Missing Browser Security Headers~~
+### 7. Medium-High: ~~Missing Browser Security Headers~~
 
 Status: baseline headers fixed in repo; stricter CSP/SRI remains future hardening.
 
@@ -371,7 +348,7 @@ Content-Security-Policy: default-src 'self'; img-src 'self' data: https:; style-
 
 Remaining hardening: the CSP still allows inline scripts/styles because the current pages use inline code. A stronger long-term fix is to move inline scripts to local files and use hashed or nonce-based CSP.
 
-### 9. Medium: External CDN Scripts Use unpkg Without SRI or Pinning in Markup
+### 8. Medium: External CDN Scripts Use unpkg Without SRI or Pinning in Markup
 
 Evidence:
 
@@ -397,7 +374,7 @@ Recommended fix:
 - Add CSP after removing inline script or adding hashes.
 - Consider replacing tooltips with a local lightweight implementation if the dependency is only used for hover content.
 
-### 10. Medium: Tooltip HTML Rendering and `innerHTML` Create a Latent XSS Path
+### 9. Medium: Tooltip HTML Rendering and `innerHTML` Create a Latent XSS Path
 
 Evidence:
 
@@ -422,12 +399,12 @@ Recommended fix:
 - Add a CSP that would limit script execution even if HTML injection occurs.
 - Treat assumption text as untrusted by default.
 
-### 11. Medium: Gamelab Can Be Read as a Proof Rather Than a Model
+### 10. Medium: Gamelab Can Be Read as a Proof Rather Than a Model
 
 Evidence:
 
 - The gamelab now presents simulations, assumptions, attack cards, watchlist metrics, and per-attack results.
-- It still necessarily abstracts away key real-world risks: answer-key poisoning, setup/key-management mistakes, legal/regulatory constraints, identity rental, biometric privacy, oracle mistakes, market manipulation, appeal griefing, and social coercion.
+- It still necessarily abstracts away some real-world risks and implementation details: setup/key-management mistakes, legal/regulatory constraints, identity rental, biometric privacy, oracle mistakes, market manipulation, appeal griefing, and social coercion.
 
 Why this matters:
 
@@ -443,7 +420,7 @@ Recommended fix:
 - Label simulation outputs as "under selected assumptions."
 - Add first-class attack dimensions for:
   - tally setup or key-management failure
-  - answer-key poisoning
+  - answer-key curation stress
   - identity rental/willing accomplices
   - regulatory shutdown
   - appeal spam
@@ -451,7 +428,7 @@ Recommended fix:
 - Add a "show assumptions that make this result fragile" panel.
 - Avoid binary safe/unsafe language; show fragility and sensitivity.
 
-### 12. Medium: Existing Validator Uses `Function` on Repository Content
+### 11. Medium: Existing Validator Uses `Function` on Repository Content
 
 Evidence:
 
@@ -471,7 +448,7 @@ Recommended fix:
 - Or parse object literals with an AST parser rather than `Function`.
 - If the script remains internal, at least document that it executes repository code.
 
-### 13. Medium: Full-Site CI / Deployment Gate Is Partial
+### 12. Medium: Full-Site CI / Deployment Gate Is Partial
 
 Evidence:
 
@@ -499,7 +476,7 @@ Added:
 - ~~Header check against Netlify preview deploy.~~ Baseline headers are generated into `dist/_headers`; live preview verification still belongs in CI.
 - Secret scan.
 
-### 14. Medium: Root Directory Contains Many Untracked Scratch Files
+### 13. Medium: Root Directory Contains Many Untracked Scratch Files
 
 Evidence:
 
@@ -545,7 +522,7 @@ screenshot.png
 
 - Prefer a dedicated ignored `scratch/` directory for one-off scripts.
 
-### 15. Medium: Prediction-Market Regulatory Surface Is Underrepresented
+### 14. Future Implementation Diligence: Prediction-Market Regulatory Surface
 
 Evidence:
 
@@ -558,16 +535,18 @@ If this remains a conceptual site, the legal surface is mostly narrative. If the
 
 Does this expose a vulnerability?
 
-Not a code vulnerability. It is a launch/regulatory risk. In production, a legal shutdown or enforcement action is as existential as a technical exploit.
+Not a code vulnerability and not necessarily a website defect. It is a launch/regulatory risk. In production, a legal shutdown or enforcement action is as existential as a technical exploit.
 
-Recommended fix:
+Website standard:
 
-- Add a "regulatory boundary" note to market-related pages.
-- Separate educational prediction-market concepts from planned implementation.
+- The docs should avoid implying that real-money prediction-market launch is regulation-free or that market settlements are automatically neutral truth.
+
+Future implementation diligence:
+
 - Get counsel before operating, facilitating, or integrating real-money markets.
-- Avoid implying that market settlements are automatically usable as neutral truth infrastructure.
+- Define the regulatory boundary before any real-money launch.
 
-### 16. Medium-Low: Accessibility Needs a Dedicated Pass
+### 15. Medium-Low: Accessibility Needs a Dedicated Pass
 
 Evidence:
 
@@ -591,7 +570,7 @@ Recommended fix:
 - Ensure tooltip-trigger icons have accessible labels and tooltip content is not the only source of essential information.
 - Run Lighthouse/accessibility checks and manual screen-reader spot checks.
 
-### 17. Low-Medium: ~~No `robots.txt`, Sitemap, or 404~~; Canonical/Social Metadata Still Open
+### 16. Low-Medium: ~~No `robots.txt`, Sitemap, or 404~~; Canonical/Social Metadata Still Open
 
 Evidence:
 
@@ -615,7 +594,7 @@ Recommended fix:
 - ~~Add a custom `404.html`.~~ Done in build output.
 - Mark internal/archived pages `noindex` if any remain public.
 
-### 18. Low-Medium: Performance and Resilience Are Adequate but Not Hardened
+### 17. Low-Medium: Performance and Resilience Are Adequate but Not Hardened
 
 Evidence:
 
@@ -638,7 +617,7 @@ Recommended fix:
 - Add immutable caching for fingerprinted assets.
 - Keep the current simplicity where it helps, but stop publishing the whole repo.
 
-### 19. Low-Medium: Public Documentation Does Not Yet Have One Canonical Threat Model
+### 18. Optional Docs Improvement: One Canonical Threat Model Page
 
 Evidence:
 
@@ -647,16 +626,16 @@ Evidence:
 
 Why this matters:
 
-The project is conceptually ambitious. A reader should not have to infer the actual trust model by reconciling multiple pages. The absence of one canonical threat model also makes it easier for absolute claims to drift back into the product copy.
+The project is conceptually ambitious. A reader currently can infer the trust model by reconciling multiple pages, and the new blueprint/privacy-boundary language helps. A single page would make that easier, but the website does not need to become a complete protocol build guide.
 
 Does this expose a vulnerability?
 
-Not in code. It is a design and communication weakness. In real protocol development, unclear threat models directly cause vulnerabilities because teams optimize against different attacker assumptions.
+Not in code. It is an optional communication improvement for the website and a future implementation artifact for the protocol team.
 
-Recommended fix:
+Optional docs improvement:
 
 - Create a `threat-model.html` page or section.
-- Include assets, adversaries, trust assumptions, non-goals, mitigations, residual risks, and "not solved yet."
+- Keep it concise: core architecture, non-goals, known boundaries, and what the docs are not claiming.
 - Link every strong claim to that threat model.
 - Keep gamelab assumption names aligned with the threat-model vocabulary.
 
@@ -664,20 +643,20 @@ Recommended fix:
 
 The gamelab is the most useful part of the project because it forces the mechanism to become explicit. The current version is much stronger than a pure essay: it lets the reader vary assumptions, inspect attack cards, and see which assumptions carry the result.
 
-Remaining gamelab weaknesses:
+Remaining gamelab weaknesses, if the lab is meant to become a more complete adversarial worksheet:
 
 1. It still compresses too many attack surfaces into a small number of knobs.
 2. It can make "green" results feel more conclusive than they are.
 3. It models the economics better than it models privacy failure.
-4. It does not yet make answer-key poisoning central enough.
+4. It treats answer-key curation as a modeled input rather than a full production specification, which is fine for an intuition lab.
 5. It does not fully model identity rental, willing accomplices, coercion, and social collusion.
 6. It does not fully model legal/regulatory shutdown as a system failure.
 7. It does not show enough sensitivity analysis: which one assumption flips the result?
 
-Recommended gamelab improvements:
+Optional gamelab improvements:
 
 - Add "tally setup/key-management failure" as a first-class attack.
-- Add "Poisoned answer keys" as a first-class attack.
+- Optionally add answer-key curation stress tests if the gamelab is meant to cover launch-spec details.
 - Add "Identity rental / willing accomplice" as a first-class attack.
 - Add "Appeal griefing" as a first-class attack.
 - Add "Regulatory halt" as a first-class non-technical failure.
@@ -688,9 +667,9 @@ Recommended gamelab improvements:
 
 The gamelab should frame itself as an adversarial design worksheet. That is a stronger and more honest position than trying to make it look like proof.
 
-## Recommended Remediation Order
+## Recommended Website Remediation Order
 
-### Immediate
+### Immediate Site Fixes
 
 1. ~~Stop publishing the repo root. Move production pages/assets into a dedicated deploy directory.~~ Fixed with `dist`.
 2. ~~Remove QA/audit/helper/markdown files from public production.~~ Fixed by deploy allowlist.
@@ -698,20 +677,20 @@ The gamelab should frame itself as an adversarial design worksheet. That is a st
 4. ~~Add baseline security headers in Netlify.~~ Fixed via generated `_headers`.
 5. Vendor or pin external dependencies and add SRI if CDN use remains.
 
-### Next
+### Remaining Website/Docs Work
 
 6. Replace absolute bribery/security claims with conditional language.
-7. Create one canonical threat model page.
-8. Add a public limitations section to the gamelab.
-9. Add first-class gamelab models for tally setup/key-management failure, answer-key poisoning, identity rental, and appeal griefing.
+7. Add a concise public limitations section to the gamelab if the current caveats still feel too light.
+8. Optionally create one canonical threat-model/architecture-boundary page, but keep it scoped to what the docs need to claim.
+9. Optionally add gamelab models for tally setup/key-management failure, answer-key curation stress, identity rental, and appeal griefing if the gamelab is meant to be more than an intuition tool.
 10. Set Tippy `allowHTML` to false where possible and reduce `innerHTML` use.
 
-### Before Any Real Product Launch
+### Future Product Launch Diligence, Not Required For This Website
 
 11. Produce a privacy/data-flow threat model for World ID, face/liveness checks, juror draw, private voting, reputation, appeals, and payouts.
 12. Get legal/privacy review for biometric/personhood claims and prediction-market/event-contract integration.
 13. Specify appeal/finality/quorum rules as a state machine.
-14. Specify answer-key provenance, curation, challenge, and holdout-test rules.
+14. Specify exact production thresholds for answer-key provenance, curation, challenge coverage, and holdout-test rules. The website already explains the intended settlement-quality filter and objective/rubric-court split.
 15. ~~Document the launch requirement that no tally/admin role can link identity, votes, reputation, or payouts.~~ Done in the court, blueprint, finishing, and rebuilding pages. Formal implementation design still remains.
 
 ## Appendix: Confirmed Non-Issues in This Pass
@@ -733,4 +712,4 @@ These are not guarantees. They are scoped observations from this pass.
 
 The project is not fundamentally broken as a static demonstration site. The core weakness is that it currently ships too much internal material and sometimes claims more certainty than the modeled system earns.
 
-The strongest next move is to make the public artifact smaller, harder to misread, and more explicit about assumptions. After that, the project needs a real threat model around identity, privacy, reputation, answer keys, appeals, and regulated market dependencies. Those are the places where a working implementation would either become genuinely interesting or genuinely dangerous.
+The strongest website move is to keep the public artifact small, hard to misread, and explicit about the architecture boundaries it actually claims. The remaining deep protocol work belongs in future implementation specs and audits, not necessarily in this explanatory site.
