@@ -203,21 +203,6 @@
   .lab-status .lab-status-clear { font-size: .68rem; font-weight: 800; letter-spacing: .04em; text-transform: uppercase; border-radius: 999px; padding: .15rem .5rem; background: color-mix(in srgb, var(--bad) 15%, transparent); color: var(--bad); border: 1px solid color-mix(in srgb, var(--bad) 25%, transparent); }
   .lab-grid { transition: box-shadow .3s ease; }
   .lab-grid.vulnerable, .lab-grid.resistant { border-radius: var(--radius); }
-  #toc.toc { position: static; width: auto; max-height: none; overflow: visible; border: 1px solid var(--line); border-radius: 14px; padding: .75rem .9rem; margin: 0 0 1.2rem; background: color-mix(in srgb, var(--surface) 82%, var(--bg)); box-shadow: var(--shadow); }
-  #toc.toc .toc-title { margin: 0 0 .45rem; }
-  #toc.toc ul { display: flex; flex-wrap: wrap; gap: .35rem .45rem; columns: auto; border-left: 0; margin: 0; padding: 0; }
-  #toc.toc li a { border: 1px solid var(--line); border-radius: 999px; background: var(--surface); color: var(--muted); margin: 0; padding: .22rem .55rem; font-size: .76rem; line-height: 1.35; }
-  #toc.toc li a:hover { color: var(--ink); border-color: var(--line-strong); }
-  #toc.toc li a.active { color: var(--accent-ink); border-color: color-mix(in srgb, var(--accent) 40%, var(--line)); background: var(--accent-soft); font-weight: 700; }
-  @media (min-width: 2040px) {
-    #toc.toc { position: fixed; top: 5.2rem; left: calc(50% - var(--half-maxw) - 15.5rem); width: 12rem; max-height: 78vh; overflow: auto; border: 0; border-radius: 0; background: transparent; box-shadow: none; padding: 0; margin: 0; }
-    #toc.toc .toc-title { margin: 0 0 .2rem .85rem; }
-    #toc.toc ul { display: block; margin: .4rem 0 0; padding: 0; border-left: 2px solid var(--line); }
-    #toc.toc li a { border: 0; border-left: 2px solid transparent; border-radius: 0; background: transparent; color: var(--faint); padding: .3rem .85rem; margin-left: -2px; font-size: .82rem; }
-    #toc.toc li a:hover { color: var(--ink); }
-    #toc.toc li a.active { color: var(--accent-ink); border-left-color: var(--accent); background: transparent; font-weight: 600; }
-  }
-
   .lab-shell { margin-top: 1.1rem; }
   .lab-tabs { display: inline-flex; gap: .35rem; border: 1px solid var(--line-strong); border-radius: 999px; background: var(--surface); box-shadow: var(--shadow); padding: .25rem; font-family: var(--sans); margin-bottom: 1rem; }
   .lab-tab { border: 0; border-radius: 999px; background: transparent; color: var(--muted); font-family: var(--sans); font-weight: 800; font-size: .78rem; padding: .45rem .75rem; cursor: pointer; }
@@ -360,8 +345,6 @@
 </header>
 
 <main class="content wrap">
-  <aside id="toc" class="toc reveal"></aside>
-
   <section class="reveal">
     <p class="sec-label">How to play</p>
     <h2>Most outputs trace back to visible inputs and open assumptions</h2>
