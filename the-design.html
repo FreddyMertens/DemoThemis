@@ -177,7 +177,7 @@
           <span class="chip lock">endless reports</span>
         </div>
       </div>
-      <figcaption>The full lock set, every one of which exists in production somewhere today. <b>One component is staged behind a fallback, and none needs inventing.</b></figcaption>
+      <figcaption>The full lock set, every one of which exists in production somewhere today. <b>No component is allowed to become a centralized fallback.</b></figcaption>
     </figure>
   </section>
 
@@ -252,11 +252,19 @@
     </ol>
   </section>
 
+  <!-- ============ privacy boundary ============ -->
+  <section class="reveal">
+    <p class="sec-label">Privacy boundary</p>
+    <h2>What the protocol learns</h2>
+    <p>The identity layer proves one thing and withholds the rest. World ID and the on-device face check say a unique, enrolled human is present for this draw, on this attested device, inside this grace window. DemoThemis does not receive an iris scan, a face image, a face template, a legal name, or a reusable person handle. It receives a purpose-scoped proof tied to the case and the seat commitment, useful here and nowhere else.</p>
+    <p>The rest of the machine keeps the same split. The draw is public because anyone must be able to check the beacon. The ballot is private because only the tally should ever open. Reputation and scoring update from verifiable case records, curated answer keys, and appeal outcomes, not from a private operator's discretion. Answer-key curation has to stay permissionless and challengeable. No component should be able to join personhood, seat, vote, score, and payout history into one table; the architecture goal is not to guard that table, but to avoid creating it.</p>
+  </section>
+
   <!-- ============ honesty ============ -->
   <section class="reveal">
     <p class="sec-label">Still owed</p>
     <h2>The two debts we publish</h2>
-    <p>A blueprint that hides its open items is a brochure. There are two, and both are scheduled rather than hoped for. The locked box launches with a single bonded, slashable coordinator: a party who could leak ballot privacy but cannot forge a tally, because every result ships with a proof anyone can check. The threshold committee that removes even that trust is the one component of the whole stack still maturing, so it ships second, with the fallback printed here instead of hidden.</p>
+    <p>A blueprint that hides its open items is a brochure. There are two, and both are scheduled rather than hoped for. The locked box has no centralized fallback: DemoThemis will not run arbitration through an admin server, a multisig, or a single tally coordinator. The production requirement is keyless or distributed setup, where no party ever holds a usable ballot-opening secret, any initialization artifact is unusable afterward, and every tally ships with a proof anyone can check. If a design requires trusting one operator to hold a key, delete a key, pick panels, rewrite scores, or admit answer keys by discretion, it is not this design.</p>
     <p>And the court for subjective disputes, the kind reality never grades, ships later, narrow, and under its own name. It opens with rubric-checkable cases only, grades its jurors on rubric coherence, split prediction, and appeal survival, and never borrows the objective court's track record, because that record measures a different skill. The routing rule is one bit wide: will reality post the answer? Everything else follows from it.</p>
   </section>
 

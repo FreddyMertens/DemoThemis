@@ -354,7 +354,7 @@
     <p>You asked whether my proposal for the arbiter behind the curtain actually works, which is the right question to ask of anything that sounds like cryptographic magic. The proposal was two devices: a verifiable random function for the draw, and threshold-encrypted votes for the count. Both replace trust with arithmetic, and each kills a different attack from the red team, so I will open them one at a time and tell you exactly where each one's power stops.</p>
     <p>The die first. The grinding attack worked because the attacker could re-roll the draw, trigger a case, peek at the panel, walk away, try again. A verifiable random function is a die with a tamper-proof seal: the protocol commits in advance to a future, unpredictable seed, a public randomness beacon or a chain VRF, and binds the draw to it plus the case's identity. One case, one roll, and anyone can re-run the math afterward to confirm the roll was honest. The attacker's strategy collapses from re-roll until you win to take what the die gives you, which is the hypergeometric lottery from the first page, the one where a 12% pool share captures half a percent of panels. Is it effective? Against grinding, completely, and that is not a hedge: the entire attack was the re-roll, and the re-roll is gone. What it does not do is shrink the honest capture odds themselves. The die is sealed, not loaded in your favor. Panel size and pool width still do that work.</p>
     <p>Now the box, because the harder problem was never the draw. It was the receipt. Commit-reveal forces every juror to publish their vote and the secret behind it, which means any juror can prove how they voted to a briber, which means votes are sellable, which was open question 01 and the through-line of every page since. The fix has to make a juror's vote unprovable, even by a juror who is trying to prove it. That sounds impossible. It is merely clever.</p>
-    <p>Votes are encrypted to a key that no single party holds. The key is split among a committee, say nine trustees of whom five must cooperate, and the only thing five trustees can jointly produce is the final tally, never an individual ballot. So far that protects privacy. The receipt-killing trick, borrowed from the MACI design used in Ethereum public-goods funding, is one twist stranger: a juror can secretly replace their voting key at any time. Hand a briber a beautiful cryptographic receipt showing you committed a NO vote, then quietly re-key and vote YES. The receipt still verifies. It is also worthless, and the briber knows it is worthless, because every juror can do this and the briber cannot tell a kept promise from a swapped key. The bribery market does not lose a battle here. It loses the ability to write enforceable contracts, and a market that cannot enforce delivery does not clear. Try it yourself.</p>
+    <p>Votes are encrypted into an aggregate-only tally setup with no admin key. No single party holds a usable ballot-opening secret, and the setup must leave no key that can later be used to open individual votes. The only thing the system can produce is the final tally, with a proof attached. So far that protects privacy. The receipt-killing trick, borrowed from the MACI design used in Ethereum public-goods funding, is one twist stranger: a juror can secretly replace their voting key at any time. Hand a briber a beautiful cryptographic receipt showing you committed a NO vote, then quietly re-key and vote YES. The receipt still verifies. It is also worthless, and the briber knows it is worthless, because every juror can do this and the briber cannot tell a kept promise from a swapped key. The bribery market does not lose a battle here. It loses the ability to write enforceable contracts, and a market that cannot enforce delivery does not clear. Try it yourself.</p>
 
     <div class="widget reveal">
       <div class="widget-head"><span class="live"></span> Sell your vote, if you can</div>
@@ -374,14 +374,14 @@
       <p style="font-family:var(--sans);font-size:.86rem;color:var(--faint);margin:1rem 0 0">Under commit-reveal the receipt is proof and the trade clears. Under threshold voting with re-keying, the same receipt proves nothing, because you may have re-keyed one minute later, and no briber pays for maybe.</p>
     </div>
 
-    <p>So is it actually effective? Against the receipt, yes, and the proof is the briber's own incentive: they will not pay for undeliverable goods. Against the deanonymization database, yes by construction, because no single operator ever holds the juror-to-vote map; reconstructing it takes five colluding trustees, and the trustees are public, bonded, rotated, and individually unable to peek. Honesty also requires me to name the three places the magic stops. If five of nine trustees do collude, individual ballots leak, so the committee needs the same treatment as everything else here, bonds, rotation, and slashing, and the parameter five-of-nine is a dial, not a law. If a seat was rented from day zero, before its first key ever existed, re-keying defends nobody, because the renter holds the only key there ever was; that hole belongs to the next section. And the engineering is heavy, zero-knowledge proofs and coordinated trustees, which is a real cost and the honest price of removing the curtain instead of promising to stand behind it politely.</p>
+    <p>So is it actually effective? Against the receipt, yes, and the proof is the briber's own incentive: they will not pay for undeliverable goods. Against the deanonymization database, yes by construction, because no single operator ever holds the juror-to-vote map and no centralized fallback can open ballots. Honesty also requires me to name the places the magic stops. If the setup ceremony secretly leaves someone with usable key material, the design has failed before the first case. If a seat was rented from day zero, before its first key ever existed, re-keying defends nobody, because the renter holds the only key there ever was; that hole belongs to the next section. And the engineering is heavy, zero-knowledge proofs, aggregate-only tallying, and ceremony verification, which is the honest price of removing the curtain instead of promising to stand behind it politely.</p>
 
     <figure class="diagram reveal">
       <div class="diagram-inner">
         <div class="flow">
           <div class="node"><span class="ic">&#128100;</span><span class="lbl">Juror encrypts a vote</span><span class="sub">may re-key anytime</span></div>
           <span class="arrow">&rarr;</span>
-          <div class="node"><span class="ic">&#128272;</span><span class="lbl">9 trustees hold key shards</span><span class="sub">5 needed, none can peek</span></div>
+          <div class="node"><span class="ic">&#128272;</span><span class="lbl">No admin key exists</span><span class="sub">aggregate tally only</span></div>
           <span class="arrow">&rarr;</span>
           <div class="node"><span class="ic">&#129518;</span><span class="lbl">Only the tally decrypts</span><span class="sub">zero-knowledge proof attached</span></div>
           <span class="arrow">&rarr;</span>
@@ -511,7 +511,7 @@
     <p class="sec-label">Where round three leaves us</p>
     <h2>The bottom of the rabbit hole</h2>
     <p>Count what is now settled. The ladder is priced by floors instead of vibes, with every discount keyed to a signal an attacker would find expensive to fake. The seat deposit floats on pay, clears like a market, and a juror with no capital can enter underwritten for the cost of a coffee a month. The popularity question got an answer with a seam down the middle: prioritization yes, gatekeeping no, except in the subjective court where the crowd's standard is the product, and that court now has its own graders. The die is sealed, the box is locked, the face check closes the rental window to minutes, and the market maker's bleeding has a name, a cap, and a signature on the budget line.</p>
-    <p>What remains is not design. It is engineering and sequencing: the trustee committee's ceremony, the zero-knowledge circuits, the rubric library, the beacon integration, each one buildable with parts that exist today in other systems. Three pages ago the headline could not survive its own comment section. Now the open items are work orders. That is the entire distance between an idea and a mechanism, and this project has crossed most of it in three rounds of being honestly attacked by its own designer.</p>
+    <p>What remains is not design. It is engineering and sequencing: the keyless or distributed tally ceremony, the zero-knowledge circuits, the rubric library, the beacon integration, each one buildable with parts that exist today in other systems. Three pages ago the headline could not survive its own comment section. Now the open items are work orders. That is the entire distance between an idea and a mechanism, and this project has crossed most of it in three rounds of being honestly attacked by its own designer.</p>
 
     <figure class="diagram reveal">
       <div class="diagram-inner">
@@ -532,7 +532,7 @@
           <div class="compare-col bad">
             <h4>Now engineering, not argument <span class="tag-bad">build next</span></h4>
             <ul>
-              <li>Trustee ceremony, rotation, and slashing parameters.</li>
+              <li>Keyless or distributed tally ceremony, with no admin key.</li>
               <li>Zero-knowledge tally circuits, audited.</li>
               <li>Beacon choice and draw binding, specified on-chain.</li>
               <li>Rubric library for the first escrow case types.</li>
@@ -822,7 +822,7 @@ function courtMoney(n) {
     show.disabled = true;
     stage.textContent = mode === "cr"
       ? "Commit-reveal: you will publish hash(vote, salt) now and open it later. Cast when ready."
-      : "Threshold voting: your vote is encrypted to the trustee committee, and you can secretly re-key at any time. Cast when ready.";
+      : "Threshold voting: your vote enters an aggregate-only tally setup with no admin key, and you can secretly re-key at any time. Cast when ready.";
     ver.innerHTML = "&hellip;";
     payEl.innerHTML = "&hellip;";
     mkt.innerHTML = "&hellip;";

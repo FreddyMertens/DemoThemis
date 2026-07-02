@@ -288,7 +288,7 @@
       <p style="font-family:var(--sans);font-size:.86rem;color:var(--faint);margin:1rem 0 0">Gold dots are your seats. One honest draw rarely captures. Grinding gets there in a handful of tries, and grinding is free if the seed can be re-rolled. A verifiable random function is what makes the left button the only button.</p>
     </div>
 
-    <p>Now anonymous. The integration chapter is candid about where the work happens: an off-chain reputation engine keeps each juror's score, decides which settled markets become secret answer keys, and draws the panels. To do those jobs it has to hold the one thing the whole anonymity argument depends on staying secret: the map from a real World ID to a vote to a verdict history. That map is the deanonymization database the project condemns elsewhere. One leak turns the court's armour into a directory of exactly who to bribe, threaten, or expose.</p>
+    <p>Now anonymous. The failure mode to avoid is not subtle: if scoring, key curation, and panel draws were ever collapsed into one centralized operator, that operator would be asked to hold the map the whole anonymity argument depends on keeping apart: real personhood, pseudonymous seat, vote, and verdict history. That is not the intended architecture. Those jobs need permissionless, verifiable rails. The warning is the shortcut: one leak from a centralized implementation would turn the court's armour into a directory of exactly who to bribe, threaten, or expose.</p>
 
     <figure class="diagram reveal">
       <div class="diagram-inner">
@@ -302,19 +302,19 @@
             <div class="ar">&rarr;</div>
           </div>
           <div class="col">
-            <div class="core">The off-chain engine<small>one operator, unnamed</small></div>
-            <div class="box">Draws every panel</div>
-            <div class="box">Picks the secret answer keys</div>
+            <div class="core">The forbidden shortcut<small>centralized operator</small></div>
+            <div class="box">Controls panel draws</div>
+            <div class="box">Curates answer keys alone</div>
           </div>
         </div>
       </div>
-      <figcaption>One process holds identity, votes, and outcomes together, and runs the draw. <b>A single leak is the whole threat model, undone.</b></figcaption>
+      <figcaption>A centralized shortcut would put identity, votes, outcomes, and draws in one place. <b>A single leak is the whole threat model, undone.</b></figcaption>
     </figure>
 
     <div class="callout reveal">
       <p class="plan-label">Already in the notes</p>
       <h3>The right principle, applied to the smaller thing</h3>
-      <p>The notes carry exactly the principle that would catch this. On parameters, they insist a value be computed from on-chain observables and warn against letting it move into a multisig (the governance caveat in Part 2). That is the correct standard. It is just aimed at a twenty-dollar bond rather than at the database that knows every juror's identity and vote. No randomness source is named anywhere, and the engine has no stated operator, no breach plan, and no path to running without a trusted middle. The cheapest version of the whole system to attack is the one part the notes never put on the lever board.</p>
+      <p>The notes carry exactly the principle that catches this. On parameters, they insist a value be computed from on-chain observables and warn against letting it move into a multisig (the governance caveat in Part 2). That same standard has to govern the larger machinery too: draws from a named public beacon, scoring from verifiable case records, answer-key curation through permissionless challengeable rules, and no single party that can join personhood, ballot, score, and payout history. The cheapest version of the whole system to attack would be the one that lets those rails collapse back into a trusted middle.</p>
     </div>
   </section>
 
@@ -443,7 +443,7 @@
   <section class="reveal">
     <p class="sec-label">Where this leaves the machine</p>
     <h2>Strong idea, unfinished hardening</h2>
-    <p>Step back from the seven moves and a pattern shows up. None of them say the idea is wrong. One human one vote really is a better foundation than one token one vote, and the market-feeds-the-court loop really is a clever way out of the cold start. What the moves show is that the headline, a verdict that cannot be bought, is currently guarding the front door while four of the windows are open. The attacks that get in, provable votes, aligned blocs, rented seats, a single trusted engine, are not exotic. They are the standard attacks on this exact class of system, and the standard answers exist. They are just not written down yet.</p>
+    <p>Step back from the seven moves and a pattern shows up. None of them say the idea is wrong. One human one vote really is a better foundation than one token one vote, and the market-feeds-the-court loop really is a clever way out of the cold start. What the moves show is that the headline, a verdict that cannot be bought, is currently guarding the front door while four of the windows are open. The attacks that get in, provable votes, aligned blocs, rented seats, and centralized implementation shortcuts, are not exotic. They are the standard attacks on this exact class of system, and the standard answers exist. They are just not written down yet.</p>
     <p>The encouraging part is how much of this the author already sees. The notes catch the bond problem, the herding problem, the centralization smell, and the credential-rental risk. The work that remains is to turn those scattered catches into one threat model, and to apply the same sharp standard already used on a twenty-dollar parameter to the parts that carry the real weight.</p>
 
     <figure class="diagram reveal">
@@ -454,7 +454,7 @@
             <ul>
               <li>Anti-capture argued against buying identities only.</li>
               <li>Security costed on the full pool, not the active fifth.</li>
-              <li>One engine holds identity, votes, and the draw.</li>
+              <li>Never let one engine hold identity, votes, and the draw.</li>
               <li>Optimistic layer assumes a watcher who is always awake.</li>
               <li>Market maker's losses to informed flow never netted.</li>
               <li>Track record assumed to carry into subjective disputes.</li>

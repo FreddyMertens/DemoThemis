@@ -231,7 +231,7 @@
   <section class="reveal">
     <p class="sec-label">Your question 03 &middot; is the cryptography real?</p>
     <h2>Off the shelf, or off the map?</h2>
-    <p>Fair challenge, because the locked box does sound like a research paper. The honest answer is that every component is running in production somewhere today, none of it is a breakthrough, and exactly one piece sits close enough to the frontier that it needs a fallback plan. Assembly is required. Invention is not.</p>
+    <p>Fair challenge, because the locked box does sound like a research paper. The honest answer is that every component is running in production somewhere today, none of it is a breakthrough, and none of it gets a centralized fallback. Assembly is required. Invention is not.</p>
 
     <div class="diagram reveal"><div class="diagram-inner parts-wrap">
       <table class="parts">
@@ -241,13 +241,13 @@
           <tr><td>Threshold encryption</td><td>Theory from 1989</td><td>drand itself is threshold cryptography; Shutter Network runs it on Gnosis Chain for encrypted transactions</td><td>Off the shelf.</td></tr>
           <tr><td>Receipt-free voting (MACI)</td><td>Proposed 2019</td><td>clr.fund has run public quadratic-funding rounds on MACI since 2021; maintained by Privacy and Scaling Explorations</td><td>Shipped and open source. Our work is adapting ballots to juror panels.</td></tr>
           <tr><td>Zero-knowledge tally proofs</td><td>2016-era proof systems</td><td>Inside MACI today; the tally is proven correct before anyone trusts it</td><td>Off the shelf.</td></tr>
-          <tr><td>Decentralized coordinator</td><td>Active work now</td><td>Prototypes and research; stock MACI still uses one coordinator who could leak privacy but cannot forge a tally</td><td>The one frontier piece. See the fallback below.</td></tr>
+          <tr><td>Keyless or distributed tally setup</td><td>Active work now</td><td>Threshold ceremonies, MACI-style proofs, and verifiable tally systems already exist; the requirement is that no single actor ever holds a usable ballot-opening key</td><td>Required from day one. No centralized coordinator fallback.</td></tr>
           <tr><td>On-device face match</td><td>Commodity since FaceID</td><td>World App ships Face Auth for sensitive actions already</td><td>Off the shelf, and already in the exact app our jurors hold.</td></tr>
         </tbody>
       </table>
     </div></div>
 
-    <p>The one honest asterisk is the coordinator. Stock MACI trusts a single operator with a strange, narrow power: they could peek at individual ballots, but they cannot forge a result, because the tally ships with a zero-knowledge proof anyone can check. Replacing that single operator with the threshold committee, so that peeking requires five of nine to collude, is engineering that exists in prototype but not in a package you npm-install. So the build plan is staged. Version one launches with a single bonded, slashable coordinator: integrity trustless from the first day, privacy resting on one accountable party. Version two swaps in the committee when the engineering matures, and nothing above it changes. That is the difference between a dependency and a bet, and this is a dependency.</p>
+    <p>The one honest asterisk is the setup, not an operator. Stock MACI often describes a coordinator, but DemoThemis cannot depend on a party who can peek and promise not to. The launch requirement is stricter: no usable ballot-opening key is ever held by one actor, and no emergency admin key exists. The setup must be distributed, keyless, or burned into an unusable state before any case can rely on it, with the aggregate tally and its zero-knowledge proof as the only thing the public needs to trust. If that cannot be met, the locked box does not launch.</p>
   </section>
 
   <!-- ============ 4: face check graded ============ -->
@@ -378,7 +378,7 @@
               <li>Stake-scaled panels and seniority gates carry big cases, not money walls.</li>
               <li>Loser-proportional petition with staked signatures, OR a lone bonded appeal.</li>
               <li>The floor-priced dispute ladder, accepted last round.</li>
-              <li>VRF draw, threshold votes, staged coordinator with a slashable v1.</li>
+              <li>VRF draw, threshold votes, and no centralized tally fallback.</li>
               <li>Face check at draw, attested devices, Orb re-auth for top panels.</li>
               <li>Markets born as parimutuel pools, graduating to books on volume.</li>
               <li>Two courts, routed by whether reality will ever grade the question.</li>

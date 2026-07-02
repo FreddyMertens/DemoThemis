@@ -1,3 +1,11 @@
 node_modules/
 .netlify/
+dist/
 windsurf_deployment.yaml
+
+# Local one-off scripts and screenshots from interactive editing sessions.
+temp*.js
+temp*.py
+fix*.js
+*_scratch.*
+screenshot.png

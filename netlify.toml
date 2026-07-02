@@ -1,5 +1,6 @@
 [build]
-  publish = "."
+  command = "node tools/build-site.js"
+  publish = "dist"
 
 [[redirects]]
   from = "/"
