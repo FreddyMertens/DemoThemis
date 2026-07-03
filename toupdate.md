@@ -1,4 +1,4 @@
-# To Update — DemoThemis design & copy notes
+# To Update — demothemis design & copy notes
 
 Working list of fixes and design changes from the review of the **juror quality-assurance (reputation) system** and its **economics**. Two parts:
 
@@ -143,7 +143,7 @@ Settled in the `victim-compensation.html` discussion. There is **no victim-compe
   - *Self-sizing:* per-head = pool ÷ eligible jurors, so as more clear the bar it dilutes toward each juror's opportunity cost, setting the equilibrium pool size at whatever fees support. As volume grows, the pool grows.
   - *Soft ramp at the bar* to avoid a hard cliff at 0.70 (threshold gaming).
   - *Early subsidy, if any, must be a published formula, never discretionary* — a company that can hand-tune juror pay has a lever over the bench (firewall).
-  - *Real scaling lever is volume:* the prediction market manufactures fee-paying cases, so the pool grows with usage. Concentration + forfeiture streams + volume together make it bite.
+  - *Real scaling lever is volume:* predictionmomo manufactures fee-paying cases, so the pool grows with usage. Concentration + forfeiture streams + volume together make it bite.
 
 ### 4.4 Pages to sweep (relabel insurance → reward pool; remove victim payout; KEEP juror vindication)
 

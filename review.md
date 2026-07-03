@@ -17,7 +17,7 @@ The largest issues are not "the page is broken." They are:
 1. ~~The Netlify deployment previously published the repository root, so internal markdown, QA pages, audit pages, helper scripts, and tooling were publicly accessible.~~ Fixed in the repo by switching Netlify to an allowlisted `dist` build output.
 2. ~~The deployed site lacked common browser security headers and relied on external CDN tooltip scripts without SRI.~~ Baseline headers are generated in the repo, and tooltip dependencies are now vendored locally.
 3. Several pages still make absolute or near-absolute claims such as "money cannot buy" / "cannot be bribed" while other parts of the project correctly admit willing-accomplice limits, settlement curation limits, subjective-dispute boundaries, quorum issues, setup/key-management risks, and centralized-shortcut risks. The centralized-fallback wording has been corrected; remaining work is mostly tone/claim calibration.
-4. ~~The docs did not make the biometric/personhood privacy boundary explicit enough.~~ Fixed: Chapter 2 and the blueprint now state that DemoThemis receives purpose-scoped proofs, not scans, templates, names, or reusable identity handles.
+4. ~~The docs did not make the biometric/personhood privacy boundary explicit enough.~~ Fixed: Chapter 2 and the blueprint now state that demothemis receives purpose-scoped proofs, not scans, templates, names, or reusable identity handles.
 5. The gamelab is useful as an intuition tool, but it should not be framed as proof of security. It models selected attack paths, not a full adversarial protocol.
 
 Findings and current status:
@@ -224,7 +224,7 @@ Even if the static site collects no biometric data, the real protocol depends on
 
 Does this expose a vulnerability?
 
-Not on the current static site. The current docs now make the intended boundary clear: DemoThemis receives purpose-scoped proofs/attestations, not scans, face templates, names, or reusable identity handles. In a real implementation, privacy mistakes would still be high-risk, but that is implementation diligence rather than a current documentation defect.
+Not on the current static site. The current docs now make the intended boundary clear: demothemis receives purpose-scoped proofs/attestations, not scans, face templates, names, or reusable identity handles. In a real implementation, privacy mistakes would still be high-risk, but that is implementation diligence rather than a current documentation defect.
 
 Doc fix completed:
 

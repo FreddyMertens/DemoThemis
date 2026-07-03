@@ -4,7 +4,7 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Game-Theory Lab QA Form</title>
-<meta name="description" content="Fillable QA and user-testing form for the DemoThemis game-theory lab.">
+<meta name="description" content="Fillable QA and user-testing form for the demothemis game-theory lab.">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=JetBrains+Mono:wght@500;700&display=swap" rel="stylesheet">
@@ -114,7 +114,7 @@
 <body>
 <div class="topbar">
   <div class="topbar-inner">
-    <div class="brand">DemoThemis<span>.</span> QA</div>
+    <div class="brand">demothemis<span>.</span> QA</div>
     <div class="top-actions">
       <a class="btnlink" href="game-theory.html" target="_blank" rel="noopener">Open game</a>
       <button type="button" class="primary" id="saveHtml">Save filled HTML</button>
@@ -128,7 +128,7 @@
 <header class="wrap">
   <p class="kicker">User testing packet</p>
   <h1>Game-theory lab QA form</h1>
-  <p class="dek">Use this document while testing the interactive DemoThemis game board. The goal is to catch broken controls, confusing explanations, inaccurate protocol logic, bad mental models, accessibility issues, and places where users leave with the wrong game-theory lesson.</p>
+  <p class="dek">Use this document while testing the interactive demothemis game board. The goal is to catch broken controls, confusing explanations, inaccurate protocol logic, bad mental models, accessibility issues, and places where users leave with the wrong game-theory lesson.</p>
   <div class="notice"><b>Testing target:</b> <a href="game-theory.html" target="_blank" rel="noopener">game-theory.html</a>. Fill the form, then click <b>Save filled HTML</b>. The saved copy contains the answers inside the HTML itself, so it can be emailed, archived, reopened, printed, or reviewed without browser storage.</div>
 </header>
 
@@ -178,7 +178,7 @@
         <h2>2. Mission comprehension</h2>
         <p>Before giving hints, ask the tester to explain what they think the game is teaching.</p>
         <div class="form-grid">
-          <label class="field short">In one sentence, what is this page for?<textarea name="mission_sentence">A sandbox showing how DemoThemis's live values chain together (demand -&gt; fees -&gt; pay pressure -&gt; live reserve -&gt; pool/panel -&gt; attack outcomes -&gt; verdict efficacy) and whether each defense actually makes a bad strategy unprofitable.</textarea></label>
+          <label class="field short">In one sentence, what is this page for?<textarea name="mission_sentence">A sandbox showing how demothemis's live values chain together (demand -&gt; fees -&gt; pay pressure -&gt; live reserve -&gt; pool/panel -&gt; attack outcomes -&gt; verdict efficacy) and whether each defense actually makes a bad strategy unprofitable.</textarea></label>
           <label class="field short">What did the tester think they should do first?<textarea name="first_action">Click a preset (Balanced court), then drag Active jurors. The preset row reads as the obvious entry point.</textarea></label>
           <label class="field short">What variables did they notice immediately?<textarea name="noticed_variables">The four score cards (Protocol safety, Pay pressure, Live reserve, Panel capture), the dial groups (Demand / Fee engine / Juror supply / Attack pressure), the 8 Locks, and the 9-node incentive circuit.</textarea></label>
           <label class="field short">What confused them before interacting?<textarea name="initial_confusion">What the 0-100 'Protocol safety' number means in absolute terms, and that 'Typical contested stake' / 'Active jurors' are hidden log scales (a 0-100 slider maps to $100-$5M and 100-80,000).</textarea></label>
@@ -463,7 +463,7 @@
         </div>
         <div class="form-grid">
           <label class="field">Top three fixes before next test<textarea name="final_top_fixes">1) Fix the governance model so verified use actually dilutes the whale (scale citizen weight by the number of verified participants) so it stops being the false #1 bottleneck of a healthy court. 2) Make the live reserve visibly beat lazy income at default settings (don't floor the margin at $0) so the reserve lesson lands. 3) Make the attack cards real keyboard-accessible buttons (role/tabindex/Enter-Space/focus ring).</textarea></label>
-          <label class="field">What the tester now believes about DemoThemis<textarea name="final_belief">That DemoThemis is a thoughtfully interlocking, dynamic system - no fixed wage or bond, private-by-default arbitration, paid watchers, receipt-free ballots, sealed draws, priced appeals - but that its use-weighted governance is effectively plutocratic, because the board says a token whale keeps ~92%+ control even with the defense on. That single screen risks the opposite of the intended governance takeaway.</textarea></label>
+          <label class="field">What the tester now believes about demothemis<textarea name="final_belief">That demothemis is a thoughtfully interlocking, dynamic system - no fixed wage or bond, private-by-default arbitration, paid watchers, receipt-free ballots, sealed draws, priced appeals - but that its use-weighted governance is effectively plutocratic, because the board says a token whale keeps ~92%+ control even with the defense on. That single screen risks the opposite of the intended governance takeaway.</textarea></label>
           <label class="field">Most important quote from tester<textarea name="final_quote">'Why is governance the top risk on the balanced court when every lock is on - and why does turning the governance lock on barely change the number?'</textarea></label>
           <label class="field">Final notes<textarea name="final_notes">The model is numerically solid (no NaN/undefined at any preset or extreme; closed-form and fast) and the protocol framing is accurate everywhere except governance. Fixing the governance weighting, the $0 lazy margin and attack-card keyboard access would move this from 'needs another pass' to 'ship with minor fixes'. Verified via a faithful Node re-implementation of compute() plus a full source review, with a live DOM spot-check through a local static-server preview.</textarea></label>
         </div>
