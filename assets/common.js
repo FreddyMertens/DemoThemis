@@ -71,10 +71,15 @@
     var nav = document.querySelector(".sitenav");
     if (!nav) return;
     var toggle = nav.querySelector(".nav-toggle");
-    function setGroupOpen(group, open) {
+    function setGroupOpen(group, open, source) {
       if (!group) return;
       var btn = group.querySelector(".nav-group-btn");
       group.classList.toggle("open", open);
+      if (open && source) {
+        group.setAttribute("data-auto-open", source);
+      } else {
+        group.removeAttribute("data-auto-open");
+      }
       if (btn) btn.setAttribute("aria-expanded", open ? "true" : "false");
     }
     function closeGroups(except) {
@@ -99,13 +104,13 @@
       gbtn.setAttribute("aria-controls", menu.id);
       gbtn.addEventListener("click", function (e) {
         e.preventDefault();
-        var open = !group.classList.contains("open");
+        var open = group.hasAttribute("data-auto-open") ? true : !group.classList.contains("open");
         closeGroups(group);
         setGroupOpen(group, open);
       });
       group.addEventListener("focusin", function () {
         closeGroups(group);
-        setGroupOpen(group, true);
+        setGroupOpen(group, true, "focus");
       });
       group.addEventListener("focusout", function () {
         window.setTimeout(function () {
@@ -113,7 +118,7 @@
         }, 0);
       });
       group.addEventListener("mouseenter", function () {
-        if (window.matchMedia("(min-width: 861px)").matches) setGroupOpen(group, true);
+        if (window.matchMedia("(min-width: 861px)").matches) setGroupOpen(group, true, "hover");
       });
       group.addEventListener("mouseleave", function () {
         if (window.matchMedia("(min-width: 861px)").matches && !group.contains(document.activeElement)) {
