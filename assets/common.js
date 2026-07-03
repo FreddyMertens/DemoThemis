@@ -388,7 +388,7 @@
         content(reference) {
           return reference.getAttribute('data-tooltip');
         },
-        theme: 'demothemis',
+        theme: 'DemoThemis',
         animation: 'shift-away',
         placement: 'top',
         trigger: 'mouseenter focus',

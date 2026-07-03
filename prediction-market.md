@@ -4,7 +4,7 @@ I like Polymarket. It proved that on-chain prediction markets can be liquid, and
 
 The first is custody. Polymarket positions are conditional tokens that trade through an order book the company runs off-chain. Your position lives on-chain, but the matching engine and the listing decisions sit with one operator. I want a market where a share is a plain ERC-20 token in your own wallet, tradable on any DEX, usable as collateral in any lending pool, with no operator able to freeze or delist it.
 
-The second is resolution. The hardest part of a prediction market is not the trading. It is deciding who won. Polymarket settles through UMA, and a handful of markets have ended in public fights where large token holders pushed a result that users disputed. That is the same failure I wrote about in the juror-court design, so PredictionMoMo uses demothemis as its oracle.
+The second is resolution. The hardest part of a prediction market is not the trading. It is deciding who won. Polymarket settles through UMA, and a handful of markets have ended in public fights where large token holders pushed a result that users disputed. That is the same failure I wrote about in the juror-court design, so PredictionMoMo uses DemoThemis as its oracle.
 
 Here is the shape of it.
 

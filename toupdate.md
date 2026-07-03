@@ -1,4 +1,4 @@
-# To Update — demothemis design & copy notes
+# To Update — DemoThemis design & copy notes
 
 Working list of fixes and design changes from the review of the **juror quality-assurance (reputation) system** and its **economics**. Two parts:
 
