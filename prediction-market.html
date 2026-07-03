@@ -3,8 +3,8 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>How predictionmomo works: betting pools, fixed odds, and ERC-20 tokens</title>
-<meta name="description" content="predictionmomo is a prediction market born as a shared pot with no market maker, grown into plain tokens you hold yourself, and settled by demothemis.">
+<title>How PredictionMoMo works: betting pools, fixed odds, and ERC-20 tokens</title>
+<meta name="description" content="PredictionMoMo is a prediction market born as a shared pot with no market maker, grown into plain tokens you hold yourself, and settled by demothemis.">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@500;700&family=Newsreader:opsz,wght@6..72,200..700&display=swap" rel="stylesheet">
@@ -65,7 +65,7 @@
       <div class="nav-group nav-group-end">
         <button class="nav-group-btn" type="button">The bootstrap</button>
         <div class="nav-menu">
-          <a href="prediction-market.html"><span class="ch">04</span> predictionmomo</a>
+          <a href="prediction-market.html"><span class="ch">04</span> PredictionMoMo</a>
           <a href="hybrid-juror-prediction-market-integration.html"><span class="ch">05</span> The loop</a>
           <a href="zero-to-one.html"><span class="ch">06</span> Zero to one</a>
         </div>
@@ -79,8 +79,8 @@
 </nav>
 
 <header class="hero reveal">
-  <p class="kicker">predictionmomo</p>
-  <h1>How predictionmomo works: betting pools, fixed odds, and ERC-20 tokens</h1>
+  <p class="kicker">PredictionMoMo</p>
+  <h1>How PredictionMoMo works: betting pools, fixed odds, and ERC-20 tokens</h1>
   <p class="dek">Anyone can open a market on anything by posting a question with their own first bet, even a dime. This chapter covers the whole life of a market: the shared pot that needs no market maker, standing offers at odds you name, graduation into self-custody ERC-20 tokens with an order book, and resolution through bonded assertions and the court.</p>
   <div class="meta">
     <span class="pill">Prediction markets</span>
@@ -100,7 +100,7 @@
     <p class="lead">Post a question, place the first bet, share the link, and that is a whole prediction market. The pot is the money traders draw on, the crowd sets the price, and a court money cannot buy decides who won.</p>
     <p>Prediction markets are the closest thing the internet has to a truth machine. Put real money on a question and the number that comes out is the most honest forecast anyone publishes. We are fans. We have exactly two complaints, and this chapter is built around them.</p>
     <p><b>The first is custody:</b> On the big platforms, your position is an entry on an operator's book. The matching engine, the listings, and the freeze button all belong to one company, and your winnings exist at its pleasure. A bet should be a plain token in your own wallet: yours to hold, move, or post as collateral, with nobody to ask.</p>
-    <p><b>The second is resolution:</b> Deciding who won is the hard part of every market, and it is the part most designs hand to a committee, an oracle company, or a token vote that a deep enough pocket can lean on. Our answer took two chapters to build: <a href="juror-court.html">a court money cannot buy</a>. predictionmomo exists to be settled by that court, and, as the rest of this act shows, to feed it.</p>
+    <p><b>The second is resolution:</b> Deciding who won is the hard part of every market, and it is the part most designs hand to a committee, an oracle company, or a token vote that a deep enough pocket can lean on. Our answer took two chapters to build: <a href="juror-court.html">a court money cannot buy</a>. PredictionMoMo exists to be settled by that court, and, as the rest of this act shows, to feed it.</p>
   </section>
 
   <section class="reveal">
@@ -207,7 +207,7 @@
     <p class="sec-label">Adulthood</p>
     <h2>Growing up into tokens</h2>
     <p>An arbitrary volume threshold (like $100,000 total volume) is lazy game theory. A whale could wash-trade both sides of a market just to force it to tokenize, or dump massive capital on a "sure thing" to trigger an order book that opens completely empty.</p>
-    <p>To prevent manipulation, predictionmomo uses a <b>Robustness Strategy</b>. A pool only graduates when it mathematically proves it can sustain an active limit order book by passing three simultaneous checks:</p>
+    <p>To prevent manipulation, PredictionMoMo uses a <b>Robustness Strategy</b>. A pool only graduates when it mathematically proves it can sustain an active limit order book by passing three simultaneous checks:</p>
 
     <div class="widget reveal">
       <div class="widget-head"><span class="live"></span> The Robustness Lock</div>
@@ -343,19 +343,19 @@
       </table>
     </div></div>
 
-    <p>This is where the custody complaint gets its answer. A YES token is not an entry on anyone's book. It is a bearer asset: post it as collateral in a lending pool, move it to any venue that will take it, or hold it through resolution in a wallet only you control. Nobody can freeze the account, because there is no account. Gas is sponsored for verified humans, so holding and moving the tokens never requires pre-funding a wallet with some second currency. If every predictionmomo interface vanished tomorrow, the claim in your wallet would still be yours.</p>
+    <p>This is where the custody complaint gets its answer. A YES token is not an entry on anyone's book. It is a bearer asset: post it as collateral in a lending pool, move it to any venue that will take it, or hold it through resolution in a wallet only you control. Nobody can freeze the account, because there is no account. Gas is sponsored for verified humans, so holding and moving the tokens never requires pre-funding a wallet with some second currency. If every PredictionMoMo interface vanished tomorrow, the claim in your wallet would still be yours.</p>
   </section>
 
   <section class="reveal">
     <p class="sec-label">Composability</p>
     <h2>DraftKings parlays, mathematically pure</h2>
     <p>Bettors love the centralized bookie experience: live fixed odds, concurrent parlays, and early cashouts. But if a decentralized protocol acts as the bookie to quote you a price on a combination of events, it is highly vulnerable to insider knowledge and bankruptcy.</p>
-    <p>predictionmomo achieves all the features of a centralized parlay without the protocol or a "bookie" ever taking risk, using a native integration of the <b>Conditional Tokens Framework (CTF)</b>.</p>
+    <p>PredictionMoMo achieves all the features of a centralized parlay without the protocol or a "bookie" ever taking risk, using a native integration of the <b>Conditional Tokens Framework (CTF)</b>.</p>
     <p>By strictly restricting this capability to markets that have already passed the Robustness Lock, we guarantee the underlying tokens are highly liquid. This completely avoids the "ghost town" fragmentation problem that plagues other AMM-based parlay platforms.</p>
 
     <h3>The UX problem with manual token splitting</h3>
     <p>In a standard CTF system, building a parlay is an awful experience. To get a $100 payout on a 2-leg parlay, a user must manually deposit $100 to mint 4 exhaustive combinatorial tokens (YES/YES, YES/NO, NO/YES, NO/NO), keep the one they want, and beg the order book to buy the other 3. If there are no buyers, the user gets stuck holding "junk" tokens they never wanted.</p>
-    <p>predictionmomo solves this with <b>Atomic Routing (Fill-or-Kill)</b>. The user simply clicks "Buy Parlay" on a clean bet slip. Under the hood, a single smart contract transaction flash-borrows the money from the order book, mints the tokens, and sells the unwanted ones instantly. If there aren't enough buyers on the order book, the transaction mathematically reverts. You never get stuck holding tokens you don't want.</p>
+    <p>PredictionMoMo solves this with <b>Atomic Routing (Fill-or-Kill)</b>. The user simply clicks "Buy Parlay" on a clean bet slip. Under the hood, a single smart contract transaction flash-borrows the money from the order book, mints the tokens, and sells the unwanted ones instantly. If there aren't enough buyers on the order book, the transaction mathematically reverts. You never get stuck holding tokens you don't want.</p>
 
     <div class="widget reveal">
       <div class="widget-head"><span class="live"></span> Atomic Routing (Fill-or-Kill)</div>
@@ -404,7 +404,7 @@
         }, 3600);
       }
     </script>
-    <p>By leveraging atomic routing, predictionmomo acts as an incorruptible escrow rather than a casino. The <b>Live Odds</b> of the parlay are simply the current bids on the limit order book for the combinatorial token. To <b>Cash Out Early</b>, bettors do not ask the house for a buyout; they simply dump their token into the open order book to the highest bidder.</p>
+    <p>By leveraging atomic routing, PredictionMoMo acts as an incorruptible escrow rather than a casino. The <b>Live Odds</b> of the parlay are simply the current bids on the limit order book for the combinatorial token. To <b>Cash Out Early</b>, bettors do not ask the house for a buyout; they simply dump their token into the open order book to the highest bidder.</p>
   </section>
 
   <section class="reveal">
@@ -472,7 +472,7 @@
   <section class="reveal">
     <p class="sec-label">The economics</p>
     <h2>The fee, printed once</h2>
-    <p>The whole business model is one number, printed once. A 2% fee comes off every pot at settlement and splits three ways: 70% pays the jurors, 20% feeds the reward pool that pays the active, high-quality ones, 10% runs the protocol. The 2% base and its split are constitutional and route first; <a href="governance.html">predictionmomo's own token</a> may vote a margin of up to one extra point on top, which is the company's revenue, and the juror payroll never depends on it. predictionmomo pays for the court that settles it, and the court is what makes it worth betting in.</p>
+    <p>The whole business model is one number, printed once. A 2% fee comes off every pot at settlement and splits three ways: 70% pays the jurors, 20% feeds the reward pool that pays the active, high-quality ones, 10% runs the protocol. The 2% base and its split are constitutional and route first; <a href="governance.html">PredictionMoMo's own token</a> may vote a margin of up to one extra point on top, which is the company's revenue, and the juror payroll never depends on it. PredictionMoMo pays for the court that settles it, and the court is what makes it worth betting in.</p>
 
     <figure class="diagram reveal">
       <div class="diagram-inner">
@@ -486,7 +486,7 @@
       <figcaption>The 2% settlement fee, split once. <b>The split sums to one, so no dollar is ever promised twice.</b></figcaption>
     </figure>
 
-    <p>That is predictionmomo: born for a dime, priced by its own crowd, grown into tokens you hold yourself, and ended by a bonded assertion or a court nobody can buy. The next chapter closes the circuit, because the same settled markets that pay the jurors are also what teach the court who its best jurors are.</p>
+    <p>That is PredictionMoMo: born for a dime, priced by its own crowd, grown into tokens you hold yourself, and ended by a bonded assertion or a court nobody can buy. The next chapter closes the circuit, because the same settled markets that pay the jurors are also what teach the court who its best jurors are.</p>
   </section>
 
   <footer class="endnote reveal">
@@ -503,7 +503,7 @@
       </div>
       <div class="sitemap-col">
         <span class="sm-h">III &middot; The bootstrap</span>
-        <a href="prediction-market.html">4. predictionmomo</a>
+        <a href="prediction-market.html">4. PredictionMoMo</a>
         <a href="hybrid-juror-prediction-market-integration.html">5. The loop</a>
         <a href="zero-to-one.html">6. Zero to one</a>
       </div>
