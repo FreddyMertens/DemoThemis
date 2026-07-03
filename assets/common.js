@@ -8,7 +8,7 @@
     { f: "vision.html", t: "The vision", act: "I", actName: "The promise", ch: 1 },
     { f: "juror-court.html", t: "The court", act: "II", actName: "The mechanism", ch: 2 },
     { f: "hybrid-juror-system.html", t: "The hybrid system", act: "II", actName: "The mechanism", ch: 3 },
-    { f: "prediction-market.html", t: "The prediction market", act: "III", actName: "The bootstrap", ch: 4 },
+    { f: "prediction-market.html", t: "predictionmomo", act: "III", actName: "The bootstrap", ch: 4 },
     { f: "hybrid-juror-prediction-market-integration.html", t: "The loop", act: "III", actName: "The bootstrap", ch: 5 },
     { f: "zero-to-one.html", t: "Zero to one", act: "III", actName: "The bootstrap", ch: 6 },
     { f: "compounding.html", t: "Why it compounds", act: "IV", actName: "The payoff", ch: 7 },

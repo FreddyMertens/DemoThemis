@@ -110,7 +110,7 @@ function extractMetaDescription(html) {
   const namedFirst = html.match(/<meta\s+[^>]*name=["']description["'][^>]*content=["']([^"']*)["'][^>]*>/i);
   if (namedFirst) return stripTags(namedFirst[1]);
   const contentFirst = html.match(/<meta\s+[^>]*content=["']([^"']*)["'][^>]*name=["']description["'][^>]*>/i);
-  return stripTags(contentFirst ? contentFirst[1] : "DemoThemis is a proposal for a decentralized court, juror system, and prediction-market bootstrap.");
+  return stripTags(contentFirst ? contentFirst[1] : "demothemis is a proposal for a decentralized court, juror system, and prediction-market bootstrap.");
 }
 
 function hasTag(html, pattern) {
@@ -130,7 +130,7 @@ function enhanceHtmlMetadata(file, html) {
     tags.push('<meta property="og:type" content="website">');
   }
   if (!hasTag(html, /<meta\s+[^>]*property=["']og:site_name["']/i)) {
-    tags.push('<meta property="og:site_name" content="DemoThemis">');
+    tags.push('<meta property="og:site_name" content="demothemis">');
   }
   if (!hasTag(html, /<meta\s+[^>]*property=["']og:title["']/i)) {
     tags.push(`<meta property="og:title" content="${title}">`);
@@ -251,7 +251,7 @@ function buildHeaders() {
 }
 
 function build404() {
-  return `<!DOCTYPE html>\n<html lang="en">\n<head>\n<meta charset="UTF-8">\n<meta name="viewport" content="width=device-width, initial-scale=1.0">\n<title>DemoThemis: page not found</title>\n<meta name="robots" content="noindex">\n<link rel="stylesheet" href="assets/styles.css">\n</head>\n<body>\n<main class="content wrap" style="padding-top:4rem">\n  <p class="sec-label">404</p>\n  <h1>Page not found</h1>\n  <p>The public site only serves the published DemoThemis chapters and assets.</p>\n  <p><a href="index.html">Return home</a></p>\n</main>\n</body>\n</html>\n`;
+  return `<!DOCTYPE html>\n<html lang="en">\n<head>\n<meta charset="UTF-8">\n<meta name="viewport" content="width=device-width, initial-scale=1.0">\n<title>demothemis: page not found</title>\n<meta name="robots" content="noindex">\n<link rel="stylesheet" href="assets/styles.css">\n</head>\n<body>\n<main class="content wrap" style="padding-top:4rem">\n  <p class="sec-label">404</p>\n  <h1>Page not found</h1>\n  <p>The public site only serves the published demothemis chapters and assets.</p>\n  <p><a href="index.html">Return home</a></p>\n</main>\n</body>\n</html>\n`;
 }
 
 ensureInsideRoot(outDir);

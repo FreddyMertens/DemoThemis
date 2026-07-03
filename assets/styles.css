@@ -475,7 +475,7 @@ a { transition: color .15s ease, text-decoration-color .15s ease; }
 .nav-links a.active { background: var(--accent-soft); }
 
 
-/* Tippy.js DemoThemis Theme */
+/* Tippy.js demothemis Theme */
 .tippy-box[data-theme~='demothemis'] {
   background-color: var(--ink, #1a1a1c);
   color: #fff;
