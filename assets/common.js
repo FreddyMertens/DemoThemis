@@ -1,5 +1,5 @@
 // Shared behaviour for the pitch site:
-// scroll progress, reveal-on-scroll, nav, series prev/next, in-page TOC, back-to-top.
+// scroll progress, reveal-on-scroll, nav, chapter prev/next, in-page TOC, back-to-top.
 (function () {
   "use strict";
 
@@ -17,15 +17,6 @@
     { f: "game-theory.html", t: "The game-theory lab", act: "IV", actName: "The payoff", ch: 10 }
   ];
   var TOTAL = CHAPTERS.length;
-
-  // The review arc: four rounds of attack and answer, chained after the blueprint.
-  var REVIEWS = [
-    { f: "breaking-the-court.html", t: "Could you break it?" },
-    { f: "hardening-the-court.html", t: "Can the gaps be closed?" },
-    { f: "finishing-the-court.html", t: "How deep do the fixes go?" },
-    { f: "rebuilding-the-court.html", t: "What deserved to die?" }
-  ];
-  var BLUEPRINT = { f: "the-design.html", t: "The blueprint" };
 
   function fileOf(path) {
     var clean = (path || "").split("?")[0].split("#")[0];
@@ -222,17 +213,6 @@
     }
 
     var idx = findChapterIndex(here);
-
-    // The review arc: rounds chain into each other, bracketed by the blueprint.
-    var rIdx = -1;
-    for (var r = 0; r < REVIEWS.length; r++) { if (REVIEWS[r].f === here) { rIdx = r; break; } }
-    if (rIdx !== -1) {
-      var rPrev = rIdx > 0 ? REVIEWS[rIdx - 1] : BLUEPRINT;
-      var rNext = rIdx < REVIEWS.length - 1 ? REVIEWS[rIdx + 1] : null;
-      nav = chapterNav("The review \u00b7 Round " + (rIdx + 1) + " of " + REVIEWS.length, rPrev, rNext);
-      renderSeries(el, nav.pos, nav.links);
-      return;
-    }
 
     // Deep dive: off the main path, route back to its parent chapter.
     if (idx === -1) {

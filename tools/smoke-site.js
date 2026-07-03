@@ -17,12 +17,7 @@ const publicHtml = [
   "compounding.html",
   "the-design.html",
   "governance.html",
-  "game-theory.html",
-  "breaking-the-court.html",
-  "hardening-the-court.html",
-  "finishing-the-court.html",
-  "rebuilding-the-court.html",
-  "juror-exam-downsides.html"
+  "game-theory.html"
 ];
 
 const forbiddenPublicPaths = [
@@ -32,6 +27,13 @@ const forbiddenPublicPaths = [
   "/game-theory-qa.html",
   "/game-theory-qa-filled-kimi.html",
   "/game-theory-audit.html",
+  "/breaking-the-court.html",
+  "/hardening-the-court.html",
+  "/finishing-the-court.html",
+  "/rebuilding-the-court.html",
+  "/juror-exam-downsides.html",
+  "/juror-reputation-system.html",
+  "/victim-compensation.html",
   "/rewrite.js",
   "/tools/validate-gamelab.js",
   "/wordcount.py"
