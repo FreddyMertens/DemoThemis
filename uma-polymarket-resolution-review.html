@@ -1,0 +1,1091 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="robots" content="noindex">
+<title>UMA and Polymarket Resolution Failures: Reference Review</title>
+<style>
+  :root {
+    color-scheme: light;
+    --bg: #f7f4ee;
+    --paper: #fffdf8;
+    --ink: #20242c;
+    --soft: #3d4451;
+    --muted: #66707e;
+    --faint: #9299a5;
+    --line: #e6ddd0;
+    --line-strong: #d7cab9;
+    --accent: #5748d7;
+    --accent-ink: #392f9f;
+    --accent-soft: #ece9fc;
+    --good: #0f8d68;
+    --good-soft: #e1f5ec;
+    --warn: #a7660a;
+    --warn-soft: #fff0d2;
+    --bad: #c94935;
+    --bad-soft: #fbe6df;
+    --blue: #2362a4;
+    --blue-soft: #e3eef9;
+    --shadow: 0 1px 2px rgba(46, 40, 30, .05), 0 24px 60px -34px rgba(46, 40, 30, .32);
+    --serif: Georgia, "Times New Roman", serif;
+    --sans: Inter, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+    --mono: "SFMono-Regular", Consolas, "Liberation Mono", monospace;
+  }
+
+  * { box-sizing: border-box; }
+
+  html {
+    scroll-behavior: smooth;
+    -webkit-text-size-adjust: 100%;
+  }
+
+  body {
+    margin: 0;
+    background:
+      linear-gradient(180deg, rgba(87, 72, 215, .08), transparent 22rem),
+      radial-gradient(circle at top right, rgba(15, 141, 104, .11), transparent 24rem),
+      var(--bg);
+    color: var(--ink);
+    font-family: var(--serif);
+    font-size: 1.08rem;
+    line-height: 1.72;
+    text-rendering: optimizeLegibility;
+    -webkit-font-smoothing: antialiased;
+  }
+
+  a {
+    color: var(--accent-ink);
+    text-decoration-color: color-mix(in srgb, var(--accent) 34%, transparent);
+    text-underline-offset: .18em;
+  }
+
+  a:hover {
+    text-decoration-color: var(--accent);
+  }
+
+  .page {
+    width: min(1180px, 100%);
+    margin: 0 auto;
+    padding: 2rem 1.25rem 4rem;
+  }
+
+  .topbar {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 1rem;
+    margin-bottom: 2.4rem;
+    font-family: var(--sans);
+    font-size: .84rem;
+    color: var(--muted);
+  }
+
+  .topbar a {
+    font-weight: 650;
+    text-decoration: none;
+  }
+
+  .status {
+    display: inline-flex;
+    align-items: center;
+    gap: .45rem;
+    border: 1px solid var(--line);
+    border-radius: 999px;
+    background: rgba(255, 253, 248, .7);
+    padding: .35rem .7rem;
+  }
+
+  .status::before {
+    content: "";
+    width: .48rem;
+    height: .48rem;
+    border-radius: 999px;
+    background: var(--good);
+    box-shadow: 0 0 0 4px rgba(15, 141, 104, .12);
+  }
+
+  .hero {
+    max-width: 860px;
+    margin-bottom: 2.2rem;
+  }
+
+  .kicker {
+    margin: 0 0 .8rem;
+    color: var(--accent-ink);
+    font-family: var(--sans);
+    font-size: .78rem;
+    font-weight: 760;
+    letter-spacing: .13em;
+    text-transform: uppercase;
+  }
+
+  h1 {
+    margin: 0;
+    font-size: clamp(2.45rem, 6vw, 4.75rem);
+    line-height: .98;
+    letter-spacing: -.02em;
+    font-weight: 560;
+  }
+
+  .dek {
+    max-width: 46rem;
+    margin: 1.2rem 0 0;
+    color: var(--soft);
+    font-size: clamp(1.15rem, 2.2vw, 1.38rem);
+    line-height: 1.55;
+  }
+
+  .meta {
+    display: flex;
+    flex-wrap: wrap;
+    gap: .55rem;
+    align-items: center;
+    margin-top: 1.35rem;
+    color: var(--muted);
+    font-family: var(--sans);
+    font-size: .86rem;
+  }
+
+  .pill {
+    display: inline-flex;
+    align-items: center;
+    gap: .4rem;
+    border-radius: 999px;
+    background: var(--accent-soft);
+    color: var(--accent-ink);
+    padding: .28rem .72rem;
+    font-weight: 720;
+  }
+
+  .layout {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) 18.5rem;
+    gap: 2rem;
+    align-items: start;
+  }
+
+  .main {
+    min-width: 0;
+  }
+
+  .rail {
+    position: sticky;
+    top: 1rem;
+    font-family: var(--sans);
+  }
+
+  .toc {
+    background: rgba(255, 253, 248, .82);
+    border: 1px solid var(--line);
+    border-radius: 14px;
+    box-shadow: var(--shadow);
+    padding: 1rem;
+  }
+
+  .toc strong {
+    display: block;
+    margin-bottom: .65rem;
+    color: var(--ink);
+    font-size: .82rem;
+    letter-spacing: .08em;
+    text-transform: uppercase;
+  }
+
+  .toc a {
+    display: block;
+    padding: .42rem .2rem;
+    color: var(--muted);
+    font-size: .9rem;
+    line-height: 1.25;
+    text-decoration: none;
+    border-top: 1px solid color-mix(in srgb, var(--line) 65%, transparent);
+  }
+
+  .toc a:hover {
+    color: var(--accent-ink);
+  }
+
+  section,
+  .note-card {
+    margin: 1.4rem 0;
+  }
+
+  .panel {
+    background: rgba(255, 253, 248, .92);
+    border: 1px solid var(--line);
+    border-radius: 18px;
+    box-shadow: var(--shadow);
+    padding: clamp(1.2rem, 3vw, 2rem);
+  }
+
+  .panel + .panel {
+    margin-top: 1.25rem;
+  }
+
+  h2,
+  h3 {
+    margin: 0;
+    line-height: 1.15;
+  }
+
+  h2 {
+    font-size: clamp(1.55rem, 3vw, 2.05rem);
+    letter-spacing: -.015em;
+    font-weight: 560;
+  }
+
+  h3 {
+    font-family: var(--sans);
+    font-size: 1.02rem;
+    font-weight: 760;
+    color: var(--ink);
+  }
+
+  p {
+    margin: 1rem 0 0;
+  }
+
+  .section-lead {
+    color: var(--muted);
+    font-size: 1.02rem;
+  }
+
+  .target {
+    border-left: 4px solid var(--accent);
+    background: linear-gradient(180deg, var(--paper), rgba(236, 233, 252, .42));
+  }
+
+  blockquote {
+    margin: 1rem 0 0;
+    border-left: 3px solid var(--accent);
+    padding: .2rem 0 .2rem 1rem;
+    color: var(--soft);
+    font-size: 1.08rem;
+  }
+
+  .ranking {
+    display: grid;
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    gap: .9rem;
+    margin-top: 1.15rem;
+  }
+
+  .rank-card {
+    min-height: 100%;
+    border: 1px solid var(--line);
+    border-radius: 14px;
+    background: var(--paper);
+    padding: 1rem;
+  }
+
+  .rank-card strong {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 1.9rem;
+    height: 1.9rem;
+    margin-bottom: .65rem;
+    border-radius: 999px;
+    background: var(--accent-soft);
+    color: var(--accent-ink);
+    font-family: var(--sans);
+    font-size: .86rem;
+  }
+
+  .rank-card h3 {
+    margin-bottom: .45rem;
+  }
+
+  .rank-card p {
+    margin-top: .4rem;
+    color: var(--muted);
+    font-family: var(--sans);
+    font-size: .92rem;
+    line-height: 1.5;
+  }
+
+  .matrix {
+    overflow-x: auto;
+    margin-top: 1.1rem;
+    border: 1px solid var(--line);
+    border-radius: 14px;
+    background: var(--paper);
+  }
+
+  table {
+    width: 100%;
+    border-collapse: collapse;
+    min-width: 720px;
+    font-family: var(--sans);
+    font-size: .9rem;
+  }
+
+  th,
+  td {
+    padding: .85rem .9rem;
+    vertical-align: top;
+    text-align: left;
+    border-bottom: 1px solid var(--line);
+  }
+
+  th {
+    color: var(--muted);
+    font-size: .74rem;
+    letter-spacing: .08em;
+    text-transform: uppercase;
+    background: #fbf8f1;
+  }
+
+  tr:last-child td {
+    border-bottom: 0;
+  }
+
+  .tag {
+    display: inline-flex;
+    align-items: center;
+    white-space: nowrap;
+    border-radius: 999px;
+    padding: .18rem .55rem;
+    font-family: var(--sans);
+    font-size: .74rem;
+    font-weight: 760;
+  }
+
+  .tag.good {
+    background: var(--good-soft);
+    color: var(--good);
+  }
+
+  .tag.warn {
+    background: var(--warn-soft);
+    color: var(--warn);
+  }
+
+  .tag.bad {
+    background: var(--bad-soft);
+    color: var(--bad);
+  }
+
+  .tag.info {
+    background: var(--blue-soft);
+    color: var(--blue);
+  }
+
+  .case {
+    border-top: 5px solid var(--accent);
+  }
+
+  .case-header {
+    display: grid;
+    grid-template-columns: 1fr auto;
+    gap: 1rem;
+    align-items: start;
+  }
+
+  .case-number {
+    color: var(--accent-ink);
+    font-family: var(--sans);
+    font-size: .76rem;
+    font-weight: 780;
+    letter-spacing: .12em;
+    text-transform: uppercase;
+  }
+
+  .case-title {
+    margin-top: .2rem;
+  }
+
+  .case-sub {
+    margin-top: .55rem;
+    color: var(--muted);
+    font-family: var(--sans);
+    font-size: .96rem;
+    line-height: 1.5;
+  }
+
+  .strength {
+    display: inline-flex;
+    align-items: center;
+    min-width: 7.8rem;
+    justify-content: center;
+    border-radius: 999px;
+    padding: .45rem .7rem;
+    font-family: var(--sans);
+    font-size: .78rem;
+    font-weight: 780;
+  }
+
+  .strength.primary {
+    background: var(--good-soft);
+    color: var(--good);
+  }
+
+  .strength.secondary {
+    background: var(--warn-soft);
+    color: var(--warn);
+  }
+
+  .details {
+    display: grid;
+    grid-template-columns: minmax(0, 1.15fr) minmax(17rem, .85fr);
+    gap: 1rem;
+    margin-top: 1.2rem;
+  }
+
+  .box {
+    border: 1px solid var(--line);
+    border-radius: 14px;
+    background: color-mix(in srgb, var(--paper) 88%, white);
+    padding: 1rem;
+  }
+
+  .box h4 {
+    margin: 0 0 .55rem;
+    color: var(--ink);
+    font-family: var(--sans);
+    font-size: .82rem;
+    font-weight: 780;
+    letter-spacing: .08em;
+    text-transform: uppercase;
+  }
+
+  ul {
+    margin: .7rem 0 0;
+    padding-left: 1.2rem;
+  }
+
+  li {
+    margin: .42rem 0;
+    padding-left: .1rem;
+  }
+
+  .box li,
+  .box p {
+    color: var(--muted);
+    font-family: var(--sans);
+    font-size: .93rem;
+    line-height: 1.55;
+  }
+
+  .source-list {
+    display: flex;
+    flex-direction: column;
+    gap: .45rem;
+    margin-top: .7rem;
+  }
+
+  .source-list a {
+    display: block;
+    border: 1px solid var(--line);
+    border-radius: 10px;
+    background: #fbf8f1;
+    padding: .55rem .65rem;
+    font-family: var(--sans);
+    font-size: .88rem;
+    font-weight: 650;
+    line-height: 1.3;
+    text-decoration: none;
+  }
+
+  .source-list a small {
+    display: block;
+    margin-top: .2rem;
+    color: var(--faint);
+    font-weight: 520;
+    overflow-wrap: anywhere;
+  }
+
+  .recommendation {
+    margin-top: 1rem;
+    border-radius: 14px;
+    background: var(--accent-soft);
+    color: var(--accent-ink);
+    padding: 1rem;
+    font-family: var(--sans);
+    font-size: .94rem;
+    line-height: 1.55;
+  }
+
+  .recommendation b {
+    display: block;
+    margin-bottom: .35rem;
+  }
+
+  .adjacent-grid {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: .9rem;
+    margin-top: 1.1rem;
+  }
+
+  .mini-card {
+    border: 1px solid var(--line);
+    border-radius: 14px;
+    background: var(--paper);
+    padding: 1rem;
+  }
+
+  .mini-card h3 {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: .7rem;
+  }
+
+  .mini-card p {
+    color: var(--muted);
+    font-family: var(--sans);
+    font-size: .92rem;
+    line-height: 1.55;
+  }
+
+  .mini-card a {
+    font-family: var(--sans);
+    font-size: .88rem;
+    font-weight: 650;
+  }
+
+  .quote-options {
+    display: grid;
+    gap: 1rem;
+    margin-top: 1rem;
+  }
+
+  .verdict-grid {
+    display: grid;
+    gap: .9rem;
+    margin-top: 1.1rem;
+  }
+
+  .verdict-card {
+    display: grid;
+    grid-template-columns: auto minmax(0, 1fr);
+    gap: .9rem;
+    border: 1px solid var(--line);
+    border-radius: 14px;
+    background: var(--paper);
+    padding: 1rem;
+  }
+
+  .verdict-rank {
+    display: inline-grid;
+    place-items: center;
+    width: 2.2rem;
+    height: 2.2rem;
+    border-radius: 999px;
+    background: var(--bad-soft);
+    color: var(--bad);
+    font-family: var(--sans);
+    font-size: .84rem;
+    font-weight: 820;
+  }
+
+  .verdict-card h3 {
+    display: flex;
+    flex-wrap: wrap;
+    gap: .5rem;
+    align-items: center;
+  }
+
+  .verdict-card p {
+    color: var(--muted);
+    font-family: var(--sans);
+    font-size: .94rem;
+    line-height: 1.55;
+  }
+
+  .verdict-note {
+    margin-top: 1rem;
+    border-left: 4px solid var(--bad);
+    border-radius: 12px;
+    background: var(--bad-soft);
+    color: #7e2f22;
+    padding: .95rem 1rem;
+    font-family: var(--sans);
+    font-size: .94rem;
+    line-height: 1.55;
+  }
+
+  .quote-option {
+    border: 1px solid var(--line);
+    border-radius: 14px;
+    background: var(--paper);
+    padding: 1rem;
+  }
+
+  .quote-option .label {
+    display: inline-flex;
+    margin-bottom: .55rem;
+    color: var(--accent-ink);
+    font-family: var(--sans);
+    font-size: .76rem;
+    font-weight: 780;
+    letter-spacing: .08em;
+    text-transform: uppercase;
+  }
+
+  .quote-option blockquote {
+    margin-top: 0;
+    font-size: 1.03rem;
+  }
+
+  .footer {
+    margin-top: 1.6rem;
+    color: var(--faint);
+    font-family: var(--sans);
+    font-size: .86rem;
+    text-align: center;
+  }
+
+  code {
+    border-radius: 6px;
+    background: rgba(87, 72, 215, .1);
+    padding: .08rem .32rem;
+    color: var(--accent-ink);
+    font-family: var(--mono);
+    font-size: .86em;
+  }
+
+  @media (max-width: 940px) {
+    .layout {
+      grid-template-columns: 1fr;
+    }
+
+    .rail {
+      position: static;
+      order: -1;
+    }
+
+    .toc {
+      display: grid;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: 0 .8rem;
+    }
+
+    .toc strong {
+      grid-column: 1 / -1;
+    }
+  }
+
+  @media (max-width: 760px) {
+    .page {
+      padding-inline: 1rem;
+    }
+
+    .topbar {
+      align-items: flex-start;
+      flex-direction: column;
+    }
+
+    .ranking,
+    .details,
+    .adjacent-grid {
+      grid-template-columns: 1fr;
+    }
+
+    .case-header {
+      grid-template-columns: 1fr;
+    }
+
+    .strength {
+      justify-content: flex-start;
+      width: fit-content;
+    }
+
+    .toc {
+      display: block;
+    }
+  }
+</style>
+</head>
+<body>
+<div class="page">
+  <div class="topbar">
+    <a href="uma-polymarket-resolution-review.md">Open markdown source</a>
+    <span class="status">Research review, not public deploy content</span>
+  </div>
+
+  <header class="hero">
+    <p class="kicker">Reference Review</p>
+    <h1>UMA and Polymarket resolution failures</h1>
+    <p class="dek">A source-backed review of the strongest examples behind the claim that token-weighted UMA resolution has pushed disputed Polymarket markets through against what traders understood reality to require.</p>
+    <div class="meta">
+      <span class="pill">Research date: 2026-07-03</span>
+      <span>Target: <code>juror-court.html</code>, line 124</span>
+    </div>
+  </header>
+
+  <div class="layout">
+    <main class="main">
+      <section id="target" class="panel target">
+        <h2>Target Passage</h2>
+        <p class="section-lead">This is the sentence being fact-checked and sharpened.</p>
+        <blockquote>
+          This is not a thought experiment. Large UMA holders have pushed disputed Polymarket resolutions through against what many traders read as plain reality, and the system behaved exactly as designed while they did it. Weight followed the wallet. The court was for sale and somebody shopped.
+        </blockquote>
+      </section>
+
+      <section id="bottom-line" class="panel">
+        <h2>Bottom Line</h2>
+        <p>The passage is directionally supported, but it should cite the cleanest examples instead of implying every controversial UMA resolution was the same kind of failure.</p>
+        <div class="ranking">
+          <article class="rank-card">
+            <strong>1</strong>
+            <h3>Strategy Bitcoin sale</h3>
+            <p>Best plain-reality case. Strategy disclosed a sale during the market window, yet the relevant May market resolved No.</p>
+          </article>
+          <article class="rank-card">
+            <strong>2</strong>
+            <h3>Ukraine mineral deal</h3>
+            <p>Best wallet-weight case. Reporting tied the Yes resolution to one UMA whale using three accounts and about 25% of the vote.</p>
+          </article>
+          <article class="rank-card">
+            <strong>3</strong>
+            <h3>Zelenskyy suit</h3>
+            <p>Best public scandal. Less clean because "suit" is subjective, but powerful and easy for readers to grasp.</p>
+          </article>
+        </div>
+        <p>Barron/DJT is useful as a secondary reference because Polymarket itself said UMA got the outcome wrong and refunded Yes holders. Ethereum ETF, Trump-Xi, Israel-Hezbollah, Clavicular, and Iran-related markets are useful pattern evidence, but each has a stronger rule-interpretation defense.</p>
+      </section>
+
+      <section id="mechanism" class="panel">
+        <h2>Mechanism And Structural Evidence</h2>
+        <p>Polymarket's docs say markets use UMA's Optimistic Oracle: anyone can propose an outcome, and anyone can dispute a proposed outcome. Galaxy Research describes the escalation path as repeated disputes leading to UMA's Data Verification Mechanism, a token-weighted vote that clears over roughly 48 to 96 hours.</p>
+
+        <div class="matrix">
+          <table>
+            <thead>
+              <tr>
+                <th>Source</th>
+                <th>Finding</th>
+                <th>Use in chapter</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td><a href="https://docs.polymarket.com/concepts/resolution">Polymarket docs</a></td>
+                <td>Polymarket markets use UMA's Optimistic Oracle for permissionless outcome proposal and dispute.</td>
+                <td><span class="tag info">Mechanism</span></td>
+              </tr>
+              <tr>
+                <td><a href="https://www.galaxy.com/insights/research/strategy-bitcoin-sale-polymarket-resolution-dispute-may-2026">Galaxy Research</a></td>
+                <td>Disputed Polymarket markets can escalate to a UMA token vote through the Data Verification Mechanism.</td>
+                <td><span class="tag info">Mechanism</span></td>
+              </tr>
+              <tr>
+                <td><a href="https://www.wsj.com/finance/polymarket-bet-disputes-fb1b8c6a">WSJ</a></td>
+                <td>Reported vote concentration, Polymarket-linked UMA voters, and cases where UMA voters had financial stakes in the outcomes.</td>
+                <td><span class="tag warn">Conflict evidence</span></td>
+              </tr>
+              <tr>
+                <td><a href="https://www.barrons.com/articles/polymarket-prediction-market-disputes-uma-crypto-e3eae345">Barron's</a></td>
+                <td>Reported that 36 of 50 sampled UMA-resolved predictions included UMA voters with active bets on the markets they resolved.</td>
+                <td><span class="tag warn">Conflict evidence</span></td>
+              </tr>
+              <tr>
+                <td><a href="https://nypost.com/2026/05/26/business/nine-anonymous-crypto-owners-hold-massive-sway-over-polymarket-outcomes-drawing-traders-ire-report/">Bloomberg via NY Post</a></td>
+                <td>Reported that nine wallets accounted for roughly half of UMA tokens used to vote on Polymarket resolutions over three years.</td>
+                <td><span class="tag warn">Concentration</span></td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </section>
+
+      <section id="best-examples" class="panel">
+        <h2>Best-Fit Examples</h2>
+        <p class="section-lead">These are the cases most worth referencing directly in the court chapter.</p>
+      </section>
+
+      <article id="strategy" class="panel case">
+        <div class="case-header">
+          <div>
+            <div class="case-number">Example 01</div>
+            <h2 class="case-title">Strategy / MicroStrategy sells Bitcoin by May 31, 2026</h2>
+            <p class="case-sub">The cleanest "plain reality" example.</p>
+          </div>
+          <span class="strength primary">Best reference</span>
+        </div>
+
+        <div class="details">
+          <div class="box">
+            <h4>What happened</h4>
+            <ul>
+              <li>The market asked whether MicroStrategy / Strategy sold any Bitcoin by May 31, 2026.</li>
+              <li>Strategy filed an 8-K on June 1 disclosing a sale of 32 BTC during May 26-31.</li>
+              <li>Galaxy Research says the original market wording was event-based and did not require public confirmation by the deadline.</li>
+              <li>Polymarket later added context saying confirmation after the market time frame did not qualify.</li>
+              <li>The market had two No proposals, both disputed, then final review, and resolved No.</li>
+              <li>Galaxy's assessment: the sale happened in the market window, and Yes holders predicted the event correctly but lost.</li>
+            </ul>
+          </div>
+          <div class="box">
+            <h4>Sources</h4>
+            <div class="source-list">
+              <a href="https://www.galaxy.com/insights/research/strategy-bitcoin-sale-polymarket-resolution-dispute-may-2026">Galaxy Research<small>strategy-bitcoin-sale-polymarket-resolution-dispute-may-2026</small></a>
+              <a href="https://polymarket.com/event/microstrategy-sell-any-bitcoin-in-2025">Polymarket market<small>microstrategy-sell-any-bitcoin-in-2025</small></a>
+              <a href="https://www.coindesk.com/markets/2026/06/04/polymarket-says-no-for-may-yes-for-june-after-strategy-s-recent-bitcoin-sale">Coindesk<small>Polymarket says No for May, Yes for June</small></a>
+              <a href="https://thedefiant.io/news/markets/usd85m-polymarket-dispute-over-strategy-s-may-bitcoin-sale-puts-uma-s-token-voting-oracle-on">The Defiant<small>$85M dispute over Strategy's May Bitcoin sale</small></a>
+            </div>
+          </div>
+        </div>
+
+        <div class="recommendation">
+          <b>Use it like this</b>
+          In 2026, Strategy disclosed that it had sold Bitcoin during the market window, yet the corresponding Polymarket contract resolved No after the dispute process.
+        </div>
+      </article>
+
+      <article id="ukraine" class="panel case">
+        <div class="case-header">
+          <div>
+            <div class="case-number">Example 02</div>
+            <h2 class="case-title">Ukraine agrees to Trump mineral deal before April, March 2025</h2>
+            <p class="case-sub">The cleanest "weight followed the wallet" example.</p>
+          </div>
+          <span class="strength primary">Best reference</span>
+        </div>
+
+        <div class="details">
+          <div class="box">
+            <h4>What happened</h4>
+            <ul>
+              <li>The market asked whether the United States and Ukraine agreed to a rare-earth/mineral deal by March 31, 2025.</li>
+              <li>Polymarket's page shows two Yes proposals, two disputes, and a final Yes outcome.</li>
+              <li>The Defiant reported that the market was supposed to resolve when a deal was reached or by March 31, but was pushed to a premature Yes.</li>
+              <li>The same report says a single UMA whale using three accounts and 5 million UMA cast about 25% of votes in favor of Yes.</li>
+              <li>Polymarket reportedly called the situation unprecedented and said it was not part of the future it wanted to build, but did not refund bettors.</li>
+            </ul>
+          </div>
+          <div class="box">
+            <h4>Sources</h4>
+            <div class="source-list">
+              <a href="https://polymarket.com/event/ukraine-agrees-to-give-trump-rare-earth-metals-before-april">Polymarket market<small>ukraine-agrees-to-give-trump-rare-earth-metals-before-april</small></a>
+              <a href="https://thedefiant.io/news/defi/polymarket-s-usd7m-ukraine-mineral-deal-debacle-traced-to-oracle-whale">The Defiant<small>$7M Ukraine mineral deal debacle traced to oracle whale</small></a>
+              <a href="https://www.tradingview.com/news/cointelegraph:6fe4b4ae3094b:0-polymarket-faces-scrutiny-over-7m-ukraine-mineral-deal-bet/">Cointelegraph via TradingView<small>Polymarket faces scrutiny over $7M Ukraine mineral deal bet</small></a>
+              <a href="https://orochi.network/blog/oracle-manipulation-in-polymarket-2025">Orochi Network<small>Oracle manipulation in Polymarket 2025</small></a>
+            </div>
+          </div>
+        </div>
+
+        <div class="recommendation">
+          <b>Use it like this</b>
+          In the 2025 Ukraine mineral-deal market, reporting traced a premature Yes resolution to one UMA whale voting through three accounts with roughly 25% of the vote.
+        </div>
+      </article>
+
+      <article id="zelenskyy" class="panel case">
+        <div class="case-header">
+          <div>
+            <div class="case-number">Example 03</div>
+            <h2 class="case-title">Zelenskyy wears a suit before July, June/July 2025</h2>
+            <p class="case-sub">The biggest public scandal and the easiest reader-facing example.</p>
+          </div>
+          <span class="strength primary">Best reference</span>
+        </div>
+
+        <div class="details">
+          <div class="box">
+            <h4>What happened</h4>
+            <ul>
+              <li>The market asked whether Volodymyr Zelenskyy was photographed or videotaped wearing a suit between May 22 and June 30, 2025.</li>
+              <li>The Polymarket page shows the outcome path: Yes proposed, disputed; No proposed, disputed; final outcome No.</li>
+              <li>WIRED reported that Zelenskyy appeared at a pre-NATO dinner in a black jacket, shirt, and trouser combination, and that multiple outlets described it as a suit.</li>
+              <li>WIRED also reported that UMA voters were saying No by a seemingly insurmountable margin, and noted criticism that token whales and delegation concentrate voting power.</li>
+              <li>Coindesk and The Defiant covered the backlash and allegations around UMA validators.</li>
+            </ul>
+          </div>
+          <div class="box">
+            <h4>Sources</h4>
+            <div class="source-list">
+              <a href="https://polymarket.com/event/will-zelenskyy-wear-a-suit-before-july">Polymarket market<small>will-zelenskyy-wear-a-suit-before-july</small></a>
+              <a href="https://www.wired.com/story/volodymyr-zelensky-suit-polymarket-rebellion/">WIRED<small>Volodymyr Zelensky's suit and the Polymarket rebellion</small></a>
+              <a href="https://www.coindesk.com/markets/2025/07/07/polymarket-embroiled-in-usd160m-controversy-over-whether-zelensky-wore-a-suit-at-nato">Coindesk<small>$160M controversy over whether Zelensky wore a suit</small></a>
+              <a href="https://thedefiant.io/news/nfts-and-web3/polymarket-controversy-heats-up-after-the-zelenskyy-suit-market-resolves">The Defiant<small>Zelenskyy suit market resolves</small></a>
+              <a href="https://www.cryptopolitan.com/polymarket-community-protests-oracle-vote-by-uma-whales-claims-market-manipulation/">Cryptopolitan<small>Community protests UMA whale vote</small></a>
+            </div>
+          </div>
+        </div>
+
+        <div class="recommendation">
+          <b>Use it like this</b>
+          In the Zelenskyy suit market, photos and major-media descriptions were not enough to stop a No resolution after the UMA dispute path.
+        </div>
+      </article>
+
+      <article id="barron" class="panel case">
+        <div class="case-header">
+          <div>
+            <div class="case-number">Example 04</div>
+            <h2 class="case-title">Barron Trump involved in DJT, June 2024</h2>
+            <p class="case-sub">Useful because Polymarket itself contradicted UMA.</p>
+          </div>
+          <span class="strength secondary">Secondary</span>
+        </div>
+
+        <div class="details">
+          <div class="box">
+            <h4>What happened</h4>
+            <ul>
+              <li>The market asked whether a preponderance of evidence suggested Barron Trump was involved in creating the Solana token DJT.</li>
+              <li>Polymarket's market page shows No proposed twice, both disputed, and final outcome No.</li>
+              <li>DL News reported that UMA voters overwhelmingly agreed the available evidence did not show Barron's involvement.</li>
+              <li>Polymarket then publicly said UMA got the resolution wrong and refunded Yes holders, saying it was conclusive that Barron was involved in some way.</li>
+            </ul>
+          </div>
+          <div class="box">
+            <h4>Sources</h4>
+            <div class="source-list">
+              <a href="https://polymarket.com/event/was-barron-involved-in-djt">Polymarket market<small>was-barron-involved-in-djt</small></a>
+              <a href="https://www.dlnews.com/articles/defi/polymarket-slams-vote-on-barron-trump-and-djt-token/">DL News<small>Polymarket slams vote on Barron Trump and DJT token</small></a>
+              <a href="https://crypto.news/polymarket-reverses-oracle-decision-on-barron-trumps-involvement-in-djt-meme-coin/">Crypto.news<small>Polymarket reverses oracle decision</small></a>
+              <a href="https://thedefiant.io/news/tradfi-and-fintech/polymarket-reportedly-eying-usd50m-fundraise-and-token-launch">The Defiant<small>Includes Barron/DJT context</small></a>
+              <a href="https://x.com/Polymarket/status/1806479362377814378">Polymarket on X<small>Public statement</small></a>
+            </div>
+          </div>
+        </div>
+
+        <div class="recommendation">
+          <b>Use it like this</b>
+          In 2024, Polymarket itself said UMA got the Barron/DJT market wrong and refunded Yes holders.
+        </div>
+      </article>
+
+      <section id="adjacent" class="panel">
+        <h2>Adjacent Cases</h2>
+        <p class="section-lead">These are real resolution fights, but they are weaker support for the exact "plain reality lost to token voting" line.</p>
+        <div class="adjacent-grid">
+          <article class="mini-card">
+            <h3>Ethereum ETF, May 2024 <span class="tag warn">Ambiguous</span></h3>
+            <p>The dispute turned on whether 19b-4 approvals counted before S-1 approvals and trading launch. UMA's Yes has a plausible defense.</p>
+            <p><a href="https://polymarket.com/event/ethereum-etf-approved-by-may-31">Polymarket</a> | <a href="https://www.dlnews.com/articles/web3/ethereum-etf-ok-may-prompt-11-million-row-on-polymarket/">DL News</a> | <a href="https://www.tradingview.com/news/cointelegraph:bd5ed99b9094b:0-polymarket-gets-backlash-over-approved-outcome-on-13m-ethereum-etf-bet/">Cointelegraph</a></p>
+          </article>
+          <article class="mini-card">
+            <h3>Trump-Xi call, March 2026 <span class="tag warn">Rule-heavy</span></h3>
+            <p>Useful for conflict-of-interest reporting, but not as clean because the market apparently required credible reporting, not only Trump's statement.</p>
+            <p><a href="https://www.barrons.com/articles/polymarket-prediction-market-disputes-uma-crypto-e3eae345">Barron's</a> | <a href="https://predictionnews.com/news/polymarket-overrules-uma-voters-in-trump-xi-call-market">Prediction News</a></p>
+          </article>
+          <article class="mini-card">
+            <h3>Israel-Hezbollah ceasefire <span class="tag warn">Interpretation</span></h3>
+            <p>Good structural evidence, but the dispute depends on whether a truce with Lebanon counted as a ceasefire with Hezbollah.</p>
+            <p><a href="https://www.wsj.com/finance/polymarket-bet-disputes-fb1b8c6a">WSJ</a> | <a href="https://cryptonews.com/news/polymarket-oracle-risk-cftc-regulatory-scrutiny/">CryptoNews</a> | <a href="https://yellow.com/news/polymarket-7m-ukraine-israel-bet">Yellow</a></p>
+          </article>
+          <article class="mini-card">
+            <h3>Clavicular pregnancy, 2026 <span class="tag info">Subjective</span></h3>
+            <p>Colorful, but more useful for showing how subjective evidence disputes become vote fights than for proving a clean factual miss.</p>
+            <p><a href="https://polymarket.com/event/clavicular-pregnancy-in-2026">Polymarket</a> | <a href="https://www.forbes.com/sites/digital-assets/2026/04/30/inmates-taking-the-asylum-polymarkets-16m-clavicular-bet/">Forbes</a> | <a href="https://www.binance.com/en/square/post/05-01-2026-polymarket-s-pregnancy-market-faces-dispute-over-resolution-318271416759330">Binance</a></p>
+          </article>
+          <article class="mini-card">
+            <h3>US forces enter Iran <span class="tag warn">Definition</span></h3>
+            <p>Large and important, but "enter" makes it a rules-definition fight more than an obvious factual miss.</p>
+            <p><a href="https://www.wsj.com/world/middle-east/polymarket-iran-war-bets-975909a3">WSJ</a> | <a href="https://www.theweek.in/news/middle-east/2026/04/11/amid-us-iran-stalemate-dollar269-million-question-divides-polymarket-did-american-forces-enter-tehran.html">The Week</a></p>
+          </article>
+          <article class="mini-card">
+            <h3>US / Israel strikes Iran <span class="tag info">Whale-watching</span></h3>
+            <p>Supports the dynamic of traders watching UMA whales, but not necessarily a final outcome contrary to reality.</p>
+            <p><a href="https://nypost.com/2026/05/26/business/nine-anonymous-crypto-owners-hold-massive-sway-over-polymarket-outcomes-drawing-traders-ire-report/">NY Post / Bloomberg summary</a> | <a href="https://polymarket.com/event/what-will-the-usisrael-target-in-iran-by-march-31">Polymarket</a></p>
+          </article>
+        </div>
+      </section>
+
+      <section id="most-damning" class="panel">
+        <h2>Most Damning Whale-Capture Evidence</h2>
+        <p class="section-lead">If the claim is specifically "UMA whales corrupted or captured the resolution process," these are the examples to lead with. The important distinction: some cases prove a bad outcome, while others prove whale influence. The strongest corruption argument needs both conduct and consequence.</p>
+
+        <div class="verdict-grid">
+          <article class="verdict-card">
+            <span class="verdict-rank">1</span>
+            <div>
+              <h3>Ukraine mineral deal <span class="tag bad">Clearest whale case</span></h3>
+              <p>This is the most obvious one. Reporting ties the disputed Yes resolution to a single UMA whale voting through three accounts with about 5 million UMA, roughly a quarter of the vote. The alleged mechanism is visible: concentrated token weight, split across accounts, pushing a disputed outcome that Polymarket reportedly treated as unprecedented.</p>
+              <p><b>Why it is damning:</b> it is not just a confusing market. It has a named pattern of capture: one large UMA holder, multiple accounts, large vote share, disputed final result.</p>
+            </div>
+          </article>
+
+          <article class="verdict-card">
+            <span class="verdict-rank">2</span>
+            <div>
+              <h3>Structural WSJ / Barron's conflict reporting <span class="tag bad">Systemic evidence</span></h3>
+              <p>This is not one market, but it may be the most damaging support for the broader critique. WSJ and Barron's reported recurring conflicts between UMA voters and Polymarket positions, with large-wallet concentration and UMA voters sometimes betting on the very outcomes they helped resolve.</p>
+              <p><b>Why it is damning:</b> it makes the problem look structural rather than anecdotal. A single scandal can be dismissed as messy edge-case adjudication. Repeated overlap between voter power and financial exposure is much harder to wave away.</p>
+            </div>
+          </article>
+
+          <article class="verdict-card">
+            <span class="verdict-rank">3</span>
+            <div>
+              <h3>Zelenskyy suit <span class="tag warn">Most public scandal</span></h3>
+              <p>This is the most legible example for normal readers: photos existed, major outlets described the outfit as a suit, and the market still resolved No after the UMA dispute path. It became a public referendum on whether a token vote can handle ordinary factual judgment.</p>
+              <p><b>Why it is damning:</b> it shows how the system performs when common-sense evidence collides with concentrated token voting. The caveat is that "suit" is subjective, so it is less clean than Ukraine for corruption and less clean than Strategy for factual wrongness.</p>
+            </div>
+          </article>
+
+          <article class="verdict-card">
+            <span class="verdict-rank">4</span>
+            <div>
+              <h3>Strategy Bitcoin sale <span class="tag info">Best bad-outcome case</span></h3>
+              <p>This is the strongest "plain reality lost" example, because Strategy disclosed that it sold Bitcoin during the market window and the market still resolved No. But it is not the strongest corruption-by-whales example, because the current evidence points more to bad resolution mechanics and late clarification than to a specific whale capture campaign.</p>
+              <p><b>Why it still belongs:</b> pair it with Ukraine. Ukraine shows token-weighted capture; Strategy shows why that capture matters: correct traders can still lose when the resolution layer defines reality away.</p>
+            </div>
+          </article>
+        </div>
+
+        <div class="verdict-note">
+          <b>Conclusion:</b> lead with Ukraine if the sentence says "whales corrupted the court." Lead with Strategy if the sentence says "the court reached an answer contrary to reality." Use Zelenskyy as the reader-friendly public scandal, and use WSJ/Barron's as the evidence that this is not one weird market but a recurring conflict-of-interest problem.
+        </div>
+      </section>
+
+      <section id="rewrite" class="panel">
+        <h2>Suggested Replacement Passage</h2>
+        <p class="section-lead">The current text is vivid, but slightly overgeneralized. These options keep the heat while making the claim easier to defend.</p>
+        <div class="quote-options">
+          <div class="quote-option">
+            <span class="label">Safer version</span>
+            <blockquote>
+              This is not a thought experiment. In the 2025 Ukraine mineral-deal market, reporting traced a premature Polymarket resolution to a single UMA whale voting through three accounts with roughly a quarter of the vote. In 2026, Strategy disclosed that it had sold Bitcoin during the market window, yet the corresponding Polymarket contract resolved No after the dispute process. The mechanism behaved as designed: token weight became adjudication weight. The problem is not a bug in UMA. It is the premise.
+            </blockquote>
+          </div>
+          <div class="quote-option">
+            <span class="label">Shorter version</span>
+            <blockquote>
+              This is not a thought experiment. Polymarket has already seen disputed UMA resolutions where the answer traders thought reality required lost to token-weighted voting: the 2025 Ukraine mineral-deal market, the 2025 Zelenskyy suit market, and the 2026 Strategy Bitcoin-sale market. Weight followed the wallet. That is exactly the failure this court is designed to remove.
+            </blockquote>
+          </div>
+        </div>
+      </section>
+
+      <section id="source-bundle" class="panel">
+        <h2>Best Source Bundle</h2>
+        <p>For a compact chapter citation, use these four source groups:</p>
+        <ul>
+          <li>Strategy: Galaxy Research plus the Polymarket market page.</li>
+          <li>Ukraine minerals: The Defiant plus the Polymarket market page.</li>
+          <li>Zelenskyy suit: WIRED or Coindesk plus the Polymarket market page.</li>
+          <li>Structural concentration: WSJ or Barron's.</li>
+        </ul>
+      </section>
+    </main>
+
+    <aside class="rail">
+      <nav class="toc" aria-label="Table of contents">
+        <strong>Contents</strong>
+        <a href="#target">Target passage</a>
+        <a href="#bottom-line">Bottom line</a>
+        <a href="#mechanism">Mechanism and structure</a>
+        <a href="#strategy">Strategy Bitcoin sale</a>
+        <a href="#ukraine">Ukraine mineral deal</a>
+        <a href="#zelenskyy">Zelenskyy suit</a>
+        <a href="#barron">Barron / DJT</a>
+        <a href="#adjacent">Adjacent cases</a>
+        <a href="#most-damning">Most damning cases</a>
+        <a href="#rewrite">Suggested wording</a>
+        <a href="#source-bundle">Source bundle</a>
+      </nav>
+    </aside>
+  </div>
+
+  <p class="footer">Standalone reading copy generated from <code>uma-polymarket-resolution-review.md</code>. It is intentionally not added to the Netlify public build allowlist.</p>
+</div>
+</body>
+</html>

@@ -4,7 +4,7 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>How PredictionMoMo works: betting pools, fixed odds, and ERC-20 tokens</title>
-<meta name="description" content="PredictionMoMo is a prediction market born as a shared pot with no market maker, grown into plain tokens you hold yourself, and settled by DemoThemis.">
+<meta name="description" content="PredictionMoMo starts as a shared pot with no market maker, grows into plain tokens you hold yourself, and resolves through DemoThemis.">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@500;700&family=Newsreader:opsz,wght@6..72,200..700&display=swap" rel="stylesheet">
@@ -43,6 +43,23 @@
   .bb-i { background: var(--good); width: 20%; }
   .bb-p { background: #9aa0ab; width: 10%; }
   .bb-keys { display: flex; gap: 1rem; flex-wrap: wrap; font-family: var(--sans); font-size: .8rem; color: var(--muted); }
+
+  /* oracle evidence */
+  .oracle-case-grid { display: grid; grid-template-columns: 1fr 1fr; gap: .9rem; margin: 1.4rem 0; }
+  @media (max-width: 700px) { .oracle-case-grid { grid-template-columns: 1fr; } }
+  .oracle-case { border: 1px solid var(--line); border-radius: 12px; background: var(--surface); box-shadow: var(--shadow); padding: 1rem 1.05rem; font-family: var(--sans); }
+  .oracle-case.hot { border-top: 3px solid var(--bad); }
+  .oracle-case.sys { border-top: 3px solid var(--accent); }
+  .oracle-case.fact { border-top: 3px solid var(--good); }
+  .oracle-case h3 { display: flex; flex-wrap: wrap; gap: .45rem; align-items: center; margin-bottom: .45rem; }
+  .oracle-case p { margin: .45rem 0 0; color: var(--muted); font-size: .92rem; line-height: 1.5; }
+  .oracle-case .lab { font-size: .68rem; font-weight: 750; letter-spacing: .06em; text-transform: uppercase; border-radius: 999px; padding: .16rem .5rem; white-space: nowrap; }
+  .oracle-case.hot .lab { background: var(--bad-soft); color: var(--bad); }
+  .oracle-case.sys .lab { background: var(--accent-soft); color: var(--accent-ink); }
+  .oracle-case.fact .lab { background: var(--good-soft); color: var(--good); }
+  .oracle-sources { display: flex; flex-wrap: wrap; gap: .45rem; margin-top: .75rem; }
+  .oracle-sources a { border: 1px solid var(--line); border-radius: 999px; background: var(--bg); padding: .16rem .55rem; font-size: .76rem; font-weight: 650; text-decoration: none; }
+  .oracle-note { border-left: 4px solid var(--bad); border-radius: 12px; background: var(--bad-soft); color: #7e2f22; padding: 1rem 1.1rem; margin: 1.3rem 0 0; font-family: var(--sans); font-size: .94rem; line-height: 1.55; }
 </style>
 </head>
 <body>
@@ -94,13 +111,63 @@
 
   <aside id="toc" class="toc reveal"></aside>
 
+  <section id="exploited-arbiter" class="reveal">
+    <p class="sec-label">The exploited arbiter</p>
+    <h2>The oracle problem Polymarket exposed</h2>
+    <p class="lead">Prediction markets do not fail when traders disagree. They fail when everyone has to stop trading the event and start trading the arbiter. UMA showed the problem plainly: token-weighted truth turns a disputed outcome into a governance market with a whale chart attached.</p>
+    <p>The point is not that every disputed Polymarket resolution was corrupt. Some were genuinely ambiguous. The point is worse: the resolution layer made whale weight, voter conflicts, and after-the-fact rule fights part of the price discovery. Four episodes explain why PredictionMoMo cannot inherit that court.</p>
+
+    <div class="oracle-case-grid">
+      <div class="oracle-case hot">
+        <h3>Ukraine mineral deal <span class="lab">clearest whale case</span></h3>
+        <p>Reporting traced a disputed Yes resolution to one UMA whale voting through three accounts with about five million UMA, roughly a quarter of the vote. That is the cleanest example of token weight pushing the arbiter itself.</p>
+        <div class="oracle-sources">
+          <a href="https://thedefiant.io/news/defi/polymarket-s-usd7m-ukraine-mineral-deal-debacle-traced-to-oracle-whale">The Defiant</a>
+          <a href="https://polymarket.com/event/ukraine-agrees-to-give-trump-rare-earth-metals-before-april">Market</a>
+        </div>
+      </div>
+
+      <div class="oracle-case sys">
+        <h3>Voters with positions <span class="lab">systemic evidence</span></h3>
+        <p>WSJ and Barron's reported recurring overlap between UMA voting power and Polymarket exposure, including large-wallet concentration and voters resolving markets they could also bet on.</p>
+        <div class="oracle-sources">
+          <a href="https://www.wsj.com/finance/polymarket-bet-disputes-fb1b8c6a">WSJ</a>
+          <a href="https://www.barrons.com/articles/polymarket-prediction-market-disputes-uma-crypto-e3eae345">Barron's</a>
+        </div>
+      </div>
+
+      <div class="oracle-case hot">
+        <h3>Zelenskyy suit <span class="lab">public scandal</span></h3>
+        <p>Photos and major-media descriptions were not enough to stop a No resolution after the UMA dispute path. The word "suit" left room for argument, but the public lesson was brutal: common-sense evidence still had to survive a token vote.</p>
+        <div class="oracle-sources">
+          <a href="https://www.wired.com/story/volodymyr-zelensky-suit-polymarket-rebellion/">WIRED</a>
+          <a href="https://www.coindesk.com/markets/2025/07/07/polymarket-embroiled-in-usd160m-controversy-over-whether-zelensky-wore-a-suit-at-nato">Coindesk</a>
+          <a href="https://polymarket.com/event/will-zelenskyy-wear-a-suit-before-july">Market</a>
+        </div>
+      </div>
+
+      <div class="oracle-case fact">
+        <h3>Strategy Bitcoin sale <span class="lab">plain reality lost</span></h3>
+        <p>Strategy disclosed that it sold Bitcoin during the market window, yet the corresponding Polymarket contract resolved No after the dispute process. This is the best example of a correct event prediction losing to resolution mechanics.</p>
+        <div class="oracle-sources">
+          <a href="https://www.galaxy.com/insights/research/strategy-bitcoin-sale-polymarket-resolution-dispute-may-2026">Galaxy Research</a>
+          <a href="https://www.coindesk.com/markets/2026/06/04/polymarket-says-no-for-may-yes-for-june-after-strategy-s-recent-bitcoin-sale">Coindesk</a>
+          <a href="https://polymarket.com/event/microstrategy-sell-any-bitcoin-in-2025">Market</a>
+        </div>
+      </div>
+    </div>
+
+    <p class="oracle-note"><b>The conclusion is simple:</b> lead with Ukraine when the charge is whale capture. Lead with Strategy when the charge is reality losing to resolution mechanics. Use Zelenskyy because readers instantly understand it, and use the WSJ/Barron's conflict reporting because it shows the problem is structural rather than one weird market.</p>
+    <p>PredictionMoMo's answer is not a nicer token vote. It removes the token vote from the verdict. Easy markets still clear through bonded assertions, but contested markets go to verified humans, randomly drawn, voting privately, with one person counted once.</p>
+  </section>
+
   <section class="reveal">
     <p class="sec-label">Two complaints</p>
     <h2>Two complaints about the markets we love</h2>
     <p class="lead">Post a question, place the first bet, share the link, and that is a whole prediction market. The pot is the money traders draw on, the crowd sets the price, and a court money cannot buy decides who won.</p>
     <p>Prediction markets are the closest thing the internet has to a truth machine. Put real money on a question and the number that comes out is the most honest forecast anyone publishes. We are fans. We have exactly two complaints, and this chapter is built around them.</p>
     <p><b>The first is custody:</b> On the big platforms, your position is an entry on an operator's book. The matching engine, the listings, and the freeze button all belong to one company, and your winnings exist at its pleasure. A bet should be a plain token in your own wallet: yours to hold, move, or post as collateral, with nobody to ask.</p>
-    <p><b>The second is resolution:</b> Deciding who won is the hard part of every market, and it is the part most designs hand to a committee, an oracle company, or a token vote that a deep enough pocket can lean on. Our answer took two chapters to build: <a href="juror-court.html">a court money cannot buy</a>. PredictionMoMo exists to be settled by that court, and, as the rest of this act shows, to feed it.</p>
+    <p><b>The second is resolution:</b> Deciding who won is the hard part of every market, and it is the part most designs hand to a committee, an oracle company, or a token vote that a deep enough pocket can lean on. Our answer took two chapters to build: <a href="juror-court.html">a court money cannot buy</a>. This market is built to be settled by that court, and, as the rest of this act shows, to feed it.</p>
   </section>
 
   <section class="reveal">
@@ -207,7 +274,7 @@
     <p class="sec-label">Adulthood</p>
     <h2>Growing up into tokens</h2>
     <p>An arbitrary volume threshold (like $100,000 total volume) is lazy game theory. A whale could wash-trade both sides of a market just to force it to tokenize, or dump massive capital on a "sure thing" to trigger an order book that opens completely empty.</p>
-    <p>To prevent manipulation, PredictionMoMo uses a <b>Robustness Strategy</b>. A pool only graduates when it mathematically proves it can sustain an active limit order book by passing three simultaneous checks:</p>
+    <p>To prevent manipulation, the market uses a <b>Robustness Strategy</b>. A pool only graduates when it mathematically proves it can sustain an active limit order book by passing three simultaneous checks:</p>
 
     <div class="widget reveal">
       <div class="widget-head"><span class="live"></span> The Robustness Lock</div>
@@ -350,12 +417,12 @@
     <p class="sec-label">Composability</p>
     <h2>DraftKings parlays, mathematically pure</h2>
     <p>Bettors love the centralized bookie experience: live fixed odds, concurrent parlays, and early cashouts. But if a decentralized protocol acts as the bookie to quote you a price on a combination of events, it is highly vulnerable to insider knowledge and bankruptcy.</p>
-    <p>PredictionMoMo achieves all the features of a centralized parlay without the protocol or a "bookie" ever taking risk, using a native integration of the <b>Conditional Tokens Framework (CTF)</b>.</p>
+    <p>The parlay layer gives bettors the centralized bookie experience without the protocol or a "bookie" ever taking risk, using a native integration of the <b>Conditional Tokens Framework (CTF)</b>.</p>
     <p>By strictly restricting this capability to markets that have already passed the Robustness Lock, we guarantee the underlying tokens are highly liquid. This completely avoids the "ghost town" fragmentation problem that plagues other AMM-based parlay platforms.</p>
 
     <h3>The UX problem with manual token splitting</h3>
     <p>In a standard CTF system, building a parlay is an awful experience. To get a $100 payout on a 2-leg parlay, a user must manually deposit $100 to mint 4 exhaustive combinatorial tokens (YES/YES, YES/NO, NO/YES, NO/NO), keep the one they want, and beg the order book to buy the other 3. If there are no buyers, the user gets stuck holding "junk" tokens they never wanted.</p>
-    <p>PredictionMoMo solves this with <b>Atomic Routing (Fill-or-Kill)</b>. The user simply clicks "Buy Parlay" on a clean bet slip. Under the hood, a single smart contract transaction flash-borrows the money from the order book, mints the tokens, and sells the unwanted ones instantly. If there aren't enough buyers on the order book, the transaction mathematically reverts. You never get stuck holding tokens you don't want.</p>
+    <p>The interface solves this with <b>Atomic Routing (Fill-or-Kill)</b>. The user simply clicks "Buy Parlay" on a clean bet slip. Under the hood, a single smart contract transaction flash-borrows the money from the order book, mints the tokens, and sells the unwanted ones instantly. If there aren't enough buyers on the order book, the transaction mathematically reverts. You never get stuck holding tokens you don't want.</p>
 
     <div class="widget reveal">
       <div class="widget-head"><span class="live"></span> Atomic Routing (Fill-or-Kill)</div>
@@ -404,7 +471,7 @@
         }, 3600);
       }
     </script>
-    <p>By leveraging atomic routing, PredictionMoMo acts as an incorruptible escrow rather than a casino. The <b>Live Odds</b> of the parlay are simply the current bids on the limit order book for the combinatorial token. To <b>Cash Out Early</b>, bettors do not ask the house for a buyout; they simply dump their token into the open order book to the highest bidder.</p>
+    <p>By leveraging atomic routing, the contracts act as market escrow rather than a casino. The <b>Live Odds</b> of the parlay are simply the current bids on the limit order book for the combinatorial token. To <b>Cash Out Early</b>, bettors do not ask the house for a buyout; they simply dump their token into the open order book to the highest bidder.</p>
   </section>
 
   <section class="reveal">
@@ -472,7 +539,7 @@
   <section class="reveal">
     <p class="sec-label">The economics</p>
     <h2>The fee, printed once</h2>
-    <p>The whole business model is one number, printed once. A 2% fee comes off every pot at settlement and splits three ways: 70% pays the jurors, 20% feeds the reward pool that pays the active, high-quality ones, 10% runs the protocol. The 2% base and its split are constitutional and route first; <a href="governance.html">PredictionMoMo's own token</a> may vote a margin of up to one extra point on top, which is the company's revenue, and the juror payroll never depends on it. PredictionMoMo pays for the court that settles it, and the court is what makes it worth betting in.</p>
+    <p>The whole business model is one number, printed once. A 2% fee comes off every pot at settlement and splits three ways: 70% pays the jurors, 20% feeds the reward pool that pays the active, high-quality ones, 10% runs the protocol. The 2% base and its split are constitutional and route first; <a href="governance.html">the market's own token</a> may vote a margin of up to one extra point on top, which is the company's revenue, and the juror payroll never depends on it. The market pays for the court that settles it, and the court is what makes it worth betting in.</p>
 
     <figure class="diagram reveal">
       <div class="diagram-inner">
