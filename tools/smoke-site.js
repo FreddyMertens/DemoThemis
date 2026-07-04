@@ -8,13 +8,11 @@ const siteUrl = (process.env.URL || process.env.DEPLOY_PRIME_URL || "https://dem
 
 const publicHtml = [
   "index.html",
-  "vision.html",
-  "juror-court.html",
-  "hybrid-juror-system.html",
+  "demothemis.html",
+  "game-theory.html",
   "prediction-market.html",
   "hybrid-juror-prediction-market-integration.html",
   "the-design.html",
-  "game-theory.html",
   "governance.html"
 ];
 
@@ -107,7 +105,7 @@ function checkDistFiles(failures) {
   for (const file of publicHtml) {
     assert(fs.existsSync(path.join(outDir, file)), `missing built public page: ${file}`, failures);
   }
-  for (const file of ["_headers", "robots.txt", "sitemap.xml", "404.html", "assets/styles.css", "assets/common.js"]) {
+  for (const file of ["_headers", "_redirects", "robots.txt", "sitemap.xml", "404.html", "assets/styles.css", "assets/common.js"]) {
     assert(fs.existsSync(path.join(outDir, file)), `missing built support file: ${file}`, failures);
   }
 }
@@ -139,10 +137,24 @@ function checkBuiltHtml(failures) {
     assert(/assets\/styles\.css/i.test(html), `${file} missing shared stylesheet`, failures);
   }
   const gameLab = readDist("game-theory.html");
+  assert(/Break the court/i.test(gameLab), "game-theory chapter missing Break the court title", failures);
   assert(/assets\/vendor\/popper-2\.11\.8\.min\.js/i.test(gameLab), "gamelab missing vendored Popper", failures);
   assert(/assets\/vendor\/tippy-6\.3\.7\.umd\.min\.js/i.test(gameLab), "gamelab missing vendored Tippy", failures);
   assert(/role=["']tablist["']/i.test(gameLab), "gamelab missing tablist role", failures);
   assert(/data-attack=["']bloc["']/i.test(gameLab), "gamelab missing coordinated attack card", failures);
+
+  const demoThemis = readDist("demothemis.html");
+  assert(/DemoThemis: the simple version and the deep dive/i.test(demoThemis), "DemoThemis chapter missing combined title", failures);
+  assert(/id=["']simple-version["']/i.test(demoThemis), "DemoThemis chapter missing simple version", failures);
+  assert(/id=["']deep-dive["']/i.test(demoThemis), "DemoThemis chapter missing deep dive section", failures);
+  assert(/id=["']F1f["']/i.test(demoThemis), "DemoThemis chapter missing live reserve widget", failures);
+  assert(/id=["']g3grid["']/i.test(demoThemis), "DemoThemis chapter missing sealed-die widget", failures);
+  assert(/id=["']R4seg["']/i.test(demoThemis), "DemoThemis chapter missing private-ballot widget", failures);
+  assert(/id=["']mppanels["']/i.test(demoThemis), "DemoThemis chapter missing parallel-panel widget", failures);
+  assert(/id=["']cgAcc["']/i.test(demoThemis), "DemoThemis chapter missing confidence-gate widget", failures);
+  assert(/id=["']RT1seg["']/i.test(demoThemis), "DemoThemis chapter missing case-router widget", failures);
+  assert(/id=["']abStake["']/i.test(demoThemis), "DemoThemis chapter missing appeal-bond widget", failures);
+  assert(/class=["'][^"']*vhub/i.test(demoThemis), "DemoThemis chapter missing shared-arbiter diagram", failures);
 
   const runThrough = readDist("the-design.html");
   assert(/Run through the whole system/i.test(runThrough), "run-through chapter missing new title", failures);
@@ -150,6 +162,7 @@ function checkBuiltHtml(failures) {
   assert(/id=["']focusScene["']/i.test(runThrough), "run-through missing focused one-step scene", failures);
   assert(/id=["']stepSvg["']/i.test(runThrough), "run-through missing illustrated step SVG", failures);
   assert(/id=["']playResult["']/i.test(runThrough), "run-through missing interactive step feedback", failures);
+  assert(/LUCIDE_ICONS/i.test(runThrough), "run-through missing vendored Lucide icon subset", failures);
   assert(!/id=["']runLanes["']/i.test(runThrough), "run-through should not expose the old multi-lane board", failures);
   assert(/data-feature=["']instant["']/i.test(runThrough), "run-through missing instant-market feature unlock", failures);
   assert(/data-feature=["']fixed["']/i.test(runThrough), "run-through missing fixed-odds feature unlock", failures);
@@ -161,6 +174,13 @@ function checkBuiltHtml(failures) {
   assert(/data-component=["']ballot["']/i.test(runThrough), "run-through missing private-ballot component unlock", failures);
   assert(/data-component=["']appeal["']/i.test(runThrough), "run-through missing appeal-ladder component unlock", failures);
   assert(/data-loop=["']trust["']/i.test(runThrough), "run-through missing bootstrap-loop trust node", failures);
+}
+
+function checkRedirects(failures) {
+  const redirects = readDist("_redirects");
+  assert(/\/vision\s+\/demothemis\s+301/i.test(redirects), "_redirects missing vision redirect", failures);
+  assert(/\/juror-court\s+\/demothemis\s+301/i.test(redirects), "_redirects missing court redirect", failures);
+  assert(/\/hybrid-juror-system\s+\/demothemis\s+301/i.test(redirects), "_redirects missing hybrid-system redirect", failures);
 }
 
 async function checkHttpRoutes(port, failures) {
@@ -185,6 +205,7 @@ async function main() {
   if (failures.length) throw new Error(failures.join("\n"));
 
   checkHeaders(failures);
+  checkRedirects(failures);
   checkBuiltHtml(failures);
 
   const server = createServer();

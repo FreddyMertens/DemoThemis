@@ -3,132 +3,19 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>The vision: one shared arbiter for every online deal</title>
-<meta name="description" content="Why a fair, unbuyable, cheap dispute court that maintains adjudicator quality becomes the trust layer online apps are built on, from spare rooms to ad networks.">
-<link rel="preconnect" href="https://fonts.googleapis.com">
-<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@500;700&family=Newsreader:opsz,wght@6..72,200..700&display=swap" rel="stylesheet">
+<meta http-equiv="refresh" content="0; url=demothemis.html">
+<link rel="canonical" href="demothemis.html">
+<title>Moved to DemoThemis</title>
+<meta name="robots" content="noindex">
 <link rel="stylesheet" href="assets/styles.css">
-<style>
-  .vhub { display: flex; align-items: center; justify-content: center; gap: .8rem; flex-wrap: wrap; }
-  .vhub .apps { display: grid; gap: .45rem; }
-  .vhub .chip { font-family: var(--sans); font-size: .85rem; font-weight: 600; background: var(--bg); border: 1px solid var(--line-strong); border-radius: 10px; padding: .5rem .8rem; text-align: center; white-space: nowrap; }
-  .vhub .ar { color: var(--accent); font-size: 1.5rem; font-weight: 700; }
-  .vhub .core { background: var(--accent-soft); border: 1px solid var(--accent); border-radius: 14px; padding: 1.1rem 1.2rem; text-align: center; font-family: var(--sans); font-weight: 700; color: var(--accent-ink); }
-  .vhub .core small { display: block; font-weight: 400; font-size: .76rem; color: var(--muted); margin-top: .25rem; }
-  .vhub .rec { background: var(--surface); border: 1px dashed var(--line-strong); border-radius: 12px; padding: 1rem 1.1rem; text-align: center; font-family: var(--sans); font-weight: 600; font-size: .9rem; }
-  @media (max-width: 640px) { .vhub .ar { transform: rotate(90deg); } }
-</style>
 </head>
 <body>
-<div id="progress"></div>
-
-<nav class="sitenav" aria-label="Primary">
-  <div class="sitenav-inner">
-    <a class="brand" href="index.html">DemoThemis<span class="dot">.</span></a>
-    <button class="nav-toggle" type="button" aria-label="Menu" aria-expanded="false">&#9776;</button>
-    <div class="nav-links">
-      <a href="index.html">Home</a>
-      <a href="vision.html"><span class="ch">01</span> Vision</a>
-      <a href="juror-court.html"><span class="ch">02</span> Court</a>
-      <a href="hybrid-juror-system.html"><span class="ch">03</span> Hybrid system</a>
-      <a href="prediction-market.html"><span class="ch">04</span> PredictionMoMo</a>
-      <a href="hybrid-juror-prediction-market-integration.html"><span class="ch">05</span> Bootstrap loop</a>
-      <a href="the-design.html"><span class="ch">06</span> Run-through</a>
-      <a href="game-theory.html"><span class="ch">07</span> Game lab</a>
-      <a href="governance.html"><span class="ch">08</span> Governance</a>
-    </div>
-  </div>
-</nav>
-
-<header class="hero reveal">
-  <p class="kicker">The vision</p>
-  <h1>The vision: one shared arbiter for every online deal</h1>
-  <p class="dek">Every online purchase quietly depends on an arbiter: the platform, the card issuer, the review system that steps in when a deal goes wrong. This chapter shows why those arbiters are conflicted, expensive, and easy to lean on, and what changes when one neutral court, owned by no platform, settles disputes for all of them.</p>
-  <div class="meta">
-    <span class="pill">Start here</span>
-    <span>7 min read</span>
-    <span class="dot">&bull;</span>
-    <span>Chapter 1 of 8</span>
-  </div>
-</header>
-
-<main class="content wrap">
-
-  <aside id="toc" class="toc reveal"></aside>
-
-  <section class="reveal">
-    <p class="lead">You never really trusted the stranger whose spare room you booked. You trusted the arbiter standing behind the deal. Make that arbiter fair, impossible to buy, and cheap enough, and every app will want to stand behind it too.</p>
-    <p>Book a room in a city you have never visited, from a host you will never meet, and hand over your money days before you arrive. On paper this is reckless. In practice you do it without blinking.</p>
-    <p>You can do it because someone has promised to step in if it goes wrong. The platform will refund you. Your card issuer will reverse the charge. A pile of reviews will punish a host who cheats. You are not trusting the host. You are trusting the arbiter behind the host.</p>
-  </section>
-
-  <section class="reveal">
-    <p class="sec-label">The hidden utility</p>
-    <h2>Trust is something you rent</h2>
-    <p>That arbiter is everywhere once you look. Every marketplace, every gig app, every ad auction, every app store is, underneath, a machine for settling the question of who was right when two strangers disagree. It is the part that makes the rest safe to use.</p>
-    <p>Today you rent it. The platform owns the arbiter, charges a fee for standing behind the deal, and gets the final say on every call. Most of the time that is fine. The trouble shows up at the edges. The arbiter and the seller are often the same company, so the appeal goes to the house. The fee is baked into every transaction whether or not a dispute ever happens. And a big enough party can lean on the call, because the arbiter answers to revenue, not to you.</p>
-    <p>The alternatives only move the trap around. Ask your bank to reverse the charge and you wait weeks for a ruling that costs more to reach than the dispute was worth. Reach for the newer on-chain courts and the verdict goes to whoever holds the most tokens, the failure <a href="juror-court.html">the court chapter</a> takes apart. Platform, bank, or token vote, every arbiter on the table is conflicted, slow, or for sale.</p>
-  </section>
-
-  <section class="reveal">
-    <p class="sec-label">One court, many apps</p>
-    <h2>Build the arbiter once, share it everywhere</h2>
-    <p>Now picture the arbiter as a neutral public utility instead of a feature each company rebuilds in private. A court of verified humans, drawn at random, who cannot be bought, attached to protocol escrow that already holds the money. Any app can route a deal through it and trust the result, because the app does not control the funds, the court, or the other side.</p>
-
-    <figure class="diagram reveal">
-      <div class="diagram-inner">
-        <div class="vhub">
-          <div class="apps">
-            <div class="chip">A rooms marketplace</div>
-            <div class="chip">A rides app</div>
-            <div class="chip">A goods marketplace</div>
-            <div class="chip">An ad network</div>
-          </div>
-          <span class="ar">&rarr;</span>
-          <div class="core">DemoThemis escrow + court<small>funds locked, random panels, private votes</small></div>
-          <span class="ar">&rarr;</span>
-          <div class="rec">A signed verdict and automatic release</div>
-        </div>
-      </div>
-      <figcaption>Many apps, one shared arbiter. <b>The court answers to none of them, which is exactly why all of them can use it.</b></figcaption>
-    </figure>
-
-    <p>For a decentralized app this is the missing piece. The app can bring users, evidence, and interface, but the deal funds sit in neutral protocol escrow before anything goes wrong. If a dispute appears, the court decides and the protocol releases or refunds by rule. Trust moves from the app's promise to the escrow itself, and the overhead that each app used to carry alone becomes one shared cost.</p>
-  </section>
-
-  <section class="reveal">
-    <p class="sec-label">The part that compounds</p>
-    <h2>The history is useful without being public</h2>
-    <p>Here is the turn that makes it more than a cheaper arbiter. Each locked case moves funds and leaves enough history to grade adjudication quality: who served, how panels split, which rulings survived appeal, and which calls later proved reliable. The court keeps the canonical case record inside the juror system. The parties and the requesting app get a signed verdict receipt. Juror scoring gets only the minimum case data it needs.</p>
-    <p>That is history's job. It is not a public reputation feed. It is the evidence needed to identify careful arbitrators, keep future panels strong, and let permitted parties verify that escrow paid by rule. Public prediction markets still resolve publicly because traders need settlement. Private arbitrations stay private by default.</p>
-  </section>
-
-  <section class="reveal">
-    <p class="sec-label">Why a standard, not a feature</p>
-    <h2>The padlock, again</h2>
-    <p>Web traffic used to travel in the clear. A padlock and the letter "s" in https changed that, not by law but by expectation. Once enough sites were encrypted, the ones that were not started to feel unsafe, and browsers began to say so out loud. The standard won because skipping it became the suspicious choice.</p>
-    <p>A shared, unbuyable court can follow the same path. Early on it is a nice option for a handful of apps. Past some point, routing deal funds through escrow no single party controls, with a verdict the right people can verify, becomes the thing a careful customer expects. That is the destination. The rest of this series is the route: first DemoThemis, the court itself; then PredictionMoMo, the market that pays for it; then the way the two switch each other on.</p>
-  </section>
-
-  <footer class="endnote reveal">
-    <nav id="series" aria-label="Where you are in the series"></nav>
-    <div class="sitemap sitemap-flat">
-      <a href="vision.html">1. The vision</a>
-      <a href="juror-court.html">2. The court</a>
-      <a href="hybrid-juror-system.html">3. The hybrid system</a>
-      <a href="prediction-market.html">4. PredictionMoMo</a>
-      <a href="hybrid-juror-prediction-market-integration.html">5. The bootstrap loop</a>
-      <a href="the-design.html">6. Run-through</a>
-      <a href="game-theory.html">7. Game lab</a>
-      <a href="governance.html">8. Governance</a>
-      <a href="index.html">Home &middot; the map</a>
-    </div>
-    <p class="signoff">An arbiter fair enough, and cheap enough, that skipping it becomes the suspicious choice.</p>
-  </footer>
-
+<main class="content wrap" style="padding-top:4rem">
+  <p class="sec-label">DemoThemis</p>
+  <h1>Opening DemoThemis.</h1>
+  <p>If the redirect does not run, open the DemoThemis overview directly.</p>
+  <p><a href="demothemis.html">Open DemoThemis</a></p>
 </main>
-
-<script src="assets/common.js"></script>
+<script>location.replace("demothemis.html");</script>
 </body>
 </html>

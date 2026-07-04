@@ -7,13 +7,11 @@ const siteUrl = (process.env.URL || process.env.DEPLOY_PRIME_URL || "https://dem
 
 const publicFiles = [
   "index.html",
-  "vision.html",
-  "juror-court.html",
-  "hybrid-juror-system.html",
+  "demothemis.html",
+  "game-theory.html",
   "prediction-market.html",
   "hybrid-juror-prediction-market-integration.html",
   "the-design.html",
-  "game-theory.html",
   "governance.html",
   "assumptions.js",
   "assets/common.js",
@@ -243,6 +241,18 @@ function buildHeaders() {
   return `/*\n  X-Content-Type-Options: nosniff\n  Referrer-Policy: strict-origin-when-cross-origin\n  Permissions-Policy: camera=(), microphone=(), geolocation=(), payment=()\n  X-Frame-Options: DENY\n  Content-Security-Policy: default-src 'self'; img-src 'self' data: https:; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src 'self' https://fonts.gstatic.com; script-src 'self' 'unsafe-inline'; connect-src 'self'; frame-ancestors 'none'; base-uri 'self'; form-action 'self'; object-src 'none'\n`;
 }
 
+function buildRedirects() {
+  return [
+    "/vision /demothemis 301",
+    "/vision.html /demothemis 301",
+    "/juror-court /demothemis 301",
+    "/juror-court.html /demothemis 301",
+    "/hybrid-juror-system /demothemis 301",
+    "/hybrid-juror-system.html /demothemis 301",
+    "/ /index.html 200"
+  ].join("\n") + "\n";
+}
+
 function build404() {
   return `<!DOCTYPE html>\n<html lang="en">\n<head>\n<meta charset="UTF-8">\n<meta name="viewport" content="width=device-width, initial-scale=1.0">\n<title>DemoThemis: page not found</title>\n<meta name="robots" content="noindex">\n<link rel="stylesheet" href="assets/styles.css">\n</head>\n<body>\n<main class="content wrap" style="padding-top:4rem">\n  <p class="sec-label">404</p>\n  <h1>Page not found</h1>\n  <p>The public site only serves the published DemoThemis chapters and assets.</p>\n  <p><a href="index.html">Return home</a></p>\n</main>\n</body>\n</html>\n`;
 }
@@ -253,7 +263,7 @@ fs.mkdirSync(outDir, { recursive: true });
 
 publicFiles.forEach(copyFile);
 writeFile("_headers", buildHeaders());
-writeFile("_redirects", "/ /index.html 200\n");
+writeFile("_redirects", buildRedirects());
 writeFile("robots.txt", "User-agent: *\nAllow: /\nSitemap: " + siteUrl + "/sitemap.xml\n");
 writeFile("sitemap.xml", buildSitemap());
 writeFile("404.html", build404());

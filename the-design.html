@@ -91,13 +91,16 @@
   .step-svg .icon-line { fill: none; stroke: var(--ink-soft); stroke-width: 4; stroke-linecap: round; stroke-linejoin: round; }
   .step-svg .icon-line.light { stroke-width: 2.5; }
   .step-svg .symbol { fill: var(--ink-soft); font-size: 19px; font-weight: 900; }
+  .step-svg .lucide-pack-icon { color: var(--ink-soft); }
+  .step-svg .lucide-pack-icon * { vector-effect: non-scaling-stroke; }
   .step-svg .flow-track { fill: none; stroke: color-mix(in srgb, var(--line-strong) 78%, transparent); stroke-width: 8; stroke-linecap: round; }
   .step-svg .flow-track.hot { stroke: color-mix(in srgb, var(--accent) 68%, var(--line)); stroke-dasharray: 14 12; animation: dash-flow 1.1s linear infinite; }
   .step-svg .chip-card { fill: color-mix(in srgb, var(--surface) 92%, #fff); stroke: var(--line); stroke-width: 1; }
   .step-svg .chip-card.hot { fill: var(--accent-soft); stroke: var(--accent); }
   .mobile-art { display: none; }
   .mobile-art-tile { display: grid; grid-template-columns: 2.25rem 1fr; gap: .62rem; align-items: center; border: 1px solid var(--line); border-radius: 12px; background: var(--surface); padding: .64rem .7rem; min-width: 0; font-family: var(--sans); }
-  .mobile-art-mark { display: grid; place-items: center; width: 2.2rem; height: 2.2rem; border-radius: 999px; background: var(--bg); border: 1px solid var(--line-strong); color: var(--accent-ink); font-family: var(--mono); font-weight: 900; font-size: .74rem; }
+  .mobile-art-mark { display: grid; place-items: center; width: 2.2rem; height: 2.2rem; border-radius: 999px; background: var(--bg); border: 1px solid var(--line-strong); color: var(--accent-ink); }
+  .mobile-art-mark svg { display: block; width: 1.2rem; height: 1.2rem; fill: none; stroke: currentColor; stroke-width: 2.2; stroke-linecap: round; stroke-linejoin: round; }
   .mobile-art-tile b { display: block; color: var(--ink); font-size: .9rem; line-height: 1.18; overflow-wrap: anywhere; }
   .mobile-art-tile small { display: block; color: var(--muted); font-size: .72rem; line-height: 1.28; margin-top: .18rem; }
   .mobile-art-tile.accent { background: var(--accent-soft); border-color: color-mix(in srgb, var(--accent) 42%, var(--line)); }
@@ -212,14 +215,12 @@
     <button class="nav-toggle" type="button" aria-label="Menu" aria-expanded="false">&#9776;</button>
     <div class="nav-links">
       <a href="index.html">Home</a>
-      <a href="vision.html"><span class="ch">01</span> Vision</a>
-      <a href="juror-court.html"><span class="ch">02</span> Court</a>
-      <a href="hybrid-juror-system.html"><span class="ch">03</span> Hybrid system</a>
-      <a href="prediction-market.html"><span class="ch">04</span> PredictionMoMo</a>
-      <a href="hybrid-juror-prediction-market-integration.html"><span class="ch">05</span> Bootstrap loop</a>
-      <a href="the-design.html"><span class="ch">06</span> Run-through</a>
-      <a href="game-theory.html"><span class="ch">07</span> Game lab</a>
-      <a href="governance.html"><span class="ch">08</span> Governance</a>
+      <a href="demothemis.html"><span class="ch">01</span> DemoThemis</a>
+      <a href="game-theory.html"><span class="ch">02</span> Break the court</a>
+      <a href="prediction-market.html"><span class="ch">03</span> PredictionMoMo</a>
+      <a href="hybrid-juror-prediction-market-integration.html"><span class="ch">04</span> Bootstrap loop</a>
+      <a href="the-design.html"><span class="ch">05</span> Run-through</a>
+      <a href="governance.html"><span class="ch">06</span> Governance</a>
     </div>
   </div>
 </nav>
@@ -230,7 +231,7 @@
   <p class="dek">A complete system simulation: create the market, grow the pot, unlock self-custody claims, trade through dispute, route the case through DemoThemis, climb the appeal ladder, and watch the bootstrap loop feed the court.</p>
   <div class="meta">
     <span class="pill">Playable chapter</span>
-    <span>Chapter 6 of 8</span>
+    <span>Chapter 5 of 6</span>
     <span class="dot">&bull;</span>
     <span>One full run</span>
   </div>
@@ -407,14 +408,12 @@
   <footer class="endnote reveal">
     <nav id="series" aria-label="Where you are in the series"></nav>
     <div class="sitemap sitemap-flat">
-      <a href="vision.html">1. The vision</a>
-      <a href="juror-court.html">2. The court</a>
-      <a href="hybrid-juror-system.html">3. The hybrid system</a>
-      <a href="prediction-market.html">4. PredictionMoMo</a>
-      <a href="hybrid-juror-prediction-market-integration.html">5. The bootstrap loop</a>
-      <a href="the-design.html">6. Run-through</a>
-      <a href="game-theory.html">7. Game lab</a>
-      <a href="governance.html">8. Governance</a>
+      <a href="demothemis.html">1. DemoThemis</a>
+      <a href="game-theory.html">2. Break the court</a>
+      <a href="prediction-market.html">3. PredictionMoMo</a>
+      <a href="hybrid-juror-prediction-market-integration.html">4. Bootstrap loop</a>
+      <a href="the-design.html">5. Run-through</a>
+      <a href="governance.html">6. Governance</a>
       <a href="index.html">Home &middot; the map</a>
     </div>
     <p class="signoff">One market, every mechanism, the loop made visible.</p>
@@ -1028,75 +1027,95 @@
     return ["accent", "good", "bad", "soft"].indexOf(tone) === -1 ? "accent" : tone;
   }
 
+  /*
+   * Icon subset: Lucide static SVGs v1.23.0, ISC License.
+   * Copyright (c) Lucide Contributors.
+   * Vendored inline so the simulator works offline and avoids runtime CDN dependencies.
+   * Permission to use, copy, modify, and/or distribute this software for any
+   * purpose with or without fee is granted, provided that the copyright notice
+   * and this permission notice appear in all copies. The software is provided
+   * "as is" without warranty.
+   */
+  var LUCIDE_ICONS = {
+    "badge-alert": `<path d="M3.85 8.62a4 4 0 0 1 4.78-4.77 4 4 0 0 1 6.74 0 4 4 0 0 1 4.78 4.78 4 4 0 0 1 0 6.74 4 4 0 0 1-4.77 4.78 4 4 0 0 1-6.75 0 4 4 0 0 1-4.78-4.77 4 4 0 0 1 0-6.76Z" /><line x1="12" x2="12" y1="8" y2="12" /><line x1="12" x2="12.01" y1="16" y2="16" />`,
+    "chart-no-axes-combined": `<path d="M12 16v5" /><path d="M16 14.639V21" /><path d="M20 10.656V21" /><path d="m22 3-8.646 8.646a.5.5 0 0 1-.708 0L9.354 8.354a.5.5 0 0 0-.707 0L2 15" /><path d="M4 18.463V21" /><path d="M8 14.656V21" />`,
+    "coins": `<path d="M13.744 17.736a6 6 0 1 1-7.48-7.48" /><path d="M15 6h1v4" /><path d="m6.134 14.768.866-.5 2 3.464" /><circle cx="16" cy="8" r="6" />`,
+    "door-open": `<path d="M11 20H2" /><path d="M11 4.562v16.157a1 1 0 0 0 1.242.97L19 20V5.562a2 2 0 0 0-1.515-1.94l-4-1A2 2 0 0 0 11 4.561z" /><path d="M11 4H8a2 2 0 0 0-2 2v14" /><path d="M14 12h.01" /><path d="M22 20h-3" />`,
+    "eye": `<path d="M2.062 12.348a1 1 0 0 1 0-.696 10.75 10.75 0 0 1 19.876 0 1 1 0 0 1 0 .696 10.75 10.75 0 0 1-19.876 0" /><circle cx="12" cy="12" r="3" />`,
+    "file-check-2": `<path d="M10.5 22H6a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h8a2.4 2.4 0 0 1 1.706.706l3.588 3.588A2.4 2.4 0 0 1 20 8v6" /><path d="M14 2v5a1 1 0 0 0 1 1h5" /><path d="m14 20 2 2 4-4" />`,
+    "gauge": `<path d="m12 14 4-4" /><path d="M3.34 19a10 10 0 1 1 17.32 0" />`,
+    "hand-coins": `<path d="M11 15h2a2 2 0 1 0 0-4h-3c-.6 0-1.1.2-1.4.6L3 17" /><path d="m7 21 1.6-1.4c.3-.4.8-.6 1.4-.6h4c1.1 0 2.1-.4 2.8-1.2l4.6-4.4a2 2 0 0 0-2.75-2.91l-4.2 3.9" /><path d="m2 16 6 6" /><circle cx="16" cy="9" r="2.9" /><circle cx="6" cy="5" r="3" />`,
+    "key-round": `<path d="M2.586 17.414A2 2 0 0 0 2 18.828V21a1 1 0 0 0 1 1h3a1 1 0 0 0 1-1v-1a1 1 0 0 1 1-1h1a1 1 0 0 0 1-1v-1a1 1 0 0 1 1-1h.172a2 2 0 0 0 1.414-.586l.814-.814a6.5 6.5 0 1 0-4-4z" /><circle cx="16.5" cy="7.5" r=".5" fill="currentColor" />`,
+    "landmark": `<path d="M10 18v-7" /><path d="M11.119 2.205a2 2 0 0 1 1.762 0l7.84 3.846A.5.5 0 0 1 20.5 7h-17a.5.5 0 0 1-.22-.949z" /><path d="M14 18v-7" /><path d="M18 18v-7" /><path d="M3 22h18" /><path d="M6 18v-7" />`,
+    "radio-tower": `<path d="M4.9 16.1C1 12.2 1 5.8 4.9 1.9" /><path d="M7.8 4.7a6.14 6.14 0 0 0-.8 7.5" /><circle cx="12" cy="9" r="2" /><path d="M16.2 4.8c2 2 2.26 5.11.8 7.47" /><path d="M19.1 1.9a9.96 9.96 0 0 1 0 14.1" /><path d="M9.5 18h5" /><path d="m8 22 4-11 4 11" />`,
+    "route": `<circle cx="6" cy="19" r="3" /><path d="M9 19h8.5a3.5 3.5 0 0 0 0-7h-11a3.5 3.5 0 0 1 0-7H15" /><circle cx="18" cy="5" r="3" />`,
+    "scale": `<path d="M12 3v18" /><path d="m19 8 3 8a5 5 0 0 1-6 0zV7" /><path d="M3 7h1a17 17 0 0 0 8-2 17 17 0 0 0 8 2h1" /><path d="m5 8 3 8a5 5 0 0 1-6 0zV7" /><path d="M7 21h10" />`,
+    "scan-face": `<path d="M3 7V5a2 2 0 0 1 2-2h2" /><path d="M17 3h2a2 2 0 0 1 2 2v2" /><path d="M21 17v2a2 2 0 0 1-2 2h-2" /><path d="M7 21H5a2 2 0 0 1-2-2v-2" /><path d="M8 14s1.5 2 4 2 4-2 4-2" /><path d="M9 9h.01" /><path d="M15 9h.01" />`,
+    "search-check": `<path d="m8 11 2 2 4-4" /><circle cx="11" cy="11" r="8" /><path d="m21 21-4.3-4.3" />`,
+    "shield-alert": `<path d="M20 13c0 5-3.5 7.5-7.66 8.95a1 1 0 0 1-.67-.01C7.5 20.5 4 18 4 13V6a1 1 0 0 1 1-1c2 0 4.5-1.2 6.24-2.72a1.17 1.17 0 0 1 1.52 0C14.51 3.81 17 5 19 5a1 1 0 0 1 1 1z" /><path d="M12 8v4" /><path d="M12 16h.01" />`,
+    "ticket": `<path d="M2 9a3 3 0 0 1 0 6v2a2 2 0 0 0 2 2h16a2 2 0 0 0 2-2v-2a3 3 0 0 1 0-6V7a2 2 0 0 0-2-2H4a2 2 0 0 0-2 2Z" /><path d="M13 5v2" /><path d="M13 17v2" /><path d="M13 11v2" />`,
+    "timer": `<line x1="10" x2="14" y1="2" y2="2" /><line x1="12" x2="15" y1="14" y2="11" /><circle cx="12" cy="14" r="8" />`,
+    "user-round": `<circle cx="12" cy="8" r="5" /><path d="M20 21a8 8 0 0 0-16 0" />`,
+    "users-round": `<path d="M18 21a8 8 0 0 0-16 0" /><circle cx="10" cy="8" r="5" /><path d="M22 20c0-3.37-2-6.5-4-8a5 5 0 0 0-.45-8.3" />`,
+    "vault": `<rect width="18" height="18" x="3" y="3" rx="2" /><circle cx="7.5" cy="7.5" r=".5" fill="currentColor" /><path d="m7.9 7.9 2.7 2.7" /><circle cx="16.5" cy="7.5" r=".5" fill="currentColor" /><path d="m13.4 10.6 2.7-2.7" /><circle cx="7.5" cy="16.5" r=".5" fill="currentColor" /><path d="m7.9 16.1 2.7-2.7" /><circle cx="16.5" cy="16.5" r=".5" fill="currentColor" /><path d="m13.4 13.4 2.7 2.7" /><circle cx="12" cy="12" r="2" />`,
+    "vote": `<path d="m9 12 2 2 4-4" /><path d="M5 7c0-1.1.9-2 2-2h10a2 2 0 0 1 2 2v12H5V7Z" /><path d="M22 19H2" />`,
+    "wallet-cards": `<path d="M3 11h3.75a2 2 0 0 1 1.6.8l.45.6a4 4 0 0 0 6.4 0l.45-.6a2 2 0 0 1 1.6-.8H21" /><path d="M3 7h18" /><rect x="3" y="3" width="18" height="18" rx="2" />`,
+    "waves-ladder": `<path d="M19 5a2 2 0 0 0-2 2v11" /><path d="M2 18c.6.5 1.2 1 2.5 1 2.5 0 2.5-2 5-2 2.6 0 2.4 2 5 2 2.5 0 2.5-2 5-2 1.3 0 1.9.5 2.5 1" /><path d="M7 13h10" /><path d="M7 9h10" /><path d="M9 5a2 2 0 0 0-2 2v11" />`,
+    "waypoints": `<path d="m10.586 5.414-5.172 5.172" /><path d="m18.586 13.414-5.172 5.172" /><path d="M6 12h12" /><circle cx="12" cy="20" r="2" /><circle cx="12" cy="4" r="2" /><circle cx="20" cy="12" r="2" /><circle cx="4" cy="12" r="2" />`
+  };
+
+  var LUCIDE_KIND = {
+    assertion: "file-check-2",
+    ballot: "vote",
+    beacon: "radio-tower",
+    book: "wallet-cards",
+    challenge: "search-check",
+    clock: "timer",
+    court: "landmark",
+    crowd: "users-round",
+    dial: "gauge",
+    jury: "users-round",
+    key: "key-round",
+    ladder: "waves-ladder",
+    market: "chart-no-axes-combined",
+    person: "user-round",
+    pool: "hand-coins",
+    reserve: "shield-alert",
+    room: "door-open",
+    router: "waypoints",
+    score: "chart-no-axes-combined",
+    ticket: "ticket",
+    tokens: "coins",
+    vault: "vault",
+    verdict: "scale",
+    watcher: "eye"
+  };
+
+  function lucideIconName(kind) {
+    return LUCIDE_KIND[kind] || kind;
+  }
+
+  function lucideGlyph(kind, cx, cy) {
+    var name = lucideIconName(kind);
+    var svg = LUCIDE_ICONS[name] || LUCIDE_ICONS["badge-alert"];
+    return "<g class=\"lucide-pack-icon\" transform=\"translate(" + (cx - 24) + " " + (cy - 24) + ") scale(2)\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"2.1\" stroke-linecap=\"round\" stroke-linejoin=\"round\">" + svg + "</g>";
+  }
+
+  function lucideMini(kind) {
+    var name = lucideIconName(kind);
+    var svg = LUCIDE_ICONS[name] || LUCIDE_ICONS["badge-alert"];
+    return "<svg viewBox=\"0 0 24 24\" aria-hidden=\"true\">" + svg + "</svg>";
+  }
+
   function sceneIcon(kind, cx, cy, tone, hot) {
     var t = sceneTone(tone);
     var pulse = hot ? " pulse" : "";
-    var out = ["<g class=\"" + pulse + "\">", "<circle class=\"sigil " + t + "\" cx=\"" + cx + "\" cy=\"" + cy + "\" r=\"38\"></circle>"];
-    if (kind === "person") {
-      out.push("<circle class=\"soft\" cx=\"" + cx + "\" cy=\"" + (cy - 11) + "\" r=\"11\"></circle>");
-      out.push("<path class=\"soft\" d=\"M" + (cx - 24) + "," + (cy + 25) + " Q" + cx + "," + (cy + 5) + " " + (cx + 24) + "," + (cy + 25) + " Z\"></path>");
-      out.push("<path class=\"icon-line light\" d=\"M" + (cx - 18) + "," + (cy + 21) + " Q" + cx + "," + (cy + 12) + " " + (cx + 18) + "," + (cy + 21) + "\"></path>");
-    } else if (kind === "crowd") {
-      out.push("<circle class=\"soft\" cx=\"" + (cx - 14) + "\" cy=\"" + (cy - 10) + "\" r=\"8\"></circle><circle class=\"soft\" cx=\"" + (cx + 14) + "\" cy=\"" + (cy - 10) + "\" r=\"8\"></circle><circle class=\"soft\" cx=\"" + cx + "\" cy=\"" + (cy + 2) + "\" r=\"9\"></circle>");
-      out.push("<path class=\"soft\" d=\"M" + (cx - 32) + "," + (cy + 22) + " Q" + (cx - 14) + "," + (cy + 8) + " " + (cx + 4) + "," + (cy + 22) + " Z\"></path>");
-      out.push("<path class=\"soft\" d=\"M" + (cx - 4) + "," + (cy + 22) + " Q" + (cx + 14) + "," + (cy + 8) + " " + (cx + 32) + "," + (cy + 22) + " Z\"></path>");
-    } else if (kind === "vault") {
-      out.push("<rect class=\"soft\" x=\"" + (cx - 22) + "\" y=\"" + (cy - 18) + "\" width=\"44\" height=\"38\" rx=\"7\"></rect>");
-      out.push("<circle class=\"icon-line light\" cx=\"" + cx + "\" cy=\"" + cy + "\" r=\"10\"></circle><path class=\"icon-line light\" d=\"M" + cx + "," + cy + " L" + (cx + 10) + "," + (cy - 8) + "\"></path>");
-    } else if (kind === "market" || kind === "book") {
-      out.push("<rect class=\"soft\" x=\"" + (cx - 25) + "\" y=\"" + (cy - 21) + "\" width=\"50\" height=\"42\" rx=\"7\"></rect>");
-      out.push("<path class=\"icon-line light\" d=\"M" + (cx - 14) + "," + (cy + 10) + " L" + (cx - 5) + "," + (cy - 7) + " L" + (cx + 5) + "," + (cy + 1) + " L" + (cx + 16) + "," + (cy - 13) + "\"></path>");
-    } else if (kind === "pool") {
-      out.push("<circle class=\"icon-line light\" cx=\"" + cx + "\" cy=\"" + cy + "\" r=\"24\"></circle><circle class=\"icon-line light\" cx=\"" + cx + "\" cy=\"" + cy + "\" r=\"13\"></circle>");
-      out.push("<text class=\"symbol\" x=\"" + cx + "\" y=\"" + (cy + 7) + "\" text-anchor=\"middle\">$</text>");
-    } else if (kind === "dial") {
-      out.push("<path class=\"icon-line light\" d=\"M" + (cx - 24) + "," + (cy + 18) + " A28,28 0 0 1 " + (cx + 24) + "," + (cy + 18) + "\"></path>");
-      out.push("<path class=\"icon-line\" d=\"M" + cx + "," + (cy + 15) + " L" + (cx + 16) + "," + (cy - 9) + "\"></path>");
-    } else if (kind === "ticket") {
-      out.push("<path class=\"soft\" d=\"M" + (cx - 29) + "," + (cy - 18) + " h58 v12 a8,8 0 0 0 0,12 v12 h-58 v-12 a8,8 0 0 0 0,-12 z\"></path>");
-      out.push("<text class=\"symbol\" x=\"" + cx + "\" y=\"" + (cy + 7) + "\" text-anchor=\"middle\">YES</text>");
-    } else if (kind === "tokens") {
-      out.push("<circle class=\"good\" cx=\"" + (cx - 11) + "\" cy=\"" + cy + "\" r=\"18\"></circle><circle class=\"bad\" cx=\"" + (cx + 15) + "\" cy=\"" + (cy + 4) + "\" r=\"18\"></circle>");
-      out.push("<text class=\"tiny\" x=\"" + (cx - 11) + "\" y=\"" + (cy + 4) + "\" text-anchor=\"middle\">Y</text><text class=\"tiny\" x=\"" + (cx + 15) + "\" y=\"" + (cy + 8) + "\" text-anchor=\"middle\">N</text>");
-    } else if (kind === "room") {
-      out.push("<rect class=\"soft\" x=\"" + (cx - 18) + "\" y=\"" + (cy - 26) + "\" width=\"36\" height=\"52\" rx=\"5\"></rect><circle class=\"ink\" cx=\"" + (cx + 8) + "\" cy=\"" + cy + "\" r=\"3\"></circle>");
-      out.push("<path class=\"icon-line light\" d=\"M" + (cx - 25) + "," + (cy + 26) + " H" + (cx + 25) + "\"></path>");
-    } else if (kind === "court") {
-      out.push("<path class=\"soft\" d=\"M" + cx + "," + (cy - 26) + " L" + (cx + 29) + "," + (cy - 8) + " H" + (cx - 29) + " Z\"></path>");
-      out.push("<path class=\"icon-line light\" d=\"M" + (cx - 20) + "," + (cy - 4) + " V" + (cy + 23) + " M" + cx + "," + (cy - 4) + " V" + (cy + 23) + " M" + (cx + 20) + "," + (cy - 4) + " V" + (cy + 23) + "\"></path>");
-    } else if (kind === "router") {
-      out.push("<circle class=\"soft\" cx=\"" + cx + "\" cy=\"" + cy + "\" r=\"12\"></circle>");
-      out.push("<path class=\"icon-line light\" d=\"M" + cx + "," + cy + " L" + (cx - 27) + "," + (cy - 18) + " M" + cx + "," + cy + " L" + (cx + 27) + "," + (cy - 18) + " M" + cx + "," + cy + " L" + cx + "," + (cy + 28) + "\"></path>");
-    } else if (kind === "clock" || kind === "assertion") {
-      out.push("<rect class=\"soft\" x=\"" + (cx - 22) + "\" y=\"" + (cy - 25) + "\" width=\"44\" height=\"50\" rx=\"6\"></rect>");
-      out.push("<path class=\"icon-line light\" d=\"M" + (cx - 12) + "," + (cy - 8) + " H" + (cx + 12) + " M" + (cx - 12) + "," + (cy + 3) + " H" + (cx + 12) + "\"></path>");
-      if (kind === "clock") out.push("<circle class=\"icon-line light\" cx=\"" + (cx + 18) + "\" cy=\"" + (cy - 18) + "\" r=\"10\"></circle>");
-    } else if (kind === "watcher" || kind === "challenge") {
-      out.push("<path class=\"soft\" d=\"M" + (cx - 30) + "," + cy + " Q" + cx + "," + (cy - 26) + " " + (cx + 30) + "," + cy + " Q" + cx + "," + (cy + 26) + " " + (cx - 30) + "," + cy + "\"></path>");
-      out.push("<circle class=\"icon-line light\" cx=\"" + cx + "\" cy=\"" + cy + "\" r=\"10\"></circle>");
-      if (kind === "challenge") out.push("<path class=\"icon-line\" d=\"M" + (cx + 18) + "," + (cy + 18) + " L" + (cx + 31) + "," + (cy + 31) + "\"></path>");
-    } else if (kind === "beacon" || kind === "jury") {
-      out.push("<circle class=\"icon-line light\" cx=\"" + cx + "\" cy=\"" + cy + "\" r=\"24\"></circle>");
-      out.push("<path class=\"icon-line light\" d=\"M" + cx + "," + (cy - 24) + " V" + (cy + 24) + " M" + (cx - 24) + "," + cy + " H" + (cx + 24) + "\"></path>");
-      if (kind === "jury") out.push("<circle class=\"good\" cx=\"" + (cx + 25) + "\" cy=\"" + (cy - 17) + "\" r=\"7\"></circle><circle class=\"good\" cx=\"" + (cx - 25) + "\" cy=\"" + (cy + 17) + "\" r=\"7\"></circle>");
-    } else if (kind === "ballot") {
-      out.push("<rect class=\"soft\" x=\"" + (cx - 27) + "\" y=\"" + (cy - 8) + "\" width=\"54\" height=\"32\" rx=\"6\"></rect>");
-      out.push("<path class=\"icon-line light\" d=\"M" + (cx - 13) + "," + (cy - 24) + " H" + (cx + 18) + " L" + (cx + 10) + "," + (cy - 8) + " H" + (cx - 21) + " Z\"></path>");
-    } else if (kind === "reserve" || kind === "verdict") {
-      out.push("<path class=\"icon-line\" d=\"M" + cx + "," + (cy - 24) + " V" + (cy + 21) + " M" + (cx - 21) + "," + (cy - 8) + " H" + (cx + 21) + "\"></path>");
-      out.push("<path class=\"icon-line light\" d=\"M" + (cx - 21) + "," + (cy - 8) + " L" + (cx - 31) + "," + (cy + 15) + " M" + (cx + 21) + "," + (cy - 8) + " L" + (cx + 31) + "," + (cy + 15) + "\"></path>");
-    } else if (kind === "ladder") {
-      out.push("<path class=\"icon-line\" d=\"M" + (cx - 20) + "," + (cy + 28) + " L" + (cx - 8) + "," + (cy - 28) + " M" + (cx + 20) + "," + (cy + 28) + " L" + (cx + 8) + "," + (cy - 28) + "\"></path>");
-      out.push("<path class=\"icon-line light\" d=\"M" + (cx - 15) + "," + (cy + 10) + " H" + (cx + 15) + " M" + (cx - 11) + "," + (cy - 8) + " H" + (cx + 11) + "\"></path>");
-    } else if (kind === "key" || kind === "score") {
-      out.push("<circle class=\"icon-line\" cx=\"" + (cx - 12) + "\" cy=\"" + (cy - 2) + "\" r=\"11\"></circle>");
-      out.push("<path class=\"icon-line\" d=\"M" + (cx - 1) + "," + (cy - 2) + " H" + (cx + 29) + " M" + (cx + 17) + "," + (cy - 2) + " V" + (cy + 9) + " M" + (cx + 25) + "," + (cy - 2) + " V" + (cy + 7) + "\"></path>");
-      if (kind === "score") out.push("<path class=\"icon-line light\" d=\"M" + (cx - 25) + "," + (cy + 25) + " L" + (cx - 7) + "," + (cy + 12) + " L" + (cx + 12) + "," + (cy + 18) + " L" + (cx + 29) + "," + (cy - 7) + "\"></path>");
-    } else {
-      out.push("<text class=\"symbol\" x=\"" + cx + "\" y=\"" + (cy + 7) + "\" text-anchor=\"middle\">" + esc(kind.slice(0, 3).toUpperCase()) + "</text>");
-    }
-    out.push("</g>");
-    return out.join("");
+    return [
+      "<g class=\"" + pulse + "\">",
+      "<circle class=\"sigil " + t + "\" cx=\"" + cx + "\" cy=\"" + cy + "\" r=\"38\"></circle>",
+      lucideGlyph(kind, cx, cy),
+      "</g>"
+    ].join("");
   }
 
   function sceneCard(x, y, w, h, data, hot, hero) {
@@ -1300,7 +1319,7 @@
     var scene = SCENE_ART[index];
     if (!scene) return [["NOW", focus.title, focus.change, focus.tone || "accent"], ["NEXT", focus.next, item.panel, "good"]];
     return [scene.actor, scene.core, scene.result].map(function (piece) {
-      return [piece.mark || piece.title.slice(0, 3).toUpperCase(), piece.title, piece.sub, piece.tone || "accent"];
+      return [piece.icon, piece.title, piece.sub, piece.tone || "accent"];
     });
   }
 
@@ -1318,7 +1337,7 @@
       var hotIndex = activeAction < 0 ? -1 : Math.min(activeAction + 1, arr.length - 1);
       div.className = "mobile-art-tile " + tone + (i === hotIndex ? " hot" : "");
       mark.className = "mobile-art-mark";
-      mark.textContent = tile[0];
+      mark.innerHTML = lucideMini(tile[0]);
       b.textContent = tile[1];
       small.textContent = tile[2];
       copy.appendChild(b);

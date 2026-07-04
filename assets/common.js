@@ -3,16 +3,14 @@
 (function () {
   "use strict";
 
-  // Canonical reading path: 8 chapters. Deep-dive pages are off-path.
+  // Canonical reading path: 6 chapters. Deep-dive pages are off-path.
   var CHAPTERS = [
-    { f: "vision.html", t: "The vision", ch: 1 },
-    { f: "juror-court.html", t: "The court", ch: 2 },
-    { f: "hybrid-juror-system.html", t: "The hybrid system", ch: 3 },
-    { f: "prediction-market.html", t: "PredictionMoMo", ch: 4 },
-    { f: "hybrid-juror-prediction-market-integration.html", t: "The bootstrap loop", ch: 5 },
-    { f: "the-design.html", t: "Run-through", ch: 6 },
-    { f: "game-theory.html", t: "The game-theory lab", ch: 7 },
-    { f: "governance.html", t: "Governance", ch: 8 }
+    { f: "demothemis.html", t: "DemoThemis", ch: 1 },
+    { f: "game-theory.html", t: "Break the court", ch: 2 },
+    { f: "prediction-market.html", t: "PredictionMoMo", ch: 3 },
+    { f: "hybrid-juror-prediction-market-integration.html", t: "The bootstrap loop", ch: 4 },
+    { f: "the-design.html", t: "Run-through", ch: 5 },
+    { f: "governance.html", t: "Governance", ch: 6 }
   ];
   var TOTAL = CHAPTERS.length;
 
@@ -187,6 +185,7 @@
     var toc = document.getElementById("toc");
     var main = document.querySelector("main");
     if (!toc || !main) return;
+    if (toc.hasAttribute("data-manual-toc")) return;
     var secs = Array.prototype.slice.call(main.querySelectorAll(":scope > section"));
     var entries = [];
     secs.forEach(function (sec) {
