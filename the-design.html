@@ -3,59 +3,117 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>The complete design: one case from a dime to a verdict</title>
-<meta name="description" content="The settled DemoThemis design, end to end. Markets born with a dime, a court with a sealed die and a locked box, a live juror reserve priced by workload, a dispute ladder priced by floors, and the launch sequence that starts from zero. Drawn so you can follow one case through the whole machine.">
+<title>Run through the whole system: one market from dime to appealed verdict</title>
+<meta name="description" content="A playable run-through of PredictionMoMo and DemoThemis: open a market with a dime, grow it into self-custody tokens, trade through dispute, route it through arbitration, climb the appeal ladder, and watch the bootstrap loop feed the court.">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@500;700&family=Newsreader:opsz,wght@6..72,200..700&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="assets/styles.css">
 <style>
-  .chipline { display: flex; gap: .45rem; flex-wrap: wrap; }
-  .chip { font-size: .7rem; font-weight: 700; letter-spacing: .03em; text-transform: uppercase; padding: .18rem .55rem; border-radius: 999px; font-family: var(--sans); }
-  .chip.lock { color: var(--accent-ink); background: var(--accent-soft); border: 1px solid color-mix(in srgb, var(--accent) 30%, transparent); }
-  .chip.ok { color: #fff; background: var(--good); }
-  .chip.bad { color: #fff; background: var(--bad); }
+  body { --maxw: 68rem; --half-maxw: 34rem; }
+  .run-hero { max-width: 66rem; }
+  .run-hero .dek { max-width: 47rem; }
+  .run-note { font-family: var(--sans); color: var(--muted); font-size: .94rem; line-height: 1.55; }
 
-  .seg { display: inline-flex; gap: .3rem; flex-wrap: wrap; }
-  .seg button { font-family: var(--sans); font-weight: 600; font-size: .85rem; padding: .35rem .75rem; border-radius: 8px; border: 1px solid var(--line-strong); background: var(--bg); color: var(--muted); cursor: pointer; transition: background .12s ease, color .12s ease; }
-  .seg button.active { background: var(--accent-soft); color: var(--accent-ink); border-color: color-mix(in srgb, var(--accent) 35%, transparent); }
+  .run-game { display: grid; gap: 1rem; }
+  .run-hud { display: grid; grid-template-columns: minmax(0, 1.1fr) repeat(4, minmax(7.5rem, .62fr)); gap: .6rem; align-items: stretch; }
+  .run-card { border: 1px solid var(--line); border-radius: 12px; background: var(--bg); padding: .72rem .8rem; font-family: var(--sans); min-width: 0; }
+  .run-card strong { display: block; font-size: .68rem; letter-spacing: .08em; text-transform: uppercase; color: var(--faint); line-height: 1.2; }
+  .run-card b { display: block; color: var(--ink); font-size: 1.08rem; line-height: 1.15; margin-top: .25rem; font-variant-numeric: tabular-nums; overflow-wrap: anywhere; }
+  .run-card small { display: block; color: var(--muted); font-size: .72rem; line-height: 1.35; margin-top: .2rem; }
+  .run-card.primary { background: var(--accent-soft); border-color: color-mix(in srgb, var(--accent) 30%, var(--line)); }
+  .run-card.primary b { color: var(--accent-ink); }
 
-  /* case pipeline */
-  .pipe { position: relative; display: flex; flex-direction: column; gap: .45rem; }
-  .pnode { display: grid; grid-template-columns: 2.2rem 1fr; gap: .8rem; align-items: start; padding: .55rem .7rem; border-radius: 10px; border: 1px solid var(--line); background: var(--bg); font-family: var(--sans); opacity: .55; transition: opacity .25s ease, border-color .25s ease, background .25s ease, transform .25s ease; }
-  .pnode .pic { font-size: 1.15rem; text-align: center; padding-top: .05rem; }
-  .pnode .pl { font-weight: 600; font-size: .9rem; }
-  .pnode .ps { font-size: .76rem; color: var(--faint); }
-  .pnode.on { opacity: 1; border-color: var(--accent); background: var(--accent-soft); transform: translateX(4px); }
-  .pnode.done { opacity: .9; border-color: color-mix(in srgb, var(--good) 50%, transparent); }
-  .pnode.court { margin-left: 1.6rem; }
-  .pbranch { margin-left: 1.6rem; font-family: var(--sans); font-size: .74rem; font-weight: 700; letter-spacing: .06em; text-transform: uppercase; color: var(--accent-ink); padding: .15rem 0 0 .2rem; }
-  .pnarr { font-family: var(--sans); font-size: .92rem; color: var(--ink-soft); background: var(--surface); border: 1px solid var(--line-strong); border-radius: 10px; padding: .85rem 1rem; margin-bottom: 1rem; min-height: 4.2rem; }
-  .pctl { display: flex; gap: .6rem; flex-wrap: wrap; margin-bottom: 1rem; }
-  .btn.ghost { background: var(--faint); }
+  .run-controls { display: flex; flex-wrap: wrap; gap: .55rem; align-items: center; }
+  .run-controls .btn { min-width: 7.5rem; }
+  .btn.alt { background: var(--ink-soft); }
+  .btn.soft { background: var(--surface); color: var(--accent-ink); border: 1px solid var(--line-strong); }
+  .btn[disabled] { opacity: .45; cursor: default; transform: none; filter: none; }
 
-  /* attacker matcher */
-  .foe { background: var(--bg); border: 1px solid var(--line-strong); border-radius: 12px; padding: 1rem 1.1rem; font-family: var(--sans); font-size: .9rem; min-height: 9rem; }
-  .foe .plan { color: var(--bad); font-weight: 600; }
-  .foe .stopped { margin: .55rem 0; }
-  .foe .bill { color: var(--muted); font-size: .86rem; }
+  .run-grid { display: grid; grid-template-columns: minmax(12rem, .62fr) minmax(0, 1.38fr); gap: 1rem; align-items: start; }
+  .stage-rail { display: grid; gap: .4rem; font-family: var(--sans); }
+  .stage-rail button { display: grid; grid-template-columns: 1.65rem 1fr auto; gap: .55rem; align-items: center; width: 100%; border: 1px solid var(--line); border-radius: 10px; background: var(--bg); color: var(--muted); padding: .55rem .62rem; text-align: left; cursor: pointer; transition: background .14s ease, border-color .14s ease, transform .14s ease; }
+  .stage-rail button:hover { transform: translateX(2px); border-color: var(--accent); }
+  .stage-rail button .n { display: grid; place-items: center; width: 1.55rem; height: 1.55rem; border-radius: 999px; background: var(--surface); border: 1px solid var(--line); color: var(--faint); font-family: var(--mono); font-size: .68rem; font-weight: 800; }
+  .stage-rail button .t { min-width: 0; font-size: .82rem; font-weight: 750; line-height: 1.25; color: inherit; }
+  .stage-rail button .mark { color: var(--faint); font-size: .82rem; }
+  .stage-rail button.done { color: var(--ink-soft); border-color: color-mix(in srgb, var(--good) 32%, var(--line)); }
+  .stage-rail button.done .n { background: var(--good-soft); color: var(--good); border-color: color-mix(in srgb, var(--good) 35%, var(--line)); }
+  .stage-rail button.active { color: var(--accent-ink); background: var(--accent-soft); border-color: color-mix(in srgb, var(--accent) 45%, var(--line)); box-shadow: var(--shadow); }
+  .stage-rail button.active .n { background: var(--accent); color: #fff; border-color: var(--accent); }
 
-  /* money flow */
-  .mflow { display: grid; grid-template-columns: 1fr auto 1fr; gap: .8rem; align-items: center; font-family: var(--sans); }
-  .mflow .pot { background: var(--accent-soft); border: 1px solid var(--accent); border-radius: 14px; padding: 1rem; text-align: center; font-weight: 700; color: var(--accent-ink); }
-  .mflow .pot small { display: block; font-weight: 400; font-size: .74rem; color: var(--muted); margin-top: .25rem; }
-  .mflow .ar { color: var(--accent); font-size: 1.4rem; font-weight: 700; text-align: center; }
-  .mflow .outs { display: grid; gap: .5rem; }
-  .mflow .out { background: var(--bg); border: 1px solid var(--line-strong); border-radius: 10px; padding: .55rem .75rem; font-size: .84rem; }
-  .mflow .out b { display: block; font-size: .95rem; }
-  @media (max-width: 640px) { .mflow { grid-template-columns: 1fr; } .mflow .ar { transform: rotate(90deg); } }
-  .budgetbar { display: flex; height: 36px; border-radius: 9px; overflow: hidden; border: 1px solid var(--line-strong); font-family: var(--sans); font-size: .76rem; font-weight: 700; color: #fff; margin: 1rem 0 .35rem; }
-  .budgetbar div { display: grid; place-items: center; white-space: nowrap; }
-  .bb-j { background: var(--accent); width: 70%; }
-  .bb-i { background: var(--good); width: 20%; }
-  .bb-p { background: #9aa0ab; width: 10%; }
+  .sim-board { display: grid; gap: 1rem; }
+  .scene { border: 1px solid var(--line-strong); border-radius: var(--radius); background: linear-gradient(180deg, var(--surface), var(--bg)); box-shadow: var(--shadow); padding: 1rem; }
+  .lanes { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: .65rem; }
+  .lane { display: grid; gap: .5rem; min-width: 0; }
+  .lane h3 { font-size: .72rem; letter-spacing: .09em; text-transform: uppercase; color: var(--accent); margin: 0; }
+  .node { min-height: 5.2rem; border: 1px solid var(--line); border-radius: 12px; background: var(--surface); padding: .68rem; font-family: var(--sans); transition: transform .18s ease, background .18s ease, border-color .18s ease, opacity .18s ease; opacity: .48; }
+  .node b { display: block; font-size: .86rem; line-height: 1.25; color: var(--ink); }
+  .node span { display: block; color: var(--muted); font-size: .72rem; line-height: 1.35; margin-top: .18rem; }
+  .node.done { opacity: .9; border-color: color-mix(in srgb, var(--good) 34%, var(--line)); }
+  .node.active { opacity: 1; transform: translateY(-2px); background: var(--accent-soft); border-color: color-mix(in srgb, var(--accent) 48%, var(--line)); box-shadow: var(--shadow); }
+  .node.warn { background: var(--bad-soft); border-color: color-mix(in srgb, var(--bad) 45%, var(--line)); }
+  .node.good { background: var(--good-soft); border-color: color-mix(in srgb, var(--good) 45%, var(--line)); }
 
-  .stat .v { font-size: clamp(1.05rem, 4.2vw, 1.5rem); }
+  .mission { display: grid; grid-template-columns: minmax(0, 1.25fr) minmax(13rem, .75fr); gap: 1rem; align-items: stretch; }
+  .mission-copy { border: 1px solid var(--line); border-radius: 12px; background: var(--surface); padding: 1rem; font-family: var(--sans); min-height: 10rem; }
+  .mission-copy .eyebrow { color: var(--accent); font-size: .72rem; letter-spacing: .09em; text-transform: uppercase; font-weight: 800; margin-bottom: .35rem; }
+  .mission-copy h3 { margin: 0 0 .35rem; font-size: 1.05rem; }
+  .mission-copy p { margin: 0; color: var(--ink-soft); font-size: .92rem; line-height: 1.52; }
+  .mission-actions { display: flex; flex-wrap: wrap; gap: .45rem; margin-top: .85rem; }
+  .mission-actions button { border: 1px solid var(--line-strong); background: var(--bg); color: var(--muted); border-radius: 999px; padding: .35rem .62rem; font-family: var(--sans); font-weight: 800; font-size: .72rem; cursor: pointer; }
+  .mission-actions button:hover { background: var(--accent-soft); color: var(--accent-ink); }
+  .event-log { border: 1px solid var(--line); border-radius: 12px; background: var(--bg); padding: .8rem; font-family: var(--sans); }
+  .event-log h3 { font-size: .72rem; letter-spacing: .09em; text-transform: uppercase; color: var(--faint); margin: 0 0 .45rem; }
+  .event-log ul { display: grid; gap: .38rem; list-style: none; padding: 0; margin: 0; }
+  .event-log li { color: var(--muted); font-size: .76rem; line-height: 1.35; border-left: 3px solid var(--line-strong); padding-left: .55rem; }
+  .event-log li.hot { color: var(--accent-ink); border-left-color: var(--accent); font-weight: 700; }
+
+  .unlock-grid { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: .55rem; }
+  .unlock { border: 1px solid var(--line); border-radius: 12px; background: var(--bg); padding: .7rem; font-family: var(--sans); min-height: 5rem; transition: background .16s ease, border-color .16s ease, opacity .16s ease; opacity: .55; }
+  .unlock b { display: flex; justify-content: space-between; gap: .5rem; color: var(--ink); font-size: .82rem; line-height: 1.25; }
+  .unlock small { display: block; color: var(--muted); font-size: .72rem; line-height: 1.35; margin-top: .28rem; }
+  .unlock .tag { color: var(--faint); font-family: var(--mono); font-size: .68rem; font-weight: 800; }
+  .unlock.on { opacity: 1; background: var(--good-soft); border-color: color-mix(in srgb, var(--good) 35%, var(--line)); }
+  .unlock.on .tag { color: var(--good); }
+
+  .loop-strip { display: grid; grid-template-columns: repeat(6, minmax(0, 1fr)); gap: .5rem; margin-top: .8rem; }
+  .loop-node { position: relative; border: 1px solid var(--line); border-radius: 12px; background: var(--surface); padding: .72rem; font-family: var(--sans); min-height: 5.4rem; overflow: hidden; }
+  .loop-node::before { content: attr(data-step); position: absolute; right: .55rem; top: .35rem; font-family: var(--mono); font-size: .66rem; color: color-mix(in srgb, var(--accent) 38%, transparent); font-weight: 800; }
+  .loop-node b { display: block; font-size: .82rem; line-height: 1.25; color: var(--ink); margin-right: 1.8rem; }
+  .loop-node span { display: block; color: var(--muted); font-size: .72rem; line-height: 1.35; margin-top: .25rem; }
+  .loop-node.active { background: var(--accent-soft); border-color: color-mix(in srgb, var(--accent) 38%, var(--line)); }
+
+  .token-shelf { display: flex; flex-wrap: wrap; gap: .42rem; min-height: 2rem; margin-top: .75rem; }
+  .token { display: inline-flex; align-items: center; gap: .3rem; border-radius: 999px; padding: .22rem .52rem; font-family: var(--sans); font-size: .72rem; font-weight: 800; border: 1px solid var(--line-strong); color: var(--muted); background: var(--surface); }
+  .token.yes { color: var(--good); background: var(--good-soft); border-color: color-mix(in srgb, var(--good) 28%, var(--line)); }
+  .token.no { color: var(--bad); background: var(--bad-soft); border-color: color-mix(in srgb, var(--bad) 28%, var(--line)); }
+  .token.lock { color: var(--accent-ink); background: var(--accent-soft); border-color: color-mix(in srgb, var(--accent) 28%, var(--line)); }
+
+  .mini-split { display: flex; height: 34px; border: 1px solid var(--line); border-radius: 9px; overflow: hidden; margin: .7rem 0 0; font-family: var(--sans); color: #fff; font-weight: 800; font-size: .74rem; }
+  .mini-split div { display: grid; place-items: center; min-width: 0; transition: width .2s ease; }
+  .mini-split .yes { background: var(--good); }
+  .mini-split .no { background: var(--bad); }
+
+  .summary-grid { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 1rem; }
+  .summary-box { border: 1px solid var(--line); border-radius: 14px; background: var(--surface); box-shadow: var(--shadow); padding: 1rem; font-family: var(--sans); }
+  .summary-box h3 { margin: 0 0 .4rem; }
+  .summary-box p { margin: 0; color: var(--muted); font-size: .92rem; line-height: 1.5; }
+
+  @media (max-width: 980px) {
+    body { --maxw: 54rem; --half-maxw: 27rem; }
+    .run-hud { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+    .run-grid, .mission { grid-template-columns: 1fr; }
+    .stage-rail { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+    .lanes { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+    .unlock-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+    .loop-strip { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+  }
+  @media (max-width: 620px) {
+    .run-hud, .stage-rail, .lanes, .unlock-grid, .loop-strip, .summary-grid { grid-template-columns: 1fr; }
+    .widget { padding: 1rem; }
+    .run-controls .btn { flex: 1 1 8rem; }
+  }
 </style>
 </head>
 <body>
@@ -72,22 +130,22 @@
       <a href="hybrid-juror-system.html"><span class="ch">03</span> Hybrid system</a>
       <a href="prediction-market.html"><span class="ch">04</span> PredictionMoMo</a>
       <a href="hybrid-juror-prediction-market-integration.html"><span class="ch">05</span> Bootstrap loop</a>
-      <a href="the-design.html"><span class="ch">06</span> Blueprint</a>
+      <a href="the-design.html"><span class="ch">06</span> Run-through</a>
       <a href="game-theory.html"><span class="ch">07</span> Game lab</a>
       <a href="governance.html"><span class="ch">08</span> Governance</a>
     </div>
   </div>
 </nav>
 
-<header class="hero reveal">
-  <p class="kicker">The blueprint</p>
-  <h1>The complete design: one case from a dime to a verdict</h1>
-  <p class="dek">The finished system on one page. Follow a single case end to end, match each attacker to the lock that stops them, and trace where every dollar of the fee goes, with every number the design ships with printed where it belongs.</p>
+<header class="hero run-hero reveal">
+  <p class="kicker">Run-through</p>
+  <h1>Play one market from a dime to an appealed verdict.</h1>
+  <p class="dek">A complete system simulation: create the market, grow the pot, unlock self-custody claims, trade through dispute, route the case through DemoThemis, climb the appeal ladder, and watch the bootstrap loop feed the court.</p>
   <div class="meta">
-    <span class="pill">The settled design</span>
-    <span>9 min read</span>
-    <span class="dot">&bull;</span>
+    <span class="pill">Playable chapter</span>
     <span>Chapter 6 of 8</span>
+    <span class="dot">&bull;</span>
+    <span>One full run</span>
   </div>
 </header>
 
@@ -96,164 +154,162 @@
   <aside id="toc" class="toc reveal"></aside>
 
   <section class="reveal">
-    <p class="lead">Five chapters of parts, now one page of working machine. Every mechanism in the design, assembled and drawn end to end, so you can watch one case travel from a dime to a verdict.</p>
+    <p class="lead">Instead of another static system map, this chapter runs the whole machine. Press <b>Next event</b> and follow one prediction market as it picks up every product feature from chapter 4, then gets disputed, appealed, finalized, and turned into fuel for the next market.</p>
   </section>
 
-  <!-- ============ pipeline ============ -->
-  <section class="reveal">
-    <p class="sec-label">The whole machine</p>
-    <h2>Follow one case through everything</h2>
-    <p>Press play and watch a single question travel the full pipeline, from a dime to a verdict. The quiet path on top is where roughly ninety five percent of markets live and die without a juror lifting a finger. The court lane below it, indented, exists for the rest, and every box in that lane is a lock sized against a named attacker.</p>
+  <section class="reveal" id="system-run">
+    <p class="sec-label">Playable run</p>
+    <h2>Run the whole system</h2>
+    <p>Every stage updates the board. The left rail is the chain of events, the middle diagram shows where the case is, the mission console explains the current rule, and the unlocks below show which market and court mechanisms are now online.</p>
 
     <div class="widget reveal">
-      <div class="widget-head"><span class="live"></span> One case, start to finish</div>
-      <div class="pnarr" id="W1narr">Press play. A question is about to be born for the price of a dime.</div>
-      <div class="pctl">
-        <button class="btn" id="W1next" type="button">Play</button>
-        <button class="btn ghost" id="W1reset" type="button">Reset</button>
-      </div>
-      <div class="pipe" id="W1pipe">
-        <div class="pnode" data-s="1"><span class="pic">&#128172;</span><span><span class="pl">Born in escrow</span><span class="ps"> &middot; post a question, lock a dime, share the link</span></span></div>
-        <div class="pnode" data-s="2"><span class="pic">&#127919;</span><span><span class="pl">The crowd prices it</span><span class="ps"> &middot; odds are the ratio of the sides, the thin side always pays better</span></span></div>
-        <div class="pnode" data-s="3"><span class="pic">&#128276;</span><span><span class="pl">Bonded assertion</span><span class="ps"> &middot; anyone posts the outcome with a bond, a one-week window opens</span></span></div>
-        <div class="pnode" data-s="4"><span class="pic">&#9989;</span><span><span class="pl">The quiet path</span><span class="ps"> &middot; unchallenged: pay out, curate an answer key, done</span></span></div>
-        <div class="pbranch">&darr; the contested few</div>
-        <div class="pnode court" data-s="5"><span class="pic">&#9878;</span><span><span class="pl">Challenge staked</span><span class="ps"> &middot; the dispute floor is posted, the locked case enters court</span></span></div>
-        <div class="pnode court" data-s="6"><span class="pic">&#127922;</span><span><span class="pl">The sealed die</span><span class="ps"> &middot; a public beacon draws the panel, one roll, verifiable, ungrindable</span></span></div>
-        <div class="pnode court" data-s="7"><span class="pic">&#128100;</span><span><span class="pl">Face check at the door</span><span class="ps"> &middot; each drawn juror proves presence on an attested device</span></span></div>
-        <div class="pnode court" data-s="8"><span class="pic">&#128274;</span><span><span class="pl">The locked box</span><span class="ps"> &middot; encrypted ballots, silent re-keying, receipts prove nothing</span></span></div>
-        <div class="pnode court" data-s="9"><span class="pic">&#129518;</span><span><span class="pl">Verdict with a proof</span><span class="ps"> &middot; only the tally decrypts, wrong-side slashes feed the reward pool</span></span></div>
-        <div class="pnode court" data-s="10"><span class="pic">&#129691;</span><span><span class="pl">The ladder, if climbed</span><span class="ps"> &middot; bond or loser-side petition, panels grow 15 to 31, floors price each rung</span></span></div>
-        <div class="pnode" data-s="11"><span class="pic">&#127937;</span><span><span class="pl">Finality, then memory</span><span class="ps"> &middot; protocol escrow pays out and never reopens; reports can slash and ban jurors forever</span></span></div>
-      </div>
-      <p style="font-family:var(--sans);font-size:.86rem;color:var(--faint);margin:1rem 0 0">The two tracks at the end matter most: settlement runs on a clock and always ends, while justice for bought or lazy jurors has no deadline and never touches settled money.</p>
-    </div>
-  </section>
+      <div class="widget-head"><span class="live"></span> The market-and-court simulator</div>
+      <div class="run-game">
+        <div class="run-hud" aria-live="polite">
+          <div class="run-card primary">
+            <strong>Current event</strong>
+            <b id="runStageTitle">Open the market</b>
+            <small id="runStageSub">Start with one tiny bet.</small>
+          </div>
+          <div class="run-card"><strong>Pot</strong><b id="runPot">$0.10</b><small id="runOdds">YES 100%</small></div>
+          <div class="run-card"><strong>Claims</strong><b id="runClaims">pool slots</b><small id="runTrade">not tokenized yet</small></div>
+          <div class="run-card"><strong>Court</strong><b id="runCourt">idle</b><small id="runPanel">no panel</small></div>
+          <div class="run-card"><strong>Loop fuel</strong><b id="runLoop">0 keys</b><small id="runFees">$0 fees</small></div>
+        </div>
 
-  <!-- ============ attackers vs locks ============ -->
-  <section class="reveal">
-    <p class="sec-label">The security argument</p>
-    <h2>Six attackers walk into this court</h2>
-    <p>A security design is a list of enemies and what each one hits instead of the prize. Every attack on this court is a variant of one of these six. Pick one and see where their plan dies.</p>
+        <div class="run-controls">
+          <button class="btn alt" id="runBack" type="button">Back</button>
+          <button class="btn" id="runNext" type="button">Next event</button>
+          <button class="btn soft" id="runReplay" type="button">Replay</button>
+        </div>
 
-    <div class="widget reveal">
-      <div class="widget-head"><span class="live"></span> Pick your villain</div>
-      <div class="controls">
-        <div class="row"><span class="seg" id="W2seg">
-          <button data-k="briber" class="active">The briber</button>
-          <button data-k="bloc">The bloc</button>
-          <button data-k="renter">The renter</button>
-          <button data-k="lazy">The lazy juror</button>
-          <button data-k="grief">The sore loser</button>
-          <button data-k="thief">The 3am thief</button>
-        </span></div>
-      </div>
-      <div class="foe" id="W2foe">&hellip;</div>
-      <p style="font-family:var(--sans);font-size:.86rem;color:var(--faint);margin:1rem 0 0">Each lock targets one failure: receipts die in the encrypted box, blocs die in the pool math, rented seats die at the face check, and grinding dies on the priced ladder.</p>
-    </div>
+        <div class="run-grid">
+          <nav class="stage-rail" id="stageRail" aria-label="Simulation stages"></nav>
 
-    <figure class="diagram reveal">
-      <div class="diagram-inner">
-        <div class="chipline" style="justify-content:center">
-          <span class="chip lock">sealed die</span>
-          <span class="chip lock">face check</span>
-          <span class="chip lock">locked box</span>
-          <span class="chip lock">live reserve</span>
-          <span class="chip lock">floor-priced ladder</span>
-          <span class="chip lock">loser-side petition</span>
-          <span class="chip lock">paid watchers</span>
-          <span class="chip lock">endless reports</span>
+          <div class="sim-board">
+            <div class="scene">
+              <div class="lanes" id="runLanes">
+                <div class="lane">
+                  <h3>Market</h3>
+                  <div class="node" data-node="open"><b>Question opens</b><span>A first bet creates the market and locks escrow.</span></div>
+                  <div class="node" data-node="pool"><b>Pool prices odds</b><span>YES and NO shares move with the pot ratio.</span></div>
+                  <div class="node" data-node="fixed"><b>Fixed odds offer</b><span>A maker posts a locked price the next bettor can take.</span></div>
+                  <div class="node" data-node="private"><b>Private room</b><span>Invite-only bets still sit in neutral escrow.</span></div>
+                </div>
+                <div class="lane">
+                  <h3>Claims</h3>
+                  <div class="node" data-node="robust"><b>Robustness lock</b><span>Disagreement, maker depth, and time unlock tokenization.</span></div>
+                  <div class="node" data-node="tokens"><b>YES/NO ERC-20s</b><span>Claims move into user wallets and can route anywhere.</span></div>
+                  <div class="node" data-node="parlay"><b>Parlay route</b><span>Conditional tokens create combinations without house risk.</span></div>
+                  <div class="node" data-node="trade"><b>Trade through dispute</b><span>Markets keep pricing while resolution runs.</span></div>
+                </div>
+                <div class="lane">
+                  <h3>Arbitration</h3>
+                  <div class="node" data-node="assert"><b>Bonded assertion</b><span>A claimant posts the outcome and a watcher window opens.</span></div>
+                  <div class="node" data-node="challenge"><b>Challenge</b><span>A watcher catches a bad assertion and stakes the dispute.</span></div>
+                  <div class="node" data-node="draw"><b>Sealed jury draw</b><span>Random beacon, one roll, no app-side panel shopping.</span></div>
+                  <div class="node" data-node="ballot"><b>Locked ballots</b><span>Face check, encrypted vote, no receipt a briber can buy.</span></div>
+                </div>
+                <div class="lane">
+                  <h3>Finality loop</h3>
+                  <div class="node" data-node="verdict"><b>Verdict and slashes</b><span>Wrong-side reserve flows to the reward pool.</span></div>
+                  <div class="node" data-node="appeal"><b>Appeal ladder</b><span>The losing side climbs to a larger panel by paying floors.</span></div>
+                  <div class="node" data-node="final"><b>Final payout</b><span>Escrow releases funds and the market cannot reopen.</span></div>
+                  <div class="node" data-node="keys"><b>Answer key</b><span>Clean outcomes grade jurors and prove the court.</span></div>
+                </div>
+              </div>
+              <div class="mini-split" aria-label="Current YES and NO market split">
+                <div class="yes" id="splitYes">YES</div>
+                <div class="no" id="splitNo">NO</div>
+              </div>
+              <div class="token-shelf" id="tokenShelf" aria-label="Tokens and proofs unlocked in this run"></div>
+            </div>
+
+            <div class="mission">
+              <div class="mission-copy">
+                <div class="eyebrow" id="missionEyebrow">Stage 1</div>
+                <h3 id="missionTitle">Open with a dime</h3>
+                <p id="missionText">A market starts when the first person locks any amount into protocol escrow. There is no listing committee, no market maker, and no minimum viable liquidity hiding behind the curtain.</p>
+                <div class="mission-actions" id="missionActions"></div>
+              </div>
+              <div class="event-log">
+                <h3>Run log</h3>
+                <ul id="runLog"></ul>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div>
+          <h3>PredictionMoMo features unlocked</h3>
+          <div class="unlock-grid" id="featureGrid">
+            <div class="unlock" data-feature="instant"><b>Instant market <span class="tag">locked</span></b><small>Open any question with a first bet, even less than a dollar.</small></div>
+            <div class="unlock" data-feature="fixed"><b>Fixed odds <span class="tag">locked</span></b><small>Post a side at named odds; later bettors fill the locked price first.</small></div>
+            <div class="unlock" data-feature="tokens"><b>Self-custody tokens <span class="tag">locked</span></b><small>Liquid markets become ERC-20 YES and NO claims in user wallets.</small></div>
+            <div class="unlock" data-feature="private"><b>Private markets <span class="tag">locked</span></b><small>Invite-only rooms get neutral escrow and third-party arbitration.</small></div>
+            <div class="unlock" data-feature="trade"><b>Trading during disputes <span class="tag">locked</span></b><small>Tokenized claims keep moving while assertion, challenge, and appeal run.</small></div>
+            <div class="unlock" data-feature="parlay"><b>Peer-to-peer parlays <span class="tag">locked</span></b><small>CTF routing gives parlays without turning the protocol into a bookie.</small></div>
+          </div>
+        </div>
+
+        <div>
+          <h3>Arbitration components online</h3>
+          <div class="unlock-grid" id="componentGrid">
+            <div class="unlock" data-component="escrow"><b>Protocol escrow <span class="tag">locked</span></b><small>Funds are locked before anyone knows who will judge.</small></div>
+            <div class="unlock" data-component="watcher"><b>Paid watcher window <span class="tag">locked</span></b><small>False assertions fund whoever catches them.</small></div>
+            <div class="unlock" data-component="draw"><b>Random draw <span class="tag">locked</span></b><small>A public beacon draws one panel; no re-roll grinding.</small></div>
+            <div class="unlock" data-component="personhood"><b>Face check <span class="tag">locked</span></b><small>The drawn World-ID-backed human must be present for this case.</small></div>
+            <div class="unlock" data-component="ballot"><b>Private ballot <span class="tag">locked</span></b><small>Encrypted ballots and re-keying make vote receipts worthless.</small></div>
+            <div class="unlock" data-component="reserve"><b>Live reserve <span class="tag">locked</span></b><small>Lazy wrong votes lose pending income; slashes feed rewards.</small></div>
+            <div class="unlock" data-component="appeal"><b>Appeal floors <span class="tag">locked</span></b><small>Rungs price the next panel, capture risk, and delay rent.</small></div>
+            <div class="unlock" data-component="finality"><b>Finality plus reports <span class="tag">locked</span></b><small>Escrow ends; collusion reports never expire.</small></div>
+            <div class="unlock" data-component="keys"><b>Answer keys <span class="tag">locked</span></b><small>Clean markets become the scoreboard for juror quality.</small></div>
+          </div>
         </div>
       </div>
-      <figcaption>The full lock set, every one of which exists in production somewhere today. <b>No component is allowed to become a centralized fallback.</b></figcaption>
+    </div>
+  </section>
+
+  <section class="reveal" id="bootstrap-loop">
+    <p class="sec-label">Bootstrap loop</p>
+    <h2>Watch the market feed the court</h2>
+    <p>The run-through is one case, but the design only matters because the same loop repeats. Markets create work and fees. Fees pay jurors. Settled outcomes create answer keys. Better-scored jurors make the court safer. A safer court makes the next market easier to trust.</p>
+    <figure class="diagram reveal">
+      <div class="diagram-inner">
+        <div class="loop-strip" id="loopStrip">
+          <div class="loop-node" data-loop="cases" data-step="01"><b>More markets</b><span>Questions appear because opening one costs whatever the first bet is.</span></div>
+          <div class="loop-node" data-loop="fees" data-step="02"><b>Fee flow</b><span>The 2% settlement fee routes first to juror pay, rewards, and operations.</span></div>
+          <div class="loop-node" data-loop="jurors" data-step="03"><b>Paid jurors</b><span>Use funds the humans who will judge the contested few.</span></div>
+          <div class="loop-node" data-loop="keys" data-step="04"><b>Answer keys</b><span>Clean resolved markets become calibration cases.</span></div>
+          <div class="loop-node" data-loop="rep" data-step="05"><b>Sharper bench</b><span>Reputation drives pay, draw rate, and appeal confidence.</span></div>
+          <div class="loop-node" data-loop="trust" data-step="06"><b>More demand</b><span>Visible proof makes the next integrator less afraid to route escrow.</span></div>
+        </div>
+      </div>
+      <figcaption>PredictionMoMo is not just the first customer. <b>It manufactures the cases, fees, answer keys, and proof the court needs to exist.</b></figcaption>
     </figure>
   </section>
 
-  <!-- ============ money ============ -->
-  <section class="reveal">
-    <p class="sec-label">The economics</p>
-    <h2>Follow the dollar</h2>
-    <p>The money story fits in one picture because the design refuses to have two of anything. One fee, skimmed from every pool at settlement. One printed split. The invoice routes first by constitution, the <a href="governance.html">PredictionMoMo token</a> keeps only the margin voted above it, and no token anywhere prints the juror payroll. Jurors are paid from use, the reward pool that pays active, high-quality jurors is fed by the fee and by slashed bonds, and the protocol's share keeps the lights on.</p>
-
-    <div class="widget reveal">
-      <div class="widget-head"><span class="live"></span> One fee, printed once</div>
-      <div class="controls">
-        <div class="row"><label for="W3v">Money settling through pools each month</label> <b id="W3vOut">$5.0M</b></div>
-        <input id="W3v" type="range" min="100000" max="50000000" step="100000" value="5000000">
+  <section class="reveal" id="what-happened">
+    <p class="sec-label">Summary</p>
+    <h2>The whole system in one chain</h2>
+    <div class="summary-grid">
+      <div class="summary-box">
+        <h3>The market side</h3>
+        <p>A first bet creates a pot; fixed odds and private rooms make early liquidity usable; robust markets tokenize into self-custody claims; those claims keep trading through resolution and can be composed into peer-to-peer parlays.</p>
       </div>
-      <div class="mflow">
-        <div class="pot">2% settlement fee<small id="W3fee">$100k this month</small></div>
-        <div class="ar">&rarr;</div>
-        <div class="outs">
-          <div class="out"><b id="W3j">$70k</b>Juror pay, split across panels by casework</div>
-          <div class="out"><b id="W3i">$20k</b>Reward pool, topped up by every slashed bond</div>
-          <div class="out"><b id="W3p">$10k</b>Protocol operations</div>
-        </div>
+      <div class="summary-box">
+        <h3>The court side</h3>
+        <p>A watched assertion settles most markets quietly. The contested few go through protocol escrow, random verified juries, private ballots, live reserves, verdict proofs, appeal floors, finality, and never-ending collusion reports.</p>
       </div>
-      <div class="budgetbar"><div class="bb-j">70%</div><div class="bb-i">20%</div><div class="bb-p">10%</div></div>
-      <p style="font-family:var(--sans);font-size:.86rem;color:var(--faint);margin:.4rem 0 0">The split is printed once and sums to one, so no dollar is ever promised twice. Slashes flow on top: a lazy juror's forfeits feed the reward pool, and a proven colluder's bonds feed it too.</p>
+      <div class="summary-box">
+        <h3>The loop</h3>
+        <p>Every settlement pays the people who make the next settlement possible. Every clean answer becomes training data. Every hard case adds public proof that the arbitration layer can survive pressure.</p>
+      </div>
+      <div class="summary-box">
+        <h3>The boundary</h3>
+        <p>The simulation is not a security proof. It is the product story: what happens, in what order, and which part of the system takes over when the happy path stops being happy.</p>
+      </div>
     </div>
-  </section>
-
-  <!-- ============ launch ============ -->
-  <section class="reveal">
-    <p class="sec-label">Zero to one</p>
-    <h2>The first week, by the numbers</h2>
-    <p>Cold starts die at the first fee. So the launch sequence follows one rule: the initial conditions must cost the first participants nothing. Here is what the first week actually looks like.</p>
-
-    <ol class="stepper reveal">
-      <li>
-        <span class="step-n">1</span>
-        <div class="step-body">
-          <h3>The first juror pays nothing</h3>
-          <p>Entry starts with low capacity instead of a fixed price. A new juror's retained fees build the live reserve automatically, and that reserve grows only as the seat carries more unresolved work. You earn capacity before you expand it. The pool starts wide because nothing is in the way, and width is the security.</p>
-        </div>
-      </li>
-      <li>
-        <span class="step-n">2</span>
-        <div class="step-body">
-          <h3>The first market costs a dime</h3>
-          <p>Creating a market is posting a question with your own opening bet, any size. The pot is the liquidity, the odds are the ratio of the sides, and there is no maker anywhere to subsidize or to bleed. Early bettors earn a time bonus for setting odds blind.</p>
-        </div>
-      </li>
-      <li>
-        <span class="step-n">3</span>
-        <div class="step-body">
-          <h3>The first settlement pays a watcher</h3>
-          <p>The first false assertion forfeits its bond to whoever catches it, which makes watching the windows a job rather than a charity from day one. Honest settlements flow into the curated answer-key library that will grade jurors from week two onward.</p>
-        </div>
-      </li>
-      <li>
-        <span class="step-n">4</span>
-        <div class="step-body">
-          <h3>The first dispute prices itself</h3>
-          <p>No admin sets the appeal bond. The three floors compute it from the live case: fund the next panel, beat the re-roll, pay the delay. A near-tie verdict discounts the climb, and the loser-side petition splits the bill among the sincerely aggrieved.</p>
-        </div>
-      </li>
-      <li>
-        <span class="step-n">5</span>
-        <div class="step-body">
-          <h3>The first cheater funds the honest jurors</h3>
-          <p>Reports never expire. When the correlation audit catches a colluding clique, their slashed bonds and banned World IDs feed the reward pool that pays the honest jurors, without reopening a single settled market.</p>
-        </div>
-      </li>
-    </ol>
-  </section>
-
-  <!-- ============ privacy boundary ============ -->
-  <section class="reveal">
-    <p class="sec-label">Privacy boundary</p>
-    <h2>What the protocol learns</h2>
-    <p>The identity layer proves one thing and withholds the rest. World ID and the on-device face check say a unique, enrolled human is present for this draw, on this attested device, inside this grace window. DemoThemis does not receive an iris scan, a face image, a face template, a legal name, or a reusable person handle. It receives a purpose-scoped proof tied to the case and the seat commitment, useful here and nowhere else.</p>
-    <p>The rest of the machine keeps the same split. The draw is public because anyone must be able to check the beacon. The ballot is private because only the tally should ever open. Reputation and scoring update from verifiable case records, curated answer keys, and appeal outcomes, not from a private operator's discretion. Answer-key curation has to stay permissionless and challengeable. No component should be able to join personhood, seat, vote, score, and payout history into one table; the architecture goal is not to guard that table, but to avoid creating it.</p>
-  </section>
-
-  <!-- ============ honesty ============ -->
-  <section class="reveal">
-    <p class="sec-label">Still owed</p>
-    <h2>The two debts we publish</h2>
-    <p>A blueprint that hides its open items is a brochure. There are two, and both are scheduled rather than hoped for. The locked box has no centralized fallback: DemoThemis will not run arbitration through an admin server, a multisig, or a single tally coordinator. The production requirement is keyless or distributed setup, where no party ever holds a usable ballot-opening secret, any initialization artifact is unusable afterward, and every tally ships with a proof anyone can check. If a design requires trusting one operator to hold a key, delete a key, pick panels, rewrite scores, or admit answer keys by discretion, it is not this design.</p>
-    <p>And the court for subjective disputes, the kind reality never grades, ships later, narrow, and under its own name. It opens with rubric-checkable cases only, grades its jurors on rubric coherence, split prediction, and appeal survival, and never borrows the objective court's track record, because that record measures a different skill. The routing rule is one bit wide: will reality post the answer? Everything else follows from it.</p>
   </section>
 
   <footer class="endnote reveal">
@@ -264,129 +320,460 @@
       <a href="hybrid-juror-system.html">3. The hybrid system</a>
       <a href="prediction-market.html">4. PredictionMoMo</a>
       <a href="hybrid-juror-prediction-market-integration.html">5. The bootstrap loop</a>
-      <a href="the-design.html">6. The blueprint</a>
+      <a href="the-design.html">6. Run-through</a>
       <a href="game-theory.html">7. Game lab</a>
       <a href="governance.html">8. Governance</a>
       <a href="index.html">Home &middot; the map</a>
     </div>
-    <p class="signoff">Five chapters of parts, one blueprint, then a game board and governance, every number printed where it belongs.</p>
+    <p class="signoff">One market, every mechanism, the loop made visible.</p>
   </footer>
 
 </main>
 
 <script src="assets/common.js"></script>
 <script>
-// ============ pipeline player ============
 (function () {
   "use strict";
-  var next = document.getElementById("W1next");
-  if (!next) return;
-  var reset = document.getElementById("W1reset");
-  var narr = document.getElementById("W1narr");
-  var nodes = document.querySelectorAll("#W1pipe .pnode");
-  var step = 0;
-  var STEPS = [
-    "9:00 am. Someone posts a question and locks a dime on YES. The market exists, the dime is inside protocol escrow, and the share link is the marketing department.",
-    "By evening the escrowed pot holds $1,400. No one quotes prices; the odds are just the ratio of the two sides, and whichever side is thin pays better, which is what keeps recruiting the other side.",
-    "The event happens. Anyone may assert the outcome by posting a bond, and a one-week challenge window opens; tokens keep trading right through it. Watching that window is a paid job, because a false assertion forfeits its bond to its catcher.",
-    "Ninety five times out of a hundred, the story ends here: no challenge, protocol escrow pays out pro-rata, and the settled answer joins the curated key library that quietly grades jurors tomorrow.",
-    "Not this time. A challenger stakes the dispute floor, and the locked case crosses into the court lane.",
-    "A public randomness beacon draws fifteen jurors from a pool tens of thousands wide. One roll, bound to this escrowed case, verifiable by anyone afterward, and nothing for an attacker to re-roll.",
-    "Each drawn juror clears an on-device face check before the ballot unlocks. A rented seat fails here; a sleeping juror hands off to a standby inside the grace window.",
-    "Votes go into the locked box: encrypted ballots a juror can silently re-key, so any receipt shown to a briber proves nothing, and a bribe that cannot verify delivery is a bribe nobody pays.",
-    "Only the tally ever decrypts, with a proof attached. Jurors on the wrong side of a lopsided verdict lose a slice of their live reserve, and every slash flows to the reward pool.",
-    "The loser can climb: post the floor-priced bond alone, or gather the loser-side petition and split it. The next panel has thirty one seats, the rung above costs more, and the ladder always ends.",
-    "Protocol escrow finalizes and pays out, permanently. What never closes is the report track: anyone, forever, can flag the verdict, and a proven clique loses bonds, seats, and World IDs, with their forfeited bonds feeding the reward pool. The case itself becomes one more answer key."
+
+  var STAGES = [
+    {
+      title: "Open the market",
+      sub: "A first bet creates escrow.",
+      mission: "Open with a dime",
+      text: "A market starts when the first person locks any amount into protocol escrow. There is no listing committee, no market maker, and no minimum viable liquidity hiding behind the curtain.",
+      nodes: ["open"],
+      features: ["instant"],
+      components: ["escrow"],
+      tokens: ["Dime in escrow"],
+      pot: .1,
+      yes: 1,
+      claims: "pool slots",
+      trade: "not tokenized yet",
+      court: "idle",
+      panel: "no panel",
+      keys: 0,
+      fees: 0,
+      loop: ["cases"],
+      log: "Market exists because one person cared enough to bet ten cents.",
+      actions: ["Post a question", "Share the link"]
+    },
+    {
+      title: "The crowd prices it",
+      sub: "The pot becomes the odds.",
+      mission: "Let both sides pile in",
+      text: "The YES and NO sides form a simple shared pool. The current ratio is the implied price, and the thinner side pays more, so the market recruits its own opposition.",
+      nodes: ["open", "pool"],
+      features: ["instant"],
+      components: ["escrow"],
+      tokens: ["YES pool share", "NO pool share"],
+      pot: 1840,
+      yes: .62,
+      claims: "pool claims",
+      trade: "ratio priced",
+      court: "idle",
+      panel: "no panel",
+      keys: 0,
+      fees: 37,
+      loop: ["cases", "fees"],
+      log: "The market grows without a house quoting prices.",
+      actions: ["Add YES flow", "Add NO flow", "Show current odds"]
+    },
+    {
+      title: "Fixed odds appear",
+      sub: "A maker posts a real price.",
+      mission: "Nail an offer to the board",
+      text: "Someone offers YES at 70 cents with real money behind it. The next YES buyer fills that locked price first, then overflow falls back to the pool. Private-room markets use the same fixed-odds primitive.",
+      nodes: ["open", "pool", "fixed"],
+      features: ["instant", "fixed"],
+      components: ["escrow"],
+      tokens: ["70c YES offer", "Pool overflow"],
+      pot: 7600,
+      yes: .68,
+      claims: "fixed + pool",
+      trade: "best price first",
+      court: "idle",
+      panel: "no panel",
+      keys: 0,
+      fees: 152,
+      loop: ["cases", "fees"],
+      log: "A posted offer becomes the first piece of market structure.",
+      actions: ["Fill the 70c offer", "Route overflow"]
+    },
+    {
+      title: "The market graduates",
+      sub: "Claims become ERC-20s.",
+      mission: "Pass the robustness lock",
+      text: "The market has real disagreement, a standing maker, and enough time alive. It graduates into plain ERC-20 YES and NO tokens held by users, not by the website.",
+      nodes: ["open", "pool", "fixed", "robust", "tokens"],
+      features: ["instant", "fixed", "tokens"],
+      components: ["escrow"],
+      tokens: ["YES ERC-20", "NO ERC-20", "wallet custody"],
+      pot: 42000,
+      yes: .57,
+      claims: "ERC-20",
+      trade: "self-custody",
+      court: "idle",
+      panel: "no panel",
+      keys: 0,
+      fees: 840,
+      loop: ["cases", "fees"],
+      log: "The claim becomes something a user can move, lend, route, or post as collateral.",
+      actions: ["Mint YES/NO", "Open the book"]
+    },
+    {
+      title: "Private room opens",
+      sub: "Invite-only, still escrowed.",
+      mission: "Create a private wager",
+      text: "Two friends open a private room on the same outcome at fixed odds. It is not public order flow, but the funds still sit in neutral escrow and the same court can settle it.",
+      nodes: ["open", "pool", "fixed", "private", "tokens"],
+      features: ["instant", "fixed", "tokens", "private"],
+      components: ["escrow"],
+      tokens: ["Invite link", "Private YES", "Private NO"],
+      pot: 52000,
+      yes: .6,
+      claims: "public + private",
+      trade: "wallet claims",
+      court: "idle",
+      panel: "no panel",
+      keys: 0,
+      fees: 1040,
+      loop: ["cases", "fees"],
+      log: "The same neutral machinery works for a public market or a private bet.",
+      actions: ["Invite counterparty", "Lock fixed odds"]
+    },
+    {
+      title: "Parlay routed",
+      sub: "No bookie balance sheet.",
+      mission: "Bundle two live markets",
+      text: "A bettor buys a parlay token. Under the hood, conditional-token routing mints all combinations and instantly sells the unwanted legs into liquid books. If the liquidity is not there, the transaction reverts.",
+      nodes: ["open", "pool", "fixed", "robust", "tokens", "parlay"],
+      features: ["instant", "fixed", "tokens", "private", "parlay"],
+      components: ["escrow"],
+      tokens: ["YES A + YES B", "Fill-or-kill route"],
+      pot: 81000,
+      yes: .54,
+      claims: "composable",
+      trade: "parlay live",
+      court: "idle",
+      panel: "no panel",
+      keys: 0,
+      fees: 1620,
+      loop: ["cases", "fees"],
+      log: "The protocol gives familiar parlay UX without becoming the house.",
+      actions: ["Build parlay", "Cash out early"]
+    },
+    {
+      title: "Event happens",
+      sub: "Resolution begins.",
+      mission: "Assert the outcome",
+      text: "The game ends on the field. Anyone can post the answer with a bond. A watcher window opens, and because tokenized claims keep trading, the court does not have to rush the window closed.",
+      nodes: ["tokens", "parlay", "trade", "assert"],
+      features: ["instant", "fixed", "tokens", "private", "trade", "parlay"],
+      components: ["escrow", "watcher"],
+      tokens: ["Assertion bond", "Tradeable YES", "Tradeable NO"],
+      pot: 118000,
+      yes: .91,
+      claims: "ERC-20",
+      trade: "trading during resolution",
+      court: "assertion",
+      panel: "watcher window",
+      keys: 0,
+      fees: 2360,
+      loop: ["cases", "fees", "jurors"],
+      log: "Resolution starts as an optimistic assertion, not as a committee meeting.",
+      actions: ["Post YES", "Keep trading"]
+    },
+    {
+      title: "Watcher catches a lie",
+      sub: "The court lane opens.",
+      mission: "Challenge the assertion",
+      text: "The assertion was wrong. A watcher challenges it, takes aim at the bond, and routes the locked pot to DemoThemis. The market still trades because the claims are self-custodied.",
+      nodes: ["trade", "assert", "challenge"],
+      features: ["instant", "fixed", "tokens", "private", "trade", "parlay"],
+      components: ["escrow", "watcher"],
+      tokens: ["Challenge bond", "Dispute risk"],
+      pot: 118000,
+      yes: .44,
+      claims: "ERC-20",
+      trade: "price absorbs dispute",
+      court: "challenged",
+      panel: "awaiting draw",
+      keys: 0,
+      fees: 2360,
+      loop: ["cases", "fees", "jurors"],
+      log: "The liar funded the night shift by putting a bounty on their own mistake.",
+      actions: ["Stake challenge", "Send to court"]
+    },
+    {
+      title: "Jury is drawn",
+      sub: "Random humans, not tokens.",
+      mission: "Roll the sealed die",
+      text: "A public randomness beacon draws a panel from verified humans. The app cannot cancel and re-roll when it dislikes the panel, because the draw is bound to the locked case.",
+      nodes: ["challenge", "draw"],
+      features: ["instant", "fixed", "tokens", "private", "trade", "parlay"],
+      components: ["escrow", "watcher", "draw", "personhood"],
+      tokens: ["15 drawn seats", "Face proofs"],
+      pot: 118000,
+      yes: .46,
+      claims: "ERC-20",
+      trade: "open through court",
+      court: "jury drawn",
+      panel: "15 verified jurors",
+      keys: 0,
+      fees: 2360,
+      loop: ["cases", "fees", "jurors"],
+      log: "The case meets the court: one roll, one panel, no whale vote.",
+      actions: ["Verify draw", "Run face checks"]
+    },
+    {
+      title: "Ballots are locked",
+      sub: "No receipt, no bribe rail.",
+      mission: "Cast private votes",
+      text: "Each juror clears the live face check, then casts an encrypted ballot. Silent re-keying means a screenshot or encrypted receipt proves nothing to a briber.",
+      nodes: ["draw", "ballot"],
+      features: ["instant", "fixed", "tokens", "private", "trade", "parlay"],
+      components: ["escrow", "watcher", "draw", "personhood", "ballot", "reserve"],
+      tokens: ["Encrypted ballots", "Live reserves"],
+      pot: 118000,
+      yes: .51,
+      claims: "ERC-20",
+      trade: "open through court",
+      court: "voting",
+      panel: "15 sealed ballots",
+      keys: 0,
+      fees: 2360,
+      loop: ["cases", "fees", "jurors"],
+      log: "A bought juror can take money and vote honestly, which breaks the bribe contract.",
+      actions: ["Seal ballots", "Price lazy votes"]
+    },
+    {
+      title: "First verdict lands",
+      sub: "Slashes feed rewards.",
+      mission: "Publish the tally proof",
+      text: "The tally opens only as an aggregate with a proof. Wrong-side votes on a lopsided case lose a slice of reserve, and those slashes go to the reward pool instead of the winning panel.",
+      nodes: ["ballot", "verdict"],
+      features: ["instant", "fixed", "tokens", "private", "trade", "parlay"],
+      components: ["escrow", "watcher", "draw", "personhood", "ballot", "reserve"],
+      tokens: ["Verdict proof", "Reward pool"],
+      pot: 118000,
+      yes: .28,
+      claims: "ERC-20",
+      trade: "verdict repriced",
+      court: "first verdict",
+      panel: "15-seat result",
+      keys: 0,
+      fees: 2360,
+      loop: ["cases", "fees", "jurors", "rep"],
+      log: "The verdict changes prices, but the losing side can still climb.",
+      actions: ["Publish proof", "Compute slashes"]
+    },
+    {
+      title: "Appeal climbs",
+      sub: "The ladder prices sincerity.",
+      mission: "Petition for the 31-seat panel",
+      text: "The losing side stakes an appeal. The rung price is the highest of three floors: pay the next panel, beat capture value, and pay for delay. The next panel is larger and the ladder ends.",
+      nodes: ["verdict", "appeal", "trade"],
+      features: ["instant", "fixed", "tokens", "private", "trade", "parlay"],
+      components: ["escrow", "watcher", "draw", "personhood", "ballot", "reserve", "appeal"],
+      tokens: ["Loser-side petition", "31-seat appeal"],
+      pot: 118000,
+      yes: .37,
+      claims: "ERC-20",
+      trade: "appeal risk priced",
+      court: "appeal",
+      panel: "31 verified jurors",
+      keys: 0,
+      fees: 2360,
+      loop: ["cases", "fees", "jurors", "rep"],
+      log: "Appeals are allowed, but every retry gets bigger, pricier, and finite.",
+      actions: ["Post appeal floor", "Draw larger panel"]
+    },
+    {
+      title: "Finality and memory",
+      sub: "The case pays out and teaches.",
+      mission: "Close escrow, feed the loop",
+      text: "The appeal verdict finalizes the market. Escrow pays out and never reopens. The clean record becomes an answer key, fees pay jurors, and the public outcome improves the court's track record for the next market.",
+      nodes: ["appeal", "final", "keys"],
+      features: ["instant", "fixed", "tokens", "private", "trade", "parlay"],
+      components: ["escrow", "watcher", "draw", "personhood", "ballot", "reserve", "appeal", "finality", "keys"],
+      tokens: ["Final payout", "Answer key", "Juror score update"],
+      pot: 118000,
+      yes: .02,
+      claims: "redeemable",
+      trade: "final redemption",
+      court: "final",
+      panel: "appeal complete",
+      keys: 1,
+      fees: 2360,
+      loop: ["cases", "fees", "jurors", "keys", "rep", "trust"],
+      log: "The market is over, but the court is stronger than before.",
+      actions: ["Redeem tokens", "Grade jurors", "Start next market"]
+    }
   ];
-  function render() {
-    nodes.forEach(function (n) {
-      var s = parseInt(n.getAttribute("data-s"), 10);
-      n.classList.toggle("on", s === step);
-      n.classList.toggle("done", s < step);
+
+  var stage = 0;
+  var rail = document.getElementById("stageRail");
+  var next = document.getElementById("runNext");
+  var back = document.getElementById("runBack");
+  var replay = document.getElementById("runReplay");
+  var logEl = document.getElementById("runLog");
+  var actionEl = document.getElementById("missionActions");
+
+  function money(n) {
+    if (n >= 1000000) return "$" + (n / 1000000).toFixed(1) + "M";
+    if (n >= 1000) return "$" + (n / 1000).toFixed(n >= 10000 ? 0 : 1) + "k";
+    if (n >= 10) return "$" + Math.round(n);
+    return "$" + n.toFixed(2);
+  }
+
+  function setText(id, value) {
+    var el = document.getElementById(id);
+    if (el) el.textContent = value;
+  }
+
+  function setTags(rootId, attr, unlocked) {
+    Array.prototype.forEach.call(document.querySelectorAll("#" + rootId + " .unlock"), function (el) {
+      var key = el.getAttribute(attr);
+      var on = unlocked.indexOf(key) !== -1;
+      el.classList.toggle("on", on);
+      var tag = el.querySelector(".tag");
+      if (tag) tag.textContent = on ? "online" : "locked";
     });
   }
+
+  function renderRail() {
+    rail.replaceChildren();
+    STAGES.forEach(function (item, i) {
+      var btn = document.createElement("button");
+      var n = document.createElement("span");
+      var t = document.createElement("span");
+      var mark = document.createElement("span");
+      btn.type = "button";
+      btn.className = i < stage ? "done" : (i === stage ? "active" : "");
+      btn.setAttribute("aria-current", i === stage ? "step" : "false");
+      n.className = "n";
+      t.className = "t";
+      mark.className = "mark";
+      n.textContent = String(i + 1).padStart(2, "0");
+      t.textContent = item.title;
+      mark.textContent = i < stage ? "ok" : (i === stage ? "now" : "");
+      btn.appendChild(n);
+      btn.appendChild(t);
+      btn.appendChild(mark);
+      btn.addEventListener("click", function () { stage = i; render(); });
+      rail.appendChild(btn);
+    });
+  }
+
+  function renderNodes(item) {
+    Array.prototype.forEach.call(document.querySelectorAll("[data-node]"), function (el) {
+      var key = el.getAttribute("data-node");
+      var active = item.nodes.indexOf(key) === item.nodes.length - 1;
+      var done = item.nodes.indexOf(key) !== -1 && !active;
+      el.classList.toggle("active", active);
+      el.classList.toggle("done", done);
+      el.classList.toggle("warn", key === "challenge" && active);
+      el.classList.toggle("good", (key === "final" || key === "keys") && active);
+    });
+  }
+
+  function renderSplit(item) {
+    var yes = Math.max(2, Math.min(98, item.yes * 100));
+    var no = 100 - yes;
+    var y = document.getElementById("splitYes");
+    var n = document.getElementById("splitNo");
+    y.style.width = yes + "%";
+    n.style.width = no + "%";
+    y.textContent = yes < 14 ? "" : "YES " + Math.round(yes) + "%";
+    n.textContent = no < 14 ? "" : "NO " + Math.round(no) + "%";
+  }
+
+  function renderTokens(item) {
+    var shelf = document.getElementById("tokenShelf");
+    shelf.replaceChildren();
+    item.tokens.forEach(function (label, i) {
+      var span = document.createElement("span");
+      span.className = "token " + (label.indexOf("YES") !== -1 ? "yes" : label.indexOf("NO") !== -1 ? "no" : "lock");
+      span.textContent = label;
+      shelf.appendChild(span);
+    });
+  }
+
+  function renderMission(item) {
+    setText("missionEyebrow", "Stage " + (stage + 1) + " of " + STAGES.length);
+    setText("missionTitle", item.mission);
+    setText("missionText", item.text);
+    actionEl.replaceChildren();
+    item.actions.forEach(function (label) {
+      var btn = document.createElement("button");
+      btn.type = "button";
+      btn.textContent = label;
+      btn.addEventListener("click", function () {
+        addLog(label + " clicked: the diagram already reflects that rule.");
+      });
+      actionEl.appendChild(btn);
+    });
+  }
+
+  function addLog(text) {
+    var li = document.createElement("li");
+    li.className = "hot";
+    li.textContent = text;
+    logEl.insertBefore(li, logEl.firstChild);
+    while (logEl.children.length > 4) logEl.removeChild(logEl.lastChild);
+  }
+
+  function renderLoop(item) {
+    Array.prototype.forEach.call(document.querySelectorAll("[data-loop]"), function (el) {
+      el.classList.toggle("active", item.loop.indexOf(el.getAttribute("data-loop")) !== -1);
+    });
+  }
+
+  function render() {
+    var item = STAGES[stage];
+    setText("runStageTitle", item.title);
+    setText("runStageSub", item.sub);
+    setText("runPot", money(item.pot));
+    setText("runOdds", "YES " + Math.round(item.yes * 100) + "% / NO " + Math.round((1 - item.yes) * 100) + "%");
+    setText("runClaims", item.claims);
+    setText("runTrade", item.trade);
+    setText("runCourt", item.court);
+    setText("runPanel", item.panel);
+    setText("runLoop", item.keys + (item.keys === 1 ? " key" : " keys"));
+    setText("runFees", money(item.fees) + " settlement fees");
+    renderRail();
+    renderNodes(item);
+    renderSplit(item);
+    renderTokens(item);
+    renderMission(item);
+    renderLoop(item);
+    setTags("featureGrid", "data-feature", item.features);
+    setTags("componentGrid", "data-component", item.components);
+    back.disabled = stage === 0;
+    next.textContent = stage === STAGES.length - 1 ? "Run complete" : "Next event";
+    next.disabled = stage === STAGES.length - 1;
+    addLog(item.log);
+  }
+
   next.addEventListener("click", function () {
-    if (step < STEPS.length) {
-      narr.textContent = STEPS[step];
-      step++;
-      next.textContent = step >= STEPS.length ? "Done" : "Next";
-      if (step >= STEPS.length) next.disabled = true;
+    if (stage < STAGES.length - 1) {
+      stage += 1;
       render();
     }
   });
-  reset.addEventListener("click", function () {
-    step = 0;
-    next.disabled = false;
-    next.textContent = "Play";
-    narr.textContent = "Press play. A question is about to be born for the price of a dime.";
+  back.addEventListener("click", function () {
+    if (stage > 0) {
+      stage -= 1;
+      render();
+    }
+  });
+  replay.addEventListener("click", function () {
+    stage = 0;
+    logEl.replaceChildren();
     render();
   });
+
   render();
-})();
-
-// ============ attacker matcher ============
-(function () {
-  "use strict";
-  var seg = document.getElementById("W2seg");
-  if (!seg) return;
-  var foe = document.getElementById("W2foe");
-  var C = {
-    briber: '<div class="plan">The plan: pay jurors for provable votes, structured so the bribe is free if it wins.</div>' +
-      '<div class="stopped"><span class="chip lock">locked box</span> Receipts prove nothing once a juror can silently re-key, so the briber cannot verify delivery, and a bribe market that cannot enforce its contracts does not clear.</div>' +
-      '<div class="bill">What it costs them now: they cannot even spend the money. The attack fails at the payment step, before the court notices it exists.</div>',
-    bloc: '<div class="plan">The plan: coordinate a thousand real verified humans, behave on cheap cases, defect together on the big one.</div>' +
-      '<div class="stopped"><span class="chip lock">live reserve</span> <span class="chip lock">sealed die</span> The reserve prices carelessness without pricing honest jurors out, the die cannot be re-rolled, and stake-scaled panels of 31 make a thousand-person bloc a rounding error. Shadow panels turn any captured panel into an alarm instead of a win.</div>' +
-      '<div class="bill">What it costs them now: majority odds measured in millionths per case, plus a correlation fingerprint the report track reads at leisure.</div>',
-    renter: '<div class="plan">The plan: rent verified World IDs by the month, point a hundred seats at one model.</div>' +
-      '<div class="stopped"><span class="chip lock">face check</span> The ballot only unlocks for the enrolled face, present, on an attested device, at draw time. The rentable window shrinks from a year to minutes, and a hundred seats run by one operator all fail the same check at the same moment.</div>' +
-      '<div class="bill">What it costs them now: a physical human per seat per vote, which is no longer renting, it is hiring, visibly, the thing the cost argument always priced correctly.</div>',
-    lazy: '<div class="plan">The plan: collect fees forever, vote the obvious answer, never read a case.</div>' +
-      '<div class="stopped"><span class="chip lock">live reserve</span> The reserve is sized at the laziness floor: a careless juror’s extra wrong votes forfeit more in slashes than the income their shortcut earns, and the curated answer keys catch the drift their easy-case agreement used to hide.</div>' +
-      '<div class="bill">What it costs them now: their own pending earnings, repeatedly, which is the one arithmetic a shirker respects.</div>',
-    grief: '<div class="plan">The plan: lose, then dispute forever, freezing the pot and grinding fresh panels until one rolls their way.</div>' +
-      '<div class="stopped"><span class="chip lock">floor-priced ladder</span> <span class="chip lock">loser-side petition</span> Every rung must use a strictly larger panel at a multiplied, floor-priced bond, so each retry faces worse odds at a higher price, and the ladder ends. The petition is proportional to the losing side and staked, so mass signing costs sincerity.</div>' +
-      '<div class="bill">What it costs them now: a geometric bill for a shrinking chance, while the money finalizes on schedule regardless.</div>',
-    thief: '<div class="plan">The plan: assert a lie into a thin market at 3am and let the window close on a sleeping world.</div>' +
-      '<div class="stopped"><span class="chip lock">paid watchers</span> <span class="chip lock">endless reports</span> A false assertion forfeits its bond to whoever catches it, which staffs the night shift with profit instead of virtue. And settled answers are curated, not canonized, so one slipped lie cannot poison the keys that grade the court.</div>' +
-      '<div class="bill">What it costs them now: a bounty on their own head, payable to anyone awake, with no statute of limitations behind it.</div>'
-  };
-  function pick(k) { foe.innerHTML = C[k]; }
-  Array.prototype.forEach.call(seg.querySelectorAll("button"), function (btn) {
-    btn.addEventListener("click", function () {
-      Array.prototype.forEach.call(seg.querySelectorAll("button"), function (b2) { b2.classList.remove("active"); });
-      btn.classList.add("active");
-      pick(btn.getAttribute("data-k"));
-    });
-  });
-  pick("briber");
-})();
-
-// ============ money ============
-(function () {
-  "use strict";
-  var v = document.getElementById("W3v");
-  if (!v) return;
-  var vOut = document.getElementById("W3vOut");
-  var fee = document.getElementById("W3fee");
-  var j = document.getElementById("W3j");
-  var i = document.getElementById("W3i");
-  var p = document.getElementById("W3p");
-  function money(n) {
-    if (n >= 1000000) return "$" + (n / 1000000).toFixed(n >= 10000000 ? 0 : 1) + "M";
-    if (n >= 1000) return "$" + Math.round(n / 1000) + "k";
-    return "$" + Math.round(n);
-  }
-  function update() {
-    var V = parseInt(v.value, 10);
-    var F = V * 0.02;
-    vOut.textContent = money(V);
-    fee.textContent = money(F) + " this month";
-    j.textContent = money(F * 0.7);
-    i.textContent = money(F * 0.2);
-    p.textContent = money(F * 0.1);
-  }
-  v.addEventListener("input", update);
-  update();
 })();
 </script>
 </body>

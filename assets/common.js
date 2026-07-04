@@ -10,7 +10,7 @@
     { f: "hybrid-juror-system.html", t: "The hybrid system", ch: 3 },
     { f: "prediction-market.html", t: "PredictionMoMo", ch: 4 },
     { f: "hybrid-juror-prediction-market-integration.html", t: "The bootstrap loop", ch: 5 },
-    { f: "the-design.html", t: "The blueprint", ch: 6 },
+    { f: "the-design.html", t: "Run-through", ch: 6 },
     { f: "game-theory.html", t: "The game-theory lab", ch: 7 },
     { f: "governance.html", t: "Governance", ch: 8 }
   ];

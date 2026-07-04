@@ -143,6 +143,20 @@ function checkBuiltHtml(failures) {
   assert(/assets\/vendor\/tippy-6\.3\.7\.umd\.min\.js/i.test(gameLab), "gamelab missing vendored Tippy", failures);
   assert(/role=["']tablist["']/i.test(gameLab), "gamelab missing tablist role", failures);
   assert(/data-attack=["']bloc["']/i.test(gameLab), "gamelab missing coordinated attack card", failures);
+
+  const runThrough = readDist("the-design.html");
+  assert(/Run through the whole system/i.test(runThrough), "run-through chapter missing new title", failures);
+  assert(/id=["']stageRail["']/i.test(runThrough), "run-through chapter missing stage rail", failures);
+  assert(/data-feature=["']instant["']/i.test(runThrough), "run-through missing instant-market feature unlock", failures);
+  assert(/data-feature=["']fixed["']/i.test(runThrough), "run-through missing fixed-odds feature unlock", failures);
+  assert(/data-feature=["']tokens["']/i.test(runThrough), "run-through missing self-custody token feature unlock", failures);
+  assert(/data-feature=["']private["']/i.test(runThrough), "run-through missing private-market feature unlock", failures);
+  assert(/data-feature=["']trade["']/i.test(runThrough), "run-through missing dispute-trading feature unlock", failures);
+  assert(/data-feature=["']parlay["']/i.test(runThrough), "run-through missing parlay feature unlock", failures);
+  assert(/data-component=["']draw["']/i.test(runThrough), "run-through missing jury-draw component unlock", failures);
+  assert(/data-component=["']ballot["']/i.test(runThrough), "run-through missing private-ballot component unlock", failures);
+  assert(/data-component=["']appeal["']/i.test(runThrough), "run-through missing appeal-ladder component unlock", failures);
+  assert(/data-loop=["']trust["']/i.test(runThrough), "run-through missing bootstrap-loop trust node", failures);
 }
 
 async function checkHttpRoutes(port, failures) {
