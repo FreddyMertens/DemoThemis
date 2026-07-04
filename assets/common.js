@@ -3,18 +3,18 @@
 (function () {
   "use strict";
 
-  // Canonical reading path: 10 chapters across 4 acts. Deep-dive pages are off-path.
+  // Canonical reading path: 10 chapters. Deep-dive pages are off-path.
   var CHAPTERS = [
-    { f: "vision.html", t: "The vision", act: "I", actName: "The promise", ch: 1 },
-    { f: "juror-court.html", t: "The court", act: "II", actName: "The mechanism", ch: 2 },
-    { f: "hybrid-juror-system.html", t: "The hybrid system", act: "II", actName: "The mechanism", ch: 3 },
-    { f: "prediction-market.html", t: "PredictionMoMo", act: "III", actName: "The bootstrap", ch: 4 },
-    { f: "hybrid-juror-prediction-market-integration.html", t: "The loop", act: "III", actName: "The bootstrap", ch: 5 },
-    { f: "zero-to-one.html", t: "Zero to one", act: "III", actName: "The bootstrap", ch: 6 },
-    { f: "compounding.html", t: "Why it compounds", act: "IV", actName: "The payoff", ch: 7 },
-    { f: "the-design.html", t: "The blueprint", act: "IV", actName: "The payoff", ch: 8 },
-    { f: "governance.html", t: "Governance", act: "IV", actName: "The payoff", ch: 9 },
-    { f: "game-theory.html", t: "The game-theory lab", act: "IV", actName: "The payoff", ch: 10 }
+    { f: "vision.html", t: "The vision", ch: 1 },
+    { f: "juror-court.html", t: "The court", ch: 2 },
+    { f: "hybrid-juror-system.html", t: "The hybrid system", ch: 3 },
+    { f: "prediction-market.html", t: "PredictionMoMo", ch: 4 },
+    { f: "hybrid-juror-prediction-market-integration.html", t: "The loop", ch: 5 },
+    { f: "zero-to-one.html", t: "Zero to one", ch: 6 },
+    { f: "compounding.html", t: "Why it compounds", ch: 7 },
+    { f: "the-design.html", t: "The blueprint", ch: 8 },
+    { f: "governance.html", t: "Governance", ch: 9 },
+    { f: "game-theory.html", t: "The game-theory lab", ch: 10 }
   ];
   var TOTAL = CHAPTERS.length;
 
@@ -62,67 +62,20 @@
     var nav = document.querySelector(".sitenav");
     if (!nav) return;
     var toggle = nav.querySelector(".nav-toggle");
-    function setGroupOpen(group, open, source) {
-      if (!group) return;
-      var btn = group.querySelector(".nav-group-btn");
-      group.classList.toggle("open", open);
-      if (open && source) {
-        group.setAttribute("data-auto-open", source);
-      } else {
-        group.removeAttribute("data-auto-open");
-      }
-      if (btn) btn.setAttribute("aria-expanded", open ? "true" : "false");
-    }
-    function closeGroups(except) {
-      Array.prototype.forEach.call(nav.querySelectorAll(".nav-group"), function (group) {
-        if (group !== except) setGroupOpen(group, false);
-      });
-    }
     if (toggle) {
       toggle.addEventListener("click", function () {
         var open = nav.classList.toggle("open");
         toggle.setAttribute("aria-expanded", open ? "true" : "false");
-        if (!open) closeGroups();
       });
     }
-    Array.prototype.forEach.call(nav.querySelectorAll(".nav-group"), function (group, index) {
-      var gbtn = group.querySelector(".nav-group-btn");
-      var menu = group.querySelector(".nav-menu");
-      if (!gbtn || !menu) return;
-      if (!menu.id) menu.id = "nav-menu-" + index;
-      gbtn.setAttribute("aria-haspopup", "true");
-      gbtn.setAttribute("aria-expanded", group.classList.contains("open") ? "true" : "false");
-      gbtn.setAttribute("aria-controls", menu.id);
-      gbtn.addEventListener("click", function (e) {
-        e.preventDefault();
-        var open = group.hasAttribute("data-auto-open") ? true : !group.classList.contains("open");
-        closeGroups(group);
-        setGroupOpen(group, open);
-      });
-      group.addEventListener("focusin", function () {
-        closeGroups(group);
-        setGroupOpen(group, true, "focus");
-      });
-      group.addEventListener("focusout", function () {
-        window.setTimeout(function () {
-          if (!group.contains(document.activeElement)) setGroupOpen(group, false);
-        }, 0);
-      });
-      group.addEventListener("mouseenter", function () {
-        if (window.matchMedia("(min-width: 861px)").matches) setGroupOpen(group, true, "hover");
-      });
-      group.addEventListener("mouseleave", function () {
-        if (window.matchMedia("(min-width: 861px)").matches && !group.contains(document.activeElement)) {
-          setGroupOpen(group, false);
-        }
-      });
-    });
     document.addEventListener("click", function (e) {
-      if (!nav.contains(e.target)) closeGroups();
+      if (toggle && !nav.contains(e.target) && nav.classList.contains("open")) {
+        nav.classList.remove("open");
+        toggle.setAttribute("aria-expanded", "false");
+      }
     });
     nav.addEventListener("keydown", function (e) {
       if (e.key !== "Escape") return;
-      closeGroups();
       if (toggle && nav.classList.contains("open")) {
         nav.classList.remove("open");
         toggle.setAttribute("aria-expanded", "false");
@@ -131,8 +84,6 @@
     Array.prototype.forEach.call(nav.querySelectorAll("a[href]"), function (a) {
       if (fileOf(a.getAttribute("href")) === here) {
         a.classList.add("active");
-        var grp = a.closest(".nav-group");
-        if (grp) { var b = grp.querySelector(".nav-group-btn"); if (b) b.classList.add("active"); }
       }
     });
   }
@@ -229,7 +180,7 @@
     var c = CHAPTERS[idx];
     var prev = idx > 0 ? CHAPTERS[idx - 1] : null;
     var next = idx < CHAPTERS.length - 1 ? CHAPTERS[idx + 1] : null;
-    nav = chapterNav("Act " + c.act + " \u00b7 Chapter " + c.ch + " of " + TOTAL + " \u00b7 " + c.actName, prev, next);
+    nav = chapterNav("Chapter " + c.ch + " of " + TOTAL, prev, next);
     renderSeries(el, nav.pos, nav.links);
   }
 

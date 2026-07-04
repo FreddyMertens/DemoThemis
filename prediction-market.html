@@ -51,15 +51,25 @@
   .oracle-case.hot { border-top: 3px solid var(--bad); }
   .oracle-case.sys { border-top: 3px solid var(--accent); }
   .oracle-case.fact { border-top: 3px solid var(--good); }
+  .oracle-case.platform { border-top: 3px solid #2362a4; margin-top: 1rem; }
   .oracle-case h3 { display: flex; flex-wrap: wrap; gap: .45rem; align-items: center; margin-bottom: .45rem; }
   .oracle-case p { margin: .45rem 0 0; color: var(--muted); font-size: .92rem; line-height: 1.5; }
   .oracle-case .lab { font-size: .68rem; font-weight: 750; letter-spacing: .06em; text-transform: uppercase; border-radius: 999px; padding: .16rem .5rem; white-space: nowrap; }
   .oracle-case.hot .lab { background: var(--bad-soft); color: var(--bad); }
   .oracle-case.sys .lab { background: var(--accent-soft); color: var(--accent-ink); }
   .oracle-case.fact .lab { background: var(--good-soft); color: var(--good); }
+  .oracle-case.platform .lab { background: #e3eef9; color: #2362a4; }
   .oracle-sources { display: flex; flex-wrap: wrap; gap: .45rem; margin-top: .75rem; }
   .oracle-sources a { border: 1px solid var(--line); border-radius: 999px; background: var(--bg); padding: .16rem .55rem; font-size: .76rem; font-weight: 650; text-decoration: none; }
   .oracle-note { border-left: 4px solid var(--bad); border-radius: 12px; background: var(--bad-soft); color: #7e2f22; padding: 1rem 1.1rem; margin: 1.3rem 0 0; font-family: var(--sans); font-size: .94rem; line-height: 1.55; }
+
+  /* product card chapter jumps */
+  .product-jumps { list-style: none; counter-reset: product-jump; padding-left: 0; }
+  .product-jumps li { counter-increment: product-jump; margin-bottom: .55rem; }
+  .product-jumps a { display: grid; grid-template-columns: 1.55rem 1fr; gap: .55rem; align-items: start; color: inherit; text-decoration: none; border-radius: 8px; padding: .18rem .2rem; }
+  .product-jumps a::before { content: counter(product-jump); display: grid; place-items: center; width: 1.35rem; height: 1.35rem; border-radius: 999px; background: var(--accent-soft); color: var(--accent-ink); font-size: .76rem; font-weight: 800; line-height: 1; }
+  .product-jumps a:hover { color: var(--accent-ink); background: var(--accent-soft); }
+  .product-jumps a:hover::before { background: var(--accent); color: #fff; }
 </style>
 </head>
 <body>
@@ -71,26 +81,16 @@
     <button class="nav-toggle" type="button" aria-label="Menu" aria-expanded="false">&#9776;</button>
     <div class="nav-links">
       <a href="index.html">Home</a>
-      <a href="vision.html">Vision</a>
-      <div class="nav-group">
-        <button class="nav-group-btn" type="button">The mechanism</button>
-        <div class="nav-menu">
-          <a href="juror-court.html"><span class="ch">02</span> The court</a>
-          <a href="hybrid-juror-system.html"><span class="ch">03</span> The hybrid system</a>
-        </div>
-      </div>
-      <div class="nav-group nav-group-end">
-        <button class="nav-group-btn" type="button">The bootstrap</button>
-        <div class="nav-menu">
-          <a href="prediction-market.html"><span class="ch">04</span> PredictionMoMo</a>
-          <a href="hybrid-juror-prediction-market-integration.html"><span class="ch">05</span> The loop</a>
-          <a href="zero-to-one.html"><span class="ch">06</span> Zero to one</a>
-        </div>
-      </div>
-      <a href="compounding.html">Why it compounds</a>
-      <a href="the-design.html">The blueprint</a>
-      <a href="governance.html">Governance</a>
-      <a href="game-theory.html">Game lab</a>
+      <a href="vision.html"><span class="ch">01</span> Vision</a>
+      <a href="juror-court.html"><span class="ch">02</span> Court</a>
+      <a href="hybrid-juror-system.html"><span class="ch">03</span> Hybrid system</a>
+      <a href="prediction-market.html"><span class="ch">04</span> PredictionMoMo</a>
+      <a href="hybrid-juror-prediction-market-integration.html"><span class="ch">05</span> Loop</a>
+      <a href="zero-to-one.html"><span class="ch">06</span> Zero to one</a>
+      <a href="compounding.html"><span class="ch">07</span> Compounding</a>
+      <a href="the-design.html"><span class="ch">08</span> Blueprint</a>
+      <a href="governance.html"><span class="ch">09</span> Governance</a>
+      <a href="game-theory.html"><span class="ch">10</span> Game lab</a>
     </div>
   </div>
 </nav>
@@ -98,24 +98,34 @@
 <header class="hero reveal">
   <p class="kicker">PredictionMoMo</p>
   <h1>How PredictionMoMo works: betting pools, fixed odds, and ERC-20 tokens</h1>
-  <p class="dek">Anyone can open a market on anything by posting a question with their own first bet, even a dime. This chapter covers the whole life of a market: the shared pot that needs no market maker, standing offers at odds you name, graduation into self-custody ERC-20 tokens with an order book, and resolution through bonded assertions and the court.</p>
+  <p class="dek">This chapter follows the six PredictionMoMo promises: arbitration whales cannot buy, self-custody YES and NO tokens, private markets with neutral escrow, instant market creation from the first bet, tradeable claims during disputes, and peer-to-peer parlays without bookie risk.</p>
   <div class="meta">
     <span class="pill">Prediction markets</span>
     <span>10 min read</span>
     <span class="dot">&bull;</span>
-    <span>Act III &middot; Chapter 4 of 10</span>
+    <span>Chapter 4 of 10</span>
   </div>
 </header>
 
 <main class="content wrap">
 
-  <aside id="toc" class="toc reveal"></aside>
+  <div class="product product-feature market reveal">
+    <h3>PredictionMoMo: markets anyone can open</h3>
+    <ol class="product-jumps">
+      <li><a href="#exploited-arbiter">Arbitration not gameable by UMA whales: no chance of getting scammed.</a></li>
+      <li><a href="#self-custody-tokens">Liquid markets tokenize into ERC-20 YES and NO tokens you self-custody; this lets you provide liquidity and earn interest, post them as collateral, and trade them with leverage.</a></li>
+      <li><a href="#private-markets">Anyone can open private, invite-only markets and still have a world-class third-party escrow and dispute system: post your side at any odds you name, invite the other side, and the odds stay fixed for everyone who joins.</a></li>
+      <li><a href="#start-market">Start a new prediction market instantly, on any topic, with any liquidity, even with less than a dollar.</a></li>
+      <li><a href="#tradeable-disputes">With self-custody tokens that stay tradeable during disputes and resolution windows, you can exit the market at any time if there is liquidity. This also means there is no rush to close dispute windows, allowing retroactive changes to resolution windows where necessary.</a></li>
+      <li><a href="#peer-to-peer-parlays">Native peer-to-peer parlays on liquid markets. By integrating Conditional Tokens Framework (CTF) via token splitting, bettors get live odds and early cashouts without the protocol or a "bookie" ever taking bankruptcy risk.</a></li>
+    </ol>
+  </div>
 
   <section id="exploited-arbiter" class="reveal">
-    <p class="sec-label">The exploited arbiter</p>
-    <h2>The oracle problem Polymarket exposed</h2>
-    <p class="lead">Prediction markets do not fail when traders disagree. They fail when everyone has to stop trading the event and start trading the arbiter. UMA showed the problem plainly: token-weighted truth turns a disputed outcome into a governance market with a whale chart attached.</p>
-    <p>The point is not that every disputed Polymarket resolution was corrupt. Some were genuinely ambiguous. The point is worse: the resolution layer made whale weight, voter conflicts, and after-the-fact rule fights part of the price discovery. Four episodes explain why PredictionMoMo cannot inherit that court.</p>
+    <p class="sec-label">Value prop 1</p>
+    <h2>1. Arbitration not gameable by whales</h2>
+    <p class="lead">Prediction markets do not fail when traders disagree. They fail when everyone has to stop trading the event and start trading whoever gets to define the event. UMA showed one version plainly: token-weighted truth turns a disputed outcome into a governance market with a whale chart attached.</p>
+    <p>The point is not that every disputed Polymarket resolution was corrupt. Some were genuinely ambiguous. The point is worse: the resolution layer made whale weight, voter conflicts, and after-the-fact rule fights part of the price discovery. Four episodes explain why PredictionMoMo cannot inherit UMA's court.</p>
 
     <div class="oracle-case-grid">
       <div class="oracle-case hot">
@@ -157,123 +167,76 @@
       </div>
     </div>
 
-    <p class="oracle-note"><b>The conclusion is simple:</b> lead with Ukraine when the charge is whale capture. Lead with Strategy when the charge is reality losing to resolution mechanics. Use Zelenskyy because readers instantly understand it, and use the WSJ/Barron's conflict reporting because it shows the problem is structural rather than one weird market.</p>
-    <p>PredictionMoMo's answer is not a nicer token vote. It removes the token vote from the verdict. Easy markets still clear through bonded assertions, but contested markets go to verified humans, randomly drawn, voting privately, with one person counted once.</p>
-  </section>
-
-  <section class="reveal">
-    <p class="sec-label">Two complaints</p>
-    <h2>Two complaints about the markets we love</h2>
-    <p class="lead">Post a question, place the first bet, share the link, and that is a whole prediction market. The pot is the money traders draw on, the crowd sets the price, and a court money cannot buy decides who won.</p>
-    <p>Prediction markets are the closest thing the internet has to a truth machine. Put real money on a question and the number that comes out is the most honest forecast anyone publishes. We are fans. We have exactly two complaints, and this chapter is built around them.</p>
-    <p><b>The first is custody:</b> On the big platforms, your position is an entry on an operator's book. The matching engine, the listings, and the freeze button all belong to one company, and your winnings exist at its pleasure. A bet should be a plain token in your own wallet: yours to hold, move, or post as collateral, with nobody to ask.</p>
-    <p><b>The second is resolution:</b> Deciding who won is the hard part of every market, and it is the part most designs hand to a committee, an oracle company, or a token vote that a deep enough pocket can lean on. Our answer took two chapters to build: <a href="juror-court.html">a court money cannot buy</a>. This market is built to be settled by that court, and, as the rest of this act shows, to feed it.</p>
-  </section>
-
-  <section class="reveal">
-    <p class="sec-label">The birth</p>
-    <h2>Born as a shared pot</h2>
-    <p><b>Here is the entire act of creating a market:</b> You type a question, you bet a dime on the side you believe, and you share the link. That is the whole ceremony. No listing process, no market maker, no liquidity provider, no seed money waiting in a vault.</p>
-    <p>A new market is a parimutuel pool, the structure Joseph Oller invented for Paris racetracks in 1867 because he wanted betting without a bookmaker setting odds. The pool predates every market maker ever built. Everyone bets into a shared pot, the odds are nothing more than the ratio of the two sides, and when the question resolves the winners split the entire pot pro-rata, minus the 2% fee skimmed at settlement. One refinement is ours: the first bettors set the odds blind, with no crowd to lean on, so their claims carry a time-weight bonus. A dollar staked early earns a larger slice than a dollar that arrived after the picture cleared.</p>
-
-    <div class="widget reveal">
-      <div class="widget-head"><span class="live"></span> Born with a dime</div>
-      <div class="pmnarr" id="PM1narr">The market is born empty. Total cost to create it: whatever you bet first. Try a dime.</div>
-      <div class="pmsplit empty" id="PM1bar">
-        <div class="yes" id="PM1yes" style="width:50%">YES</div>
-        <div class="no" id="PM1no" style="width:50%">NO</div>
+    <div class="oracle-case platform">
+      <h3>Kalshi's Khamenei carveout <span class="lab">platform as judge</span></h3>
+      <p>Kalshi shows the centralized version of the same failure: the house can write the escape hatch and then judge it. Plaintiffs alleged Kalshi used its Khamenei death carveout to avoid full Yes payouts and settle at the last traded price. The venue's incentive is self-protection: limit legal risk, precedent risk, and ugly death-market fallout. The user's incentive is simpler: pay the event as written. DemoThemis removes that conflict. Rules are fixed before escrow, and edge cases go to randomly drawn, conflict-screened jurors. Ambiguity remains, but the venue no longer rules on its own book.</p>
+      <div class="oracle-sources">
+        <a href="https://www.classaction.org/news/kalshi-refused-to-honor-certain-prediction-contracts-with-death-carveout-class-action-lawsuit-claims">ClassAction.org</a>
+        <a href="https://www.theverge.com/tech/887210/kalshi-void-bets-khamenei-death">The Verge</a>
+        <a href="https://kalshi.com/markets/kxkhameneiout/ali-khamenei-out/kxkhameneiout-akha">Market</a>
       </div>
-      <div class="pmbtns">
-        <button class="btn" id="PM1y01" type="button">Bet 10&cent; YES</button>
-        <button class="btn" id="PM1y1" type="button">Bet $1 YES</button>
-        <button class="btn no" id="PM1n1" type="button">Bet $1 NO</button>
-        <button class="btn no" id="PM1n10" type="button">Bet $10 NO</button>
-        <button class="btn ghost" id="PM1crowd" type="button">Let 25 bettors arrive</button>
-        <button class="btn ghost" id="PM1reset" type="button">Reset</button>
-      </div>
-      <div class="readout">
-        <div class="stat"><div class="k">Pot</div><div class="v" id="PM1pot">$0.00</div></div>
-        <div class="stat"><div class="k">Crowd's odds on YES</div><div class="v accent" id="PM1odds">&hellip;</div></div>
-        <div class="stat"><div class="k">$1 on YES pays</div><div class="v" id="PM1py">&hellip;</div></div>
-        <div class="stat"><div class="k">$1 on NO pays</div><div class="v" id="PM1pn">&hellip;</div></div>
-      </div>
-      <p style="font-family:var(--sans);font-size:.86rem;color:var(--faint);margin:1rem 0 0">Illustrative, with the 2% settlement fee taken off the pot. Payouts are pro-rata shares of everything, so each side's quoted payout is live and self-balancing: when YES gets crowded, betting NO gets juicy, which is what pulls the other side in. The early-bettor time weight is left out of the demo to keep the arithmetic visible.</p>
     </div>
 
-    <p>Notice what the demo never asks for. <b>Nobody funds the market before the crowd exists, because the first dime in is the market.</b> Your opening bet is the listing fee, the seed, and the dare, all at once, and the share link is the entire distribution strategy.</p>
+    <p class="oracle-note"><b>The conclusion is simple:</b> a prediction market needs an arbiter neither whales nor the venue itself can own. UMA shows the whale failure: token weight becomes adjudication weight. Kalshi's Khamenei dispute shows the house failure: the venue can write the exception and then judge the exception. PredictionMoMo's answer is not a nicer token vote or a more trusted operator. It removes both from the final verdict.</p>
+    <p>Easy markets still clear through bonded assertions, but contested markets go to verified humans, randomly drawn, voting privately, with one person counted once. That is the service upgrade: a market where the price can move freely, but the court cannot be bought by the biggest wallet or rewritten by the house.</p>
+
+    <h3>How a market ends without a bought judge</h3>
+    <p><b>The event happens:</b> Now somebody has to say so, and this is where most markets quietly hand the job back to a trusted operator. Here the job is open to anyone, and it runs in three moves.</p>
+
+    <ol class="stepper reveal">
+      <li>
+        <span class="step-n">1</span>
+        <div class="step-body">
+          <h3>Anyone asserts the outcome</h3>
+          <p>Whoever saw the result posts it along with a bond. No oracle company, no resolution committee, no waiting for an operator to wake up. The bond is the assertion's skin in the game.</p>
+        </div>
+      </li>
+      <li>
+        <span class="step-n">2</span>
+        <div class="step-body">
+          <h3>A one-week window, watched for profit</h3>
+          <p>A false assertion forfeits its bond to whoever catches it, so <b>watching the windows is a paid job</b>, not a civic hobby. The night shift is staffed by bounty hunters, and a lie asserted into a sleeping market is a bounty on the liar's own head. A full week of window means the lie has to survive every timezone awake, day after day. On tokenized markets, section 5 explains why that longer window does not freeze traders.</p>
+        </div>
+      </li>
+      <li>
+        <span class="step-n">3</span>
+        <div class="step-body">
+          <h3>Payout, or the court</h3>
+          <p>If the window closes quietly, the pool pays out pro-rata and the market is history. If someone challenges, the locked pot crosses into the court lane, and the final verdict releases it by rule.</p>
+        </div>
+      </li>
+    </ol>
+
+    <p>Roughly 95% of markets end at step two: one assertion, one quiet window, payout. The funnel below is the whole resolution story at a glance.</p>
+
+    <figure class="diagram reveal">
+      <div class="diagram-inner">
+        <div class="funnel">
+          <div>
+            <div class="fk"><span>Markets that reach resolution</span><b>100</b></div>
+            <div class="fbar f-all"></div>
+          </div>
+          <div>
+            <div class="fk"><span>Settle quietly: asserted, watched, unchallenged</span><b>~95</b></div>
+            <div class="fbar f-quiet"></div>
+          </div>
+          <div>
+            <div class="fk"><span>Challenged, decided by the court</span><b>~5</b></div>
+            <div class="fbar f-court"></div>
+          </div>
+        </div>
+      </div>
+      <figcaption>One hundred markets, one ending each. <b>Roughly ninety five settle without a juror lifting a finger, and the court exists for the rest.</b></figcaption>
+    </figure>
+
+    <p>The contested few cross into <a href="juror-court.html">the court</a>: a panel of verified humans, drawn by a public beacon, voting in encrypted ballots, with a dispute ladder above them for the truly stubborn. The money is already inside protocol escrow, so the verdict is not advice; it is the release rule. And the quiet settlements are not wasted. Every one that passes curation becomes an answer key that grades the jurors, which is the engine <a href="hybrid-juror-prediction-market-integration.html">the loop chapter</a> is about.</p>
   </section>
 
-  <section class="reveal">
-    <p class="sec-label">The missing middleman</p>
-    <h2>Why there is no market maker</h2>
-    <p>Ask who loses when a well-informed trader walks into a market. On a quoted market, the quoter does. An automated market maker is a standing offer to trade at a posted price, and whoever knows more than the posting picks it off, trade after trade. That is why quoting engines need a subsidy to survive, and why a subsidized market can never be opened by anyone for pocket change. Someone has to fund the quote before a single bettor shows up.</p>
-    <p>A pool has nobody to pick off. There is no quote, only a ratio. When sharp money arrives it does not extract from a liquidity provider, because there is none; it simply bets against the other side and moves the odds. A moved number is information, the very thing a prediction market exists to produce. The sharpest trader alive can do nothing to a pool except make it more accurate.</p>
-    <p>The cost of this design is stated, not hidden. While a market is young there are no locked-in odds and no guaranteed exit before resolution. Your effective odds drift until the pool closes, the way racetrack odds flash until the gate opens, and you cannot sell out of a position early. That is the price of markets anyone can create with zero liquidity, and for the short-dated social questions pools are born for, it costs almost nothing. For markets that outgrow it, the answer is one section down.</p>
-    <p>No quoter, no bleed, no seed.</p>
-  </section>
-
-  <section class="reveal">
-    <style>
-      .lf-offer { background: var(--accent-soft); border: 1px solid var(--accent); border-radius: 10px; padding: .6rem .8rem; font-family: var(--sans); font-size: .84rem; color: var(--accent-ink); font-weight: 600; margin-bottom: .9rem; display: none; }
-      .lf-offer small { display: block; font-weight: 400; color: var(--muted); }
-      .lf-prog { display: flex; gap: 1rem; font-family: var(--sans); font-size: .8rem; color: var(--muted); margin: 1rem 0 .5rem; }
-      .lf-k { font-family: var(--sans); font-size: .8rem; color: var(--faint); margin-bottom: 1rem; }
-      .lf-tokens { display: none; grid-template-columns: 1fr 1fr 1.4fr; gap: .8rem; font-family: var(--sans); margin-bottom: 1rem; }
-      @media (max-width: 640px) { .lf-tokens { grid-template-columns: 1fr; } }
-      .lf-tok { border-radius: 12px; border: 1px solid var(--line-strong); background: var(--surface); box-shadow: var(--shadow); padding: .8rem .9rem; text-align: center; }
-      .lf-tok b { display: block; font-size: 1.05rem; }
-      .lf-tok.yes b { color: var(--good); }
-      .lf-tok.no b { color: var(--bad); }
-      .lf-tok small { color: var(--faint); font-size: .74rem; }
-      .lf-book { border-radius: 12px; border: 1px solid var(--accent); background: var(--accent-soft); padding: .8rem .9rem; font-size: .82rem; color: var(--accent-ink); font-weight: 600; }
-      .lf-book small { display: block; font-weight: 400; color: var(--muted); margin-top: .2rem; }
-    </style>
-    <p class="sec-label">Name your odds</p>
-    <h2>Or skip the drift entirely</h2>
-    <p>The pool's drifting odds are the fair price of zero-liquidity birth, and some bettors will not pay it. So from minute one a market also accepts standing offers: name your odds, escrow your side, and wait. Backing NO at 70 cents, up to some size, is not a bet into the ratio. It is a price you have nailed to the wall, borrowed straight from the private room's machinery with a public door on it.</p>
-    <p>One rule keeps two kinds of liquidity from confusing anyone: the market shows one price and routes through it. The default tap stays the simple pool bet. When a taker bets, the contract first fills any standing offer that beats the pool's current ratio, locked at the offer's posted odds, and overflows whatever remains into the pool. Best execution happens in the contract, so no casual bettor ever does arbitrage homework, and a tiny market with a serious offer suddenly has a serious price: $500 standing at 70 cents says far more about the world than a thirty-cent pool ratio does.</p>
-    <p>Two lines of small print, both deliberate. Offers earn no early-bettor bonus, because locked odds need no compensation for drift. And filling your own offer moves your governance volume by exactly zero, because the daily-net metric nets a self-trade out of existence before it counts.</p>
-
-    <div class="widget reveal">
-      <div class="widget-head"><span class="live"></span> One market's whole life, clickable</div>
-      <div class="pmnarr" id="lfNarr">A question is posted with a dime on YES. That dime is the market. Bet, post the offer, or call the crowd, and watch it grow up.</div>
-      <div class="lf-offer" id="lfOffer">Standing offer live: YES at a locked 70&cent;<small id="lfOfferSub">$140 of capacity, posted by someone sure of themselves</small></div>
-      <div class="pmsplit" id="lfBar" style="margin-bottom:.9rem">
-        <div class="yes" id="lfYes" style="width:95%">YES</div>
-        <div class="no" id="lfNo" style="width:5%"></div>
-      </div>
-      <div class="pmbtns">
-        <button class="btn" id="lfBetY" type="button">Bet $25 YES</button>
-        <button class="btn no" id="lfBetN" type="button">Bet $25 NO</button>
-        <button class="btn" id="lfPost" type="button" style="background:var(--accent-ink)">Post the offer</button>
-        <button class="btn ghost" id="lfCrowd" type="button">A crowd of 12 arrives</button>
-        <button class="btn ghost" id="lfReset" type="button">Reset</button>
-      </div>
-      <div class="lf-tokens" id="lfTokens">
-        <div class="lf-tok yes"><b>YES token</b><small>ERC-20, in your wallet: lend it, collateralize it, trade it</small></div>
-        <div class="lf-tok no"><b>NO token</b><small>ERC-20, in your wallet: same powers, other side</small></div>
-        <div class="lf-book"><span>Order book opens</span><small id="lfBookSub">The unfilled slice of the standing offer just became its first resting order.</small></div>
-      </div>
-      <div class="readout">
-        <div class="stat"><div class="k">Price of the next YES dollar</div><div class="v accent" id="lfPrice">&hellip;</div></div>
-        <div class="stat"><div class="k">Pot</div><div class="v" id="lfPot">$0.10</div></div>
-        <div class="stat"><div class="k">Matched at locked odds</div><div class="v" id="lfLocked">$0</div></div>
-      </div>
-      <div class="lf-prog" id="lfProg">
-        <div id="chkDis">&#10007; Disagreement Floor</div>
-        <div id="chkMak">&#10007; Maker Depth</div>
-        <div id="chkTim">&#10007; Time Lock</div>
-      </div>
-      <p style="font-family:var(--sans);font-size:.86rem;color:var(--faint);margin:0">Post the offer while the pool leans YES and watch routing work: your next YES bet fills at the locked 70 cents first, and only the overflow rides the ratio. Meet the <b>robustness thresholds</b> and the pool grows up on the spot: claims tokenize, the book opens, and nothing about your position changes except how much you can now do with it.</p>
-    </div>
-
-    <p>Graduation stops being a phase switch under this rule. The order book that opens at tokenization is not a new market bolted on; it grows out of offers that were standing there from the first hour, now trading tokens instead of escrow slots.</p>
-  </section>
-
-  <section class="reveal">
-    <p class="sec-label">Adulthood</p>
-    <h2>Growing up into tokens</h2>
-    <p>An arbitrary volume threshold (like $100,000 total volume) is lazy game theory. A whale could wash-trade both sides of a market just to force it to tokenize, or dump massive capital on a "sure thing" to trigger an order book that opens completely empty.</p>
+  <section id="self-custody-tokens" class="reveal">
+    <p class="sec-label">Value prop 2</p>
+    <h2>2. Self-custody tokens for liquid markets</h2>
+    <p>Tokenization is when a pool becomes a real market asset. Your claim turns into plain ERC-20 YES and NO tokens you can hold in your wallet, lend, borrow against, route through other venues, or combine into more complex bets. The question is when a pool has earned that power. Section 5 comes back to the resolution benefit: because this claim is transferable, final settlement can take the time it needs without trapping every holder.</p>
+    <p>An arbitrary volume threshold, like $100,000 total volume, is lazy game theory. A whale could wash-trade both sides of a market just to force it to tokenize, or dump massive capital on a "sure thing" to trigger an order book that opens completely empty.</p>
     <p>To prevent manipulation, the market uses a <b>Robustness Strategy</b>. A pool only graduates when it mathematically proves it can sustain an active limit order book by passing three simultaneous checks:</p>
 
     <div class="widget reveal">
@@ -413,11 +376,126 @@
     <p>This is where the custody complaint gets its answer. A YES token is not an entry on anyone's book. It is a bearer asset: post it as collateral in a lending pool, move it to any venue that will take it, or hold it through resolution in a wallet only you control. Nobody can freeze the account, because there is no account. Gas is sponsored for verified humans, so holding and moving the tokens never requires pre-funding a wallet with some second currency. If every PredictionMoMo interface vanished tomorrow, the claim in your wallet would still be yours.</p>
   </section>
 
+  <section id="private-markets" class="reveal">
+    <p class="sec-label">Value prop 3</p>
+    <h2>3. Private markets with neutral escrow</h2>
+    <p>This is the feature existing prediction markets mostly skip: a private, invite-only market with real third-party escrow. Set the odds yourself, share the link, and those odds never move.</p>
+    <p>It is a handshake bet with the escrow built in. Post your side at any odds you name, say $700 on YES at 70 cents, and send the link to whoever you want on the other side. Accepting means depositing the matching $300 of NO, and from that moment the odds are locked at exactly what you posted. No crowd, no drift. More invitees can join either side at the same fixed price for as long as the two sides stay matched, and unmatched money walks home at close. Resolution is the machinery you already know: an asserted outcome, a challenge window, the court for anything contested.</p>
+    <p>Two things make the room more than a convenience. It is protocol escrow in its simplest clothes: two parties, a disagreement with money locked in the middle, and an arbiter already attached, which is the exact shape of the deals apps will route here later. And a settled private market gives the court something no public market can: a real question with a verified answer that never appeared on any public page. With the participants' consent it becomes a blind test for jurors, one that cannot be looked up, and <a href="hybrid-juror-prediction-market-integration.html">the loop chapter</a> puts those tests to work.</p>
+  </section>
+
+  <section id="start-market" class="reveal">
+    <p class="sec-label">Value prop 4</p>
+    <h2>4. Start a market with the first bet</h2>
+    <p><b>Here is the entire act of creating a market:</b> You type a question, you bet a dime on the side you believe, and you share the link. That is the whole ceremony. No listing process, no market maker, no liquidity provider, no seed money waiting in a vault.</p>
+    <p>A new market is a parimutuel pool, the structure Joseph Oller invented for Paris racetracks in 1867 because he wanted betting without a bookmaker setting odds. The pool predates every market maker ever built. Everyone bets into a shared pot, the odds are nothing more than the ratio of the two sides, and when the question resolves the winners split the entire pot pro-rata, minus the 2% fee skimmed at settlement. One refinement is ours: the first bettors set the odds blind, with no crowd to lean on, so their claims carry a time-weight bonus. A dollar staked early earns a larger slice than a dollar that arrived after the picture cleared.</p>
+
+    <div class="widget reveal">
+      <div class="widget-head"><span class="live"></span> Born with a dime</div>
+      <div class="pmnarr" id="PM1narr">The market is born empty. Total cost to create it: whatever you bet first. Try a dime.</div>
+      <div class="pmsplit empty" id="PM1bar">
+        <div class="yes" id="PM1yes" style="width:50%">YES</div>
+        <div class="no" id="PM1no" style="width:50%">NO</div>
+      </div>
+      <div class="pmbtns">
+        <button class="btn" id="PM1y01" type="button">Bet 10&cent; YES</button>
+        <button class="btn" id="PM1y1" type="button">Bet $1 YES</button>
+        <button class="btn no" id="PM1n1" type="button">Bet $1 NO</button>
+        <button class="btn no" id="PM1n10" type="button">Bet $10 NO</button>
+        <button class="btn ghost" id="PM1crowd" type="button">Let 25 bettors arrive</button>
+        <button class="btn ghost" id="PM1reset" type="button">Reset</button>
+      </div>
+      <div class="readout">
+        <div class="stat"><div class="k">Pot</div><div class="v" id="PM1pot">$0.00</div></div>
+        <div class="stat"><div class="k">Crowd's odds on YES</div><div class="v accent" id="PM1odds">&hellip;</div></div>
+        <div class="stat"><div class="k">$1 on YES pays</div><div class="v" id="PM1py">&hellip;</div></div>
+        <div class="stat"><div class="k">$1 on NO pays</div><div class="v" id="PM1pn">&hellip;</div></div>
+      </div>
+      <p style="font-family:var(--sans);font-size:.86rem;color:var(--faint);margin:1rem 0 0">Illustrative, with the 2% settlement fee taken off the pot. Payouts are pro-rata shares of everything, so each side's quoted payout is live and self-balancing: when YES gets crowded, betting NO gets juicy, which is what pulls the other side in. The early-bettor time weight is left out of the demo to keep the arithmetic visible.</p>
+    </div>
+
+    <p>Notice what the demo never asks for. <b>Nobody funds the market before the crowd exists, because the first dime in is the market.</b> Your opening bet is the listing fee, the seed, and the dare, all at once, and the share link is the entire distribution strategy.</p>
+  </section>
+
   <section class="reveal">
-    <p class="sec-label">Composability</p>
-    <h2>DraftKings parlays, mathematically pure</h2>
-    <p>Bettors love the centralized bookie experience: live fixed odds, concurrent parlays, and early cashouts. But if a decentralized protocol acts as the bookie to quote you a price on a combination of events, it is highly vulnerable to insider knowledge and bankruptcy.</p>
-    <p>The parlay layer gives bettors the centralized bookie experience without the protocol or a "bookie" ever taking risk, using a native integration of the <b>Conditional Tokens Framework (CTF)</b>.</p>
+    <p class="sec-label">Value prop 4</p>
+    <h2>4.1 Why tiny markets need no market maker</h2>
+    <p>Ask who loses when a well-informed trader walks into a market. On a quoted market, the quoter does. An automated market maker is a standing offer to trade at a posted price, and whoever knows more than the posting picks it off, trade after trade. That is why quoting engines need a subsidy to survive, and why a subsidized market can never be opened by anyone for pocket change. Someone has to fund the quote before a single bettor shows up.</p>
+    <p>A pool has nobody to pick off. There is no quote, only a ratio. When sharp money arrives it does not extract from a liquidity provider, because there is none; it simply bets against the other side and moves the odds. A moved number is information, the very thing a prediction market exists to produce. The sharpest trader alive can do nothing to a pool except make it more accurate.</p>
+    <p>The cost of this design is stated, not hidden. While a market is young there are no locked-in odds and no guaranteed exit before resolution. Your effective odds drift until the pool closes, the way racetrack odds flash until the gate opens, and you cannot sell out of a position early. That is the price of markets anyone can create with zero liquidity, and for the short-dated social questions pools are born for, it costs almost nothing. For markets that outgrow it, the answer is one section down.</p>
+    <p>No quoter, no bleed, no seed.</p>
+  </section>
+
+  <section class="reveal">
+    <style>
+      .lf-offer { background: var(--accent-soft); border: 1px solid var(--accent); border-radius: 10px; padding: .6rem .8rem; font-family: var(--sans); font-size: .84rem; color: var(--accent-ink); font-weight: 600; margin-bottom: .9rem; display: none; }
+      .lf-offer small { display: block; font-weight: 400; color: var(--muted); }
+      .lf-prog { display: flex; gap: 1rem; font-family: var(--sans); font-size: .8rem; color: var(--muted); margin: 1rem 0 .5rem; }
+      .lf-k { font-family: var(--sans); font-size: .8rem; color: var(--faint); margin-bottom: 1rem; }
+      .lf-tokens { display: none; grid-template-columns: 1fr 1fr 1.4fr; gap: .8rem; font-family: var(--sans); margin-bottom: 1rem; }
+      @media (max-width: 640px) { .lf-tokens { grid-template-columns: 1fr; } }
+      .lf-tok { border-radius: 12px; border: 1px solid var(--line-strong); background: var(--surface); box-shadow: var(--shadow); padding: .8rem .9rem; text-align: center; }
+      .lf-tok b { display: block; font-size: 1.05rem; }
+      .lf-tok.yes b { color: var(--good); }
+      .lf-tok.no b { color: var(--bad); }
+      .lf-tok small { color: var(--faint); font-size: .74rem; }
+      .lf-book { border-radius: 12px; border: 1px solid var(--accent); background: var(--accent-soft); padding: .8rem .9rem; font-size: .82rem; color: var(--accent-ink); font-weight: 600; }
+      .lf-book small { display: block; font-weight: 400; color: var(--muted); margin-top: .2rem; }
+    </style>
+    <p class="sec-label">Value prop 4</p>
+    <h2>4.2 Fixed odds when the pool price is not enough</h2>
+    <p>The pool's drifting odds are the fair price of zero-liquidity birth, and some bettors will not pay it. So from minute one a market also accepts standing offers: name your odds, escrow your side, and wait. Backing NO at 70 cents, up to some size, is not a bet into the ratio. It is a price you have nailed to the wall, borrowed straight from the private room's machinery with a public door on it.</p>
+    <p>One rule keeps two kinds of liquidity from confusing anyone: the market shows one price and routes through it. The default tap stays the simple pool bet. When a taker bets, the contract first fills any standing offer that beats the pool's current ratio, locked at the offer's posted odds, and overflows whatever remains into the pool. Best execution happens in the contract, so no casual bettor ever does arbitrage homework, and a tiny market with a serious offer suddenly has a serious price: $500 standing at 70 cents says far more about the world than a thirty-cent pool ratio does.</p>
+    <p>Two lines of small print, both deliberate. Offers earn no early-bettor bonus, because locked odds need no compensation for drift. And filling your own offer moves your governance volume by exactly zero, because the daily-net metric nets a self-trade out of existence before it counts.</p>
+
+    <div class="widget reveal">
+      <div class="widget-head"><span class="live"></span> One market's whole life, clickable</div>
+      <div class="pmnarr" id="lfNarr">A question is posted with a dime on YES. That dime is the market. Bet, post the offer, or call the crowd, and watch it grow up.</div>
+      <div class="lf-offer" id="lfOffer">Standing offer live: YES at a locked 70&cent;<small id="lfOfferSub">$140 of capacity, posted by someone sure of themselves</small></div>
+      <div class="pmsplit" id="lfBar" style="margin-bottom:.9rem">
+        <div class="yes" id="lfYes" style="width:95%">YES</div>
+        <div class="no" id="lfNo" style="width:5%"></div>
+      </div>
+      <div class="pmbtns">
+        <button class="btn" id="lfBetY" type="button">Bet $25 YES</button>
+        <button class="btn no" id="lfBetN" type="button">Bet $25 NO</button>
+        <button class="btn" id="lfPost" type="button" style="background:var(--accent-ink)">Post the offer</button>
+        <button class="btn ghost" id="lfCrowd" type="button">A crowd of 12 arrives</button>
+        <button class="btn ghost" id="lfReset" type="button">Reset</button>
+      </div>
+      <div class="lf-tokens" id="lfTokens">
+        <div class="lf-tok yes"><b>YES token</b><small>ERC-20, in your wallet: lend it, collateralize it, trade it</small></div>
+        <div class="lf-tok no"><b>NO token</b><small>ERC-20, in your wallet: same powers, other side</small></div>
+        <div class="lf-book"><span>Order book opens</span><small id="lfBookSub">The unfilled slice of the standing offer just became its first resting order.</small></div>
+      </div>
+      <div class="readout">
+        <div class="stat"><div class="k">Price of the next YES dollar</div><div class="v accent" id="lfPrice">&hellip;</div></div>
+        <div class="stat"><div class="k">Pot</div><div class="v" id="lfPot">$0.10</div></div>
+        <div class="stat"><div class="k">Matched at locked odds</div><div class="v" id="lfLocked">$0</div></div>
+      </div>
+      <div class="lf-prog" id="lfProg">
+        <div id="chkDis">&#10007; Disagreement Floor</div>
+        <div id="chkMak">&#10007; Maker Depth</div>
+        <div id="chkTim">&#10007; Time Lock</div>
+      </div>
+      <p style="font-family:var(--sans);font-size:.86rem;color:var(--faint);margin:0">Post the offer while the pool leans YES and watch routing work: your next YES bet fills at the locked 70 cents first, and only the overflow rides the ratio. Meet the <b>robustness thresholds</b> and the pool grows up on the spot: claims tokenize, the book opens, and nothing about your position changes except how much you can now do with it.</p>
+    </div>
+
+    <p>Graduation stops being a phase switch under this rule. The order book that opens at tokenization is not a new market bolted on; it grows out of offers that were standing there from the first hour, now trading tokens instead of escrow slots.</p>
+  </section>
+
+  <section id="tradeable-disputes" class="reveal">
+    <p class="sec-label">Value prop 5</p>
+    <h2>5. Markets keep trading while resolution runs</h2>
+    <p>This is where the token layer from section 2 pays off. If a market has tokenized, YES and NO stay transferable through assertion windows, challenges, and court review. Anyone who wants out can sell to someone willing to hold resolution risk; final redemption waits, but price discovery does not.</p>
+    <p>That means the court does not have to rush. Longer challenge windows and retroactive fixes become possible because users are not trapped inside a frozen platform balance while the answer is checked.</p>
+  </section>
+
+  <section id="peer-to-peer-parlays" class="reveal">
+    <p class="sec-label">Value prop 6</p>
+    <h2>6. Peer-to-peer parlays without bookie risk</h2>
+    <p>Bettors want live fixed odds, parlays, and early cashouts. The dangerous version is a house quoting combinations from its own balance sheet, where insider knowledge and bankruptcy risk sit in the middle of every bet.</p>
+    <p>The parlay layer gives that familiar experience without making the protocol a bookie, using a native integration of the <b>Conditional Tokens Framework (CTF)</b>.</p>
     <p>By strictly restricting this capability to markets that have already passed the Robustness Lock, we guarantee the underlying tokens are highly liquid. This completely avoids the "ghost town" fragmentation problem that plagues other AMM-based parlay platforms.</p>
 
     <h3>The UX problem with manual token splitting</h3>
@@ -473,72 +551,9 @@
     </script>
     <p>By leveraging atomic routing, the contracts act as market escrow rather than a casino. The <b>Live Odds</b> of the parlay are simply the current bids on the limit order book for the combinatorial token. To <b>Cash Out Early</b>, bettors do not ask the house for a buyout; they simply dump their token into the open order book to the highest bidder.</p>
   </section>
-
-  <section class="reveal">
-    <p class="sec-label">The private room</p>
-    <h2>Markets behind an invitation</h2>
-    <p>Everything so far has been public: a pool anyone can join, a book anyone can trade. The fourth feature is a room. A private, invite-only market where you set the odds yourself and they never move.</p>
-    <p>It is a handshake bet with the escrow built in. Post your side at any odds you name, say $700 on YES at 70 cents, and send the link to whoever you want on the other side. Accepting means depositing the matching $300 of NO, and from that moment the odds are locked at exactly what you posted. No crowd, no drift. More invitees can join either side at the same fixed price for as long as the two sides stay matched, and unmatched money walks home at close. Resolution is the machinery you already know: an asserted outcome, a challenge window, the court for anything contested.</p>
-    <p>Two things make the room more than a convenience. It is protocol escrow in its simplest clothes: two parties, a disagreement with money locked in the middle, and an arbiter already attached, which is the exact shape of the deals apps will route here later. And a settled private market gives the court something no public market can: a real question with a verified answer that never appeared on any public page. With the participants' consent it becomes a blind test for jurors, one that cannot be looked up, and <a href="hybrid-juror-prediction-market-integration.html">the loop chapter</a> puts those tests to work.</p>
-  </section>
-
-  <section class="reveal">
-    <p class="sec-label">Resolution</p>
-    <h2>How a market ends</h2>
-    <p><b>The event happens:</b> Now somebody has to say so, and this is where most markets quietly hand the job back to a trusted operator. Here the job is open to anyone, and it runs in three moves.</p>
-
-    <ol class="stepper reveal">
-      <li>
-        <span class="step-n">1</span>
-        <div class="step-body">
-          <h3>Anyone asserts the outcome</h3>
-          <p>Whoever saw the result posts it along with a bond. No oracle company, no resolution committee, no waiting for an operator to wake up. The bond is the assertion's skin in the game.</p>
-        </div>
-      </li>
-      <li>
-        <span class="step-n">2</span>
-        <div class="step-body">
-          <h3>A one-week window, watched for profit</h3>
-          <p>A false assertion forfeits its bond to whoever catches it, so <b>watching the windows is a paid job</b>, not a civic hobby. The night shift is staffed by bounty hunters, and a lie asserted into a sleeping market is a bounty on the liar's own head. A full week of window means the lie has to survive every timezone awake, day after day, and nobody is left waiting on it: on tokenized markets the YES and NO tokens keep trading straight through the window, so anyone who wants out sells, and only the final conversion to dollars waits.</p>
-        </div>
-      </li>
-      <li>
-        <span class="step-n">3</span>
-        <div class="step-body">
-          <h3>Payout, or the court</h3>
-          <p>If the window closes quietly, the pool pays out pro-rata and the market is history. If someone challenges, the locked pot crosses into the court lane, and the final verdict releases it by rule.</p>
-        </div>
-      </li>
-    </ol>
-
-    <p>Roughly 95% of markets end at step two: one assertion, one quiet window, payout. The funnel below is the whole resolution story at a glance.</p>
-
-    <figure class="diagram reveal">
-      <div class="diagram-inner">
-        <div class="funnel">
-          <div>
-            <div class="fk"><span>Markets that reach resolution</span><b>100</b></div>
-            <div class="fbar f-all"></div>
-          </div>
-          <div>
-            <div class="fk"><span>Settle quietly: asserted, watched, unchallenged</span><b>~95</b></div>
-            <div class="fbar f-quiet"></div>
-          </div>
-          <div>
-            <div class="fk"><span>Challenged, decided by the court</span><b>~5</b></div>
-            <div class="fbar f-court"></div>
-          </div>
-        </div>
-      </div>
-      <figcaption>One hundred markets, one ending each. <b>Roughly ninety five settle without a juror lifting a finger, and the court exists for the rest.</b></figcaption>
-    </figure>
-
-    <p>The contested few cross into <a href="juror-court.html">the court</a>: a panel of verified humans, drawn by a public beacon, voting in encrypted ballots, with a dispute ladder above them for the truly stubborn. The money is already inside protocol escrow, so the verdict is not advice; it is the release rule. And the quiet settlements are not wasted. Every one that passes curation becomes an answer key that grades the jurors, which is the engine <a href="hybrid-juror-prediction-market-integration.html">the loop chapter</a> is about.</p>
-  </section>
-
   <section class="reveal">
     <p class="sec-label">The economics</p>
-    <h2>The fee, printed once</h2>
+    <h2>The fee that pays the court</h2>
     <p>The whole business model is one number, printed once. A 2% fee comes off every pot at settlement and splits three ways: 70% pays the jurors, 20% feeds the reward pool that pays the active, high-quality ones, 10% runs the protocol. The 2% base and its split are constitutional and route first; <a href="governance.html">the market's own token</a> may vote a margin of up to one extra point on top, which is the company's revenue, and the juror payroll never depends on it. The market pays for the court that settles it, and the court is what makes it worth betting in.</p>
 
     <figure class="diagram reveal">
@@ -553,35 +568,23 @@
       <figcaption>The 2% settlement fee, split once. <b>The split sums to one, so no dollar is ever promised twice.</b></figcaption>
     </figure>
 
-    <p>That is PredictionMoMo: born for a dime, priced by its own crowd, grown into tokens you hold yourself, and ended by a bonded assertion or a court nobody can buy. The next chapter closes the circuit, because the same settled markets that pay the jurors are also what teach the court who its best jurors are.</p>
+    <p>That is PredictionMoMo: an arbiter whales cannot buy, claims you hold yourself, private markets with neutral escrow, markets born from a dime, dispute windows that do not freeze trade, and parlays without bookie risk. The next chapter closes the circuit, because the same settled markets that pay the jurors are also what teach the court who its best jurors are.</p>
   </section>
 
   <footer class="endnote reveal">
     <nav id="series" aria-label="Where you are in the series"></nav>
-    <div class="sitemap">
-      <div class="sitemap-col">
-        <span class="sm-h">I &middot; The promise</span>
-        <a href="vision.html">1. The vision</a>
-      </div>
-      <div class="sitemap-col">
-        <span class="sm-h">II &middot; The mechanism</span>
-        <a href="juror-court.html">2. The court</a>
-        <a href="hybrid-juror-system.html">3. The hybrid system</a>
-      </div>
-      <div class="sitemap-col">
-        <span class="sm-h">III &middot; The bootstrap</span>
-        <a href="prediction-market.html">4. PredictionMoMo</a>
-        <a href="hybrid-juror-prediction-market-integration.html">5. The loop</a>
-        <a href="zero-to-one.html">6. Zero to one</a>
-      </div>
-      <div class="sitemap-col">
-        <span class="sm-h">IV &middot; The payoff</span>
-        <a href="compounding.html">7. Why it compounds</a>
-        <a href="the-design.html">8. The blueprint</a>
-        <a href="governance.html">9. Governance</a>
-        <a href="game-theory.html">10. Game lab</a>
-        <a href="index.html">Home &middot; the map</a>
-      </div>
+    <div class="sitemap sitemap-flat">
+      <a href="vision.html">1. The vision</a>
+      <a href="juror-court.html">2. The court</a>
+      <a href="hybrid-juror-system.html">3. The hybrid system</a>
+      <a href="prediction-market.html">4. PredictionMoMo</a>
+      <a href="hybrid-juror-prediction-market-integration.html">5. The loop</a>
+      <a href="zero-to-one.html">6. Zero to one</a>
+      <a href="compounding.html">7. Why it compounds</a>
+      <a href="the-design.html">8. The blueprint</a>
+      <a href="governance.html">9. Governance</a>
+      <a href="game-theory.html">10. Game lab</a>
+      <a href="index.html">Home &middot; the map</a>
     </div>
     <p class="signoff">Markets that cost a dime to open and settle like clockwork.</p>
   </footer>

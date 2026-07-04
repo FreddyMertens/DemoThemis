@@ -75,26 +75,16 @@
     <button class="nav-toggle" type="button" aria-label="Menu" aria-expanded="false">&#9776;</button>
     <div class="nav-links">
       <a href="index.html">Home</a>
-      <a href="vision.html">Vision</a>
-      <div class="nav-group">
-        <button class="nav-group-btn" type="button">The mechanism</button>
-        <div class="nav-menu">
-          <a href="juror-court.html"><span class="ch">02</span> The court</a>
-          <a href="hybrid-juror-system.html"><span class="ch">03</span> The hybrid system</a>
-        </div>
-      </div>
-      <div class="nav-group nav-group-end">
-        <button class="nav-group-btn" type="button">The bootstrap</button>
-        <div class="nav-menu">
-          <a href="prediction-market.html"><span class="ch">04</span> PredictionMoMo</a>
-          <a href="hybrid-juror-prediction-market-integration.html"><span class="ch">05</span> The loop</a>
-          <a href="zero-to-one.html"><span class="ch">06</span> Zero to one</a>
-        </div>
-      </div>
-      <a href="compounding.html">Why it compounds</a>
-      <a href="the-design.html">The blueprint</a>
-      <a href="governance.html">Governance</a>
-      <a href="game-theory.html">Game lab</a>
+      <a href="vision.html"><span class="ch">01</span> Vision</a>
+      <a href="juror-court.html"><span class="ch">02</span> Court</a>
+      <a href="hybrid-juror-system.html"><span class="ch">03</span> Hybrid system</a>
+      <a href="prediction-market.html"><span class="ch">04</span> PredictionMoMo</a>
+      <a href="hybrid-juror-prediction-market-integration.html"><span class="ch">05</span> Loop</a>
+      <a href="zero-to-one.html"><span class="ch">06</span> Zero to one</a>
+      <a href="compounding.html"><span class="ch">07</span> Compounding</a>
+      <a href="the-design.html"><span class="ch">08</span> Blueprint</a>
+      <a href="governance.html"><span class="ch">09</span> Governance</a>
+      <a href="game-theory.html"><span class="ch">10</span> Game lab</a>
     </div>
   </div>
 </nav>
@@ -104,16 +94,23 @@
   <h1>How the court works: verified human juries that cannot be bribed</h1>
   <p class="dek">The court decides disputed outcomes after funds are already locked in protocol escrow, with randomly drawn juries of verified humans, one person one vote. This chapter walks through each lock that keeps a verdict unbuyable: the self-pricing seat, the random draw nobody can re-roll, the face check at every draw, the encrypted ballot no juror can prove, and panels that grow with the stakes.</p>
   <div class="meta">
-    <span class="pill">The mechanism</span>
+    <span class="pill">Arbitration</span>
     <span>12 min read</span>
     <span class="dot">&bull;</span>
-    <span>Act II &middot; Chapter 2 of 10</span>
+    <span>Chapter 2 of 10</span>
   </div>
 </header>
 
 <main class="content wrap">
 
   <aside id="toc" class="toc reveal"></aside>
+
+  <div class="product product-feature court reveal">
+    <h3>DemoThemis: protocol escrow and arbitration</h3>
+    <p><span class="lab">Goal:</span> a protocol escrow and arbitration service so good that customers want every online deal to run through it, from Uber to eBay to Airbnb to AdSense. Apps bring demand and interface; DemoThemis holds the funds, decides disputes, and releases or refunds by rule.</p>
+    <p><span class="lab">How:</span> robust, ungameable mechanics with proof of personhood to overcome the need for plutocracy. PredictionMoMo supplies the first demand, data, and escrow volume.</p>
+    <p><span class="lab">Using worldcoin for 1 to ensure juror = 1 person:</span> a World ID iris scan makes each arbitrator one unique person with one vote, a face check on their own phone confirms presence at every draw, and settlement runs on-chain with gas sponsored for verified humans.</p>
+  </div>
 
   <!-- ============ 1: the wrong foundation ============ -->
   <section class="reveal">
@@ -332,30 +329,18 @@
 
   <footer class="endnote reveal">
     <nav id="series" aria-label="Where you are in the series"></nav>
-    <div class="sitemap">
-      <div class="sitemap-col">
-        <span class="sm-h">I &middot; The promise</span>
-        <a href="vision.html">1. The vision</a>
-      </div>
-      <div class="sitemap-col">
-        <span class="sm-h">II &middot; The mechanism</span>
-        <a href="juror-court.html">2. The court</a>
-        <a href="hybrid-juror-system.html">3. The hybrid system</a>
-      </div>
-      <div class="sitemap-col">
-        <span class="sm-h">III &middot; The bootstrap</span>
-        <a href="prediction-market.html">4. PredictionMoMo</a>
-        <a href="hybrid-juror-prediction-market-integration.html">5. The loop</a>
-        <a href="zero-to-one.html">6. Zero to one</a>
-      </div>
-      <div class="sitemap-col">
-        <span class="sm-h">IV &middot; The payoff</span>
-        <a href="compounding.html">7. Why it compounds</a>
-        <a href="the-design.html">8. The blueprint</a>
-        <a href="governance.html">9. Governance</a>
-        <a href="game-theory.html">10. Game lab</a>
-        <a href="index.html">Home &middot; the map</a>
-      </div>
+    <div class="sitemap sitemap-flat">
+      <a href="vision.html">1. The vision</a>
+      <a href="juror-court.html">2. The court</a>
+      <a href="hybrid-juror-system.html">3. The hybrid system</a>
+      <a href="prediction-market.html">4. PredictionMoMo</a>
+      <a href="hybrid-juror-prediction-market-integration.html">5. The loop</a>
+      <a href="zero-to-one.html">6. Zero to one</a>
+      <a href="compounding.html">7. Why it compounds</a>
+      <a href="the-design.html">8. The blueprint</a>
+      <a href="governance.html">9. Governance</a>
+      <a href="game-theory.html">10. Game lab</a>
+      <a href="index.html">Home &middot; the map</a>
     </div>
     <p class="signoff">A verdict money cannot reach: not because nobody would sell, but because nothing here can be delivered.</p>
   </footer>
