@@ -221,6 +221,7 @@
       <a href="hybrid-juror-prediction-market-integration.html"><span class="ch">04</span> Bootstrap loop</a>
       <a href="the-design.html"><span class="ch">05</span> Run-through</a>
       <a href="governance.html"><span class="ch">06</span> Governance</a>
+      <a href="glossary.html">Glossary</a>
     </div>
   </div>
 </nav>
@@ -262,7 +263,7 @@
           <div class="run-card"><strong>Pot</strong><b id="runPot">$0.10</b><small id="runOdds">YES 100%</small></div>
           <div class="run-card"><strong>Claims</strong><b id="runClaims">pool slots</b><small id="runTrade">not tokenized yet</small></div>
           <div class="run-card"><strong>Court</strong><b id="runCourt">idle</b><small id="runPanel">no panel</small></div>
-          <div class="run-card"><strong>Loop fuel</strong><b id="runLoop">0 keys</b><small id="runFees">$0 fees</small></div>
+          <div class="run-card"><strong>Loop fuel</strong><b id="runLoop">0 aptitude test cases</b><small id="runFees">$0 fees</small></div>
         </div>
 
         <div class="run-controls">
@@ -354,7 +355,7 @@
                 <div class="unlock" data-component="reserve"><b>Live reserve <span class="tag">locked</span></b><small>Lazy wrong votes lose pending income; slashes feed rewards.</small></div>
                 <div class="unlock" data-component="appeal"><b>Appeal floors <span class="tag">locked</span></b><small>Rungs price the next panel, capture risk, and delay rent.</small></div>
                 <div class="unlock" data-component="finality"><b>Finality plus reports <span class="tag">locked</span></b><small>Escrow ends; collusion reports never expire.</small></div>
-                <div class="unlock" data-component="keys"><b>Answer keys <span class="tag">locked</span></b><small>Clean markets become the scoreboard for juror quality.</small></div>
+                <div class="unlock" data-component="keys"><b>Aptitude tests <span class="tag">locked</span></b><small>Clean resolved markets become test cases for juror quality.</small></div>
               </div>
             </div>
           </div>
@@ -366,19 +367,19 @@
   <section class="reveal" id="bootstrap-loop">
     <p class="sec-label">Bootstrap loop</p>
     <h2>Watch the market feed the court</h2>
-    <p>The run-through is one case, but the design only matters because the same loop repeats. Markets create work and fees. Fees pay jurors. Settled outcomes create answer keys. Better-scored jurors make the court safer. A safer court makes the next market easier to trust.</p>
+    <p>The run-through is one case, but the design only matters because the same loop repeats. Markets create work and fees. Fees pay jurors. Settled outcomes create resolved cases for aptitude tests. Better-scored jurors make the court safer. A safer court makes the next market easier to trust.</p>
     <figure class="diagram reveal">
       <div class="diagram-inner">
         <div class="loop-strip" id="loopStrip">
           <div class="loop-node" data-loop="cases" data-step="01"><b>More markets</b><span>Questions appear because opening one costs whatever the first bet is.</span></div>
           <div class="loop-node" data-loop="fees" data-step="02"><b>Fee flow</b><span>The 2% settlement fee routes first to juror pay, rewards, and operations.</span></div>
           <div class="loop-node" data-loop="jurors" data-step="03"><b>Paid jurors</b><span>Use funds the humans who will judge the contested few.</span></div>
-          <div class="loop-node" data-loop="keys" data-step="04"><b>Answer keys</b><span>Clean resolved markets become calibration cases.</span></div>
+          <div class="loop-node" data-loop="keys" data-step="04"><b>Aptitude tests</b><span>Clean resolved markets become juror test cases.</span></div>
           <div class="loop-node" data-loop="rep" data-step="05"><b>Sharper bench</b><span>Reputation drives pay, draw rate, and appeal confidence.</span></div>
           <div class="loop-node" data-loop="trust" data-step="06"><b>More demand</b><span>Visible proof makes the next integrator less afraid to route escrow.</span></div>
         </div>
       </div>
-      <figcaption>PredictionMoMo is not just the first customer. <b>It manufactures the cases, fees, answer keys, and proof the court needs to exist.</b></figcaption>
+      <figcaption>PredictionMoMo is not just the first customer. <b>It manufactures the cases, fees, resolved cases for aptitude tests, and proof the court needs to exist.</b></figcaption>
     </figure>
   </section>
 
@@ -414,6 +415,7 @@
       <a href="hybrid-juror-prediction-market-integration.html">4. Bootstrap loop</a>
       <a href="the-design.html">5. Run-through</a>
       <a href="governance.html">6. Governance</a>
+      <a href="glossary.html">Glossary</a>
       <a href="index.html">Home &middot; the map</a>
     </div>
     <p class="signoff">One market, every mechanism, the loop made visible.</p>
@@ -683,11 +685,11 @@
       title: "Finality and memory",
       sub: "The case pays out and teaches.",
       mission: "Close escrow, feed the loop",
-      text: "The appeal verdict finalizes the market. Escrow pays out and never reopens. The clean record becomes an answer key, fees pay jurors, and the public outcome improves the court's track record for the next market.",
+      text: "The appeal verdict finalizes the market. Escrow pays out and never reopens. The clean record becomes a resolved case for aptitude tests, fees pay jurors, and the public outcome improves the court's track record for the next market.",
       nodes: ["appeal", "final", "keys"],
       features: ["instant", "fixed", "tokens", "private", "trade", "parlay"],
       components: ["escrow", "watcher", "draw", "personhood", "ballot", "reserve", "appeal", "finality", "keys"],
-      tokens: ["Final payout", "Answer key", "Juror score update"],
+      tokens: ["Final payout", "Aptitude test case", "Juror score update"],
       pot: 118000,
       yes: .02,
       claims: "redeemable",
@@ -825,13 +827,13 @@
     },
     {
       lane: "Finality loop",
-      title: "Answer key",
-      body: "The final result pays escrow and closes the market. The clean record becomes an answer key that improves juror scoring for later cases.",
+      title: "Aptitude test case",
+      body: "The final result pays escrow and closes the market. The clean record becomes a resolved case for aptitude tests that improves juror scoring for later cases.",
       change: "Escrow closed",
       why: "The market is over, but the court is stronger for the next one.",
       next: "More demand",
       tone: "final",
-      results: ["Winning claims redeem and the market cannot reopen.", "The answer key updates juror scoring for future cases.", "A stronger public record makes the next market easier to trust."]
+      results: ["Winning claims redeem and the market cannot reopen.", "The resolved case for aptitude tests updates juror scoring for future cases.", "A stronger public record makes the next market easier to trust."]
     }
   ];
 
@@ -1017,7 +1019,7 @@
     },
     {
       actor: { title: "Final escrow", sub: "market cannot reopen", icon: "vault", tone: "accent", mark: "END" },
-      core: { title: "Answer key", sub: "clean record saved", icon: "key", tone: "accent", mark: "KEY" },
+      core: { title: "Aptitude test case", sub: "clean record saved", icon: "score", tone: "accent", mark: "TEST" },
       result: { title: "Better court", sub: "scores raise trust", icon: "score", tone: "good", mark: "UP" },
       chips: [["Payout complete", "good"], ["Jurors graded", "accent"], ["Demand rises", "good"]]
     }
@@ -1302,7 +1304,7 @@
     } else {
       svg += node(50, 94, 126, 90, "Escrow", "final", "accent", hot0);
       svg += node(258, 80, 122, 74, "Payout", "redeem YES/NO", "good", hot0);
-      svg += node(258, 190, 122, 74, "Answer key", "clean record", "accent", hot1);
+      svg += node(258, 190, 122, 74, "Aptitude test case", "clean record", "accent", hot1);
       svg += node(500, 96, 136, 76, "Juror scores", "updated", "good", hot1);
       svg += node(500, 210, 136, 56, "Next demand", "more trust", "soft", hot2);
       svg += flow(176, 139, 258, 118, "good", hot0);
@@ -1502,7 +1504,7 @@
     setText("runTrade", item.trade);
     setText("runCourt", item.court);
     setText("runPanel", item.panel);
-    setText("runLoop", item.keys + (item.keys === 1 ? " key" : " keys"));
+    setText("runLoop", item.keys + (item.keys === 1 ? " aptitude test case" : " aptitude test cases"));
     setText("runFees", money(item.fees) + " settlement fees");
     renderRail();
     renderFocus(item);

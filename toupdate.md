@@ -35,7 +35,7 @@ Settings reviewed: bar `0.70`, `z = 1.96` (95%), rolling window `50–150` cases
 
 - *Finding:* For **effort/shirking**, the gate is blind. Coherence is inflated by case base rates, so a low-effort juror who just votes the obvious answer can score ~0.80+ coherence on a lopsided docket and never trip the gate, keeping near-full weight.
 - *Finding:* **Margin weighting makes this worse** — a shirker's confident agreement on lopsided cases is high-margin and heavily weighted, while their coin-flip noise on close cases is low-margin and lightly weighted. The mechanism meant to protect honest dissent inadvertently subsidizes the prior-voter.
-- *Finding:* **Calibration is too thin per-juror to police individuals.** At 5–10% of a ≤150-case window that is ~8–15 known-answer cases; a Wilson interval on ~10 samples has half-width ±0.20–0.25 — far too wide to suspend on. Calibration is strong for **pool-wide drift**, weak for **individual effort**.
+- *Finding:* **Calibration is too thin per-juror to police individuals.** At 5–10% of a ≤150-case window that is ~8–15 resolved cases for aptitude tests; a Wilson interval on ~10 samples has half-width ±0.20–0.25 — far too wide to suspend on. Calibration is strong for **pool-wide drift**, weak for **individual effort**.
 - *Equilibrium risk:* if shirking clears the bar and pays full fees for ~zero effort, low effort is a profitable deviation. Pushed to its limit the pool drifts to "everyone votes the prior" — accurate on easy cases that never needed a court, coin-flip on the contested ones that did.
 
 ### 1.3 Reference — the full control surface (6 lever families)
@@ -137,7 +137,7 @@ Settled in the `victim-compensation.html` discussion. There is **no victim-compe
 ### 4.3 The reward mechanism — quality bar + recency, self-sizing
 
 - [ ] Pay the reward pool on a period (weekly/monthly), split among jurors who clear **two gates at once**:
-  - **Quality:** above the existing **0.70 full-weight bar** (absolute, calibrated against settled answer keys). *Not a pool-relative median* — a median always excludes half regardless of true quality, doesn't track absolute quality, and is gameable by flooding bad jurors to drag it down.
+  - **Quality:** above the existing **0.70 full-weight bar** (absolute, calibrated against settled resolved cases for aptitude tests). *Not a pool-relative median* — a median always excludes half regardless of true quality, doesn't track absolute quality, and is gameable by flooding bad jurors to drag it down.
   - **Recency / activity:** active in the window. Key it to **availability** (opted in, passing liveness when called), not realized draws, so a good juror who simply was not drawn is not punished by the random lottery.
   - *Why both gates — concentration:* spread across everyone who ever cleared the bar, the dividend is too small to motivate; gated to active above-bar jurors, the same dollars land on a small set and become meaningful per head. It also targets the security-relevant set (the active, high-quality pool that decides cases).
   - *Self-sizing:* per-head = pool ÷ eligible jurors, so as more clear the bar it dilutes toward each juror's opportunity cost, setting the equilibrium pool size at whatever fees support. As volume grows, the pool grows.

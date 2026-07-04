@@ -3,8 +3,8 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>DemoThemis: simple version and deep dive</title>
-<meta name="description" content="A simple explanation and full deep dive for DemoThemis: protocol escrow, verified human juries, private ballots, appeals, and juror scoring.">
+<title>DemoThemis: simple version and full mechanics</title>
+<meta name="description" content="A simple explanation and full mechanics reference for DemoThemis: protocol escrow, verified human juries, private ballots, appeals, and juror scoring.">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@500;700&family=Newsreader:opsz,wght@6..72,200..700&display=swap" rel="stylesheet">
@@ -185,13 +185,14 @@ body.theme-solve { --accent: #2f62cf; --accent-soft: #e6edfa; --accent-ink: #214
       <a href="hybrid-juror-prediction-market-integration.html"><span class="ch">04</span> Bootstrap loop</a>
       <a href="the-design.html"><span class="ch">05</span> Run-through</a>
       <a href="governance.html"><span class="ch">06</span> Governance</a>
+      <a href="glossary.html">Glossary</a>
     </div>
   </div>
 </nav>
 
 <header class="hero reveal">
   <p class="kicker">DemoThemis</p>
-  <h1>DemoThemis: the simple version and the deep dive</h1>
+  <h1>DemoThemis: the simple version and the full mechanics</h1>
   <p class="dek">DemoThemis is a neutral escrow court for online deals and prediction markets. This chapter starts with the plain version, then keeps the full design detail: verified human juries, one sealed draw, private ballots, appeal ladders, and the scoring system that makes careful jurors more valuable over time.</p>
   <div class="meta">
     <span class="pill">Start here</span>
@@ -226,9 +227,9 @@ body.theme-solve { --accent: #2f62cf; --accent-soft: #e6edfa; --accent-ink: #214
         <details>
           <summary>Show sections</summary>
           <ul>
-            <li><a href="#trust-layer">The trust layer</a></li>
-            <li><a href="#capture-resistance">Capture resistance</a></li>
-            <li><a href="#quality-engine">The quality engine</a></li>
+            <li><a href="#trust-layer">Why a neutral court matters</a></li>
+            <li><a href="#capture-resistance">How capture gets priced out</a></li>
+            <li><a href="#quality-engine">How careful jurors stand out</a></li>
           </ul>
         </details>
       </li>
@@ -236,7 +237,7 @@ body.theme-solve { --accent: #2f62cf; --accent-soft: #e6edfa; --accent-ink: #214
   </aside>
 
   <section class="reveal" id="simple-version">
-    <p class="sec-label">Part one</p>
+    <p class="sec-label">4 min overview</p>
     <h2>The simple version</h2>
     <p class="lead">DemoThemis is a neutral court and escrow layer for online money. It lets apps make deals safer without letting the app, the biggest wallet, or the loudest trader decide who was right.</p>
     <p>The short version is this: funds lock before trouble starts; most cases settle without a trial; disputed cases go to randomly drawn verified humans; votes are private enough that they cannot be sold; appeals widen the jury when the stakes demand it; and every settled case teaches the system which jurors are careful.</p>
@@ -285,7 +286,7 @@ body.theme-solve { --accent: #2f62cf; --accent-soft: #e6edfa; --accent-ink: #214
     <h2>The court has to learn who is careful</h2>
     <p>A court cannot simply grade jurors by asking whether they were right, because many disputes have no answer sheet. DemoThemis uses two anchors instead: clean prediction-market outcomes where reality eventually posts the answer, and a peer-scoring rule that gives credit only when a vote carried information beyond the obvious majority.</p>
     <div class="simple-list">
-      <div><b>Answer keys</b><span>Settled objective markets become graded questions after curation, keeping the court tied to reality instead of self-agreement.</span></div>
+      <div><b>Resolved cases for aptitude tests</b><span>Settled objective markets become graded questions after curation, keeping the court tied to reality instead of self-agreement.</span></div>
       <div><b>Credit above the obvious</b><span>Matching a landslide vote earns little; being right on hard near-ties earns much more.</span></div>
       <div><b>Error bars matter</b><span>Reputation is a score with uncertainty attached, so a bad week does not equal a proven bad juror.</span></div>
       <div><b>Pay does most of the reward</b><span>Careful jurors earn more and get drawn more often, but caps stop any one juror from dominating the pool.</span></div>
@@ -302,24 +303,24 @@ body.theme-solve { --accent: #2f62cf; --accent-soft: #e6edfa; --accent-ink: #214
   <section class="reveal" id="bootstrap">
     <p class="sec-label">Bootstrap</p>
     <h2>PredictionMoMo gives the court its first work</h2>
-    <p>DemoThemis needs cases, fees, and a track record before outside apps trust it. PredictionMoMo supplies all three. Markets need resolution. Traders pay fees. Clean market outcomes become answer keys. That lets the court prove itself on paid work before it asks Uber-scale, eBay-scale, or Airbnb-scale apps to route disputes through it.</p>
-    <p class="deep-note"><b>You now have the whole model:</b> neutral escrow, verified humans, one sealed draw, per-draw presence checks, receipt-free ballots, live reserves, larger panels, appeals, answer keys, careful-juror scoring, objective and rubric courts, and the PredictionMoMo bootstrap. The under-the-hood section below opens the mechanics and the interactive widgets that test each claim.</p>
+    <p>DemoThemis needs cases, fees, and a track record before outside apps trust it. PredictionMoMo supplies all three. Markets need resolution. Traders pay fees. Clean market outcomes become resolved cases for aptitude tests. That lets the court prove itself on paid work before it asks Uber-scale, eBay-scale, or Airbnb-scale apps to route disputes through it.</p>
+    <p class="deep-note"><b>You now have the whole model:</b> neutral escrow, verified humans, one sealed draw, per-draw presence checks, receipt-free ballots, live reserves, larger panels, appeals, resolved cases for aptitude tests, careful-juror scoring, objective and rubric courts, and the PredictionMoMo bootstrap. The under-the-hood section below opens the mechanics and the interactive widgets that test each claim.</p>
   </section>
 
   <section class="reveal part-marker" id="deep-dive">
-    <p class="sec-label">Part two</p>
+    <p class="sec-label">35 min reference</p>
     <h2>Under the hood</h2>
-    <p>The simple version gives the map. This section opens the machinery: why a shared arbiter matters, how the court blocks capture, and how juror quality improves without a normal answer key. Read straight through, or jump to the part whose assumptions you want to inspect.</p>
+    <p>The simple version gives the map. This section opens the machinery: why a shared arbiter matters, how the court blocks capture, and how juror quality improves when many disputes do not have a ready-made resolved case for aptitude tests. Read straight through, or jump to the layer whose assumptions you want to inspect.</p>
     <div class="underhood-map">
-      <a href="#trust-layer"><span class="eyebrow">Why it matters</span><b>The trust layer</b><span>Why online trust is rented today, and why one neutral escrow court could become a shared standard.</span></a>
-      <a href="#capture-resistance"><span class="eyebrow">How it resists capture</span><b>The anti-capture stack</b><span>Verified humans, live reserves, sealed randomness, face checks, receipt-free ballots, and panel scaling.</span></a>
-      <a href="#quality-engine"><span class="eyebrow">How it improves</span><b>The quality engine</b><span>Answer keys, peer scoring, reputation error bars, appeals, and objective versus rubric courts.</span></a>
+      <a href="#trust-layer"><span class="eyebrow">Problem and role</span><b>Why a neutral court matters</b><span>Online trust is already rented from arbiters. DemoThemis turns that backstop into shared protocol escrow.</span></a>
+      <a href="#capture-resistance"><span class="eyebrow">Attack resistance</span><b>How capture gets priced out</b><span>Verified humans, live reserves, sealed randomness, face checks, receipt-free ballots, and panel scaling each remove a different shortcut.</span></a>
+      <a href="#quality-engine"><span class="eyebrow">Juror quality</span><b>How careful jurors stand out</b><span>Resolved cases for aptitude tests, peer scoring, error bars, appeals, and court types show how the system rewards useful judgment over crowd-following.</span></a>
     </div>
   </section>
 
   <section class="reveal part-marker" id="trust-layer">
-    <p class="sec-label">Why it matters</p>
-    <h2>The trust layer</h2>
+    <p class="sec-label">Problem and role</p>
+    <h2>Why a neutral court matters</h2>
     <p>Start with the product-level reason DemoThemis matters: online trust is already arbitration, but today's arbiters are platform-owned, bank-owned, or token-owned.</p>
   </section>
 
@@ -364,7 +365,7 @@ body.theme-solve { --accent: #2f62cf; --accent-soft: #e6edfa; --accent-ink: #214
   </section>
 
   <section class="reveal">
-    <p class="sec-label">The part that compounds</p>
+    <p class="sec-label">Why shared history compounds</p>
     <h2>The history is useful without being public</h2>
     <p>Here is the turn that makes it more than a cheaper arbiter. Each locked case moves funds and leaves enough history to grade adjudication quality: who served, how panels split, which rulings survived appeal, and which calls later proved reliable. The court keeps the canonical case record inside the juror system. The parties and the requesting app get a signed verdict receipt. Juror scoring gets only the minimum case data it needs.</p>
     <p>That is history's job. It is not a public reputation feed. It is the evidence needed to identify careful arbitrators, keep future panels strong, and let permitted parties verify that escrow paid by rule. Public prediction markets still resolve publicly because traders need settlement. Private arbitrations stay private by default.</p>
@@ -378,8 +379,8 @@ body.theme-solve { --accent: #2f62cf; --accent-soft: #e6edfa; --accent-ink: #214
   </section>
 
   <section class="reveal part-marker" id="capture-resistance">
-    <p class="sec-label">How it resists capture</p>
-    <h2>The anti-capture stack</h2>
+    <p class="sec-label">Attack resistance</p>
+    <h2>How capture gets priced out</h2>
     <p>The court replaces plutocratic arbitration lock by lock: verified humans, random panels, live reserves, private ballots, and panels that grow with the stakes.</p>
   </section>
 
@@ -595,12 +596,12 @@ body.theme-solve { --accent: #2f62cf; --accent-soft: #e6edfa; --accent-ink: #214
     </div>
 
     <p><b>Two honest notes:</b> The panels are drawn without overlap, so a bloc cannot reuse one corrupted juror across them, which makes the true odds even longer than the plain multiplication above. And owning a majority of every panel inside one short window is the very coordination the encrypted ballot already made unenforceable, since a juror can take the money on all of them and still vote honestly on all of them. Parallel panels do not replace the other locks. They are the floor beneath the tallest cases, the piece that keeps the price of a takeover rising no matter how large the pot grows.</p>
-    <p><b>Stand back from the whole court:</b> The verdict has no token to corner, the seats are humans drawn by a die that rolls once, the face check confirms the same person who signed up, the ballots cannot testify, and the largest cases must clear not one jury but a row of them at the same instant. The remaining question is the one a skeptic should ask next: how does the court know which of those humans to trust more over time? That is a grading problem, handled by <a href="demothemis.html#quality-engine">the quality engine</a>, where settled markets become answer keys and reputation is earned the slow way.</p>
+    <p><b>Stand back from the whole court:</b> The verdict has no token to corner, the seats are humans drawn by a die that rolls once, the face check confirms the same person who signed up, the ballots cannot testify, and the largest cases must clear not one jury but a row of them at the same instant. The remaining question is the one a skeptic should ask next: how does the court know which of those humans to trust more over time? That is a grading problem, handled by <a href="demothemis.html#quality-engine">the juror quality system</a>, where settled markets become resolved cases for aptitude tests and reputation is earned the slow way.</p>
   </section>
 
   <section class="reveal part-marker" id="quality-engine">
-    <p class="sec-label">How it improves</p>
-    <h2>The quality engine</h2>
+    <p class="sec-label">Juror quality</p>
+    <h2>How careful jurors stand out</h2>
     <p>The quality system explains how DemoThemis rewards careful jurors when the court often cannot look up a clean answer sheet.</p>
   </section>
 
@@ -631,7 +632,7 @@ body.theme-solve { --accent: #2f62cf; --accent-soft: #e6edfa; --accent-ink: #214
       <figcaption>The herding loop, four steps from rule to ruin. <b>A court that pays for agreement ends up with flawless scores and no information.</b></figcaption>
     </figure>
 
-    <p>So the design ties the grade to two outside anchors, neither of which a herd can vote its way around. The first is a supply of questions where reality eventually publishes the answer: settled markets that pass a curation step become answer keys, and <a href="hybrid-juror-prediction-market-integration.html">the loop chapter</a> shows where that supply comes from. The second anchor is this page: a scoring rule that refuses to pay for agreement itself, and pays only for the part of a vote that carried information.</p>
+    <p>So the design ties the grade to two outside anchors, neither of which a herd can vote its way around. The first is a supply of questions where reality eventually publishes the answer: settled markets that pass a curation step become resolved cases for aptitude tests, and <a href="hybrid-juror-prediction-market-integration.html">the loop chapter</a> shows where that supply comes from. The second anchor is this page: a scoring rule that refuses to pay for agreement itself, and pays only for the part of a vote that carried information.</p>
   </section>
 
   <section class="reveal">
@@ -691,7 +692,7 @@ body.theme-solve { --accent: #2f62cf; --accent-soft: #e6edfa; --accent-ink: #214
       <figcaption>Same agreement rate, opposite value. <b>The baseline subtraction is what makes reading the case the only strategy that earns.</b></figcaption>
     </figure>
 
-    <p>The answer keys fold into the same score. When a market settles cleanly and the settlement passes curation, the outcome becomes a graded question with a known answer, and jurors who ruled on it are scored against reality instead of against each other. The keys keep the peer score honest: a pool that drifted into a comfortable shared error would keep agreeing with itself, but it cannot keep agreeing with the scoreboard reality posts. The sharpest keys come from settled private markets, questions that never had a public page, so a juror cannot even look them up. To supplement this natural supply, the protocol will also introduce synthetic test cases and establish a sustainable, decentralized governance mechanism for generating them (TBA). <b>Peer agreement above the obvious, anchored by curated keys</b>, is the whole rule. Everything else on this page is plumbing for it.</p>
+    <p>Those resolved cases feed aptitude tests inside the same score. When a market settles cleanly and the settlement passes curation, the outcome becomes a graded question with the final result attached, and jurors who ruled on it are scored against reality instead of against each other. These aptitude tests keep the peer score honest: a pool that drifted into a comfortable shared error would keep agreeing with itself, but it cannot keep agreeing with the scoreboard reality posts. The sharpest resolved cases for aptitude tests come from settled private markets, questions that never had a public page, so a juror cannot even look them up. To supplement this natural supply, the protocol will also introduce synthetic test cases and establish a sustainable, decentralized governance mechanism for generating them (TBA). <b>Peer agreement above the obvious, anchored by curated resolved cases for aptitude tests</b>, is the whole rule. Everything else on this page is plumbing for it.</p>
   </section>
 
   <section class="reveal">
@@ -813,8 +814,8 @@ body.theme-solve { --accent: #2f62cf; --accent-soft: #e6edfa; --accent-ink: #214
   <section class="reveal">
     <p class="sec-label">Two courts</p>
     <h2>Two courts, one constitution</h2>
-    <p>Everything above assumes reality will eventually grade the question. Did bitcoin close above $100k, did the package arrive, who won the match: these belong to the objective court, where answer keys pile up and a lone bonded dissenter can always appeal a panel into a larger one. But some disputes will never get a scoreboard. Was the logo delivered to spec, was the apartment as described. No future fact arrives to settle them, so a court that pretends otherwise is grading its jurors against an answer key that does not exist.</p>
-    <p>The design's answer is a second court, not a stretched one. The rubric court is a separate product with its own track record, never borrowing the objective court's statistics, because they measure a different skill. It opens narrow, on rubric-checkable cases only: files against a spec, a photo against a listing, where most of the judgment is verification with a thin rim of opinion. Its jurors are graded on three signals that exist without a key: coherence with their own rubric scores, accuracy at predicting how the panel will split, and whether their verdicts survive the appeal ladder. Community-standard cases, the pure reasonable-person disputes, come later, once the narrow court has appeal data behind it. Either way the parties are told the standard up front, before they file. Both courts share the same constitution underneath: the same random draw, the same encrypted ballots, the same ladder. Only the grader changes.</p>
+    <p>Everything above assumes reality will eventually grade the question. Did bitcoin close above $100k, did the package arrive, who won the match: these belong to the objective court, where resolved cases for aptitude tests pile up and a lone bonded dissenter can always appeal a panel into a larger one. But some disputes will never get a scoreboard. Was the logo delivered to spec, was the apartment as described. No future fact arrives to settle them, so a court that pretends otherwise is grading its jurors against a resolved case for aptitude tests that does not exist.</p>
+    <p>The design's answer is a second court, not a stretched one. The rubric court is a separate product with its own track record, never borrowing the objective court's statistics, because they measure a different skill. It opens narrow, on rubric-checkable cases only: files against a spec, a photo against a listing, where most of the judgment is verification with a thin rim of opinion. Its jurors are graded on three signals that exist without a fixed external result: coherence with their own rubric scores, accuracy at predicting how the panel will split, and whether their verdicts survive the appeal ladder. Community-standard cases, the pure reasonable-person disputes, come later, once the narrow court has appeal data behind it. Either way the parties are told the standard up front, before they file. Both courts share the same constitution underneath: the same random draw, the same encrypted ballots, the same ladder. Only the grader changes.</p>
     <p>Routing between them takes exactly one bit: will reality post the answer? Try it.</p>
 
     <div class="widget reveal">
@@ -840,9 +841,10 @@ body.theme-solve { --accent: #2f62cf; --accent-soft: #e6edfa; --accent-ink: #214
       <a href="hybrid-juror-prediction-market-integration.html">4. Bootstrap loop</a>
       <a href="the-design.html">5. Run-through</a>
       <a href="governance.html">6. Governance</a>
+      <a href="glossary.html">Glossary</a>
       <a href="index.html">Home &middot; the map</a>
     </div>
-    <p class="signoff">A neutral escrow court, explained once simply and then all the way down.</p>
+    <p class="signoff">A neutral escrow court, explained once simply and then under the hood.</p>
   </footer>
 
 </main>
@@ -1333,9 +1335,9 @@ function courtSeg(id, onPick) {
   if (!seg) return;
   var panel = document.getElementById("RT1panel");
   var CONTENT = {
-    btc: '<div class="rt">Objective court.</div><div class="rg">Reality posts the closing price whether anyone likes it or not. The question settles on the bonded assertion layer, escalates to answer-key-graded panels only if challenged, and the settled outcome, once curated, becomes one more calibration key. The parties were promised the checkable truth, and a lone bonded dissenter can always appeal the panel into a larger one.</div>',
+    btc: '<div class="rt">Objective court.</div><div class="rg">Reality posts the closing price whether anyone likes it or not. The question settles on the bonded assertion layer, escalates to panels graded through aptitude tests only if challenged, and the settled outcome, once curated, becomes one more resolved case for aptitude tests. The parties were promised the checkable truth, and a lone bonded dissenter can always appeal the panel into a larger one.</div>',
     logo: '<div class="rt">Rubric court, rubric tier.</div><div class="rg">Reality never grades it, but the spec does: file formats, dimensions, deadline, each a checkable rubric item with a thin rim of judgment. Jurors score the items before the verdict, are graded on rubric coherence and on predicting the panel split, and the verdict survives or dies on the appeal ladder. This tier is where the rubric court earns its own track record, kept separate from the objective court&rsquo;s.</div>',
-    apt: '<div class="rt">Rubric court, community-standard tier, opens later.</div><div class="rg">No spec, no key, pure reasonable-person judgment. Here the panel is an honest sample of the community standard itself, and both parties are told exactly that, up front, before they file. This tier stays closed until the rubric tier has thousands of appeal-tested cases proving the graders work.</div>'
+    apt: '<div class="rt">Rubric court, community-standard tier, opens later.</div><div class="rg">No spec, no fixed external result, pure reasonable-person judgment. Here the panel is an honest sample of the community standard itself, and both parties are told exactly that, up front, before they file. This tier stays closed until the rubric tier has thousands of appeal-tested cases proving the graders work.</div>'
   };
   function pick(k) { panel.innerHTML = CONTENT[k]; }
   Array.prototype.forEach.call(seg.querySelectorAll("button"), function (btn) {

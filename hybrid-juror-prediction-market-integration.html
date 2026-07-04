@@ -4,7 +4,7 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>The bootstrap loop: how PredictionMoMo seeds DemoThemis demand</title>
-<meta name="description" content="PredictionMoMo gives DemoThemis paid cases, fees, answer keys, and proof before outside apps have to trust it.">
+<meta name="description" content="PredictionMoMo gives DemoThemis paid cases, fees, resolved cases for aptitude tests, and proof before outside apps have to trust it.">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@500;700&family=Newsreader:opsz,wght@6..72,200..700&display=swap" rel="stylesheet">
@@ -56,13 +56,14 @@
       <a href="hybrid-juror-prediction-market-integration.html"><span class="ch">04</span> Bootstrap loop</a>
       <a href="the-design.html"><span class="ch">05</span> Run-through</a>
       <a href="governance.html"><span class="ch">06</span> Governance</a>
+      <a href="glossary.html">Glossary</a>
     </div>
   </div>
 </nav>
 
 <header class="hero reveal">
   <p class="kicker">The bootstrap loop</p>
-  <h1>How PredictionMoMo gives DemoThemis cases, fees, answer keys, and proof</h1>
+  <h1>How PredictionMoMo gives DemoThemis cases, fees, resolved cases for aptitude tests, and proof</h1>
   <p class="dek">A new arbitration market has no cases, no money, and no track record. PredictionMoMo breaks that loop by creating paid resolution work from day one, then turning settled markets into the evidence that lets DemoThemis win outside disputes.</p>
   <div class="meta">
     <span class="pill">Bootstrap loop</span>
@@ -101,7 +102,7 @@
     <p class="sec-label">The way in</p>
     <h2>The first paying customer is a bet</h2>
     <p><a href="prediction-market.html">PredictionMoMo</a> manufactures disputes people already want settled. Someone opens a market on an election, a match, a price, or a private bet. To pay out, the market has to decide what actually happened, and that decision is arbitration with money already locked inside it.</p>
-    <p>That gives DemoThemis three things at once. Markets need answers, so the court has cases. Traders pay fees, so jurors can be paid from use. Objective markets settle against reality, so the court gets graded answer keys instead of asking the world to trust an empty badge.</p>
+    <p>That gives DemoThemis three things at once. Markets need answers, so the court has cases. Traders pay fees, so jurors can be paid from use. Objective markets settle against reality, so the court gets resolved cases for aptitude tests instead of asking the world to trust an empty badge.</p>
   </section>
 
   <section class="reveal">
@@ -131,7 +132,7 @@
   </section>
 
   <section class="reveal">
-    <p class="sec-label">The answer keys</p>
+    <p class="sec-label">Resolved cases for aptitude tests</p>
     <h2>Settled markets keep the court tied to reality</h2>
     <p>The <a href="demothemis.html#scoring-deep-dive">hybrid system</a> grades each juror by leave-one-out agreement with their panel, which is the right everyday ruler. But agreement alone can drift. If the room learns the same wrong habit, everyone still agrees.</p>
     <p>Objective markets give the court an outside audit. A final score, a price at a fixed minute, an election result: these are questions reality can grade. When a market settles cleanly, it leaves behind a genuine question, argued over by people with stakes, with the world's answer attached.</p>
@@ -143,15 +144,15 @@
           <span class="ar">&rarr;</span>
           <div class="e">Reality posts the answer<small>a score, a price, a result</small></div>
           <span class="ar">&rarr;</span>
-          <div class="e key">A graded question<small>answer attached, timestamped</small></div>
+          <div class="e key">A graded question<small>result attached, timestamped</small></div>
         </div>
       </div>
-      <figcaption>PredictionMoMo's answer-key stream. <b>Every settled objective market is a question reality itself has graded.</b></figcaption>
+      <figcaption>PredictionMoMo's stream of resolved cases for aptitude tests. <b>Every settled objective market is a question reality itself has graded.</b></figcaption>
     </figure>
   </section>
 
   <section class="reveal">
-    <p class="sec-label">Clean keys</p>
+    <p class="sec-label">Clean resolved cases</p>
     <h2>Watched windows and curation keep the library clean</h2>
     <p>A false market assertion forfeits its bond to whoever catches it. That turns challenge windows from civic duty into paid work: watchers cover thin markets because catching a lie is profitable, and would-be liars fund the patrol.</p>
 
@@ -179,10 +180,10 @@
     </div>
 
     <p>The toggle is the whole argument. With the rule on, the defaults show near-full coverage and a zero in the last box, and notice who funds the patrol: the would-be liars themselves, one forfeited bond at a time. The design never asks anyone to be vigilant. It makes vigilance a business.</p>
-    <p>Even a watched settlement is not automatically an exam question. It has to pass curation: enough volume, a clean window, real watcher coverage, and a spot-check that the question meant what it said. Public keys audit the juror pool. Private-room keys, admitted only by participant consent and never shown to their own participants, audit individual jurors because they cannot be looked up.</p>
+    <p>Even a watched settlement is not automatically an exam question. It has to pass curation: enough volume, a clean window, real watcher coverage, and a spot-check that the question meant what it said. Public resolved cases for aptitude tests audit the juror pool. Private-room resolved cases, admitted only by participant consent and never shown to their own participants, audit individual jurors because they cannot be looked up.</p>
 
     <div class="widget reveal">
-      <div class="widget-head"><span class="live"></span> The key supply</div>
+      <div class="widget-head"><span class="live"></span> Resolved cases feeding aptitude tests</div>
       <div class="controls">
         <div class="row"><label for="kVol">Objective markets settling per day</label> <b id="kVolOut">400</b></div>
         <input id="kVol" type="range" min="20" max="2000" step="20" value="400">
@@ -190,11 +191,11 @@
         <input id="kCur" type="range" min="5" max="40" step="1" value="20">
       </div>
       <div class="readout">
-        <div class="stat"><div class="k">Answer keys per day</div><div class="v accent" id="kKeys">&hellip;</div></div>
-        <div class="stat"><div class="k">Jurors kept calibrated</div><div class="v" id="kJur">&hellip;</div></div>
-        <div class="stat"><div class="k">Writing keys by hand</div><div class="v" id="kHand">&hellip;</div></div>
+        <div class="stat"><div class="k">Resolved test cases per day</div><div class="v accent" id="kKeys">&hellip;</div></div>
+        <div class="stat"><div class="k">Jurors aptitude-tested</div><div class="v" id="kJur">&hellip;</div></div>
+        <div class="stat"><div class="k">Manual test cases</div><div class="v" id="kHand">&hellip;</div></div>
       </div>
-      <p style="font-family:var(--sans);font-size:.86rem;color:var(--faint);margin:1rem 0 0">Assumes a juror needs about two fresh keys a day to hold a confident rating across their rolling 50-to-150 case window, and that a human editorial team can write and verify about twenty keys a day, a ceiling near ten jurors no matter the budget.</p>
+      <p style="font-family:var(--sans);font-size:.86rem;color:var(--faint);margin:1rem 0 0">Assumes a juror needs about two fresh aptitude tests a day to hold a confident rating across their rolling 50-to-150 case window, and that a human editorial team can write and verify about twenty manual test cases a day, a ceiling near ten jurors no matter the budget.</p>
     </div>
 
     <p>Stare at the hand-written column for a second. A court that writes its own exams can keep roughly ten jurors honestly rated, forever, because editors do not scale. A court fed by markets keeps forty rated at modest volume, four hundred at ten times that, and the supply climbs on its own every day betting does. The thing that keeps jurors honest is the one input the platform manufactures faster the more it is used.</p>
@@ -203,8 +204,8 @@
       <table class="cmp-table">
         <thead><tr><th>The failure</th><th>What catches it</th></tr></thead>
         <tbody>
-          <tr><td>The whole pool drifts toward a shared error</td><td>Curated answer keys, dozens to hundreds a day, graded in public</td></tr>
-          <tr><td>A juror quietly looks up public answers</td><td>Private-room keys, questions that never had a public page</td></tr>
+          <tr><td>The whole pool drifts toward a shared error</td><td>Curated resolved cases for aptitude tests, dozens to hundreds a day, graded in public</td></tr>
+          <tr><td>A juror quietly looks up public answers</td><td>Private-room resolved cases for aptitude tests, questions that never had a public page</td></tr>
           <tr><td>A juror votes the predictable answer without reading</td><td>Baseline-adjusted scoring pays nothing for the obvious vote</td></tr>
           <tr><td>A juror stops caring</td><td>The live reserve at the laziness floor, where slashes outrun saved effort</td></tr>
           <tr><td>A juror coasts on an old record</td><td>Reputation over a rolling 50-to-150 case window drives draws and pay</td></tr>
@@ -212,7 +213,7 @@
       </table>
     </div>
 
-    <p>Keys police the crowd. Incentives police the juror. Two instruments, two failure modes, no gap between them.</p>
+    <p>Aptitude tests police the crowd. Incentives police the juror. Two instruments, two failure modes, no gap between them.</p>
   </section>
 
   <section class="reveal">
@@ -248,16 +249,16 @@
   <section class="reveal">
     <p class="sec-label">Why it compounds</p>
     <h2>One wheel, not three repeated stories</h2>
-    <p>Now stand back and watch it turn. More markets create more fees and answer keys. More fees pay jurors. More answer keys calibrate them. Better verdicts make markets and outside escrow safer. That safety brings more demand.</p>
+    <p>Now stand back and watch it turn. More markets create more fees and resolved cases for aptitude tests. More fees pay jurors. More aptitude tests keep jurors measured against reality. Better verdicts make markets and outside escrow safer. That safety brings more demand.</p>
 
     <figure class="diagram reveal">
       <div class="diagram-inner">
         <div class="amp">
           <div class="node">More markets<small>fees, questions, cases</small></div>
           <span class="ar">&rarr;</span>
-          <div class="node">More known answers<small>curated from settlements</small></div>
+          <div class="node">More resolved cases<small>curated for aptitude tests</small></div>
           <span class="ar">&rarr;</span>
-          <div class="node">A sharper court<small>better calibrated</small></div>
+          <div class="node">A sharper court<small>tested against reality</small></div>
           <span class="ar">&rarr;</span>
           <div class="node">Verdicts apps trust<small>more escrow demand</small></div>
           <span class="ar">&#8635;</span>
@@ -301,9 +302,10 @@
       <a href="hybrid-juror-prediction-market-integration.html">4. Bootstrap loop</a>
       <a href="the-design.html">5. Run-through</a>
       <a href="governance.html">6. Governance</a>
+      <a href="glossary.html">Glossary</a>
       <a href="index.html">Home &middot; the map</a>
     </div>
-    <p class="signoff">The court stays tied to reality because answer keys arrive exactly as fast as people bet, and people never stop betting.</p>
+    <p class="signoff">The court stays tied to reality because resolved cases for aptitude tests arrive exactly as fast as people bet, and people never stop betting.</p>
   </footer>
 
 </main>
@@ -409,7 +411,7 @@
   update();
 })();
 
-// ============ key supply ============
+// ============ aptitude-test case supply ============
 (function () {
   "use strict";
   var v = document.getElementById("kVol");
@@ -421,8 +423,8 @@
   var jurEl = document.getElementById("kJur");
   var handEl = document.getElementById("kHand");
 
-  var NEED = 2;  // fresh keys a juror needs per day to stay confidently rated
-  var HAND = 20; // keys per day a human editorial team can write and verify
+  var NEED = 2;  // fresh aptitude tests a juror needs per day to stay confidently rated
+  var HAND = 20; // manual test cases a human editorial team can write and verify per day
 
   function update() {
     var V = parseInt(v.value, 10);

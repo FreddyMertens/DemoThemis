@@ -1,0 +1,350 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>DemoThemis glossary: terminology review</title>
+<meta name="description" content="A review-friendly glossary of DemoThemis and PredictionMoMo terms, grouped by product names, market flow, court mechanics, juror identity, voting, incentives, attacks, scoring, and governance.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@500;700&family=Newsreader:opsz,wght@6..72,200..700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="assets/styles.css">
+<style>
+  .glossary-shell { display: grid; gap: 1.2rem; }
+  .glossary-page .reveal { opacity: 1; transform: none; }
+  .glossary-tools { position: sticky; top: 4.25rem; z-index: 9; border: 1px solid var(--line); background: rgba(250, 248, 243, .94); backdrop-filter: blur(12px); border-radius: var(--radius); box-shadow: var(--shadow); padding: 1rem; font-family: var(--sans); }
+  .tool-row { display: grid; grid-template-columns: minmax(220px, 1fr) auto; gap: .8rem; align-items: center; }
+  .searchbox { display: flex; align-items: center; gap: .55rem; border: 1px solid var(--line-strong); border-radius: 999px; background: var(--surface); padding: .75rem .95rem; }
+  .searchbox span { font-family: var(--mono); font-size: .72rem; font-weight: 700; letter-spacing: .08em; text-transform: uppercase; color: var(--accent-ink); }
+  .searchbox input { min-width: 0; width: 100%; border: 0; outline: 0; background: transparent; color: var(--ink); font: 500 .95rem/1.2 var(--sans); }
+  .term-count { justify-self: end; font-family: var(--mono); font-size: .78rem; font-weight: 700; color: var(--faint); white-space: nowrap; }
+  .category-filter { display: flex; flex-wrap: wrap; gap: .45rem; margin-top: .8rem; }
+  .category-filter button { border: 1px solid var(--line-strong); background: var(--surface); color: var(--ink-soft); border-radius: 999px; padding: .45rem .75rem; font: 700 .75rem/1 var(--sans); cursor: pointer; }
+  .category-filter button.active { border-color: var(--accent); color: var(--accent-ink); background: var(--accent-soft); }
+  .glossary-section { scroll-margin-top: 8rem; }
+  .category-head { display: flex; justify-content: space-between; gap: 1rem; align-items: end; margin-bottom: .9rem; }
+  .category-head h2 { margin-bottom: 0; }
+  .category-head .count { font-family: var(--mono); font-size: .72rem; font-weight: 700; letter-spacing: .06em; text-transform: uppercase; color: var(--faint); white-space: nowrap; }
+  .term-grid { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: .9rem; }
+  .term-card { border: 1px solid var(--line); background: var(--surface); border-radius: var(--radius); box-shadow: var(--shadow); padding: 1rem; font-family: var(--sans); display: grid; gap: .7rem; }
+  .term-card.is-hidden, .glossary-section.is-hidden { display: none; }
+  .term-top { display: flex; justify-content: space-between; align-items: start; gap: .8rem; }
+  .term-top h3 { margin: 0; font-size: 1.02rem; line-height: 1.12; }
+  .term-top span { flex: 0 0 auto; border: 1px solid var(--line); border-radius: 999px; padding: .22rem .45rem; font-family: var(--mono); font-size: .62rem; font-weight: 700; color: var(--faint); text-transform: uppercase; }
+  .term-card p { margin: 0; color: var(--muted); font-size: .9rem; line-height: 1.48; }
+  .term-card b { color: var(--ink); }
+  .term-note { border-top: 1px solid var(--line); padding-top: .65rem; }
+  .term-alias { color: var(--accent-ink); font-weight: 700; }
+  .no-results { display: none; border: 1px dashed var(--line-strong); border-radius: var(--radius); padding: 1.2rem; color: var(--muted); font-family: var(--sans); background: var(--surface); }
+  .no-results.visible { display: block; }
+  @media (max-width: 920px) {
+    .glossary-tools { position: static; }
+    .term-grid { grid-template-columns: 1fr; }
+    .tool-row { grid-template-columns: 1fr; }
+    .term-count { justify-self: start; }
+  }
+</style>
+</head>
+<body class="glossary-page">
+<div id="progress"></div>
+
+<nav class="sitenav" aria-label="Primary">
+  <div class="sitenav-inner">
+    <a class="brand" href="index.html">DemoThemis<span class="dot">.</span></a>
+    <button class="nav-toggle" type="button" aria-label="Menu" aria-expanded="false">&#9776;</button>
+    <div class="nav-links">
+      <a href="index.html">Home</a>
+      <a href="demothemis.html"><span class="ch">01</span> DemoThemis</a>
+      <a href="game-theory.html"><span class="ch">02</span> Break the court</a>
+      <a href="prediction-market.html"><span class="ch">03</span> PredictionMoMo</a>
+      <a href="hybrid-juror-prediction-market-integration.html"><span class="ch">04</span> Bootstrap loop</a>
+      <a href="the-design.html"><span class="ch">05</span> Run-through</a>
+      <a href="governance.html"><span class="ch">06</span> Governance</a>
+      <a href="glossary.html">Glossary</a>
+    </div>
+  </div>
+</nav>
+
+<header class="hero reveal">
+  <p class="kicker">Terminology review</p>
+  <h1>Glossary of DemoThemis terms</h1>
+  <p class="dek">A working reference for the names, mechanism labels, and product language used across the site. Each term includes the plain meaning, where it appears in the system, and a note on whether the wording feels clear or potentially too technical.</p>
+  <div class="meta">
+    <span class="pill">Reference</span>
+    <span>Grouped by system role</span>
+    <span class="dot">&bull;</span>
+    <span>Built for wording review</span>
+  </div>
+</header>
+
+<main class="content wrap">
+  <aside id="toc" class="toc reveal" data-manual-toc>
+    <p class="toc-title">On this page</p>
+    <ul>
+      <li><a href="#term-review">Search and filter</a></li>
+      <li><a href="#product-names">Product names</a></li>
+      <li><a href="#market-flow">Market flow</a></li>
+      <li><a href="#court-flow">Court flow</a></li>
+      <li><a href="#jurors-and-personhood">Jurors and personhood</a></li>
+      <li><a href="#draws-panels-and-ballots">Draws, panels, and ballots</a></li>
+      <li><a href="#incentives-and-attacks">Incentives and attacks</a></li>
+      <li><a href="#scoring-and-quality">Scoring and quality</a></li>
+      <li><a href="#governance">Governance</a></li>
+    </ul>
+  </aside>
+
+  <section class="reveal">
+    <p class="sec-label">Review surface</p>
+    <h2>Terms, meanings, and naming notes</h2>
+    <p>This page collects the vocabulary a reader meets while moving through DemoThemis, Break the court, PredictionMoMo, the bootstrap loop, the run-through, and governance. The goal is to make naming decisions visible: what is clear, what is jargon, and what may need a friendlier phrase.</p>
+  </section>
+
+  <section class="reveal glossary-shell" id="term-review">
+    <div class="glossary-tools" aria-label="Glossary controls">
+      <div class="tool-row">
+        <label class="searchbox" for="termSearch"><span>Search</span><input id="termSearch" type="search" placeholder="Term, meaning, alias, or note"></label>
+        <div class="term-count" id="termCount">Loading terms</div>
+      </div>
+      <div class="category-filter" id="categoryFilter" aria-label="Term categories"></div>
+    </div>
+    <div id="glossaryList"></div>
+    <div class="no-results" id="noResults">No glossary terms match this filter.</div>
+  </section>
+
+  <footer class="endnote reveal">
+    <div class="sitemap sitemap-flat">
+      <a href="demothemis.html">1. DemoThemis</a>
+      <a href="game-theory.html">2. Break the court</a>
+      <a href="prediction-market.html">3. PredictionMoMo</a>
+      <a href="hybrid-juror-prediction-market-integration.html">4. Bootstrap loop</a>
+      <a href="the-design.html">5. Run-through</a>
+      <a href="governance.html">6. Governance</a>
+      <a href="glossary.html">Glossary</a>
+      <a href="index.html">Home &middot; the map</a>
+    </div>
+    <p class="signoff">The terminology map for the court, the market, and the loop between them.</p>
+  </footer>
+</main>
+
+<script>
+(function () {
+  "use strict";
+
+  var CATEGORIES = [
+    "Product names",
+    "Market flow",
+    "Court flow",
+    "Jurors and personhood",
+    "Draws, panels, and ballots",
+    "Incentives and attacks",
+    "Scoring and quality",
+    "Governance"
+  ];
+
+  var TERMS = [
+    { term: "DemoThemis", category: "Product names", aliases: "court, protocol escrow, arbitration layer", means: "The protocol escrow and arbitration system. It holds funds, draws verified human jurors, counts private ballots, and releases or refunds by rule.", used: "Chapter 1, the court side of the run-through, and the bootstrap loop.", note: "Strong brand name. Pair it with 'protocol escrow and arbitration' when a reader may not know what it does yet." },
+    { term: "PredictionMoMo", category: "Product names", aliases: "market product, first customer", means: "The prediction-market product that creates the first demand, fees, disputes, resolved cases for aptitude tests, and public proof for DemoThemis.", used: "Home, prediction-market chapter, bootstrap loop, and run-through.", note: "Distinctive name. Keep capitalization consistent because mismatches make it look less deliberate." },
+    { term: "Break the court", category: "Product names", aliases: "game lab, attack model", means: "The interactive lab where readers move volume, juror supply, attacker size, and safety locks to see when attacks make money.", used: "Chapter 2 and the site navigation.", note: "Clear and fun. It describes the reader's task, not the builder's model." },
+    { term: "Bootstrap loop", category: "Product names", aliases: "market-to-court loop", means: "The cycle where markets create fees and resolved cases for aptitude tests, the court improves, and stronger court proof attracts more markets and outside escrow demand.", used: "Chapter 4 and run-through loop diagrams.", note: "Understandable if paired with the loop sentence. 'Market-to-court loop' is a plainer fallback." },
+    { term: "Run-through", category: "Product names", aliases: "system simulation, one market journey", means: "The playable chapter that follows one market from first bet through dispute, appeal, finality, and feedback into the court.", used: "Chapter 5 and navigation.", note: "Plain and approachable. Better than a more architectural title." },
+    { term: "Under the hood", category: "Product names", aliases: "full mechanics, reference section", means: "The detailed mechanics section inside Chapter 1 after the simple overview.", used: "DemoThemis chapter.", note: "Good as a reader cue. 'Full mechanics' is clearer for titles and metadata." },
+
+    { term: "Prediction market", category: "Market flow", aliases: "market, bet, outcome market", means: "A market where people trade claims on whether an event or statement resolves true or false.", used: "PredictionMoMo product and most examples.", note: "Standard term. Define once because many readers know betting but not prediction-market structure." },
+    { term: "Instant market", category: "Market flow", aliases: "first-bet market", means: "A market that can start as soon as one person locks a first bet, even with very small liquidity.", used: "PredictionMoMo features and run-through unlocks.", note: "Simple and clear. It emphasizes user benefit." },
+    { term: "Shared pot", category: "Market flow", aliases: "pool", means: "The early market structure where both sides' funds sit together before the market graduates into transferable tokens.", used: "Prediction-market chapter.", note: "Friendly wording. Keep 'pool' nearby for readers used to market math." },
+    { term: "Fixed odds", category: "Market flow", aliases: "named odds, locked price", means: "A user posts a side at a price they choose, and later counterparties can fill that locked price.", used: "PredictionMoMo value prop and run-through.", note: "Very readable. Works better than order-book language for lay readers." },
+    { term: "Private market", category: "Market flow", aliases: "invite-only market, private room", means: "A market shared with selected counterparties while still using neutral escrow and third-party arbitration.", used: "PredictionMoMo value prop 3 and run-through.", note: "Clear, but it can imply hidden settlement. Pair with 'still escrowed' or 'same court'." },
+    { term: "Self-custody tokens", category: "Market flow", aliases: "ERC-20 YES and NO claims", means: "Transferable market claims held in the user's own wallet rather than inside the app's database.", used: "PredictionMoMo value prop 2 and run-through.", note: "Good crypto-native term. For lay readers, 'tokens you hold yourself' may be clearer." },
+    { term: "YES and NO tokens", category: "Market flow", aliases: "outcome tokens, claims", means: "The two tokenized claims for a binary market: one pays if YES wins, the other pays if NO wins.", used: "Prediction-market chapter and run-through.", note: "Clear and concrete. Keep this phrase whenever possible." },
+    { term: "Liquid market", category: "Market flow", aliases: "graduated market, robust market", means: "A market with enough two-sided activity and standing offers to support transferable tokens and trading features.", used: "PredictionMoMo value prop and tokenization section.", note: "More intuitive than 'graduated market'. It describes why the threshold matters." },
+    { term: "Robustness lock", category: "Market flow", aliases: "graduation checks", means: "The combined checks a market passes before tokenization: enough disagreement, maker depth, and time under observation.", used: "Prediction-market tokenization section.", note: "A little builder-ish. Useful if the page immediately names the checks underneath." },
+    { term: "Disagreement floor", category: "Market flow", aliases: "two-sided volume floor", means: "A tokenization check requiring meaningful money on both YES and NO so a one-sided dump cannot open an empty order book.", used: "Robustness lock widget.", note: "Good phrase. It explains the anti-manipulation reason." },
+    { term: "Maker depth", category: "Market flow", aliases: "standing offers, order-book depth", means: "Liquidity already posted by makers so the order book is usable when a market tokenizes.", used: "Robustness lock widget.", note: "Financial jargon, but acceptable if 'standing offers' stays nearby." },
+    { term: "Time-weighted lock", category: "Market flow", aliases: "hold period, observation window", means: "A waiting period that exposes fake liquidity before a market graduates.", used: "Robustness lock widget.", note: "Somewhat technical. 'Hold period' is friendlier, but less precise." },
+    { term: "Watched assertion window", category: "Market flow", aliases: "resolution window, watcher window", means: "The period after someone asserts an outcome, during which anyone can challenge a false answer for a reward.", used: "Prediction-market chapter, game lab, and run-through.", note: "Descriptive but long. 'Watcher window' is shorter once the mechanism is introduced." },
+    { term: "Assertion", category: "Market flow", aliases: "proposed outcome", means: "A posted claim about how a market should resolve, backed by a bond.", used: "Prediction-market resolution flow.", note: "Standard oracle language. 'Proposed outcome' is clearer for first-time readers." },
+    { term: "Assertion bond", category: "Market flow", aliases: "skin in the game", means: "Money posted with an asserted outcome, forfeited if the assertion is successfully challenged.", used: "Prediction-market resolution flow.", note: "Clear if paired with 'skin in the game'." },
+    { term: "Watcher", category: "Market flow", aliases: "challenger, bounty hunter", means: "A participant who monitors resolution windows and challenges false assertions for the posted bond.", used: "Prediction-market and run-through.", note: "Friendly and memorable. It makes vigilance sound like a job, which is the point." },
+    { term: "Quiet settlement", category: "Market flow", aliases: "unchallenged settlement", means: "A market ending without a court case because the asserted outcome survived the watcher window.", used: "Prediction-market funnel and bootstrap loop.", note: "Clear. It helps readers understand that not every market needs jurors." },
+    { term: "Court lane", category: "Market flow", aliases: "disputed path", means: "The path a market enters after a challenge, where DemoThemis draws jurors and issues a final verdict.", used: "Prediction-market and run-through.", note: "Good UX phrase. It is spatial and easy to follow." },
+    { term: "Conditional Tokens Framework", category: "Market flow", aliases: "CTF", means: "The token standard and routing idea used to split outcomes into composable conditional claims.", used: "Parlay section and run-through.", note: "Technical but necessary. Always expand it before using CTF alone." },
+    { term: "Token splitting", category: "Market flow", aliases: "conditional-token routing", means: "Creating all outcome-claim combinations, then keeping or selling the legs needed for a composed bet.", used: "Peer-to-peer parlay explanation.", note: "Technical. The current writing should translate it into 'all legs or revert' quickly." },
+    { term: "Peer-to-peer parlay", category: "Market flow", aliases: "native parlay, CTF parlay", means: "A multi-leg bet built from market claims where counterparties and liquidity take the other side, not a house bookie.", used: "PredictionMoMo value prop 6 and run-through.", note: "Strong product phrase. 'Peer-to-peer' does important work because it avoids bookie risk." },
+    { term: "Bookie risk", category: "Market flow", aliases: "bankruptcy risk, house risk", means: "The risk that a central bookmaker owes more than it can pay. PredictionMoMo avoids this by settling through escrowed claims.", used: "Parlay section and home value prop.", note: "Lay readers understand this. Good phrase." },
+    { term: "Early cashout", category: "Market flow", aliases: "exit before final settlement", means: "Selling or unwinding a position before the underlying market has finalized.", used: "PredictionMoMo value props.", note: "Common betting language. Clear." },
+    { term: "Trading during disputes", category: "Market flow", aliases: "dispute trading", means: "The ability for tokenized claims to keep moving while assertion, challenge, court, and appeal steps run.", used: "PredictionMoMo value prop 5 and run-through.", note: "Clear. It explains why longer windows do not freeze everyone." },
+
+    { term: "Protocol escrow", category: "Court flow", aliases: "neutral escrow, escrowed funds", means: "Funds are locked by the protocol before a dispute, so the app cannot choose winners or run away with money.", used: "DemoThemis chapter, home, and run-through.", note: "Core term. Pairing 'protocol' with 'escrow' is good because control is the key point." },
+    { term: "Neutral arbiter", category: "Court flow", aliases: "shared arbiter, neutral court", means: "A decision layer that is not owned by either party, the app, the largest wallet, or the market venue.", used: "DemoThemis chapter.", note: "Clear and important. It frames the whole product." },
+    { term: "Signed verdict", category: "Court flow", aliases: "verdict receipt, release rule", means: "A verifiable result from the court that lets the protocol release or refund escrow by rule.", used: "DemoThemis under-the-hood section.", note: "Good phrase. 'Signed verdict receipt' can sound technical, so use it where verification matters." },
+    { term: "Finality", category: "Court flow", aliases: "market cannot reopen, escrow ends", means: "The point where the final ruling pays the escrow and the case cannot be reopened for settlement.", used: "Run-through and DemoThemis appeals.", note: "Standard and clear. Distinguish it from post-settlement collusion reports." },
+    { term: "Collusion reports", category: "Court flow", aliases: "post-settlement reports", means: "Reports that can continue after escrow finality to investigate suspicious coordination without reopening the payout.", used: "Run-through and court flow.", note: "Clear. It reassures readers that settlement is final but monitoring continues." },
+    { term: "Case record", category: "Court flow", aliases: "canonical case history", means: "The private or permissioned history the system uses for scoring, appeal checks, and verification by the relevant parties.", used: "DemoThemis shared-history section.", note: "Important privacy distinction. Avoid implying a public reputation feed." },
+    { term: "Objective court", category: "Court flow", aliases: "objective cases", means: "Court handling for questions reality can later grade, like market outcomes, prices, shipments, or scores.", used: "DemoThemis two-courts section.", note: "Clear if contrasted with rubric cases." },
+    { term: "Rubric court", category: "Court flow", aliases: "subjective cases, spec-based cases", means: "Court handling for disputes where jurors judge evidence against a spec or standard rather than a later public answer.", used: "DemoThemis two-courts section.", note: "Slightly technical. 'Spec-based disputes' may help lay readers." },
+    { term: "Two courts, one constitution", category: "Court flow", aliases: "shared court rules", means: "Objective and rubric cases use the same core rules: random draw, private ballots, appeals, and anti-capture mechanics.", used: "DemoThemis closing section.", note: "Memorable. It makes the split easy without implying two separate products." },
+
+    { term: "Juror", category: "Jurors and personhood", aliases: "arbitrator, verified human", means: "A person drawn to review evidence and vote on a disputed case.", used: "Every court chapter and the game lab.", note: "Plain term. Good choice." },
+    { term: "Verified human", category: "Jurors and personhood", aliases: "World-ID-backed human", means: "A person who has proved uniqueness through World ID, so one person cannot cheaply become many jurors.", used: "DemoThemis, game lab, and governance.", note: "Clear. It avoids over-focusing on biometrics while preserving the security property." },
+    { term: "World ID", category: "Jurors and personhood", aliases: "proof of personhood", means: "The personhood proof used to make one juror seat correspond to one unique human.", used: "Home, DemoThemis, game lab, governance.", note: "Use 'World ID' for the mechanism and 'Worldcoin' when referring to the ecosystem or app support." },
+    { term: "Worldcoin", category: "Jurors and personhood", aliases: "World App ecosystem", means: "The ecosystem that provides World ID and the app surface used for personhood and face-check flows.", used: "Home and DemoThemis personhood wording.", note: "Keep capitalization consistent. It should not sound like the court depends on a token vote." },
+    { term: "One juror = one human", category: "Jurors and personhood", aliases: "one human, one vote", means: "The anti-plutocracy rule: money can buy tokens, but it cannot mint extra people for court seats.", used: "Home, DemoThemis, game lab.", note: "Excellent lay phrase. Keep it prominent." },
+    { term: "Face check", category: "Jurors and personhood", aliases: "live face check, presence check", means: "A draw-time check that the same enrolled human is present for this case, without DemoThemis storing a face database.", used: "DemoThemis, game lab, run-through.", note: "Readable. Add 'live' when distinguishing it from one-time enrollment." },
+    { term: "Liveness", category: "Jurors and personhood", aliases: "presence, live person check", means: "The property that a real, enrolled person is present at the time a vote matters.", used: "Personhood and rented-account discussion.", note: "Technical in isolation. 'Presence check' is friendlier for most pages." },
+    { term: "Draw-bound proof", category: "Jurors and personhood", aliases: "short-lived proof, case-bound proof", means: "A proof valid only for a specific jury draw, so it cannot become a reusable identity token.", used: "DemoThemis privacy boundary.", note: "Precise but technical. Use when explaining privacy architecture." },
+    { term: "Active jurors", category: "Jurors and personhood", aliases: "retained jurors", means: "Jurors currently available, reachable, eligible, and willing to serve.", used: "Game lab knobs and assumptions.", note: "Clear. It is better than raw signup count." },
+    { term: "Available jury pool", category: "Jurors and personhood", aliases: "draw pool, draw-ready jurors", means: "The subset of active jurors who can actually be randomly drawn for a case.", used: "Game lab, attack model, capture odds.", note: "Very important. It explains why headline signups are not the security number." },
+    { term: "Senior pool", category: "Jurors and personhood", aliases: "jurors eligible for largest juries", means: "Jurors with enough history and checks to serve on the largest panels.", used: "DemoThemis and game lab assumptions.", note: "Clear if paired with 'largest juries'." },
+    { term: "Rented accounts", category: "Jurors and personhood", aliases: "credential rental", means: "An attack where someone tries to operate other people's verified accounts instead of recruiting independent jurors.", used: "DemoThemis and game lab attacks.", note: "Plain and useful. The term makes the threat concrete." },
+
+    { term: "Random jury draw", category: "Draws, panels, and ballots", aliases: "one public random draw", means: "The process that selects a panel from eligible jurors using public randomness bound to the case.", used: "Game lab locks, DemoThemis, run-through.", note: "Clear. Use 'jury' instead of only 'draw' for first-time readers." },
+    { term: "Public randomness beacon", category: "Draws, panels, and ballots", aliases: "beacon", means: "A public source of unpredictable values used to prove the jury draw was not chosen by the app or attacker.", used: "DemoThemis sealed die and run-through.", note: "Technical but standard. 'Public random beacon' is a little easier." },
+    { term: "Sealed die", category: "Draws, panels, and ballots", aliases: "one roll, no rerolls", means: "The metaphor for a draw that can be verified but not rerolled until the app likes the panel.", used: "DemoThemis under-the-hood section.", note: "Strong metaphor. Keep it, but anchor it to public randomness." },
+    { term: "Panel", category: "Draws, panels, and ballots", aliases: "jury panel", means: "The group of drawn jurors assigned to one case or appeal rung.", used: "Court chapters, game lab, run-through.", note: "Clear. 'Jury panel' is plainer on first use." },
+    { term: "Panel size", category: "Draws, panels, and ballots", aliases: "jury size", means: "The number of jurors on a panel, increasing with stakes and appeals.", used: "DemoThemis, game lab, run-through.", note: "Both terms are clear. 'Jury size' is better in lay UI." },
+    { term: "Parallel panels", category: "Draws, panels, and ballots", aliases: "several juries at once", means: "Multiple independent panels seated for very large cases so an attacker must capture all of them at the same time.", used: "DemoThemis ceiling section and game lab assumptions.", note: "Clear once explained. 'Several juries at once' is the friendly gloss." },
+    { term: "Threshold key", category: "Draws, panels, and ballots", aliases: "tally key", means: "The cryptographic setup that allows only the aggregate result to open, never individual ballots.", used: "Private ballot section.", note: "Technical. Important to keep it in the under-the-hood layer." },
+    { term: "Encrypted ballot", category: "Draws, panels, and ballots", aliases: "locked ballot", means: "A vote that is submitted without revealing its contents until only the final aggregate tally is opened.", used: "DemoThemis and run-through.", note: "Clear enough. 'Locked ballot' is the friendlier metaphor." },
+    { term: "Receipt-free ballot", category: "Draws, panels, and ballots", aliases: "private vote, ballot nobody can sell", means: "A voting method where even a willing seller cannot prove how they voted to a briber.", used: "DemoThemis, game lab, run-through.", note: "Core security phrase. 'Private vote' is simpler, but 'receipt-free' explains why bribery fails." },
+    { term: "Re-key", category: "Draws, panels, and ballots", aliases: "change the encrypted vote", means: "A juror can silently replace an encrypted vote, making any earlier receipt useless to a briber.", used: "Private ballot section and run-through.", note: "Technical. It needs the bribe example beside it." },
+    { term: "Aggregate tally", category: "Draws, panels, and ballots", aliases: "final total", means: "The final count opened as a total, without opening any individual ballot.", used: "Private ballot section.", note: "Clear and precise." },
+    { term: "Zero-knowledge proof", category: "Draws, panels, and ballots", aliases: "ZK proof", means: "A proof that the final tally was counted correctly without revealing private votes.", used: "Private ballot and no-centralized-fallback discussion.", note: "Technical but probably necessary. Avoid using 'ZK' before spelling it out." },
+    { term: "Pseudonymous seat", category: "Draws, panels, and ballots", aliases: "seat pseudonym", means: "The visible court identity of a juror seat, separated from the juror's name, face, and personal identity.", used: "Briber visibility and privacy section.", note: "Useful distinction. It helps avoid implying real-name exposure." },
+    { term: "No centralized fallback", category: "Draws, panels, and ballots", aliases: "no admin key, keyless setup", means: "The tally setup is only acceptable if no operator ever has a usable key that can open ballots or bypass privacy.", used: "Private ballot security note.", note: "Strong and important. Keep this wording direct." },
+
+    { term: "Juror pay", category: "Incentives and attacks", aliases: "pay pressure", means: "Fees and rewards available per active juror, making honest court work attractive without guaranteeing a wage.", used: "Game lab scores and incentive circuit.", note: "Clear. 'Pay pressure' is more technical; use 'juror pay' in UI." },
+    { term: "Fee flow", category: "Incentives and attacks", aliases: "fees funding jurors", means: "Settlement fees routed to juror pay, long-term rewards, and operations.", used: "Game lab, bootstrap loop, governance.", note: "Clear enough. 'Where fees go' is more lay-friendly." },
+    { term: "Reward pool", category: "Incentives and attacks", aliases: "long-term rewards", means: "Funds used to reward high-quality jurors over time, including slashes from bad or careless votes.", used: "DemoThemis, game lab, bootstrap loop.", note: "Clear. Explain that it does not pay the winning panel extra." },
+    { term: "Live reserve", category: "Incentives and attacks", aliases: "money at risk", means: "Pending juror income that can be lost for careless or wrong voting. It should deter laziness without pricing out honest jurors.", used: "DemoThemis, game lab, run-through.", note: "In docs, 'live reserve' is precise. In UI, 'money at risk' is easier." },
+    { term: "Slash", category: "Incentives and attacks", aliases: "slashing, wrong-side loss", means: "A loss imposed on a wrong or careless vote, with proceeds routed to the reward pool.", used: "DemoThemis and game lab assumptions.", note: "Crypto-native term. Pair with 'lose money' for lay readers." },
+    { term: "Laziness floor", category: "Incentives and attacks", aliases: "reserve floor", means: "The minimum money at risk needed to make careless voting lose more than it saves.", used: "DemoThemis live reserve section and assumptions.", note: "Good term for mechanics. 'Minimum money at risk' is clearer in UI." },
+    { term: "Appeal floor", category: "Incentives and attacks", aliases: "appeal cost floor", means: "The minimum cost of an appeal, covering the next panel, capture risk, and delay imposed on the winner.", used: "DemoThemis, game lab, run-through.", note: "Clear if the three floors are listed nearby." },
+    { term: "Appeal bond", category: "Incentives and attacks", aliases: "rung bond", means: "Money posted to climb the appeal ladder, refunded or forfeited depending on the appeal outcome.", used: "DemoThemis appeal section.", note: "Standard and clear." },
+    { term: "Delay rent", category: "Incentives and attacks", aliases: "delay cost", means: "The part of appeal pricing that compensates for locking up the winner's funds during an appeal.", used: "DemoThemis and game lab.", note: "A little unusual but vivid. Define on first use." },
+    { term: "Loser-side petition", category: "Incentives and attacks", aliases: "appeal sincerity gate", means: "A way for many losing-side verified humans to support an appeal by staking small refundable amounts.", used: "DemoThemis appeals.", note: "Clear. It explains who can trigger an appeal without winner permission." },
+    { term: "Appeal ladder", category: "Incentives and attacks", aliases: "dispute ladder", means: "The path from smaller to larger panels when a losing side pays or petitions to challenge a verdict.", used: "DemoThemis and run-through.", note: "Good metaphor. Keep it." },
+    { term: "Capture odds", category: "Incentives and attacks", aliases: "jury-control odds", means: "The probability that attackers control enough drawn jurors to win a panel.", used: "Game lab, appeal pricing, DemoThemis.", note: "Clear for risk readers. 'Chance attackers control a jury' is better in UI." },
+    { term: "Safety score", category: "Incentives and attacks", aliases: "illustrative safety index", means: "A launch-stage health score in the game lab. It is a weighted index, not a measured failure probability.", used: "Break the court.", note: "Use the caveat every time. This term can otherwise sound overconfident." },
+    { term: "Safety locks", category: "Incentives and attacks", aliases: "attack defenses", means: "The toggled protections in the game lab: random draw, private vote, live face check, aptitude tests, and costly appeals.", used: "Break the court controls.", note: "Good UX term. It is understandable without math." },
+    { term: "Coordinated group attack", category: "Incentives and attacks", aliases: "bloc attack, bloc capture", means: "An attacker recruits enough qualified humans to try to land a majority on the drawn jury.", used: "Game lab attack cards and DemoThemis.", note: "Clearer than 'bloc capture' for lay readers." },
+    { term: "Provable bribe", category: "Incentives and attacks", aliases: "bribe contract", means: "A bribe that works only if the buyer can verify how the juror voted.", used: "Game lab and private ballot section.", note: "Excellent because it focuses on proof, not moral intent." },
+    { term: "Lazy voting", category: "Incentives and attacks", aliases: "careless voting", means: "Skipping the work and voting randomly or by shortcut while trying to collect pay.", used: "Game lab and live reserve section.", note: "Plain and effective." },
+    { term: "Delay attack", category: "Incentives and attacks", aliases: "appeal griefing, grief attack", means: "Using appeals to lock funds or slow finality for profit or pressure.", used: "Game lab and appeal mechanics.", note: "Use 'delay attack' in UI; 'griefing' is jargon." },
+    { term: "Jurors follow the crowd", category: "Incentives and attacks", aliases: "drift, herding, crowd-following", means: "Jurors learn to copy the likely majority instead of reading evidence because agreement appears safer.", used: "Game lab and scoring section.", note: "Current UI phrase is strong. 'Drift' alone is too abstract." },
+
+    { term: "Resolved cases for aptitude tests", category: "Scoring and quality", aliases: "resolved test cases, curated resolved cases", means: "Clean settled outcomes that can be reused as source material for juror aptitude tests.", used: "DemoThemis, bootstrap loop, game lab, run-through.", note: "Precise but long. In compact UI, shorten to 'resolved test cases' or 'aptitude test case'." },
+    { term: "Aptitude tests", category: "Scoring and quality", aliases: "juror tests, anti-crowd-following tests", means: "Tests that use resolved cases or synthetic cases to check whether jurors are reasoning instead of copying the crowd.", used: "Game lab, DemoThemis, assumptions.", note: "Clear and lay-friendly. Keep separate from the resolved cases that supply many of the test questions." },
+    { term: "Curation", category: "Scoring and quality", aliases: "resolved-case filter, test-case curation", means: "The filter that decides which settled markets are reliable enough to become resolved cases for aptitude tests.", used: "Bootstrap loop and DemoThemis scoring.", note: "Standard but slightly vague. Pair with concrete criteria." },
+    { term: "Peer scoring", category: "Scoring and quality", aliases: "baseline-adjusted scoring", means: "A rule that scores a juror by the information their vote added beyond what the rest of the panel already implied.", used: "DemoThemis scoring mechanics.", note: "Technical. 'Credit above the obvious' is the reader-facing version." },
+    { term: "Credit above the obvious", category: "Scoring and quality", aliases: "subtract the obvious", means: "The scoring idea that obvious majority agreement earns little, while correct votes on hard cases earn more.", used: "DemoThemis scoring section.", note: "Excellent lay phrase. Keep it as the headline." },
+    { term: "Leave-one-out agreement", category: "Scoring and quality", aliases: "leave one out", means: "Scoring a juror by comparing their vote with what the rest of the panel said without them.", used: "DemoThemis scoring widget.", note: "Technical but readable with the widget." },
+    { term: "Margin weight", category: "Scoring and quality", aliases: "weight by margin", means: "A score adjustment that gives more credit for being right on close calls than on landslides.", used: "DemoThemis scoring section.", note: "Clear. Good bridge between intuition and math." },
+    { term: "Reputation", category: "Scoring and quality", aliases: "juror score, rating", means: "A rolling estimate of juror quality that affects draw rate and pay.", used: "DemoThemis, game lab, governance.", note: "Common term, but avoid making it sound like a public social score." },
+    { term: "Error bar", category: "Scoring and quality", aliases: "confidence interval, uncertainty band", means: "The uncertainty around a juror's score, preventing the system from overreacting to too little data.", used: "DemoThemis scoring section.", note: "Clear enough. 'Uncertainty band' is friendlier if needed." },
+    { term: "Confidence gate", category: "Scoring and quality", aliases: "suspension gate", means: "A rule that only acts when the score and its uncertainty confidently show persistent poor performance.", used: "DemoThemis scoring widget.", note: "Clear in context. It is less punitive-sounding than 'suspension gate'." },
+    { term: "Full vote weight", category: "Scoring and quality", aliases: "trusted vote weight", means: "The point where a juror's score is confident enough for their ballot to count at full strength.", used: "DemoThemis scoring section.", note: "Clear. Needs care so it does not imply low-score people are voiceless by default." },
+    { term: "Seniority gate", category: "Scoring and quality", aliases: "largest-panel eligibility", means: "A history requirement before jurors can serve on the largest panels.", used: "DemoThemis panel scaling.", note: "Clear and low-jargon." },
+
+    { term: "Market token", category: "Governance", aliases: "for-profit market governance", means: "The governance token for market-business dials such as margin, curation, thresholds, and treasury decisions.", used: "Governance chapter.", note: "Clear. Emphasize that it does not govern court verdicts." },
+    { term: "Court token", category: "Governance", aliases: "court governance token", means: "The governance token for bounded court parameters, counted with personhood and square-root weighting.", used: "Governance chapter.", note: "Clear if the firewall is explained nearby." },
+    { term: "Constitutional firewall", category: "Governance", aliases: "governance boundary, hard-coded boundary", means: "The rule boundary that stops market governance from controlling court truth and stops any vote from changing load-bearing court protections.", used: "Governance chapter.", note: "Strong phrase. It makes the separation memorable." },
+    { term: "One token, one vote", category: "Governance", aliases: "plutocratic market vote", means: "The market token's simple capital vote, used only for business-side decisions where capital may speak as capital.", used: "Governance market-token section.", note: "Clear and intentionally blunt." },
+    { term: "Square-root voting", category: "Governance", aliases: "root-weighted court vote", means: "Court governance weight grows with the square root of tokens per verified person, reducing the advantage of wealth.", used: "Governance court-token section.", note: "Technical but standard. The whale-and-village widget helps." },
+    { term: "Service multiplier", category: "Governance", aliases: "use-based multiplier", means: "A governance weight multiplier earned by actually using or serving the court, such as paying escrow fees or earning credited cases.", used: "Governance chapter.", note: "Clear. Good phrase for aligning power with contribution." },
+    { term: "Per-person cap", category: "Governance", aliases: "voice cap", means: "A maximum share of court governance weight any one verified human can hold.", used: "Governance chapter.", note: "Clear and reassuring." },
+    { term: "Linked wallet", category: "Governance", aliases: "World-ID-linked wallet", means: "A wallet connected to a verified human for governance counting, with all linked balances summed before square-root weighting.", used: "Governance chapter.", note: "Clear. Use carefully to avoid implying public identity exposure." },
+    { term: "Snapshot", category: "Governance", aliases: "proposal-time lock", means: "The recorded balances and weights used for a vote, fixed when the proposal starts so votes cannot be rented afterward.", used: "Governance chapter.", note: "Common governance term. Define on first use." },
+    { term: "Timelock", category: "Governance", aliases: "delay before execution", means: "A waiting period before a passed proposal takes effect.", used: "Governance chapter.", note: "Standard and clear." },
+    { term: "Quorum", category: "Governance", aliases: "minimum turnout", means: "The minimum active voting weight required for a governance proposal to count.", used: "Governance chapter.", note: "Standard. Fine as-is." },
+    { term: "Growth emissions", category: "Governance", aliases: "token incentives", means: "Token distributions used to grow usage, subject to the governance firewall and product boundaries.", used: "Governance and bootstrap context.", note: "Crypto-native. 'Growth incentives' is more readable." }
+  ];
+
+  function slug(value) {
+    return value.toLowerCase().replace(/[^a-z0-9]+/g, "-").replace(/^-+|-+$/g, "");
+  }
+
+  function escapeHtml(value) {
+    return String(value).replace(/[&<>"']/g, function (ch) {
+      return { "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" }[ch];
+    });
+  }
+
+  function termText(item) {
+    return [item.term, item.category, item.aliases, item.means, item.used, item.note].join(" ").toLowerCase();
+  }
+
+  function render() {
+    var list = document.getElementById("glossaryList");
+    var filter = document.getElementById("categoryFilter");
+    var count = document.getElementById("termCount");
+    if (!list || !filter || !count) return;
+
+    filter.innerHTML = '<button type="button" class="active" data-category="all">All terms</button>' + CATEGORIES.map(function (category) {
+      return '<button type="button" data-category="' + escapeHtml(category) + '">' + escapeHtml(category) + '</button>';
+    }).join("");
+
+    list.innerHTML = CATEGORIES.map(function (category) {
+      var items = TERMS.filter(function (item) { return item.category === category; });
+      return '<section class="reveal glossary-section" id="' + slug(category) + '" data-category="' + escapeHtml(category) + '">' +
+        '<div class="category-head"><div><p class="sec-label">' + escapeHtml(category) + '</p><h2>' + escapeHtml(category) + '</h2></div><span class="count">' + items.length + ' terms</span></div>' +
+        '<div class="term-grid">' + items.map(function (item) {
+          return '<article class="term-card" data-term-card data-category="' + escapeHtml(item.category) + '" data-search="' + escapeHtml(termText(item)) + '">' +
+            '<div class="term-top"><h3>' + escapeHtml(item.term) + '</h3><span>' + escapeHtml(item.category) + '</span></div>' +
+            '<p><b>Also used as:</b> <span class="term-alias">' + escapeHtml(item.aliases) + '</span></p>' +
+            '<p><b>Means:</b> ' + escapeHtml(item.means) + '</p>' +
+            '<p><b>Appears in:</b> ' + escapeHtml(item.used) + '</p>' +
+            '<p class="term-note"><b>Review note:</b> ' + escapeHtml(item.note) + '</p>' +
+          '</article>';
+        }).join("") + '</div>' +
+      '</section>';
+    }).join("");
+
+    count.textContent = TERMS.length + " terms";
+  }
+
+  function initFilters() {
+    var search = document.getElementById("termSearch");
+    var filter = document.getElementById("categoryFilter");
+    var count = document.getElementById("termCount");
+    var noResults = document.getElementById("noResults");
+    var activeCategory = "all";
+
+    function apply() {
+      var query = (search.value || "").trim().toLowerCase();
+      var visible = 0;
+      var sections = Array.prototype.slice.call(document.querySelectorAll(".glossary-section"));
+      sections.forEach(function (section) {
+        var sectionVisible = 0;
+        Array.prototype.slice.call(section.querySelectorAll("[data-term-card]")).forEach(function (card) {
+          var categoryMatch = activeCategory === "all" || card.getAttribute("data-category") === activeCategory;
+          var searchMatch = !query || card.getAttribute("data-search").indexOf(query) !== -1;
+          var show = categoryMatch && searchMatch;
+          card.classList.toggle("is-hidden", !show);
+          if (show) { visible += 1; sectionVisible += 1; }
+        });
+        section.classList.toggle("is-hidden", sectionVisible === 0);
+      });
+      count.textContent = visible + " of " + TERMS.length + " terms";
+      noResults.classList.toggle("visible", visible === 0);
+    }
+
+    filter.addEventListener("click", function (event) {
+      var button = event.target.closest("button[data-category]");
+      if (!button) return;
+      activeCategory = button.getAttribute("data-category");
+      Array.prototype.forEach.call(filter.querySelectorAll("button"), function (btn) {
+        btn.classList.toggle("active", btn === button);
+      });
+      apply();
+    });
+    search.addEventListener("input", apply);
+    apply();
+  }
+
+  render();
+  initFilters();
+})();
+</script>
+<script src="assets/common.js"></script>
+</body>
+</html>

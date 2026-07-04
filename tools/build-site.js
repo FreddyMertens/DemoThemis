@@ -13,6 +13,7 @@ const publicFiles = [
   "hybrid-juror-prediction-market-integration.html",
   "the-design.html",
   "governance.html",
+  "glossary.html",
   "assumptions.js",
   "assets/common.js",
   "assets/styles.css",

@@ -176,13 +176,13 @@ Evidence:
   - Willing accomplices can pass face checks.
   - ~~A single tally operator would break ballot privacy, so the docs now reject a centralized fallback.~~ The public docs now explicitly reject single-operator/admin-key tally designs.
   - A centralized implementation shortcut can become a deanonymization database.
-  - False settlements can poison answer keys.
+  - False settlements can poison resolved cases for aptitude tests.
   - Appeals and quorum rules have unresolved edge cases.
   - Subjective disputes need a separate rubric court and separate track record.
 
 Why this matters:
 
-The project's strongest technical posture is conditional: it can raise attack costs under specific assumptions. It cannot honestly promise that money cannot buy influence in all worlds. Bribery, identity rental, coercion, collusion, bad answer keys, operator compromise, and governance capture remain meaningful threats.
+The project's strongest technical posture is conditional: it can raise attack costs under specific assumptions. It cannot honestly promise that money cannot buy influence in all worlds. Bribery, identity rental, coercion, collusion, bad resolved cases for aptitude tests, operator compromise, and governance capture remain meaningful threats.
 
 Does this expose a vulnerability?
 
@@ -241,13 +241,13 @@ Future implementation diligence:
 
 ### 5. Fixed Docs / Future Implementation Diligence: Centralized Shortcuts Can Re-Centralize the System
 
-Status: fixed for this website. The public docs now reject centralized arbitration fallback, admin-key tally designs, and discretionary operator control of panels, scores, or answer-key admission.
+Status: fixed for this website. The public docs now reject centralized arbitration fallback, admin-key tally designs, and discretionary operator control of panels, scores, or resolved-case admission for aptitude tests.
 
 Evidence:
 
-- The project discusses juror track records, calibration, answer keys, private votes, draws, and scoring.
-- ~~`breaking-the-court.html` now frames centralized handling of scoring, key curation, and draws as a forbidden shortcut rather than the intended architecture.~~ Done.
-- ~~`rebuilding-the-court.html` now makes the stricter requirement explicit: no centralized tally fallback, no operator-held ballot-opening key, and no admin discretion over panels, scores, or answer-key admission.~~ Done.
+- The project discusses juror track records, calibration, resolved cases for aptitude tests, private votes, draws, and scoring.
+- ~~`breaking-the-court.html` now frames centralized handling of scoring, resolved-case curation, and draws as a forbidden shortcut rather than the intended architecture.~~ Done.
+- ~~`rebuilding-the-court.html` now makes the stricter requirement explicit: no centralized tally fallback, no operator-held ballot-opening key, and no admin discretion over panels, scores, or resolved-case admission for aptitude tests.~~ Done.
 
 Why this matters:
 
@@ -256,11 +256,11 @@ The hard part is not just preventing a fake vote. It is preventing the infrastru
 - Which personhood credential was drawn.
 - Which pseudonym voted.
 - How that juror voted.
-- Which answer keys affected their score.
+- Which resolved cases for aptitude tests affected their score.
 - Which market or dispute they participated in.
 - Whether reputation links multiple appearances by the same human.
 
-If one backend, analytics stack, database, admin key, or operator can link those facts, bribery resistance and privacy collapse together. The stated architecture should continue to make clear that arbitration, reputation, scoring, draws, and answer-key curation belong on permissionless, verifiable rails rather than in a trusted private service.
+If one backend, analytics stack, database, admin key, or operator can link those facts, bribery resistance and privacy collapse together. The stated architecture should continue to make clear that arbitration, reputation, scoring, draws, and resolved-case curation for aptitude tests belong on permissionless, verifiable rails rather than in a trusted private service.
 
 Does this expose a vulnerability?
 
@@ -431,7 +431,7 @@ Recommended fix:
 - Label simulation outputs as "under selected assumptions."
 - Add first-class attack dimensions for:
   - tally setup or key-management failure
-  - answer-key curation stress
+  - resolved-case curation for aptitude tests
   - identity rental/willing accomplices
   - regulatory shutdown
   - appeal spam
@@ -539,7 +539,7 @@ screenshot.png
 
 Evidence:
 
-- The project discusses prediction markets and event-like markets as infrastructure for truth/answer keys.
+- The project discusses prediction markets and event-like markets as infrastructure for truth/resolved cases for aptitude tests.
 - CFTC materials in 2026 continue to discuss prediction markets, event contracts, reporting, public-interest review, and enforcement concerns.
 
 Why this matters:
@@ -667,7 +667,7 @@ Remaining gamelab weaknesses, if the lab is meant to become a more complete adve
 1. It still compresses too many attack surfaces into a small number of knobs.
 2. It can make "green" results feel more conclusive than they are.
 3. It models the economics better than it models privacy failure.
-4. It treats answer-key curation as a modeled input rather than a full production specification, which is fine for an intuition lab.
+4. It treats resolved-case curation for aptitude tests as a modeled input rather than a full production specification, which is fine for an intuition lab.
 5. It does not fully model identity rental, willing accomplices, coercion, and social collusion.
 6. It does not fully model legal/regulatory shutdown as a system failure.
 7. It does not show enough sensitivity analysis: which one assumption flips the result?
@@ -675,7 +675,7 @@ Remaining gamelab weaknesses, if the lab is meant to become a more complete adve
 Optional gamelab improvements:
 
 - Add "tally setup/key-management failure" as a first-class attack.
-- Optionally add answer-key curation stress tests if the gamelab is meant to cover launch-spec details.
+- Optionally add resolved-case curation stress tests for aptitude tests if the gamelab is meant to cover launch-spec details.
 - Add "Identity rental / willing accomplice" as a first-class attack.
 - Add "Appeal griefing" as a first-class attack.
 - Add "Regulatory halt" as a first-class non-technical failure.
@@ -704,7 +704,7 @@ The gamelab should frame itself as an adversarial design worksheet. That is a st
 9. Replace absolute bribery/security claims with conditional language.
 10. Add a concise public limitations section to the gamelab if the current caveats still feel too light.
 11. Optionally create one canonical threat-model/architecture-boundary page, but keep it scoped to what the docs need to claim.
-12. Optionally add gamelab models for tally setup/key-management failure, answer-key curation stress, identity rental, and appeal griefing if the gamelab is meant to be more than an intuition tool.
+12. Optionally add gamelab models for tally setup/key-management failure, resolved-case curation stress for aptitude tests, identity rental, and appeal griefing if the gamelab is meant to be more than an intuition tool.
 13. ~~Set Tippy `allowHTML` to false where possible and reduce shared `innerHTML` use.~~ Fixed for shared site chrome/tooltips; remaining page-specific `innerHTML` is controlled display markup.
 
 ### Future Product Launch Diligence, Not Required For This Website
@@ -712,7 +712,7 @@ The gamelab should frame itself as an adversarial design worksheet. That is a st
 11. Produce a privacy/data-flow threat model for World ID, face/liveness checks, juror draw, private voting, reputation, appeals, and payouts.
 12. Get legal/privacy review for biometric/personhood claims and prediction-market/event-contract integration.
 13. Specify appeal/finality/quorum rules as a state machine.
-14. Specify exact production thresholds for answer-key provenance, curation, challenge coverage, and holdout-test rules. The website already explains the intended settlement-quality filter and objective/rubric-court split.
+14. Specify exact production thresholds for resolved-case provenance, curation, challenge coverage, and holdout-test rules for aptitude tests. The website already explains the intended settlement-quality filter and objective/rubric-court split.
 15. ~~Document the launch requirement that no tally/admin role can link identity, votes, reputation, or payouts.~~ Done in the court, blueprint, finishing, and rebuilding pages. Formal implementation design still remains.
 
 ## Appendix: Confirmed Non-Issues in This Pass
