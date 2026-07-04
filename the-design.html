@@ -50,6 +50,46 @@
   .focus-lane { width: fit-content; border: 1px solid var(--line-strong); border-radius: 999px; background: var(--surface); color: var(--accent-ink); padding: .26rem .58rem; font-size: .68rem; line-height: 1; font-weight: 850; letter-spacing: .08em; text-transform: uppercase; }
   .focus-card h3 { margin: .12rem 0 0; font-size: clamp(1.35rem, 2.4vw, 2rem); line-height: 1.05; }
   .focus-card p { margin: 0; color: var(--ink-soft); font-size: .98rem; line-height: 1.55; max-width: 42rem; }
+  .step-stage { position: relative; border: 1px solid var(--line); border-radius: 12px; background: linear-gradient(135deg, color-mix(in srgb, var(--surface) 90%, #fff), var(--bg)); overflow: hidden; min-height: 16.25rem; }
+  .step-stage::after { content: ""; position: absolute; inset: auto 0 0; height: 3.2rem; background: linear-gradient(180deg, transparent, color-mix(in srgb, var(--accent-soft) 45%, transparent)); pointer-events: none; }
+  .step-svg { display: block; width: 100%; height: auto; min-height: 16.25rem; }
+  .step-svg text { font-family: var(--sans); fill: var(--ink); letter-spacing: 0; }
+  .step-svg .small { fill: var(--muted); font-size: 11px; font-weight: 700; }
+  .step-svg .tiny { fill: var(--faint); font-size: 9px; font-weight: 800; text-transform: uppercase; }
+  .step-svg .label { fill: var(--ink); font-size: 13px; font-weight: 850; }
+  .step-svg .body { fill: var(--bg); stroke: var(--line-strong); stroke-width: 1.4; }
+  .step-svg .soft { fill: var(--surface); }
+  .step-svg .accent { fill: var(--accent-soft); stroke: color-mix(in srgb, var(--accent) 50%, var(--line)); }
+  .step-svg .good { fill: var(--good-soft); stroke: color-mix(in srgb, var(--good) 50%, var(--line)); }
+  .step-svg .bad { fill: var(--bad-soft); stroke: color-mix(in srgb, var(--bad) 50%, var(--line)); }
+  .step-svg .ink { fill: var(--ink-soft); }
+  .step-svg .yes-fill { fill: var(--good); }
+  .step-svg .no-fill { fill: var(--bad); }
+  .step-svg .accent-fill { fill: var(--accent); }
+  .step-svg .line { fill: none; stroke: var(--line-strong); stroke-width: 3; stroke-linecap: round; stroke-linejoin: round; }
+  .step-svg .line.good { stroke: var(--good); }
+  .step-svg .line.bad { stroke: var(--bad); }
+  .step-svg .line.accent { stroke: var(--accent); }
+  .step-svg .line.hot { stroke-dasharray: 10 10; animation: dash-flow 1.15s linear infinite; }
+  .step-svg .pulse { transform-box: fill-box; transform-origin: center; animation: art-pulse 1.2s ease-in-out infinite; }
+  .step-svg .pop { transform-box: fill-box; transform-origin: center; animation: art-pop .42s ease-out both; }
+  .step-svg .bob { animation: art-bob 2.2s ease-in-out infinite; }
+  .step-svg .fade { opacity: .38; }
+  .step-svg .seat { fill: var(--surface); stroke: var(--line-strong); stroke-width: 1; }
+  .step-svg .seat.on { fill: var(--accent-soft); stroke: var(--accent); }
+  .mobile-art { display: none; }
+  .mobile-art-tile { border: 1px solid var(--line); border-radius: 12px; background: var(--surface); padding: .64rem .7rem; min-width: 0; font-family: var(--sans); }
+  .mobile-art-tile b { display: block; color: var(--ink); font-size: .9rem; line-height: 1.18; overflow-wrap: anywhere; }
+  .mobile-art-tile small { display: block; color: var(--muted); font-size: .72rem; line-height: 1.28; margin-top: .18rem; }
+  .mobile-art-tile.accent { background: var(--accent-soft); border-color: color-mix(in srgb, var(--accent) 42%, var(--line)); }
+  .mobile-art-tile.good { background: var(--good-soft); border-color: color-mix(in srgb, var(--good) 42%, var(--line)); }
+  .mobile-art-tile.bad { background: var(--bad-soft); border-color: color-mix(in srgb, var(--bad) 42%, var(--line)); }
+  .mobile-art-tile.hot { box-shadow: var(--shadow); animation: art-pop .42s ease-out both; }
+  .mobile-art-arrow { display: grid; place-items: center; color: var(--accent); font-family: var(--mono); font-weight: 900; min-height: 1.1rem; }
+  .play-panel { display: grid; gap: .45rem; }
+  .play-result { border-left: 3px solid var(--accent); padding: .28rem 0 .28rem .6rem; color: var(--ink-soft); font-size: .82rem; line-height: 1.4; min-height: 2.2rem; }
+  .mission-actions.play-toolbar { margin-top: 0; }
+  .mission-actions button.active { background: var(--accent); border-color: var(--accent); color: #fff; }
   .focus-path { display: flex; flex-wrap: wrap; gap: .35rem; align-self: end; margin-top: .45rem; }
   .focus-path span { border: 1px solid var(--line); border-radius: 999px; background: color-mix(in srgb, var(--surface) 82%, transparent); color: var(--muted); padding: .25rem .52rem; font-size: .7rem; font-weight: 800; }
   .focus-path span.now { background: var(--accent); border-color: var(--accent); color: #fff; }
@@ -110,6 +150,23 @@
   .summary-box h3 { margin: 0 0 .4rem; }
   .summary-box p { margin: 0; color: var(--muted); font-size: .92rem; line-height: 1.5; }
 
+  @keyframes dash-flow {
+    from { stroke-dashoffset: 24; }
+    to { stroke-dashoffset: 0; }
+  }
+  @keyframes art-pulse {
+    0%, 100% { transform: scale(1); opacity: 1; }
+    50% { transform: scale(1.06); opacity: .82; }
+  }
+  @keyframes art-pop {
+    0% { transform: scale(.82); opacity: .45; }
+    100% { transform: scale(1); opacity: 1; }
+  }
+  @keyframes art-bob {
+    0%, 100% { transform: translateY(0); }
+    50% { transform: translateY(-5px); }
+  }
+
   @media (max-width: 980px) {
     body { --maxw: 54rem; --half-maxw: 27rem; }
     .run-hud { grid-template-columns: repeat(2, minmax(0, 1fr)); }
@@ -121,6 +178,9 @@
     .run-hud, .unlock-grid, .loop-strip, .summary-grid { grid-template-columns: 1fr; }
     .widget { padding: 1rem; }
     .run-controls .btn { flex: 1 1 8rem; }
+    .step-stage { min-height: 0; }
+    .step-svg { display: none; }
+    .mobile-art { display: grid; gap: .42rem; padding: .72rem; }
   }
 </style>
 </head>
@@ -201,6 +261,17 @@
                   <div class="focus-lane" id="focusLane">Market</div>
                   <h3 id="focusTitle">Question opens</h3>
                   <p id="focusBody">A first bet creates the market and locks escrow.</p>
+                  <div class="step-stage market" id="stepStage">
+                    <svg class="step-svg" id="stepSvg" viewBox="0 0 720 320" role="img" aria-labelledby="stepSvgTitle stepSvgDesc">
+                      <title id="stepSvgTitle">Question opens</title>
+                      <desc id="stepSvgDesc">A dime moves into escrow and opens the market.</desc>
+                    </svg>
+                    <div class="mobile-art" id="mobileArt" aria-label="Mobile illustration for the current step"></div>
+                  </div>
+                  <div class="play-panel">
+                    <div class="mission-actions play-toolbar" id="missionActions" aria-label="Play this step"></div>
+                    <div class="play-result" id="playResult" aria-live="polite">The scene is ready.</div>
+                  </div>
                   <div class="focus-path" id="focusPath" aria-label="Current simulation progress"></div>
                 </article>
                 <aside class="focus-side" aria-label="Current step details">
@@ -228,7 +299,6 @@
                 <div class="eyebrow" id="missionEyebrow">Stage 1</div>
                 <h3 id="missionTitle">Open with a dime</h3>
                 <p id="missionText">A market starts when the first person locks any amount into protocol escrow. There is no listing committee, no market maker, and no minimum viable liquidity hiding behind the curtain.</p>
-                <div class="mission-actions" id="missionActions"></div>
               </div>
               <div class="event-log">
                 <h3>Current event</h3>
@@ -622,7 +692,8 @@
       change: "Market exists",
       why: "Ten cents in escrow is enough to make the question live.",
       next: "Crowd prices it",
-      tone: "market"
+      tone: "market",
+      results: ["The dime lands in escrow; the question becomes a real market.", "A shareable link pulls the first observers toward the pot."]
     },
     {
       lane: "Market",
@@ -631,7 +702,8 @@
       change: "Odds become visible",
       why: "The pot is now large enough to show a real YES/NO split.",
       next: "Fixed odds offer",
-      tone: "market"
+      tone: "market",
+      results: ["YES flow pushes the price dial upward and makes NO cheaper.", "NO flow pushes back, which is how the pool finds opposition.", "The current odds become the simplest public summary of disagreement."]
     },
     {
       lane: "Market",
@@ -640,7 +712,8 @@
       change: "70c YES offer",
       why: "Named odds make early liquidity easier to understand and take.",
       next: "Robustness lock",
-      tone: "market"
+      tone: "market",
+      results: ["The buyer fills the maker's fixed 70c offer before touching the pool.", "Overflow falls back to the pool only after the posted price is consumed."]
     },
     {
       lane: "Claims",
@@ -649,7 +722,8 @@
       change: "Self-custody claims",
       why: "The website no longer needs to hold the user's position.",
       next: "Private room",
-      tone: "claim"
+      tone: "claim",
+      results: ["The robustness gates light up and mint wallet-held YES/NO tokens.", "The order book opens because claims can now move outside the page."]
     },
     {
       lane: "Market",
@@ -658,7 +732,8 @@
       change: "Invite-only escrow",
       why: "Private bets get the same arbitration path as public markets.",
       next: "Parlay route",
-      tone: "market"
+      tone: "market",
+      results: ["The invite opens a private room without exposing the wager to the public book.", "Both sides lock fixed odds into neutral escrow."]
     },
     {
       lane: "Claims",
@@ -667,7 +742,8 @@
       change: "Fill-or-kill bundle",
       why: "Composability creates familiar betting UX without balance-sheet risk.",
       next: "Bonded assertion",
-      tone: "claim"
+      tone: "claim",
+      results: ["The router bundles the legs only if every required fill is available.", "Cash-out routes the unwanted legs back through live liquidity."]
     },
     {
       lane: "Arbitration",
@@ -676,7 +752,8 @@
       change: "Assertion window",
       why: "Most cases can resolve optimistically unless someone finds a lie.",
       next: "Watcher challenge",
-      tone: "court"
+      tone: "court",
+      results: ["A bonded YES assertion starts the settlement clock.", "Trading keeps moving while watchers inspect the assertion."]
     },
     {
       lane: "Arbitration",
@@ -685,7 +762,8 @@
       change: "Court lane opens",
       why: "The bad answer funds the person who caught it.",
       next: "Jury draw",
-      tone: "court"
+      tone: "court",
+      results: ["The watcher stakes a challenge and points at the false answer.", "The disputed pot routes into DemoThemis for a human panel."]
     },
     {
       lane: "Arbitration",
@@ -694,7 +772,8 @@
       change: "15 verified jurors",
       why: "One bound draw prevents panel shopping.",
       next: "Private ballots",
-      tone: "court"
+      tone: "court",
+      results: ["The beacon locks one draw, so the app cannot shop for a friendlier panel.", "Face checks confirm the drawn seats are present verified humans."]
     },
     {
       lane: "Arbitration",
@@ -703,7 +782,8 @@
       change: "No useful vote receipt",
       why: "A bribed juror can take money and still vote honestly.",
       next: "Verdict proof",
-      tone: "court"
+      tone: "court",
+      results: ["Encrypted ballots enter the box without revealing usable receipts.", "Lazy or suspicious votes put live reserve at risk."]
     },
     {
       lane: "Finality loop",
@@ -712,7 +792,8 @@
       change: "First verdict lands",
       why: "The court can punish lazy or wrong votes without paying the winning panel extra.",
       next: "Appeal ladder",
-      tone: "final"
+      tone: "final",
+      results: ["The aggregate proof lands and reprices the unresolved claims.", "Wrong-side reserve moves to the reward pool instead of becoming a bribe target."]
     },
     {
       lane: "Finality loop",
@@ -721,7 +802,8 @@
       change: "31-seat appeal",
       why: "Retrying the case gets bigger, pricier, and finite.",
       next: "Final payout",
-      tone: "final"
+      tone: "final",
+      results: ["The appeal only opens after the losing side pays the rung floor.", "The next panel is larger, which raises the cost of capture."]
     },
     {
       lane: "Finality loop",
@@ -730,7 +812,8 @@
       change: "Escrow closed",
       why: "The market is over, but the court is stronger for the next one.",
       next: "More demand",
-      tone: "final"
+      tone: "final",
+      results: ["Winning claims redeem and the market cannot reopen.", "The answer key updates juror scoring for future cases.", "A stronger public record makes the next market easier to trust."]
     }
   ];
 
@@ -741,6 +824,7 @@
   var replay = document.getElementById("runReplay");
   var logEl = document.getElementById("runLog");
   var actionEl = document.getElementById("missionActions");
+  var activeAction = -1;
 
   function money(n) {
     if (n >= 1000000) return "$" + (n / 1000000).toFixed(1) + "M";
@@ -762,6 +846,308 @@
       var tag = el.querySelector(".tag");
       if (tag) tag.textContent = on ? "online" : "locked";
     });
+  }
+
+  function esc(value) {
+    return String(value).replace(/[&<>"']/g, function (ch) {
+      return { "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" }[ch];
+    });
+  }
+
+  function svgShell(title, desc, inner) {
+    return [
+      "<title id=\"stepSvgTitle\">" + esc(title) + "</title>",
+      "<desc id=\"stepSvgDesc\">" + esc(desc) + "</desc>",
+      "<defs>",
+      "<marker id=\"stepArrow\" markerWidth=\"10\" markerHeight=\"10\" refX=\"8\" refY=\"3\" orient=\"auto\" markerUnits=\"strokeWidth\"><path d=\"M0,0 L0,6 L8,3 z\" fill=\"currentColor\"></path></marker>",
+      "</defs>",
+      "<rect x=\"0\" y=\"0\" width=\"720\" height=\"320\" rx=\"0\" fill=\"transparent\"></rect>",
+      inner
+    ].join("");
+  }
+
+  function flow(x1, y1, x2, y2, tone, hot) {
+    var cls = "line " + (tone || "accent") + (hot ? " hot" : "");
+    return "<path class=\"" + cls + "\" d=\"M" + x1 + "," + y1 + " C" + ((x1 + x2) / 2) + "," + y1 + " " + ((x1 + x2) / 2) + "," + y2 + " " + x2 + "," + y2 + "\" marker-end=\"url(#stepArrow)\"></path>";
+  }
+
+  function node(x, y, w, h, label, sub, tone, hot) {
+    var cls = "body " + (tone || "soft");
+    return [
+      "<g class=\"" + (hot ? "pulse" : "") + "\">",
+      "<rect class=\"" + cls + "\" x=\"" + x + "\" y=\"" + y + "\" width=\"" + w + "\" height=\"" + h + "\" rx=\"15\"></rect>",
+      "<text class=\"label\" x=\"" + (x + 14) + "\" y=\"" + (y + 28) + "\">" + esc(label) + "</text>",
+      "<text class=\"small\" x=\"" + (x + 14) + "\" y=\"" + (y + 49) + "\">" + esc(sub) + "</text>",
+      "</g>"
+    ].join("");
+  }
+
+  function person(x, y, label, tone, hot) {
+    return [
+      "<g class=\"" + (hot ? "pulse" : "bob") + "\">",
+      "<circle class=\"" + (tone || "accent") + "\" cx=\"" + x + "\" cy=\"" + y + "\" r=\"23\"></circle>",
+      "<circle class=\"soft\" cx=\"" + x + "\" cy=\"" + (y - 8) + "\" r=\"7\"></circle>",
+      "<path class=\"line\" d=\"M" + (x - 11) + "," + (y + 13) + " Q" + x + "," + (y + 2) + " " + (x + 11) + "," + (y + 13) + "\"></path>",
+      "<text class=\"tiny\" x=\"" + x + "\" y=\"" + (y + 43) + "\" text-anchor=\"middle\">" + esc(label) + "</text>",
+      "</g>"
+    ].join("");
+  }
+
+  function chip(x, y, label, tone, hot) {
+    return [
+      "<g class=\"" + (hot ? "pop pulse" : "") + "\">",
+      "<rect class=\"" + (tone || "accent") + "\" x=\"" + x + "\" y=\"" + y + "\" width=\"86\" height=\"30\" rx=\"15\"></rect>",
+      "<text class=\"tiny\" x=\"" + (x + 43) + "\" y=\"" + (y + 20) + "\" text-anchor=\"middle\">" + esc(label) + "</text>",
+      "</g>"
+    ].join("");
+  }
+
+  function gauge(x, y, w, label, value, tone, hot) {
+    var width = Math.max(10, Math.min(w, w * value));
+    return [
+      "<g class=\"" + (hot ? "pulse" : "") + "\">",
+      "<text class=\"tiny\" x=\"" + x + "\" y=\"" + (y - 8) + "\">" + esc(label) + "</text>",
+      "<rect class=\"soft\" x=\"" + x + "\" y=\"" + y + "\" width=\"" + w + "\" height=\"18\" rx=\"9\"></rect>",
+      "<rect class=\"" + (tone || "accent-fill") + "\" x=\"" + x + "\" y=\"" + y + "\" width=\"" + width + "\" height=\"18\" rx=\"9\"></rect>",
+      "</g>"
+    ].join("");
+  }
+
+  function seats(x, y, count, hot) {
+    var out = ["<g class=\"" + (hot ? "pulse" : "") + "\">"];
+    for (var i = 0; i < count; i += 1) {
+      var cx = x + (i % 8) * 22;
+      var cy = y + Math.floor(i / 8) * 24;
+      out.push("<circle class=\"seat " + (hot && i < 15 ? "on" : "") + "\" cx=\"" + cx + "\" cy=\"" + cy + "\" r=\"8\"></circle>");
+    }
+    out.push("</g>");
+    return out.join("");
+  }
+
+  function buildStepSvg(index, item, focus, actionIndex, narrow) {
+    var hot0 = actionIndex === 0;
+    var hot1 = actionIndex === 1;
+    var hot2 = actionIndex === 2;
+    var title = focus.title;
+    var desc = focus.body;
+    var svg = "";
+    if (index === 0) {
+      svg += person(82, 142, "first bettor", "accent", hot0);
+      svg += node(186, 96, 138, 88, "Escrow", "dime locked", "accent", hot0);
+      svg += node(405, 86, 158, 105, "New market", "question is live", "good", hot0);
+      svg += person(635, 128, "observers", "good", hot1);
+      svg += flow(112, 142, 186, 140, "accent", hot0);
+      svg += flow(324, 140, 405, 138, "good", hot0);
+      svg += flow(563, 138, 615, 130, "good", hot1);
+      svg += chip(210, 214, "$0.10", "accent", hot0);
+      svg += chip(475, 214, "live link", "good", hot1);
+    } else if (index === 1) {
+      svg += person(95, 118, "YES crowd", "good", hot0);
+      svg += person(95, 222, "NO crowd", "bad", hot1);
+      svg += node(276, 106, 168, 116, "Shared pool", money(item.pot) + " pot", "accent", hot0 || hot1);
+      svg += node(526, 100, 124, 124, "Price dial", Math.round(item.yes * 100) + "% YES", "soft", hot2);
+      svg += flow(122, 118, 276, 137, "good", hot0);
+      svg += flow(122, 222, 276, 188, "bad", hot1);
+      svg += flow(444, 164, 526, 163, "accent", hot2);
+      svg += gauge(520, 246, 140, "YES share", item.yes, "yes-fill", hot0 || hot2);
+      svg += gauge(520, 282, 140, "NO share", 1 - item.yes, "no-fill", hot1);
+    } else if (index === 2) {
+      svg += person(78, 130, "maker", "accent", hot0);
+      svg += node(174, 91, 150, 94, "70c offer", "locked price", "accent", hot0);
+      svg += person(395, 130, "buyer", "good", hot0);
+      svg += node(528, 91, 132, 94, "Pool", "overflow", "soft", hot1);
+      svg += flow(104, 130, 174, 134, "accent", hot0);
+      svg += flow(324, 134, 374, 132, "good", hot0);
+      svg += flow(421, 132, 528, 134, "accent", hot1);
+      svg += chip(207, 218, "YES 70c", "accent", hot0);
+      svg += chip(535, 218, "leftover", "soft", hot1);
+    } else if (index === 3) {
+      svg += node(58, 96, 126, 96, "Market", "alive + deep", "accent", hot0);
+      svg += node(236, 70, 120, 54, "Disagree", "both sides", "good", hot0);
+      svg += node(236, 138, 120, 54, "Maker depth", "standing bid", "good", hot0);
+      svg += node(236, 206, 120, 54, "Time alive", "not a flash", "good", hot0);
+      svg += node(438, 82, 112, 72, "YES token", "wallet held", "good", hot0 || hot1);
+      svg += node(438, 176, 112, 72, "NO token", "wallet held", "bad", hot0 || hot1);
+      svg += node(590, 128, 90, 72, "Book", "portable", "soft", hot1);
+      svg += flow(184, 144, 236, 97, "good", hot0);
+      svg += flow(184, 144, 236, 165, "good", hot0);
+      svg += flow(184, 144, 236, 233, "good", hot0);
+      svg += flow(356, 150, 438, 117, "good", hot0);
+      svg += flow(356, 150, 438, 211, "bad", hot0);
+      svg += flow(550, 118, 590, 152, "accent", hot1);
+      svg += flow(550, 212, 590, 174, "accent", hot1);
+    } else if (index === 4) {
+      svg += person(76, 122, "friend A", "good", hot0);
+      svg += person(76, 230, "friend B", "bad", hot0);
+      svg += node(198, 126, 148, 96, "Private room", "invite-only", "accent", hot0);
+      svg += node(424, 112, 132, 86, "Escrow", "neutral funds", "soft", hot1);
+      svg += node(586, 120, 96, 70, "Court", "same path", "good", hot1);
+      svg += flow(103, 122, 198, 150, "good", hot0);
+      svg += flow(103, 230, 198, 196, "bad", hot0);
+      svg += flow(346, 173, 424, 154, "accent", hot1);
+      svg += flow(556, 154, 586, 154, "good", hot1);
+      svg += chip(229, 239, "invite", "accent", hot0);
+      svg += chip(440, 224, "fixed odds", "soft", hot1);
+    } else if (index === 5) {
+      svg += node(56, 80, 128, 78, "Market A", "YES leg", "good", hot0);
+      svg += node(56, 190, 128, 78, "Market B", "YES leg", "good", hot0);
+      svg += node(284, 126, 150, 96, "CTF router", "all-or-nothing", "accent", hot0 || hot1);
+      svg += node(536, 96, 132, 74, "Parlay token", "YES A + YES B", "good", hot0);
+      svg += node(536, 202, 132, 74, "Cash out", "sell legs", "soft", hot1);
+      svg += flow(184, 119, 284, 150, "good", hot0);
+      svg += flow(184, 229, 284, 192, "good", hot0);
+      svg += flow(434, 158, 536, 134, "good", hot0);
+      svg += flow(536, 238, 434, 191, "accent", hot1);
+      svg += chip(316, 246, "fill-or-kill", "accent", hot0);
+    } else if (index === 6) {
+      svg += node(52, 102, 130, 88, "Event", "result exists", "soft", hot0);
+      svg += person(256, 137, "asserter", "accent", hot0);
+      svg += node(356, 93, 140, 96, "Bonded claim", "YES posted", "accent", hot0);
+      svg += node(546, 83, 116, 116, "Watcher window", "inspect", "good", hot0);
+      svg += node(286, 230, 176, 50, "Trading stays open", "price keeps moving", "soft", hot1);
+      svg += flow(182, 146, 235, 138, "accent", hot0);
+      svg += flow(279, 138, 356, 140, "accent", hot0);
+      svg += flow(496, 141, 546, 140, "good", hot0);
+      svg += flow(382, 190, 374, 230, "good", hot1);
+      svg += chip(389, 208, "bond", "accent", hot0);
+    } else if (index === 7) {
+      svg += node(58, 90, 142, 96, "Bad assertion", "wrong answer", "bad", hot0);
+      svg += person(290, 136, "watcher", "good", hot0);
+      svg += node(386, 92, 136, 92, "Challenge", "bond staked", "good", hot0);
+      svg += node(576, 102, 102, 74, "Court", "case opens", "accent", hot1);
+      svg += flow(200, 138, 267, 138, "bad", hot0);
+      svg += flow(314, 138, 386, 138, "good", hot0);
+      svg += flow(522, 138, 576, 138, "accent", hot1);
+      svg += chip(91, 216, "false", "bad", hot0);
+      svg += chip(412, 216, "bounty", "good", hot0);
+    } else if (index === 8) {
+      svg += node(54, 104, 126, 84, "Beacon", "public random", "accent", hot0);
+      svg += node(268, 90, 140, 112, "Draw wheel", "one roll", "soft", hot0);
+      svg += flow(180, 145, 268, 146, "accent", hot0);
+      svg += seats(500, 94, 16, hot1 || hot0);
+      svg += flow(408, 146, 500, 145, "good", hot0);
+      svg += node(470, 220, 188, 52, "Face proofs", "drawn humans present", "good", hot1);
+      svg += flow(575, 188, 575, 220, "good", hot1);
+      svg += chip(294, 230, "no re-roll", "accent", hot0);
+    } else if (index === 9) {
+      svg += person(82, 126, "juror", "good", hot1);
+      svg += node(172, 88, 126, 86, "Face check", "live human", "good", hot1);
+      svg += node(376, 82, 142, 98, "Encrypted box", "sealed vote", "accent", hot0);
+      svg += node(572, 96, 102, 72, "Reserve", "at risk", "bad", hot1);
+      svg += flow(105, 126, 172, 130, "good", hot1);
+      svg += flow(298, 132, 376, 132, "accent", hot0);
+      svg += flow(518, 132, 572, 132, "bad", hot1);
+      svg += chip(404, 214, "no receipt", "accent", hot0);
+      svg += gauge(564, 214, 104, "live reserve", .68, "no-fill", hot1);
+    } else if (index === 10) {
+      svg += node(54, 104, 126, 82, "Ballots", "sealed set", "soft", hot0);
+      svg += node(254, 88, 142, 102, "Tally proof", "aggregate only", "accent", hot0);
+      svg += node(468, 88, 124, 102, "Verdict", "YES loses", "bad", hot0);
+      svg += node(560, 216, 118, 58, "Reward pool", "slash inflow", "good", hot1);
+      svg += flow(180, 144, 254, 140, "accent", hot0);
+      svg += flow(396, 140, 468, 140, "bad", hot0);
+      svg += flow(530, 190, 596, 216, "good", hot1);
+      svg += chip(460, 218, "slashed", "bad", hot1);
+    } else if (index === 11) {
+      svg += person(82, 142, "losing side", "bad", hot0);
+      svg += node(190, 96, 136, 92, "Appeal floor", "pay rung", "bad", hot0);
+      svg += node(386, 74, 112, 140, "Ladder", "finite climb", "accent", hot0);
+      svg += seats(560, 90, 32, hot1);
+      svg += flow(108, 142, 190, 142, "bad", hot0);
+      svg += flow(326, 142, 386, 143, "accent", hot0);
+      svg += flow(498, 143, 560, 143, "good", hot1);
+      svg += gauge(197, 218, 126, "capture cost", .82, "no-fill", hot0);
+      svg += chip(566, 242, "31 seats", "good", hot1);
+    } else {
+      svg += node(50, 94, 126, 90, "Escrow", "final", "accent", hot0);
+      svg += node(258, 80, 122, 74, "Payout", "redeem YES/NO", "good", hot0);
+      svg += node(258, 190, 122, 74, "Answer key", "clean record", "accent", hot1);
+      svg += node(500, 96, 136, 76, "Juror scores", "updated", "good", hot1);
+      svg += node(500, 210, 136, 56, "Next demand", "more trust", "soft", hot2);
+      svg += flow(176, 139, 258, 118, "good", hot0);
+      svg += flow(176, 139, 258, 226, "accent", hot1);
+      svg += flow(380, 226, 500, 136, "good", hot1);
+      svg += flow(568, 172, 568, 210, "accent", hot2);
+      svg += chip(63, 222, "closed", "accent", hot0);
+    }
+    if (narrow) svg = "<g transform=\"translate(0 28) scale(.5)\">" + svg + "</g>";
+    return svgShell(title, desc, svg);
+  }
+
+  function mobileTiles(index, item, focus) {
+    var pot = money(item.pot);
+    var data = [
+      [["First bettor", "$0.10 starts it", "accent"], ["Escrow", "funds locked", "accent"], ["Market", "question is live", "good"], ["Observers", "link spreads", "good"]],
+      [["YES + NO flow", "both sides arrive", "accent"], ["Shared pool", pot + " pot", "accent"], ["Price dial", Math.round(item.yes * 100) + "% YES", "good"]],
+      [["Maker", "posts 70c YES", "accent"], ["Buyer", "fills fixed odds", "good"], ["Pool", "takes overflow", "accent"]],
+      [["Robustness", "gates pass", "good"], ["YES/NO tokens", "wallet custody", "accent"], ["Order book", "claims move", "good"]],
+      [["Private room", "invite-only wager", "accent"], ["Escrow", "neutral lock", "accent"], ["Court path", "same settlement", "good"]],
+      [["Two markets", "legs exist", "good"], ["CTF router", "fill-or-kill", "accent"], ["Parlay token", "bundle minted", "good"]],
+      [["Event", "answer exists", "accent"], ["Bonded assertion", "settlement clock", "accent"], ["Watcher window", "inspect claim", "good"], ["Trading", "still open", "good"]],
+      [["False answer", "bad assertion", "bad"], ["Watcher", "stakes challenge", "good"], ["DemoThemis", "court opens", "accent"]],
+      [["Beacon", "public random", "accent"], ["Jury draw", "one roll", "accent"], ["Verified seats", "humans present", "good"]],
+      [["Face check", "drawn human", "good"], ["Encrypted vote", "no receipt", "accent"], ["Live reserve", "lazy votes risked", "bad"]],
+      [["Tally proof", "aggregate opens", "accent"], ["Verdict", "market reprices", "bad"], ["Reward pool", "slashes flow", "good"]],
+      [["Losing side", "petitions", "bad"], ["Appeal floor", "rung paid", "accent"], ["31-seat panel", "capture cost rises", "good"]],
+      [["Escrow", "final payout", "accent"], ["Answer key", "clean record", "accent"], ["Juror scores", "bench improves", "good"], ["Next demand", "trust rises", "good"]]
+    ];
+    return data[index] || [[focus.title, focus.change, focus.tone || "accent"], [focus.next, item.panel, "good"]];
+  }
+
+  function renderMobileArt(item, focus) {
+    var root = document.getElementById("mobileArt");
+    if (!root) return;
+    root.replaceChildren();
+    mobileTiles(stage, item, focus).forEach(function (tile, i, arr) {
+      var div = document.createElement("div");
+      var b = document.createElement("b");
+      var small = document.createElement("small");
+      var tone = tile[2] || "accent";
+      div.className = "mobile-art-tile " + tone + (activeAction >= 0 && i === Math.min(activeAction + 1, arr.length - 1) ? " hot" : "");
+      b.textContent = tile[0];
+      small.textContent = tile[1];
+      div.appendChild(b);
+      div.appendChild(small);
+      root.appendChild(div);
+      if (i < arr.length - 1) {
+        var arrow = document.createElement("div");
+        arrow.className = "mobile-art-arrow";
+        arrow.textContent = "v";
+        root.appendChild(arrow);
+      }
+    });
+  }
+
+  function renderStageArt(item, focus) {
+    var svg = document.getElementById("stepSvg");
+    var stageEl = document.getElementById("stepStage");
+    var narrow = window.matchMedia && window.matchMedia("(max-width: 620px)").matches;
+    var result = focus.results && focus.results[activeAction] ? focus.results[activeAction] : "The current mechanism is staged above.";
+    if (stageEl) stageEl.className = "step-stage " + (focus.tone || "market") + (activeAction >= 0 ? " played" : "");
+    if (svg) {
+      svg.setAttribute("viewBox", narrow ? "0 0 360 230" : "0 0 720 320");
+      svg.innerHTML = buildStepSvg(stage, item, focus, activeAction, narrow);
+    }
+    renderMobileArt(item, focus);
+    setText("playResult", result);
+  }
+
+  function updateActionButtons() {
+    Array.prototype.forEach.call(actionEl.querySelectorAll("button"), function (btn, i) {
+      var on = i === activeAction;
+      btn.classList.toggle("active", on);
+      btn.setAttribute("aria-pressed", on ? "true" : "false");
+    });
+  }
+
+  function playStepAction(index, label) {
+    var item = STAGES[stage];
+    var focus = FOCUS_STEPS[stage];
+    activeAction = index;
+    renderStageArt(item, focus);
+    updateActionButtons();
+    var result = focus.results && focus.results[index] ? focus.results[index] : item.log;
+    addLog(label + ": " + result);
   }
 
   function renderRail() {
@@ -802,6 +1188,7 @@
     setText("focusWhy", focus.why);
     setText("focusNext", focus.next);
     setText("focusNextNote", stage === STAGES.length - 1 ? "The loop can start again from a fresh market." : "The next mechanism is queued behind this step.");
+    renderStageArt(item, focus);
     path.replaceChildren();
     [
       { text: "Step " + (stage + 1) + " of " + STAGES.length, className: "now" },
@@ -843,14 +1230,17 @@
     setText("missionText", item.text);
     actionEl.replaceChildren();
     item.actions.forEach(function (label) {
+      var index = actionEl.children.length;
       var btn = document.createElement("button");
       btn.type = "button";
       btn.textContent = label;
+      btn.setAttribute("aria-pressed", "false");
       btn.addEventListener("click", function () {
-        addLog(label + " clicked: the diagram already reflects that rule.");
+        playStepAction(index, label);
       });
       actionEl.appendChild(btn);
     });
+    updateActionButtons();
   }
 
   function addLog(text) {
@@ -868,6 +1258,7 @@
 
   function render() {
     var item = STAGES[stage];
+    activeAction = -1;
     setText("runStageTitle", item.title);
     setText("runStageSub", item.sub);
     setText("runPot", money(item.pot));

@@ -148,6 +148,8 @@ function checkBuiltHtml(failures) {
   assert(/Run through the whole system/i.test(runThrough), "run-through chapter missing new title", failures);
   assert(/id=["']stageRail["']/i.test(runThrough), "run-through chapter missing stage rail", failures);
   assert(/id=["']focusScene["']/i.test(runThrough), "run-through missing focused one-step scene", failures);
+  assert(/id=["']stepSvg["']/i.test(runThrough), "run-through missing illustrated step SVG", failures);
+  assert(/id=["']playResult["']/i.test(runThrough), "run-through missing interactive step feedback", failures);
   assert(!/id=["']runLanes["']/i.test(runThrough), "run-through should not expose the old multi-lane board", failures);
   assert(/data-feature=["']instant["']/i.test(runThrough), "run-through missing instant-market feature unlock", failures);
   assert(/data-feature=["']fixed["']/i.test(runThrough), "run-through missing fixed-odds feature unlock", failures);
