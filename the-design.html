@@ -30,30 +30,34 @@
   .btn.soft { background: var(--surface); color: var(--accent-ink); border: 1px solid var(--line-strong); }
   .btn[disabled] { opacity: .45; cursor: default; transform: none; filter: none; }
 
-  .run-grid { display: grid; grid-template-columns: minmax(12rem, .62fr) minmax(0, 1.38fr); gap: 1rem; align-items: start; }
-  .stage-rail { display: grid; gap: .4rem; font-family: var(--sans); }
-  .stage-rail button { display: grid; grid-template-columns: 1.65rem 1fr auto; gap: .55rem; align-items: center; width: 100%; border: 1px solid var(--line); border-radius: 10px; background: var(--bg); color: var(--muted); padding: .55rem .62rem; text-align: left; cursor: pointer; transition: background .14s ease, border-color .14s ease, transform .14s ease; }
-  .stage-rail button:hover { transform: translateX(2px); border-color: var(--accent); }
+  .run-grid { display: grid; grid-template-columns: 1fr; gap: .8rem; align-items: start; }
+  .stage-rail { display: grid; grid-template-columns: repeat(auto-fit, minmax(2.35rem, 1fr)); gap: .35rem; font-family: var(--sans); }
+  .stage-rail button { display: grid; place-items: center; min-height: 2.35rem; width: 100%; border: 1px solid var(--line); border-radius: 10px; background: var(--bg); color: var(--muted); padding: .25rem; text-align: center; cursor: pointer; transition: background .14s ease, border-color .14s ease, transform .14s ease; }
+  .stage-rail button:hover { transform: translateY(-1px); border-color: var(--accent); }
   .stage-rail button .n { display: grid; place-items: center; width: 1.55rem; height: 1.55rem; border-radius: 999px; background: var(--surface); border: 1px solid var(--line); color: var(--faint); font-family: var(--mono); font-size: .68rem; font-weight: 800; }
-  .stage-rail button .t { min-width: 0; font-size: .82rem; font-weight: 750; line-height: 1.25; color: inherit; }
-  .stage-rail button .mark { color: var(--faint); font-size: .82rem; }
   .stage-rail button.done { color: var(--ink-soft); border-color: color-mix(in srgb, var(--good) 32%, var(--line)); }
   .stage-rail button.done .n { background: var(--good-soft); color: var(--good); border-color: color-mix(in srgb, var(--good) 35%, var(--line)); }
   .stage-rail button.active { color: var(--accent-ink); background: var(--accent-soft); border-color: color-mix(in srgb, var(--accent) 45%, var(--line)); box-shadow: var(--shadow); }
   .stage-rail button.active .n { background: var(--accent); color: #fff; border-color: var(--accent); }
 
   .sim-board { display: grid; gap: 1rem; }
-  .scene { border: 1px solid var(--line-strong); border-radius: var(--radius); background: linear-gradient(180deg, var(--surface), var(--bg)); box-shadow: var(--shadow); padding: 1rem; }
-  .lanes { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: .65rem; }
-  .lane { display: grid; gap: .5rem; min-width: 0; }
-  .lane h3 { font-size: .72rem; letter-spacing: .09em; text-transform: uppercase; color: var(--accent); margin: 0; }
-  .node { min-height: 5.2rem; border: 1px solid var(--line); border-radius: 12px; background: var(--surface); padding: .68rem; font-family: var(--sans); transition: transform .18s ease, background .18s ease, border-color .18s ease, opacity .18s ease; opacity: .48; }
-  .node b { display: block; font-size: .86rem; line-height: 1.25; color: var(--ink); }
-  .node span { display: block; color: var(--muted); font-size: .72rem; line-height: 1.35; margin-top: .18rem; }
-  .node.done { opacity: .9; border-color: color-mix(in srgb, var(--good) 34%, var(--line)); }
-  .node.active { opacity: 1; transform: translateY(-2px); background: var(--accent-soft); border-color: color-mix(in srgb, var(--accent) 48%, var(--line)); box-shadow: var(--shadow); }
-  .node.warn { background: var(--bad-soft); border-color: color-mix(in srgb, var(--bad) 45%, var(--line)); }
-  .node.good { background: var(--good-soft); border-color: color-mix(in srgb, var(--good) 45%, var(--line)); }
+  .scene { display: grid; gap: .85rem; border: 1px solid var(--line-strong); border-radius: var(--radius); background: linear-gradient(180deg, var(--surface), var(--bg)); box-shadow: var(--shadow); padding: 1rem; }
+  .focus-scene { display: grid; grid-template-columns: minmax(0, 1.35fr) minmax(12rem, .65fr); gap: .8rem; align-items: stretch; }
+  .focus-card { display: grid; align-content: start; gap: .55rem; min-height: 13rem; border: 1px solid color-mix(in srgb, var(--accent) 36%, var(--line)); border-radius: 14px; background: var(--bg); padding: 1rem; font-family: var(--sans); box-shadow: var(--shadow); }
+  .focus-card.claim { border-color: color-mix(in srgb, var(--good) 35%, var(--line)); background: var(--good-soft); }
+  .focus-card.court { border-color: color-mix(in srgb, var(--bad) 32%, var(--line)); background: var(--bad-soft); }
+  .focus-card.final { border-color: color-mix(in srgb, var(--accent) 45%, var(--line)); background: var(--accent-soft); }
+  .focus-lane { width: fit-content; border: 1px solid var(--line-strong); border-radius: 999px; background: var(--surface); color: var(--accent-ink); padding: .26rem .58rem; font-size: .68rem; line-height: 1; font-weight: 850; letter-spacing: .08em; text-transform: uppercase; }
+  .focus-card h3 { margin: .12rem 0 0; font-size: clamp(1.35rem, 2.4vw, 2rem); line-height: 1.05; }
+  .focus-card p { margin: 0; color: var(--ink-soft); font-size: .98rem; line-height: 1.55; max-width: 42rem; }
+  .focus-path { display: flex; flex-wrap: wrap; gap: .35rem; align-self: end; margin-top: .45rem; }
+  .focus-path span { border: 1px solid var(--line); border-radius: 999px; background: color-mix(in srgb, var(--surface) 82%, transparent); color: var(--muted); padding: .25rem .52rem; font-size: .7rem; font-weight: 800; }
+  .focus-path span.now { background: var(--accent); border-color: var(--accent); color: #fff; }
+  .focus-side { display: grid; gap: .65rem; min-width: 0; }
+  .focus-stat { border: 1px solid var(--line); border-radius: 12px; background: var(--surface); padding: .78rem; font-family: var(--sans); min-width: 0; }
+  .focus-stat strong { display: block; color: var(--faint); font-size: .68rem; letter-spacing: .08em; line-height: 1.2; text-transform: uppercase; }
+  .focus-stat b { display: block; color: var(--ink); font-size: 1rem; line-height: 1.25; margin-top: .32rem; overflow-wrap: anywhere; }
+  .focus-stat small { display: block; color: var(--muted); font-size: .76rem; line-height: 1.38; margin-top: .22rem; }
 
   .mission { display: grid; grid-template-columns: minmax(0, 1.25fr) minmax(13rem, .75fr); gap: 1rem; align-items: stretch; }
   .mission-copy { border: 1px solid var(--line); border-radius: 12px; background: var(--surface); padding: 1rem; font-family: var(--sans); min-height: 10rem; }
@@ -68,6 +72,12 @@
   .event-log ul { display: grid; gap: .38rem; list-style: none; padding: 0; margin: 0; }
   .event-log li { color: var(--muted); font-size: .76rem; line-height: 1.35; border-left: 3px solid var(--line-strong); padding-left: .55rem; }
   .event-log li.hot { color: var(--accent-ink); border-left-color: var(--accent); font-weight: 700; }
+
+  .run-details { border: 1px solid var(--line); border-radius: 14px; background: var(--surface); padding: .78rem .85rem; font-family: var(--sans); }
+  .run-details summary { cursor: pointer; color: var(--accent-ink); font-weight: 850; }
+  .run-details summary::marker { color: var(--accent); }
+  .unlock-panels { display: grid; gap: 1rem; margin-top: 1rem; }
+  .unlock-panels h3 { margin-top: 0; }
 
   .unlock-grid { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: .55rem; }
   .unlock { border: 1px solid var(--line); border-radius: 12px; background: var(--bg); padding: .7rem; font-family: var(--sans); min-height: 5rem; transition: background .16s ease, border-color .16s ease, opacity .16s ease; opacity: .55; }
@@ -103,14 +113,12 @@
   @media (max-width: 980px) {
     body { --maxw: 54rem; --half-maxw: 27rem; }
     .run-hud { grid-template-columns: repeat(2, minmax(0, 1fr)); }
-    .run-grid, .mission { grid-template-columns: 1fr; }
-    .stage-rail { grid-template-columns: repeat(2, minmax(0, 1fr)); }
-    .lanes { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+    .mission, .focus-scene { grid-template-columns: 1fr; }
     .unlock-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); }
     .loop-strip { grid-template-columns: repeat(2, minmax(0, 1fr)); }
   }
   @media (max-width: 620px) {
-    .run-hud, .stage-rail, .lanes, .unlock-grid, .loop-strip, .summary-grid { grid-template-columns: 1fr; }
+    .run-hud, .unlock-grid, .loop-strip, .summary-grid { grid-template-columns: 1fr; }
     .widget { padding: 1rem; }
     .run-controls .btn { flex: 1 1 8rem; }
   }
@@ -187,36 +195,26 @@
           <nav class="stage-rail" id="stageRail" aria-label="Simulation stages"></nav>
 
           <div class="sim-board">
-            <div class="scene">
-              <div class="lanes" id="runLanes">
-                <div class="lane">
-                  <h3>Market</h3>
-                  <div class="node" data-node="open"><b>Question opens</b><span>A first bet creates the market and locks escrow.</span></div>
-                  <div class="node" data-node="pool"><b>Pool prices odds</b><span>YES and NO shares move with the pot ratio.</span></div>
-                  <div class="node" data-node="fixed"><b>Fixed odds offer</b><span>A maker posts a locked price the next bettor can take.</span></div>
-                  <div class="node" data-node="private"><b>Private room</b><span>Invite-only bets still sit in neutral escrow.</span></div>
-                </div>
-                <div class="lane">
-                  <h3>Claims</h3>
-                  <div class="node" data-node="robust"><b>Robustness lock</b><span>Disagreement, maker depth, and time unlock tokenization.</span></div>
-                  <div class="node" data-node="tokens"><b>YES/NO ERC-20s</b><span>Claims move into user wallets and can route anywhere.</span></div>
-                  <div class="node" data-node="parlay"><b>Parlay route</b><span>Conditional tokens create combinations without house risk.</span></div>
-                  <div class="node" data-node="trade"><b>Trade through dispute</b><span>Markets keep pricing while resolution runs.</span></div>
-                </div>
-                <div class="lane">
-                  <h3>Arbitration</h3>
-                  <div class="node" data-node="assert"><b>Bonded assertion</b><span>A claimant posts the outcome and a watcher window opens.</span></div>
-                  <div class="node" data-node="challenge"><b>Challenge</b><span>A watcher catches a bad assertion and stakes the dispute.</span></div>
-                  <div class="node" data-node="draw"><b>Sealed jury draw</b><span>Random beacon, one roll, no app-side panel shopping.</span></div>
-                  <div class="node" data-node="ballot"><b>Locked ballots</b><span>Face check, encrypted vote, no receipt a briber can buy.</span></div>
-                </div>
-                <div class="lane">
-                  <h3>Finality loop</h3>
-                  <div class="node" data-node="verdict"><b>Verdict and slashes</b><span>Wrong-side reserve flows to the reward pool.</span></div>
-                  <div class="node" data-node="appeal"><b>Appeal ladder</b><span>The losing side climbs to a larger panel by paying floors.</span></div>
-                  <div class="node" data-node="final"><b>Final payout</b><span>Escrow releases funds and the market cannot reopen.</span></div>
-                  <div class="node" data-node="keys"><b>Answer key</b><span>Clean outcomes grade jurors and prove the court.</span></div>
-                </div>
+            <div class="scene" aria-live="polite">
+              <div class="focus-scene" id="focusScene">
+                <article class="focus-card market" id="focusCard" aria-labelledby="focusTitle">
+                  <div class="focus-lane" id="focusLane">Market</div>
+                  <h3 id="focusTitle">Question opens</h3>
+                  <p id="focusBody">A first bet creates the market and locks escrow.</p>
+                  <div class="focus-path" id="focusPath" aria-label="Current simulation progress"></div>
+                </article>
+                <aside class="focus-side" aria-label="Current step details">
+                  <div class="focus-stat">
+                    <strong>What changed</strong>
+                    <b id="focusChange">Market exists</b>
+                    <small id="focusWhy">One small escrowed bet is enough to begin.</small>
+                  </div>
+                  <div class="focus-stat">
+                    <strong>Next handoff</strong>
+                    <b id="focusNext">Crowd prices it</b>
+                    <small id="focusNextNote">The next mechanism is queued behind this step.</small>
+                  </div>
+                </aside>
               </div>
               <div class="mini-split" aria-label="Current YES and NO market split">
                 <div class="yes" id="splitYes">YES</div>
@@ -233,39 +231,44 @@
                 <div class="mission-actions" id="missionActions"></div>
               </div>
               <div class="event-log">
-                <h3>Run log</h3>
+                <h3>Current event</h3>
                 <ul id="runLog"></ul>
               </div>
             </div>
           </div>
         </div>
 
-        <div>
-          <h3>PredictionMoMo features unlocked</h3>
-          <div class="unlock-grid" id="featureGrid">
-            <div class="unlock" data-feature="instant"><b>Instant market <span class="tag">locked</span></b><small>Open any question with a first bet, even less than a dollar.</small></div>
-            <div class="unlock" data-feature="fixed"><b>Fixed odds <span class="tag">locked</span></b><small>Post a side at named odds; later bettors fill the locked price first.</small></div>
-            <div class="unlock" data-feature="tokens"><b>Self-custody tokens <span class="tag">locked</span></b><small>Liquid markets become ERC-20 YES and NO claims in user wallets.</small></div>
-            <div class="unlock" data-feature="private"><b>Private markets <span class="tag">locked</span></b><small>Invite-only rooms get neutral escrow and third-party arbitration.</small></div>
-            <div class="unlock" data-feature="trade"><b>Trading during disputes <span class="tag">locked</span></b><small>Tokenized claims keep moving while assertion, challenge, and appeal run.</small></div>
-            <div class="unlock" data-feature="parlay"><b>Peer-to-peer parlays <span class="tag">locked</span></b><small>CTF routing gives parlays without turning the protocol into a bookie.</small></div>
-          </div>
-        </div>
+        <details class="run-details">
+          <summary>Mechanics unlocked so far</summary>
+          <div class="unlock-panels">
+            <div>
+              <h3>PredictionMoMo features unlocked</h3>
+              <div class="unlock-grid" id="featureGrid">
+                <div class="unlock" data-feature="instant"><b>Instant market <span class="tag">locked</span></b><small>Open any question with a first bet, even less than a dollar.</small></div>
+                <div class="unlock" data-feature="fixed"><b>Fixed odds <span class="tag">locked</span></b><small>Post a side at named odds; later bettors fill the locked price first.</small></div>
+                <div class="unlock" data-feature="tokens"><b>Self-custody tokens <span class="tag">locked</span></b><small>Liquid markets become ERC-20 YES and NO claims in user wallets.</small></div>
+                <div class="unlock" data-feature="private"><b>Private markets <span class="tag">locked</span></b><small>Invite-only rooms get neutral escrow and third-party arbitration.</small></div>
+                <div class="unlock" data-feature="trade"><b>Trading during disputes <span class="tag">locked</span></b><small>Tokenized claims keep moving while assertion, challenge, and appeal run.</small></div>
+                <div class="unlock" data-feature="parlay"><b>Peer-to-peer parlays <span class="tag">locked</span></b><small>CTF routing gives parlays without turning the protocol into a bookie.</small></div>
+              </div>
+            </div>
 
-        <div>
-          <h3>Arbitration components online</h3>
-          <div class="unlock-grid" id="componentGrid">
-            <div class="unlock" data-component="escrow"><b>Protocol escrow <span class="tag">locked</span></b><small>Funds are locked before anyone knows who will judge.</small></div>
-            <div class="unlock" data-component="watcher"><b>Paid watcher window <span class="tag">locked</span></b><small>False assertions fund whoever catches them.</small></div>
-            <div class="unlock" data-component="draw"><b>Random draw <span class="tag">locked</span></b><small>A public beacon draws one panel; no re-roll grinding.</small></div>
-            <div class="unlock" data-component="personhood"><b>Face check <span class="tag">locked</span></b><small>The drawn World-ID-backed human must be present for this case.</small></div>
-            <div class="unlock" data-component="ballot"><b>Private ballot <span class="tag">locked</span></b><small>Encrypted ballots and re-keying make vote receipts worthless.</small></div>
-            <div class="unlock" data-component="reserve"><b>Live reserve <span class="tag">locked</span></b><small>Lazy wrong votes lose pending income; slashes feed rewards.</small></div>
-            <div class="unlock" data-component="appeal"><b>Appeal floors <span class="tag">locked</span></b><small>Rungs price the next panel, capture risk, and delay rent.</small></div>
-            <div class="unlock" data-component="finality"><b>Finality plus reports <span class="tag">locked</span></b><small>Escrow ends; collusion reports never expire.</small></div>
-            <div class="unlock" data-component="keys"><b>Answer keys <span class="tag">locked</span></b><small>Clean markets become the scoreboard for juror quality.</small></div>
+            <div>
+              <h3>Arbitration components online</h3>
+              <div class="unlock-grid" id="componentGrid">
+                <div class="unlock" data-component="escrow"><b>Protocol escrow <span class="tag">locked</span></b><small>Funds are locked before anyone knows who will judge.</small></div>
+                <div class="unlock" data-component="watcher"><b>Paid watcher window <span class="tag">locked</span></b><small>False assertions fund whoever catches them.</small></div>
+                <div class="unlock" data-component="draw"><b>Random draw <span class="tag">locked</span></b><small>A public beacon draws one panel; no re-roll grinding.</small></div>
+                <div class="unlock" data-component="personhood"><b>Face check <span class="tag">locked</span></b><small>The drawn World-ID-backed human must be present for this case.</small></div>
+                <div class="unlock" data-component="ballot"><b>Private ballot <span class="tag">locked</span></b><small>Encrypted ballots and re-keying make vote receipts worthless.</small></div>
+                <div class="unlock" data-component="reserve"><b>Live reserve <span class="tag">locked</span></b><small>Lazy wrong votes lose pending income; slashes feed rewards.</small></div>
+                <div class="unlock" data-component="appeal"><b>Appeal floors <span class="tag">locked</span></b><small>Rungs price the next panel, capture risk, and delay rent.</small></div>
+                <div class="unlock" data-component="finality"><b>Finality plus reports <span class="tag">locked</span></b><small>Escrow ends; collusion reports never expire.</small></div>
+                <div class="unlock" data-component="keys"><b>Answer keys <span class="tag">locked</span></b><small>Clean markets become the scoreboard for juror quality.</small></div>
+              </div>
+            </div>
           </div>
-        </div>
+        </details>
       </div>
     </div>
   </section>
@@ -611,6 +614,126 @@
     }
   ];
 
+  var FOCUS_STEPS = [
+    {
+      lane: "Market",
+      title: "Question opens",
+      body: "A first bet creates the market and locks escrow. The important mechanic is that the protocol does not need a listing committee or minimum liquidity to begin.",
+      change: "Market exists",
+      why: "Ten cents in escrow is enough to make the question live.",
+      next: "Crowd prices it",
+      tone: "market"
+    },
+    {
+      lane: "Market",
+      title: "Pool prices odds",
+      body: "Both sides add money to a shared pool. The YES and NO ratio becomes the visible price, so the market recruits its own opposition as the odds move.",
+      change: "Odds become visible",
+      why: "The pot is now large enough to show a real YES/NO split.",
+      next: "Fixed odds offer",
+      tone: "market"
+    },
+    {
+      lane: "Market",
+      title: "Fixed odds offer",
+      body: "A maker posts YES at a locked price. The next matching buyer fills that offer first, then any overflow can fall back to the pool.",
+      change: "70c YES offer",
+      why: "Named odds make early liquidity easier to understand and take.",
+      next: "Robustness lock",
+      tone: "market"
+    },
+    {
+      lane: "Claims",
+      title: "YES/NO ERC-20s",
+      body: "The market has enough disagreement, maker depth, and time alive to graduate. Claims become plain wallet-held YES and NO tokens.",
+      change: "Self-custody claims",
+      why: "The website no longer needs to hold the user's position.",
+      next: "Private room",
+      tone: "claim"
+    },
+    {
+      lane: "Market",
+      title: "Private room",
+      body: "Two counterparties open an invite-only wager on the same outcome. It is private order flow, but settlement still uses neutral protocol escrow.",
+      change: "Invite-only escrow",
+      why: "Private bets get the same arbitration path as public markets.",
+      next: "Parlay route",
+      tone: "market"
+    },
+    {
+      lane: "Claims",
+      title: "Parlay route",
+      body: "A parlay token routes through conditional claims. The transaction only lands if the needed legs can fill, so the protocol does not become the house.",
+      change: "Fill-or-kill bundle",
+      why: "Composability creates familiar betting UX without balance-sheet risk.",
+      next: "Bonded assertion",
+      tone: "claim"
+    },
+    {
+      lane: "Arbitration",
+      title: "Bonded assertion",
+      body: "The real-world event has happened. Anyone can post the answer with a bond, and a watcher window opens before the market can finalize.",
+      change: "Assertion window",
+      why: "Most cases can resolve optimistically unless someone finds a lie.",
+      next: "Watcher challenge",
+      tone: "court"
+    },
+    {
+      lane: "Arbitration",
+      title: "Challenge",
+      body: "A watcher spots the wrong assertion and stakes the challenge. The dispute moves from optimistic settlement into the DemoThemis court flow.",
+      change: "Court lane opens",
+      why: "The bad answer funds the person who caught it.",
+      next: "Jury draw",
+      tone: "court"
+    },
+    {
+      lane: "Arbitration",
+      title: "Sealed jury draw",
+      body: "A public randomness beacon draws verified humans for this case. The app cannot keep re-rolling until it likes the panel.",
+      change: "15 verified jurors",
+      why: "One bound draw prevents panel shopping.",
+      next: "Private ballots",
+      tone: "court"
+    },
+    {
+      lane: "Arbitration",
+      title: "Locked ballots",
+      body: "Drawn jurors pass a live face check and cast encrypted ballots. Silent re-keying means a screenshot or receipt is not useful to a briber.",
+      change: "No useful vote receipt",
+      why: "A bribed juror can take money and still vote honestly.",
+      next: "Verdict proof",
+      tone: "court"
+    },
+    {
+      lane: "Finality loop",
+      title: "Verdict and slashes",
+      body: "The tally opens as an aggregate proof. Wrong-side reserve on a lopsided case can be slashed into the reward pool.",
+      change: "First verdict lands",
+      why: "The court can punish lazy or wrong votes without paying the winning panel extra.",
+      next: "Appeal ladder",
+      tone: "final"
+    },
+    {
+      lane: "Finality loop",
+      title: "Appeal ladder",
+      body: "The losing side can climb to a larger panel, but the rung price must cover juror pay, capture risk, and delay.",
+      change: "31-seat appeal",
+      why: "Retrying the case gets bigger, pricier, and finite.",
+      next: "Final payout",
+      tone: "final"
+    },
+    {
+      lane: "Finality loop",
+      title: "Answer key",
+      body: "The final result pays escrow and closes the market. The clean record becomes an answer key that improves juror scoring for later cases.",
+      change: "Escrow closed",
+      why: "The market is over, but the court is stronger for the next one.",
+      next: "More demand",
+      tone: "final"
+    }
+  ];
+
   var stage = 0;
   var rail = document.getElementById("stageRail");
   var next = document.getElementById("runNext");
@@ -646,34 +769,49 @@
     STAGES.forEach(function (item, i) {
       var btn = document.createElement("button");
       var n = document.createElement("span");
-      var t = document.createElement("span");
-      var mark = document.createElement("span");
       btn.type = "button";
       btn.className = i < stage ? "done" : (i === stage ? "active" : "");
       btn.setAttribute("aria-current", i === stage ? "step" : "false");
+      btn.setAttribute("aria-label", "Go to stage " + (i + 1) + ": " + item.title);
+      btn.title = item.title;
       n.className = "n";
-      t.className = "t";
-      mark.className = "mark";
       n.textContent = String(i + 1).padStart(2, "0");
-      t.textContent = item.title;
-      mark.textContent = i < stage ? "ok" : (i === stage ? "now" : "");
       btn.appendChild(n);
-      btn.appendChild(t);
-      btn.appendChild(mark);
       btn.addEventListener("click", function () { stage = i; render(); });
       rail.appendChild(btn);
     });
   }
 
-  function renderNodes(item) {
-    Array.prototype.forEach.call(document.querySelectorAll("[data-node]"), function (el) {
-      var key = el.getAttribute("data-node");
-      var active = item.nodes.indexOf(key) === item.nodes.length - 1;
-      var done = item.nodes.indexOf(key) !== -1 && !active;
-      el.classList.toggle("active", active);
-      el.classList.toggle("done", done);
-      el.classList.toggle("warn", key === "challenge" && active);
-      el.classList.toggle("good", (key === "final" || key === "keys") && active);
+  function renderFocus(item) {
+    var focus = FOCUS_STEPS[stage] || {
+      lane: item.court === "idle" ? "Market" : "Arbitration",
+      title: item.title,
+      body: item.text,
+      change: item.sub,
+      why: item.log,
+      next: stage === STAGES.length - 1 ? "Run complete" : STAGES[stage + 1].title,
+      tone: "market"
+    };
+    var card = document.getElementById("focusCard");
+    var path = document.getElementById("focusPath");
+    card.className = "focus-card " + (focus.tone || "market");
+    setText("focusLane", focus.lane);
+    setText("focusTitle", focus.title);
+    setText("focusBody", focus.body);
+    setText("focusChange", focus.change);
+    setText("focusWhy", focus.why);
+    setText("focusNext", focus.next);
+    setText("focusNextNote", stage === STAGES.length - 1 ? "The loop can start again from a fresh market." : "The next mechanism is queued behind this step.");
+    path.replaceChildren();
+    [
+      { text: "Step " + (stage + 1) + " of " + STAGES.length, className: "now" },
+      { text: stage === 0 ? "Start of run" : "Previous step saved" },
+      { text: stage === STAGES.length - 1 ? "Run complete" : "Next event ready" }
+    ].forEach(function (chip) {
+      var span = document.createElement("span");
+      span.textContent = chip.text;
+      if (chip.className) span.className = chip.className;
+      path.appendChild(span);
     });
   }
 
@@ -719,8 +857,7 @@
     var li = document.createElement("li");
     li.className = "hot";
     li.textContent = text;
-    logEl.insertBefore(li, logEl.firstChild);
-    while (logEl.children.length > 4) logEl.removeChild(logEl.lastChild);
+    logEl.replaceChildren(li);
   }
 
   function renderLoop(item) {
@@ -742,7 +879,7 @@
     setText("runLoop", item.keys + (item.keys === 1 ? " key" : " keys"));
     setText("runFees", money(item.fees) + " settlement fees");
     renderRail();
-    renderNodes(item);
+    renderFocus(item);
     renderSplit(item);
     renderTokens(item);
     renderMission(item);

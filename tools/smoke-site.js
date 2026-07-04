@@ -147,6 +147,8 @@ function checkBuiltHtml(failures) {
   const runThrough = readDist("the-design.html");
   assert(/Run through the whole system/i.test(runThrough), "run-through chapter missing new title", failures);
   assert(/id=["']stageRail["']/i.test(runThrough), "run-through chapter missing stage rail", failures);
+  assert(/id=["']focusScene["']/i.test(runThrough), "run-through missing focused one-step scene", failures);
+  assert(!/id=["']runLanes["']/i.test(runThrough), "run-through should not expose the old multi-lane board", failures);
   assert(/data-feature=["']instant["']/i.test(runThrough), "run-through missing instant-market feature unlock", failures);
   assert(/data-feature=["']fixed["']/i.test(runThrough), "run-through missing fixed-odds feature unlock", failures);
   assert(/data-feature=["']tokens["']/i.test(runThrough), "run-through missing self-custody token feature unlock", failures);
