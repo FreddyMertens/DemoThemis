@@ -3,18 +3,16 @@
 (function () {
   "use strict";
 
-  // Canonical reading path: 10 chapters. Deep-dive pages are off-path.
+  // Canonical reading path: 8 chapters. Deep-dive pages are off-path.
   var CHAPTERS = [
     { f: "vision.html", t: "The vision", ch: 1 },
     { f: "juror-court.html", t: "The court", ch: 2 },
     { f: "hybrid-juror-system.html", t: "The hybrid system", ch: 3 },
     { f: "prediction-market.html", t: "PredictionMoMo", ch: 4 },
-    { f: "hybrid-juror-prediction-market-integration.html", t: "The loop", ch: 5 },
-    { f: "zero-to-one.html", t: "Zero to one", ch: 6 },
-    { f: "compounding.html", t: "Why it compounds", ch: 7 },
-    { f: "the-design.html", t: "The blueprint", ch: 8 },
-    { f: "governance.html", t: "Governance", ch: 9 },
-    { f: "game-theory.html", t: "The game-theory lab", ch: 10 }
+    { f: "hybrid-juror-prediction-market-integration.html", t: "The bootstrap loop", ch: 5 },
+    { f: "the-design.html", t: "The blueprint", ch: 6 },
+    { f: "game-theory.html", t: "The game-theory lab", ch: 7 },
+    { f: "governance.html", t: "Governance", ch: 8 }
   ];
   var TOTAL = CHAPTERS.length;
 

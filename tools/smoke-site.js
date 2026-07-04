@@ -13,11 +13,9 @@ const publicHtml = [
   "hybrid-juror-system.html",
   "prediction-market.html",
   "hybrid-juror-prediction-market-integration.html",
-  "zero-to-one.html",
-  "compounding.html",
   "the-design.html",
-  "governance.html",
-  "game-theory.html"
+  "game-theory.html",
+  "governance.html"
 ];
 
 const forbiddenPublicPaths = [

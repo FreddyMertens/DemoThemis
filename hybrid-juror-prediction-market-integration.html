@@ -3,8 +3,8 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>How PredictionMoMo calibrates DemoThemis: settled bets become juror answer keys</title>
-<meta name="description" content="Settled markets become graded answer keys, so the thing that keeps jurors honest grows with use instead of running out.">
+<title>The bootstrap loop: how PredictionMoMo seeds DemoThemis demand</title>
+<meta name="description" content="PredictionMoMo gives DemoThemis paid cases, fees, answer keys, and proof before outside apps have to trust it.">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@500;700&family=Newsreader:opsz,wght@6..72,200..700&display=swap" rel="stylesheet">
@@ -27,6 +27,18 @@
   .cmp-table th, .cmp-table td { padding: .7rem .6rem; border-bottom: 1px solid var(--line); text-align: left; vertical-align: top; }
   .cmp-table thead th { font-size: .74rem; text-transform: uppercase; letter-spacing: .03em; color: var(--faint); font-weight: 700; }
   .cmp-table td:first-child { font-weight: 600; color: var(--ink); }
+  .coldstart { display: flex; align-items: center; justify-content: center; gap: .7rem; flex-wrap: wrap; font-family: var(--sans); }
+  .coldstart .ring { background: var(--bg); border: 1px solid var(--line-strong); border-radius: 12px; padding: .7rem .9rem; font-weight: 600; font-size: .9rem; text-align: center; }
+  .coldstart .ar { color: var(--accent); font-size: 1.4rem; font-weight: 700; }
+  .amp { display: flex; flex-wrap: wrap; gap: .55rem; align-items: stretch; justify-content: center; }
+  .amp .node { flex: 1 1 8.5rem; min-width: 8rem; background: var(--accent-soft); border: 1px solid var(--accent); border-radius: 12px; padding: .8rem; text-align: center; font-family: var(--sans); font-weight: 600; font-size: .9rem; color: var(--accent-ink); }
+  .amp .node small { display: block; font-weight: 400; font-size: .74rem; color: var(--muted); margin-top: .2rem; }
+  .amp .ar { align-self: center; color: var(--accent); font-size: 1.3rem; font-weight: 700; }
+  .pairs { display: grid; grid-template-columns: repeat(auto-fit, minmax(15.5rem, 1fr)); gap: 1rem; margin: 1.6rem 0; }
+  .pair { background: var(--surface); border: 1px solid var(--line); border-left: 4px solid var(--accent); border-radius: 12px; padding: 1.1rem 1.2rem; box-shadow: var(--shadow); }
+  .pair .combo { font-family: var(--mono); font-size: .72rem; color: var(--faint); text-transform: uppercase; letter-spacing: .04em; }
+  .pair h3 { color: var(--accent-ink); margin: .3rem 0 .35rem; }
+  .pair p { font-family: var(--sans); font-size: .92rem; line-height: 1.5; color: var(--muted); margin: 0; }
 </style>
 </head>
 <body>
@@ -42,25 +54,23 @@
       <a href="juror-court.html"><span class="ch">02</span> Court</a>
       <a href="hybrid-juror-system.html"><span class="ch">03</span> Hybrid system</a>
       <a href="prediction-market.html"><span class="ch">04</span> PredictionMoMo</a>
-      <a href="hybrid-juror-prediction-market-integration.html"><span class="ch">05</span> Loop</a>
-      <a href="zero-to-one.html"><span class="ch">06</span> Zero to one</a>
-      <a href="compounding.html"><span class="ch">07</span> Compounding</a>
-      <a href="the-design.html"><span class="ch">08</span> Blueprint</a>
-      <a href="governance.html"><span class="ch">09</span> Governance</a>
-      <a href="game-theory.html"><span class="ch">10</span> Game lab</a>
+      <a href="hybrid-juror-prediction-market-integration.html"><span class="ch">05</span> Bootstrap loop</a>
+      <a href="the-design.html"><span class="ch">06</span> Blueprint</a>
+      <a href="game-theory.html"><span class="ch">07</span> Game lab</a>
+      <a href="governance.html"><span class="ch">08</span> Governance</a>
     </div>
   </div>
 </nav>
 
 <header class="hero reveal">
-  <p class="kicker">The loop</p>
-  <h1>How PredictionMoMo calibrates DemoThemis: settled bets become juror answer keys</h1>
-  <p class="dek">Every objective PredictionMoMo market leaves behind a question with a verified answer. This chapter shows how those settlements are watched, curated into an answer-key library, and used to keep thousands of jurors measurably honest, so the court's calibration grows automatically with betting volume.</p>
+  <p class="kicker">The bootstrap loop</p>
+  <h1>How PredictionMoMo gives DemoThemis cases, fees, answer keys, and proof</h1>
+  <p class="dek">A new arbitration market has no cases, no money, and no track record. PredictionMoMo breaks that loop by creating paid resolution work from day one, then turning settled markets into the evidence that lets DemoThemis win outside disputes.</p>
   <div class="meta">
-    <span class="pill">The flywheel</span>
-    <span>10 min read</span>
+    <span class="pill">Bootstrap loop</span>
+    <span>12 min read</span>
     <span class="dot">&bull;</span>
-    <span>Chapter 5 of 10</span>
+    <span>Chapter 5 of 8</span>
   </div>
 </header>
 
@@ -69,14 +79,64 @@
   <aside id="toc" class="toc reveal"></aside>
 
   <section class="reveal">
-    <p class="sec-label">The problem</p>
-    <h2>The one rope to reality</h2>
-    <p class="lead">To stay honest, the juror court needs a steady drip of questions with known answers. PredictionMoMo makes them by the thousand, almost for free, as a side effect of people betting. Here is how the two click together.</p>
-    <p>A school that has lost its answer sheets can still hand out grades. Mark every student against the class average. The marks look precise. They are also untethered, because if the whole class learns the same wrong fact, every exam confirms it.</p>
-    <p>The court runs the same risk. The <a href="hybrid-juror-system.html">hybrid system</a> grades each juror by leave-one-out agreement with their panel, and that is the right everyday ruler, because on most disputes nobody holds a certificate of the truth. But agreement is a relative measurement. It can tell you a juror moved with the room. It cannot tell you the room is still pointed at the world. A pool that slowly absorbed a fashionable error would keep agreeing with itself, scores green, verdicts drifting.</p>
-    <p>So the check has to come from outside the scoring, from questions the jurors did not write and cannot vote on. Where do you find thousands of real questions whose answers arrive from the world itself, on a schedule? You are standing on them. Every market on the platform is a question with money riding on it, and the great majority are questions reality will grade personally: a final score, a price at a fixed minute, an election called by morning. When such a market settles, what it leaves behind is exactly the artifact the court is starving for. A genuine question, argued over by people with stakes, with the world's own answer stapled to it and a timestamp on the staple.</p>
-    <p>Agreement keeps its job. It is the everyday ruler, cheap and always available. The keys are the audit that tells you the ruler has not bent.</p>
-    <p>Nobody is paid to write these exams. They appear as the ordinary byproduct of people betting on things they care about.</p>
+    <p class="sec-label">The trap</p>
+    <h2>The cold start arbitration cannot dodge</h2>
+    <p class="lead">A court is only trusted once it has a record, but nobody pays for an untested court. PredictionMoMo breaks that loop by handing DemoThemis paid cases, fee revenue, and public proof before outside apps have to take the first risk.</p>
+    <p>The trap is circular: no track record means no paying cases, no paying cases means no money for jurors, and no real jurors making real calls means no track record. Subsidies can paper over one corner for a while, but a court propped up by a grant is racing a clock it set for itself.</p>
+
+    <figure class="diagram reveal">
+      <div class="diagram-inner">
+        <div class="coldstart">
+          <div class="ring">No track record</div>
+          <span class="ar">&rarr;</span>
+          <div class="ring">No paying cases</div>
+          <span class="ar">&rarr;</span>
+          <div class="ring">No way to pay jurors</div>
+          <span class="ar">&#8635;</span>
+        </div>
+      </div>
+      <figcaption>The cold-start trap. <b>Each missing piece is the reason the next one stays missing.</b></figcaption>
+    </figure>
+  </section>
+
+  <section class="reveal">
+    <p class="sec-label">The way in</p>
+    <h2>The first paying customer is a bet</h2>
+    <p><a href="prediction-market.html">PredictionMoMo</a> manufactures disputes people already want settled. Someone opens a market on an election, a match, a price, or a private bet. To pay out, the market has to decide what actually happened, and that decision is arbitration with money already locked inside it.</p>
+    <p>That gives DemoThemis three things at once. Markets need answers, so the court has cases. Traders pay fees, so jurors can be paid from use. Objective markets settle against reality, so the court gets graded answer keys instead of asking the world to trust an empty badge.</p>
+  </section>
+
+  <section class="reveal">
+    <p class="sec-label">The money</p>
+    <h2>Fees pay the judges, not a printing press</h2>
+    <p>The pay for jurors comes from use. A 2% fee is skimmed from every pool at settlement and split once: 70% to juror pay, 20% to the reward pool that pays active, high-quality jurors, 10% to operations. The court breathes with traffic: more demand raises pay pressure, more jurors spread it out, and careless rulings slash the live reserve into the reward pool.</p>
+
+    <div class="widget reveal">
+      <div class="widget-head"><span class="live"></span> Bootstrap economics, illustrative</div>
+      <div class="controls">
+        <div class="row"><label for="zVol">Monthly money settled through markets</label> <b id="zVolOut">$5.0M</b></div>
+        <input id="zVol" type="range" min="100000" max="50000000" step="100000" value="5000000">
+        <div class="row"><label for="zFee">Fee taken on that flow</label> <b id="zFeeOut">2.0%</b></div>
+        <input id="zFee" type="range" min="5" max="30" step="1" value="20">
+        <div class="row"><label for="zActive">Active jurors available</label> <b id="zActiveOut">2,000</b></div>
+        <input id="zActive" type="range" min="100" max="20000" step="100" value="2000">
+      </div>
+      <div class="readout">
+        <div class="stat"><div class="k">Monthly fee revenue</div><div class="v" id="zRev">$100k</div></div>
+        <div class="stat"><div class="k">Goes to the juror pool</div><div class="v accent" id="zPool">$70k</div></div>
+        <div class="stat"><div class="k">Pay pressure per active juror</div><div class="v" id="zJur">&hellip;</div></div>
+      </div>
+      <p style="font-family:var(--sans);font-size:.86rem;color:var(--faint);margin:1rem 0 0">Illustrative only. The last number is not a promised wage; it is the pressure the fee pool puts on juror pay and reserve sizing. Add active jurors and the pressure spreads out.</p>
+    </div>
+
+    <p>The point is the shape. A busier court can afford more and better jurors, while a quiet court does not bleed a fixed payroll it cannot support.</p>
+  </section>
+
+  <section class="reveal">
+    <p class="sec-label">The answer keys</p>
+    <h2>Settled markets keep the court tied to reality</h2>
+    <p>The <a href="hybrid-juror-system.html">hybrid system</a> grades each juror by leave-one-out agreement with their panel, which is the right everyday ruler. But agreement alone can drift. If the room learns the same wrong habit, everyone still agrees.</p>
+    <p>Objective markets give the court an outside audit. A final score, a price at a fixed minute, an election result: these are questions reality can grade. When a market settles cleanly, it leaves behind a genuine question, argued over by people with stakes, with the world's answer attached.</p>
 
     <figure class="diagram reveal">
       <div class="diagram-inner">
@@ -88,18 +148,14 @@
           <div class="e key">A graded question<small>answer attached, timestamped</small></div>
         </div>
       </div>
-      <figcaption>PredictionMoMo's answer-key stream. <b>Every settled objective market is a question that reality itself has graded.</b></figcaption>
+      <figcaption>PredictionMoMo's answer-key stream. <b>Every settled objective market is a question reality itself has graded.</b></figcaption>
     </figure>
-
-    <p>One stream of these, flowing daily, is the rope that ties the court's scores to the world. The next two sections are about keeping that rope clean, because a grading instrument is only worth what its worst entry is.</p>
   </section>
 
   <section class="reveal">
-    <p class="sec-label">Quality control</p>
-    <h2>Watched windows make clean keys</h2>
-    <p>An answer key is only as trustworthy as the settlement that minted it, so look hard at how a market settles. When the event lands, anyone may assert the outcome by posting a bond, and a one-week challenge window opens. If nobody objects, the assertion stands, the pool pays out, and no juror is disturbed. Roughly 95% of markets end exactly this way, quietly, which is what keeps the court small and the fees at 2%.</p>
-    <p>The obvious worry: who is awake at three in the morning, watching the window on a thin market about second-division volleyball? If watching costs more than it pays, a rational watcher stays in bed, and a lie asserted into an empty room sails through.</p>
-    <p>One rule removes the dilemma. A false assertion forfeits its bond to whoever catches it. Not to a burn address, not to the protocol, to the catcher. The challenge window stops being a civic duty and becomes a bounty board, and watching the long tail of thin markets becomes a paid job that bots are happy to work around the clock. Set the dials below, then untick the rule and watch the job, and the coverage, disappear.</p>
+    <p class="sec-label">Clean keys</p>
+    <h2>Watched windows and curation keep the library clean</h2>
+    <p>A false market assertion forfeits its bond to whoever catches it. That turns challenge windows from civic duty into paid work: watchers cover thin markets because catching a lie is profitable, and would-be liars fund the patrol.</p>
 
     <div class="widget reveal">
       <div class="widget-head"><span class="live"></span> Who is awake to challenge it? Someone paid to be.</div>
@@ -125,16 +181,7 @@
     </div>
 
     <p>The toggle is the whole argument. With the rule on, the defaults show near-full coverage and a zero in the last box, and notice who funds the patrol: the would-be liars themselves, one forfeited bond at a time. The design never asks anyone to be vigilant. It makes vigilance a business.</p>
-    <p>The window is a deliberately unhurried full day. Tokenized positions keep trading while it runs, so nobody is actually waiting, and a lie has to survive every timezone awake instead of one quiet stretch.</p>
-  </section>
-
-  <section class="reveal">
-    <p class="sec-label">The filter</p>
-    <h2>Curated, not collected</h2>
-    <p>Even a cleanly watched settlement is not automatically an exam question. Before a settled market is allowed to grade anyone, it passes through curation, and curation is picky on purpose. A market becomes an answer key only if it carried enough volume for real attention to have been on it, its challenge window ran while watcher coverage was actually live, and it survives a spot-check. Everything else still pays out normally. It just never gets to mark a juror's record.</p>
-    <p>Settled private rooms join the library the same way, by participant consent, and curation prizes them above everything else, because a question that never had a public page is the cleanest test there is. One rule rides along: a juror who was inside the room is never handed its key.</p>
-    <p>That ordering is the safety. Suppose a lie does slip through some unwatched corner, the rare case the last widget let you build. The bettors on that one market are hurt, and that loss is real. But the lie cannot poison the court, because the library of answer keys is chosen, not automatic, and a thin market with no watchers is precisely the kind the filter throws out. The failure stays local. The instrument stays clean.</p>
-    <p>What does the filter leave behind? Plenty, and the amount is the point.</p>
+    <p>Even a watched settlement is not automatically an exam question. It has to pass curation: enough volume, a clean window, real watcher coverage, and a spot-check that the question meant what it said. Public keys audit the juror pool. Private-room keys, admitted only by participant consent and never shown to their own participants, audit individual jurors because they cannot be looked up.</p>
 
     <div class="widget reveal">
       <div class="widget-head"><span class="live"></span> The key supply</div>
@@ -154,56 +201,6 @@
 
     <p>Stare at the hand-written column for a second. A court that writes its own exams can keep roughly ten jurors honestly rated, forever, because editors do not scale. A court fed by markets keeps forty rated at modest volume, four hundred at ten times that, and the supply climbs on its own every day betting does. The thing that keeps jurors honest is the one input the platform manufactures faster the more it is used.</p>
 
-    <p>Here is the full path one market walks from pocket change to the library.</p>
-
-    <ol class="stepper reveal">
-      <li>
-        <span class="step-n">1</span>
-        <div class="step-body">
-          <h3>Born for a dime</h3>
-          <p>Someone posts a question about Sunday's final and backs it with their own first bet. The link travels, the pot grows, and the market crosses the volume threshold that says real attention is on it.</p>
-        </div>
-      </li>
-      <li>
-        <span class="step-n">2</span>
-        <div class="step-body">
-          <h3>Reality answers</h3>
-          <p>The final whistle blows. Someone asserts the outcome with a bond, and the one-week challenge window opens with that bond hanging over it.</p>
-        </div>
-      </li>
-      <li>
-        <span class="step-n">3</span>
-        <div class="step-body">
-          <h3>The window runs watched</h3>
-          <p>Watchers are staking out the window because catching a lie pays the liar's bond. No challenge lands. The pool pays out pro-rata, the 2% fee is skimmed, and the settlement is logged with its coverage intact.</p>
-        </div>
-      </li>
-      <li>
-        <span class="step-n">4</span>
-        <div class="step-body">
-          <h3>Curation says yes</h3>
-          <p>Enough volume, a clean watched window, and a spot-check that the question meant what it said. The market enters the answer-key library. Most settlements stop one step short, and that is the filter working.</p>
-        </div>
-      </li>
-      <li>
-        <span class="step-n">5</span>
-        <div class="step-body">
-          <h3>The key starts grading</h3>
-          <p>Folded into juror scores beside the leave-one-out marks, the key becomes one more public test the pool either passes or fails. The bettors got their payout days ago. The court keeps the question forever.</p>
-        </div>
-      </li>
-    </ol>
-
-    <p>Five steps, no editor, no commission, no budget line. The library writes itself and the filter signs off.</p>
-  </section>
-
-  <section class="reveal">
-    <p class="sec-label">Honest limits</p>
-    <h2>What the keys can and cannot measure</h2>
-    <p>Be precise about what this instrument reads, because it reads one thing superbly and another not at all.</p>
-    <p>What it measures well is the pool. Curated keys are folded into juror scores alongside the leave-one-out agreement marks, which gives the court a measurement no amount of internal coherence could produce: how often its panels land on answers reality later confirmed. If panel verdicts start diverging from the keys across the whole pool, that is drift, caught early and with confidence, the exact failure that agreement-only grading is structurally blind to. Hundreds of keys a day make the test statistically sharp within weeks.</p>
-    <p>What a public key cannot do is trap an individual. A public settlement can be looked up, so a lazy juror who quietly checks one scores correct anyway. Two things close that gap. The first is incentives that bite case by case: scoring credited only above the obvious-vote baseline, reputation driving draw rate and per-case pay, and a live reserve priced by pending income, all built in the <a href="hybrid-juror-system.html">hybrid system chapter</a>. The second is a sharper kind of key: the settled private room. Its question and its outcome never appeared on any public page, so when it lands in a juror's docket there is nothing to look up, and anyone who was inside the room is never handed it. Public keys audit the pool. Private keys audit the person.</p>
-
     <div class="cmp-wrap">
       <table class="cmp-table">
         <thead><tr><th>The failure</th><th>What catches it</th></tr></thead>
@@ -221,37 +218,80 @@
   </section>
 
   <section class="reveal">
-    <p class="sec-label">The flywheel</p>
-    <h2>The wheel</h2>
-    <p>Now stand back and watch it turn. More betting settles more markets, and the curated cut becomes more answer keys. More keys hold more jurors to a confident rating, which raises the floor of every panel drawn. Sharper panels return verdicts the next bettor can rely on, and reliable settlement is the one feature a betting venue cannot fake its way to. So, more betting.</p>
-    <p>The money turns with it. The same settlements that mint the keys pay the 2% fee, and 70% of that fee is juror pay, so the wheel that sharpens the jurors is also the wheel that feeds them.</p>
+    <p class="sec-label">The climb</p>
+    <h2>Three phases, each standing on the last</h2>
+    <p>PredictionMoMo is the first rung, not the destination. The record it builds is what lets DemoThemis step out into the wider world of disputes.</p>
+
+    <ol class="stepper reveal">
+      <li>
+        <span class="step-n">1</span>
+        <div class="step-body">
+          <h3>Markets only</h3>
+          <p>DemoThemis settles PredictionMoMo markets first. Fees pay jurors, settled markets grade them, and a public history of fair calls starts to pile up.</p>
+        </div>
+      </li>
+      <li>
+        <span class="step-n">2</span>
+        <div class="step-body">
+          <h3>Open the doors to real disputes</h3>
+          <p>With a record in hand, the protocol starts taking outside escrowed deals: small on-chain work, creator payouts, marketplace refunds, and app-specific rubrics where funds are already locked and a release rule is needed.</p>
+        </div>
+      </li>
+      <li>
+        <span class="step-n">3</span>
+        <div class="step-body">
+          <h3>Become the default</h3>
+          <p>Once enough apps route funds through the same protocol escrow, signed verdict receipts and measured court accuracy become proof new integrations can verify instead of rebuilding a support desk from scratch.</p>
+        </div>
+      </li>
+    </ol>
+  </section>
+
+  <section class="reveal">
+    <p class="sec-label">Why it compounds</p>
+    <h2>One wheel, not three repeated stories</h2>
+    <p>Now stand back and watch it turn. More markets create more fees and answer keys. More fees pay jurors. More answer keys calibrate them. Better verdicts make markets and outside escrow safer. That safety brings more demand.</p>
 
     <figure class="diagram reveal">
       <div class="diagram-inner">
-        <div class="flow">
-          <div class="node"><span class="ic">&#127922;</span><span class="lbl">More betting</span><span class="sub">pools, fees, questions</span></div>
-          <span class="arrow">&rarr;</span>
-          <div class="node"><span class="ic">&#128273;</span><span class="lbl">More answer keys</span><span class="sub">curated from settlements</span></div>
-          <span class="arrow">&rarr;</span>
-          <div class="node"><span class="ic">&#9878;</span><span class="lbl">Sharper jurors</span><span class="sub">rated with confidence</span></div>
-          <span class="arrow">&rarr;</span>
-          <div class="node is-accent"><span class="ic">&#10003;</span><span class="lbl">Verdicts worth trusting</span><span class="sub">a public track record</span></div>
-          <span class="arrow">&#8635;</span>
+        <div class="amp">
+          <div class="node">More markets<small>fees, questions, cases</small></div>
+          <span class="ar">&rarr;</span>
+          <div class="node">More known answers<small>curated from settlements</small></div>
+          <span class="ar">&rarr;</span>
+          <div class="node">A sharper court<small>better calibrated</small></div>
+          <span class="ar">&rarr;</span>
+          <div class="node">Verdicts apps trust<small>more escrow demand</small></div>
+          <span class="ar">&#8635;</span>
         </div>
       </div>
-      <figcaption>Each quarter turn pushes the next. <b>The check that keeps jurors honest grows with use instead of wearing out.</b></figcaption>
+      <figcaption>The same product supplies the first demand and the evidence that wins the next demand. <b>The court does not wait to be trusted; it manufactures proof while people bet.</b></figcaption>
     </figure>
 
-    <p>And notice what the wheel throws off as it spins: a record. Every curated key is a public test the court either passed or failed, timestamped, free for anyone to recount. Most arbiters ask to be trusted. This one publishes its own grading, continuously, at the speed of settlement.</p>
-    <p>That record is the product. When a marketplace, escrow contract, or ad network decides whether to route deal funds through DemoThemis, it can point to a running public measurement of accuracy: thousands of graded calls and counting. How the court spends that proof to win its first outside customers is <a href="zero-to-one.html">the next chapter</a>.</p>
+    <div class="pairs">
+      <div class="pair">
+        <span class="combo">PredictionMoMo + DemoThemis</span>
+        <h3>Bets become paid cases</h3>
+        <p>The market needs resolution anyway, so its ordinary operation gives the court real work before outside customers arrive.</p>
+      </div>
+      <div class="pair">
+        <span class="combo">Fees + reserves</span>
+        <h3>Use funds the bench</h3>
+        <p>Settlement fees pay jurors, and bad rulings slash reserves into the reward pool that pays active, high-quality ones.</p>
+      </div>
+      <div class="pair">
+        <span class="combo">Personhood + markets</span>
+        <h3>Growth incentives reach humans</h3>
+        <p>Fee rebates, airdrops, and early-market incentives can go to real people instead of bot farms.</p>
+      </div>
+      <div class="pair">
+        <span class="combo">Apps + escrow</span>
+        <h3>Proof makes integrations easier</h3>
+        <p>Outside apps can inspect a live record of verdict accuracy and route funds through protocol escrow instead of trusting a promise.</p>
+      </div>
+    </div>
 
-    <a class="pair-link reveal" href="zero-to-one.html">
-      <span>
-        <span class="pl-k">Where the record gets spent</span>
-        <span class="pl-t">Zero to one: switching the court on</span>
-      </span>
-      <span class="pl-arrow">&rarr;</span>
-    </a>
+    <p>A subsidy is a countdown. A prediction market is an engine: it creates disputes, pays for their resolution, grades the people resolving them, and publishes the proof that brings the next customer in.</p>
   </section>
 
   <footer class="endnote reveal">
@@ -261,12 +301,10 @@
       <a href="juror-court.html">2. The court</a>
       <a href="hybrid-juror-system.html">3. The hybrid system</a>
       <a href="prediction-market.html">4. PredictionMoMo</a>
-      <a href="hybrid-juror-prediction-market-integration.html">5. The loop</a>
-      <a href="zero-to-one.html">6. Zero to one</a>
-      <a href="compounding.html">7. Why it compounds</a>
-      <a href="the-design.html">8. The blueprint</a>
-      <a href="governance.html">9. Governance</a>
-      <a href="game-theory.html">10. Game lab</a>
+      <a href="hybrid-juror-prediction-market-integration.html">5. The bootstrap loop</a>
+      <a href="the-design.html">6. The blueprint</a>
+      <a href="game-theory.html">7. Game lab</a>
+      <a href="governance.html">8. Governance</a>
       <a href="index.html">Home &middot; the map</a>
     </div>
     <p class="signoff">The court stays tied to reality because answer keys arrive exactly as fast as people bet, and people never stop betting.</p>
@@ -276,6 +314,47 @@
 
 <script src="assets/common.js"></script>
 <script>
+// ============ bootstrap economics ============
+(function () {
+  "use strict";
+  var vol = document.getElementById("zVol");
+  var fee = document.getElementById("zFee");
+  var active = document.getElementById("zActive");
+  if (!vol || !fee || !active) return;
+  var volOut = document.getElementById("zVolOut");
+  var feeOut = document.getElementById("zFeeOut");
+  var activeOut = document.getElementById("zActiveOut");
+  var rev = document.getElementById("zRev");
+  var pool = document.getElementById("zPool");
+  var jur = document.getElementById("zJur");
+
+  var POOL_SHARE = 0.7;
+
+  function money(n) {
+    if (n >= 1000000) return "$" + (n / 1000000).toFixed(n >= 10000000 ? 0 : 1) + "M";
+    if (n >= 1000) return "$" + Math.round(n / 1000) + "k";
+    return "$" + Math.round(n);
+  }
+
+  function update() {
+    var v = parseInt(vol.value, 10);
+    var f = parseInt(fee.value, 10) / 10;
+    var a = parseInt(active.value, 10);
+    var revenue = v * (f / 100);
+    var poolUsd = revenue * POOL_SHARE;
+    volOut.textContent = money(v);
+    feeOut.textContent = f.toFixed(1) + "%";
+    activeOut.textContent = a.toLocaleString("en-US");
+    rev.textContent = money(revenue);
+    pool.textContent = money(poolUsd);
+    jur.textContent = money(poolUsd / Math.max(1, a));
+  }
+  vol.addEventListener("input", update);
+  fee.addEventListener("input", update);
+  active.addEventListener("input", update);
+  update();
+})();
+
 // ============ watcher economics ============
 (function () {
   "use strict";
