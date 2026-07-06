@@ -4441,33 +4441,85 @@
       rect.bottom <= window.innerHeight - 10;
   }
 
-  function correctTargetScroll(target) {
-    if (!target || targetIsComfortablyVisible(target)) return;
-    var rect = target.getBoundingClientRect();
-    var safeTop = stickySafeTop();
-    var safeHeight = Math.max(120, window.innerHeight - safeTop - 12);
-    var desiredTop = window.pageYOffset + rect.top - safeTop - Math.max(0, (safeHeight - rect.height) / 2);
-    window.scrollTo({
-      top: Math.max(0, desiredTop),
-      behavior: "auto"
-    });
-    queueCoachmarkPosition();
-  }
-
   function focusSimulatorTarget(target) {
-    if (!target || typeof target.scrollIntoView !== "function") return;
+    if (!target) return;
+    var preview = document.querySelector(".sim-live-preview");
+    if (!preview) return;
+
+    var safeTop = stickySafeTop();
+    var viewportHeight = window.innerHeight - safeTop - 10;
+    var previewRect = preview.getBoundingClientRect();
+    var currentScrollY = window.pageYOffset || document.documentElement.scrollTop;
+
+    // Check if the entire app view fits fully in viewport currently
+    var isFullyInFrame = previewRect.top >= safeTop && previewRect.bottom <= window.innerHeight - 10;
+    if (isFullyInFrame) {
+      queueCoachmarkPosition();
+      return;
+    }
+
+    var previewAbsoluteTop = currentScrollY + previewRect.top;
+    var previewAbsoluteBottom = previewAbsoluteTop + previewRect.height;
+    var targetRect = target.getBoundingClientRect();
+    var desiredScrollTop = currentScrollY;
+
+    if (previewRect.height <= viewportHeight) {
+      // Center the preview since it fits entirely in viewport
+      desiredScrollTop = previewAbsoluteTop - safeTop - (viewportHeight - previewRect.height) / 2;
+    } else {
+      // Preview is taller than viewport. We scroll target into view, keeping preview as visible as possible.
+      var targetAbsoluteTop = currentScrollY + targetRect.top;
+      var targetAbsoluteBottom = targetAbsoluteTop + targetRect.height;
+
+      // Target needs to be within [safeTop + 20, window.innerHeight - 20]
+      var targetVisible = targetRect.top >= safeTop + 20 && targetRect.bottom <= window.innerHeight - 20;
+      if (!targetVisible) {
+        if (targetRect.top < safeTop + 20) {
+          // Target is above: scroll down slightly to show it
+          desiredScrollTop = targetAbsoluteTop - safeTop - 40;
+        } else {
+          // Target is below: scroll up slightly to show it
+          desiredScrollTop = targetAbsoluteBottom - window.innerHeight + 40;
+        }
+      }
+      
+      // Clamp the scroll position to keep the preview on screen as much as possible
+      var minScroll = previewAbsoluteTop - safeTop - 10;
+      var maxScroll = previewAbsoluteBottom - window.innerHeight + 10;
+      desiredScrollTop = Math.max(minScroll, Math.min(maxScroll, desiredScrollTop));
+    }
+
+    // Scroll smoothly or auto
     var reduceMotion = window.matchMedia && window.matchMedia("(prefers-reduced-motion: reduce)").matches;
     var useAutoScroll = reduceMotion || window.innerWidth <= 520;
-    target.scrollIntoView({
-      behavior: useAutoScroll ? "auto" : "smooth",
-      block: "center",
-      inline: "nearest"
-    });
+
+    if (Math.abs(currentScrollY - desiredScrollTop) > 1.5) {
+      window.scrollTo({
+        top: Math.max(0, desiredScrollTop),
+        behavior: useAutoScroll ? "auto" : "smooth"
+      });
+    }
+
     queueCoachmarkPosition();
-    window.setTimeout(function () { correctTargetScroll(target); }, useAutoScroll ? 40 : 140);
-    window.setTimeout(function () { correctTargetScroll(target); }, useAutoScroll ? 120 : 420);
-    window.setTimeout(function () { correctTargetScroll(target); }, useAutoScroll ? 240 : 760);
-    window.setTimeout(queueCoachmarkPosition, useAutoScroll ? 280 : 820);
+
+    // Ensure coachmark positions correctly after/during smooth scroll
+    if (!useAutoScroll) {
+      var scrollCount = 0;
+      var scrollHandler = function () {
+        queueCoachmarkPosition();
+        scrollCount++;
+        if (scrollCount > 50) {
+          window.removeEventListener("scroll", scrollHandler);
+        }
+      };
+      window.addEventListener("scroll", scrollHandler);
+      setTimeout(function () {
+        window.removeEventListener("scroll", scrollHandler);
+        queueCoachmarkPosition();
+      }, 800);
+    } else {
+      setTimeout(queueCoachmarkPosition, 100);
+    }
   }
 
   function scrollToChangedAppArea() {
