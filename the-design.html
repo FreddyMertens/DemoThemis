@@ -130,12 +130,24 @@
   .sim-live-preview { display: grid; min-width: 0; border: 1px solid color-mix(in srgb, var(--accent) 42%, var(--line)); border-radius: 16px; background: color-mix(in srgb, var(--ink) 5%, var(--surface)); box-shadow: 0 18px 32px rgba(31, 36, 48, .12); overflow: hidden; }
   .sim-frame-label { display: flex; align-items: center; justify-content: space-between; gap: .6rem; border-bottom: 1px solid color-mix(in srgb, var(--accent) 26%, var(--line)); background: color-mix(in srgb, var(--accent-soft) 62%, var(--surface)); color: var(--accent-ink); padding: .48rem .64rem; font-size: .66rem; line-height: 1.1; font-weight: 950; letter-spacing: .08em; text-transform: uppercase; }
   .sim-frame-label span:last-child { color: var(--muted); font-size: .62rem; letter-spacing: .04em; text-align: right; }
-  .sim-browser-bar { display: grid; grid-template-columns: auto minmax(0, 1fr) auto; gap: .48rem; align-items: center; border-bottom: 1px solid var(--line); background: color-mix(in srgb, var(--bg) 86%, #fff); padding: .42rem .55rem; }
+  .sim-browser-bar { display: grid; grid-template-columns: auto auto minmax(0, 1fr) auto; gap: .48rem; align-items: center; border-bottom: 1px solid var(--line); background: color-mix(in srgb, var(--bg) 86%, #fff); padding: .42rem .55rem; }
   .sim-window-dots { display: flex; gap: .22rem; }
   .sim-window-dots span { width: .45rem; height: .45rem; border-radius: 50%; background: var(--line-strong); }
   .sim-window-dots span:nth-child(1) { background: #ff6b6b; }
   .sim-window-dots span:nth-child(2) { background: #f6c85f; }
   .sim-window-dots span:nth-child(3) { background: #6bcf92; }
+  .sim-browser-back { position: relative; display: inline-flex; align-items: center; justify-content: center; gap: .48rem; min-width: 7.2rem; min-height: 2.65rem; border: 3px solid color-mix(in srgb, var(--accent) 70%, var(--line)); border-radius: 15px; background: linear-gradient(180deg, color-mix(in srgb, var(--accent) 95%, #fff), color-mix(in srgb, var(--accent) 78%, #171144)); color: #fff; padding: .32rem .82rem .32rem .38rem; font-family: var(--sans); font-size: .82rem; line-height: 1; font-weight: 950; box-shadow: 0 12px 24px rgba(91, 74, 215, .3), 0 0 0 5px color-mix(in srgb, var(--accent-soft) 86%, transparent); cursor: pointer; transition: transform .14s ease, background .14s ease, border-color .14s ease, box-shadow .14s ease; }
+  .sim-browser-back::before { content: ""; position: absolute; inset: 4px; border-radius: 11px; border: 1px solid rgba(255, 255, 255, .32); pointer-events: none; }
+  .sim-browser-back-icon { position: relative; display: grid; place-items: center; width: 2rem; height: 2rem; border-radius: 50%; background: #fff; color: var(--accent); box-shadow: inset 0 0 0 1px rgba(255, 255, 255, .65), 0 5px 12px rgba(31, 36, 48, .24); flex: 0 0 auto; }
+  .sim-browser-back-icon::before { content: ""; width: .72rem; height: .72rem; border-left: 4px solid currentColor; border-bottom: 4px solid currentColor; transform: translateX(.14rem) rotate(45deg); }
+  .sim-browser-back-icon::after { content: ""; position: absolute; left: .62rem; top: 50%; width: .78rem; height: 4px; border-radius: 999px; background: currentColor; transform: translateY(-50%); }
+  .sim-browser-back-label { color: currentColor; font-size: .82rem; letter-spacing: .01em; text-transform: uppercase; white-space: nowrap; }
+  .sim-browser-back:hover,
+  .sim-browser-back:focus-visible { background: linear-gradient(180deg, var(--good), color-mix(in srgb, var(--good) 80%, #044b38)); border-color: var(--good); transform: translateY(-2px); box-shadow: 0 15px 30px rgba(11, 153, 107, .28), 0 0 0 5px var(--good-soft); }
+  .sim-browser-back:not([disabled]) { animation: browser-back-pulse 2.6s ease-in-out infinite; }
+  .sim-live-preview .sim-browser-back[data-sim-tip]:not([disabled]) { cursor: pointer; }
+  .sim-browser-back[disabled] { background: color-mix(in srgb, var(--surface) 78%, #fff); border-color: var(--line-strong); color: var(--faint); box-shadow: 0 0 0 2px color-mix(in srgb, var(--line) 55%, transparent); cursor: default; transform: none; animation: none; }
+  .sim-browser-back[disabled] .sim-browser-back-icon { background: color-mix(in srgb, var(--line) 72%, #fff); color: var(--faint); box-shadow: none; }
   .sim-url { min-width: 0; border: 1px solid var(--line); border-radius: 999px; background: var(--surface); color: var(--muted); padding: .25rem .52rem; font-size: .66rem; line-height: 1.05; font-weight: 800; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
   .sim-live-dot { display: inline-flex; align-items: center; gap: .28rem; color: var(--good); font-size: .64rem; font-weight: 900; white-space: nowrap; }
   .sim-live-dot::before { content: ""; width: .43rem; height: .43rem; border-radius: 50%; background: currentColor; box-shadow: 0 0 0 4px var(--good-soft); }
@@ -206,9 +218,9 @@
   .app-panel.bad { border-color: color-mix(in srgb, var(--bad) 32%, var(--line)); }
   .app-panel h5 { margin: 0; color: var(--ink); font-size: .86rem; line-height: 1.16; }
   .app-panel .mini { color: var(--faint); font-size: .6rem; font-weight: 900; letter-spacing: .07em; line-height: 1.1; text-transform: uppercase; }
-  .sim-app-viewport [data-sim-tip] { cursor: help; outline: 0 solid transparent; outline-offset: 2px; transition: background .14s ease, border-color .14s ease, box-shadow .14s ease, outline-color .14s ease, transform .14s ease; }
-  .sim-app-viewport [data-sim-tip]:hover,
-  .sim-app-viewport [data-sim-tip]:focus-visible { outline: 2px solid color-mix(in srgb, var(--accent) 34%, transparent); border-color: color-mix(in srgb, var(--accent) 54%, var(--line)); box-shadow: 0 0 0 4px color-mix(in srgb, var(--accent-soft) 72%, transparent), 0 10px 22px rgba(69, 48, 154, .12); }
+  .sim-live-preview [data-sim-tip] { cursor: help; outline: 0 solid transparent; outline-offset: 2px; transition: background .14s ease, border-color .14s ease, box-shadow .14s ease, outline-color .14s ease, transform .14s ease; }
+  .sim-live-preview [data-sim-tip]:hover,
+  .sim-live-preview [data-sim-tip]:focus-visible { outline: 2px solid color-mix(in srgb, var(--accent) 34%, transparent); border-color: color-mix(in srgb, var(--accent) 54%, var(--line)); box-shadow: 0 0 0 4px color-mix(in srgb, var(--accent-soft) 72%, transparent), 0 10px 22px rgba(69, 48, 154, .12); }
   .sim-app-viewport .app-seat[data-sim-tip]:hover,
   .sim-app-viewport .app-seat[data-sim-tip]:focus-visible { transform: scale(1.12); }
   .guided-target { position: relative; z-index: 2; cursor: pointer; outline: 3px solid color-mix(in srgb, var(--good) 58%, transparent); outline-offset: 3px; border-color: color-mix(in srgb, var(--good) 72%, var(--line)) !important; box-shadow: 0 0 0 7px color-mix(in srgb, var(--good-soft) 82%, transparent), 0 18px 34px rgba(11, 153, 107, .18) !important; animation: tutorial-target-pulse 1.65s ease-in-out infinite; }
@@ -231,6 +243,15 @@
   .tutorial-dots span { width: .46rem; height: .46rem; border-radius: 50%; background: var(--line-strong); }
   .tutorial-dots span.done { background: var(--good); }
   .tutorial-dots span.active { background: var(--accent); box-shadow: 0 0 0 4px var(--accent-soft); }
+  .event-continuation { display: grid; gap: .46rem; min-width: 0; border: 2px solid color-mix(in srgb, var(--good) 42%, var(--line)); border-radius: 13px; background: linear-gradient(180deg, color-mix(in srgb, var(--good-soft) 66%, var(--surface)), color-mix(in srgb, var(--surface) 94%, #fff)); padding: .58rem; box-shadow: 0 14px 28px rgba(11, 153, 107, .13); }
+  .event-handoff { display: grid; grid-template-columns: minmax(0, 1fr) auto minmax(0, 1fr); gap: .34rem; align-items: center; color: var(--ink-soft); font-size: .66rem; line-height: 1.16; font-weight: 900; }
+  .event-handoff span { min-width: 0; border: 1px solid color-mix(in srgb, var(--line-strong) 72%, transparent); border-radius: 999px; background: color-mix(in srgb, var(--surface) 92%, #fff); padding: .28rem .42rem; overflow-wrap: anywhere; text-align: center; }
+  .event-handoff b { color: var(--good); font-size: .58rem; line-height: 1; font-weight: 950; letter-spacing: .08em; text-transform: uppercase; white-space: nowrap; }
+  .event-continuation p { margin: 0; color: var(--muted); font-size: .72rem; line-height: 1.32; }
+  .event-continue-button { position: relative; display: inline-flex; align-items: center; justify-content: space-between; gap: .52rem; width: 100%; min-width: 0; min-height: 2.55rem; border: 2px solid color-mix(in srgb, var(--good) 70%, var(--line)); border-radius: 12px; background: linear-gradient(180deg, var(--good), color-mix(in srgb, var(--good) 78%, #043f31)); color: #fff; padding: .58rem 2.02rem .58rem .72rem; font-family: var(--sans); font-size: .78rem; line-height: 1.12; font-weight: 950; text-align: left; cursor: pointer; box-shadow: 0 14px 26px rgba(11, 153, 107, .24), 0 0 0 4px color-mix(in srgb, var(--good-soft) 76%, transparent); transition: transform .14s ease, box-shadow .14s ease, background .14s ease; }
+  .event-continue-button::after { content: ""; position: absolute; right: .78rem; top: 50%; width: .52rem; height: .52rem; border-top: 3px solid currentColor; border-right: 3px solid currentColor; transform: translateY(-50%) rotate(45deg); }
+  .event-continue-button:hover,
+  .event-continue-button:focus-visible { transform: translateY(-2px); background: linear-gradient(180deg, color-mix(in srgb, var(--good) 92%, #fff), var(--good)); box-shadow: 0 18px 34px rgba(11, 153, 107, .28), 0 0 0 5px var(--good-soft); outline: 0; }
   .sim-result-toast { position: absolute; left: .78rem; right: .78rem; bottom: .78rem; z-index: 4; display: flex; align-items: center; gap: .46rem; width: fit-content; max-width: calc(100% - 1.56rem); border: 1px solid color-mix(in srgb, var(--good) 40%, var(--line)); border-radius: 999px; background: color-mix(in srgb, var(--surface) 96%, #fff); color: var(--good); padding: .42rem .66rem; font-family: var(--sans); font-size: .72rem; line-height: 1.18; font-weight: 950; box-shadow: 0 16px 32px rgba(31, 36, 48, .16); animation: toast-rise .36s ease-out both; pointer-events: none; }
   .sim-result-toast::before { content: ""; width: .5rem; height: .5rem; border-radius: 50%; background: currentColor; box-shadow: 0 0 0 4px var(--good-soft); flex: 0 0 auto; }
   .sim-tooltip { position: fixed; z-index: 9999; left: 0; top: 0; max-width: min(19rem, calc(100vw - 1.25rem)); border: 1px solid color-mix(in srgb, var(--accent) 28%, transparent); border-radius: 11px; background: color-mix(in srgb, var(--ink) 94%, #111); color: #fff; box-shadow: 0 18px 36px rgba(31, 36, 48, .22); padding: .58rem .66rem; font-family: var(--sans); font-size: .72rem; line-height: 1.34; opacity: 0; pointer-events: none; transform: translateY(4px); transition: opacity .12s ease, transform .12s ease; }
@@ -327,6 +348,7 @@
   .live-status.warn { color: var(--bad); background: var(--bad-soft); border-color: color-mix(in srgb, var(--bad) 34%, var(--line)); }
   .live-card { position: relative; display: grid; gap: .52rem; min-width: 0; border: 1px solid var(--line); border-radius: 13px; background: var(--surface); box-shadow: var(--shadow); padding: .68rem; }
   .live-card.awaiting-action { border-color: color-mix(in srgb, var(--good) 42%, var(--line)); background: color-mix(in srgb, var(--good-soft) 34%, var(--surface)); }
+  .live-card.is-continuation-target { border-color: color-mix(in srgb, var(--good) 54%, var(--line)); background: color-mix(in srgb, var(--good-soft) 42%, var(--surface)); box-shadow: 0 0 0 2px color-mix(in srgb, var(--good) 16%, transparent), 0 16px 30px rgba(11, 153, 107, .14); }
   .live-card.hot { border-color: var(--accent); background: color-mix(in srgb, var(--accent-soft) 76%, var(--surface)); box-shadow: 0 0 0 2px color-mix(in srgb, var(--accent) 24%, transparent), 0 16px 30px rgba(91, 74, 215, .18); animation: app-target-pop .42s ease-out both; }
   .live-card.good { border-color: color-mix(in srgb, var(--good) 38%, var(--line)); background: color-mix(in srgb, var(--good-soft) 48%, var(--surface)); }
   .live-card.bad { border-color: color-mix(in srgb, var(--bad) 38%, var(--line)); background: color-mix(in srgb, var(--bad-soft) 48%, var(--surface)); }
@@ -344,6 +366,9 @@
   .sim-app-action::after { content: ">"; display: grid; place-items: center; width: 1.1rem; height: 1.1rem; border-radius: 50%; background: rgba(255, 255, 255, .18); color: #fff; flex: 0 0 auto; font-size: .68rem; line-height: 1; }
   .sim-app-action:hover,
   .sim-app-action:focus-visible { background: var(--good); border-color: var(--good); color: #fff; }
+  .sim-app-action.app-continue-action { width: 100%; justify-content: space-between; background: var(--good); border-color: var(--good); box-shadow: 0 12px 24px rgba(11, 153, 107, .24), 0 0 0 4px color-mix(in srgb, var(--good-soft) 72%, transparent); }
+  .sim-app-action.app-continue-action:hover,
+  .sim-app-action.app-continue-action:focus-visible { background: color-mix(in srgb, var(--good) 86%, #053f32); border-color: color-mix(in srgb, var(--good) 86%, #053f32); transform: translateY(-2px); box-shadow: 0 18px 34px rgba(11, 153, 107, .28), 0 0 0 5px var(--good-soft); }
   .sim-app-action-label { min-width: 0; overflow-wrap: anywhere; }
   .live-kpis { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: .45rem; }
   .live-kpi { border: 1px solid var(--line); border-radius: 10px; background: var(--bg); padding: .54rem; min-width: 0; }
@@ -470,8 +495,10 @@
   .product-demo.sim-ultra .sim-step-guide { grid-template-columns: 1fr; padding: .5rem; }
   .product-demo.sim-ultra .sim-step-badge { width: 100%; min-height: 0; grid-template-columns: auto auto; justify-content: start; gap: .4rem; padding: .42rem .5rem; box-sizing: border-box; }
   .product-demo.sim-ultra .sim-step-controls { grid-column: auto; border-top: 1px solid var(--line); padding-top: .48rem; }
+  .product-demo.sim-ultra .event-handoff { grid-template-columns: 1fr; }
+  .product-demo.sim-ultra .event-handoff b { text-align: center; }
   .product-demo.sim-ultra .sim-frame-label { align-items: flex-start; flex-direction: column; gap: .22rem; padding: .42rem .5rem; }
-  .product-demo.sim-ultra .sim-browser-bar { grid-template-columns: auto minmax(0, 1fr); }
+  .product-demo.sim-ultra .sim-browser-bar { grid-template-columns: auto auto minmax(0, 1fr); }
   .product-demo.sim-ultra .sim-live-dot { grid-column: 1 / -1; justify-self: start; }
   .product-demo.sim-ultra .live-page { padding: .42rem; }
   .product-demo.sim-ultra .app-nav { padding: .5rem; }
@@ -527,8 +554,10 @@
     .sim-step-guide { grid-template-columns: 1fr; padding: .5rem; }
     .sim-step-badge { width: 100%; min-height: 0; grid-template-columns: auto auto; justify-content: start; gap: .4rem; padding: .42rem .5rem; box-sizing: border-box; }
     .sim-step-controls { grid-column: auto; border-top: 1px solid var(--line); padding-top: .48rem; }
+    .event-handoff { grid-template-columns: 1fr; }
+    .event-handoff b { text-align: center; }
     .sim-frame-label { align-items: flex-start; flex-direction: column; gap: .22rem; padding: .42rem .5rem; }
-    .sim-browser-bar { grid-template-columns: auto minmax(0, 1fr); }
+    .sim-browser-bar { grid-template-columns: auto auto minmax(0, 1fr); }
     .sim-live-dot { grid-column: 1 / -1; justify-self: start; }
     .live-page { padding: .42rem; }
     .app-nav { padding: .5rem; }
@@ -608,6 +637,12 @@
   @keyframes toast-rise {
     from { opacity: 0; transform: translateY(8px); }
     to { opacity: 1; transform: translateY(0); }
+  }
+  @keyframes browser-back-pulse {
+    0%, 72%, 100% { transform: translate3d(0, 0, 0) scale(1); box-shadow: 0 12px 24px rgba(91, 74, 215, .3), 0 0 0 5px color-mix(in srgb, var(--accent-soft) 86%, transparent); }
+    78% { transform: translate3d(-2px, -1px, 0) scale(1.035); box-shadow: 0 17px 34px rgba(91, 74, 215, .36), 0 0 0 8px color-mix(in srgb, var(--accent-soft) 96%, transparent); }
+    84% { transform: translate3d(1px, 0, 0) scale(1.01); }
+    90% { transform: translate3d(0, 0, 0) scale(1); }
   }
   @keyframes action-idle-nudge {
     0%, 5%, 22%, 100% { transform: translate3d(0, 0, 0) rotate(0) scale(1); border-color: color-mix(in srgb, var(--accent) 35%, var(--line)); color: var(--accent-ink); box-shadow: 0 10px 18px rgba(31, 36, 48, .1); }
@@ -1392,6 +1427,101 @@
     }
   ];
 
+  var EVENT_CONTINUATIONS = [
+    {
+      action: "Go to deployed market page",
+      from: "Market creator",
+      to: "Bettor / trader",
+      targetTitle: "Market page",
+      note: "The creator shares the live URL; traders now price the public market."
+    },
+    {
+      action: "Open fixed-price offers",
+      from: "Bettor / trader",
+      to: "Same bettor",
+      targetTitle: "Current odds",
+      note: "The trader moves from live odds to a named posted price."
+    },
+    {
+      action: "Claim wallet assets",
+      from: "Same bettor",
+      to: "Token holder",
+      targetTitle: "Result",
+      note: "The filled position is ready to become wallet-held claims."
+    },
+    {
+      action: "Open private wager room",
+      from: "Token holder",
+      to: "Room creator",
+      targetTitle: "Transfer path",
+      note: "The same market can now support an invite-only wager."
+    },
+    {
+      action: "Build a parlay",
+      from: "Room creator",
+      to: "Parlay bettor",
+      targetTitle: "Locked terms",
+      note: "The bettor switches from one wager to a combined bet slip."
+    },
+    {
+      action: "Post the result",
+      from: "Parlay bettor",
+      to: "Result poster",
+      targetTitle: "Cashout preview",
+      note: "After the event happens, someone posts a bonded answer."
+    },
+    {
+      action: "Challenge the result",
+      from: "Result poster",
+      to: "Watcher / challenger",
+      targetTitle: "Review window",
+      note: "A watcher who sees a wrong answer can open the dispute path."
+    },
+    {
+      action: "Go to jury draw",
+      from: "Watcher / challenger",
+      to: "Case participant",
+      targetTitle: "Product handoff",
+      note: "The disputed market is now tracked inside DemoThemis."
+    },
+    {
+      action: "Open juror workspace",
+      from: "Case participant",
+      to: "Drawn juror",
+      targetTitle: "Panel receipt",
+      note: "The case moves from public tracking to a verified juror's workspace."
+    },
+    {
+      action: "Publish verdict proof",
+      from: "Drawn juror",
+      to: "Court observer",
+      targetTitle: "Ballot box",
+      note: "Private votes are tallied; the public sees the aggregate proof."
+    },
+    {
+      action: "Review appeal price",
+      from: "Court observer",
+      to: "Losing side",
+      targetTitle: "Reward movement",
+      note: "The losing side decides whether a larger panel is worth paying for."
+    },
+    {
+      action: "Redeem final payout",
+      from: "Losing side",
+      to: "Winning holder",
+      targetTitle: "Appeal state",
+      note: "After appeals resolve, winning holders return to the market receipt."
+    },
+    {
+      action: "Start another market",
+      from: "Winning holder",
+      to: "Next market creator",
+      targetTitle: "Bootstrap loop",
+      note: "The final record strengthens the court; a new market can begin.",
+      restart: true
+    }
+  ];
+
   var STAGE_GROUPS = [
     { label: "Market setup", start: 0, end: 3 },
     { label: "Bet types", start: 4, end: 5 },
@@ -1412,6 +1542,7 @@
   var coachmarkFrame = 0;
   var coachmarkEl = null;
   var lastArtLayout = "";
+  var allowAutoRevealTarget = false;
 
   function money(n) {
     if (n >= 1000000) return "$" + (n / 1000000).toFixed(1) + "M";
@@ -1463,7 +1594,7 @@
     var activeTarget = null;
 
     function isSimTipTarget(target) {
-      return target && target.closest && target.closest(".sim-app-viewport [data-sim-tip]");
+      return target && target.closest && target.closest(".sim-live-preview [data-sim-tip]");
     }
 
     function position(target) {
@@ -3309,6 +3440,10 @@
     return APP_FLOWS[stage] || { steps: [] };
   }
 
+  function currentContinuation() {
+    return EVENT_CONTINUATIONS[stage] || null;
+  }
+
   function eventStepCount() {
     return (currentFlow().steps || []).length;
   }
@@ -3419,6 +3554,37 @@
 
   function blockIsCurrentTarget(block) {
     return targetMatches("block", block.title || blockTypeLabel(block.type));
+  }
+
+  function blockIsContinuationTarget(block) {
+    var continuation = currentContinuation();
+    if (!isEventComplete() || !continuation) return false;
+    var target = continuation.targetTitle || (lastTutorialStep() && lastTutorialStep().targetTitle);
+    return cleanTip(block.title || blockTypeLabel(block.type)) === cleanTip(target);
+  }
+
+  function runContinuationAction() {
+    var continuation = currentContinuation();
+    if (!continuation || !isEventComplete()) return false;
+    return continuation.restart ? restartRunFromContinuation() : goToNextEvent();
+  }
+
+  function makeLiveContinuationControl() {
+    var continuation = currentContinuation();
+    if (!isEventComplete() || !continuation) return null;
+    var row = makeEl("div", "live-action-row app-continuation-row");
+    var btn = makeEl("button", "sim-app-action app-continue-action");
+    btn.type = "button";
+    btn.setAttribute("aria-label", continuation.action + ". " + continuation.note);
+    btn.setAttribute("data-sim-tip", continuation.note + " Handoff: " + continuation.from + " to " + continuation.to + ".");
+    btn.appendChild(makeEl("span", "sim-app-action-label", continuation.action));
+    btn.addEventListener("click", function (event) {
+      event.preventDefault();
+      event.stopPropagation();
+      runContinuationAction();
+    });
+    row.appendChild(btn);
+    return row;
   }
 
   function makeLiveActionControl(block) {
@@ -3664,21 +3830,42 @@
     return guideEl;
   }
 
+  function renderEventContinuation() {
+    var continuation = currentContinuation();
+    if (!isEventComplete() || !continuation) return null;
+    var card = makeEl("div", "event-continuation");
+    var handoff = makeEl("div", "event-handoff");
+    handoff.appendChild(makeEl("span", "", continuation.from));
+    handoff.appendChild(makeEl("b", "", "to"));
+    handoff.appendChild(makeEl("span", "", continuation.to));
+    card.appendChild(handoff);
+    card.appendChild(makeEl("p", "", continuation.note));
+    var btn = makeEl("button", "event-continue-button", continuation.action);
+    btn.type = "button";
+    btn.setAttribute("aria-label", continuation.action + ". " + continuation.note);
+    btn.addEventListener("click", function () {
+      runContinuationAction();
+    });
+    card.appendChild(btn);
+    return card;
+  }
+
   function renderTutorialDock(item) {
     var flow = currentFlow();
     var steps = flow.steps || [];
     var step = currentTutorialStep();
     var last = lastTutorialStep();
+    var continuation = currentContinuation();
     var dock = makeEl("div", "tutorial-dock");
     var top = makeEl("div", "tutorial-top");
     var total = steps.length || 1;
     var current = Math.min(activeEventStep + 1, total);
     var targetKind = step && step.target === "primary" ? "Tap app button" : "Tap app control";
     top.appendChild(makeEl("span", "tutorial-step", isEventComplete() ? "Event complete" : "Step " + current + " of " + total));
-    top.appendChild(makeEl("span", "tutorial-state", isEventComplete() ? "Ready for next event" : targetKind));
+    top.appendChild(makeEl("span", "tutorial-state", isEventComplete() ? (continuation && continuation.restart ? "Run complete" : "Continue") : targetKind));
     dock.appendChild(top);
 
-    dock.appendChild(makeEl("div", "tutorial-cue", step ? targetInstruction() : "Use Next event when ready"));
+    dock.appendChild(makeEl("div", "tutorial-cue", step ? targetInstruction() : (continuation ? "Next: " + continuation.action : "Run complete")));
     dock.appendChild(makeEl("div", "tutorial-result", last && last.result ? last.result : "Follow the coachmark on the app control."));
 
     var dots = makeEl("div", "tutorial-dots");
@@ -3689,6 +3876,8 @@
       dots.appendChild(dot);
     });
     dock.appendChild(dots);
+    var continuationCard = renderEventContinuation();
+    if (continuationCard) dock.appendChild(continuationCard);
     return dock;
   }
 
@@ -3741,10 +3930,12 @@
     var type = block.type || "panel";
     var isHot = hasHot(block.hot);
     var isCurrentTarget = blockIsCurrentTarget(block);
+    var isContinuationTarget = blockIsContinuationTarget(block);
     var card = makeEl("div", "live-card " + blockClassName(type) + " " + (block.tone || ""));
     if (block.wide) card.classList.add("wide");
     if (isHot) card.classList.add("hot");
     if (isCurrentTarget) card.classList.add("awaiting-action");
+    if (isContinuationTarget) card.classList.add("is-continuation-target");
     var title = makeEl("div", "live-card-title");
     var titleMain = makeEl("span", "block-title-main");
     titleMain.appendChild(makeBlockIcon(type));
@@ -3752,6 +3943,7 @@
     title.appendChild(titleMain);
     title.appendChild(makeEl("span", "", blockTypeLabel(type)));
     if (isHot) title.appendChild(makeEl("span", "step-link-badge", currentActionLabel()));
+    if (isContinuationTarget) title.appendChild(makeEl("span", "step-link-badge", "Next"));
     card.appendChild(title);
 
     if (type === "fields") {
@@ -3929,6 +4121,10 @@
     }
     var actionControl = makeLiveActionControl(block);
     if (actionControl) card.appendChild(actionControl);
+    if (isContinuationTarget) {
+      var continuationControl = makeLiveContinuationControl();
+      if (continuationControl) card.appendChild(continuationControl);
+    }
     if (isHot) {
       var effect = currentActionEffect();
       if (effect) {
@@ -4075,7 +4271,17 @@
     var browserBar = makeEl("div", "sim-browser-bar");
     var dots = makeEl("div", "sim-window-dots");
     [1, 2, 3].forEach(function () { dots.appendChild(makeEl("span")); });
+    var browserBack = makeEl("button", "sim-browser-back");
+    browserBack.type = "button";
+    browserBack.disabled = activeEventStep === 0;
+    browserBack.setAttribute("aria-label", activeEventStep > 0 ? "Go back one action in this event" : "No previous action in this event yet");
+    browserBack.setAttribute("data-sim-tip", activeEventStep > 0 ? "Go back one action in this event to see the previous screen state." : "Take an action first, then this browser back button rewinds one step in the current event.");
+    browserBack.title = activeEventStep > 0 ? "Go back one action in this event" : "Take an action first";
+    browserBack.appendChild(makeEl("span", "sim-browser-back-icon"));
+    browserBack.appendChild(makeEl("span", "sim-browser-back-label", "Go back"));
+    browserBack.addEventListener("click", rewindCurrentEventStep);
     browserBar.appendChild(dots);
+    browserBar.appendChild(browserBack);
     browserBar.appendChild(makeEl("div", "sim-url", simulatedAppUrl(page)));
     browserBar.appendChild(makeEl("div", "sim-live-dot", "Live preview"));
     var appViewport = makeEl("div", "sim-app-viewport");
@@ -4265,6 +4471,8 @@
   }
 
   function revealGuidedTargetIfNeeded() {
+    if (!allowAutoRevealTarget) return;
+    allowAutoRevealTarget = false;
     requestAnimationFrame(function () {
       requestAnimationFrame(function () {
         var section = document.getElementById("system-run");
@@ -4279,6 +4487,10 @@
         focusSimulatorTarget(target);
       });
     });
+  }
+
+  function allowNextGuidedReveal() {
+    allowAutoRevealTarget = true;
   }
 
   function advanceEventStep() {
@@ -4303,6 +4515,34 @@
     renderStageArt(item, focus);
     renderControls();
     scrollToChangedAppArea();
+  }
+
+  function rewindCurrentEventStep() {
+    if (activeEventStep <= 0) return false;
+    activeEventStep -= 1;
+    activeAction = activeEventStep > 0 ? activeEventStep - 1 : -1;
+    allowNextGuidedReveal();
+    render();
+    return true;
+  }
+
+  function goToNextEvent() {
+    if (!isEventComplete() || stage >= STAGES.length - 1) return false;
+    stage += 1;
+    resetEventFlow(false);
+    openStageGroup = -1;
+    allowNextGuidedReveal();
+    render();
+    return true;
+  }
+
+  function restartRunFromContinuation() {
+    stage = 0;
+    resetEventFlow(false);
+    openStageGroup = -1;
+    allowNextGuidedReveal();
+    render();
+    return true;
   }
 
   function stageGroupIndexForStage(stageIndex) {
@@ -4370,6 +4610,7 @@
             stage = nextStage;
             resetEventFlow(false);
             openStageGroup = -1;
+            allowNextGuidedReveal();
             render();
           };
         }(i));
@@ -4440,24 +4681,18 @@
   }
 
   next.addEventListener("click", function () {
-    if (isEventComplete() && stage < STAGES.length - 1) {
-      stage += 1;
-      resetEventFlow(false);
-      openStageGroup = -1;
-      render();
-    }
+    goToNextEvent();
   });
   back.addEventListener("click", function () {
     if (activeEventStep > 0) {
-      activeEventStep -= 1;
-      activeAction = activeEventStep > 0 ? activeEventStep - 1 : -1;
-      render();
+      rewindCurrentEventStep();
       return;
     }
     if (stage > 0) {
       stage -= 1;
       resetEventFlow(true);
       openStageGroup = -1;
+      allowNextGuidedReveal();
       render();
     }
   });
@@ -4475,12 +4710,11 @@
     queueCoachmarkPosition();
   });
   window.addEventListener("load", function () {
-    revealGuidedTargetIfNeeded();
-    window.setTimeout(revealGuidedTargetIfNeeded, 520);
+    queueCoachmarkPosition();
   });
   window.addEventListener("hashchange", function () {
-    revealGuidedTargetIfNeeded();
-    window.setTimeout(revealGuidedTargetIfNeeded, 360);
+    allowAutoRevealTarget = false;
+    queueCoachmarkPosition();
   });
   if (window.visualViewport) {
     window.visualViewport.addEventListener("resize", function () {
