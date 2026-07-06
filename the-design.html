@@ -10,6 +10,8 @@
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@500;700&family=Newsreader:opsz,wght@6..72,200..700&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="assets/styles.css">
 <style>
+  button, [role="button"] { cursor: pointer; }
+  button[disabled], [role="button"][disabled] { cursor: default; }
   body { --maxw: 68rem; --half-maxw: 34rem; }
   .run-hero { max-width: 66rem; }
   .run-hero .dek { max-width: 47rem; }
@@ -227,9 +229,9 @@
   .guided-target:hover,
   .guided-target:focus-visible { transform: translateY(-2px); outline-color: color-mix(in srgb, var(--good) 78%, transparent); box-shadow: 0 0 0 8px color-mix(in srgb, var(--good-soft) 92%, transparent), 0 22px 42px rgba(11, 153, 107, .23) !important; }
   .app-nav-action.guided-target { background: var(--good); border-color: var(--good); color: #fff; }
-  .target-callout { position: fixed; left: var(--coach-left, 1rem); top: var(--coach-top, 1rem); bottom: auto; z-index: 9998; display: grid; gap: .15rem; width: var(--coach-width, min(18rem, calc(100vw - 2rem))); min-width: 0; max-width: calc(100vw - 1rem); max-height: var(--coach-max-height, calc(100vh - 1rem)); overflow: visible; border: 1px solid color-mix(in srgb, var(--good) 42%, var(--line)); border-radius: 14px; background: color-mix(in srgb, var(--ink) 94%, #111); color: #fff; padding: .58rem .68rem; font-family: var(--sans); font-size: .72rem; line-height: 1.24; font-weight: 800; text-align: left; white-space: normal; box-shadow: 0 18px 36px rgba(31, 36, 48, .24); pointer-events: none; transform: none; animation: coachmark-pop .32s ease-out both; transition: opacity 0.15s ease; }
+  .target-callout { position: fixed; left: var(--coach-left, 1rem); top: var(--coach-top, 1rem); bottom: auto; z-index: 9998; display: grid; gap: .15rem; width: var(--coach-width, min(18rem, calc(100vw - 2rem))); min-width: 0; max-width: calc(100vw - 1rem); max-height: var(--coach-max-height, calc(100vh - 1rem)); overflow: visible; border: 1px solid color-mix(in srgb, var(--good) 42%, var(--line)); border-radius: 14px; background: color-mix(in srgb, var(--ink) 94%, #111); color: #fff; padding: .58rem .68rem; font-family: var(--sans); font-size: .72rem; line-height: 1.24; font-weight: 800; text-align: left; white-space: normal; box-shadow: 0 18px 36px rgba(31, 36, 48, .24); pointer-events: none; transform: none; animation: coachmark-pop .32s ease-out; transition: opacity 0.15s ease; }
   body.is-scrolling .target-callout,
-  body.is-touching .target-callout { opacity: 0; pointer-events: none; }
+  body.is-touching .target-callout { opacity: 0; pointer-events: none; animation: none; }
   .target-callout b { display: flex; align-items: center; gap: .34rem; color: #fff; font-size: .68rem; line-height: 1.12; font-weight: 950; letter-spacing: .06em; text-transform: uppercase; }
   .target-callout b::before { content: ""; width: .46rem; height: .46rem; border-radius: 50%; background: var(--good); box-shadow: 0 0 0 4px color-mix(in srgb, var(--good) 22%, transparent); flex: 0 0 auto; }
   .target-callout span { color: rgba(255, 255, 255, .78); font-size: .72rem; line-height: 1.28; font-weight: 750; }
@@ -253,7 +255,7 @@
   .event-continue-button { position: relative; display: inline-flex; align-items: center; justify-content: space-between; gap: .52rem; width: 100%; min-width: 0; min-height: 2.55rem; border: 2px solid color-mix(in srgb, var(--good) 70%, var(--line)); border-radius: 12px; background: linear-gradient(180deg, var(--good), color-mix(in srgb, var(--good) 78%, #043f31)); color: #fff; padding: .58rem 2.02rem .58rem .72rem; font-family: var(--sans); font-size: .78rem; line-height: 1.12; font-weight: 950; text-align: left; cursor: pointer; box-shadow: 0 14px 26px rgba(11, 153, 107, .24), 0 0 0 4px color-mix(in srgb, var(--good-soft) 76%, transparent); transition: transform .14s ease, box-shadow .14s ease, background .14s ease; }
   .event-continue-button::after { content: ""; position: absolute; right: .78rem; top: 50%; width: .52rem; height: .52rem; border-top: 3px solid currentColor; border-right: 3px solid currentColor; transform: translateY(-50%) rotate(45deg); }
   .event-continue-button:hover,
-  .event-continue-button:focus-visible { transform: translateY(-2px); background: linear-gradient(180deg, color-mix(in srgb, var(--good) 92%, #fff), var(--good)); box-shadow: 0 18px 34px rgba(11, 153, 107, .28), 0 0 0 5px var(--good-soft); outline: 0; }
+  .event-continue-button:focus-visible { transform: translateY(-2px); background: linear-gradient(180deg, color-mix(in srgb, var(--good) 92%, #fff), var(--good)); box-shadow: 0 18px 34px rgba(11, 153, 107, .28), 0 0 0 5px var(--good-soft); outline: 0; cursor: pointer; }
   .sim-result-toast { position: absolute; left: 50%; bottom: 1.5rem; transform: translate3d(-50%, 0, 0); z-index: 100; display: flex; align-items: center; gap: 0.8rem; width: 88%; max-width: 320px; border: 2px solid #10b981; border-radius: 16px; background: linear-gradient(135deg, #111a16 0%, #0b100e 100%); color: #e2e8f0; padding: 0.75rem 1rem; box-shadow: 0 0 25px rgba(16, 185, 129, 0.4), 0 15px 30px rgba(0, 0, 0, 0.5); animation: toast-rise 3.2s cubic-bezier(0.175, 0.885, 0.32, 1.275) both; pointer-events: none; }
   .sim-result-toast::before { content: "✔"; display: flex; align-items: center; justify-content: center; width: 2.2rem; height: 2.2rem; background: linear-gradient(135deg, #34d399 0%, #059669 100%); border-radius: 50%; color: #fff; font-size: 1.1rem; font-weight: 900; flex: 0 0 auto; box-shadow: 0 4px 10px rgba(16, 185, 129, 0.4), inset 0 1px 2px rgba(255, 255, 255, 0.4); text-shadow: 0 1px 2px rgba(0, 0, 0, 0.2); }
   .sim-toast-content { display: flex; flex-direction: column; align-items: flex-start; text-align: left; min-width: 0; }
