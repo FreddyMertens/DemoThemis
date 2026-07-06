@@ -4451,42 +4451,63 @@
     var previewRect = preview.getBoundingClientRect();
     var currentScrollY = window.pageYOffset || document.documentElement.scrollTop;
 
-    // Check if the entire app view fits fully in viewport currently
-    var isFullyInFrame = previewRect.top >= safeTop && previewRect.bottom <= window.innerHeight - 10;
-    if (isFullyInFrame) {
-      queueCoachmarkPosition();
-      return;
-    }
-
-    var previewAbsoluteTop = currentScrollY + previewRect.top;
-    var previewAbsoluteBottom = previewAbsoluteTop + previewRect.height;
+    var isTargetInsidePreview = preview.contains(target);
     var targetRect = target.getBoundingClientRect();
     var desiredScrollTop = currentScrollY;
 
-    if (previewRect.height <= viewportHeight) {
-      // Center the preview since it fits entirely in viewport
-      desiredScrollTop = previewAbsoluteTop - safeTop - (viewportHeight - previewRect.height) / 2;
-    } else {
-      // Preview is taller than viewport. We scroll target into view, keeping preview as visible as possible.
-      var targetAbsoluteTop = currentScrollY + targetRect.top;
-      var targetAbsoluteBottom = targetAbsoluteTop + targetRect.height;
+    if (isTargetInsidePreview) {
+      // Check if the entire app view fits fully in viewport currently
+      var isFullyInFrame = previewRect.top >= safeTop && previewRect.bottom <= window.innerHeight - 10;
+      if (isFullyInFrame) {
+        queueCoachmarkPosition();
+        return;
+      }
 
-      // Target needs to be within [safeTop + 20, window.innerHeight - 20]
-      var targetVisible = targetRect.top >= safeTop + 20 && targetRect.bottom <= window.innerHeight - 20;
-      if (!targetVisible) {
-        if (targetRect.top < safeTop + 20) {
-          // Target is above: scroll down slightly to show it
-          desiredScrollTop = targetAbsoluteTop - safeTop - 40;
-        } else {
-          // Target is below: scroll up slightly to show it
-          desiredScrollTop = targetAbsoluteBottom - window.innerHeight + 40;
+      var previewAbsoluteTop = currentScrollY + previewRect.top;
+      var previewAbsoluteBottom = previewAbsoluteTop + previewRect.height;
+
+      if (previewRect.height <= viewportHeight) {
+        // Center the preview since it fits entirely in viewport
+        desiredScrollTop = previewAbsoluteTop - safeTop - (viewportHeight - previewRect.height) / 2;
+      } else {
+        // Preview is taller than viewport. We scroll target into view, keeping preview as visible as possible.
+        var targetAbsoluteTop = currentScrollY + targetRect.top;
+        var targetAbsoluteBottom = targetAbsoluteTop + targetRect.height;
+
+        // Target needs to be within [safeTop + 20, window.innerHeight - 20]
+        var targetVisible = targetRect.top >= safeTop + 20 && targetRect.bottom <= window.innerHeight - 20;
+        if (!targetVisible) {
+          if (targetRect.top < safeTop + 20) {
+            // Target is above: scroll down slightly to show it
+            desiredScrollTop = targetAbsoluteTop - safeTop - 40;
+          } else {
+            // Target is below: scroll up slightly to show it
+            desiredScrollTop = targetAbsoluteBottom - window.innerHeight + 40;
+          }
         }
+        
+        // Clamp the scroll position to keep the preview on screen as much as possible
+        var minScroll = previewAbsoluteTop - safeTop - 10;
+        var maxScroll = previewAbsoluteBottom - window.innerHeight + 10;
+        desiredScrollTop = Math.max(minScroll, Math.min(maxScroll, desiredScrollTop));
+      }
+    } else {
+      // Target is outside the preview (e.g. .event-continue-button)
+      var targetVisible = targetRect.top >= safeTop + 15 && targetRect.bottom <= window.innerHeight - 15;
+      if (targetVisible) {
+        queueCoachmarkPosition();
+        return;
       }
       
-      // Clamp the scroll position to keep the preview on screen as much as possible
-      var minScroll = previewAbsoluteTop - safeTop - 10;
-      var maxScroll = previewAbsoluteBottom - window.innerHeight + 10;
-      desiredScrollTop = Math.max(minScroll, Math.min(maxScroll, desiredScrollTop));
+      var targetAbsoluteTop = currentScrollY + targetRect.top;
+      var targetAbsoluteBottom = targetAbsoluteTop + targetRect.height;
+      if (targetRect.top < safeTop + 15) {
+        // Target is above: scroll up to show it near the top
+        desiredScrollTop = targetAbsoluteTop - safeTop - 30;
+      } else {
+        // Target is below: scroll down to show it near the bottom
+        desiredScrollTop = targetAbsoluteBottom - window.innerHeight + 30;
+      }
     }
 
     // Scroll smoothly or auto
@@ -4527,7 +4548,13 @@
       requestAnimationFrame(function () {
         var root = document.getElementById("productDemo");
         if (!root) return;
-        var target = root.querySelector(".sim-live-preview .guided-target, .sim-result-toast, .sim-live-preview .hot, .sim-live-preview .is-hot") || root.querySelector(".sim-live-preview");
+        var target;
+        if (isEventComplete()) {
+          target = root.querySelector(".event-continue-button");
+        }
+        if (!target) {
+          target = root.querySelector(".sim-live-preview .guided-target, .sim-result-toast, .sim-live-preview .hot, .sim-live-preview .is-hot") || root.querySelector(".sim-live-preview");
+        }
         focusSimulatorTarget(target);
       });
     });
