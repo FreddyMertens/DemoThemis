@@ -173,8 +173,10 @@ function checkBuiltHtml(failures) {
   assert(/Run through the whole system/i.test(runThrough), "run-through chapter missing new title", failures);
   assert(/id=["']stageRail["']/i.test(runThrough), "run-through chapter missing stage rail", failures);
   assert(/id=["']focusScene["']/i.test(runThrough), "run-through missing focused one-step scene", failures);
-  assert(/id=["']stepSvg["']/i.test(runThrough), "run-through missing illustrated step SVG", failures);
-  assert(/id=["']playResult["']/i.test(runThrough), "run-through missing interactive step feedback", failures);
+  assert(/id=["']productDemo["']/i.test(runThrough), "run-through missing product mock screen", failures);
+  assert(/missionActions/i.test(runThrough), "run-through missing mock-app action buttons", failures);
+  assert(/PRODUCT_SCREENS/i.test(runThrough), "run-through missing staged product screens", failures);
+  assert(/action-effect/i.test(runThrough), "run-through missing inline interactive step feedback", failures);
   assert(/LUCIDE_ICONS/i.test(runThrough), "run-through missing vendored Lucide icon subset", failures);
   assert(!/id=["']runLanes["']/i.test(runThrough), "run-through should not expose the old multi-lane board", failures);
   assert(/data-feature=["']instant["']/i.test(runThrough), "run-through missing instant-market feature unlock", failures);
