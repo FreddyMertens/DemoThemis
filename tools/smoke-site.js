@@ -188,7 +188,6 @@ function checkBuiltHtml(failures) {
   assert(/data-component=["']draw["']/i.test(runThrough), "run-through missing jury-draw component unlock", failures);
   assert(/data-component=["']ballot["']/i.test(runThrough), "run-through missing private-ballot component unlock", failures);
   assert(/data-component=["']appeal["']/i.test(runThrough), "run-through missing appeal-ladder component unlock", failures);
-  assert(/data-loop=["']trust["']/i.test(runThrough), "run-through missing bootstrap-loop trust node", failures);
 }
 
 function checkRedirects(failures) {

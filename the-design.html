@@ -4,7 +4,7 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Run through the whole system: one market from dime to appealed verdict</title>
-<meta name="description" content="A playable run-through of PredictionMoMo and DemoThemis: open a market with a dime, grow it into self-custody tokens, trade through dispute, route it through arbitration, climb the appeal ladder, and watch the bootstrap loop feed the court.">
+<meta name="description" content="A playable run-through of PredictionMoMo and DemoThemis: open a market with a dime, grow it into self-custody tokens, trade through dispute, route it through arbitration, and climb the appeal ladder to finality.">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@500;700&family=Newsreader:opsz,wght@6..72,200..700&display=swap" rel="stylesheet">
@@ -845,17 +845,7 @@
   .unlock.on { opacity: 1; background: var(--good-soft); border-color: color-mix(in srgb, var(--good) 35%, var(--line)); }
   .unlock.on .tag { color: var(--good); }
 
-  .loop-strip { display: grid; grid-template-columns: repeat(6, minmax(0, 1fr)); gap: .5rem; margin-top: .8rem; }
-  .loop-node { position: relative; border: 1px solid var(--line); border-radius: 12px; background: var(--surface); padding: .72rem; font-family: var(--sans); min-height: 5.4rem; overflow: hidden; }
-  .loop-node::before { content: attr(data-step); position: absolute; right: .55rem; top: .35rem; font-family: var(--mono); font-size: .66rem; color: color-mix(in srgb, var(--accent) 38%, transparent); font-weight: 800; }
-  .loop-node b { display: block; font-size: .82rem; line-height: 1.25; color: var(--ink); margin-right: 1.8rem; }
-  .loop-node span { display: block; color: var(--muted); font-size: .72rem; line-height: 1.35; margin-top: .25rem; }
-  .loop-node.active { background: var(--accent-soft); border-color: color-mix(in srgb, var(--accent) 38%, var(--line)); }
 
-  .summary-grid { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 1rem; }
-  .summary-box { border: 1px solid var(--line); border-radius: 14px; background: var(--surface); box-shadow: var(--shadow); padding: 1rem; font-family: var(--sans); }
-  .summary-box h3 { margin: 0 0 .4rem; }
-  .summary-box p { margin: 0; color: var(--muted); font-size: .92rem; line-height: 1.5; }
 
   #system-run, #system-run .run-game, #system-run .simulator-island, #system-run .product-demo { min-width: 0; }
 
@@ -957,14 +947,13 @@
   @media (max-width: 980px) {
     body { --maxw: 54rem; --half-maxw: 27rem; }
     .unlock-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); }
-    .loop-strip { grid-template-columns: repeat(2, minmax(0, 1fr)); }
     .stage-rail { grid-template-columns: repeat(3, minmax(0, 1fr)); }
   }
   @media (max-width: 620px) {
     .to-top { display: none; }
     .content.wrap { padding-left: .35rem; padding-right: .35rem; }
     #system-run { padding-bottom: 18rem; }
-    .unlock-grid, .loop-strip, .summary-grid { grid-template-columns: 1fr; }
+    .unlock-grid { grid-template-columns: 1fr; }
     .run-control-panel { padding: .54rem; border-radius: 12px; gap: .54rem; }
     .simulator-island { padding: .35rem; border-radius: 12px; gap: .58rem; }
     .run-controls { grid-template-columns: auto auto; justify-content: space-between; }
@@ -1086,7 +1075,7 @@
 <header class="hero run-hero reveal">
   <p class="kicker">Run-through</p>
   <h1>Play one market from a dime to an appealed verdict.</h1>
-  <p class="dek">A complete system simulation: create the market, grow the pot, unlock self-custody claims, trade through dispute, route the case through DemoThemis, climb the appeal ladder, and watch the bootstrap loop feed the court.</p>
+  <p class="dek">A complete system simulation: create the market, grow the pot, unlock self-custody claims, trade through dispute, route the case through DemoThemis, and climb the appeal ladder to finality.</p>
   <div class="meta">
     <span class="pill">Playable chapter</span>
     <span>Chapter 5 of 6</span>
@@ -1162,48 +1151,6 @@
     </div>
   </section>
 
-  <section class="reveal" id="bootstrap-loop">
-    <p class="sec-label">Bootstrap loop</p>
-    <h2>Watch the market feed the court</h2>
-    <p>The run-through is one case, but the design only matters because the same loop repeats. Markets create work and fees. Fees pay jurors. Settled outcomes create resolved cases for aptitude tests. Better-scored jurors make the court safer. A safer court makes the next market easier to trust.</p>
-    <figure class="diagram reveal">
-      <div class="diagram-inner">
-        <div class="loop-strip" id="loopStrip">
-          <div class="loop-node" data-loop="cases" data-step="01"><b>More markets</b><span>Questions appear because opening one costs whatever the first bet is.</span></div>
-          <div class="loop-node" data-loop="fees" data-step="02"><b>Fee flow</b><span>The 2% settlement fee routes first to juror pay, rewards, and operations.</span></div>
-          <div class="loop-node" data-loop="jurors" data-step="03"><b>Paid jurors</b><span>Use funds the humans who will judge the contested few.</span></div>
-          <div class="loop-node" data-loop="keys" data-step="04"><b>Aptitude tests</b><span>Clean resolved markets become juror test cases.</span></div>
-          <div class="loop-node" data-loop="rep" data-step="05"><b>Sharper bench</b><span>Reputation drives pay, draw rate, and appeal confidence.</span></div>
-          <div class="loop-node" data-loop="trust" data-step="06"><b>More demand</b><span>Visible proof makes the next integrator less afraid to route escrow.</span></div>
-        </div>
-      </div>
-      <figcaption>PredictionMoMo is not just the first customer. <b>It manufactures the cases, fees, resolved cases for aptitude tests, and proof the court needs to exist.</b></figcaption>
-    </figure>
-  </section>
-
-  <section class="reveal" id="what-happened">
-    <p class="sec-label">Summary</p>
-    <h2>The whole system in one chain</h2>
-    <div class="summary-grid">
-      <div class="summary-box">
-        <h3>The market side</h3>
-        <p>A first bet creates a pot; fixed odds and private rooms make early liquidity usable; robust markets tokenize into self-custody claims; those claims keep trading through resolution and can be composed into peer-to-peer parlays.</p>
-      </div>
-      <div class="summary-box">
-        <h3>The court side</h3>
-        <p>A watched assertion settles most markets quietly. The contested few go through protocol escrow, random verified juries, private ballots, live reserves, verdict proofs, appeal floors, finality, and never-ending collusion reports.</p>
-      </div>
-      <div class="summary-box">
-        <h3>The loop</h3>
-        <p>Every settlement pays the people who make the next settlement possible. Every clean answer becomes training data. Every hard case adds public proof that the arbitration layer can survive pressure.</p>
-      </div>
-      <div class="summary-box">
-        <h3>The boundary</h3>
-        <p>The simulation is not a security proof. It is the product story: what happens, in what order, and which part of the system takes over when the happy path stops being happy.</p>
-      </div>
-    </div>
-  </section>
-
   <footer class="endnote reveal">
     <nav id="series" aria-label="Where you are in the series"></nav>
     <div class="sitemap sitemap-flat">
@@ -1216,7 +1163,7 @@
       <a href="glossary.html">Glossary</a>
       <a href="index.html">Home &middot; the map</a>
     </div>
-    <p class="signoff">One market, every mechanism, the loop made visible.</p>
+    <p class="signoff">One market, every mechanism, the system made visible.</p>
   </footer>
 
 </main>
@@ -5231,12 +5178,6 @@
     renderStageArt(item, focus);
   }
 
-  function renderLoop(item) {
-    Array.prototype.forEach.call(document.querySelectorAll("[data-loop]"), function (el) {
-      el.classList.toggle("active", item.loop.indexOf(el.getAttribute("data-loop")) !== -1);
-    });
-  }
-
   function eventSimulationCopy(item, focus) {
     var summary = focus && focus.body ? focus.body : item.text;
     var firstSentence = summary.split(". ")[0].replace(/\.$/, "");
@@ -5260,7 +5201,6 @@
     var focus = FOCUS_STEPS[stage] || {};
     renderRail();
     renderFocus(item);
-    renderLoop(item);
     setTags("featureGrid", "data-feature", item.features);
     setTags("componentGrid", "data-component", item.components);
     renderControls();
