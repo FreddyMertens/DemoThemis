@@ -4844,8 +4844,8 @@
     var isHovered = document.querySelector(".guided-target:hover, .event-continue-button:hover, .app-action-bar button:hover") !== null;
 
     if (isHovered) {
-      clearTimeout(mouseMoveTimeout);
-      clearTimeout(mouseStopTimeout);
+      if (mouseMoveTimeout) clearTimeout(mouseMoveTimeout);
+      if (mouseStopTimeout) clearTimeout(mouseStopTimeout);
       isMouseMoving = false;
       document.body.classList.remove("is-mouse-moving");
       return;
@@ -4853,19 +4853,21 @@
 
     if (!isMouseMoving) {
       isMouseMoving = true;
-      if (mouseMoveTimeout) clearTimeout(mouseMoveTimeout);
-      mouseMoveTimeout = setTimeout(function () {
-        if (isMouseMoving) {
-          document.body.classList.add("is-mouse-moving");
-        }
-      }, 1000);
+      document.body.classList.add("is-mouse-moving");
+    }
+
+    if (mouseMoveTimeout) {
+      clearTimeout(mouseMoveTimeout);
+      mouseMoveTimeout = null;
     }
 
     if (mouseStopTimeout) clearTimeout(mouseStopTimeout);
     mouseStopTimeout = setTimeout(function () {
-      isMouseMoving = false;
       if (mouseMoveTimeout) clearTimeout(mouseMoveTimeout);
-      document.body.classList.remove("is-mouse-moving");
+      mouseMoveTimeout = setTimeout(function () {
+        isMouseMoving = false;
+        document.body.classList.remove("is-mouse-moving");
+      }, 1000);
     }, 150);
   }, { passive: true });
 
