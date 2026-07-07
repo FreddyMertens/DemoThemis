@@ -4588,10 +4588,11 @@
     [1, 2, 3].forEach(function () { dots.appendChild(makeEl("span")); });
     var browserBack = makeEl("button", "sim-browser-back");
     browserBack.type = "button";
-    browserBack.disabled = activeEventStep === 0;
-    browserBack.setAttribute("aria-label", activeEventStep > 0 ? "Go back one action in this event" : "No previous action in this event yet");
-    browserBack.setAttribute("data-sim-tip", activeEventStep > 0 ? "Go back one action in this event to see the previous screen state." : "Take an action first, then this browser back button rewinds one step in the current event.");
-    browserBack.title = activeEventStep > 0 ? "Go back one action in this event" : "Take an action first";
+    var canGoBack = activeEventStep > 0 || stage > 0;
+    browserBack.disabled = !canGoBack;
+    browserBack.setAttribute("aria-label", canGoBack ? "Go back one action" : "No previous action yet");
+    browserBack.setAttribute("data-sim-tip", canGoBack ? "Go back to the previous screen state." : "Take an action first to enable backward navigation.");
+    browserBack.title = canGoBack ? "Go back" : "No previous action yet";
     browserBack.appendChild(makeEl("span", "sim-browser-back-icon"));
     browserBack.appendChild(makeEl("span", "sim-browser-back-label", "Back"));
     browserBack.addEventListener("click", rewindCurrentEventStep);
@@ -5006,12 +5007,27 @@
   }
 
   function rewindCurrentEventStep() {
-    if (activeEventStep <= 0) return false;
-    activeEventStep -= 1;
-    activeAction = activeEventStep > 0 ? activeEventStep - 1 : -1;
-    allowNextGuidedReveal();
-    render();
-    return true;
+    if (activeEventStep > 0) {
+      activeEventStep -= 1;
+      activeAction = activeEventStep > 0 ? activeEventStep - 1 : -1;
+      allowNextGuidedReveal();
+      render();
+      scrollToChangedAppArea();
+      return true;
+    } else if (stage > 0) {
+      stage -= 1;
+      var prevFlow = APP_FLOWS[stage] || { steps: [] };
+      var N = (prevFlow.steps || []).length;
+      activeEventStep = N;
+      activeAction = N > 0 ? N - 1 : -1;
+      openStageGroup = -1;
+      setEventNavigatorOpen(false);
+      allowNextGuidedReveal();
+      render();
+      scrollToChangedAppArea();
+      return true;
+    }
+    return false;
   }
 
   function goToNextEvent() {
