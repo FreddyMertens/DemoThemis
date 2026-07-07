@@ -4841,10 +4841,9 @@
   window.addEventListener("mousemove", function () {
     if (!window.matchMedia("(hover: hover)").matches) return;
 
-    var root = document.getElementById("productDemo");
-    var target = root && (root.querySelector(".sim-live-preview .guided-target") || root.querySelector(".event-continue-button"));
+    var isHovered = document.querySelector(".guided-target:hover, .event-continue-button:hover, .app-action-bar button:hover") !== null;
 
-    if (target && target.matches(":hover")) {
+    if (isHovered) {
       clearTimeout(mouseMoveTimeout);
       clearTimeout(mouseStopTimeout);
       isMouseMoving = false;
