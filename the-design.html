@@ -258,7 +258,8 @@
   .target-callout { position: fixed; left: var(--coach-left, 1rem); top: var(--coach-top, 1rem); bottom: auto; z-index: 9998; display: grid; gap: .15rem; width: var(--coach-width, min(18rem, calc(100vw - 2rem))); min-width: 0; max-width: calc(100vw - 1rem); max-height: var(--coach-max-height, calc(100vh - 1rem)); overflow: visible; border: 1px solid color-mix(in srgb, var(--good) 42%, var(--line)); border-radius: 14px; background: color-mix(in srgb, var(--ink) 94%, #111); color: #fff; padding: .58rem .68rem; font-family: var(--sans); font-size: .72rem; line-height: 1.24; font-weight: 800; text-align: left; white-space: normal; box-shadow: 0 18px 36px rgba(31, 36, 48, .24); pointer-events: none; transform: none; animation: coachmark-pop .32s ease-out both; transition: opacity 0.15s ease, visibility 0.15s ease; }
   body.is-scrolling .target-callout,
   body.is-touching .target-callout,
-  body.is-mouse-moving .target-callout { opacity: 0; visibility: hidden; pointer-events: none; }
+  body.is-mouse-moving .target-callout,
+  body.is-coachmark-buffering .target-callout { opacity: 0; visibility: hidden; pointer-events: none; }
   .target-callout b { display: flex; align-items: center; gap: .34rem; color: #fff; font-size: .68rem; line-height: 1.12; font-weight: 950; letter-spacing: .06em; text-transform: uppercase; }
   .target-callout b::before { content: ""; width: .46rem; height: .46rem; border-radius: 50%; background: var(--good); box-shadow: 0 0 0 4px color-mix(in srgb, var(--good) 22%, transparent); flex: 0 0 auto; }
   .target-callout span { color: rgba(255, 255, 255, .78); font-size: .72rem; line-height: 1.28; font-weight: 750; }
@@ -1847,8 +1848,12 @@
   var artResizeFrame = 0;
   var coachmarkFrame = 0;
   var coachmarkEl = null;
+  var coachmarkResumeTimeout = null;
+  var coachmarkHiddenUntil = 0;
+  var coachmarkTargetKey = "";
   var lastArtLayout = "";
   var allowAutoRevealTarget = false;
+  var COACHMARK_BUFFER_MS = 500;
 
   function money(n) {
     if (n >= 1000000) return "$" + (n / 1000000).toFixed(1) + "M";
@@ -3839,6 +3844,47 @@
       coachmarkEl.parentNode.removeChild(coachmarkEl);
     }
     coachmarkEl = null;
+    coachmarkTargetKey = "";
+  }
+
+  function scheduleCoachmarkResume() {
+    if (coachmarkResumeTimeout) clearTimeout(coachmarkResumeTimeout);
+    coachmarkResumeTimeout = setTimeout(function () {
+      coachmarkResumeTimeout = null;
+      if (Date.now() < coachmarkHiddenUntil) {
+        scheduleCoachmarkResume();
+        return;
+      }
+      document.body.classList.remove("is-coachmark-buffering");
+      queueCoachmarkPosition();
+    }, Math.max(0, coachmarkHiddenUntil - Date.now()));
+  }
+
+  function bufferCoachmark(ms) {
+    coachmarkHiddenUntil = Math.max(coachmarkHiddenUntil, Date.now() + (ms || COACHMARK_BUFFER_MS));
+    document.body.classList.add("is-coachmark-buffering");
+    scheduleCoachmarkResume();
+  }
+
+  function coachmarkIsBuffered() {
+    if (Date.now() >= coachmarkHiddenUntil) {
+      document.body.classList.remove("is-coachmark-buffering");
+      return false;
+    }
+    scheduleCoachmarkResume();
+    return true;
+  }
+
+  function coachmarkKeyForTarget(target) {
+    var step = currentTutorialStep();
+    return [
+      stage,
+      activeEventStep,
+      activeAction,
+      step ? step.target : "",
+      step ? stepActionLabel(step) : "",
+      target ? target.getAttribute("data-action-label") || "" : ""
+    ].join("|");
   }
 
   function applyGuidedTarget(el, area, name) {
@@ -4696,9 +4742,17 @@
     var root = document.getElementById("productDemo");
     var target = root && root.querySelector(".sim-live-preview .guided-target");
     if (!target) {
+      if (coachmarkEl) bufferCoachmark(COACHMARK_BUFFER_MS);
       clearCoachmark();
       return;
     }
+    var targetKey = coachmarkKeyForTarget(target);
+    if (coachmarkTargetKey && coachmarkTargetKey !== targetKey) {
+      coachmarkTargetKey = "";
+      bufferCoachmark(COACHMARK_BUFFER_MS);
+      return;
+    }
+    if (coachmarkIsBuffered()) return;
     var coach = ensureCoachmark();
     var targetRect = target.getBoundingClientRect();
     var safeTop = stickySafeTop();
@@ -4745,6 +4799,7 @@
     coach.dataset.placement = placeBelow ? "below" : "above";
     coach.style.setProperty("--coach-top", top + "px");
     coach.style.setProperty("--coach-arrow-left", clampNumber(centerX - left, 18, width - 18) + "px");
+    coachmarkTargetKey = targetKey;
   }
 
   function queueCoachmarkPosition() {
@@ -5270,20 +5325,23 @@
     queueCoachmarkPosition();
 
     document.body.classList.add("is-scrolling");
+    bufferCoachmark(COACHMARK_BUFFER_MS);
     if (scrollClassTimeout) clearTimeout(scrollClassTimeout);
     scrollClassTimeout = setTimeout(function () {
       document.body.classList.remove("is-scrolling");
-    }, 150);
+    }, COACHMARK_BUFFER_MS);
   }, { passive: true });
 
   window.addEventListener("touchstart", function () {
     document.body.classList.add("is-touching");
+    bufferCoachmark(COACHMARK_BUFFER_MS);
   }, { capture: true, passive: true });
 
   var touchEndHandler = function () {
+    bufferCoachmark(COACHMARK_BUFFER_MS);
     setTimeout(function () {
       document.body.classList.remove("is-touching");
-    }, 80);
+    }, COACHMARK_BUFFER_MS);
   };
   window.addEventListener("touchend", touchEndHandler, { capture: true, passive: true });
   window.addEventListener("touchcancel", touchEndHandler, { capture: true, passive: true });
@@ -5344,10 +5402,11 @@
     window.visualViewport.addEventListener("scroll", function () {
       queueCoachmarkPosition();
       document.body.classList.add("is-scrolling");
+      bufferCoachmark(COACHMARK_BUFFER_MS);
       if (scrollClassTimeout) clearTimeout(scrollClassTimeout);
       scrollClassTimeout = setTimeout(function () {
         document.body.classList.remove("is-scrolling");
-      }, 150);
+      }, COACHMARK_BUFFER_MS);
     }, { passive: true });
   }
   if ("ResizeObserver" in window) {
