@@ -231,7 +231,8 @@
   .app-nav-action.guided-target { background: var(--good); border-color: var(--good); color: #fff; }
   .target-callout { position: fixed; left: var(--coach-left, 1rem); top: var(--coach-top, 1rem); bottom: auto; z-index: 9998; display: grid; gap: .15rem; width: var(--coach-width, min(18rem, calc(100vw - 2rem))); min-width: 0; max-width: calc(100vw - 1rem); max-height: var(--coach-max-height, calc(100vh - 1rem)); overflow: visible; border: 1px solid color-mix(in srgb, var(--good) 42%, var(--line)); border-radius: 14px; background: color-mix(in srgb, var(--ink) 94%, #111); color: #fff; padding: .58rem .68rem; font-family: var(--sans); font-size: .72rem; line-height: 1.24; font-weight: 800; text-align: left; white-space: normal; box-shadow: 0 18px 36px rgba(31, 36, 48, .24); pointer-events: none; transform: none; animation: coachmark-pop .32s ease-out both; transition: opacity 0.15s ease, visibility 0.15s ease; }
   body.is-scrolling .target-callout,
-  body.is-touching .target-callout { opacity: 0; visibility: hidden; pointer-events: none; }
+  body.is-touching .target-callout,
+  body.is-mouse-moving .target-callout { opacity: 0; visibility: hidden; pointer-events: none; }
   .target-callout b { display: flex; align-items: center; gap: .34rem; color: #fff; font-size: .68rem; line-height: 1.12; font-weight: 950; letter-spacing: .06em; text-transform: uppercase; }
   .target-callout b::before { content: ""; width: .46rem; height: .46rem; border-radius: 50%; background: var(--good); box-shadow: 0 0 0 4px color-mix(in srgb, var(--good) 22%, transparent); flex: 0 0 auto; }
   .target-callout span { color: rgba(255, 255, 255, .78); font-size: .72rem; line-height: 1.28; font-weight: 750; }
@@ -4832,6 +4833,42 @@
   };
   window.addEventListener("touchend", touchEndHandler, { capture: true, passive: true });
   window.addEventListener("touchcancel", touchEndHandler, { capture: true, passive: true });
+
+  var mouseMoveTimeout = null;
+  var mouseStopTimeout = null;
+  var isMouseMoving = false;
+
+  window.addEventListener("mousemove", function () {
+    if (!window.matchMedia("(hover: hover)").matches) return;
+
+    var root = document.getElementById("productDemo");
+    var target = root && (root.querySelector(".sim-live-preview .guided-target") || root.querySelector(".event-continue-button"));
+
+    if (target && target.matches(":hover")) {
+      clearTimeout(mouseMoveTimeout);
+      clearTimeout(mouseStopTimeout);
+      isMouseMoving = false;
+      document.body.classList.remove("is-mouse-moving");
+      return;
+    }
+
+    if (!isMouseMoving) {
+      isMouseMoving = true;
+      if (mouseMoveTimeout) clearTimeout(mouseMoveTimeout);
+      mouseMoveTimeout = setTimeout(function () {
+        if (isMouseMoving) {
+          document.body.classList.add("is-mouse-moving");
+        }
+      }, 1000);
+    }
+
+    if (mouseStopTimeout) clearTimeout(mouseStopTimeout);
+    mouseStopTimeout = setTimeout(function () {
+      isMouseMoving = false;
+      if (mouseMoveTimeout) clearTimeout(mouseMoveTimeout);
+      document.body.classList.remove("is-mouse-moving");
+    }, 150);
+  }, { passive: true });
 
   window.addEventListener("resize", function () {
     queueStageArtResize();
