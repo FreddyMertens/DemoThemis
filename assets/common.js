@@ -8,8 +8,8 @@
     { f: "demothemis.html", t: "DemoThemis", ch: 1 },
     { f: "game-theory.html", t: "Break the court", ch: 2 },
     { f: "prediction-market.html", t: "PredictionMoMo", ch: 3 },
-    { f: "hybrid-juror-prediction-market-integration.html", t: "The bootstrap loop", ch: 4 },
-    { f: "the-design.html", t: "Run-through", ch: 5 },
+    { f: "the-design.html", t: "Run-through", ch: 4 },
+    { f: "hybrid-juror-prediction-market-integration.html", t: "The bootstrap loop", ch: 5 },
     { f: "governance.html", t: "Governance", ch: 6 }
   ];
   var TOTAL = CHAPTERS.length;

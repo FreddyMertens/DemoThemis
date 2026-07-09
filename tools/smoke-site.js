@@ -11,8 +11,8 @@ const publicHtml = [
   "demothemis.html",
   "game-theory.html",
   "prediction-market.html",
-  "hybrid-juror-prediction-market-integration.html",
   "the-design.html",
+  "hybrid-juror-prediction-market-integration.html",
   "governance.html",
   "glossary.html"
 ];
