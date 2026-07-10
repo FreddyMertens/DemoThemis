@@ -3,7 +3,7 @@
 import Link from 'next/link';
 import { useEffect, useMemo, useState } from 'react';
 import { encodeAbiParameters, keccak256, type Address, type Hex } from 'viem';
-import { TopBar } from '@worldcoin/mini-apps-ui-kit-react';
+import { CourtTopBar } from '@/components/CourtTopBar';
 import { Page } from '@/components/PageLayout';
 import { CaseTypeBadge, OutcomeBadge, PhaseBadge } from '@/components/court-ui';
 import type { Phase } from '@/lib/court';
@@ -38,11 +38,7 @@ function StepPill({ active, done, label }: { active: boolean; done: boolean; lab
   return (
     <span
       className={`rounded-full px-2 py-1 text-[11px] font-semibold ${
-        active
-          ? 'bg-slate-900 text-white'
-          : done
-            ? 'bg-emerald-100 text-emerald-800'
-            : 'bg-slate-100 text-slate-500'
+        active ? 'bg-slate-900 text-white' : done ? 'bg-emerald-100 text-emerald-800' : 'bg-slate-100 text-slate-500'
       }`}
     >
       {label}
@@ -121,7 +117,7 @@ export default function JurorPreview() {
   return (
     <>
       <Page.Header className="p-0">
-        <TopBar
+        <CourtTopBar
           title="Juror UX preview"
           startAdornment={
             <Link href="/onboard" className="text-sm text-slate-500">
@@ -132,8 +128,8 @@ export default function JurorPreview() {
       </Page.Header>
       <Page.Main className="mb-20 flex flex-col items-stretch gap-4">
         <section className="rounded-xl border border-amber-300 bg-amber-50 p-3 text-xs leading-snug text-amber-900">
-          Local QA only. No World ID prompt, no wallet signature, no transaction, and no chain state is
-          changed. This page previews the juror screens that are otherwise gated by World App.
+          Local QA only. No World ID prompt, no wallet signature, no transaction, and no chain state is changed. This
+          page previews the juror screens that are otherwise gated by World App.
         </section>
 
         <div className="flex flex-wrap gap-1.5">
@@ -147,9 +143,9 @@ export default function JurorPreview() {
           <div className="flex items-start justify-between gap-3">
             <div>
               <p className="text-xs font-semibold uppercase tracking-widest text-slate-500">Local juror</p>
-              <h1 className="mt-1 text-lg font-bold text-slate-950">
+              <h2 className="mt-1 text-lg font-bold text-slate-950">
                 {joined ? 'Verified human #21' : 'Become a juror'}
-              </h1>
+              </h2>
             </div>
             <span className="rounded-full bg-sky-100 px-2 py-1 text-[10px] font-semibold uppercase text-sky-700">
               preview
@@ -159,8 +155,8 @@ export default function JurorPreview() {
           {!joined ? (
             <>
               <p className="mt-2 text-sm leading-relaxed text-slate-600">
-                The preview compresses the World ID proof, Permit2 approval, MockUSD faucet, and registry
-                join into one local sequence.
+                The preview compresses the World ID proof, Permit2 approval, MockUSD faucet, and registry join into one
+                local sequence.
               </p>
               <button
                 onClick={startJoinPreview}
@@ -187,12 +183,10 @@ export default function JurorPreview() {
             </>
           ) : (
             <div className="mt-2 rounded-lg border border-emerald-200 bg-emerald-50 p-3">
-              <p className="text-sm font-semibold text-emerald-900">
-                Verified human #21: one person, one vote.
-              </p>
+              <p className="text-sm font-semibold text-emerald-900">Verified human #21: one person, one vote.</p>
               <p className="mt-1 text-xs leading-snug text-emerald-700">
-                In the real path, the identity nullifier is spent in the registry; a second wallet for
-                the same human would revert instead of creating another seat.
+                In the real path, the identity nullifier is spent in the registry; a second wallet for the same human
+                would revert instead of creating another seat.
               </p>
             </div>
           )}
@@ -255,8 +249,8 @@ export default function JurorPreview() {
                 <h3 className="text-sm font-semibold text-slate-800">Reveal your vote</h3>
                 {saved ? (
                   <p className="mt-1 text-xs text-slate-500">
-                    You committed <span className="font-semibold">{saved.vote ? 'YES' : 'NO'}</span>.
-                    Reveal it now so it counts toward the verdict.
+                    You committed <span className="font-semibold">{saved.vote ? 'YES' : 'NO'}</span>. Reveal it now so
+                    it counts toward the verdict.
                   </p>
                 ) : (
                   <p className="mt-1 rounded-lg bg-rose-50 p-2 text-xs text-rose-700">

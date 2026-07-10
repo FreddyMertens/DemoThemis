@@ -153,9 +153,28 @@ function checkMvpNavigation(file, html, failures) {
   if (!siteNav) return;
 
   const navTargets = openingTagAttributeValues(siteNav[0], "a", "href");
+  assert(navTargets.includes("/"), `${file} primary navigation missing root-relative Home link`, failures);
   assert(navTargets.includes("glossary.html"), `${file} primary navigation missing glossary.html`, failures);
   assert(navTargets.includes("mvp.html"), `${file} primary navigation missing mvp.html`, failures);
   assert(navTargets.indexOf("mvp.html") === navTargets.indexOf("glossary.html") + 1, `${file} should place the MVP immediately after the glossary in primary navigation`, failures);
+}
+
+function checkProposalHomeLinks(file, html, failures) {
+  const baseUrl = new URL(`/${file}`, `${siteUrl}/`);
+  const expectedOrigin = new URL(siteUrl).origin;
+  const obsoleteTargets = openingTagAttributeValues(html, "a", "href").filter((target) => {
+    try {
+      const targetUrl = new URL(target, baseUrl);
+      return targetUrl.origin === expectedOrigin && /\/index\.html$/i.test(targetUrl.pathname);
+    } catch (error) {
+      return false;
+    }
+  });
+  assert(
+    obsoleteTargets.length === 0,
+    `${file} contains obsolete same-site index.html link(s); proposal Home links must target /`,
+    failures
+  );
 }
 
 function checkMvpPage(html, failures) {
@@ -268,9 +287,12 @@ function checkBuiltHtml(failures) {
     const html = readDist(file);
     checkMetadata(file, html, failures);
     checkMvpNavigation(file, html, failures);
+    checkProposalHomeLinks(file, html, failures);
     assert(!/unpkg\.com/i.test(html), `${file} should not load unpkg.com`, failures);
     assert(/assets\/styles\.css/i.test(html), `${file} missing shared stylesheet`, failures);
   }
+
+  checkProposalHomeLinks("404.html", readDist("404.html"), failures);
 
   checkMvpPage(readDist("mvp.html"), failures);
 

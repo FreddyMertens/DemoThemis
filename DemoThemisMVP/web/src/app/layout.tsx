@@ -1,18 +1,27 @@
 import { auth } from '@/auth';
 import ClientProviders from '@/providers';
+import { SiteChrome } from '@/components/SiteChrome';
 import '@worldcoin/mini-apps-ui-kit-react/styles.css';
 import type { Metadata } from 'next';
-import { Geist, Geist_Mono } from 'next/font/google';
+import { Inter, JetBrains_Mono, Newsreader } from 'next/font/google';
 import './globals.css';
 
-const geistSans = Geist({
-  variable: '--font-geist-sans',
+const sans = Inter({
+  variable: '--font-app-sans',
   subsets: ['latin'],
+  display: 'swap',
 });
 
-const geistMono = Geist_Mono({
-  variable: '--font-geist-mono',
+const serif = Newsreader({
+  variable: '--font-app-serif',
   subsets: ['latin'],
+  display: 'swap',
+});
+
+const mono = JetBrains_Mono({
+  variable: '--font-app-mono',
+  subsets: ['latin'],
+  display: 'swap',
 });
 
 export const metadata: Metadata = {
@@ -29,8 +38,14 @@ export default async function RootLayout({
   const session = await auth();
   return (
     <html lang="en">
-      <body className={`${geistSans.variable} ${geistMono.variable} `}>
-        <ClientProviders session={session}>{children}</ClientProviders>
+      <body className={`${sans.variable} ${serif.variable} ${mono.variable}`}>
+        <ClientProviders session={session}>
+          <a className="site-skip-link" href="#main-content">
+            Skip to content
+          </a>
+          <SiteChrome />
+          <div className="site-app-content">{children}</div>
+        </ClientProviders>
       </body>
     </html>
   );

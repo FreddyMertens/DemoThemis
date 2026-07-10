@@ -1,7 +1,7 @@
 'use client';
 
 import { Page } from '@/components/PageLayout';
-import { TopBar } from '@worldcoin/mini-apps-ui-kit-react';
+import { CourtTopBar } from '@/components/CourtTopBar';
 import { InstanceBanner } from '@/components/InstanceBanner';
 import { explorerAddress, addr, IS_COHORT } from '@/lib/chain';
 
@@ -9,36 +9,50 @@ export default function About() {
   return (
     <>
       <Page.Header className="p-0">
-        <TopBar title="About" />
+        <CourtTopBar title="About" />
       </Page.Header>
       <Page.Main className="flex flex-col items-stretch gap-4 mb-20">
         <InstanceBanner />
 
-        <div className="rounded-xl border border-slate-200 bg-white p-4">
-          <h2 className="text-base font-semibold text-slate-900">DemoThemis — a human arbitration court</h2>
-          <p className="mt-2 text-sm leading-relaxed text-slate-600">
-            DemoThemis settles disputes with a panel of <span className="font-semibold">verified humans</span>,
-            not token-weighted stake. Each juror is one World ID — one person, one vote — drawn at random
-            after a question is filed, voting by private commit/reveal with a bond at risk. A token-weighted
-            oracle can be bought by whoever holds the most stake; a one-human-one-vote court cannot, because
-            buying a verdict means buying a random, unknown majority of distinct people. The mainnet deployment
-            uses a 3-seat demo panel on purpose; capture-resistance is a function of pool width, and scaling the
-            panel and pool is funded-milestone work. Watch the contrast in the sandbox.
+        <section className="court-about-card">
+          <p className="court-about-kicker">The mechanism</p>
+          <h2>Human arbitration, without purchased voting power.</h2>
+          <p className="court-about-dek">
+            DemoThemis settles disputes with verified humans instead of token-weighted stake. Its mainnet deployment
+            deliberately uses a three-seat demo panel; expanding the pool and panel is funded milestone work.
           </p>
-        </div>
+          <div className="court-about-steps">
+            <article>
+              <span>01</span>
+              <strong>One human, one seat</strong>
+              <p>One World ID cannot return through a second wallet to gain another juror seat.</p>
+            </article>
+            <article>
+              <span>02</span>
+              <strong>A late random draw</strong>
+              <p>The panel is chosen after the question is filed, so it cannot be targeted early.</p>
+            </article>
+            <article>
+              <span>03</span>
+              <strong>A sealed, bonded vote</strong>
+              <p>Commit/reveal hides early votes; a bond puts careless participation at risk.</p>
+            </article>
+          </div>
+        </section>
 
-        <div className="space-y-2">
-          <a href="/sandbox" className="block rounded-xl border border-slate-200 bg-white p-3 text-sm font-medium text-slate-800 hover:border-slate-300">
-            ▶ Sandbox — the &ldquo;buy this verdict&rdquo; attack demo (token court flips, human court holds)
+        <div className="court-about-links">
+          <a href="/sandbox">
+            <span>Try</span> The “buy this verdict” sandbox
           </a>
-          <a href={explorerAddress(addr.registry)} target="_blank" rel="noreferrer" className="block rounded-xl border border-slate-200 bg-white p-3 text-sm font-medium text-slate-800 hover:border-slate-300">
-            🔗{' '}
-            {IS_COHORT
-              ? "This cohort's JurorRegistry on the explorer"
-              : 'Capstone-ready JurorRegistry — World ID 4.0 (Production verifier) on worldscan'}
+          <a href={explorerAddress(addr.registry)} target="_blank" rel="noreferrer">
+            <span>Verify ↗</span>{' '}
+            {IS_COHORT ? "This cohort's JurorRegistry" : 'Mainnet JurorRegistry and World ID 4.0 verifier'}
           </a>
-          <a href={explorerAddress(addr.court)} target="_blank" rel="noreferrer" className="block rounded-xl border border-slate-200 bg-white p-3 text-sm font-medium text-slate-800 hover:border-slate-300">
-            🔗 This instance&apos;s DisputeCourt on the explorer
+          <a href={explorerAddress(addr.court)} target="_blank" rel="noreferrer">
+            <span>Verify ↗</span> This instance&apos;s DisputeCourt
+          </a>
+          <a href="/demothemis.html">
+            <span>Read</span> The full DemoThemis design
           </a>
         </div>
 

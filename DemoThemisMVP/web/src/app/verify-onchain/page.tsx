@@ -59,7 +59,7 @@ export default function VerifyOnchainProbe() {
   };
 
   return (
-    <div style={{ padding: 24, fontFamily: 'monospace', maxWidth: 920 }}>
+    <main id="main-content" tabIndex={-1} style={{ padding: 24, fontFamily: 'monospace', maxWidth: 920 }}>
       <h1>v4 on-chain proof probe (proofOfHuman)</h1>
       <button onClick={run} style={{ padding: '8px 16px', fontSize: 16 }}>
         Start v4 request
@@ -71,6 +71,6 @@ export default function VerifyOnchainProbe() {
       <pre style={{ whiteSpace: 'pre-wrap', wordBreak: 'break-all', background: '#f0f0f0', padding: 12 }}>
         {result}
       </pre>
-    </div>
+    </main>
   );
 }

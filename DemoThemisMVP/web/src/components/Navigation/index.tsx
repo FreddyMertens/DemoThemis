@@ -21,16 +21,19 @@ export const Navigation = () => {
   const active = TABS.find((t) => pathname?.startsWith(t.href))?.value ?? 'home';
 
   return (
-    <Tabs
-      value={active}
-      onValueChange={(v) => {
-        const tab = TABS.find((t) => t.value === v);
-        if (tab) router.push(tab.href);
-      }}
-    >
-      {TABS.map((t) => (
-        <TabItem key={t.value} value={t.value} icon={t.icon} label={t.label} />
-      ))}
-    </Tabs>
+    <nav className="court-tabs" aria-label="Court application navigation">
+      <Tabs
+        aria-label="Court sections"
+        value={active}
+        onValueChange={(v) => {
+          const tab = TABS.find((t) => t.value === v);
+          if (tab) router.push(tab.href);
+        }}
+      >
+        {TABS.map((t) => (
+          <TabItem key={t.value} value={t.value} icon={t.icon} label={t.label} />
+        ))}
+      </Tabs>
+    </nav>
   );
 };

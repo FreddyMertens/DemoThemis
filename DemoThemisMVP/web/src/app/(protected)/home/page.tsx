@@ -2,7 +2,7 @@
 
 import Link from 'next/link';
 import { Page } from '@/components/PageLayout';
-import { TopBar } from '@worldcoin/mini-apps-ui-kit-react';
+import { CourtTopBar } from '@/components/CourtTopBar';
 import { InstanceBanner } from '@/components/InstanceBanner';
 import { SimulatedBadge } from '@/components/Badges';
 import {
@@ -50,7 +50,7 @@ export default function Home() {
   return (
     <>
       <Page.Header className="p-0">
-        <TopBar title="DemoThemis Court" />
+        <CourtTopBar title="DemoThemis Court" />
       </Page.Header>
       <Page.Main className="flex flex-col items-stretch justify-start gap-4 mb-20">
         <InstanceBanner />
@@ -62,7 +62,10 @@ export default function Home() {
           <ErrorState error={stats.error} />
         ) : stats.data ? (
           <div className="flex gap-2">
-            <StatCard label={IS_COHORT ? 'Simulated jurors' : 'Verified jurors'} value={String(stats.data.jurorCount)} />
+            <StatCard
+              label={IS_COHORT ? 'Simulated jurors' : 'Verified jurors'}
+              value={String(stats.data.jurorCount)}
+            />
             <StatCard label="Bonds held" value={fmtMusd(stats.data.bondsHeld)} sub="MUSD" />
             <StatCard label="Reward pool" value={fmtMusd(stats.data.rewardPool)} sub="MUSD" />
           </div>
@@ -78,9 +81,8 @@ export default function Home() {
 
         {/* optimistic-funnel framing */}
         <p className="rounded-xl bg-slate-50 px-3 py-2 text-xs leading-snug text-slate-500">
-          Most matters never reach a jury — an escrow release or the optimistic-assertion fast path
-          (a roadmap layer) settles them first. The jury is the rare backstop you see here, not the
-          everyday cost.
+          Most matters never reach a jury — an escrow release or the optimistic-assertion fast path (a roadmap layer)
+          settles them first. The jury is the rare backstop you see here, not the everyday cost.
         </p>
 
         {/* case list */}

@@ -7,7 +7,7 @@ import { useSession } from 'next-auth/react';
 import { useMiniKit } from '@worldcoin/minikit-js/minikit-provider';
 import { keccak256, encodeAbiParameters, type Address, type Hex } from 'viem';
 import { Page } from '@/components/PageLayout';
-import { TopBar } from '@worldcoin/mini-apps-ui-kit-react';
+import { CourtTopBar } from '@/components/CourtTopBar';
 import { CaseTypeBadge, ErrorState, OutcomeBadge, PhaseBadge, Skeleton } from '@/components/court-ui';
 import { GasBadge, SimulatedBadge } from '@/components/Badges';
 import { AuthButton } from '@/components/AuthButton';
@@ -157,13 +157,13 @@ function CommitReveal({ caseId, phase, refresh }: { caseId: number; phase: Phase
         <p className="text-xs text-slate-500">
           {saved ? (
             <>
-              You committed <span className="font-semibold">{saved.vote ? 'YES' : 'NO'}</span>. Reveal it
-              now so it counts toward the verdict.
+              You committed <span className="font-semibold">{saved.vote ? 'YES' : 'NO'}</span>. Reveal it now so it
+              counts toward the verdict.
             </>
           ) : (
             <span className="text-rose-600">
-              No saved ballot found on this device — the salt is needed to reveal. If you committed on
-              another device, reveal there.
+              No saved ballot found on this device — the salt is needed to reveal. If you committed on another device,
+              reveal there.
             </span>
           )}
         </p>
@@ -233,7 +233,13 @@ export default function CaseDetail() {
     if (!c) return;
     let alive = true;
     fetchCaseContent(c.uri, c.criteriaHash).then((r) => {
-      if (alive) setContent({ content: r.content, matches: r.matches, error: r.error, loaded: true });
+      if (alive)
+        setContent({
+          content: r.content,
+          matches: r.matches,
+          error: r.error,
+          loaded: true,
+        });
     });
     return () => {
       alive = false;
@@ -243,7 +249,7 @@ export default function CaseDetail() {
   return (
     <>
       <Page.Header className="p-0">
-        <TopBar
+        <CourtTopBar
           title={`Case #${Number.isNaN(id) ? '?' : id}`}
           startAdornment={
             <Link href="/home" className="text-sm text-slate-500">
@@ -265,9 +271,7 @@ export default function CaseDetail() {
               <CaseTypeBadge caseType={c.caseType} />
               {c.phase === 'Resolved' && <OutcomeBadge caseType={c.caseType} outcome={c.outcome} />}
               {c.redraws > 0 && (
-                <span className="rounded-full bg-orange-50 px-2 py-0.5 text-xs text-orange-700">
-                  redrawn once
-                </span>
+                <span className="rounded-full bg-orange-50 px-2 py-0.5 text-xs text-orange-700">redrawn once</span>
               )}
               <SimulatedBadge />
             </div>
@@ -290,9 +294,7 @@ export default function CaseDetail() {
                   )}
                   <div className="mt-2 text-xs">
                     {content.matches ? (
-                      <span className="font-medium text-emerald-700">
-                        ✓ content matches the on-chain hash
-                      </span>
+                      <span className="font-medium text-emerald-700">✓ content matches the on-chain hash</span>
                     ) : (
                       <span className="font-medium text-rose-700">✗ content does NOT match the on-chain hash</span>
                     )}
@@ -331,17 +333,15 @@ export default function CaseDetail() {
             {c.phase === 'Resolved' && (
               <div className="rounded-xl border border-emerald-200 bg-emerald-50 p-3 text-sm text-emerald-900">
                 <p className="font-semibold">
-                  {c.panel.length}{' '}
-                  {IS_COHORT ? 'simulated unique humans' : 'verified humans'} decided this: one person,
+                  {c.panel.length} {IS_COHORT ? 'simulated unique humans' : 'verified humans'} decided this: one person,
                   one vote, no wallet voted twice.
                 </p>
                 <p className="mt-1 text-xs">
-                  Each seat comes from the one-nullifier registry, and each ballot was sealed until
-                  reveal by commit/reveal.
+                  Each seat comes from the one-nullifier registry, and each ballot was sealed until reveal by
+                  commit/reveal.
                 </p>
                 <p className="mt-1 text-xs">
-                  Fee pool {fmtMusd(c.feePool)} MUSD split 70/20/10 (coherent jurors / reward pool /
-                  protocol). Verdict:{' '}
+                  Fee pool {fmtMusd(c.feePool)} MUSD split 70/20/10 (coherent jurors / reward pool / protocol). Verdict:{' '}
                   <span className="font-semibold">
                     {c.caseType === 1 ? (c.outcome ? 'payee paid' : 'payer refunded') : c.outcome ? 'YES' : 'NO'}
                   </span>
@@ -354,8 +354,8 @@ export default function CaseDetail() {
               <div className="rounded-xl border border-amber-200 bg-amber-50 p-3 text-sm text-amber-900">
                 <p className="font-semibold">Ready to resolve</p>
                 <p className="mt-1 text-xs">
-                  The reveal deadline has passed. Resolving is permissionless — the keeper (or anyone)
-                  can advance this case; no operator required.
+                  The reveal deadline has passed. Resolving is permissionless — the keeper (or anyone) can advance this
+                  case; no operator required.
                 </p>
               </div>
             )}

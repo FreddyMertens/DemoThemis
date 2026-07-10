@@ -58,18 +58,18 @@ export default function DevRegister() {
 
   if (info && !info.enabled) {
     return (
-      <div style={{ padding: 24, fontFamily: 'monospace', maxWidth: 720 }}>
+      <main id="main-content" tabIndex={-1} style={{ padding: 24, fontFamily: 'monospace', maxWidth: 720 }}>
         <h1>Dev register (/app/dev)</h1>
         <p>
           This page is disabled. Set <code>NEXT_PUBLIC_SHOW_DEV=true</code> and <code>DEV_PRIVATE_KEY</code>{' '}
           (a funded dev signing key) to enable it.
         </p>
-      </div>
+      </main>
     );
   }
 
   return (
-    <div style={{ padding: 24, fontFamily: 'monospace', maxWidth: 860 }}>
+    <main id="main-content" tabIndex={-1} style={{ padding: 24, fontFamily: 'monospace', maxWidth: 860 }}>
       <h1>Dev register — paste a World ID proof (/app/dev)</h1>
       {info ? (
         <div style={{ background: '#f4f4f5', padding: 12, borderRadius: 8, fontSize: 13, lineHeight: 1.6 }}>
@@ -149,6 +149,6 @@ export default function DevRegister() {
             ))}
         </div>
       )}
-    </div>
+    </main>
   );
 }

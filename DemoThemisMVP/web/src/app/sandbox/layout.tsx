@@ -1,11 +1,5 @@
 import type { Metadata } from 'next';
-import { Inter, Newsreader, JetBrains_Mono } from 'next/font/google';
 import './sandbox.css';
-
-// The pitch-site type stack, wired to the variables sandbox.css expects.
-const sans = Inter({ subsets: ['latin'], variable: '--font-sbx-sans', display: 'swap' });
-const serif = Newsreader({ subsets: ['latin'], variable: '--font-sbx-serif', display: 'swap' });
-const mono = JetBrains_Mono({ subsets: ['latin'], variable: '--font-sbx-mono', display: 'swap' });
 
 export const metadata: Metadata = {
   title: 'DemoThemis sandbox: buy this verdict',
@@ -15,15 +9,17 @@ export const metadata: Metadata = {
 
 export default function SandboxLayout({ children }: { children: React.ReactNode }) {
   return (
-    <div className={`sbx ${sans.variable} ${serif.variable} ${mono.variable}`}>
+    <div className="sbx">
       <div className="sbx-badge" role="note">
         <span className="sbx-badge-dot" aria-hidden />
         <span>
-          <b>Simulation.</b> Illustrative model on the design&apos;s published parameters. The
-          on-chain demo lives at <a href="/home">/home</a>.
+          <b>Simulation.</b> Illustrative model on the design&apos;s published parameters. The on-chain demo is
+          available in the <a href="/home">live court</a>.
         </span>
       </div>
-      <div className="sbx-wrap">{children}</div>
+      <main className="sbx-wrap" id="main-content" tabIndex={-1}>
+        {children}
+      </main>
     </div>
   );
 }

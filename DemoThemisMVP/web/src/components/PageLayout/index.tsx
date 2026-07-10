@@ -7,20 +7,13 @@ import { twMerge } from 'tailwind-merge';
  * Feel free to modify this component to fit your needs
  */
 export const Page = (props: { children: ReactNode; className?: string }) => {
-  return (
-    <div className={twMerge(clsx('flex h-dvh flex-col', props.className))}>
-      {props.children}
-    </div>
-  );
+  return <div className={twMerge(clsx('court-page flex flex-col', props.className))}>{props.children}</div>;
 };
 
 const Header = (props: { children: ReactNode; className?: string }) => {
   return (
     <header
-      className={twMerge(
-        'bg-white flex flex-col justify-center px-6 pt-6 pb-3 z-10',
-        clsx(props.className),
-      )}
+      className={twMerge('court-page-header flex flex-col justify-center px-6 pt-6 pb-3 z-10', clsx(props.className))}
     >
       {props.children}
     </header>
@@ -29,11 +22,7 @@ const Header = (props: { children: ReactNode; className?: string }) => {
 
 const Main = (props: { children: ReactNode; className?: string }) => {
   return (
-    <main
-      className={twMerge(
-        clsx('grow overflow-y-auto p-6 pt-3', props.className),
-      )}
-    >
+    <main id="main-content" tabIndex={-1} className={twMerge(clsx('court-page-main grow p-6 pt-3', props.className))}>
       {props.children}
     </main>
   );
@@ -41,9 +30,7 @@ const Main = (props: { children: ReactNode; className?: string }) => {
 
 const Footer = (props: { children: ReactNode; className?: string }) => {
   return (
-    <footer className={twMerge('px-6 pb-[35px]', clsx(props.className))}>
-      {props.children}
-    </footer>
+    <footer className={twMerge('court-page-footer px-6 pb-[35px]', clsx(props.className))}>{props.children}</footer>
   );
 };
 

@@ -169,7 +169,7 @@ export default function RegisterOnchain() {
   };
 
   return (
-    <div style={{ padding: 24, fontFamily: 'monospace', maxWidth: 960 }}>
+    <main id="main-content" tabIndex={-1} style={{ padding: 24, fontFamily: 'monospace', maxWidth: 960 }}>
       <h1>WorldIDGate registration proof (v4 on-chain)</h1>
       <p>
         Generates a World ID 4.0 proof bound to the wallet below and emits the
@@ -208,6 +208,6 @@ export default function RegisterOnchain() {
       <pre style={{ whiteSpace: 'pre-wrap', wordBreak: 'break-all', background: '#f0f0f0', padding: 12 }}>
         {raw}
       </pre>
-    </div>
+    </main>
   );
 }

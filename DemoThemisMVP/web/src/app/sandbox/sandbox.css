@@ -10,7 +10,7 @@
   --ink: #23262e;
   --ink-soft: #3a3f4a;
   --muted: #5c6470;
-  --faint: #8b919c;
+  --faint: #5c6470;
   --line: #eae4d9;
   --line-strong: #ddd6ca;
   --accent: #5a4bd6;
@@ -24,9 +24,9 @@
   --shadow: 0 1px 2px rgba(46, 40, 30, 0.05), 0 12px 30px -14px rgba(46, 40, 30, 0.14);
   --shadow-lg: 0 2px 6px rgba(46, 40, 30, 0.06), 0 26px 54px -24px rgba(46, 40, 30, 0.22);
   --radius: 16px;
-  --serif: var(--font-sbx-serif), Georgia, 'Times New Roman', serif;
-  --sans: var(--font-sbx-sans), system-ui, -apple-system, 'Segoe UI', Roboto, sans-serif;
-  --mono: var(--font-sbx-mono), ui-monospace, 'SFMono-Regular', Menlo, monospace;
+  --serif: var(--font-app-serif), Georgia, 'Times New Roman', serif;
+  --sans: var(--font-app-sans), system-ui, -apple-system, 'Segoe UI', Roboto, sans-serif;
+  --mono: var(--font-app-mono), ui-monospace, 'SFMono-Regular', Menlo, monospace;
 
   background: var(--bg);
   color: var(--ink);
@@ -270,7 +270,9 @@
   background: var(--bg);
   color: var(--muted);
   cursor: pointer;
-  transition: background 0.12s ease, color 0.12s ease;
+  transition:
+    background 0.12s ease,
+    color 0.12s ease;
 }
 .sbx-seg button.active {
   background: var(--accent-soft);
@@ -289,7 +291,9 @@
   border-radius: 10px;
   cursor: pointer;
   box-shadow: var(--shadow);
-  transition: transform 0.12s ease, filter 0.12s ease;
+  transition:
+    transform 0.12s ease,
+    filter 0.12s ease;
 }
 .sbx-btn:hover {
   filter: brightness(1.06);
@@ -504,7 +508,10 @@
   aspect-ratio: 1;
   border-radius: 50%;
   background: var(--line-strong);
-  transition: background 0.18s ease, transform 0.18s ease, box-shadow 0.18s ease;
+  transition:
+    background 0.18s ease,
+    transform 0.18s ease,
+    box-shadow 0.18s ease;
 }
 .sbx-dot.col {
   background: var(--gold);
@@ -532,7 +539,9 @@
   border-radius: 10px;
   padding: 0.6rem 0.65rem;
   background: var(--bg);
-  transition: border-color 0.15s ease, box-shadow 0.15s ease;
+  transition:
+    border-color 0.15s ease,
+    box-shadow 0.15s ease;
 }
 .sbx-ppanel.cap {
   border-color: var(--bad);

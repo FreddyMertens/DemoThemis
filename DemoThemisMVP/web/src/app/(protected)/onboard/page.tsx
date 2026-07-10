@@ -6,7 +6,7 @@ import { useSession } from 'next-auth/react';
 import { useMiniKit } from '@worldcoin/minikit-js/minikit-provider';
 import { type Address } from 'viem';
 import { Page } from '@/components/PageLayout';
-import { TopBar } from '@worldcoin/mini-apps-ui-kit-react';
+import { CourtTopBar } from '@/components/CourtTopBar';
 import { GasBadge } from '@/components/Badges';
 import { AuthButton } from '@/components/AuthButton';
 import { InstanceBanner } from '@/components/InstanceBanner';
@@ -19,9 +19,21 @@ import { courtTx } from '@/lib/calldata';
 import { useCourtTx } from '@/lib/tx';
 
 const STEPS = [
-  { n: 1, title: 'Verify a unique human', body: 'A World ID 4.0 proof is checked on-chain and bound to your wallet. One person, one juror seat — no wallet can do it twice.' },
-  { n: 2, title: 'Post a $5 bond through Permit2', body: 'World App, MiniKit, and Permit2 batch the valueless MUSD bond path so the court can pull the bond in one onboard.' },
-  { n: 3, title: 'Join the drawable pool', body: 'You become eligible to be drawn onto random panels. Withdraw the bond any time you are not empaneled.' },
+  {
+    n: 1,
+    title: 'Verify a unique human',
+    body: 'A World ID 4.0 proof is checked on-chain and bound to your wallet. One person, one juror seat — no wallet can do it twice.',
+  },
+  {
+    n: 2,
+    title: 'Post a $5 bond through Permit2',
+    body: 'World App, MiniKit, and Permit2 batch the valueless MUSD bond path so the court can pull the bond in one onboard.',
+  },
+  {
+    n: 3,
+    title: 'Join the drawable pool',
+    body: 'You become eligible to be drawn onto random panels. Withdraw the bond any time you are not empaneled.',
+  },
 ];
 
 type Phase = 'idle' | 'verifying' | 'submitting' | 'done' | 'error';
@@ -87,7 +99,7 @@ export default function Onboard() {
   return (
     <>
       <Page.Header className="p-0">
-        <TopBar
+        <CourtTopBar
           title="Become a juror"
           startAdornment={
             <Link href="/home" className="text-sm text-slate-500">
@@ -101,8 +113,8 @@ export default function Onboard() {
 
         <div className="rounded-xl border border-slate-200 bg-white p-4 text-center">
           <p className="text-sm font-semibold text-slate-900">
-            The World stack handles the hard parts: one person, one vote, wallet-bound proof, Permit2 bond,
-            and sponsored mainnet transaction path.
+            The World stack handles the hard parts: one person, one vote, wallet-bound proof, Permit2 bond, and
+            sponsored mainnet transaction path.
           </p>
           <div className="mt-2 flex justify-center">
             <GasBadge />
@@ -128,10 +140,10 @@ export default function Onboard() {
         {IS_COHORT ? (
           <div className="rounded-xl border border-amber-300 bg-amber-50 p-3 text-xs leading-snug text-amber-900">
             <p>
-              This cohort&apos;s ~20 jurors register through a labeled stand-in (MockSybilGate), so you
-              can&apos;t join it from here. The <span className="font-semibold">real</span> on-chain
-              World ID 4.0 gate runs on World Chain mainnet — the reverts above show it rejecting a forged
-              proof and a duplicate human. A real human registration is the on-device capstone step.
+              This cohort&apos;s ~20 jurors register through a labeled stand-in (MockSybilGate), so you can&apos;t join
+              it from here. The <span className="font-semibold">real</span> on-chain World ID 4.0 gate runs on World
+              Chain mainnet — the reverts above show it rejecting a forged proof and a duplicate human. A real human
+              registration is the on-device capstone step.
             </p>
             <Link
               href="/juror-preview"
@@ -143,15 +155,11 @@ export default function Onboard() {
         ) : phase === 'done' ? (
           <div className="rounded-xl border border-emerald-300 bg-emerald-50 p-4 text-center">
             <p className="text-base font-bold text-emerald-900">🎉 You are a juror.</p>
-            <p className="mt-1 text-sm font-semibold text-emerald-900">
-              {verifiedHumanLabel}: one person, one vote.
-            </p>
-            <p className="mt-1 text-sm text-emerald-800">
-              No wallet can do this twice.
-            </p>
+            <p className="mt-1 text-sm font-semibold text-emerald-900">{verifiedHumanLabel}: one person, one vote.</p>
+            <p className="mt-1 text-sm text-emerald-800">No wallet can do this twice.</p>
             <p className="mt-1 text-xs leading-snug text-emerald-700">
-              Your identity nullifier is now spent in this registry; a second wallet for the same
-              human would revert instead of creating another seat.
+              Your identity nullifier is now spent in this registry; a second wallet for the same human would revert
+              instead of creating another seat.
             </p>
             {tx.txHash && (
               <a
@@ -174,8 +182,8 @@ export default function Onboard() {
           <div className="rounded-xl border border-slate-200 bg-white p-4 text-center">
             <p className="text-sm font-semibold text-slate-800">Sign in before joining the court</p>
             <p className="mb-3 mt-1 text-xs text-slate-500">
-              World App signs a one-time wallet message, then returns you here to verify personhood
-              and post the valueless MockUSD bond.
+              World App signs a one-time wallet message, then returns you here to verify personhood and post the
+              valueless MockUSD bond.
             </p>
             <AuthButton />
           </div>
@@ -183,8 +191,8 @@ export default function Onboard() {
           <div className="rounded-xl border border-slate-200 bg-white p-4 text-center">
             <p className="text-sm font-semibold text-slate-800">Joining happens in World App</p>
             <p className="mt-1 text-xs text-slate-500">
-              Open this Mini App inside World App on your phone: walletAuth signs you in, World ID verifies
-              personhood, and Permit2 posts the bond. On desktop this screen is read-only.
+              Open this Mini App inside World App on your phone: walletAuth signs you in, World ID verifies personhood,
+              and Permit2 posts the bond. On desktop this screen is read-only.
             </p>
           </div>
         ) : (
@@ -203,13 +211,9 @@ export default function Onboard() {
             {/* two-step progress */}
             {busy && (
               <div className="flex gap-2 text-[11px] text-slate-500">
-                <span className={phase === 'verifying' ? 'font-semibold text-slate-800' : ''}>
-                  1. Verify human
-                </span>
+                <span className={phase === 'verifying' ? 'font-semibold text-slate-800' : ''}>1. Verify human</span>
                 <span>→</span>
-                <span className={phase === 'submitting' ? 'font-semibold text-slate-800' : ''}>
-                  2. Bond & register
-                </span>
+                <span className={phase === 'submitting' ? 'font-semibold text-slate-800' : ''}>2. Bond & register</span>
               </div>
             )}
             {note && (
@@ -222,8 +226,8 @@ export default function Onboard() {
               </p>
             )}
             <p className="text-[11px] leading-snug text-slate-400">
-              World App will sponsor gas for verified humans at the capstone trace. The bond is valueless
-              MockUSD; the 3/3 panel is a labeled demo parameter.
+              World App will sponsor gas for verified humans at the capstone trace. The bond is valueless MockUSD; the
+              3/3 panel is a labeled demo parameter.
             </p>
           </div>
         )}
