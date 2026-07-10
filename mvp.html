@@ -1,0 +1,218 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>DemoThemis MVP: try the working court</title>
+<meta name="description" content="Try the DemoThemis MVP: use the browser sandbox, inspect the live on-chain court, review the evidence, or continue into World App.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="preconnect" href="https://demo-themis-mvp.vercel.app">
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@500;700&family=Newsreader:opsz,wght@6..72,200..700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="assets/styles.css">
+</head>
+<body class="mvp-page">
+<div id="progress"></div>
+
+<nav class="sitenav" aria-label="Primary">
+  <div class="sitenav-inner">
+    <a class="brand" href="index.html">DemoThemis<span class="dot">.</span></a>
+    <button class="nav-toggle" type="button" aria-label="Menu" aria-expanded="false" aria-controls="primary-nav">&#9776;</button>
+    <div class="nav-links" id="primary-nav">
+      <a href="index.html">Home</a>
+      <a href="demothemis.html"><span class="ch">01</span> DemoThemis</a>
+      <a href="game-theory.html"><span class="ch">02</span> Break the court</a>
+      <a href="prediction-market.html"><span class="ch">03</span> PredictionMoMo</a>
+      <a href="the-design.html"><span class="ch">04</span> Run-through</a>
+      <a href="hybrid-juror-prediction-market-integration.html"><span class="ch">05</span> Bootstrap loop</a>
+      <a href="governance.html"><span class="ch">06</span> Governance</a>
+      <a href="glossary.html">Glossary</a>
+      <a class="active" href="mvp.html" aria-current="page">Live MVP</a>
+    </div>
+  </div>
+</nav>
+
+<header class="hero mvp-hero reveal">
+  <p class="kicker">Live MVP</p>
+  <h1>See the court work, then inspect the proof.</h1>
+  <p class="dek">The proposal explains the idea. This page lets you touch the working software: start with a wallet-free simulation, inspect the read-only on-chain court, or continue into World App.</p>
+  <div class="mvp-hero-actions" aria-label="MVP quick actions">
+    <a class="mvp-button primary" href="#try-mvp">Preview the MVP</a>
+    <a class="mvp-button secondary" href="https://demo-themis-mvp.vercel.app/" target="_blank" rel="noreferrer">Open the full MVP <span aria-hidden="true">&#8599;</span><span class="sr-only"> in a new tab</span></a>
+  </div>
+  <div class="meta">
+    <span class="pill">Working software</span>
+    <span>World Chain</span>
+    <span class="dot">&bull;</span>
+    <span>Valueless test tokens</span>
+    <span class="dot">&bull;</span>
+    <span>Clear evidence labels</span>
+  </div>
+</header>
+
+<main class="content mvp-content">
+  <section class="mvp-truth-strip reveal" aria-label="MVP status summary">
+    <div><span class="mvp-signal is-live" aria-hidden="true"></span><strong>On-chain slice</strong><small>Contracts and World ID verifier wiring are live.</small></div>
+    <div><span class="mvp-signal is-simulated" aria-hidden="true"></span><strong>Browser simulation</strong><small>The full journey is seeded and safe to replay.</small></div>
+    <div><span class="mvp-signal is-pending" aria-hidden="true"></span><strong>Human capstone</strong><small>The final three-human mainnet trace is still pending.</small></div>
+  </section>
+
+  <section class="mvp-demo-section reveal" id="try-mvp" aria-labelledby="try-title">
+    <div class="mvp-section-head">
+      <div>
+        <p class="sec-label">Start here &middot; no wallet needed</p>
+        <h2 id="try-title">Try the attack-and-court sandbox</h2>
+        <p>The preview below opens the real browser sandbox full-screen. It uses seeded pretend people and valueless balances so you can compare attacks, move a case through the court, test appeals, and reset everything freely.</p>
+      </div>
+      <a class="mvp-text-link" href="https://demo-themis-mvp.vercel.app/sandbox" target="_blank" rel="noreferrer">Open full screen <span aria-hidden="true">&#8599;</span><span class="sr-only"> in a new tab</span></a>
+    </div>
+
+    <div class="mvp-browser-shell">
+      <div class="mvp-browser-bar" aria-hidden="true">
+        <span class="mvp-window-dots"><i></i><i></i><i></i></span>
+        <span class="mvp-browser-address">demo-themis-mvp.vercel.app / sandbox</span>
+        <span class="mvp-browser-badge">Simulated</span>
+      </div>
+      <a class="mvp-sandbox-preview" href="https://demo-themis-mvp.vercel.app/sandbox" target="_blank" rel="noreferrer" aria-label="Launch the interactive DemoThemis sandbox in a new tab">
+        <span class="mvp-preview-banner"><strong>Simulation.</strong> Illustrative model on the design&rsquo;s published parameters. The on-chain demo lives separately.</span>
+        <span class="mvp-preview-main">
+          <span class="mvp-preview-copy">
+            <span class="mvp-preview-kicker">Courtroom simulator</span>
+            <strong class="mvp-preview-title">Buy this verdict</strong>
+            <span class="mvp-preview-description">Put a token-weighted oracle beside a one-human-one-vote court, give the attacker a budget, and try to buy each result.</span>
+            <span class="mvp-preview-launch">Launch interactive sandbox <span aria-hidden="true">&#8599;</span></span>
+          </span>
+          <span class="mvp-preview-model">
+            <span class="mvp-preview-model-head"><strong>The comparative attack</strong><em>Simulated</em></span>
+            <span class="mvp-preview-question">Can an attacker afford this verdict?</span>
+            <span class="mvp-preview-budget"><span>Attacker budget</span><strong>$250k</strong></span>
+            <span class="mvp-preview-slider" aria-hidden="true"><i></i></span>
+            <span class="mvp-preview-results">
+              <span><small>Token court</small><strong class="is-bad">Affordable</strong></span>
+              <span><small>Human court</small><strong class="is-good">Blocked</strong></span>
+            </span>
+          </span>
+        </span>
+      </a>
+    </div>
+    <p class="mvp-frame-note"><strong>Simulation label:</strong> this preview represents product behavior; it does not claim that its seeded jurors or balances are live users or money.</p>
+  </section>
+
+  <section class="reveal" aria-labelledby="route-title">
+    <p class="sec-label">Choose the right surface</p>
+    <h2 id="route-title">Three ways to review the MVP</h2>
+    <p class="mvp-section-dek">Each route has a different purpose. The label tells you what is real before you open it.</p>
+    <div class="mvp-route-grid">
+      <article class="mvp-route-card is-sandbox">
+        <div class="mvp-route-top"><span class="mvp-route-number">01</span><span class="mvp-status-tag is-simulated">Simulation</span></div>
+        <h3>Watch the attack demo</h3>
+        <p>Compare token-weighted and human juries, run the court funnel, appeal a verdict, update reputation, and replay the case.</p>
+        <ul class="mvp-route-facts"><li>No wallet</li><li>No real funds</li><li>Safe to reset</li></ul>
+        <a href="https://demo-themis-mvp.vercel.app/sandbox" target="_blank" rel="noreferrer">Launch sandbox <span aria-hidden="true">&#8599;</span><span class="sr-only"> in a new tab</span></a>
+      </article>
+
+      <article class="mvp-route-card is-court">
+        <div class="mvp-route-top"><span class="mvp-route-number">02</span><span class="mvp-status-tag is-live">On-chain</span></div>
+        <h3>Inspect the live court</h3>
+        <p>Read contract-backed court statistics and case data on World Chain. Writes remain inside the supported World App flow.</p>
+        <ul class="mvp-route-facts"><li>Desktop friendly</li><li>Read-only</li><li>Public chain data</li></ul>
+        <a href="https://demo-themis-mvp.vercel.app/home" target="_blank" rel="noreferrer">Open court <span aria-hidden="true">&#8599;</span><span class="sr-only"> in a new tab</span></a>
+      </article>
+
+      <article class="mvp-route-card is-world">
+        <div class="mvp-route-top"><span class="mvp-route-number">03</span><span class="mvp-status-tag is-world">World App</span></div>
+        <h3>Continue as a verified human</h3>
+        <p>Open the Mini App onboarding route for wallet authentication, World ID proof, and the supported mainnet interaction path.</p>
+        <ul class="mvp-route-facts"><li>World App</li><li>World ID</li><li>Valueless MockUSD</li></ul>
+        <a href="https://worldcoin.org/mini-app?app_id=app_7bdfda4db4e2f59dd4a2427cd2bd860d&amp;path=/onboard" target="_blank" rel="noreferrer">Open in World App <span aria-hidden="true">&#8599;</span><span class="sr-only"> in a new tab</span></a>
+      </article>
+    </div>
+  </section>
+
+  <section class="mvp-proof-section reveal" aria-labelledby="proof-title">
+    <div class="mvp-section-head">
+      <div>
+        <p class="sec-label">Evidence, not theatre</p>
+        <h2 id="proof-title">What is working today?</h2>
+        <p>The MVP separates deployed proof, simulation, and unfinished work instead of blending them into one claim.</p>
+      </div>
+      <a class="mvp-text-link" href="https://demo-themis-mvp.vercel.app/about" target="_blank" rel="noreferrer">Read scope notes <span aria-hidden="true">&#8599;</span><span class="sr-only"> in a new tab</span></a>
+    </div>
+
+    <div class="mvp-proof-grid">
+      <article class="mvp-proof-card is-live">
+        <span class="mvp-proof-kicker">Deployed</span>
+        <h3>On-chain now</h3>
+        <ul>
+          <li>Source-verified World Chain contracts</li>
+          <li>World ID 4.0 verifier inside registration</li>
+          <li>Duplicate-human nullifier rejection</li>
+          <li>Commit/reveal ballot and escrow settlement</li>
+          <li>70 / 20 / 10 fee routing</li>
+        </ul>
+      </article>
+      <article class="mvp-proof-card is-simulated">
+        <span class="mvp-proof-kicker">Demonstrated</span>
+        <h3>Simulated safely</h3>
+        <ul>
+          <li>Attack-cost comparison</li>
+          <li>Case funnel and juror workflow</li>
+          <li>Appeals and provisional verdicts</li>
+          <li>Reputation, watcher, and reward behavior</li>
+          <li>Seeded cases that can be reset</li>
+        </ul>
+      </article>
+      <article class="mvp-proof-card is-pending">
+        <span class="mvp-proof-kicker">Still open</span>
+        <h3>Not claimed as finished</h3>
+        <ul>
+          <li>Three independent humans completing the capstone</li>
+          <li>Production-grade randomness and ballot privacy</li>
+          <li>Hardened appeal and reputation layers</li>
+          <li>Independent security review</li>
+          <li>Dispute creation—the current form is a preview</li>
+        </ul>
+      </article>
+    </div>
+  </section>
+
+  <section class="mvp-mechanism reveal" aria-labelledby="mechanism-title">
+    <p class="sec-label">From proposal to software</p>
+    <h2 id="mechanism-title">Four important locks you can trace</h2>
+    <div class="mvp-lock-grid">
+      <article><span>1</span><h3>One person</h3><p>World ID gates juror registration and a spent nullifier stops the same human returning through another wallet.</p></article>
+      <article><span>2</span><h3>One panel</h3><p>The court selects a small demo jury after the dispute exists, rather than letting the richest accounts appoint themselves.</p></article>
+      <article><span>3</span><h3>One sealed round</h3><p>Jurors commit a hidden vote first and reveal later, so early votes cannot steer the rest of the panel.</p></article>
+      <article><span>4</span><h3>One settlement</h3><p>The final result routes escrow and fees atomically, keeping the court decision tied to the money movement.</p></article>
+    </div>
+  </section>
+
+  <aside class="mvp-scope-note reveal" aria-labelledby="scope-title">
+    <div>
+      <p class="sec-label">Current scope</p>
+      <h2 id="scope-title">A real MVP, with honest edges.</h2>
+    </div>
+    <p>The sandbox is intentionally simulated. The court dashboard reads public chain data. World App is required for supported identity and transaction flows. Test tokens have no value, the “open a dispute” form is currently a disabled preview, and the three-human capstone remains pending.</p>
+    <a class="mvp-button secondary" href="https://demo-themis-mvp.vercel.app/" target="_blank" rel="noreferrer">Review the evidence dashboard <span aria-hidden="true">&#8599;</span><span class="sr-only"> in a new tab</span></a>
+  </aside>
+
+  <footer class="endnote reveal">
+    <nav id="series" aria-label="Where you are in the series"></nav>
+    <div class="sitemap sitemap-flat">
+      <a href="demothemis.html">1. DemoThemis</a>
+      <a href="game-theory.html">2. Break the court</a>
+      <a href="prediction-market.html">3. PredictionMoMo</a>
+      <a href="the-design.html">4. Run-through</a>
+      <a href="hybrid-juror-prediction-market-integration.html">5. Bootstrap loop</a>
+      <a href="governance.html">6. Governance</a>
+      <a href="glossary.html">Glossary</a>
+      <a href="mvp.html" aria-current="page">Live MVP</a>
+      <a href="index.html">Home &middot; the map</a>
+    </div>
+    <p class="signoff">Read the idea. Try the mechanism. Check the evidence.</p>
+  </footer>
+</main>
+
+<script src="assets/common.js"></script>
+</body>
+</html>

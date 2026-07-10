@@ -1,0 +1,981 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="description" content="A plain-language, comprehensive review of the DemoThemis and PredictionMoMo concept, prototype, risks, and recommended next steps.">
+  <meta name="robots" content="noindex">
+  <title>DemoThemis &amp; PredictionMoMo: Comprehensive Project Review</title>
+  <style>
+    :root {
+      color-scheme: light;
+      --paper: #f7f5ef;
+      --surface: #fffdf9;
+      --surface-strong: #ffffff;
+      --ink: #20232b;
+      --muted: #5c6470;
+      --line: #ddd9cf;
+      --line-strong: #c9c3b7;
+      --court: #6044c5;
+      --court-dark: #422b9a;
+      --court-soft: #eeeafd;
+      --market: #08664f;
+      --market-soft: #e5f5ef;
+      --warning: #805300;
+      --warning-soft: #fff1cc;
+      --critical: #a62632;
+      --critical-soft: #fdebed;
+      --info: #245b8a;
+      --info-soft: #e8f2fb;
+      --shadow: 0 14px 40px rgba(39, 34, 27, .08);
+      --radius: 18px;
+      --sans: Inter, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+      --serif: Georgia, "Times New Roman", serif;
+    }
+
+    * { box-sizing: border-box; }
+    html { scroll-behavior: smooth; }
+    body {
+      margin: 0;
+      background: var(--paper);
+      color: var(--ink);
+      font-family: var(--serif);
+      font-size: 18px;
+      line-height: 1.68;
+    }
+    a { color: var(--court-dark); text-decoration-thickness: .08em; text-underline-offset: .16em; }
+    a:hover { text-decoration-thickness: .14em; }
+    a:focus-visible,
+    summary:focus-visible {
+      outline: 3px solid #f2a900;
+      outline-offset: 4px;
+      border-radius: 4px;
+    }
+    code {
+      font-family: ui-monospace, SFMono-Regular, Consolas, "Liberation Mono", monospace;
+      font-size: .83em;
+      overflow-wrap: anywhere;
+    }
+    img, svg { max-width: 100%; }
+    h1, h2, h3, h4 {
+      color: var(--ink);
+      font-family: var(--sans);
+      line-height: 1.14;
+      letter-spacing: -.025em;
+      text-wrap: balance;
+    }
+    h1 { margin: .35rem 0 1rem; font-size: clamp(2.45rem, 7vw, 5.35rem); max-width: 13ch; }
+    h2 { margin: 0 0 1rem; font-size: clamp(1.85rem, 3.6vw, 2.8rem); }
+    h3 { margin: 0 0 .6rem; font-size: 1.28rem; }
+    h4 { margin: 0 0 .35rem; font-size: 1rem; }
+    p { margin: 0 0 1rem; }
+    ul, ol { margin: .55rem 0 1.15rem; padding-left: 1.3rem; }
+    li + li { margin-top: .42rem; }
+    section { scroll-margin-top: 1.25rem; }
+
+    .skip-link {
+      position: fixed;
+      z-index: 100;
+      top: .75rem;
+      left: .75rem;
+      transform: translateY(-180%);
+      padding: .7rem 1rem;
+      border-radius: 10px;
+      background: var(--ink);
+      color: #fff;
+      font: 700 .9rem/1 var(--sans);
+    }
+    .skip-link:focus { transform: translateY(0); }
+
+    .hero {
+      position: relative;
+      overflow: hidden;
+      border-bottom: 1px solid var(--line);
+      background:
+        radial-gradient(circle at 84% 15%, rgba(96, 68, 197, .13), transparent 26rem),
+        radial-gradient(circle at 90% 95%, rgba(8, 102, 79, .10), transparent 24rem),
+        var(--surface);
+    }
+    .hero-inner {
+      width: min(1160px, calc(100% - 2rem));
+      margin: 0 auto;
+      padding: clamp(3.2rem, 8vw, 7rem) 0 clamp(2.6rem, 6vw, 5rem);
+    }
+    .eyebrow,
+    .section-label,
+    .status,
+    .mini-label {
+      font-family: var(--sans);
+      font-weight: 800;
+      letter-spacing: .09em;
+      text-transform: uppercase;
+    }
+    .eyebrow { margin: 0; color: var(--court-dark); font-size: .77rem; }
+    .dek { max-width: 700px; color: var(--muted); font-size: clamp(1.1rem, 2vw, 1.35rem); line-height: 1.55; }
+    .meta-row { display: flex; flex-wrap: wrap; gap: .55rem; margin-top: 1.4rem; }
+    .meta-chip {
+      padding: .35rem .65rem;
+      border: 1px solid var(--line);
+      border-radius: 999px;
+      background: rgba(255,255,255,.72);
+      color: var(--muted);
+      font: 700 .75rem/1.2 var(--sans);
+    }
+    .status-banner {
+      display: grid;
+      grid-template-columns: auto 1fr;
+      gap: 1rem;
+      max-width: 900px;
+      margin-top: 2rem;
+      padding: 1.15rem 1.25rem;
+      border: 2px solid var(--warning);
+      border-radius: 16px;
+      background: var(--warning-soft);
+      box-shadow: 0 8px 24px rgba(128, 83, 0, .08);
+    }
+    .status-icon {
+      display: grid;
+      width: 2.4rem;
+      height: 2.4rem;
+      place-items: center;
+      border-radius: 50%;
+      background: var(--warning);
+      color: #fff;
+      font: 900 1.25rem/1 var(--sans);
+    }
+    .status-banner strong { display: block; font: 800 1rem/1.3 var(--sans); }
+    .status-banner p { margin: .2rem 0 0; color: #5f4206; font-family: var(--sans); font-size: .92rem; line-height: 1.5; }
+
+    .page-shell {
+      display: grid;
+      grid-template-columns: minmax(0, 1fr) 18rem;
+      gap: clamp(2rem, 5vw, 5.5rem);
+      width: min(1160px, calc(100% - 2rem));
+      margin: 0 auto;
+      padding: 3.4rem 0 6rem;
+      align-items: start;
+    }
+    main { min-width: 0; }
+    .rail { position: sticky; top: 1rem; }
+    .contents {
+      padding: 1.15rem;
+      border: 1px solid var(--line);
+      border-radius: 14px;
+      background: rgba(255, 253, 249, .92);
+      box-shadow: var(--shadow);
+      font-family: var(--sans);
+    }
+    .contents h2 { margin: 0 0 .65rem; font-size: .78rem; letter-spacing: .09em; text-transform: uppercase; }
+    .contents ol { margin: 0; padding-left: 1.25rem; font-size: .82rem; line-height: 1.45; }
+    .contents li + li { margin-top: .35rem; }
+    .contents a { color: var(--muted); font-weight: 650; text-decoration: none; }
+    .contents a:hover { color: var(--court-dark); text-decoration: underline; }
+
+    .section-block { margin: 0 0 clamp(4rem, 8vw, 6.5rem); }
+    .section-label { margin: 0 0 .55rem; color: var(--court-dark); font-size: .72rem; }
+    .lead { max-width: 720px; font-size: 1.22rem; line-height: 1.6; }
+    .plain-answer {
+      margin: 1.6rem 0 2rem;
+      padding: 1.35rem 1.5rem;
+      border-left: 5px solid var(--court);
+      border-radius: 0 14px 14px 0;
+      background: var(--court-soft);
+      font-size: 1.14rem;
+    }
+    .plain-answer strong { font-family: var(--sans); }
+
+    .grid-2,
+    .grid-3,
+    .score-grid,
+    .status-grid,
+    .glossary-grid {
+      display: grid;
+      gap: 1rem;
+    }
+    .grid-2 { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+    .grid-3 { grid-template-columns: repeat(3, minmax(0, 1fr)); }
+    .score-grid { grid-template-columns: repeat(3, minmax(0, 1fr)); }
+    .status-grid { grid-template-columns: repeat(3, minmax(0, 1fr)); }
+    .glossary-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+
+    .card,
+    .score-card,
+    .strength,
+    .finding,
+    .road-step {
+      border: 1px solid var(--line);
+      border-radius: var(--radius);
+      background: var(--surface);
+      box-shadow: var(--shadow);
+    }
+    .card { padding: 1.35rem; }
+    .card p:last-child { margin-bottom: 0; }
+    .product-card { position: relative; overflow: hidden; padding-top: 1.55rem; }
+    .product-card::before { position: absolute; inset: 0 0 auto; height: 5px; content: ""; }
+    .product-card.market::before { background: var(--market); }
+    .product-card.court::before { background: var(--court); }
+    .product-card .mini-label { margin: 0 0 .45rem; font-size: .65rem; }
+    .product-card.market .mini-label { color: var(--market); }
+    .product-card.court .mini-label { color: var(--court-dark); }
+
+    .score-card { padding: 1.05rem; box-shadow: none; }
+    .score-card b { display: block; margin-bottom: .25rem; font: 800 .9rem/1.3 var(--sans); }
+    .score-card span { display: block; color: var(--muted); font: 650 .82rem/1.42 var(--sans); }
+    .score-card.good { border-top: 4px solid var(--market); }
+    .score-card.warn { border-top: 4px solid var(--warning); }
+    .score-card.bad { border-top: 4px solid var(--critical); }
+
+    .flow {
+      display: grid;
+      gap: .72rem;
+      margin: 1.5rem 0;
+      padding: 0;
+      list-style: none;
+      counter-reset: flow;
+    }
+    .flow li {
+      position: relative;
+      min-height: 4.5rem;
+      margin: 0;
+      padding: 1rem 1.1rem 1rem 4.3rem;
+      border: 1px solid var(--line);
+      border-radius: 14px;
+      background: var(--surface);
+      box-shadow: 0 7px 20px rgba(39, 34, 27, .05);
+      counter-increment: flow;
+    }
+    .flow li::before {
+      position: absolute;
+      top: .85rem;
+      left: 1rem;
+      display: grid;
+      width: 2.35rem;
+      height: 2.35rem;
+      place-items: center;
+      border-radius: 50%;
+      background: var(--court);
+      color: #fff;
+      content: counter(flow, decimal-leading-zero);
+      font: 800 .73rem/1 var(--sans);
+    }
+    .flow li:nth-child(-n+4)::before { background: var(--market); }
+    .flow b { display: block; margin-bottom: .15rem; font: 800 .95rem/1.35 var(--sans); }
+    .flow span { display: block; color: var(--muted); font-size: .95rem; line-height: 1.5; }
+
+    .loop-box {
+      display: grid;
+      grid-template-columns: repeat(5, minmax(0, 1fr));
+      gap: .6rem;
+      margin-top: 1.4rem;
+      padding: 1rem;
+      border: 1px solid #bfcfc8;
+      border-radius: var(--radius);
+      background: linear-gradient(135deg, var(--market-soft), var(--court-soft));
+    }
+    .loop-step {
+      position: relative;
+      padding: .9rem .8rem;
+      border-radius: 12px;
+      background: rgba(255,255,255,.82);
+      text-align: center;
+      font: 750 .78rem/1.4 var(--sans);
+    }
+    .loop-step:not(:last-child)::after {
+      position: absolute;
+      top: 50%;
+      right: -.48rem;
+      z-index: 1;
+      color: var(--court-dark);
+      content: "→";
+      font-size: 1.1rem;
+      transform: translateY(-50%);
+    }
+    .loop-note { margin: .75rem 0 0; color: var(--muted); font: 650 .8rem/1.5 var(--sans); }
+
+    .table-wrap {
+      overflow-x: auto;
+      margin: 1.4rem 0;
+      border: 1px solid var(--line);
+      border-radius: var(--radius);
+      background: var(--surface);
+      box-shadow: var(--shadow);
+    }
+    table { width: 100%; border-collapse: collapse; font-family: var(--sans); font-size: .86rem; line-height: 1.45; }
+    caption { padding: 1rem 1.1rem .3rem; color: var(--muted); text-align: left; font-size: .78rem; }
+    th, td { padding: .85rem 1rem; border-bottom: 1px solid var(--line); text-align: left; vertical-align: top; }
+    thead th { background: #eeece5; font-size: .76rem; letter-spacing: .04em; text-transform: uppercase; }
+    tbody tr:last-child th, tbody tr:last-child td { border-bottom: 0; }
+    tbody th { width: 22%; color: var(--ink); font-size: .82rem; }
+    .tag {
+      display: inline-flex;
+      align-items: center;
+      min-height: 1.6rem;
+      padding: .2rem .48rem;
+      border-radius: 999px;
+      font: 800 .65rem/1 var(--sans);
+      letter-spacing: .04em;
+      text-transform: uppercase;
+      white-space: nowrap;
+    }
+    .tag.built { background: var(--market-soft); color: #04513e; }
+    .tag.simulated { background: var(--info-soft); color: #174f7c; }
+    .tag.proposed { background: var(--court-soft); color: var(--court-dark); }
+    .tag.unproven { background: var(--warning-soft); color: #664200; }
+    .tag.critical { background: var(--critical-soft); color: #8b1e28; }
+
+    .strength-list { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 1rem; }
+    .strength { padding: 1.2rem; box-shadow: none; }
+    .strength::before { display: block; margin-bottom: .4rem; color: var(--market); content: "✓"; font: 900 1.2rem/1 var(--sans); }
+    .strength h3 { font-size: 1rem; }
+    .strength p { margin: 0; color: var(--muted); font-size: .95rem; }
+
+    .findings { display: grid; gap: 1.15rem; }
+    .finding { overflow: hidden; }
+    .finding-head {
+      display: grid;
+      grid-template-columns: auto 1fr;
+      gap: 1rem;
+      padding: 1.25rem 1.3rem .85rem;
+    }
+    .finding-number {
+      display: grid;
+      width: 2.55rem;
+      height: 2.55rem;
+      place-items: center;
+      border-radius: 12px;
+      background: var(--critical-soft);
+      color: var(--critical);
+      font: 900 .86rem/1 var(--sans);
+    }
+    .finding.medium .finding-number { background: var(--warning-soft); color: var(--warning); }
+    .finding h3 { margin: 0 0 .22rem; }
+    .finding .status { display: block; margin-bottom: .38rem; color: var(--critical); font-size: .64rem; }
+    .finding.medium .status { color: var(--warning); }
+    .finding-body { padding: 0 1.3rem 1.2rem; }
+    .finding-body p { font-size: 1rem; }
+    .why {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: .8rem;
+      margin-top: .8rem;
+    }
+    .why > div { padding: .85rem; border-radius: 12px; background: #f1efe8; }
+    .why b { display: block; margin-bottom: .18rem; font: 800 .74rem/1.3 var(--sans); letter-spacing: .04em; text-transform: uppercase; }
+    .why span { display: block; color: var(--muted); font-size: .88rem; line-height: 1.5; }
+    details {
+      border-top: 1px solid var(--line);
+      background: #faf8f3;
+      font-family: var(--sans);
+    }
+    summary {
+      min-height: 44px;
+      padding: .8rem 1.3rem;
+      cursor: pointer;
+      color: var(--court-dark);
+      font-size: .8rem;
+      font-weight: 800;
+    }
+    .detail-body { padding: 0 1.3rem 1.1rem; color: var(--muted); font-size: .83rem; line-height: 1.55; }
+    .detail-body p:last-child { margin-bottom: 0; }
+    .evidence { margin-top: .6rem; padding-top: .6rem; border-top: 1px dashed var(--line-strong); }
+
+    .callout {
+      margin: 1.25rem 0;
+      padding: 1.1rem 1.2rem;
+      border-radius: 14px;
+      background: var(--info-soft);
+      color: #173f61;
+      font-family: var(--sans);
+      font-size: .9rem;
+      line-height: 1.55;
+    }
+    .callout.warning { background: var(--warning-soft); color: #5c3d06; }
+    .callout strong { display: block; margin-bottom: .2rem; }
+
+    .roadmap { display: grid; gap: .85rem; counter-reset: road; }
+    .road-step {
+      position: relative;
+      min-height: 5rem;
+      padding: 1.15rem 1.2rem 1.15rem 4.6rem;
+      box-shadow: none;
+      counter-increment: road;
+    }
+    .road-step::before {
+      position: absolute;
+      top: 1rem;
+      left: 1.1rem;
+      display: grid;
+      width: 2.5rem;
+      height: 2.5rem;
+      place-items: center;
+      border-radius: 50%;
+      background: var(--ink);
+      color: #fff;
+      content: counter(road);
+      font: 850 .8rem/1 var(--sans);
+    }
+    .road-step h3 { font-size: 1rem; }
+    .road-step p { margin: 0; color: var(--muted); font-size: .92rem; }
+
+    .glossary-grid > div { padding: .95rem 1rem; border: 1px solid var(--line); border-radius: 12px; background: var(--surface); }
+    .glossary-grid dt { font: 800 .83rem/1.3 var(--sans); }
+    .glossary-grid dd { margin: .3rem 0 0; color: var(--muted); font-size: .9rem; line-height: 1.45; }
+
+    .source-list { color: var(--muted); font-family: var(--sans); font-size: .8rem; line-height: 1.55; }
+    .source-list li { padding-left: .2rem; }
+    .source-list a { overflow-wrap: anywhere; }
+    .final-verdict {
+      padding: 1.5rem;
+      border: 2px solid var(--court);
+      border-radius: var(--radius);
+      background: linear-gradient(135deg, var(--court-soft), var(--surface));
+      box-shadow: var(--shadow);
+    }
+    .final-verdict p:last-child { margin-bottom: 0; }
+    .one-line { color: var(--court-dark); font: 850 1.1rem/1.45 var(--sans); }
+
+    footer {
+      border-top: 1px solid var(--line);
+      background: var(--surface);
+    }
+    .footer-inner {
+      display: flex;
+      justify-content: space-between;
+      gap: 1rem;
+      width: min(1160px, calc(100% - 2rem));
+      margin: 0 auto;
+      padding: 1.5rem 0;
+      color: var(--muted);
+      font: 650 .75rem/1.4 var(--sans);
+    }
+
+    @media (max-width: 960px) {
+      .page-shell { grid-template-columns: 1fr; }
+      .rail { position: static; grid-row: 1; }
+      .contents ol { columns: 2; column-gap: 2rem; }
+      .loop-box { grid-template-columns: 1fr; }
+      .loop-step:not(:last-child)::after { top: auto; right: 50%; bottom: -.78rem; transform: translateX(50%); content: "↓"; }
+    }
+    @media (max-width: 720px) {
+      body { font-size: 17px; }
+      .grid-2, .grid-3, .score-grid, .status-grid, .strength-list, .glossary-grid, .why { grid-template-columns: 1fr; }
+      .status-banner { grid-template-columns: 1fr; }
+      .contents ol { columns: 1; }
+      .finding-head { gap: .75rem; }
+      .footer-inner { display: block; }
+      .footer-inner span { display: block; margin-top: .35rem; }
+    }
+    @media (max-width: 420px) {
+      .hero-inner, .page-shell, .footer-inner { width: min(100% - 1.15rem, 1160px); }
+      h1 { font-size: 2.3rem; }
+      .card, .finding-body, .finding-head { padding-left: 1rem; padding-right: 1rem; }
+      .flow li { padding-left: 3.8rem; }
+    }
+    @media (prefers-reduced-motion: reduce) {
+      html { scroll-behavior: auto; }
+      *, *::before, *::after { animation-duration: .01ms !important; animation-iteration-count: 1 !important; transition-duration: .01ms !important; }
+    }
+
+    @page { margin: 16mm; }
+    @media print {
+      body { background: #fff; color: #000; font-size: 10.5pt; }
+      .skip-link, .rail, .screen-only { display: none !important; }
+      .hero { border-bottom: 1px solid #999; background: #fff; }
+      .hero-inner, .page-shell, .footer-inner { width: 100%; }
+      .hero-inner { padding: 0 0 8mm; }
+      .page-shell { display: block; padding: 9mm 0 0; }
+      .section-block { margin-bottom: 12mm; }
+      .card, .score-card, .strength, .finding, .road-step, .table-wrap, .final-verdict { box-shadow: none; background: #fff; }
+      .loop-box, .plain-answer, .callout, .status-banner { background: #fff; }
+      details { background: #fff; }
+      details > * { display: block !important; }
+      summary { display: none !important; }
+      h1, h2, h3, h4 { break-after: avoid; }
+      .card, .score-card, .strength, .finding, .road-step, figure, table, tr { break-inside: avoid; }
+      p, li { orphans: 3; widows: 3; }
+      table { min-width: 0; font-size: 8.5pt; }
+      a { color: #000; text-decoration: underline; }
+      footer { background: #fff; }
+    }
+  </style>
+</head>
+<body>
+  <a class="skip-link" href="#main">Skip to the review</a>
+
+  <header class="hero">
+    <div class="hero-inner">
+      <p class="eyebrow">Independent project review · 9 July 2026</p>
+      <h1>DemoThemis &amp; PredictionMoMo</h1>
+      <p class="dek">The big idea, how it could work, what is already built, and what still needs proof.</p>
+      <div class="meta-row" aria-label="Review details">
+        <span class="meta-chip">Plain-language review</span>
+        <span class="meta-chip">Product + security + code + UX</span>
+        <span class="meta-chip">Repository and deployed site checked</span>
+      </div>
+
+      <div class="status-banner" role="note" aria-label="Important project status">
+        <span class="status-icon" aria-hidden="true">!</span>
+        <div>
+          <strong>Project status: interactive concept, not a working money app.</strong>
+          <p>The repository contains a polished website, calculators, and simulated journeys. It does not yet contain the real court, prediction market, smart contracts, wallets, World ID connection, private voting system, or live funds.</p>
+        </div>
+      </div>
+    </div>
+  </header>
+
+  <div class="page-shell">
+    <main id="main">
+      <section class="section-block" id="quick-answer" aria-labelledby="quick-answer-title">
+        <p class="section-label">Thirty-second answer</p>
+        <h2 id="quick-answer-title">What is this project?</h2>
+        <p class="lead">People lock money around a question. If they disagree about the answer, randomly selected, verified people study the evidence, vote, and decide who receives the money.</p>
+
+        <div class="grid-3">
+          <article class="card product-card market">
+            <p class="mini-label">Product one</p>
+            <h3>PredictionMoMo</h3>
+            <p>A proposed prediction market where people put money on answers such as YES or NO. Think of it as a shared betting jar whose payout depends on what really happens.</p>
+          </article>
+          <article class="card product-card court">
+            <p class="mini-label">Product two</p>
+            <h3>DemoThemis</h3>
+            <p>A proposed online court. When people disagree, it would ask a randomly chosen group of verified humans to review the evidence and decide the result.</p>
+          </article>
+          <article class="card product-card">
+            <p class="mini-label">Why together?</p>
+            <h3>Each product helps the other</h3>
+            <p>The market could give the new court cases, fees, and a track record. The court could give the market a neutral way to settle disputed outcomes.</p>
+          </article>
+        </div>
+
+        <div class="plain-answer">
+          <strong>Simple analogy:</strong> PredictionMoMo is the game. DemoThemis is the referee. Escrow is the locked prize box that neither side can open until the referee finishes.
+        </div>
+
+        <div class="score-grid" aria-label="Overall assessment">
+          <div class="score-card good"><b>Product idea</b><span>Strong, unusual, and worth testing.</span></div>
+          <div class="score-card good"><b>Interactive explanation</b><span>Clear, polished, and persuasive.</span></div>
+          <div class="score-card good"><b>Static website</b><span>Healthy build and small attack surface.</span></div>
+          <div class="score-card warn"><b>Protocol design</b><span>Interesting, but several core rules are incomplete.</span></div>
+          <div class="score-card bad"><b>Real implementation</b><span>No contracts, wallet, court, or identity integration yet.</span></div>
+          <div class="score-card bad"><b>Ready for real money?</b><span>No. It remains a research prototype.</span></div>
+        </div>
+      </section>
+
+      <section class="section-block" id="problem" aria-labelledby="problem-title">
+        <p class="section-label">The problem</p>
+        <h2 id="problem-title">Why build a new referee?</h2>
+        <p>Online deals and prediction markets need a trusted answer when people disagree. A company-controlled referee may favor the company. A token vote may give the richest wallets the most power.</p>
+        <p>DemoThemis tries a different base rule: one verified human can hold one juror seat. World ID is proposed as the proof that a juror is one unique person.</p>
+        <div class="callout warning">
+          <strong>Important limit</strong>
+          “One human, one seat” can make it harder to create thousands of fake jurors. It does not prove that a person is honest, skilled, independent, awake, or impossible to pressure.
+        </div>
+      </section>
+
+      <section class="section-block" id="how-it-works" aria-labelledby="how-title">
+        <p class="section-label">The proposed journey</p>
+        <h2 id="how-title">How one market could work</h2>
+        <ol class="flow">
+          <li><b>Write a clear question</b><span>A creator asks something that should later have a YES or NO answer.</span></li>
+          <li><b>Lock money in escrow</b><span>People choose a side. The money goes into a locked software box, not to the winner yet.</span></li>
+          <li><b>Let the shared pool show the odds</b><span>The balance between the two sides becomes the displayed price. Early bets may receive extra weight.</span></li>
+          <li><b>Add fixed-price offers</b><span>A trader can offer a set price instead of accepting the shared pool’s changing odds.</span></li>
+          <li><b>Graduate a healthy market</b><span>If the market meets proposed liquidity tests, claims become wallet-held YES and NO tokens.</span></li>
+          <li><b>Propose the final answer</b><span>Someone posts an answer and risks a bond, which is money they can lose for being wrong.</span></li>
+          <li><b>Watch for a challenge</b><span>If nobody objects during the window, the answer pays. A challenged answer goes to court.</span></li>
+          <li><b>Draw verified human jurors</b><span>A public random process chooses a panel. A phone-based check is proposed to prove each juror is present.</span></li>
+          <li><b>Review evidence and vote privately</b><span>Jurors study the case. The system is meant to reveal only the total, not each person’s vote.</span></li>
+          <li><b>Appeal, finalize, and pay</b><span>A losing side may ask a larger panel to check the result. The final answer unlocks the escrow.</span></li>
+        </ol>
+
+        <div class="grid-2">
+          <div class="card">
+            <h3>Objective case</h3>
+            <p>Reality can later grade the answer, such as a match score, a closing price, or a delivery date.</p>
+          </div>
+          <div class="card">
+            <h3>Rubric case</h3>
+            <p>Jurors compare evidence with written rules, such as whether work met a contract. There may be no perfect outside answer.</p>
+          </div>
+        </div>
+      </section>
+
+      <section class="section-block" id="bootstrap-loop" aria-labelledby="loop-title">
+        <p class="section-label">The strongest idea</p>
+        <h2 id="loop-title">How the two products could grow together</h2>
+        <p>A new court has a “cold start” problem. It needs work before people trust it, but people may not send work to a court with no history. PredictionMoMo is meant to create the first useful loop.</p>
+        <div class="loop-box" role="img" aria-label="Markets create cases, cases create fees, fees pay jurors, finished cases create tests and a track record, and a stronger court attracts more markets.">
+          <div class="loop-step">Markets create cases</div>
+          <div class="loop-step">Cases create fees</div>
+          <div class="loop-step">Fees pay jurors</div>
+          <div class="loop-step">Finished cases build a record</div>
+          <div class="loop-step">A stronger court attracts markets</div>
+        </div>
+        <p class="loop-note">Text equivalent: markets → cases → fees → jurors and learning data → trust → more markets.</p>
+        <div class="plain-answer">
+          <strong>Proposed fee:</strong> 2% at settlement. Of that fee, 70% would pay jurors, 20% would fund longer-term juror rewards, and 10% would pay operating costs. PredictionMoMo may add up to another 1% business margin. These are design numbers, not live fees.
+        </div>
+      </section>
+
+      <section class="section-block" id="status" aria-labelledby="status-title">
+        <p class="section-label">Reality check</p>
+        <h2 id="status-title">What exists today?</h2>
+        <div class="table-wrap" role="region" aria-label="Implementation status table" tabindex="0">
+          <table>
+            <caption>Clicking a simulated button shows the intended experience. It does not perform a blockchain transaction or prove that the mechanism is safe.</caption>
+            <thead>
+              <tr>
+                <th scope="col">Area</th>
+                <th scope="col">Status</th>
+                <th scope="col">What is present</th>
+                <th scope="col">What is missing</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr><th scope="row">Website</th><td><span class="tag built">Built</span></td><td>Eight public pages, diagrams, glossary, navigation, responsive styles.</td><td>A clear project-status page, team, roadmap, and conversion path.</td></tr>
+              <tr><th scope="row">Attack model</th><td><span class="tag simulated">Simulated</span></td><td>Sliders, presets, assumptions, attack cards, scenario checks.</td><td>Independent calibration, real data, correlated-failure testing.</td></tr>
+              <tr><th scope="row">Product journey</th><td><span class="tag simulated">Simulated</span></td><td>A 13-event walkthrough with mock application screens.</td><td>Real accounts, wallets, persistence, transactions, failure states.</td></tr>
+              <tr><th scope="row">Prediction market</th><td><span class="tag proposed">Proposed</span></td><td>Written mechanics and small interactive examples.</td><td>Contracts, exact token math, collateral, live trading, audits.</td></tr>
+              <tr><th scope="row">Human court</th><td><span class="tag proposed">Proposed</span></td><td>Panel, appeal, scoring, and incentive design.</td><td>Juror service, evidence system, final state machine, live testing.</td></tr>
+              <tr><th scope="row">World ID</th><td><span class="tag unproven">Unproven</span></td><td>A described role for proof of personhood and presence.</td><td>SDK/API integration, privacy design, recovery and outage handling.</td></tr>
+              <tr><th scope="row">Private ballots</th><td><span class="tag unproven">Unproven</span></td><td>A proposed threshold-encryption and re-voting idea.</td><td>Exact protocol, proofs, implementation, audit, privacy-safe slashing.</td></tr>
+              <tr><th scope="row">Real-money safety</th><td><span class="tag critical">Not ready</span></td><td>No live funds are handled by this repository.</td><td>Contracts, audits, operations, privacy and legal approval.</td></tr>
+            </tbody>
+          </table>
+        </div>
+      </section>
+
+      <section class="section-block" id="strengths" aria-labelledby="strengths-title">
+        <p class="section-label">What works well</p>
+        <h2 id="strengths-title">The project has real strengths</h2>
+        <div class="strength-list">
+          <article class="strength"><h3>Strong bootstrap idea</h3><p>The market could give a new court its first cases, income, and public history.</p></article>
+          <article class="strength"><h3>Excellent teaching prototype</h3><p>The widgets turn difficult ideas into controls a reviewer can explore.</p></article>
+          <article class="strength"><h3>Attacks are discussed openly</h3><p>Bribery, fake identities, lazy jurors, collusion, appeals, and capture are not ignored.</p></article>
+          <article class="strength"><h3>Wealth is not meant to equal jury power</h3><p>The court tries to count verified people instead of simply counting tokens.</p></article>
+          <article class="strength"><h3>Healthy static-site engineering</h3><p>The public build is allowlisted, dependencies are local, and baseline browser headers are present.</p></article>
+          <article class="strength"><h3>Uncertainty is partly visible</h3><p>The attack model labels many inputs as low-confidence or future assumptions.</p></article>
+        </div>
+      </section>
+
+      <section class="section-block" id="critical-questions" aria-labelledby="questions-title">
+        <p class="section-label">Main critique</p>
+        <h2 id="questions-title">The most important unanswered questions</h2>
+        <p class="lead">These do not mean the idea cannot work. They mean the project must answer them before it can safely hold real money.</p>
+
+        <div class="findings">
+          <article class="finding" id="finding-ballot-privacy">
+            <div class="finding-head">
+              <span class="finding-number">01</span>
+              <div><span class="status">Resolved in design · implementation must prove it</span><h3>Can a secret vote remain secret?</h3></div>
+            </div>
+            <div class="finding-body">
+              <p>The design now keeps each juror’s exact reputation, reserve, payments, penalties, refunds, and case history private. The public sees one-case pseudonyms, eligibility and reserve proofs, the aggregate tally, and aggregate accounting—never a named consequence that could reveal a vote.</p>
+              <div class="why"><div><b>Why it matters</b><span>A public payment or punishment could become a voting receipt even when the ballot itself stayed encrypted.</span></div><div><b>What remains</b><span>Specify, implement, and audit the private commitments, batched accounting, aggregate-only tally, and unlinkable payout flow.</span></div></div>
+            </div>
+            <details><summary>Technical detail and evidence</summary><div class="detail-body"><p>The corrected rule is “public proofs and aggregate accounting; private votes, histories, balances, reputation, penalties, refunds, and payments.” Each case uses a new pseudonym and receiving key. Zero-knowledge proofs reveal only eligibility, a reputation band, sufficient reserve, and correct private updates. Correlation checks must run over encrypted histories and reveal only a proved rule breach. Ordinary threshold encryption still does not automatically force aggregate-only decryption, so the production protocol and its metadata boundary require independent review.</p><p class="evidence"><b>Repository evidence:</b> <code>demothemis.html:493–542, 702–751, 759</code>.</p></div></details>
+          </article>
+
+          <article class="finding" id="finding-finality">
+            <div class="finding-head">
+              <span class="finding-number">02</span>
+              <div><span class="status">Critical · finality risk</span><h3>Can every case reach a final answer?</h3></div>
+            </div>
+            <div class="finding-body">
+              <p>Large cases may use several juries and require every jury to agree. One honest disagreement, missing panel, or malicious holdout could stop the money from paying.</p>
+              <div class="why"><div><b>Why it matters</b><span>An attacker may not need to control the verdict. Delaying it forever could be cheaper.</span></div><div><b>What to do</b><span>Define quorum, deadlines, replacement rules, how panels combine, and a final fallback that always ends.</span></div></div>
+            </div>
+            <details><summary>Technical detail and evidence</summary><div class="detail-body"><p>The simulator raises one-panel capture probability to the number of panels. That models how hard it is to capture every panel, but not how easy it may be to cause one disagreement. It also leaves out shared evidence errors, juror outages, abstentions, and correlated mistakes.</p><p class="evidence"><b>Repository evidence:</b> <code>demothemis.html:574–575</code>; <code>game-theory.html:1020–1021</code>.</p></div></details>
+          </article>
+
+          <article class="finding" id="finding-token-accounting">
+            <div class="finding-head">
+              <span class="finding-number">03</span>
+              <div><span class="status">Critical · money and token accounting</span><h3>Does all the token math balance?</h3></div>
+            </div>
+            <div class="finding-body">
+              <p>The early market is a shared pot with changing odds and an early-bettor bonus. The later market uses fungible YES and NO tokens. Parlays add another token model. The exact conversion equations are missing.</p>
+              <div class="why"><div><b>Why it matters</b><span>Without conservation rules, claims may not remain fully backed or may pay differently from what users expect.</span></div><div><b>What to do</b><span>Publish equations and tests for token supply, early weights, redemptions, fees, parlays, rounding, and collateral conservation.</span></div></div>
+            </div>
+            <details><summary>Technical detail and evidence</summary><div class="detail-body"><p>An older design mints one YES and one NO for one collateral unit, while the current design starts with a weighted parimutuel pool and tokenizes later. A conversion may be possible, but it must prove that no value is created, lost, or promised twice. Composability and lending claims should wait for that proof.</p><p class="evidence"><b>Repository evidence:</b> <code>prediction-market.html:234–355, 386–411, 493–549</code>; <code>prediction-market.md:11–15</code>.</p></div></details>
+          </article>
+
+          <article class="finding" id="finding-model-validation">
+            <div class="finding-head">
+              <span class="finding-number">04</span>
+              <div><span class="status">Critical · evidence quality</span><h3>Does the attack model test the idea, or repeat its assumptions?</h3></div>
+            </div>
+            <div class="finding-body">
+              <p>The simulator is very useful for learning. It is not proof. Some protections succeed because the code assumes they succeed. The named presets are also required to pass the checks.</p>
+              <div class="why"><div><b>Why it matters</b><span>A score such as 93 out of 100 can look measured even when it is built from uncertain inputs.</span></div><div><b>What to do</b><span>Add unsafe examples, independent assumptions, real measurements, correlated failures, wider attacker ranges, and an outside red team.</span></div></div>
+            </div>
+            <details><summary>Technical detail and evidence</summary><div class="detail-body"><p>With private ballots enabled, ordinary profitable bribery is prevented by model logic and a residual risk is assigned. The validator rejects any named preset that clears an attack or even reaches a watch state. The model caps attackers and stake sizes, and often treats juror mistakes as independent. Sixteen of 35 assumptions are labeled low-confidence or future rails; seven more are index weights or guardrails.</p><p class="evidence"><b>Repository evidence:</b> <code>game-theory.html:974–1062</code>; <code>assumptions.js</code>; <code>tools/validate-gamelab.js:335–358</code>.</p></div></details>
+          </article>
+
+          <article class="finding medium" id="finding-learning-data">
+            <div class="finding-head">
+              <span class="finding-number">05</span>
+              <div><span class="status">High · learning-data risk</span><h3>How does the system learn the truth?</h3></div>
+            </div>
+            <div class="finding-body">
+              <p>An answer that nobody challenged is not always true. It may only be small, obscure, or badly timed. Turning unnoticed mistakes into juror test questions could teach the court the wrong lesson.</p>
+              <div class="why"><div><b>Why it matters</b><span>Bad training data can make a confident system consistently wrong.</span></div><div><b>What to do</b><span>Separate court verdicts from outside facts, require evidence quality rules, audit watchers, and define who can create synthetic tests.</span></div></div>
+            </div>
+            <details><summary>Technical detail and evidence</summary><div class="detail-body"><p>Private markets may also be used as hidden tests, but participants could collude to plant a false answer. Synthetic-test governance is explicitly marked “TBA.” The market token can lower the curation bar even though governance copy says it cannot affect court test data, creating an indirect leak through the claimed firewall.</p><p class="evidence"><b>Repository evidence:</b> <code>demothemis.html:635–695</code>; <code>governance.html:111, 147, 234</code>.</p></div></details>
+          </article>
+
+          <article class="finding medium" id="finding-conflicts">
+            <div class="finding-head">
+              <span class="finding-number">06</span>
+              <div><span class="status">High · conflicts and insider knowledge</span><h3>Can juror conflicts really be found?</h3></div>
+            </div>
+            <div class="finding-body">
+              <p>A juror may hide an interest in another wallet or through a third party. An attacker may also send tiny unwanted tokens to a juror so that the juror looks conflicted and gets replaced.</p>
+              <div class="why"><div><b>Why it matters</b><span>Replacement rules can be attacked, while hidden interests may still pass the screen.</span></div><div><b>What to do</b><span>Use a pre-draw snapshot, ignore unsolicited dust, hide summons, define exposure rules, and limit juror trading during a case.</span></div></div>
+            </div>
+            <details><summary>Technical detail and evidence</summary><div class="detail-body"><p>Drawn pseudonyms and wallets are meant to be public for audit, while outcome tokens continue trading during court review. That creates targeting, chain-analysis, hedging, and possible insider-trading problems. Positions may also be hidden through custodians, lending pools, derivatives, or parlays.</p><p class="evidence"><b>Repository evidence:</b> <code>demothemis.html:443, 516, 523–525</code>; <code>prediction-market.html:486–488</code>.</p></div></details>
+          </article>
+
+          <article class="finding medium" id="finding-upgrades">
+            <div class="finding-head">
+              <span class="finding-number">07</span>
+              <div><span class="status">High · governance and upgrades</span><h3>Can the rules be repaired safely?</h3></div>
+            </div>
+            <div class="finding-body">
+              <p>A truly unchangeable constitution cannot fix a serious bug. An upgradeable constitution needs someone or some process with upgrade power. That power can become another capture risk.</p>
+              <div class="why"><div><b>Why it matters</b><span>Financial software needs both strong limits and a safe way to respond to failures.</span></div><div><b>What to do</b><span>Define ownership, guardians, pauses, upgrades, delays, migrations, key custody, user exits, and emergency limits.</span></div></div>
+            </div>
+            <details><summary>Technical detail and evidence</summary><div class="detail-body"><p>The court token uses square-root token weight, service multipliers, a per-person cap, and a 4% active-weight quorum. The denominator, low-turnout behavior, and manipulation of paid service history need specification. Paying fees to manufacture service is not automatically useless if the governance power gained is worth more than the burn.</p><p class="evidence"><b>Repository evidence:</b> <code>governance.html:153–176, 220, 227–243</code>.</p></div></details>
+          </article>
+
+          <article class="finding medium" id="finding-state-machines">
+            <div class="finding-head">
+              <span class="finding-number">08</span>
+              <div><span class="status">High · incomplete state machines</span><h3>What happens when real life is messy?</h3></div>
+            </div>
+            <div class="finding-body">
+              <p>The happy path is clear. Many failure paths are not. The rules need an ending for cancelled events, missing jurors, conflicting evidence, broken collateral, and more.</p>
+              <div class="why"><div><b>Why it matters</b><span>Most serious financial bugs live in unusual transitions, not the normal path.</span></div><div><b>What to do</b><span>Write a complete state diagram and invariants before writing smart contracts.</span></div></div>
+              <ul>
+                <li>No one proposes an answer, or two people propose different answers.</li>
+                <li>An event is cancelled, delayed, partly complete, or impossible to grade.</li>
+                <li>Too few jurors answer, a juror withdraws, or several panels disagree.</li>
+                <li>Collateral loses value, is frozen, or moves across a failed bridge.</li>
+                <li>An upgrade, pause, migration, refund, or final appeal is required.</li>
+              </ul>
+            </div>
+            <details><summary>Technical detail and evidence</summary><div class="detail-body"><p>Appeal timing also differs across the site: one place says a full week, another says one month, and governance permits two to eight weeks. Bond sizing, fee rounding, dust, replay, double finalization, and emergency recovery are not specified.</p><p class="evidence"><b>Repository evidence:</b> <code>demothemis.html:755, 764</code>; <code>governance.html:241</code>.</p></div></details>
+          </article>
+
+          <article class="finding medium" id="finding-world-id">
+            <div class="finding-head">
+              <span class="finding-number">09</span>
+              <div><span class="status">High · external dependency</span><h3>Does World ID provide every required feature?</h3></div>
+            </div>
+            <div class="finding-body">
+              <p>World ID may help prove that one account belongs to one unique person. The project still needs to prove that draw-time presence, privacy between cases, recovery, reputation, and on-chain checks work together as described.</p>
+              <div class="why"><div><b>Why it matters</b><span>A provider outage, false rejection, stolen phone, replay, or policy change could stop the court.</span></div><div><b>What to do</b><span>Build a small integration test before treating the exact identity flow as available infrastructure.</span></div></div>
+            </div>
+            <details><summary>Technical detail and evidence</summary><div class="detail-body"><p>Current World documentation supports privacy-preserving proof of human and on-chain verification. It describes high-assurance Orb-backed uniqueness separately from Selfie Check, which is labeled beta. The repository’s exact mix of persistent eligibility, draw-bound face continuity, unlinkable case proofs, private reputation commitments, and contract enforcement is not demonstrated.</p><p class="evidence"><b>Repository evidence:</b> <code>demothemis.html:470–487</code>. <b>External sources:</b> World ID Overview and On-chain Verification, listed below.</p></div></details>
+          </article>
+
+          <article class="finding medium" id="finding-law">
+            <div class="finding-head">
+              <span class="finding-number">10</span>
+              <div><span class="status">High · law and operations</span><h3>Can it legally and safely handle real money?</h3></div>
+            </div>
+            <div class="finding-body">
+              <p>Prediction markets, gambling, financial products, customer funds, identity checks, sanctions, and consumer protection have different rules in different countries. “Any topic, any country, no account” is not a safe launch promise.</p>
+              <div class="why"><div><b>Why it matters</b><span>A technically working market can still be illegal, inaccessible, or unsafe for customers.</span></div><div><b>What to do</b><span>Choose one launch region, restrict market types, and obtain specialist legal, compliance, and responsible-gambling advice.</span></div></div>
+            </div>
+            <details><summary>Technical detail and evidence</summary><div class="detail-body"><p>In the United States, the CFTC says public prediction-market contracts may be swaps or futures and a public market may need designated-contract-market registration. Great Britain requires an appropriate licence to provide remote gambling to British consumers, including when the operator is based abroad. A real service also needs market surveillance, customer-fund controls, AML/sanctions processes, age rules, complaints, incident response, and operational monitoring.</p><p class="evidence"><b>External sources:</b> CFTC 2026 Prediction Markets notice and UK Gambling Commission remote-sector guidance, listed below. This review is not legal advice.</p></div></details>
+          </article>
+        </div>
+      </section>
+
+      <section class="section-block" id="product-ux" aria-labelledby="ux-title">
+        <p class="section-label">Communication and usability</p>
+        <h2 id="ux-title">Product and website critique</h2>
+        <div class="grid-2">
+          <div class="card">
+            <h3>Make the message more trustworthy</h3>
+            <ul>
+              <li>Replace “bulletproof,” “unbuyable,” and “no chance of getting scammed.”</li>
+              <li>Say “designed to raise attack costs under stated assumptions.”</li>
+              <li>Show <b>Built</b>, <b>Simulated</b>, <b>Proposed</b>, and <b>Unproven</b> on every key page.</li>
+              <li>Separate a true five-minute tour from the full technical reference.</li>
+              <li>Add the team, roadmap, grant request, source/spec link, contact route, risks, privacy, and terms.</li>
+            </ul>
+          </div>
+          <div class="card">
+            <h3>Make the journeys more honest</h3>
+            <ul>
+              <li>The 13-event “one market” tour is really a service blueprint with many different actors.</li>
+              <li>Label whether the user is a creator, trader, watcher, juror, loser, or winner.</li>
+              <li>Show quiet settlement before the rare full appeal path.</li>
+              <li>Add failed identity checks, bad wording, missing liquidity, juror timeout, panel disagreement, and cancelled markets.</li>
+              <li>Let reviewers share an exact simulator state through the URL.</li>
+            </ul>
+          </div>
+        </div>
+
+        <div class="callout warning">
+          <strong>The reading-time promise should be corrected.</strong>
+          The home page calls six chapters “about a 7 minute tour,” while chapter one alone offers a four-minute overview plus a 35-minute reference. The static prose is already roughly 19,000 words before all generated simulator text.
+        </div>
+
+        <h3>Accessibility priorities</h3>
+        <ul>
+          <li>Darken faint text and small green labels so they meet contrast rules.</li>
+          <li>Keep a visible keyboard focus ring on every range slider and button.</li>
+          <li>Use native controls or <code>aria-pressed</code> for selected options.</li>
+          <li>Add <code>aria-current</code> to active navigation and a skip link before repeated menus.</li>
+          <li>Announce only the small result that changed, not an entire rebuilt mock screen.</li>
+          <li>Always pair color with words such as Safe, Warning, or Failed.</li>
+        </ul>
+      </section>
+
+      <section class="section-block" id="engineering" aria-labelledby="engineering-title">
+        <p class="section-label">Code and operations</p>
+        <h2 id="engineering-title">Repository review</h2>
+        <p>The website is healthy for a prototype. It will become harder to maintain if it keeps growing in its current form.</p>
+        <div class="table-wrap" role="region" aria-label="Engineering strengths and gaps" tabindex="0">
+          <table>
+            <caption>Current repository engineering</caption>
+            <thead><tr><th scope="col">Healthy today</th><th scope="col">Needs improvement</th></tr></thead>
+            <tbody>
+              <tr><td>Explicit public-file allowlist prevents internal drafts from shipping.</td><td>No README, package manifest, lockfile, standard command list, or project licence.</td></tr>
+              <tr><td>Build checks local links, metadata, routes, and internal-file leakage.</td><td>Large HTML files mix content, CSS, state, formulas, rendering, and events.</td></tr>
+              <tr><td>Popper and Tippy are stored locally with their licences.</td><td>Navigation and public-page lists are repeated in several files.</td></tr>
+              <tr><td>Baseline CSP, frame protection, referrer, MIME, and permissions headers are live.</td><td>Inline scripts and styles require the weaker <code>unsafe-inline</code> CSP rule.</td></tr>
+              <tr><td>The model validator and eight-page smoke test pass.</td><td>CI does not execute full browser journeys, inspect console errors, or run accessibility scans.</td></tr>
+              <tr><td>The site has no current login, database, upload, or payment attack surface.</td><td>Older Markdown disagrees with the current public design, including the rejected commit-reveal ballot.</td></tr>
+            </tbody>
+          </table>
+        </div>
+        <div class="callout">
+          <strong>Recommended repository boundary</strong>
+          Keep this repository as the explanation and prototype site. Put contracts, identity integration, cryptography, indexing, evidence storage, and dispute services in a separate, clearly documented implementation workspace.
+        </div>
+      </section>
+
+      <section class="section-block" id="roadmap" aria-labelledby="roadmap-title">
+        <p class="section-label">Practical next steps</p>
+        <h2 id="roadmap-title">A safer development path</h2>
+        <div class="roadmap">
+          <article class="road-step"><h3>Tell readers the exact status</h3><p>Clearly label what is built, simulated, proposed, measured, audited, and still unknown. Remove absolute safety claims.</p></article>
+          <article class="road-step"><h3>Write one official specification</h3><p>Define every role, state, deadline, failure path, equation, trust assumption, privacy promise, and upgrade rule. Archive or remove conflicting old drafts.</p></article>
+          <article class="road-step"><h3>Test the four hardest ideas separately</h3><p>Prototype private tally plus slashing; World ID presence plus privacy; pool-to-token accounting; and jury replacement plus guaranteed finality.</p></article>
+          <article class="road-step"><h3>Make the simulator adversarial</h3><p>Add unsafe presets, correlated mistakes, poisoned test data, no-watcher periods, juror denial-of-service, low turnout, and independently chosen assumptions.</p></article>
+          <article class="road-step"><h3>Build one small testnet path</h3><p>One objective binary market, one collateral asset, one seven-person jury, one appeal, and one final payout. No real money.</p></article>
+          <article class="road-step"><h3>Seek outside review before real funds</h3><p>Cryptography, smart contracts, economics, identity, privacy, accessibility, operations, and law all need specialist review.</p></article>
+        </div>
+        <div class="callout warning">
+          <strong>Defer the extra complexity.</strong>
+          Parlays, lending collateral, the court token, private markets, rubric courts, permanent collusion audits, and broad marketplace arbitration should wait until the narrow testnet path works.
+        </div>
+      </section>
+
+      <section class="section-block" id="verification" aria-labelledby="verification-title">
+        <p class="section-label">Review method</p>
+        <h2 id="verification-title">What was checked</h2>
+        <ul>
+          <li>Mapped the tracked repository files and deployment boundary.</li>
+          <li>Read the product, court, market, governance, bootstrap, model, build, and test code.</li>
+          <li>Ran <code>node tools/build-site.js</code>, <code>node tools/validate-gamelab.js</code>, and <code>node tools/smoke-site.js</code>. All passed.</li>
+          <li>Used the rendered site on desktop and a narrow viewport.</li>
+          <li>Tested the mobile menu, disabled the private-vote safety lock, and confirmed the bribe result changed from failing to working.</li>
+          <li>Stepped through the first guided workflow event and checked browser warnings and errors.</li>
+          <li>Checked the live deployment’s browser-security headers and confirmed internal review files return 404.</li>
+        </ul>
+        <p class="callout"><strong>Scope limit</strong>This is a product, repository, security-design, and credibility review. It is not a smart-contract audit, cryptographic proof, economic certification, privacy impact assessment, or legal opinion, because the real implementation does not yet exist.</p>
+      </section>
+
+      <section class="section-block" id="glossary" aria-labelledby="glossary-title">
+        <p class="section-label">Plain words</p>
+        <h2 id="glossary-title">Short glossary</h2>
+        <dl class="glossary-grid">
+          <div><dt>Prediction market</dt><dd>A place where people put money behind different answers.</dd></div>
+          <div><dt>Protocol</dt><dd>A shared rulebook carried out by software.</dd></div>
+          <div><dt>Escrow</dt><dd>Money locked until the rules say who receives it.</dd></div>
+          <div><dt>Collateral</dt><dd>Money or assets backing a promise or claim.</dd></div>
+          <div><dt>Token</dt><dd>A digital claim ticket. It is not automatically company ownership.</dd></div>
+          <div><dt>Assertion</dt><dd>Someone’s proposed final answer.</dd></div>
+          <div><dt>Challenge</dt><dd>A formal objection to the proposed answer.</dd></div>
+          <div><dt>Bond</dt><dd>Money risked to discourage dishonest or careless claims.</dd></div>
+          <div><dt>Juror panel</dt><dd>A small group selected to decide a dispute.</dd></div>
+          <div><dt>Verified human</dt><dd>A person who has proved uniqueness. This is not proof of honesty or skill.</dd></div>
+          <div><dt>Private ballot</dt><dd>A vote that should not reveal how one person voted.</dd></div>
+          <div><dt>Appeal</dt><dd>A request for another, usually larger, panel to check a ruling.</dd></div>
+          <div><dt>Finality</dt><dd>The point when the decision pays and cannot reopen.</dd></div>
+          <div><dt>Governance</dt><dd>The process used to change system rules.</dd></div>
+          <div><dt>Aptitude test</dt><dd>A quiz used to estimate whether a juror understands a topic.</dd></div>
+          <div><dt>Sybil attack</dt><dd>One person pretending to be many different people.</dd></div>
+          <div><dt>Smart contract</dt><dd>Blockchain code that moves assets according to rules.</dd></div>
+          <div><dt>Threshold encryption</dt><dd>A lock that needs several key holders to cooperate before it opens.</dd></div>
+        </dl>
+      </section>
+
+      <section class="section-block" id="sources" aria-labelledby="sources-title">
+        <p class="section-label">Evidence</p>
+        <h2 id="sources-title">Key sources</h2>
+        <ol class="source-list">
+          <li><a href="index.html">Project home page</a>, especially claims and chapter map around <code>index.html:49–139</code>.</li>
+          <li><a href="demothemis.html">DemoThemis design</a>, especially lifecycle, private ballots, panels, scoring, and appeals around <code>demothemis.html:239–818</code>.</li>
+          <li><a href="game-theory.html">Break the court model</a> and <a href="assumptions.js">its assumption list</a>, including model computation around <code>game-theory.html:612–1127</code>.</li>
+          <li><a href="prediction-market.html">PredictionMoMo design</a>, including tokenization, pool birth, fixed offers, resolution, and parlays around <code>prediction-market.html:180–554</code>.</li>
+          <li><a href="hybrid-juror-prediction-market-integration.html">Bootstrap-loop economics</a>, including watcher and aptitude-test assumptions.</li>
+          <li><a href="governance.html">Governance design</a>, especially the two-token firewall around <code>governance.html:98–254</code>.</li>
+          <li><a href="tools/build-site.js">Build script</a>, <a href="tools/validate-gamelab.js">model validator</a>, and <a href="tools/smoke-site.js">site smoke test</a>.</li>
+          <li><a href="https://docs.world.org/world-id/overview">World ID Overview</a>, World developer documentation, reviewed 9 July 2026.</li>
+          <li><a href="https://docs.world.org/world-id/idkit/onchain-verification">World ID On-chain Verification</a>, World developer documentation, reviewed 9 July 2026.</li>
+          <li><a href="https://docs.world.org/world-id/credentials/11">World ID Selfie Check</a>, World developer documentation, reviewed 9 July 2026.</li>
+          <li><a href="https://www.cftc.gov/LawRegulation/FederalRegister/proposedrules/2026-05105.html">Prediction Markets: Advance Notice of Proposed Rulemaking</a>, U.S. Commodity Futures Trading Commission, 16 March 2026.</li>
+          <li><a href="https://www.gamblingcommission.gov.uk/licensees-and-businesses/licences-and-fees/sector/remote">Remote-sector guidance</a>, UK Gambling Commission, reviewed 9 July 2026.</li>
+          <li><a href="https://link.springer.com/chapter/10.1007/978-3-032-05036-6_4">Threshold Receipt-Free Voting with Server-Side Vote Validation</a>, E-Vote-ID 2025.</li>
+        </ol>
+      </section>
+
+      <section class="section-block" id="verdict" aria-labelledby="verdict-title">
+        <p class="section-label">Final assessment</p>
+        <h2 id="verdict-title">Bottom line</h2>
+        <div class="final-verdict">
+          <p>DemoThemis and PredictionMoMo form a thoughtful and unusual idea. The strongest part is the loop in which a prediction market gives a new human-jury court its first cases, fees, and learning data. The website explains that idea very well.</p>
+          <p>Today, however, this is an interactive proposal, not a working or proven financial system. Its hardest questions involve ballot privacy, guaranteed final decisions, token accounting, hidden conflicts, upgrades, identity, and law. The right next step is a small, exact specification and testnet experiment, not stronger safety claims.</p>
+          <p class="one-line">In one line: promising idea, excellent explanation, incomplete protocol, and not ready for real money.</p>
+        </div>
+      </section>
+    </main>
+
+    <aside class="rail">
+      <nav class="contents" aria-labelledby="contents-title">
+        <h2 id="contents-title">On this page</h2>
+        <ol>
+          <li><a href="#quick-answer">Quick answer</a></li>
+          <li><a href="#problem">The problem</a></li>
+          <li><a href="#how-it-works">How it works</a></li>
+          <li><a href="#bootstrap-loop">The bootstrap loop</a></li>
+          <li><a href="#status">What exists today</a></li>
+          <li><a href="#strengths">Strengths</a></li>
+          <li><a href="#critical-questions">Critical questions</a></li>
+          <li><a href="#product-ux">Product and UX</a></li>
+          <li><a href="#engineering">Repository review</a></li>
+          <li><a href="#roadmap">Recommended path</a></li>
+          <li><a href="#verification">What was checked</a></li>
+          <li><a href="#glossary">Glossary</a></li>
+          <li><a href="#sources">Sources</a></li>
+          <li><a href="#verdict">Bottom line</a></li>
+        </ol>
+      </nav>
+    </aside>
+  </div>
+
+  <footer>
+    <div class="footer-inner">
+      <strong>DemoThemis &amp; PredictionMoMo · Comprehensive Project Review</strong>
+      <span>Review date: 9 July 2026 · Static document · No live financial system tested</span>
+    </div>
+  </footer>
+</body>
+</html>

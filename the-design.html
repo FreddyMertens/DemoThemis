@@ -845,6 +845,139 @@
   .unlock.on { opacity: 1; background: var(--good-soft); border-color: color-mix(in srgb, var(--good) 35%, var(--line)); }
   .unlock.on .tag { color: var(--good); }
 
+  /* Complete lifecycle map: a calm reference layer beneath the guided run. */
+  .state-machine { margin-top: clamp(5rem, 9vw, 7.5rem) !important; padding-top: clamp(2.8rem, 5vw, 4rem); border-top: 1px solid var(--line); }
+  .state-machine > h2 { max-width: 42rem; }
+  .state-machine-intro { max-width: 50rem; color: var(--ink-soft); }
+  .machine-primer { display: flex; align-items: flex-start; gap: .62rem; max-width: 48rem; margin: 1.2rem 0 0; color: var(--muted); font-family: var(--sans); font-size: .86rem; line-height: 1.5; }
+  .machine-primer-mark { display: grid; flex: 0 0 auto; place-items: center; width: 1.65rem; height: 1.65rem; border: 1px solid color-mix(in srgb, var(--accent) 32%, var(--line)); border-radius: 999px; background: var(--accent-soft); color: var(--accent-ink); font-weight: 950; }
+  .machine-shell { --machine-market: #0d8273; --machine-market-soft: #e3f3ef; --machine-court: #5a4bd6; --machine-court-soft: #ece9fc; --machine-final: #0f8a65; --machine-final-soft: #e2f5ed; --machine-open: #9a5b16; --machine-open-soft: #fff3df; margin: 2rem 0 0; overflow: clip; border: 1px solid color-mix(in srgb, var(--line-strong) 88%, transparent); border-radius: 24px; background: color-mix(in srgb, var(--surface) 95%, #fff); box-shadow: 0 24px 56px -34px rgba(31, 36, 48, .28); font-family: var(--sans); }
+  .machine-toolbar { display: grid; grid-template-columns: minmax(0, auto) minmax(14rem, 1fr); gap: .78rem 1rem; align-items: center; border-bottom: 1px solid var(--line); background: linear-gradient(180deg, color-mix(in srgb, var(--surface) 98%, #fff), color-mix(in srgb, var(--bg) 52%, var(--surface))); padding: .85rem; }
+  .machine-route-controls { display: flex; flex-wrap: wrap; gap: .38rem; }
+  .machine-route-button { min-height: 2.75rem; border: 1px solid var(--line-strong); border-radius: 999px; background: var(--surface); color: var(--ink-soft); padding: .5rem .78rem; font: 850 .76rem/1 var(--sans); box-shadow: none; transition: color .16s ease, background .16s ease, border-color .16s ease, transform .16s ease, box-shadow .16s ease; }
+  .machine-route-button:hover { transform: translateY(-1px); border-color: color-mix(in srgb, var(--accent) 42%, var(--line)); color: var(--accent-ink); box-shadow: 0 7px 16px rgba(54, 46, 116, .08); }
+  .machine-route-button[aria-pressed="true"] { border-color: var(--accent); background: var(--accent); color: #fff; box-shadow: 0 7px 16px rgba(74, 60, 178, .18); }
+  .machine-route-summary { min-width: 0; margin: 0; color: var(--muted); font-size: .8rem; line-height: 1.42; }
+  .machine-route-summary strong { color: var(--ink); }
+  .machine-legend { display: flex; flex-wrap: wrap; gap: .55rem 1rem; align-items: center; border-bottom: 1px solid color-mix(in srgb, var(--line) 82%, transparent); padding: .62rem .9rem; color: var(--muted); font-size: .7rem; line-height: 1.3; }
+  .machine-legend-item { display: inline-flex; align-items: center; gap: .35rem; }
+  .machine-legend-swatch { width: 1.22rem; height: .66rem; border: 1px solid var(--line-strong); border-radius: 4px; background: var(--surface); }
+  .machine-legend-swatch.is-terminal { border-color: color-mix(in srgb, var(--machine-final) 44%, var(--line)); background: var(--machine-final-soft); }
+  .machine-legend-swatch.is-open { border: 1px dashed var(--machine-open); background: var(--machine-open-soft); }
+  .machine-legend-swatch.is-current { width: .68rem; height: .68rem; border: 2px solid var(--machine-court); border-radius: 999px; background: var(--surface); }
+  .machine-trade-rail { display: grid; grid-template-columns: auto minmax(0, 1fr); gap: .62rem; align-items: center; margin: .85rem .85rem 0; border: 1px solid color-mix(in srgb, var(--machine-market) 28%, var(--line)); border-radius: 13px; background: linear-gradient(90deg, color-mix(in srgb, var(--machine-market-soft) 70%, var(--surface)), color-mix(in srgb, var(--machine-court-soft) 52%, var(--surface))); padding: .58rem .72rem; color: var(--ink-soft); font-size: .76rem; line-height: 1.4; transition: opacity .18s ease, filter .18s ease; }
+  .machine-trade-rail strong { color: var(--machine-market); font-size: .67rem; letter-spacing: .08em; text-transform: uppercase; white-space: nowrap; }
+  .machine-shell[data-route="quiet"] .machine-trade-rail,
+  .machine-shell[data-route="exceptions"] .machine-trade-rail { opacity: 1; filter: grayscale(.9) saturate(.25); border-color: var(--line); background: color-mix(in srgb, var(--bg) 72%, var(--surface)); }
+  .machine-phase-grid { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: .7rem; padding: .85rem; }
+  .machine-phase { --phase-color: var(--machine-court); --phase-soft: var(--machine-court-soft); position: relative; min-width: 0; border: 1px solid color-mix(in srgb, var(--phase-color) 18%, var(--line)); border-radius: 17px; background: linear-gradient(180deg, color-mix(in srgb, var(--phase-soft) 36%, var(--surface)) 0, color-mix(in srgb, var(--surface) 96%, #fff) 7.5rem); padding: .66rem; transition: opacity .18s ease, filter .18s ease; }
+  .machine-phase[data-phase="build"] { --phase-color: var(--machine-market); --phase-soft: var(--machine-market-soft); }
+  .machine-phase[data-phase="check"] { --phase-color: #237f83; --phase-soft: #e2f1f1; }
+  .machine-phase[data-phase="judge"] { --phase-color: var(--machine-court); --phase-soft: var(--machine-court-soft); }
+  .machine-phase[data-phase="finish"] { --phase-color: var(--machine-final); --phase-soft: var(--machine-final-soft); }
+  .machine-phase:not(:last-child)::after { content: ""; position: absolute; z-index: 3; top: 2.28rem; right: -.88rem; width: 1rem; border-top: 2px solid color-mix(in srgb, var(--phase-color) 44%, var(--line)); }
+  .machine-phase:not(:last-child)::before { content: ""; position: absolute; z-index: 4; top: 2.02rem; right: -.88rem; border-top: .27rem solid transparent; border-bottom: .27rem solid transparent; border-left: .38rem solid color-mix(in srgb, var(--phase-color) 56%, var(--line-strong)); }
+  .machine-phase-head { min-height: 5.55rem; border-bottom: 1px solid color-mix(in srgb, var(--phase-color) 18%, var(--line)); padding: .18rem .16rem .62rem; }
+  .machine-phase-kicker { display: block; color: var(--phase-color); font-family: var(--mono); font-size: .65rem; font-weight: 950; letter-spacing: .08em; text-transform: uppercase; }
+  .machine-phase-head h3 { margin: .2rem 0 .18rem; color: var(--ink); font-size: .98rem; line-height: 1.12; }
+  .machine-phase-head p { margin: 0; color: var(--muted); font-size: .72rem; line-height: 1.35; }
+  .machine-phase-transition { display: inline-flex; align-items: center; width: fit-content; margin-top: .34rem; border-radius: 999px; background: color-mix(in srgb, var(--phase-soft) 72%, var(--surface)); color: color-mix(in srgb, var(--phase-color) 88%, var(--ink)); padding: .18rem .4rem; font-size: .68rem; font-weight: 950; line-height: 1.15; letter-spacing: .02em; text-transform: uppercase; }
+  .machine-phase-flow { display: grid; gap: .9rem; margin: 0; padding: .72rem 0 0; list-style: none; }
+  .machine-step { position: relative; min-width: 0; }
+  .machine-step:not(:last-child)::after { content: ""; position: absolute; left: 50%; bottom: -.9rem; width: 2px; height: .9rem; transform: translateX(-50%); border-radius: 999px; background: color-mix(in srgb, var(--line-strong) 90%, transparent); transition: background .18s ease, box-shadow .18s ease; }
+  .machine-step:not(:last-child)::before { content: ""; position: absolute; z-index: 2; left: calc(50% - .2rem); bottom: -.9rem; border-left: .2rem solid transparent; border-right: .2rem solid transparent; border-top: .28rem solid var(--line-strong); }
+  .machine-step.is-route-active:not(:last-child)::after { background: color-mix(in srgb, var(--phase-color) 66%, var(--line)); box-shadow: 0 0 0 2px color-mix(in srgb, var(--phase-soft) 52%, transparent); }
+  .machine-step.is-route-active:not(:last-child)::before { border-top-color: color-mix(in srgb, var(--phase-color) 74%, var(--line)); }
+  .machine-step.has-split-exit::after,
+  .machine-step.has-split-exit::before { display: none; }
+  .machine-flow-note { margin: .42rem .08rem 0; border-top: 1px dashed color-mix(in srgb, var(--phase-color) 30%, var(--line)); padding-top: .34rem; color: color-mix(in srgb, var(--phase-color) 82%, var(--ink)); font-size: .72rem; font-weight: 850; line-height: 1.4; text-align: center; }
+  .machine-state-row { display: grid; gap: .34rem; min-width: 0; }
+  .machine-state-row.is-branch { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+  .machine-state { position: relative; display: grid; align-content: start; gap: .22rem; width: 100%; min-width: 0; min-height: 4.65rem; overflow: hidden; border: 1px solid color-mix(in srgb, var(--line-strong) 92%, transparent); border-left: 3px solid color-mix(in srgb, var(--phase-color) 58%, var(--line)); border-radius: 11px; background: color-mix(in srgb, var(--surface) 96%, #fff); color: var(--ink); padding: .52rem .5rem; box-shadow: 0 5px 13px rgba(31, 36, 48, .035); text-align: left; transition: opacity .2s ease, filter .2s ease, border-color .18s ease, background .18s ease, box-shadow .18s ease, transform .18s ease; }
+  .machine-state:hover { transform: translateY(-1px); border-color: color-mix(in srgb, var(--phase-color) 48%, var(--line)); box-shadow: 0 9px 18px rgba(31, 36, 48, .08); }
+  .machine-state:focus-visible { outline: 3px solid color-mix(in srgb, var(--phase-color) 30%, transparent); outline-offset: 2px; }
+  .machine-state-top { display: flex; flex-wrap: wrap; justify-content: space-between; gap: .24rem; min-width: 0; }
+  .machine-state-kind, .machine-state-branch, .machine-sim-chip { display: inline-flex; align-items: center; width: fit-content; min-height: 1.12rem; border-radius: 999px; padding: .14rem .34rem; font-size: .68rem; font-weight: 950; line-height: 1.05; letter-spacing: .02em; text-transform: uppercase; }
+  .machine-state-kind { background: color-mix(in srgb, var(--phase-soft) 78%, var(--surface)); color: color-mix(in srgb, var(--phase-color) 92%, var(--ink)); }
+  .machine-state-branch { border: 1px solid var(--line); background: var(--bg); color: var(--muted); }
+  .machine-state-title { display: block; color: var(--ink); font-size: .8rem; font-weight: 950; line-height: 1.2; overflow-wrap: anywhere; }
+  .machine-state-short { display: block; color: var(--muted); font-size: .72rem; line-height: 1.34; overflow-wrap: anywhere; }
+  .machine-state[data-kind="decision"] { border-left-color: var(--machine-court); background: color-mix(in srgb, var(--machine-court-soft) 30%, var(--surface)); }
+  .machine-state[data-kind="terminal"] { border-color: color-mix(in srgb, var(--machine-final) 36%, var(--line)); border-left-color: var(--machine-final); background: color-mix(in srgb, var(--machine-final-soft) 50%, var(--surface)); }
+  .machine-state[data-kind="optional"] { border-style: dashed; }
+  .machine-state.is-selected { border-color: var(--phase-color); background: color-mix(in srgb, var(--phase-soft) 52%, var(--surface)); box-shadow: 0 0 0 2px color-mix(in srgb, var(--phase-color) 12%, transparent), 0 12px 24px rgba(31, 36, 48, .1); }
+  .machine-state-detail { display: grid; gap: .34rem; margin-top: .26rem; border-top: 1px solid color-mix(in srgb, var(--phase-color) 18%, var(--line)); padding-top: .42rem; color: var(--ink-soft); font-size: .72rem; font-weight: 560; line-height: 1.44; }
+  .machine-state-detail[hidden] { display: none; }
+  .machine-state-detail b { color: var(--ink); font-weight: 950; }
+  .machine-state-facts { display: grid; gap: .16rem; color: var(--muted); }
+  .machine-state-next { color: color-mix(in srgb, var(--phase-color) 88%, var(--ink)); }
+  .machine-shell.is-filtered .machine-state.is-dimmed { opacity: 1; filter: grayscale(.9) saturate(.28); border-color: var(--line); background: color-mix(in srgb, var(--bg) 72%, var(--surface)); box-shadow: none; }
+  .machine-shell.is-filtered .machine-state.is-dimmed:hover,
+  .machine-shell.is-filtered .machine-state.is-dimmed:focus-visible { opacity: 1; filter: grayscale(.2) saturate(.82); }
+  .machine-phase.is-dimmed-phase { opacity: 1; filter: grayscale(.72) saturate(.45); }
+  .machine-shell[data-route="quiet"] .machine-phase[data-phase="check"]::after,
+  .machine-shell[data-route="quiet"] .machine-phase[data-phase="check"]::before { opacity: .18; }
+  .machine-state.is-sim-current { box-shadow: 0 0 0 2px color-mix(in srgb, var(--machine-court) 24%, transparent), 0 9px 20px rgba(74, 60, 178, .12); }
+  .machine-state.is-sim-current .machine-sim-chip { display: inline-flex; background: var(--machine-court); color: #fff; }
+  .machine-sim-chip { display: none; }
+  .machine-state.is-route-tracing { animation: machine-route-trace .48s cubic-bezier(.2,.8,.25,1) both; animation-delay: var(--machine-delay, 0ms); }
+  @keyframes machine-route-trace {
+    0% { transform: translateY(2px); box-shadow: 0 0 0 0 color-mix(in srgb, var(--phase-color) 0%, transparent); }
+    55% { transform: translateY(-1px); box-shadow: 0 0 0 3px color-mix(in srgb, var(--phase-color) 17%, transparent), 0 10px 20px rgba(31, 36, 48, .08); }
+    100% { transform: translateY(0); }
+  }
+  .machine-exceptions { margin: .1rem .85rem .85rem; border: 1px solid color-mix(in srgb, var(--machine-open) 26%, var(--line)); border-radius: 16px; background: color-mix(in srgb, var(--machine-open-soft) 38%, var(--surface)); padding: .72rem; }
+  .machine-subhead { display: flex; flex-wrap: wrap; justify-content: space-between; gap: .35rem 1rem; align-items: baseline; margin: 0 0 .6rem; }
+  .machine-subhead h3 { margin: 0; color: var(--ink); font-size: .9rem; }
+  .machine-subhead p { margin: 0; color: var(--muted); font-size: .72rem; line-height: 1.35; }
+  .machine-exception-grid { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: .42rem; }
+  .machine-exception { --phase-color: var(--machine-open); --phase-soft: var(--machine-open-soft); min-height: 6.3rem; border-left-color: var(--machine-open); }
+  .machine-exception[data-kind="open"] { border: 1px dashed var(--machine-open); border-left-width: 3px; background: color-mix(in srgb, var(--machine-open-soft) 68%, var(--surface)); }
+  .machine-exception[data-kind="described"] { --phase-color: var(--machine-final); --phase-soft: var(--machine-final-soft); border-color: color-mix(in srgb, var(--machine-final) 28%, var(--line)); border-left: 3px solid var(--machine-final); }
+  .machine-foundation { margin: 0 .85rem .85rem; border-top: 1px solid var(--line); padding-top: .75rem; }
+  .machine-foundation-grid { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: .42rem; }
+  .machine-foundation-item { min-width: 0; border-left: 2px solid color-mix(in srgb, var(--machine-court) 36%, var(--line)); padding: .16rem .58rem; color: var(--muted); font-size: .7rem; line-height: 1.42; }
+  .machine-foundation-item b { display: block; margin-bottom: .08rem; color: var(--ink); font-size: .74rem; }
+  .machine-text-outline { margin: 0 .85rem .85rem; border: 1px solid var(--line); border-radius: 12px; background: var(--surface); padding: .62rem .7rem; color: var(--ink-soft); font-size: .72rem; }
+  .machine-text-outline summary { cursor: pointer; color: var(--accent-ink); font-weight: 900; }
+  .machine-text-content { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: .75rem 1rem; margin-top: .72rem; }
+  .machine-text-content section { margin: 0; }
+  .machine-text-content h4 { margin: 0 0 .26rem; color: var(--ink); font-size: .72rem; }
+  .machine-text-content ol, .machine-text-content ul { margin: 0; padding-left: 1.05rem; color: var(--muted); }
+  .machine-text-content li { margin: .16rem 0; line-height: 1.38; }
+  .machine-honesty-note { margin: 0; border-top: 1px solid var(--line); background: color-mix(in srgb, var(--bg) 64%, var(--surface)); padding: .72rem .9rem .82rem; color: var(--muted); font-size: .68rem; line-height: 1.45; }
+  .machine-honesty-note b { color: var(--machine-open); }
+  .sr-only { position: absolute !important; width: 1px !important; height: 1px !important; overflow: hidden !important; clip: rect(0, 0, 0, 0) !important; clip-path: inset(50%) !important; white-space: nowrap !important; }
+
+  @media (max-width: 920px) {
+    .machine-phase-grid { grid-template-columns: 1fr; }
+    .machine-phase:not(:last-child)::after { top: auto; right: auto; bottom: -.74rem; left: 50%; width: 0; height: .74rem; border-top: 0; border-left: 2px solid color-mix(in srgb, var(--phase-color) 44%, var(--line)); }
+    .machine-phase:not(:last-child)::before { top: auto; right: auto; bottom: -.78rem; left: calc(50% - .27rem); border-top: .38rem solid color-mix(in srgb, var(--phase-color) 56%, var(--line-strong)); border-right: .27rem solid transparent; border-bottom: 0; border-left: .27rem solid transparent; }
+    .machine-phase-head { min-height: 0; }
+  }
+  @media (max-width: 720px) {
+    .machine-toolbar { grid-template-columns: 1fr; }
+    .machine-route-summary { min-height: 2.2rem; }
+    .machine-exception-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+    .machine-foundation-grid { grid-template-columns: 1fr; }
+  }
+  @media (max-width: 560px) {
+    .state-machine { padding-top: 2.4rem; }
+    .machine-shell { border-radius: 18px; }
+    .machine-route-controls { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); }
+    .machine-route-button { width: 100%; min-height: 2.8rem; padding-inline: .45rem; }
+    .machine-legend { align-items: flex-start; }
+    .machine-trade-rail { grid-template-columns: 1fr; }
+    .machine-exception-grid, .machine-text-content { grid-template-columns: 1fr; }
+  }
+  @media (max-width: 430px) {
+    .machine-state-row.is-branch { grid-template-columns: 1fr; }
+  }
+  @media (max-width: 380px) {
+    .machine-route-controls { grid-template-columns: 1fr; }
+    .machine-state { min-height: 4.35rem; }
+  }
+
 
 
   #system-run, #system-run .run-game, #system-run .simulator-island, #system-run .product-demo { min-width: 0; }
@@ -952,7 +1085,7 @@
   @media (max-width: 620px) {
     .to-top { display: none; }
     .content.wrap { padding-left: .35rem; padding-right: .35rem; }
-    #system-run { padding-bottom: 18rem; }
+    #system-run { padding-bottom: 0; }
     .unlock-grid { grid-template-columns: 1fr; }
     .run-control-panel { padding: .54rem; border-radius: 12px; gap: .54rem; }
     .simulator-island { padding: .35rem; border-radius: 12px; gap: .58rem; }
@@ -1068,6 +1201,7 @@
       <a href="hybrid-juror-prediction-market-integration.html"><span class="ch">05</span> Bootstrap loop</a>
       <a href="governance.html"><span class="ch">06</span> Governance</a>
       <a href="glossary.html">Glossary</a>
+      <a href="mvp.html">Live MVP</a>
     </div>
   </div>
 </nav>
@@ -1151,6 +1285,70 @@
     </div>
   </section>
 
+  <section class="state-machine" id="system-state-machine" aria-labelledby="state-machine-title">
+    <p class="sec-label">The complete state map</p>
+    <h2 id="state-machine-title">Every route through one market</h2>
+    <p class="state-machine-intro">The simulator above follows the long, dramatic route: a false answer is challenged, a jury rules, and the loser appeals. That is only one path. The map below keeps the common quiet settlement, every product branch, the full court loop, and the failure exits in view at the same time.</p>
+    <p class="machine-primer"><span class="machine-primer-mark" aria-hidden="true">?</span><span><b>A state machine is a map of “where are we now?” and “what may happen next?”</b> Choose a route to light it once, or select any state to unfold who acts, where the money sits, and what moves the system forward.</span></p>
+
+    <div class="machine-shell" id="systemStateMachine" data-route="all">
+      <div class="machine-toolbar">
+        <div class="machine-route-controls" role="group" aria-label="Highlight a route through the system">
+          <button class="machine-route-button" type="button" data-machine-route="all" aria-pressed="true">Whole map</button>
+          <button class="machine-route-button" type="button" data-machine-route="quiet" aria-pressed="false">Most markets</button>
+          <button class="machine-route-button" type="button" data-machine-route="dispute" aria-pressed="false">Disputed market</button>
+          <button class="machine-route-button" type="button" data-machine-route="exceptions" aria-pressed="false">What can go wrong?</button>
+        </div>
+        <p class="machine-route-summary" id="machineRouteSummary" aria-live="polite"><strong>Whole map.</strong> Alternative market forms, quiet settlement, court, appeals, finality, learning, and recovery rules are all visible.</p>
+      </div>
+
+      <div class="machine-legend" aria-label="State map legend">
+        <span class="machine-legend-item"><span class="machine-legend-swatch" aria-hidden="true"></span> Described transition</span>
+        <span class="machine-legend-item"><span class="machine-legend-swatch is-terminal" aria-hidden="true"></span> Final result or release state</span>
+        <span class="machine-legend-item"><span class="machine-legend-swatch is-open" aria-hidden="true"></span> Pre-written rule still needed</span>
+        <span class="machine-legend-item"><span class="machine-legend-swatch is-current" aria-hidden="true"></span> Current simulator event</span>
+      </div>
+
+      <aside class="machine-trade-rail" data-machine-routes="dispute" aria-label="Trading can continue during resolution">
+        <strong>Runs beside the clock</strong>
+        <span>Once claims graduate into wallet tokens, YES and NO can keep trading while the answer, challenge, jury, and appeal are still unresolved. Trading is a parallel capability, not another compulsory state.</span>
+      </aside>
+
+      <div class="machine-phase-grid" id="machinePhaseGrid" aria-label="Complete market lifecycle"></div>
+
+      <section class="machine-exceptions" aria-labelledby="machine-exceptions-title">
+        <div class="machine-subhead">
+          <h3 id="machine-exceptions-title">When the simple path breaks</h3>
+          <p>Green has a described exit. Dashed amber needs a precise rule before launch.</p>
+        </div>
+        <div class="machine-exception-grid" id="machineExceptionGrid"></div>
+      </section>
+
+      <section class="machine-foundation" aria-labelledby="machine-foundation-title">
+        <div class="machine-subhead">
+          <h3 id="machine-foundation-title">Rules underneath every state</h3>
+          <p>These are guardrails and control planes, not extra lifecycle steps.</p>
+        </div>
+        <div class="machine-foundation-grid">
+          <div class="machine-foundation-item"><b>Custody and proof</b>Funds lock before an unknown panel exists. One bound random draw, live presence checks, private ballots, and an aggregate tally protect each disputed case.</div>
+          <div class="machine-foundation-item"><b>Two governments</b>The market token may tune business settings, including a 0–1% margin above the court invoice. Person-weighted court governance may tune court settings. Neither is the judge in an active case.</div>
+          <div class="machine-foundation-item"><b>Constitutional firewall</b>The court invoice routes first, company money cannot buy the bench, final money never reopens, and later collusion reports punish people rather than rewrite payment.</div>
+        </div>
+      </section>
+
+      <details class="machine-text-outline">
+        <summary>Read the complete flow as text</summary>
+        <div class="machine-text-content" id="machineTextFlow"></div>
+      </details>
+
+      <noscript>
+        <p class="machine-honesty-note"><b>JavaScript is off.</b> In plain text: define the question; open public or private escrow; price the market; keep pooled claims or graduate them to wallet tokens; wait for the event and a bonded answer; settle quietly if nobody challenges; otherwise lock a case, draw and verify jurors, collect private ballots, allow a funded larger-panel appeal, then pay and close. Invalid events, missing assertions, exhausted panels, proof failures, and infrastructure recovery still require explicit launch rules.</p>
+      </noscript>
+      <p class="machine-honesty-note"><b>Honesty note:</b> “Described” means the concept explains the transition; it does not mean production code exists. A dashed state is intentionally left unresolved here instead of pretending the current chapters already specify its safe exit.</p>
+      <div class="sr-only" id="machineAnnouncement" aria-live="polite"></div>
+    </div>
+  </section>
+
   <footer class="endnote reveal">
     <nav id="series" aria-label="Where you are in the series"></nav>
     <div class="sitemap sitemap-flat">
@@ -1161,6 +1359,7 @@
       <a href="hybrid-juror-prediction-market-integration.html">5. Bootstrap loop</a>
       <a href="governance.html">6. Governance</a>
       <a href="glossary.html">Glossary</a>
+      <a href="mvp.html">Live MVP</a>
       <a href="index.html">Home &middot; the map</a>
     </div>
     <p class="signoff">One market, every mechanism, the system made visible.</p>
@@ -1382,13 +1581,13 @@
       fees: 2360,
       loop: ["cases", "fees", "jurors"],
       log: "A bought juror can take money and vote honestly, which breaks the bribe contract.",
-      actions: ["Seal ballot", "View reserve"]
+      actions: ["Seal ballot", "Prove reserve"]
     },
     {
       title: "First verdict lands",
       sub: "Slashes feed rewards.",
       mission: "Publish the tally proof",
-      text: "The tally opens only as an aggregate with a proof. Wrong-side votes on a lopsided case lose a slice of reserve, and those slashes go to the reward pool instead of the winning panel.",
+      text: "The tally opens only as an aggregate with a proof. Wrong-side votes on a lopsided case lose a private slice of reserve; only the aggregate transfer and proof are public.",
       nodes: ["ballot", "verdict"],
       features: ["instant", "fixed", "tokens", "private", "trade", "parlay"],
       components: ["escrow", "watcher", "draw", "personhood", "ballot", "reserve"],
@@ -1403,7 +1602,7 @@
       fees: 2360,
       loop: ["cases", "fees", "jurors", "rep"],
       log: "The verdict changes prices, but the losing side can still climb.",
-      actions: ["Publish proof", "View reward update"]
+      actions: ["Publish proof", "Verify reward total"]
     },
     {
       title: "Appeal climbs",
@@ -1553,12 +1752,12 @@
     {
       lane: "Finality loop",
       title: "Verdict and slashes",
-      body: "The tally opens as an aggregate proof. Wrong-side reserve on a lopsided case can be slashed into the reward pool.",
+      body: "The tally opens as an aggregate proof. Wrong-side reserve can be debited privately while only the aggregate reward-pool transfer is public.",
       change: "First verdict lands",
       why: "The court can punish lazy or wrong votes without paying the winning panel extra.",
       next: "Appeal ladder",
       tone: "final",
-      results: ["The aggregate proof lands and reprices the unresolved claims.", "Wrong-side reserve moves to the reward pool instead of becoming a bribe target."]
+      results: ["The aggregate proof lands and reprices the unresolved claims.", "Private debits fund a proved aggregate transfer without identifying a juror's vote."]
     },
     {
       lane: "Finality loop",
@@ -1751,7 +1950,7 @@
       action: "Review appeal price",
       from: "Court observer",
       to: "Losing side",
-      targetTitle: "Reward movement",
+      targetTitle: "Aggregate reward movement",
       note: "The losing side decides whether a larger panel is worth paying for."
     },
     {
@@ -1819,6 +2018,627 @@
     if (className) el.className = className;
     if (text != null) el.textContent = text;
     return el;
+  }
+
+  var SYSTEM_PHASES = [
+    { id: "build", number: "01", title: "Build the market", note: "Choose public or private escrow. Only a robust public pool graduates into wallet tokens.", transition: "All forms → answer check" },
+    { id: "check", number: "02", title: "Check the answer", note: "Wait for a bonded answer. Most markets finish here without ever needing a jury.", transition: "Challenge only → court" },
+    { id: "judge", number: "03", title: "Decide a dispute", note: "Lock the case, draw verified humans, vote privately, and widen the panel only when an appeal is funded.", transition: "Final result → pay" },
+    { id: "finish", number: "04", title: "Pay and learn", note: "Release money once, close permanently, then let learning, accountability, and growth continue in parallel.", transition: "Payout ends · learning continues" }
+  ];
+
+  var SYSTEM_STATES = [
+    {
+      id: "rules-fixed", phase: "build", order: 1, title: "Question and rules fixed",
+      short: "The answer choices, close time, and evidence source are written before money arrives.",
+      routes: ["quiet", "dispute", "exceptions"], sim: [],
+      detail: "The market must say what counts as YES, NO, or another permitted result before anyone can bet. Clear rules make later evidence checkable.",
+      actor: "Market creator; protocol validates the format", money: "No outcome money has moved yet", condition: "Before the first stake", next: "Open a public pool or fund a private room"
+    },
+    {
+      id: "public-pool", phase: "build", order: 2, group: "market-entry", branch: "Public · continue", afterNote: "Public continues ↓ · Private skips to Phase 02 →", title: "First stake opens a public pool",
+      short: "Any amount can create the market and enter protocol escrow.",
+      routes: ["quiet", "dispute"], sim: [0],
+      detail: "There is no listing committee or minimum launch size. The first stake creates the public market and locks its funds in the protocol.",
+      actor: "First trader", money: "First stake is locked in escrow", condition: "A valid question exists", next: "More pool bets and fixed offers"
+    },
+    {
+      id: "private-room", phase: "build", order: 2, group: "market-entry", branch: "Private · Phase 02", title: "Private room is funded",
+      short: "Invited people accept named odds with neutral escrow and the same court.",
+      routes: ["quiet", "dispute"], sim: [4],
+      detail: "A private market is an alternative entry, not a later stage of every public market. Only matched money is at risk; unmatched money has a defined return path.",
+      actor: "Invited counterparties", money: "Matched stakes lock; unmatched offers wait", condition: "An invited party accepts the terms", next: "Trade until close, or return unmatched money"
+    },
+    {
+      id: "price-formation", phase: "build", order: 3, title: "Public pool prices and offers",
+      short: "Crowd odds move with both sides; better fixed prices fill before overflow joins the pool.",
+      routes: ["quiet", "dispute"], sim: [1, 2],
+      detail: "Two pricing tools coexist. Crowd stakes move the pool price, while standing fixed-odds offers promise a named price to later traders.",
+      actor: "Traders", money: "Filled stakes remain in escrow", condition: "The market is open", next: "Test whether the market is robust enough to graduate"
+    },
+    {
+      id: "robustness-gate", phase: "build", order: 4, kind: "decision", title: "Is the public pool robust?",
+      short: "Disagreement, maker depth, and enough time must all clear the graduation gate.",
+      routes: ["quiet", "dispute"], sim: [],
+      detail: "Graduation is not just a pot-size trigger. The proposal requires a disagreement floor, usable depth, and a time lock so one burst of activity cannot fake a mature market.",
+      actor: "Protocol checks objective thresholds", money: "Still fully backed in escrow", condition: "The checks are evaluated while the market is live", next: "Stay pooled, or mint transferable YES and NO claims"
+    },
+    {
+      id: "pooled-claims", phase: "build", order: 5, group: "claim-form", branch: "Pool · Phase 02", afterNote: "Pooled claims go to Phase 02 → · Tokenized claims may take the optional parlay ↓", title: "Claims stay inside the pool",
+      short: "A smaller market can keep running without wallet tokens.",
+      routes: ["quiet", "dispute"], sim: [],
+      detail: "Failure to graduate is not market failure. Positions remain internal accounting claims, and the pool can still close and settle from the final answer.",
+      actor: "Protocol pool", money: "One escrowed pool", condition: "A graduation check has not passed", next: "Event or close time"
+    },
+    {
+      id: "tokenized-claims", phase: "build", order: 5, group: "claim-form", branch: "Token · optional", title: "Wallet claims go live",
+      short: "Fully backed YES and NO claims become transferable in user wallets.",
+      routes: ["quiet", "dispute"], sim: [3],
+      detail: "Graduation changes the product form, not the intended backing. Each token should remain a claim on locked collateral and can trade in an order book; the exact pool-to-token conservation, mint, burn, and dust equations still need launch-grade specification.",
+      actor: "Protocol mints; users self-custody", money: "Collateral stays locked behind the claims", condition: "Every robustness check passes", next: "Order-book trading, optional parlays, then resolution"
+    },
+    {
+      id: "parlay-route", phase: "build", order: 6, kind: "optional", branch: "Token route only", title: "Optional atomic parlay",
+      short: "Every liquid leg fills together, or the whole transaction changes nothing.",
+      routes: [], sim: [5],
+      detail: "A parlay branches from liquid token markets. It is not the next stage of every market: all legs must fill in one transaction or the transaction reverts.",
+      actor: "Trader and routing contract", money: "Moves only if every leg fills", condition: "All selected legs have enough liquidity", next: "Combined claim, or a clean revert"
+    },
+
+    {
+      id: "event-close", phase: "check", order: 1, title: "Event or close time arrives",
+      short: "New betting ends according to the market's written clock.",
+      routes: ["quiet", "dispute", "exceptions"], sim: [],
+      detail: "The real-world event finishes, or the market reaches its scheduled close. The system now needs a usable outcome rather than another price.",
+      actor: "Protocol clock and real-world evidence", money: "Still locked; no winner is paid", condition: "Close rule is reached", next: "Await a bonded answer"
+    },
+    {
+      id: "awaiting-answer", phase: "check", order: 2, title: "Awaiting a bonded answer",
+      short: "Someone must put money behind a claimed outcome.",
+      routes: ["quiet", "dispute", "exceptions"], sim: [],
+      detail: "The optimistic layer begins only when an asserter names the result and posts a bond. The bond makes a careless or dishonest answer costly.",
+      actor: "Any eligible asserter", money: "Market escrow waits; no payout yet", condition: "The event is ready to resolve", next: "Bonded answer, or an assertion-timeout rule"
+    },
+    {
+      id: "assertion-posted", phase: "check", order: 3, title: "Answer and bond are posted",
+      short: "One claimed result becomes the answer to inspect.",
+      routes: ["quiet", "dispute", "exceptions"], sim: [6],
+      detail: "The asserted result is public and its bond is locked. This is provisional truth, not final truth.",
+      actor: "Asserter", money: "Assertion bond joins the still-locked market escrow", condition: "A valid assertion is submitted", next: "Paid watcher window"
+    },
+    {
+      id: "watch-window", phase: "check", order: 4, title: "Paid watcher window",
+      short: "Anyone can check the claim; catching a false answer earns its bond.",
+      routes: ["quiet", "dispute"], sim: [],
+      detail: "The design pays for vigilance instead of hoping for volunteers. A correct assertion should pass quietly; a false one gives watchers a reason to challenge.",
+      actor: "Independent watchers", money: "Assertion bond is exposed to a successful challenger", condition: "The configured review window is open", next: "Quiet result or funded dispute"
+    },
+    {
+      id: "challenge-gate", phase: "check", order: 5, kind: "decision", title: "Was it challenged in time?",
+      short: "This one decision splits the common path from the court path.",
+      routes: ["quiet", "dispute", "exceptions"], sim: [],
+      detail: "No timely challenge lets the optimistic answer harden. A valid challenge with stake locks a real case for DemoThemis.",
+      actor: "Watcher or other challenger", money: "Challenge stake locks beside the assertion bond", condition: "Before the configured window closes", next: "Quiet finality if no; court intake if yes"
+    },
+    {
+      id: "quiet-result", phase: "check", order: 6, group: "challenge-outcome", branch: "No · Phase 04", kind: "terminal", title: "Quiet result hardens",
+      short: "The proposal expects roughly 95% of markets to finish without a jury.",
+      routes: ["quiet"], sim: [],
+      detail: "When nobody disputes the bonded answer before the deadline, it becomes the final release rule. This is the ordinary route the dramatic simulator does not show.",
+      actor: "Protocol clock", money: "Ready for one final release", condition: "Watch window expires cleanly", next: "Pay winners and close"
+    },
+    {
+      id: "dispute-open", phase: "check", order: 6, group: "challenge-outcome", branch: "Yes · Phase 03", title: "Dispute case opens",
+      short: "The claim, evidence, stakes, and funds move into the court path.",
+      routes: ["dispute"], sim: [7],
+      detail: "A funded challenge stops optimistic settlement and creates a case. Trading can continue for tokenized claims, but the escrow cannot pay until the court path finishes.",
+      actor: "Protocol court intake", money: "Market, assertion, and challenge funds remain locked", condition: "A valid funded challenge arrives", next: "Lock the case before any panel is known"
+    },
+
+    {
+      id: "case-locked", phase: "judge", order: 1, title: "Case and escrow lock",
+      short: "Evidence, value at stake, and dispute contents freeze before the draw.",
+      routes: ["dispute", "exceptions"], sim: [],
+      detail: "Locking first prevents parties from changing the case after seeing who will judge it. It also fixes the inputs used to choose panel size and appeal cost.",
+      actor: "DemoThemis intake", money: "All relevant funds remain in escrow", condition: "The challenge is accepted", next: "Choose the correct court route"
+    },
+    {
+      id: "court-route", phase: "judge", order: 2, kind: "decision", title: "Objective or rubric court?",
+      short: "Use objective truth when reality will grade it; use a disclosed rubric when it will not.",
+      routes: ["dispute"], sim: [],
+      detail: "The two courts share draw, privacy, and appeal rules but grade jurors differently. Objective cases can later become answer-key tests; subjective cases need rubric and appeal evidence.",
+      actor: "Pre-written case rule", money: "Unchanged in escrow", condition: "The answer type is known before judgment", next: "Build the panel plan"
+    },
+    {
+      id: "panel-drawn", phase: "judge", order: 3, title: "Panel plan and one bound draw",
+      short: "Stakes choose 7, 15, or 31 seats; the beacon chooses people once, with no re-roll.",
+      routes: ["dispute", "exceptions"], sim: [8],
+      detail: "Panel size grows with value. A 31-seat draw uses jurors with long case histories, and the largest cases may use several non-overlapping 31-seat panels in parallel. Every seat still comes from a public, replayable draw.",
+      actor: "Public randomness beacon and deterministic rules", money: "Juror budget is reserved; case escrow stays locked", condition: "Case value and rung are fixed", next: "Conflict and live-presence checks"
+    },
+    {
+      id: "seat-checked", phase: "judge", order: 4, title: "Conflicts removed; humans check in",
+      short: "Wallet conflicts are replaced, and the drawn person proves live presence for this case.",
+      routes: ["dispute", "exceptions"], sim: [8],
+      detail: "A juror holding the disputed market position is skipped by deterministic replacement. A missed presence grace period activates a standby and records a reliability ding rather than a verdict-linked slash.",
+      actor: "Drawn jurors, World App proof, deterministic standby list", money: "Still locked; no vote-dependent payment", condition: "Before a ballot unlocks", next: "Evidence review and private ballot"
+    },
+    {
+      id: "private-ballot", phase: "judge", order: 5, title: "Evidence and private ballot",
+      short: "Jurors review the same record and may silently re-key until the deadline.",
+      routes: ["dispute"], sim: [9],
+      detail: "The court reveals only the aggregate result. Hidden individual ballots and re-keying make a photographed or promised vote a weak receipt for a briber.",
+      actor: "Verified seated jurors", money: "Juror reserve stays pending", condition: "Ballot window is open", next: "Aggregate tally proof"
+    },
+    {
+      id: "provisional-verdict", phase: "judge", order: 6, title: "Aggregate verdict lands",
+      short: "A tally is public, but individual votes stay closed and money is not final yet.",
+      routes: ["dispute", "exceptions"], sim: [10],
+      detail: "The first panel's result is provisional during the appeal window. Juror quality, slashes, and rewards wait for the last outcome so a later correction protects honest dissent.",
+      actor: "Threshold tally process", money: "Escrow and juror reserves remain pending", condition: "Enough valid private ballots are tallied", next: "Configured appeal window"
+    },
+    {
+      id: "appeal-gate", phase: "judge", order: 7, kind: "decision", title: "Was a valid appeal funded?",
+      short: "A solo bond or a verified losing-side petition can pay for the next rung.",
+      routes: ["dispute", "exceptions"], sim: [11],
+      detail: "The next rung costs the highest of panel pay, attack-risk pricing, and delay rent. The chapters disagree on the exact duration, so the safe state label is simply a configured appeal window.",
+      actor: "Losing party or at least 5% of losing-side verified people", money: "Appeal bond or petition stakes lock", condition: "Before the configured appeal deadline", next: "Final result, or a larger new panel"
+    },
+    {
+      id: "court-final", phase: "judge", order: 8, group: "appeal-outcome", branch: "No/top · Phase 04", kind: "terminal", title: "Court result hardens",
+      short: "No timely appeal—or the maximum rung—ends the settlement clock.",
+      routes: ["dispute"], sim: [],
+      detail: "Finality is deliberate. Once the configured window closes or the 31-seat top rung finishes, no later evidence can reopen the settled money.",
+      actor: "Protocol clock and appeal ladder", money: "Ready for final release", condition: "No valid appeal remains", next: "Pay winners and close"
+    },
+    {
+      id: "larger-panel", phase: "judge", order: 8, group: "appeal-outcome", branch: "Funded · loop ↺", title: "Larger fresh panel",
+      short: "The case loops through 7 → 15 → 31, never the same panel size twice.",
+      routes: ["dispute"], sim: [11],
+      detail: "A new, wider, non-overlapping panel re-hears the locked case. A failed appeal bond feeds the reward pool; a vindicated appellant is refunded with a bonus.",
+      actor: "New randomly drawn panel", money: "Appeal funding pays the rung; case escrow stays locked", condition: "A valid appeal exists and another rung remains", next: "Loop to draw, presence, ballot, and verdict"
+    },
+
+    {
+      id: "release-rule", phase: "finish", order: 1, kind: "terminal", title: "One final release rule",
+      short: "Quiet result and final court verdict converge on the same irreversible answer.",
+      routes: ["quiet", "dispute", "exceptions"], sim: [],
+      detail: "The system has exactly one authoritative outcome for payment. Convergence prevents the optimistic path and court path from paying different answers.",
+      actor: "Settlement contract", money: "All escrow is still locked for the last instant", condition: "A result has become final", next: "Settle each product form"
+    },
+    {
+      id: "settle-funds", phase: "finish", order: 2, title: "Settle funds and route the invoice",
+      short: "One transaction pays each product form, routes fees, and settles bonds, reserves, refunds, bonuses, and slashes.",
+      routes: ["quiet", "dispute", "exceptions"], sim: [12],
+      detail: "Settlement is atomic, not two clocks. Pool winners split the pot, tokens redeem, private escrow and parlays follow their result, and the constitutional invoice routes first: 70% juror pay, 20% reward pool, 10% operations. Appeal and juror consequences use the final outcome.",
+      actor: "Settlement and accounting contracts", money: "Routes from escrow to entitled wallets and constitutional destinations", condition: "The final release rule is available", next: "Permanent closed record"
+    },
+    {
+      id: "closed-record", phase: "finish", order: 4, title: "Market closes permanently",
+      short: "A signed record remains; public cases are public, private arbitration stays private by default.",
+      routes: ["quiet", "dispute"], sim: [],
+      detail: "The payment state is immutable, but an auditable record can still support curation, reputation, and later collusion investigation.",
+      actor: "Protocol record layer", money: "Already settled and cannot reopen", condition: "Settlement transaction completes", next: "Curation and long-term accountability"
+    },
+    {
+      id: "curation-gate", phase: "finish", order: 5, kind: "decision", title: "Is this a clean teaching case?",
+      short: "Volume, watcher coverage, a clean window, and an unambiguous answer decide whether it enters the library.",
+      routes: ["quiet", "dispute"], sim: [],
+      detail: "Not every finished market should grade jurors. Objective cases need a clean, checkable result; private cases also require participant consent and must not be shown back to their own participants.",
+      actor: "Curation rules and spot checks", money: "No settlement money changes", condition: "After finality", next: "Aptitude library, or record only"
+    },
+    {
+      id: "record-only", phase: "finish", order: 6, group: "curation-outcome", branch: "Not curated", afterNote: "Meanwhile, accountability and the next-cycle loop run independently ↓", title: "Record only",
+      short: "A finished case that fails curation remains auditable but never becomes an answer key.",
+      routes: ["quiet", "dispute"], sim: [],
+      detail: "Finality does not guarantee teaching quality. An ambiguous, thin, poorly watched, or non-consented private case stays in the record without grading future jurors.",
+      actor: "Curation rules", money: "No settlement money changes", condition: "The case fails one or more curation gates", next: "Keep the record; do not update aptitude from it"
+    },
+    {
+      id: "quality-update", phase: "finish", order: 6, group: "curation-outcome", branch: "Curated", title: "Juror quality updates",
+      short: "Aptitude, peer evidence, appeal survival, draw rate, pay, weight, and suspension signals improve.",
+      routes: ["quiet", "dispute"], sim: [],
+      detail: "Curated objective outcomes give the court an external answer key. Resolved cases, appeals, and rubric coherence update future selection and rewards without changing the closed case.",
+      actor: "Quality engine", money: "Future pay and rewards may change; past payout does not", condition: "A usable resolved record exists", next: "A wider, better measured juror pool"
+    },
+    {
+      id: "collusion-clock", phase: "finish", order: 7, group: "aftercare-rails", branch: "Justice · stays open", title: "Accountability stays open",
+      short: "A later collusion report may slash and ban proven actors, but never reopens payment.",
+      routes: ["quiet", "dispute"], sim: [],
+      detail: "Settlement has a closing clock; justice does not. Correlation evidence can be investigated years later while everyone can still rely on final escrow.",
+      actor: "Any reporter and the collusion audit", money: "Only offender bonds and future eligibility are at risk", condition: "Any time after a suspicious pattern appears", next: "Punishment if proved; final payout remains untouched"
+    },
+    {
+      id: "bootstrap-loop", phase: "finish", order: 7, group: "aftercare-rails", branch: "Next market ↺ Phase 01", title: "The next market gets a stronger court",
+      short: "More markets create more evidence, more paid jurors, and eventually support outside escrow disputes.",
+      routes: ["quiet", "dispute"], sim: [],
+      detail: "This is the bootstrap loop: market fees fund the court; clean outcomes train it; a stronger court makes the market and later external escrow integrations more trustworthy.",
+      actor: "The combined PredictionMoMo and DemoThemis system", money: "New fees fund future service", condition: "Repeated settled use", next: "New markets and, later, outside escrow cases"
+    }
+  ];
+
+  var SYSTEM_EXCEPTIONS = [
+    {
+      id: "product-unfilled", kind: "described", title: "A product route does not fill",
+      short: "Private unmatched money returns; an unfillable parlay reverts without changing funds.",
+      routes: ["exceptions"], sim: [],
+      detail: "These product-level failures already have clean exits. They do not create a half-funded market or a partly filled combined claim.",
+      actor: "Matching or routing contract", money: "Returns or never moves", condition: "Close with unmatched private funds, or any parlay leg lacks liquidity", next: "User keeps the unchanged or returned balance"
+    },
+    {
+      id: "juror-unavailable", kind: "described", title: "A drawn seat is unavailable",
+      short: "A wallet conflict or missed presence window activates the deterministic standby.",
+      routes: ["exceptions"], sim: [],
+      detail: "The court does not redraw until it likes the panel. It walks a precommitted replacement order; a no-show receives a reliability ding rather than a verdict-linked slash.",
+      actor: "Conflict screen, presence proof, and standby list", money: "Case escrow stays locked", condition: "Conflict found or grace period missed", next: "Seat the standby and continue"
+    },
+    {
+      id: "invalid-event", kind: "open", title: "Event is unusable",
+      short: "Postponed, cancelled, partly completed, ambiguous, or invalid outcomes need a pre-written branch.",
+      routes: ["exceptions"], sim: [],
+      detail: "The current concept does not define one canonical exit for every bad event. Each market type needs explicit postpone, void, split, refund, and evidence rules before money is accepted.",
+      actor: "Must be fixed by market rules and protocol", money: "Must remain safely locked until the rule resolves it", condition: "The promised real-world answer cannot be used", next: "Rule needed: reschedule, void, refund, or another bounded outcome"
+    },
+    {
+      id: "assertion-exception", kind: "open", title: "Answer is missing or conflicts",
+      short: "No assertion, several assertions, late evidence, or an invalid challenge needs a deterministic timeout rule.",
+      routes: ["exceptions"], sim: [],
+      detail: "A launch protocol must say who may assert, whether competing claims queue or replace one another, what happens after silence, and how late or malformed evidence is rejected.",
+      actor: "Must be fixed by assertion and challenge rules", money: "Market and bonds stay locked", condition: "Normal bonded-answer flow cannot advance", next: "Rule needed: accept one claim, extend once, escalate, or refund"
+    },
+    {
+      id: "court-exception", kind: "open", title: "Court cannot produce one valid result",
+      short: "Standbys run out, quorum fails, proof setup breaks, or parallel panels disagree.",
+      routes: ["exceptions"], sim: [],
+      detail: "The chapters describe pieces of recovery but not the complete terminal path. Missing or late evidence, exhausted standbys, invalid tallies, and honest parallel-panel disagreement all need bounded retries and a safe escalation destination.",
+      actor: "Must be fixed by court constitution", money: "All disputed funds remain locked", condition: "A valid aggregate verdict cannot be produced", next: "Rule needed: retry, widen, escalate, or execute a defined refund"
+    },
+    {
+      id: "settlement-exception", kind: "open", title: "Settlement or accounting fails",
+      short: "Pool-to-token conservation, collateral trouble, chain outage, double execution, dust, abandoned claims, or migration needs safe recovery.",
+      routes: ["exceptions"], sim: [],
+      detail: "Operational failure is part of the state machine even when the product story is silent about it. Exact mint, burn, conservation, and dust equations plus collateral freeze or depeg, abandoned claims, and migrations need recovery that preserves one-payment finality and keeps governance from rewriting an active result.",
+      actor: "Must be fixed by token-accounting, settlement, and emergency rules", money: "Locked, frozen, or at execution risk", condition: "Graduation accounting or final settlement cannot complete safely", next: "Rule needed: stop before balances change, then safely resume, migrate, or refund without double pay"
+    }
+  ];
+
+  /* Canonical topology. The visual layout is only a projection of these real branch, merge, loop, parallel, and exception edges. */
+  var SYSTEM_TRANSITIONS = [
+    { from: "rules-fixed", to: "public-pool", when: "public market", kind: "branch" },
+    { from: "rules-fixed", to: "private-room", when: "private room", kind: "branch" },
+    { from: "public-pool", to: "price-formation", when: "more orders arrive", kind: "forward" },
+    { from: "private-room", to: "event-close", when: "matched room", kind: "skip" },
+    { from: "private-room", to: "product-unfilled", when: "money remains unmatched at close", kind: "exception" },
+    { from: "price-formation", to: "robustness-gate", when: "graduation check", kind: "forward" },
+    { from: "robustness-gate", to: "pooled-claims", when: "one or more checks fail", kind: "branch" },
+    { from: "robustness-gate", to: "tokenized-claims", when: "every check passes", kind: "branch" },
+    { from: "robustness-gate", to: "settlement-exception", when: "tokenization accounting cannot prove conservation", kind: "exception" },
+    { from: "pooled-claims", to: "event-close", when: "event or close time", kind: "skip" },
+    { from: "tokenized-claims", to: "event-close", when: "event or close time", kind: "skip" },
+    { from: "tokenized-claims", to: "parlay-route", when: "optional combined order", kind: "branch" },
+    { from: "parlay-route", to: "event-close", when: "every leg fills", kind: "forward" },
+    { from: "parlay-route", to: "product-unfilled", when: "any leg cannot fill", kind: "exception" },
+
+    { from: "event-close", to: "awaiting-answer", when: "outcome is usable", kind: "forward" },
+    { from: "event-close", to: "invalid-event", when: "event is unusable", kind: "exception" },
+    { from: "awaiting-answer", to: "assertion-posted", when: "valid bonded answer", kind: "forward" },
+    { from: "awaiting-answer", to: "assertion-exception", when: "answer times out", kind: "exception" },
+    { from: "assertion-posted", to: "watch-window", when: "one valid answer", kind: "forward" },
+    { from: "assertion-posted", to: "assertion-exception", when: "answers conflict", kind: "exception" },
+    { from: "watch-window", to: "challenge-gate", when: "configured window ends or challenge arrives", kind: "forward" },
+    { from: "challenge-gate", to: "quiet-result", when: "no timely challenge", kind: "branch" },
+    { from: "challenge-gate", to: "dispute-open", when: "valid funded challenge", kind: "branch" },
+    { from: "challenge-gate", to: "assertion-exception", when: "challenge is late or invalid", kind: "exception" },
+    { from: "quiet-result", to: "release-rule", when: "optimistic result hardens", kind: "merge" },
+    { from: "dispute-open", to: "case-locked", when: "court accepts case", kind: "forward" },
+
+    { from: "case-locked", to: "court-route", when: "answer type is classified", kind: "forward" },
+    { from: "court-route", to: "panel-drawn", when: "panel plan is fixed", kind: "forward" },
+    { from: "panel-drawn", to: "seat-checked", when: "bound draw succeeds", kind: "forward" },
+    { from: "panel-drawn", to: "court-exception", when: "draw or panel plan fails", kind: "exception" },
+    { from: "seat-checked", to: "juror-unavailable", when: "conflict or missed presence", kind: "exception" },
+    { from: "juror-unavailable", to: "seat-checked", when: "standby activates", kind: "loop" },
+    { from: "juror-unavailable", to: "court-exception", when: "standby list is exhausted", kind: "exception" },
+    { from: "seat-checked", to: "private-ballot", when: "required panel is seated", kind: "forward" },
+    { from: "private-ballot", to: "provisional-verdict", when: "valid aggregate tally", kind: "forward" },
+    { from: "private-ballot", to: "court-exception", when: "quorum or proof fails", kind: "exception" },
+    { from: "provisional-verdict", to: "appeal-gate", when: "appeal window opens", kind: "forward" },
+    { from: "provisional-verdict", to: "court-exception", when: "parallel panels disagree", kind: "exception" },
+    { from: "appeal-gate", to: "court-final", when: "no valid appeal or top rung", kind: "branch" },
+    { from: "appeal-gate", to: "larger-panel", when: "appeal is funded and a rung remains", kind: "branch" },
+    { from: "larger-panel", to: "panel-drawn", when: "fresh wider draw", kind: "loop" },
+    { from: "court-final", to: "release-rule", when: "court result hardens", kind: "merge" },
+
+    { from: "release-rule", to: "settle-funds", when: "one final answer", kind: "forward" },
+    { from: "settle-funds", to: "settlement-exception", when: "accounting or execution fails", kind: "exception" },
+    { from: "settle-funds", to: "closed-record", when: "atomic settlement succeeds", kind: "forward" },
+    { from: "closed-record", to: "curation-gate", when: "learning rail", kind: "parallel" },
+    { from: "curation-gate", to: "record-only", when: "curation fails", kind: "branch" },
+    { from: "curation-gate", to: "quality-update", when: "curation passes", kind: "branch" },
+    { from: "closed-record", to: "collusion-clock", when: "accountability rail", kind: "parallel" },
+    { from: "closed-record", to: "bootstrap-loop", when: "next-cycle rail", kind: "parallel" },
+    { from: "bootstrap-loop", to: "rules-fixed", when: "new market", kind: "loop" }
+  ];
+
+  var MACHINE_ROUTE_COPY = {
+    all: ["Whole map.", "Alternative market forms, quiet settlement, court, appeals, finality, learning, and recovery rules are all visible."],
+    quiet: ["Most markets.", "Question → escrow → answer → watcher window → no challenge → payout. The proposal expects roughly 95% to avoid a jury."],
+    dispute: ["Disputed market.", "Challenge → locked case → verified jury → private verdict → optional larger-panel appeal → final payout."],
+    exceptions: ["What can go wrong?", "Defined exits and missing protocol rules are highlighted. Unrelated states remain visible so every failure has context."]
+  };
+
+  var machineRouteTimer = 0;
+
+  function machineStateById(id) {
+    return SYSTEM_STATES.concat(SYSTEM_EXCEPTIONS).find(function (state) { return state.id === id; });
+  }
+
+  function machineTransitionText(id) {
+    return SYSTEM_TRANSITIONS.filter(function (edge) { return edge.from === id; }).map(function (edge) {
+      var target = machineStateById(edge.to);
+      return edge.when + " → " + (target ? target.title : edge.to) + (edge.kind === "loop" ? " (loop)" : "");
+    }).join("; ");
+  }
+
+  function updateMachineStateAria(button) {
+    if (!button) return;
+    var root = document.getElementById("systemStateMachine");
+    var baseLabel = button.getAttribute("data-machine-base-label") || "System state.";
+    var route = root ? root.getAttribute("data-route") : "all";
+    var label = baseLabel;
+    if (route !== "all") label += button.classList.contains("is-dimmed") ? " Not on the highlighted route." : " On the highlighted route.";
+    if (button.classList.contains("is-sim-current")) {
+      var chip = button.querySelector(".machine-sim-chip");
+      label += " Current simulator " + (chip ? chip.textContent.toLowerCase() : "event") + ".";
+    }
+    button.setAttribute("aria-label", label);
+  }
+
+  function machineKindLabel(state) {
+    if (state.kind === "decision") return "Decision";
+    if (state.kind === "terminal") return "Final result";
+    if (state.kind === "optional") return "Optional";
+    if (state.kind === "open") return "Rule needed";
+    if (state.kind === "described") return "Defined exit";
+    return "State";
+  }
+
+  function appendMachineFact(root, label, value) {
+    var line = makeEl("span");
+    line.appendChild(makeEl("b", "", label + ": "));
+    line.appendChild(document.createTextNode(value));
+    root.appendChild(line);
+  }
+
+  function createMachineStateButton(state, isException) {
+    var button = makeEl("button", "machine-state" + (isException ? " machine-exception" : ""));
+    button.type = "button";
+    button.setAttribute("data-machine-state", state.id);
+    button.setAttribute("data-machine-routes", (state.routes || []).join(" "));
+    button.setAttribute("data-sim-stages", (state.sim || []).join(" "));
+    button.setAttribute("data-kind", state.kind || "state");
+    button.setAttribute("aria-expanded", "false");
+    var baseLabel = state.title + (/[.!?]$/.test(state.title) ? " " : ". ") + state.short + " Select to read full state details.";
+    button.setAttribute("data-machine-base-label", baseLabel);
+    button.setAttribute("aria-label", baseLabel);
+
+    var top = makeEl("span", "machine-state-top");
+    var labels = makeEl("span", "machine-state-top");
+    labels.appendChild(makeEl("span", "machine-state-kind", machineKindLabel(state)));
+    if (state.branch) labels.appendChild(makeEl("span", "machine-state-branch", state.branch));
+    top.appendChild(labels);
+    top.appendChild(makeEl("span", "machine-sim-chip", "Current event"));
+    button.appendChild(top);
+    button.appendChild(makeEl("strong", "machine-state-title", state.title));
+    button.appendChild(makeEl("span", "machine-state-short", state.short));
+
+    var detail = makeEl("span", "machine-state-detail");
+    detail.id = "machine-state-detail-" + state.id;
+    detail.hidden = true;
+    button.setAttribute("aria-controls", detail.id);
+    detail.appendChild(makeEl("span", "machine-state-meaning", state.detail));
+    var facts = makeEl("span", "machine-state-facts");
+    appendMachineFact(facts, "Who", state.actor);
+    appendMachineFact(facts, "Money", state.money);
+    appendMachineFact(facts, "Trigger", state.condition);
+    detail.appendChild(facts);
+    var nextLine = makeEl("span", "machine-state-next");
+    nextLine.appendChild(makeEl("b", "", "Next: "));
+    nextLine.appendChild(document.createTextNode(state.next));
+    detail.appendChild(nextLine);
+    button.appendChild(detail);
+
+    button.addEventListener("click", function () {
+      var alreadyOpen = button.getAttribute("aria-expanded") === "true";
+      document.querySelectorAll("#systemStateMachine .machine-state[aria-expanded='true']").forEach(function (other) {
+        other.setAttribute("aria-expanded", "false");
+        other.removeAttribute("aria-describedby");
+        other.classList.remove("is-selected");
+        var otherDetail = other.querySelector(".machine-state-detail");
+        if (otherDetail) otherDetail.hidden = true;
+        updateMachineStateAria(other);
+      });
+      if (!alreadyOpen) {
+        button.setAttribute("aria-expanded", "true");
+        button.setAttribute("aria-describedby", detail.id);
+        button.classList.add("is-selected");
+        detail.hidden = false;
+      }
+      updateMachineStateAria(button);
+      var announcement = document.getElementById("machineAnnouncement");
+      if (announcement) {
+        announcement.textContent = alreadyOpen
+          ? state.title + " details closed."
+          : state.title + " details opened. " + state.detail + " Who: " + state.actor + ". Money: " + state.money + ". Trigger: " + state.condition + ". Next: " + state.next + ".";
+      }
+    });
+    return button;
+  }
+
+  function groupedMachineStates(states) {
+    var groups = [];
+    states.forEach(function (state) {
+      var key = state.group || state.id;
+      var last = groups[groups.length - 1];
+      if (last && last.key === key) last.states.push(state);
+      else groups.push({ key: key, states: [state] });
+    });
+    return groups;
+  }
+
+  function renderMachineTextFlow() {
+    var root = document.getElementById("machineTextFlow");
+    if (!root) return;
+    root.replaceChildren();
+    SYSTEM_PHASES.forEach(function (phase) {
+      var section = makeEl("section");
+      section.appendChild(makeEl("h4", "", phase.number + " · " + phase.title));
+      var list = makeEl("ol");
+      SYSTEM_STATES.filter(function (state) { return state.phase === phase.id; }).sort(function (a, b) { return a.order - b.order; }).forEach(function (state) {
+        var item = makeEl("li");
+        item.appendChild(makeEl("b", "", state.title + ". "));
+        item.appendChild(document.createTextNode(state.short));
+        var transitions = machineTransitionText(state.id);
+        if (transitions) item.appendChild(document.createTextNode(" Next: " + transitions + "."));
+        list.appendChild(item);
+      });
+      section.appendChild(list);
+      root.appendChild(section);
+    });
+    var exceptions = makeEl("section");
+    exceptions.appendChild(makeEl("h4", "", "Exceptions and recovery"));
+    var exceptionList = makeEl("ul");
+    SYSTEM_EXCEPTIONS.forEach(function (state) {
+      var item = makeEl("li");
+      item.appendChild(makeEl("b", "", state.title + " — " + (state.kind === "open" ? "rule needed. " : "defined exit. ")));
+      item.appendChild(document.createTextNode(state.short));
+      var transitions = machineTransitionText(state.id);
+      if (transitions) item.appendChild(document.createTextNode(" Next: " + transitions + "."));
+      exceptionList.appendChild(item);
+    });
+    exceptions.appendChild(exceptionList);
+    root.appendChild(exceptions);
+  }
+
+  function renderSystemStateMachine() {
+    var phaseRoot = document.getElementById("machinePhaseGrid");
+    var exceptionRoot = document.getElementById("machineExceptionGrid");
+    if (!phaseRoot || !exceptionRoot) return;
+    phaseRoot.replaceChildren();
+    exceptionRoot.replaceChildren();
+
+    SYSTEM_PHASES.forEach(function (phase) {
+      var phaseEl = makeEl("section", "machine-phase");
+      phaseEl.setAttribute("data-phase", phase.id);
+      phaseEl.setAttribute("aria-labelledby", "machine-phase-" + phase.id);
+      var head = makeEl("header", "machine-phase-head");
+      head.appendChild(makeEl("span", "machine-phase-kicker", "Phase " + phase.number));
+      var title = makeEl("h3", "", phase.title);
+      title.id = "machine-phase-" + phase.id;
+      head.appendChild(title);
+      head.appendChild(makeEl("p", "", phase.note));
+      if (phase.transition) head.appendChild(makeEl("span", "machine-phase-transition", phase.transition));
+      phaseEl.appendChild(head);
+
+      var flow = makeEl("ol", "machine-phase-flow");
+      var states = SYSTEM_STATES.filter(function (state) { return state.phase === phase.id; }).sort(function (a, b) { return a.order - b.order; });
+      groupedMachineStates(states).forEach(function (group) {
+        var step = makeEl("li", "machine-step");
+        var row = makeEl("div", "machine-state-row" + (group.states.length > 1 ? " is-branch" : ""));
+        group.states.forEach(function (state) {
+          row.appendChild(createMachineStateButton(state, false));
+        });
+        step.appendChild(row);
+        var noteState = group.states.find(function (state) { return !!state.afterNote; });
+        if (noteState) {
+          step.classList.add("has-split-exit");
+          step.appendChild(makeEl("p", "machine-flow-note", noteState.afterNote));
+        }
+        flow.appendChild(step);
+      });
+      phaseEl.appendChild(flow);
+      phaseRoot.appendChild(phaseEl);
+    });
+
+    SYSTEM_EXCEPTIONS.forEach(function (state) {
+      exceptionRoot.appendChild(createMachineStateButton(state, true));
+    });
+    renderMachineTextFlow();
+  }
+
+  function setMachineRouteSummary(route) {
+    var root = document.getElementById("machineRouteSummary");
+    var copy = MACHINE_ROUTE_COPY[route] || MACHINE_ROUTE_COPY.all;
+    if (!root) return;
+    root.replaceChildren();
+    root.appendChild(makeEl("strong", "", copy[0] + " "));
+    root.appendChild(document.createTextNode(copy[1]));
+  }
+
+  function setMachineRoute(route, animate) {
+    var root = document.getElementById("systemStateMachine");
+    if (!root) return;
+    var filtered = route !== "all";
+    root.setAttribute("data-route", route);
+    root.classList.toggle("is-filtered", filtered);
+    document.querySelectorAll("[data-machine-route]").forEach(function (button) {
+      button.setAttribute("aria-pressed", button.getAttribute("data-machine-route") === route ? "true" : "false");
+    });
+
+    var active = [];
+    root.querySelectorAll(".machine-state").forEach(function (button) {
+      var routes = (button.getAttribute("data-machine-routes") || "").split(/\s+/).filter(Boolean);
+      var matches = !filtered || routes.indexOf(route) >= 0;
+      button.classList.toggle("is-dimmed", !matches);
+      button.classList.toggle("is-route-active", matches);
+      button.classList.remove("is-route-tracing");
+      updateMachineStateAria(button);
+      if (matches) active.push(button);
+    });
+    root.querySelectorAll(".machine-step").forEach(function (step) {
+      step.classList.toggle("is-route-active", !!step.querySelector(".machine-state.is-route-active:not(.is-dimmed)"));
+    });
+    root.querySelectorAll(".machine-phase").forEach(function (phase) {
+      phase.classList.toggle("is-dimmed-phase", filtered && !phase.querySelector(".machine-state.is-route-active:not(.is-dimmed)"));
+    });
+    setMachineRouteSummary(route);
+
+    if (machineRouteTimer) window.clearTimeout(machineRouteTimer);
+    if (animate && !window.matchMedia("(prefers-reduced-motion: reduce)").matches) {
+      void root.offsetWidth;
+      active.forEach(function (button, index) {
+        button.style.setProperty("--machine-delay", Math.min(index * 28, 560) + "ms");
+        button.classList.add("is-route-tracing");
+      });
+      machineRouteTimer = window.setTimeout(function () {
+        active.forEach(function (button) { button.classList.remove("is-route-tracing"); });
+      }, 1150);
+    }
+  }
+
+  function syncSystemMachineStage() {
+    var root = document.getElementById("systemStateMachine");
+    if (!root) return;
+    root.querySelectorAll(".machine-state").forEach(function (button) {
+      var stages = (button.getAttribute("data-sim-stages") || "").split(/\s+/).filter(Boolean).map(Number);
+      var current = stages.indexOf(stage) >= 0;
+      button.classList.toggle("is-sim-current", current);
+      var chip = button.querySelector(".machine-sim-chip");
+      if (chip && current) chip.textContent = "Event " + String(stage + 1).padStart(2, "0");
+      updateMachineStateAria(button);
+    });
+  }
+
+  function initSystemStateMachine() {
+    if (!document.getElementById("systemStateMachine")) return;
+    renderSystemStateMachine();
+    document.querySelectorAll("[data-machine-route]").forEach(function (button) {
+      button.addEventListener("click", function () {
+        setMachineRoute(button.getAttribute("data-machine-route"), true);
+      });
+    });
+    setMachineRoute("all", false);
+    syncSystemMachineStage();
   }
 
   function cleanTip(value) {
@@ -2209,9 +3029,9 @@
       headline: "The court publishes the aggregate result",
       sub: "The tally opens as a proof of the final count, not as individual public ballots.",
       status: "First verdict landed",
-      flow: [["You do", "Read the verdict proof."], ["App shows", "The market price reprices around the result."], ["Protocol does", "Moves wrong-side reserve into rewards when rules allow."]],
-      fields: [["Verdict", "NO wins first panel", "The aggregate result is public."], ["Individual votes", "Still private", "The proof does not expose each juror."], ["Slashes", "Feed rewards", "Wrong lazy votes do not enrich the winning panel."], ["Appeal", "Still available", "The losing side can climb."]],
-      behind: ["The verdict is enough to move the market, but not necessarily final if the losing side appeals.", "Reward flow is separated from bribery incentives."]
+      flow: [["You do", "Read the verdict proof."], ["App shows", "The market price reprices around the result."], ["Protocol does", "Privately updates reserves and proves the aggregate reward transfer."]],
+      fields: [["Verdict", "NO wins first panel", "The aggregate result is public."], ["Individual votes", "Still private", "The proof does not expose each juror."], ["Reserve update", "Private", "Only the aggregate transfer and proof are public."], ["Appeal", "Still available", "The losing side can climb."]],
+      behind: ["The verdict is enough to move the market, but not necessarily final if the losing side appeals.", "Private consequence accounting prevents a penalty from becoming a vote receipt."]
     },
     {
       product: "DemoThemis",
@@ -2416,11 +3236,11 @@
       metrics: [["Verdict", "NO"], ["Appeal", "Open"], ["Privacy", "Kept"]],
       summary: "The verdict can move markets without exposing individual ballot receipts.",
       sideTitle: "After verdict",
-      sideRows: [["Claims", "Repriced"], ["Slashes", "Rewards"], ["Next", "Appeal option"]],
+      sideRows: [["Claims", "Repriced"], ["Reserve update", "Private"], ["Next", "Appeal option"]],
       components: [
         { type: "bars", title: "Tally proof", hot: 0, bars: [["NO", 73, "bad"], ["YES", 27, "good"]] },
         { type: "bars", title: "Market price", hot: 0, bars: [["YES", 28, "good"], ["NO", 72, "bad"]] },
-        { type: "receipt", wide: true, title: "Reward pool", hot: 1, value: "Wrong reserve flows out", note: "Slashes feed rewards, not bribes." }
+        { type: "receipt", wide: true, title: "Reward pool", hot: 1, value: "Aggregate transfer verified", note: "Individual debits and payments remain private." }
       ]
     },
     {
@@ -2661,13 +3481,13 @@
       status: "Proof posted",
       intent: { why: "See what the verdict means for your position", money: "NO leads; appeal still open", next: "Watch deadline or trade" },
       kpis: [["Verdict", "NO"], ["Appeal", "Open"], ["Privacy", "Kept"]],
-      summary: "This should look like a court result page with proof, market repricing, and reward movement.",
+      summary: "This should look like a court result page with proof, market repricing, and aggregate reward movement.",
       sideTitle: "After verdict",
-      sideRows: [["Claims", "Repriced"], ["Wrong reserve", "Slashed"], ["Appeal", "Available"]],
+      sideRows: [["Claims", "Repriced"], ["Reserve update", "Private"], ["Appeal", "Available"]],
       blocks: [
         { type: "proof", title: "Aggregate tally", hot: 0, result: "NO wins 11-4", note: "Individual ballots remain private." },
         { type: "odds", title: "Market repricing", hot: 0, yes: 28, no: 72 },
-        { type: "route", title: "Reward movement", hot: 1, steps: [["1", "Detect wrong-side reserve", "rule"], ["2", "Move to reward pool", "done"], ["3", "Keep panel pay separate", "safe"]] }
+        { type: "route", title: "Aggregate reward movement", hot: 1, steps: [["1", "Prove private debits", "valid"], ["2", "Publish aggregate transfer", "done"], ["3", "Hide individual amounts", "safe"]] }
       ]
     },
     {
@@ -3128,7 +3948,7 @@
           result: "Encrypted ballot sealed",
           after: {
             status: "Ballot sealed",
-            primary: "View reserve",
+            primary: "Check my reserve",
             intent: { why: "Earn by making the careful call", money: "$92 pay depends on timely honest work", next: "Check reserve, then wait for tally" },
             kpis: [["Earn", "$92"], ["Deadline", "18m"], ["Ballot", "Sealed"]],
             blocks: [
@@ -3139,10 +3959,10 @@
           }
         },
         {
-          cue: "Tap View reserve",
+          cue: "Tap Check my reserve",
           target: "block",
           targetTitle: "Live reserve",
-          result: "Reserve risk priced",
+          result: "Private reserve risk priced",
           after: {
             status: "Reserve priced",
             primary: "Reserve live",
@@ -3165,7 +3985,7 @@
         blocks: [
           { type: "proof", title: "Aggregate tally", result: "Sealed", note: "The proof has not been posted yet." },
           { type: "odds", title: "Market repricing", yes: 51, no: 49 },
-          { type: "route", title: "Reward movement", steps: [["1", "Wait for proof", "pending"], ["2", "Move reserve", "pending"], ["3", "Keep pay separate", "pending"]] }
+          { type: "route", title: "Aggregate reward movement", steps: [["1", "Wait for proof", "pending"], ["2", "Publish aggregate", "pending"], ["3", "Hide individual amounts", "private"]] }
         ]
       },
       steps: [
@@ -3176,27 +3996,27 @@
           result: "Aggregate proof posted",
           after: {
             status: "Proof posted",
-            primary: "View reward update",
+            primary: "Verify reward total",
             kpis: [["Verdict", "NO"], ["Appeal", "Open"], ["Privacy", "Kept"]],
             blocks: [
               { type: "proof", title: "Aggregate tally", result: "NO wins 11-4", note: "Individual ballots remain private." },
               { type: "odds", title: "Market repricing", yes: 28, no: 72 },
-              { type: "route", title: "Reward movement", steps: [["1", "Detect wrong-side reserve", "ready"], ["2", "Move to reward pool", "next"], ["3", "Keep panel pay separate", "safe"]] }
+              { type: "route", title: "Aggregate reward movement", steps: [["1", "Prove private debits", "ready"], ["2", "Publish aggregate transfer", "next"], ["3", "Hide individual amounts", "safe"]] }
             ]
           }
         },
         {
-          cue: "Tap View reward update",
+          cue: "Tap Verify reward total",
           target: "block",
-          targetTitle: "Reward movement",
-          result: "Wrong reserve moved",
+          targetTitle: "Aggregate reward movement",
+          result: "Aggregate transfer proved",
           after: {
             status: "Rewards funded",
-            primary: "Rewards moved",
-            kpis: [["Verdict", "NO"], ["Slashes", "Moved"], ["Panel pay", "Separate"]],
+            primary: "Total verified",
+            kpis: [["Verdict", "NO"], ["Aggregate", "Proved"], ["Individuals", "Private"]],
             blocks: [
-              { type: "route", title: "Reward movement", steps: [["1", "Detect wrong-side reserve", "done"], ["2", "Move to reward pool", "done"], ["3", "Keep panel pay separate", "safe"]] },
-              { type: "receipt", title: "Reward pool", value: "Wrong reserve flows out", note: "Slashes feed rewards, not bribes." },
+              { type: "route", title: "Aggregate reward movement", steps: [["1", "Prove private debits", "done"], ["2", "Publish aggregate transfer", "done"], ["3", "Hide individual amounts", "safe"]] },
+              { type: "receipt", title: "Reward pool", value: "Aggregate transfer verified", note: "No named debit can reveal a vote." },
               { type: "odds", title: "Market repricing", yes: 28, no: 72 }
             ]
           }
@@ -3332,9 +4152,9 @@
     "Verify draw": "Check the randomness seed and bind this panel to the case.",
     "View presence checks": "Show which drawn seats have passed live presence checks.",
     "Seal ballot": "Submit an encrypted ballot without creating a transferable receipt.",
-    "View reserve": "Open the reserve meter so lazy or wrong votes carry a visible cost.",
+    "Check my reserve": "Open the juror's private reserve meter without publishing its amount or history.",
     "Publish proof": "Publish the aggregate tally without exposing individual votes.",
-    "View reward update": "Show wrong-side reserve moving into rewards while panel pay stays separate.",
+    "Verify reward total": "Verify the aggregate reward transfer without exposing any juror's debit or payment.",
     "Pay appeal": "Pay the minimum floor needed to open the next appeal rung.",
     "View appeal panel": "Show the larger verified panel for the paid appeal.",
     "Redeem tokens": "Redeem winning claims after the verdict is final.",
@@ -5220,6 +6040,7 @@
     setTags("featureGrid", "data-feature", item.features);
     setTags("componentGrid", "data-component", item.components);
     renderControls();
+    syncSystemMachineStage();
     revealGuidedTargetIfNeeded();
     queueCoachmarkPosition();
   }
@@ -5371,6 +6192,7 @@
     if (stageNode) stageObserver.observe(stageNode);
   }
 
+  initSystemStateMachine();
   installSimTooltips();
   installLayoutAuditHook();
   render();

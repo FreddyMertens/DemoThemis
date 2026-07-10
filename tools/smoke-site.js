@@ -1,6 +1,7 @@
 const fs = require("fs");
 const http = require("http");
 const path = require("path");
+const vm = require("vm");
 
 const root = path.resolve(__dirname, "..");
 const outDir = path.join(root, "dist");
@@ -14,8 +15,11 @@ const publicHtml = [
   "the-design.html",
   "hybrid-juror-prediction-market-integration.html",
   "governance.html",
-  "glossary.html"
+  "glossary.html",
+  "mvp.html"
 ];
+
+const canonicalMvpOrigin = "https://demo-themis-mvp.vercel.app";
 
 const forbiddenPublicPaths = [
   "/SKILL.md",
@@ -130,13 +134,148 @@ function checkMetadata(file, html, failures) {
   assert(/<meta\s+[^>]*name=["']twitter:card["'][^>]*content=["']summary["']/i.test(html), `${file} missing twitter:card`, failures);
 }
 
+function openingTags(html, tag) {
+  const tagPattern = new RegExp(`<${tag}\\b[^>]*>`, "gi");
+  return Array.from(html.matchAll(tagPattern), (match) => match[0]);
+}
+
+function tagAttributeValue(tagHtml, attribute) {
+  const attributePattern = new RegExp(`\\b${attribute}\\s*=\\s*(["'])(.*?)\\1`, "i");
+  const match = tagHtml.match(attributePattern);
+  return match ? match[2] : null;
+}
+
+function openingTagAttributeValues(html, tag, attribute) {
+  return openingTags(html, tag).map((tagHtml) => tagAttributeValue(tagHtml, attribute)).filter(Boolean);
+}
+
+function checkMvpNavigation(file, html, failures) {
+  const siteNav = html.match(/<nav\b[^>]*class=["'][^"']*\bsitenav\b[^"']*["'][^>]*>[\s\S]*?<\/nav>/i);
+  assert(Boolean(siteNav), `${file} missing primary site navigation`, failures);
+  if (!siteNav) return;
+
+  const navTargets = openingTagAttributeValues(siteNav[0], "a", "href");
+  assert(navTargets.includes("glossary.html"), `${file} primary navigation missing glossary.html`, failures);
+  assert(navTargets.includes("mvp.html"), `${file} primary navigation missing mvp.html`, failures);
+  assert(navTargets.indexOf("mvp.html") === navTargets.indexOf("glossary.html") + 1, `${file} should place the MVP immediately after the glossary in primary navigation`, failures);
+}
+
+function checkMvpPage(html, failures) {
+  const titleMatch = html.match(/<title>([^<]+)<\/title>/i);
+  const descriptionTag = openingTags(html, "meta").find((tagHtml) => (tagAttributeValue(tagHtml, "name") || "").toLowerCase() === "description");
+  const title = titleMatch ? titleMatch[1] : "";
+  const description = descriptionTag ? tagAttributeValue(descriptionTag, "content") || "" : "";
+
+  assert(/\bMVP\b/i.test(title) && /DemoThemis/i.test(title), "mvp.html title should identify the DemoThemis MVP", failures);
+  assert(/\b(?:MVP|prototype)\b/i.test(description) && /\b(?:live|sandbox|on[- ]?chain)\b/i.test(description), "mvp.html description should explain the live MVP experience", failures);
+
+  const linkTargets = openingTagAttributeValues(html, "a", "href");
+  for (const route of ["/sandbox", "/home", "/about"]) {
+    const expected = canonicalMvpOrigin + route;
+    const hasRoute = linkTargets.some((target) => {
+      try {
+        const targetUrl = new URL(target);
+        return targetUrl.origin === canonicalMvpOrigin && targetUrl.pathname.replace(/\/+$/, "") === route;
+      } catch (error) {
+        return false;
+      }
+    });
+    assert(hasRoute, `mvp.html missing canonical MVP link: ${expected}`, failures);
+  }
+
+  assert(/\bsimulat(?:e|ed|es|ion|or)\b/i.test(html), "mvp.html should label the simulated experience", failures);
+  assert(/\bon[- ]?chain\b/i.test(html), "mvp.html should distinguish the on-chain experience", failures);
+}
+
+function checkStateMachineData(html, failures) {
+  const inlineScripts = Array.from(html.matchAll(/<script(?![^>]*\bsrc\s*=)[^>]*>([\s\S]*?)<\/script>/gi), (match) => match[1]);
+  assert(inlineScripts.length > 0, "run-through has no inline script to parse", failures);
+  for (const [index, script] of inlineScripts.entries()) {
+    try {
+      new vm.Script(script, { filename: "the-design.inline-" + (index + 1) + ".js" });
+    } catch (error) {
+      failures.push("run-through inline script " + (index + 1) + " has invalid JavaScript: " + error.message);
+    }
+  }
+
+  const start = html.indexOf("var SYSTEM_PHASES =");
+  const end = html.indexOf("var MACHINE_ROUTE_COPY =");
+  assert(start >= 0 && end > start, "run-through state-machine data block is missing or malformed", failures);
+  if (start < 0 || end <= start) return;
+
+  let data;
+  try {
+    const context = {};
+    const source = html.slice(start, end) + "\nthis.__machineData = { phases: SYSTEM_PHASES, states: SYSTEM_STATES, exceptions: SYSTEM_EXCEPTIONS, transitions: SYSTEM_TRANSITIONS };";
+    vm.runInNewContext(source, context, { filename: "the-design.state-machine-data.js" });
+    data = context.__machineData;
+  } catch (error) {
+    failures.push("run-through state-machine data cannot be evaluated: " + error.message);
+    return;
+  }
+
+  const phaseIds = new Set(data.phases.map((phase) => phase.id));
+  const allStates = data.states.concat(data.exceptions);
+  const ids = allStates.map((state) => state.id);
+  const idSet = new Set(ids);
+  assert(data.phases.length === 4 && phaseIds.size === 4, "state machine should have four unique lifecycle phases", failures);
+  assert(idSet.size === ids.length, "state machine contains duplicate state IDs", failures);
+  assert(data.states.every((state) => phaseIds.has(state.phase)), "state machine contains a lifecycle state with an invalid phase", failures);
+
+  const allowedRoutes = new Set(["quiet", "dispute", "exceptions"]);
+  assert(allStates.every((state) => (state.routes || []).every((route) => allowedRoutes.has(route))), "state machine contains an unknown route tag", failures);
+  const mappedStages = Array.from(new Set(data.states.flatMap((state) => state.sim || []))).sort((a, b) => a - b);
+  assert(JSON.stringify(mappedStages) === JSON.stringify(Array.from({ length: 13 }, (_, index) => index)), "state machine must map every simulator event from 0 through 12", failures);
+
+  const transitionKinds = new Set(["forward", "branch", "skip", "merge", "loop", "parallel", "exception"]);
+  assert(data.transitions.length >= 40, "state machine transition model is unexpectedly incomplete", failures);
+  assert(data.transitions.every((edge) => idSet.has(edge.from) && idSet.has(edge.to)), "state machine has a transition with an unknown endpoint", failures);
+  assert(data.transitions.every((edge) => edge.from !== edge.to && transitionKinds.has(edge.kind) && edge.when), "state machine has an invalid transition shape", failures);
+
+  function hasEdge(from, to, kind) {
+    return data.transitions.some((edge) => edge.from === from && edge.to === to && (!kind || edge.kind === kind));
+  }
+  assert(hasEdge("private-room", "event-close", "skip"), "private rooms must bypass public graduation", failures);
+  assert(hasEdge("pooled-claims", "event-close", "skip"), "pooled claims must bypass the optional parlay", failures);
+  assert(hasEdge("quiet-result", "release-rule", "merge"), "quiet settlement must bypass court and merge at release", failures);
+  assert(hasEdge("larger-panel", "panel-drawn", "loop"), "a funded appeal must loop to a fresh panel draw", failures);
+  assert(hasEdge("juror-unavailable", "court-exception", "exception"), "an exhausted standby list must reach court recovery", failures);
+  assert(hasEdge("robustness-gate", "settlement-exception", "exception"), "tokenization accounting failure must reach accounting recovery", failures);
+  assert(hasEdge("curation-gate", "record-only", "branch") && hasEdge("curation-gate", "quality-update", "branch"), "curation must branch between record-only and juror learning", failures);
+  assert(hasEdge("closed-record", "collusion-clock", "parallel") && hasEdge("closed-record", "bootstrap-loop", "parallel"), "post-finality accountability and growth must run in parallel", failures);
+
+  function routeReaches(route, startId, targetId) {
+    const allowed = new Set(allStates.filter((state) => (state.routes || []).includes(route)).map((state) => state.id));
+    const queue = [startId];
+    const seen = new Set(queue);
+    while (queue.length) {
+      const current = queue.shift();
+      if (current === targetId) return true;
+      for (const edge of data.transitions) {
+        if (edge.from !== current || !allowed.has(edge.to) || seen.has(edge.to)) continue;
+        seen.add(edge.to);
+        queue.push(edge.to);
+      }
+    }
+    return false;
+  }
+  assert(routeReaches("quiet", "rules-fixed", "closed-record"), "quiet route is not continuous from question to closed record", failures);
+  assert(routeReaches("dispute", "rules-fixed", "closed-record"), "disputed route is not continuous from question through court to closed record", failures);
+  assert(data.exceptions.every((state) => data.transitions.some((edge) => edge.to === state.id)), "every exception state should have an incoming transition", failures);
+  assert(/function\s+initSystemStateMachine\s*\(/.test(html) && /initSystemStateMachine\s*\(\s*\)\s*;/.test(html), "state machine initialization is missing", failures);
+}
+
 function checkBuiltHtml(failures) {
   for (const file of publicHtml) {
     const html = readDist(file);
     checkMetadata(file, html, failures);
+    checkMvpNavigation(file, html, failures);
     assert(!/unpkg\.com/i.test(html), `${file} should not load unpkg.com`, failures);
     assert(/assets\/styles\.css/i.test(html), `${file} missing shared stylesheet`, failures);
   }
+
+  checkMvpPage(readDist("mvp.html"), failures);
+
   const gameLab = readDist("game-theory.html");
   assert(/Break the court/i.test(gameLab), "game-theory chapter missing Break the court title", failures);
   assert(/assets\/vendor\/popper-2\.11\.8\.min\.js/i.test(gameLab), "gamelab missing vendored Popper", failures);
@@ -170,6 +309,7 @@ function checkBuiltHtml(failures) {
   assert(/Court token/i.test(glossary), "glossary missing governance terms", failures);
 
   const runThrough = readDist("the-design.html");
+  checkStateMachineData(runThrough, failures);
   assert(/Run through the whole system/i.test(runThrough), "run-through chapter missing new title", failures);
   assert(/id=["']stageRail["']/i.test(runThrough), "run-through chapter missing stage rail", failures);
   assert(/id=["']focusScene["']/i.test(runThrough), "run-through missing focused one-step scene", failures);
@@ -188,6 +328,17 @@ function checkBuiltHtml(failures) {
   assert(/data-component=["']draw["']/i.test(runThrough), "run-through missing jury-draw component unlock", failures);
   assert(/data-component=["']ballot["']/i.test(runThrough), "run-through missing private-ballot component unlock", failures);
   assert(/data-component=["']appeal["']/i.test(runThrough), "run-through missing appeal-ladder component unlock", failures);
+  assert(/id=["']system-state-machine["']/i.test(runThrough), "run-through missing complete state-machine section", failures);
+  assert(/id=["']machinePhaseGrid["']/i.test(runThrough), "run-through state machine missing lifecycle phase map", failures);
+  assert(/id=["']machineExceptionGrid["']/i.test(runThrough), "run-through state machine missing exception rail", failures);
+  assert(/id=["']machineTextFlow["']/i.test(runThrough), "run-through state machine missing text alternative", failures);
+  assert(/data-machine-route=["']quiet["']/i.test(runThrough), "run-through state machine missing quiet-settlement route", failures);
+  assert(/data-machine-route=["']dispute["']/i.test(runThrough), "run-through state machine missing disputed-case route", failures);
+  assert(/data-machine-route=["']exceptions["']/i.test(runThrough), "run-through state machine missing exception route", failures);
+  assert(/SYSTEM_STATES/i.test(runThrough), "run-through state machine missing canonical lifecycle data", failures);
+  assert(/SYSTEM_EXCEPTIONS/i.test(runThrough), "run-through state machine missing canonical exception data", failures);
+  assert(/Pre-written rule still needed/i.test(runThrough), "run-through state machine must distinguish open protocol rules", failures);
+  assert(runThrough.indexOf('id="system-state-machine"') > runThrough.indexOf('id="productDemo"'), "state machine should appear below the simulator", failures);
 }
 
 function checkRedirects(failures) {

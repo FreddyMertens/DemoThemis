@@ -248,6 +248,7 @@ Evidence:
 - The project discusses juror track records, calibration, resolved cases for aptitude tests, private votes, draws, and scoring.
 - ~~`breaking-the-court.html` now frames centralized handling of scoring, resolved-case curation, and draws as a forbidden shortcut rather than the intended architecture.~~ Done.
 - ~~`rebuilding-the-court.html` now makes the stricter requirement explicit: no centralized tally fallback, no operator-held ballot-opening key, and no admin discretion over panels, scores, or resolved-case admission for aptitude tests.~~ Done.
+- `demothemis.html` now states the full privacy boundary: one-case pseudonyms; private reputation, reserve, payment, penalty, refund, and case-history commitments; and public eligibility proofs, aggregate tallies, and aggregate accounting only.
 
 Why this matters:
 
@@ -276,6 +277,7 @@ Future implementation diligence:
 - Decide what must be on-chain, permissionlessly verifiable, encrypted, anonymized, or never stored.
 - Use keyless, distributed, or threshold/MPC setup for privacy-critical roles so no single actor ever holds a usable full secret.
 - Separate draw, vote collection, tallying, scoring, and payout responsibilities.
+- Verify that penalties, appeal reversals, reward claims, and transaction metadata cannot recreate a vote receipt.
 - Make deanonymization a first-class failure mode in implementation review and audits.
 
 ### 6. Future Implementation Diligence: Appeals, Finality, Quorum, and Dissenter Treatment

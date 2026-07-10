@@ -186,6 +186,7 @@ body.theme-solve { --accent: #2f62cf; --accent-soft: #e6edfa; --accent-ink: #214
       <a href="hybrid-juror-prediction-market-integration.html"><span class="ch">05</span> Bootstrap loop</a>
       <a href="governance.html"><span class="ch">06</span> Governance</a>
       <a href="glossary.html">Glossary</a>
+      <a href="mvp.html">Live MVP</a>
     </div>
   </div>
 </nav>
@@ -433,7 +434,7 @@ body.theme-solve { --accent: #2f62cf; --accent-soft: #e6edfa; --accent-ink: #214
       <p style="font-family:var(--sans);font-size:.86rem;color:var(--faint);margin:1rem 0 0">Illustrative. Juror turnout falls as the reserve rises; the attacker's recruits do not, so their share of a shrinking pool grows. Slide the reserve right and watch security get worse as the entry burden gets bigger. The sweet spot sits just above the laziness floor and moves with workload.</p>
     </div>
 
-    <p>A court with many low-reserve jurors beats a court with a few high-reserve jurors against every attack in this chapter, and it is not close. The discipline survives in the slash, not the headline size: a wrong-side vote forfeits a slice of the reserve scaled by how lopsided the verdict was, settled only after appeals finish, refunded in full if a later panel vindicates the vote. Every slash flows to the reward pool that pays active, high-quality jurors, never the winning panel, so a majority earns nothing extra by convicting its dissenters.</p>
+    <p>A court with many low-reserve jurors beats a court with a few high-reserve jurors against every attack in this chapter, and it is not close. The discipline survives in the slash, not the headline size: a wrong-side vote forfeits a slice of the reserve scaled by how lopsided the verdict was, settled only after appeals finish, refunded in full if a later panel vindicates the vote. The individual debit stays private; only the aggregate transfer into the reward pool and a proof that every debit followed the rule are public. The pool pays active, high-quality jurors, never the winning panel, so a majority earns nothing extra by convicting its dissenters.</p>
   </section>
 
   <section class="reveal">
@@ -513,7 +514,7 @@ body.theme-solve { --accent: #2f62cf; --accent-soft: #e6edfa; --accent-ink: #214
     </div>
 
     <p>The bribery market does not lose a fight here. It loses the ability to write a contract it can enforce, and a market that cannot enforce delivery does not clear at any price.</p>
-    <p>Pin down what a briber actually has to work with, because the design splits the world on purpose. Some things are public by design: which pseudonymous seats were drawn for a case has to be visible, or nobody could re-check the draw against the randomness beacon and confirm the panel was honest. Verifiability costs visibility, and the design pays it. What it never pays with is people. A seat is a World ID pseudonym and a wallet. The scans that prove the human behind it never leave their phone, no biometric library exists, and no record anywhere maps a seat to a name.</p>
+    <p>Pin down what a briber actually has to work with, because the design splits the world on purpose. Some things are public by design: which one-time pseudonymous seats were drawn for a case has to be visible, or nobody could re-check the draw against the randomness beacon and confirm the panel was honest. Each case uses a new pseudonym and receiving key, so appearances cannot be joined into one public juror history. The scans that prove the human behind a seat never leave their phone, no biometric library exists, and no record anywhere maps a seat to a name.</p>
 
     <figure class="diagram reveal">
       <div class="diagram-inner">
@@ -521,22 +522,24 @@ body.theme-solve { --accent: #2f62cf; --accent-soft: #e6edfa; --accent-ink: #214
           <div class="pane vis">
             <h4>What a briber can see, on purpose</h4>
             <div class="row2">The pseudonymous seats drawn for a case, so anyone can audit the draw against the randomness beacon.</div>
-            <div class="row2">Each seat's live reserve, reputation, and slash history, the track record that earns trust.</div>
+            <div class="row2">Proof that every seat is unique, eligible, selected fairly, and has enough private reserve. Draw weight is proved from a private reputation band, never a public score.</div>
             <div class="row2">The final tally, with its proof attached.</div>
           </div>
           <div class="pane hid">
             <h4>What they can never see</h4>
             <div class="row2">Any juror's name or face. The scans stay on the phone; a seat is a pseudonym.</div>
             <div class="row2">Which way any seat voted, on any case, ever. Only the tally decrypts.</div>
+            <div class="row2">Any juror's exact reserve, reputation, case history, individual payment, slash, or appeal refund.</div>
             <div class="row2">Proof of a bought vote, even from a juror trying to sell one.</div>
           </div>
         </div>
       </div>
-      <figcaption>The split is deliberate. <b>A briber gets a list of pseudonyms they can audit and nothing they can buy: no name to find, no vote to verify, no receipt to pay against.</b></figcaption>
+      <figcaption>The split is deliberate. <b>The public gets one-case pseudonyms, aggregate accounting, and proofs that the rules were followed; it never gets the private history that could turn a penalty or payment into a vote receipt.</b></figcaption>
     </figure>
 
-    <p>So the worst a briber can do is shout an offer at a list of pseudonyms, and the worst a juror can do back is take the money and vote however they wanted anyway. The one privacy a juror has to guard themselves is their own: tell the neighborhood you hold a seat and you have spent the anonymity the protocol gave you, the same way any pseudonym is spent.</p>
+    <p>So the worst a briber can do is shout an offer at a list of one-case pseudonyms, and the worst a juror can do back is take the money and vote however they wanted anyway. The one privacy a juror has to guard themselves is their own: tell the neighborhood you hold a seat and you have spent the anonymity the protocol gave you for that case.</p>
     <p>One honest note about the machinery underneath, because this section made a strong promise: that nobody, not even the people running the count, ever opens a single ballot. There is no centralized fallback for that promise. The tally setup is acceptable only if no operator ever receives a usable ballot-opening key: the secret is generated in a distributed or keyless ceremony, any setup artifact is unusable after initialization, and the only public output is the aggregate tally with a zero-knowledge proof anyone can check. A design where one party creates, holds, or promises to delete the key is rejected, because a security argument with a hidden admin key is not a security argument.</p>
+    <p>The same boundary continues after the tally. Exact scores, reserves, rewards, slashes, and refunds live inside private commitments. Zero-knowledge proofs reveal only the fact needed now&mdash;enough reserve, an eligible reputation band, a valid private update&mdash;while batched totals prove that money balanced. A direct public payment or penalty tied to a seat is rejected because it would recreate the vote receipt the ballot removed.</p>
   </section>
 
   <section class="reveal">
@@ -557,7 +560,7 @@ body.theme-solve { --accent: #2f62cf; --accent-soft: #e6edfa; --accent-ink: #214
           <span class="arrow">&rarr;</span>
           <div class="node"><span class="ic">&#128274;</span><span class="lbl">Encrypted vote</span><span class="sub">re-keyable, no receipts</span></div>
           <span class="arrow">&rarr;</span>
-          <div class="node is-accent"><span class="ic">&#9878;</span><span class="lbl">Paid or slashed</span><span class="sub">fees in, slashes to the reward pool</span></div>
+          <div class="node is-accent"><span class="ic">&#9878;</span><span class="lbl">Paid or slashed</span><span class="sub">private update, aggregate proof</span></div>
         </div>
       </div>
       <figcaption>The life of a seat, end to end. <b>At no step does more money buy more voice; it buys a larger panel of strangers you still cannot reach.</b></figcaption>
@@ -698,8 +701,8 @@ body.theme-solve { --accent: #2f62cf; --accent-soft: #e6edfa; --accent-ink: #214
   <section class="reveal">
     <p class="sec-label">The reputation dial</p>
     <h2>A score with an error bar attached</h2>
-    <p>The per-case credits build into a reputation, and that reputation is deliberately not a single number. It is a beta distribution, which is a precise way of saying a best guess plus an honest error bar: a juror at 80% over 12 cases and a juror at 80% over 140 cases have the same average and very different evidence behind it. The system always carries the 95% interval with the estimate, over a rolling window of the last 50 to 150 cases, so a reputation stays recent enough to mean something and old scores cannot coast forever.</p>
-    <p>The dial drives two everyday things. Draw rate: higher-scored jurors are drawn more often, but never more than three times as often as a newcomer, because <a href="demothemis.html#capture-resistance">the court's</a> security is the width of its active pool and no scoring rule may thin it. And per-case pay: the juror fee scales with the score, so accuracy compounds into income. Pay carries most of the reward on purpose, because a fee that tracks the score motivates without thinning the pool, which lets the draw ceiling stay low. Suspension exists too, but it sits behind a gate, and the gate has an unusual rule. It refuses to act on a guess.</p>
+    <p>The per-case credits build into a private reputation commitment, and that reputation is deliberately not a single number. It is a beta distribution, which is a precise way of saying a best guess plus an honest error bar: a juror at 80% over 12 cases and a juror at 80% over 140 cases have the same average and very different evidence behind it. The system carries the 95% interval over a rolling window of the last 50 to 150 cases, but publishes neither the exact score nor the cases behind it.</p>
+    <p>The private dial drives two everyday things. Draw rate: a juror proves the eligible weight band without revealing their score, and no band can be drawn more than three times as often as a newcomer because <a href="demothemis.html#capture-resistance">the court's</a> security is the width of its active pool. Per-case pay also scales inside private accounting, so accuracy compounds into income without publishing a score-sized payment. Suspension exists too, but it sits behind a gate, and the gate has an unusual rule. It refuses to act on a guess.</p>
 
     <div class="dial-wrap reveal">
       <table class="dial-table">
@@ -707,8 +710,8 @@ body.theme-solve { --accent: #2f62cf; --accent-soft: #e6edfa; --accent-ink: #214
           <tr><th>What the dial moves</th><th>The rule</th><th>How fast it bites</th></tr>
         </thead>
         <tbody>
-          <tr><td>Draw rate</td><td>Scales with the score, capped at <span class="param">3&times;</span> a newcomer's rate so no juror dominates the draw. The largest panels, the <span class="param">31</span> seats, draw only long case histories.</td><td>Continuously, from the first case</td></tr>
-          <tr><td>Per-case pay</td><td>The juror's share of the fee scales with the score.</td><td>Continuously, from the first case</td></tr>
+          <tr><td>Draw rate</td><td>Scales by a privately proved reputation band, capped at <span class="param">3&times;</span> a newcomer's rate so no juror dominates the draw. The largest panels, the <span class="param">31</span> seats, require a private proof of a long case history.</td><td>Continuously, from the first case</td></tr>
+          <tr><td>Per-case pay</td><td>The juror's private share of the fee scales with the score; only the panel total is public.</td><td>Continuously, from the first case</td></tr>
           <tr><td>Full vote weight</td><td>Granted when the interval sits clear of the line on the high side: <span class="param">lower bound &ge; 0.70</span>.</td><td>Earned over tens of cases</td></tr>
           <tr><td>Suspension</td><td>Fires only when the whole 95% interval sits below <span class="param">0.70</span>.</td><td>Last, and only on confident evidence</td></tr>
         </tbody>
@@ -737,15 +740,15 @@ body.theme-solve { --accent: #2f62cf; --accent-soft: #e6edfa; --accent-ink: #214
     </div>
 
     <p>Drag the case slider and watch the band shrink. A juror at 65% over 8 cases straddles the bar from both sides: maybe careless, maybe unlucky, the math honestly cannot tell yet, so the gate does nothing. The same 65% over 140 cases is a different fact. The band has pulled in tight, the whole interval sits under the bar, and the suspension is no longer a judgment call. It is a measurement.</p>
-    <p>Pay does not stop at the per-case fee. The 20% slice of every settlement fee, plus forfeited juror and appeal bonds, gathers into a reward pool that pays out on a regular cycle to jurors who clear the quality bar and were recently active. So a good, active juror earns income beyond the fee on any single case. The pool is decoupled from any one verdict, so it can reward a track record without ever bending a vote.</p>
+    <p>Pay does not stop at the per-case fee. The 20% slice of every settlement fee, plus forfeited juror and appeal bonds, gathers into a reward pool that pays out privately on a regular cycle to jurors who prove they clear the quality and recency gates. The public sees the pool total and a proof of correct distribution, not each juror's amount. The pool is decoupled from any one verdict, so it can reward a track record without exposing or bending a vote.</p>
   </section>
 
   <section class="reveal">
     <p class="sec-label">Lenient on purpose</p>
     <h2>Why the gate waits so long</h2>
     <p>A stricter gate sounds like higher standards. It is really a herding machine. If one rough stretch can end a career, the rational juror stops taking positions on hard cases and votes whatever the room will obviously say, because the obvious vote is the safe one. You would pay for accuracy with one hand and punish independence with the other, and the second instinct wins. So the suspension bar is set low, 0.70, and it acts only when the full interval is below it. A juror has to be confidently, persistently worse than that before the court shows them the door.</p>
-    <p>Leniency at the bottom does not mean softness everywhere. Full vote weight has a stricter bar: the interval has to sit clear of the line on the high side before a juror's ballot counts at full strength, and the pay and draw dials track the score the whole way. A coasting juror earns less and is drawn less long before any gate fires, and the live reserve is already forfeiting margin-scaled slices on wrong-side votes, every slash flowing to the reward pool. Low effort turns unprofitable years before it turns suspendable. The gate is the last resort, not the incentive.</p>
-    <p>And the design protects its most valuable juror: the one who disagrees with the whole panel and turns out to be right. A wrong-side slash is settled against the post-appeal outcome, not the first verdict. When a 15-seat panel gets it wrong and the 31-seat appeal overturns them, the original dissenter's slash is refunded, the score is recomputed against the corrected outcome, and the overturned majority takes the loss instead. Dissent on a near-tie was already cheap, because the slash scales with margin. Vindicated dissent costs nothing at all, and that arithmetic keeps independent minds in the pool.</p>
+    <p>Leniency at the bottom does not mean softness everywhere. Full vote weight has a stricter bar: the interval has to sit clear of the line on the high side before a juror's ballot counts at full strength, and the private pay and draw dials track the score the whole way. A coasting juror earns less and is drawn less long before any gate fires, and the live reserve is already forfeiting margin-scaled slices on wrong-side votes. Individual debits stay private while the aggregate transfer to the reward pool is proved publicly. Low effort turns unprofitable years before it turns suspendable. The gate is the last resort, not the incentive.</p>
+    <p>And the design protects its most valuable juror: the one who disagrees with the whole panel and turns out to be right. A wrong-side slash is settled against the post-appeal outcome, not the first verdict. When a 15-seat panel gets it wrong and the 31-seat appeal overturns them, the original dissenter's private debit and score update are reversed, and the overturned majority takes the loss instead. No named public refund reveals who dissented. Dissent on a near-tie was already cheap, because the slash scales with margin. Vindicated dissent costs nothing at all, and that arithmetic keeps independent minds in the pool.</p>
   </section>
 
   <section class="reveal">
@@ -753,7 +756,7 @@ body.theme-solve { --accent: #2f62cf; --accent-soft: #e6edfa; --accent-ink: #214
     <h2>The ladder, and the two clocks</h2>
     <p>Lose a verdict and still believe you are right? Then climb. An appeal redraws the case at the next panel size, 7 to 15 to 31, never the same size twice, so every retry faces a wider panel and worse odds for whoever is wrong. The price of each rung is not a number anyone picked. It is the highest of three floors computed from the live case: enough to pay the next panel's jurors, enough to beat the value of re-rolling (the attacker's capture odds times the stake at issue), and enough to rent the delay it imposes on everyone's money. A near-tie verdict discounts the climb, because a 16 to 15 split is the court itself admitting doubt, and the discount never dips below the floor that keeps grinding unprofitable.</p>
     <p>There are two ways onto the ladder. Post the rung's bond alone, or gather a petition from the losing side: at least 5% of its verified humans, each staking a small refundable sliver. So a lone dissenter with conviction can climb solo, and a thousand sore losers have to pay with sincerity rather than a click. A failed climb forfeits its bond to the reward pool. A vindicated one is refunded with a bonus taken from the overturned majority's slashes, the same arithmetic that makes honest dissent free in the section above. Each verdict then stays open to appeal for a full week before it hardens: time enough for the slowest petition to gather, and affordable because tokenized positions keep trading while the clock runs.</p>
-    <p>And then the ladder ends, on purpose. The top rung's verdict is final: the pot pays, the tokens redeem, and no later discovery reopens settled money, because escrow that can be reopened forever is escrow nobody can build on. What never ends is the other clock. Anyone, at any time, years later, can report a verdict for collusion. The vote-correlation audit runs, proven cliques lose their bonds and their World IDs, and those forfeited bonds feed the reward pool. Two clocks, deliberately unsynchronized: settlement always finishes, justice never closes, and neither can hold the other hostage.</p>
+    <p>And then the ladder ends, on purpose. The top rung's verdict is final: the pot pays, the tokens redeem, and no later discovery reopens settled money, because escrow that can be reopened forever is escrow nobody can build on. What never ends is the other clock. Anyone can later report evidence of collusion, but any correlation test must run over encrypted histories and publish only a proof of the rule breach, never a linkable voting history. Proven cliques lose their private bonds and eligibility, and the aggregate forfeiture feeds the reward pool. Two clocks, deliberately unsynchronized: settlement always finishes, justice never closes, and neither can hold the other hostage.</p>
 
     <figure class="diagram reveal">
       <div class="diagram-inner">
@@ -842,6 +845,7 @@ body.theme-solve { --accent: #2f62cf; --accent-soft: #e6edfa; --accent-ink: #214
       <a href="hybrid-juror-prediction-market-integration.html">5. Bootstrap loop</a>
       <a href="governance.html">6. Governance</a>
       <a href="glossary.html">Glossary</a>
+      <a href="mvp.html">Live MVP</a>
       <a href="index.html">Home &middot; the map</a>
     </div>
     <p class="signoff">A neutral escrow court, explained once simply and then under the hood.</p>

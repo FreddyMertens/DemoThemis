@@ -15,12 +15,22 @@
   var TOTAL = CHAPTERS.length;
 
   function fileOf(path) {
-    var clean = (path || "").split("?")[0].split("#")[0];
-    if (!clean || /\/$/.test(clean)) return "index.html";
+    var clean = String(path || "").split("?")[0].split("#")[0].replace(/\\/g, "/");
+    try { clean = decodeURIComponent(clean); } catch (e) { /* Keep the undecoded path. */ }
+    clean = clean.replace(/\/+$/, "");
+    if (!clean) return "index.html";
     var p = clean.split("/").pop();
     if (!p) return "index.html";
-    if (p.indexOf(".") === -1) return p + ".html";
-    return p;
+    if (p.indexOf(".") === -1) return (p + ".html").toLowerCase();
+    return p.toLowerCase();
+  }
+
+  function linkedFile(a) {
+    try {
+      return fileOf(new URL(a.href, location.href).pathname);
+    } catch (e) {
+      return fileOf(a.getAttribute("href"));
+    }
   }
   var here = fileOf(location.pathname);
 
@@ -58,6 +68,11 @@
     var nav = document.querySelector(".sitenav");
     if (!nav) return;
     var toggle = nav.querySelector(".nav-toggle");
+    var links = nav.querySelector(".nav-links");
+    if (toggle && links) {
+      if (!links.id) links.id = "primary-navigation";
+      toggle.setAttribute("aria-controls", links.id);
+    }
     if (toggle) {
       toggle.addEventListener("click", function () {
         var open = nav.classList.toggle("open");
@@ -77,9 +92,12 @@
         toggle.setAttribute("aria-expanded", "false");
       }
     });
-    Array.prototype.forEach.call(nav.querySelectorAll("a[href]"), function (a) {
-      if (fileOf(a.getAttribute("href")) === here) {
+    Array.prototype.forEach.call(nav.querySelectorAll(".nav-links a[href]"), function (a) {
+      a.classList.remove("active");
+      a.removeAttribute("aria-current");
+      if (linkedFile(a) === here) {
         a.classList.add("active");
+        a.setAttribute("aria-current", "page");
       }
     });
   }
