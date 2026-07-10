@@ -1,0 +1,25 @@
+{
+  "title": "Used GPU sold as working, but artifacts under load",
+  "question": "Should the seller (payee) keep the escrowed funds, given the card was advertised as fully working but artifacts under load and fails the agreed benchmark threshold?",
+  "standard": "objective",
+  "evidence": [
+    {
+      "label": "Original listing text describing the card as fully working with no artifacting",
+      "url": "https://example.com/listing/used-radeon-rx6800-fully-working"
+    },
+    {
+      "label": "Buyer's 3DMark Time Spy result run after delivery",
+      "url": "https://example.com/benchmarks/timespy-buyer-run-9120"
+    },
+    {
+      "label": "Buyer's screen capture and short clip showing green and pink artifacts during a stress loop",
+      "url": "https://example.com/media/artifact-stress-capture"
+    },
+    {
+      "label": "Seller's pre-shipment benchmark and photo of the card on a test bench",
+      "url": "https://example.com/benchmarks/timespy-seller-run-9870"
+    }
+  ],
+  "terms": "Seller agreed to ship a Radeon RX 6800 that is fully functional with no visual artifacts under sustained gaming or stress load. The parties set a pass threshold of a 3DMark Time Spy graphics score of at least 9,500, to be confirmed by the buyer within 72 hours of delivery on a clean driver install. If the card artifacts under load or scores below 9,500 on that test, the buyer may return it and the escrow refunds to the buyer; otherwise the funds release to the seller.",
+  "simulated": true
+}

@@ -1,0 +1,12 @@
+{
+  "title": "Dataset delivery deadline",
+  "type": "question",
+  "standard": "objective",
+  "question": "Was the labeled training dataset delivered in full before the contractual deadline of 2026-05-31 23:59 UTC?",
+  "resolution": "YES if the complete dataset was delivered before the deadline; NO if late or incomplete.",
+  "evidence": [
+    { "label": "Delivery email with timestamp", "url": "https://example.com/deal/delivery-email" },
+    { "label": "Repository release tag + commit times", "url": "https://example.com/deal/repo-releases" }
+  ],
+  "simulated": true
+}

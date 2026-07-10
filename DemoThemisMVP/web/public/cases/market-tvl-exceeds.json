@@ -1,0 +1,24 @@
+{
+  "title": "Lumenwave protocol passing $1B TVL by settlement",
+  "question": "Did the Lumenwave Finance protocol report total value locked of at least $1,000,000,000 on the DeFiPulse Tracker dashboard at any point on or before the settlement date of 2026-09-30?",
+  "standard": "objective",
+  "evidence": [
+    {
+      "label": "DeFiPulse Tracker dashboard page for Lumenwave Finance, showing the live TVL figure",
+      "url": "https://example.com/defipulse-tracker/protocols/lumenwave-finance"
+    },
+    {
+      "label": "Daily TVL history export (CSV) for Lumenwave, covering the period through 2026-09-30",
+      "url": "https://example.com/defipulse-tracker/api/lumenwave/tvl-history.csv"
+    },
+    {
+      "label": "Methodology note describing how DeFiPulse Tracker counts staked and pooled assets toward TVL",
+      "url": "https://example.com/defipulse-tracker/docs/tvl-methodology"
+    },
+    {
+      "label": "Archived snapshot of the Lumenwave dashboard taken at 23:59 UTC on the settlement date",
+      "url": "https://example.com/web-archive/2026-09-30/lumenwave-tvl-snapshot"
+    }
+  ],
+  "simulated": true
+}

@@ -1,8 +1,48 @@
 [build]
-  command = "node tools/build-site.js"
-  publish = "dist"
+  base = "DemoThemisMVP/web"
+  command = "node ../../tools/prepare-unified-site.js && pnpm build"
+  publish = ".next"
+
+[build.environment]
+  NODE_VERSION = "24"
 
 [[redirects]]
   from = "/"
-  to = "/index.html"
+  to = "/proposal-home.html"
   status = 200
+
+[[redirects]]
+  from = "/vision"
+  to = "/demothemis.html"
+  status = 301
+
+[[redirects]]
+  from = "/vision.html"
+  to = "/demothemis.html"
+  status = 301
+
+[[redirects]]
+  from = "/juror-court"
+  to = "/demothemis.html"
+  status = 301
+
+[[redirects]]
+  from = "/juror-court.html"
+  to = "/demothemis.html"
+  status = 301
+
+[[redirects]]
+  from = "/hybrid-juror-system"
+  to = "/demothemis.html"
+  status = 301
+
+[[redirects]]
+  from = "/hybrid-juror-system.html"
+  to = "/demothemis.html"
+  status = 301
+
+[[headers]]
+  for = "/*"
+  [headers.values]
+    X-Content-Type-Options = "nosniff"
+    Referrer-Policy = "strict-origin-when-cross-origin"

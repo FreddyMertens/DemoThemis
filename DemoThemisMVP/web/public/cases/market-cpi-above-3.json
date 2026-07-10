@@ -1,0 +1,24 @@
+{
+  "title": "CPI year-over-year above 3.0 percent",
+  "question": "Did the national headline CPI for May 2026 print above 3.0 percent year over year in the official statistics-office release dated June 12, 2026?",
+  "standard": "objective",
+  "evidence": [
+    {
+      "label": "Official statistics-office CPI release for May 2026",
+      "url": "https://example.gov/statistics/cpi/2026-05-release"
+    },
+    {
+      "label": "Methodology note on how the headline year-over-year rate is computed",
+      "url": "https://example.gov/statistics/cpi/methodology"
+    },
+    {
+      "label": "Data table with the printed year-over-year figure to one decimal place",
+      "url": "https://example.gov/statistics/cpi/2026-05-table"
+    },
+    {
+      "label": "Prior month release (April 2026) for context on the trend",
+      "url": "https://example.gov/statistics/cpi/2026-04-release"
+    }
+  ],
+  "simulated": true
+}

@@ -1,0 +1,25 @@
+{
+  "title": "Bulk order short by 60 units on carrier scan",
+  "question": "Should the supplier (payee) be paid the full invoiced amount when the carrier scan logs 440 of 500 units delivered?",
+  "standard": "objective",
+  "evidence": [
+    {
+      "label": "Purchase order for 500 units of part RX-12",
+      "url": "https://example.com/escrow/po-rx12-500-units.pdf"
+    },
+    {
+      "label": "Supplier invoice billing all 500 units",
+      "url": "https://example.com/escrow/invoice-northvale-supply.pdf"
+    },
+    {
+      "label": "Carrier delivery scan log showing piece count at the buyer dock",
+      "url": "https://example.com/escrow/carrier-scan-delivery-log.pdf"
+    },
+    {
+      "label": "Buyer receiving report counting units off the truck",
+      "url": "https://example.com/escrow/buyer-receiving-report.pdf"
+    }
+  ],
+  "terms": "Northvale Supply Co (payee) agreed to deliver 500 units of part RX-12 to Harborline Goods (buyer) at the buyer's dock. Payment releases in full only if the carrier delivery scan and the buyer receiving report both confirm 500 units received. If fewer than 500 units are confirmed delivered, the payee is paid only for the confirmed count at the per-unit price stated on the invoice, and the shortfall is withheld. The carrier scan is treated as the controlling count where it and the receiving report agree.",
+  "simulated": true
+}

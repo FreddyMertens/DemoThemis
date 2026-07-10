@@ -1,0 +1,25 @@
+{
+  "title": "Marketing site delivered without contact form or CMS access",
+  "question": "Should the payee (Larkfield Studio) be paid the final $1,800 milestone under the linked terms?",
+  "standard": "rubric",
+  "evidence": [
+    {
+      "label": "Signed statement of work listing the five required deliverables",
+      "url": "https://example.com/cases/larkfield/statement-of-work.pdf"
+    },
+    {
+      "label": "Screenshots of the live site showing no working contact form",
+      "url": "https://example.com/cases/larkfield/live-site-screenshots.png"
+    },
+    {
+      "label": "Email thread where the client requests CMS login and the developer does not provide one",
+      "url": "https://example.com/cases/larkfield/cms-access-emails.txt"
+    },
+    {
+      "label": "Hosting export confirming the contact form endpoint returns a 404",
+      "url": "https://example.com/cases/larkfield/endpoint-check-log.json"
+    }
+  ],
+  "terms": "On April 2, 2026, Marrow Coffee Co. agreed to pay Larkfield Studio $1,800 for a five-page marketing website. The statement of work lists five deliverables: responsive layout, five page templates, basic SEO tags, a working contact form that emails submissions to hello@marrowcoffee.test, and CMS access so staff can edit page text without a developer. The final milestone releases only when all five deliverables are present and functioning on the production domain. The first three items shipped and work.",
+  "simulated": true
+}

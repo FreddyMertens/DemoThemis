@@ -1,0 +1,24 @@
+{
+  "title": "Opening weekend above $80M",
+  "question": "Did the film Quartz Harbor gross more than $80M in its domestic opening weekend, per the studio-reported box office figure?",
+  "standard": "objective",
+  "evidence": [
+    {
+      "label": "Studio press release reporting the three-day domestic opening total",
+      "url": "https://example.com/quartz-harbor/studio-opening-weekend-release"
+    },
+    {
+      "label": "Box office tracker entry with the domestic opening weekend gross",
+      "url": "https://example.org/box-office/quartz-harbor-opening"
+    },
+    {
+      "label": "Trade outlet weekend recap covering the top domestic releases",
+      "url": "https://example.net/film/weekend-box-office-recap"
+    },
+    {
+      "label": "Distributor methodology note defining the opening weekend window",
+      "url": "https://example.com/quartz-harbor/reporting-methodology"
+    }
+  ],
+  "simulated": true
+}

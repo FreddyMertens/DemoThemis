@@ -1,0 +1,12 @@
+{
+  "title": "Product copywriting",
+  "type": "escrow",
+  "standard": "rubric",
+  "question": "Should the payee be paid under the linked terms? (vote YES = pay the payee, NO = refund the payer)",
+  "terms": "Deliver 10 product descriptions, ~150 words each, original (passes plagiarism check), in the brand voice guide, with one revision round included.",
+  "evidence": [
+    { "label": "Brief + brand voice guide", "url": "https://example.com/copy/brief.pdf" },
+    { "label": "Delivered copy + plagiarism report", "url": "https://example.com/copy/delivery" }
+  ],
+  "simulated": true
+}

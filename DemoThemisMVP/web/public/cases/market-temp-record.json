@@ -1,0 +1,24 @@
+{
+  "title": "July high-temperature record in Calderport",
+  "question": "Did the city of Calderport set a new July high-temperature record, as reported by the National Weather Bureau, on or before the settlement date of July 31, 2026?",
+  "standard": "objective",
+  "evidence": [
+    {
+      "label": "National Weather Bureau daily climate report for Calderport, July 2026",
+      "url": "https://example.com/nwb/calderport/daily-climate-2026-07"
+    },
+    {
+      "label": "Calderport station historical July records table (prior record: 41.2 C, set July 18, 1998)",
+      "url": "https://example.com/nwb/calderport/station-records-july"
+    },
+    {
+      "label": "National Weather Bureau methodology note on official record verification",
+      "url": "https://example.com/nwb/methodology/record-verification"
+    },
+    {
+      "label": "Calderport regional summary, end-of-month review for July 2026",
+      "url": "https://example.com/nwb/calderport/monthly-summary-2026-07"
+    }
+  ],
+  "simulated": true
+}

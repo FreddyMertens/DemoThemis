@@ -1,0 +1,12 @@
+{
+  "title": "Brand logo design",
+  "type": "escrow",
+  "standard": "rubric",
+  "question": "Should the payee be paid under the linked terms? (vote YES = pay the payee, NO = refund the payer)",
+  "terms": "Deliver a primary brand logo plus 3 variations (horizontal, icon-only, monochrome) as editable vector source (SVG + AI) and a one-page usage guide.",
+  "evidence": [
+    { "label": "Design brief", "url": "https://example.com/logo/brief.pdf" },
+    { "label": "Delivered files", "url": "https://example.com/logo/delivery.zip" }
+  ],
+  "simulated": true
+}

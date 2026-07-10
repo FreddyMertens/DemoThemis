@@ -1,0 +1,24 @@
+{
+  "title": "Riverside Athletic win away at Castleford United",
+  "question": "Did Riverside Athletic win their league match away at Castleford United on 14 March 2026, per the official final result?",
+  "standard": "objective",
+  "evidence": [
+    {
+      "label": "League official result page for the fixture",
+      "url": "https://example.com/midland-league/2026-03-14/castleford-united-vs-riverside-athletic"
+    },
+    {
+      "label": "Match report with final score and scorers",
+      "url": "https://example.org/match-reports/castleford-riverside-2026-03-14"
+    },
+    {
+      "label": "Referee match sheet submitted to the league",
+      "url": "https://example.com/midland-league/match-sheets/r29-castleford-riverside"
+    },
+    {
+      "label": "Club post-match statement from Riverside Athletic",
+      "url": "https://riverside-athletic.example.net/news/away-result-castleford"
+    }
+  ],
+  "simulated": true
+}

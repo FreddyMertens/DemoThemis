@@ -19,8 +19,6 @@ const publicHtml = [
   "mvp.html"
 ];
 
-const canonicalMvpOrigin = "https://demo-themis-mvp.vercel.app";
-
 const forbiddenPublicPaths = [
   "/SKILL.md",
   "/review.md",
@@ -170,17 +168,17 @@ function checkMvpPage(html, failures) {
   assert(/\b(?:MVP|prototype)\b/i.test(description) && /\b(?:live|sandbox|on[- ]?chain)\b/i.test(description), "mvp.html description should explain the live MVP experience", failures);
 
   const linkTargets = openingTagAttributeValues(html, "a", "href");
-  for (const route of ["/sandbox", "/home", "/about"]) {
-    const expected = canonicalMvpOrigin + route;
+  for (const route of ["/app", "/sandbox", "/home", "/about"]) {
+    const expected = siteUrl + route;
     const hasRoute = linkTargets.some((target) => {
       try {
-        const targetUrl = new URL(target);
-        return targetUrl.origin === canonicalMvpOrigin && targetUrl.pathname.replace(/\/+$/, "") === route;
+        const targetUrl = new URL(target, `${siteUrl}/mvp.html`);
+        return targetUrl.origin === new URL(siteUrl).origin && targetUrl.pathname.replace(/\/+$/, "") === route;
       } catch (error) {
         return false;
       }
     });
-    assert(hasRoute, `mvp.html missing canonical MVP link: ${expected}`, failures);
+    assert(hasRoute, `mvp.html missing same-site MVP link: ${expected}`, failures);
   }
 
   assert(/\bsimulat(?:e|ed|es|ion|or)\b/i.test(html), "mvp.html should label the simulated experience", failures);

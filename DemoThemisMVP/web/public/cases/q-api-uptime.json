@@ -1,0 +1,12 @@
+{
+  "title": "API uptime SLA — Q2 2026",
+  "type": "question",
+  "standard": "objective",
+  "question": "Did the Acme API meet its contractual 99.9% uptime SLA for Q2 2026 (Apr 1 – Jun 30)?",
+  "resolution": "YES if measured uptime was at or above 99.9% across the quarter; NO otherwise.",
+  "evidence": [
+    { "label": "Acme public status page (incident history)", "url": "https://example.com/acme/status" },
+    { "label": "Third-party uptime monitor export (CSV)", "url": "https://example.com/acme/uptime-q2.csv" }
+  ],
+  "simulated": true
+}

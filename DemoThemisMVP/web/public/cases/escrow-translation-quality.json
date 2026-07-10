@@ -1,0 +1,25 @@
+{
+  "title": "Translation accuracy against the agreed glossary",
+  "question": "Should the payee (translator Mara Volkova) be paid in full under the linked terms, given the client's dispute over technical-term accuracy?",
+  "standard": "rubric",
+  "evidence": [
+    {
+      "label": "Signed services agreement and statement of work (5,000-word technical manual, German to English)",
+      "url": "https://example.com/escrow/translation-quality/services-agreement.pdf"
+    },
+    {
+      "label": "Agreed terminology glossary (142 technical terms, version dated 2026-04-10)",
+      "url": "https://example.com/escrow/translation-quality/agreed-glossary-v3.csv"
+    },
+    {
+      "label": "Delivered translation with the client's marked accuracy objections",
+      "url": "https://example.com/escrow/translation-quality/delivery-with-client-markup.docx"
+    },
+    {
+      "label": "Term-by-term comparison: delivered renderings versus the glossary",
+      "url": "https://example.com/escrow/translation-quality/term-conformance-report.html"
+    }
+  ],
+  "terms": "Northwind Localization Ltd. (client) engaged Mara Volkova (payee) to translate a 5,000-word technical manual from German into English for a flat fee of 950 euros, held in escrow. The contract required that all 142 terms in the agreed glossary dated 2026-04-10 be rendered exactly as specified, with no more than 3 deviations permitted across the document. Payment is due in full if the delivered translation meets the word count and the glossary-conformance limit; the client may withhold only on glossary deviations, not on stylistic preferences outside the glossary.",
+  "simulated": true
+}

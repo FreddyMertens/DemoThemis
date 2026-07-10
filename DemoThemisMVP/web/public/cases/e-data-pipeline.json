@@ -1,0 +1,12 @@
+{
+  "title": "ETL data pipeline",
+  "type": "escrow",
+  "standard": "rubric",
+  "question": "Should the payee be paid under the linked terms? (vote YES = pay the payee, NO = refund the payer)",
+  "terms": "Build an ETL pipeline ingesting 3 named sources on a daily schedule, with validation, retries, and a runbook. Acceptance: 7 consecutive successful daily runs.",
+  "evidence": [
+    { "label": "Agreed specification", "url": "https://example.com/etl/spec.pdf" },
+    { "label": "Run logs (last 14 days)", "url": "https://example.com/etl/run-logs" }
+  ],
+  "simulated": true
+}

@@ -1,0 +1,13 @@
+{
+  "title": "Translation quality (rubric)",
+  "type": "question",
+  "standard": "rubric",
+  "question": "Does the delivered 5,000-word EN→FR translation meet the agreed professional-quality rubric (accuracy, fluency, terminology, formatting)?",
+  "resolution": "YES if the work meets all four rubric dimensions at the agreed bar; NO if it fails one or more.",
+  "evidence": [
+    { "label": "Source document", "url": "https://example.com/translation/source.pdf" },
+    { "label": "Delivered translation", "url": "https://example.com/translation/delivered.pdf" },
+    { "label": "Agreed quality rubric", "url": "https://example.com/translation/rubric.pdf" }
+  ],
+  "simulated": true
+}

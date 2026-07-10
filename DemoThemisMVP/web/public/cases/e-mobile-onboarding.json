@@ -1,0 +1,12 @@
+{
+  "title": "Mobile onboarding flow",
+  "type": "escrow",
+  "standard": "rubric",
+  "question": "Should the payee be paid under the linked terms? (vote YES = pay the payee, NO = refund the payer)",
+  "terms": "Deliver a 4-screen mobile onboarding flow as Figma designs plus working React Native code, passing the agreed acceptance checklist on iOS and Android.",
+  "evidence": [
+    { "label": "Acceptance checklist", "url": "https://example.com/mobile/checklist.pdf" },
+    { "label": "Figma + build artifacts", "url": "https://example.com/mobile/delivery" }
+  ],
+  "simulated": true
+}

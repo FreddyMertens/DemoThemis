@@ -1,4 +1,4 @@
-name: Site checks
+name: Unified site checks
 
 on:
   push:
@@ -13,10 +13,17 @@ jobs:
       - name: Check out repository
         uses: actions/checkout@v4
 
+      - name: Set up pnpm
+        uses: pnpm/action-setup@v4
+        with:
+          version: 11.7.0
+
       - name: Set up Node
         uses: actions/setup-node@v4
         with:
-          node-version: "20"
+          node-version: "24"
+          cache: pnpm
+          cache-dependency-path: DemoThemisMVP/web/pnpm-lock.yaml
 
       - name: Build deploy output
         run: node tools/build-site.js
@@ -26,3 +33,11 @@ jobs:
 
       - name: Smoke test built site
         run: node tools/smoke-site.js
+
+      - name: Install MVP dependencies
+        working-directory: DemoThemisMVP/web
+        run: pnpm install --frozen-lockfile
+
+      - name: Build unified proposal and MVP
+        working-directory: DemoThemisMVP/web
+        run: node ../../tools/prepare-unified-site.js && pnpm build

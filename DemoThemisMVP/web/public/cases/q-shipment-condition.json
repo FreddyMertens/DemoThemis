@@ -1,0 +1,12 @@
+{
+  "title": "Shipment arrived undamaged",
+  "type": "question",
+  "standard": "objective",
+  "question": "Did the equipment shipment arrive undamaged and complete per the receiving inspection?",
+  "resolution": "YES if the inspection found no damage and all items present; NO otherwise.",
+  "evidence": [
+    { "label": "Receiving inspection report", "url": "https://example.com/ship/inspection.pdf" },
+    { "label": "Unboxing photos", "url": "https://example.com/ship/photos" }
+  ],
+  "simulated": true
+}

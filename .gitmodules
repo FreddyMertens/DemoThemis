@@ -1,0 +1,6 @@
+[submodule "DemoThemisMVP/contracts/lib/forge-std"]
+	path = DemoThemisMVP/contracts/lib/forge-std
+	url = https://github.com/foundry-rs/forge-std
+[submodule "DemoThemisMVP/contracts/lib/openzeppelin-contracts"]
+	path = DemoThemisMVP/contracts/lib/openzeppelin-contracts
+	url = https://github.com/OpenZeppelin/openzeppelin-contracts

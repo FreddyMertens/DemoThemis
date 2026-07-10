@@ -1,0 +1,25 @@
+{
+  "title": "Security deposit dispute over move-out condition",
+  "question": "Should the payee (tenant Dario Vance) be released the $1,800 deposit under the linked move-out checklist?",
+  "standard": "rubric",
+  "evidence": [
+    {
+      "label": "Signed move-out checklist with itemized condition standards",
+      "url": "https://example.com/escrow/move-out-checklist-unit-4b.pdf"
+    },
+    {
+      "label": "Move-in inspection report dated 2024-03-01",
+      "url": "https://example.com/escrow/move-in-inspection-2024-03-01.pdf"
+    },
+    {
+      "label": "Landlord damage claim with repair quotes (carpet, kitchen wall)",
+      "url": "https://example.com/escrow/landlord-damage-claim-rivermark.pdf"
+    },
+    {
+      "label": "Tenant move-out photos taken 2026-05-31",
+      "url": "https://example.com/escrow/tenant-moveout-photos-2026-05-31.zip"
+    }
+  ],
+  "terms": "Tenant Dario Vance paid an $1,800 security deposit held in escrow for unit 4B at Rivermark Apartments. The deposit is released to the tenant only if the unit passes the signed move-out checklist, which sets specific standards: floors free of stains larger than a quarter, walls free of holes wider than a pen, all keys returned, and the unit broom-clean. Damage counts against release only when it exceeds normal wear, so faded paint and minor scuffs do not. Repair costs for any failed item are deducted from the deposit before release, and the landlord must back each deduction with a dated photo or repair quote.",
+  "simulated": true
+}

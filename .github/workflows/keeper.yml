@@ -1,0 +1,32 @@
+name: Cohort keeper
+
+permissions:
+  contents: read
+
+on:
+  schedule:
+    - cron: '0 */2 * * *'
+  workflow_dispatch:
+
+concurrency:
+  group: cohort-keeper
+  cancel-in-progress: false
+
+jobs:
+  drive:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    env:
+      PRIVATE_KEY: ${{ secrets.COHORT_KEEPER_PRIVATE_KEY }}
+    steps:
+      - name: Explain missing keeper secret
+        if: ${{ env.PRIVATE_KEY == '' }}
+        run: echo "COHORT_KEEPER_PRIVATE_KEY is not configured in the unified repository; skipping this run."
+      - uses: actions/checkout@v4
+        if: ${{ env.PRIVATE_KEY != '' }}
+      - uses: foundry-rs/foundry-toolchain@v1
+        if: ${{ env.PRIVATE_KEY != '' }}
+      - name: Drive one full case
+        if: ${{ env.PRIVATE_KEY != '' }}
+        working-directory: DemoThemisMVP
+        run: bash scripts/keeper.sh

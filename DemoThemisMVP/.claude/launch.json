@@ -1,0 +1,17 @@
+{
+  "version": "0.0.1",
+  "configurations": [
+    {
+      "name": "web",
+      "runtimeExecutable": "pnpm",
+      "runtimeArgs": ["-C", "web", "dev"],
+      "port": 3000
+    },
+    {
+      "name": "grant-portal",
+      "runtimeExecutable": "node",
+      "runtimeArgs": ["docs/grant-portal/_serve.mjs"],
+      "port": 8099
+    }
+  ]
+}

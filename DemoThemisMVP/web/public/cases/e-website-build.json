@@ -1,0 +1,12 @@
+{
+  "title": "Marketing website build",
+  "type": "escrow",
+  "standard": "rubric",
+  "question": "Should the payee be paid under the linked terms? (vote YES = pay the payee, NO = refund the payer)",
+  "terms": "Deliver a 5-page static marketing website (Home, About, Pricing, Blog, Contact), responsive, Lighthouse performance >= 90, source in the client repo, by 2026-06-01.",
+  "evidence": [
+    { "label": "Signed statement of work", "url": "https://example.com/web/sow.pdf" },
+    { "label": "Delivered site + Lighthouse report", "url": "https://example.com/web/delivery" }
+  ],
+  "simulated": true
+}

@@ -1,0 +1,84 @@
+// SPDX-License-Identifier: MIT
+pragma solidity ^0.8.24;
+
+import {Script, console} from "forge-std/Script.sol";
+import {MockUSD} from "../src/MockUSD.sol";
+import {ISybilGate} from "../src/sybil/ISybilGate.sol";
+import {MockSybilGate} from "../src/sybil/MockSybilGate.sol";
+import {WorldIDGate} from "../src/sybil/WorldIDGate.sol";
+import {JurorRegistry} from "../src/JurorRegistry.sol";
+import {RewardPool} from "../src/RewardPool.sol";
+import {DisputeCourt} from "../src/DisputeCourt.sol";
+import {DealEscrow} from "../src/DealEscrow.sol";
+import {IDisputeCourt} from "../src/interfaces/IDisputeCourt.sol";
+
+/// @notice Deploys + wires a full DemoThemis instance.
+///   Sepolia cohort:   PANEL_SIZE=7  MIN_POOL=14 (the 2x rule), MockSybilGate.
+///   Mainnet live:     PANEL_SIZE=3  MIN_POOL=3, real WorldIDGate over World ID 4.0.
+///
+/// The sybil gate is chosen by the WORLD_ID_VERIFIER env var:
+///   - unset (cohort):  MockSybilGate (labeled stand-in, docs/MECHANISM_DELTA.md).
+///   - set   (mainnet): WorldIDGate pointed at that verifier, in the SAME gate
+///                      constructor slot. Staging 0x703a… for the Step-3.5
+///                      simulator de-risk; Production 0x0000…94d7 for the Step-5
+///                      humans — the only change between them is this one address.
+///
+///   Cohort:  forge script script/Deploy.s.sol --rpc-url worldchain_sepolia --broadcast
+///   Mainnet: WORLD_ID_VERIFIER=0x703a... PANEL_SIZE=3 MIN_POOL=3 \
+///              forge script script/Deploy.s.sol --rpc-url worldchain_mainnet --broadcast
+contract Deploy is Script {
+    /// @dev The World ID action this app gates registration on; the field-fitted
+    ///      value `keccak256(action) >> 8` is what the proof and the gate agree on.
+    string internal constant ACTION = "juror-registration";
+
+    /// @dev rp_1ddcf8ba2efe3f36 with the "rp_" prefix stripped, as uint64. Fixed
+    ///      for this Developer Portal app across staging + production.
+    uint64 internal constant RP_ID = 0x1ddcf8ba2efe3f36;
+
+    function run() external {
+        uint256 pk = vm.envUint("PRIVATE_KEY");
+        uint256 panelSize = vm.envOr("PANEL_SIZE", uint256(7));
+        uint256 minPool = vm.envOr("MIN_POOL", uint256(14));
+        uint64 commitDur = uint64(vm.envOr("COMMIT_DURATION", uint256(60)));
+        uint64 revealDur = uint64(vm.envOr("REVEAL_DURATION", uint256(60)));
+        // When set, deploy the real World ID gate against this verifier (mainnet);
+        // otherwise the cohort MockSybilGate. This is the only mainnet/cohort fork.
+        address worldIdVerifier = vm.envOr("WORLD_ID_VERIFIER", address(0));
+
+        // protocol treasury is the deployer for the cohort (the reward pool is a
+        // passive sink with no governor)
+        address treasury = vm.addr(pk);
+
+        vm.startBroadcast(pk);
+        MockUSD musd = new MockUSD();
+
+        ISybilGate gate;
+        if (worldIdVerifier == address(0)) {
+            gate = new MockSybilGate();
+            console.log("gate=MockSybilGate (cohort stand-in)");
+        } else {
+            uint256 action = uint256(keccak256(bytes(ACTION))) >> 8;
+            gate = new WorldIDGate(worldIdVerifier, action, RP_ID);
+            console.log("gate=WorldIDGate (World ID 4.0)");
+            console.log("  worldIdVerifier=%s", worldIdVerifier);
+            console.log("  action=%s", vm.toString(action));
+            console.log("  rpId=%s", vm.toString(uint256(RP_ID)));
+        }
+
+        JurorRegistry registry = new JurorRegistry(musd, gate);
+        RewardPool rewardPool = new RewardPool(musd);
+        DisputeCourt court =
+            new DisputeCourt(musd, registry, address(rewardPool), treasury, panelSize, minPool, commitDur, revealDur);
+        DealEscrow escrow = new DealEscrow(musd, IDisputeCourt(address(court)));
+        registry.setCourt(address(court));
+        court.setEscrow(address(escrow));
+        vm.stopBroadcast();
+
+        console.log("MockUSD=%s", address(musd));
+        console.log("SybilGate=%s", address(gate));
+        console.log("JurorRegistry=%s", address(registry));
+        console.log("RewardPool=%s", address(rewardPool));
+        console.log("DisputeCourt=%s", address(court));
+        console.log("DealEscrow=%s", address(escrow));
+    }
+}

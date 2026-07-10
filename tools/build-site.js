@@ -41,6 +41,10 @@ const internalNamePatterns = [
   /^screenshot\./i
 ];
 
+// These routes are supplied by the unified Next.js application rather than the
+// proposal's static output directory.
+const applicationRoutes = new Set(["/app", "/sandbox", "/home", "/about"]);
+
 function toPosix(file) {
   return file.split(path.sep).join("/");
 }
@@ -152,6 +156,7 @@ function enhanceHtmlMetadata(file, html) {
 function resolveLocalRef(fromFile, rawRef) {
   const clean = stripHashAndQuery(rawRef.trim());
   if (!clean || isExternal(clean)) return null;
+  if (applicationRoutes.has(clean.replace(/\/+$/, "") || "/")) return null;
   const baseDir = clean.startsWith("/") ? outDir : path.dirname(path.join(outDir, fromFile));
   const relativeRef = clean.startsWith("/") ? clean.slice(1) : clean;
   const normalized = relativeRef.endsWith("/") ? path.join(relativeRef, "index.html") : relativeRef;

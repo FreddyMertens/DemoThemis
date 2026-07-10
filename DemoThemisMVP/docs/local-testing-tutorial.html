@@ -1,0 +1,634 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>DemoThemis Local MVP User Testing Tutorial</title>
+  <style>
+    :root {
+      color-scheme: light;
+      --bg: #f8fafc;
+      --card: #ffffff;
+      --ink: #0f172a;
+      --muted: #475569;
+      --faint: #94a3b8;
+      --line: #e2e8f0;
+      --accent: #047857;
+      --accent-bg: #ecfdf5;
+      --warn: #92400e;
+      --warn-bg: #fffbeb;
+      --bad: #b91c1c;
+      --bad-bg: #fff1f2;
+      --blue: #1d4ed8;
+      --blue-bg: #eff6ff;
+      --shadow: 0 18px 50px rgba(15, 23, 42, 0.08);
+    }
+
+    * { box-sizing: border-box; }
+    body {
+      margin: 0;
+      background: var(--bg);
+      color: var(--ink);
+      font-family: Arial, Helvetica, sans-serif;
+      line-height: 1.5;
+    }
+
+    a { color: var(--blue); }
+    code {
+      border-radius: 6px;
+      background: #e2e8f0;
+      padding: 0.12rem 0.32rem;
+      font-family: Consolas, "Liberation Mono", monospace;
+      font-size: 0.92em;
+    }
+
+    header {
+      border-bottom: 1px solid var(--line);
+      background: var(--card);
+    }
+
+    .wrap {
+      max-width: 1120px;
+      margin: 0 auto;
+      padding: 28px 20px;
+    }
+
+    .hero {
+      display: grid;
+      gap: 18px;
+      grid-template-columns: minmax(0, 1fr);
+    }
+
+    .eyebrow {
+      margin: 0 0 6px;
+      color: var(--accent);
+      font-size: 0.78rem;
+      font-weight: 800;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+    }
+
+    h1, h2, h3 { line-height: 1.15; }
+    h1 {
+      margin: 0;
+      max-width: 780px;
+      font-size: clamp(2rem, 5vw, 4rem);
+      letter-spacing: 0;
+    }
+
+    h2 {
+      margin: 0 0 10px;
+      font-size: 1.55rem;
+    }
+
+    h3 {
+      margin: 0 0 8px;
+      font-size: 1.05rem;
+    }
+
+    p { margin: 0 0 10px; }
+    ul, ol { margin: 0; padding-left: 1.2rem; }
+    li + li { margin-top: 6px; }
+
+    nav {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+      margin-top: 18px;
+    }
+
+    nav a,
+    .pill {
+      display: inline-flex;
+      align-items: center;
+      border: 1px solid var(--line);
+      border-radius: 999px;
+      background: var(--card);
+      padding: 7px 11px;
+      color: var(--muted);
+      font-size: 0.86rem;
+      font-weight: 700;
+      text-decoration: none;
+    }
+
+    main {
+      display: grid;
+      gap: 20px;
+      padding: 22px 0 56px;
+    }
+
+    .section {
+      border: 1px solid var(--line);
+      border-radius: 12px;
+      background: var(--card);
+      box-shadow: var(--shadow);
+      overflow: hidden;
+    }
+
+    .section-head {
+      border-bottom: 1px solid var(--line);
+      padding: 18px 20px;
+    }
+
+    .section-body {
+      display: grid;
+      gap: 18px;
+      padding: 20px;
+    }
+
+    .grid {
+      display: grid;
+      gap: 16px;
+      grid-template-columns: minmax(0, 1fr);
+    }
+
+    @media (min-width: 860px) {
+      .grid.two {
+        grid-template-columns: minmax(0, 1fr) 390px;
+        align-items: start;
+      }
+    }
+
+    .shot {
+      border: 1px solid var(--line);
+      border-radius: 10px;
+      background: #f1f5f9;
+      padding: 10px;
+    }
+
+    .shot img {
+      display: block;
+      width: 100%;
+      max-width: 390px;
+      margin: 0 auto;
+      border-radius: 8px;
+      border: 1px solid #cbd5e1;
+      background: #fff;
+    }
+
+    .caption {
+      margin-top: 8px;
+      color: var(--muted);
+      font-size: 0.86rem;
+      text-align: center;
+    }
+
+    .callout {
+      border: 1px solid var(--line);
+      border-radius: 10px;
+      padding: 12px 14px;
+      background: #f8fafc;
+    }
+
+    .callout.good {
+      border-color: #a7f3d0;
+      background: var(--accent-bg);
+      color: #064e3b;
+    }
+
+    .callout.warn {
+      border-color: #fde68a;
+      background: var(--warn-bg);
+      color: var(--warn);
+    }
+
+    .callout.bad {
+      border-color: #fecdd3;
+      background: var(--bad-bg);
+      color: var(--bad);
+    }
+
+    .callout.blue {
+      border-color: #bfdbfe;
+      background: var(--blue-bg);
+      color: #1e3a8a;
+    }
+
+    .click-target {
+      display: inline-block;
+      border-radius: 8px;
+      background: #0f172a;
+      padding: 3px 7px;
+      color: #fff;
+      font-weight: 800;
+      white-space: nowrap;
+    }
+
+    .route {
+      display: inline-block;
+      border-radius: 7px;
+      background: #eef2ff;
+      padding: 3px 7px;
+      color: #3730a3;
+      font-weight: 800;
+    }
+
+    .checklist {
+      display: grid;
+      gap: 9px;
+      padding: 0;
+      list-style: none;
+    }
+
+    .checklist li {
+      display: grid;
+      grid-template-columns: 22px minmax(0, 1fr);
+      gap: 8px;
+      align-items: start;
+    }
+
+    input[type="checkbox"] {
+      width: 18px;
+      height: 18px;
+      margin: 2px 0 0;
+    }
+
+    .meta {
+      display: grid;
+      gap: 10px;
+      grid-template-columns: repeat(auto-fit, minmax(210px, 1fr));
+    }
+
+    .meta div {
+      border: 1px solid var(--line);
+      border-radius: 10px;
+      background: #f8fafc;
+      padding: 12px;
+    }
+
+    .meta b {
+      display: block;
+      margin-bottom: 3px;
+      color: var(--ink);
+    }
+
+    .small {
+      color: var(--muted);
+      font-size: 0.92rem;
+    }
+
+    .print-note {
+      margin-top: 16px;
+      color: var(--faint);
+      font-size: 0.84rem;
+    }
+
+    @media print {
+      body { background: #fff; }
+      .section { break-inside: avoid; box-shadow: none; }
+      nav { display: none; }
+      .wrap { max-width: none; }
+      .shot img { max-height: 650px; object-fit: contain; }
+    }
+  </style>
+</head>
+<body>
+  <header>
+    <div class="wrap hero">
+      <div>
+        <p class="eyebrow">DemoThemis local MVP QA</p>
+        <h1>User Testing Tutorial</h1>
+        <p class="small">
+          Click-by-click guide for testing the local MVP in pseudo/cohort mode. This tutorial uses the local
+          app at <code>http://localhost:3000</code> and does not require World ID, World App, or live chain writes.
+        </p>
+      </div>
+      <nav aria-label="Tutorial sections">
+        <a href="#setup">Setup</a>
+        <a href="#landing">Landing</a>
+        <a href="#sandbox">Sandbox</a>
+        <a href="#court">Court</a>
+        <a href="#juror">Juror UX</a>
+        <a href="#dispute">Dispute</a>
+        <a href="#about">About</a>
+        <a href="#reporting">Reporting</a>
+      </nav>
+    </div>
+  </header>
+
+  <main class="wrap">
+    <section id="setup" class="section">
+      <div class="section-head">
+        <h2>0. Before You Start</h2>
+        <p class="small">Use this section to confirm the test environment is the local pseudo/testing MVP.</p>
+      </div>
+      <div class="section-body">
+        <div class="meta">
+          <div>
+            <b>Local URL</b>
+            <code>http://localhost:3000</code>
+          </div>
+          <div>
+            <b>Testing mode</b>
+            Pseudo/cohort mode: World Chain Sepolia cohort, <code>MockSybilGate</code>, read-only chain data.
+          </div>
+          <div>
+            <b>Juror write testing</b>
+            Use <code>/juror-preview</code>. It is local-only and changes no chain state.
+          </div>
+        </div>
+
+        <div class="callout warn">
+          <b>Important boundary:</b> do not use the World App deep link for this local QA pass. Real World ID
+          onboarding and real transactions are capstone-only. Local juror UX testing happens through the
+          clearly labeled preview route.
+        </div>
+
+        <div class="callout blue">
+          <b>If the server is not running:</b> start the app from <code>C:\dev\DemoThemisMVP\web</code> in cohort mode,
+          then open <code>http://localhost:3000</code>. If a tester only has this HTML open, ask the developer
+          running the session to start the local server.
+        </div>
+
+        <ul class="checklist">
+          <li><input type="checkbox" /> <span>The app opens at <code>http://localhost:3000</code>.</span></li>
+          <li><input type="checkbox" /> <span>The UI mentions the simulated Sepolia cohort or local QA where appropriate.</span></li>
+          <li><input type="checkbox" /> <span>No tester is asked to install World App or verify World ID for this local pass.</span></li>
+        </ul>
+      </div>
+    </section>
+
+    <section id="landing" class="section">
+      <div class="section-head">
+        <h2>1. Reviewer Landing Page</h2>
+        <p class="small">Goal: verify the first screen explains what DemoThemis is and gives a clear path into the demo.</p>
+      </div>
+      <div class="section-body grid two">
+        <div>
+          <p><span class="route">/</span></p>
+          <ol>
+            <li>Open <code>http://localhost:3000/</code>.</li>
+            <li>Read the headline and first paragraph. Confirm the product is understandable in under one minute.</li>
+            <li>Click <span class="click-target">Watch attack demo</span> to enter the sandbox.</li>
+            <li>Return and click <span class="click-target">Open court</span> to reach the cohort case list.</li>
+            <li>Do not click <span class="click-target">Open in World App</span> during local QA.</li>
+          </ol>
+          <div class="callout good">
+            Expected: the landing page should frame the MVP as human arbitration for World App, show the evidence
+            dashboard, and make the sandbox/court paths easy to find.
+          </div>
+        </div>
+        <figure class="shot">
+          <img src="local-testing-tutorial-assets/01-landing.png" alt="Landing page with Watch attack demo, Open court, and Open in World App buttons" />
+          <figcaption class="caption">Click "Watch attack demo" or "Open court". Avoid World App for this local pass.</figcaption>
+        </figure>
+      </div>
+    </section>
+
+    <section id="sandbox" class="section">
+      <div class="section-head">
+        <h2>2. Sandbox Attack Demo</h2>
+        <p class="small">Goal: verify the pure-browser simulation is responsive and explains why token-weighted courts are easier to buy.</p>
+      </div>
+      <div class="section-body grid two">
+        <div>
+          <p><span class="route">/sandbox</span></p>
+          <ol>
+            <li>Open <code>http://localhost:3000/sandbox</code>.</li>
+            <li>Scroll to the comparative attack controls.</li>
+            <li>Drag <span class="click-target">Attacker budget</span> and confirm both columns update.</li>
+            <li>Change <span class="click-target">Human pool width</span> and watch the green curve shift.</li>
+            <li>Click <span class="click-target">Draw a panel</span> several times. The human court should sometimes redraw the random panel, not freeze.</li>
+            <li>Continue down the page and test the core court, ladder, reputation, reward-pool, watchers, and case-browser widgets.</li>
+          </ol>
+          <div class="callout good">
+            Expected: sliders and buttons respond immediately after the first route compile. Every widget is labeled simulated.
+          </div>
+        </div>
+        <figure class="shot">
+          <img src="local-testing-tutorial-assets/02-sandbox-attack-controls.png" alt="Sandbox attack demo controls and verdict comparison" />
+          <figcaption class="caption">Main sandbox controls: budget, token price, pool width, bribe price, and panel size.</figcaption>
+        </figure>
+      </div>
+    </section>
+
+    <section id="court" class="section">
+      <div class="section-head">
+        <h2>3. Cohort Court Home and Case Detail</h2>
+        <p class="small">Goal: verify testers can inspect pseudo cohort data and resolved case UX without wallet access.</p>
+      </div>
+      <div class="section-body">
+        <div class="grid two">
+          <div>
+            <p><span class="route">/home</span></p>
+            <ol>
+              <li>Open <code>http://localhost:3000/home</code>.</li>
+              <li>Confirm the banner says this is the simulated scale demo.</li>
+              <li>Check the stats cards for simulated jurors, bonds held, and reward pool.</li>
+              <li>Click <span class="click-target">Become a juror</span> to test onboarding entry.</li>
+              <li>Open a case card, for example <code>/case/111</code>.</li>
+            </ol>
+          </div>
+          <figure class="shot">
+            <img src="local-testing-tutorial-assets/03-court-home.png" alt="Court home with simulated juror stats and case list" />
+            <figcaption class="caption">Court home: stats, Become a juror, and case cards.</figcaption>
+          </figure>
+        </div>
+
+        <div class="grid two">
+          <div>
+            <p><span class="route">/case/111</span></p>
+            <ol>
+              <li>Open a resolved case from the list.</li>
+              <li>Confirm phase and case-type badges are legible.</li>
+              <li>Confirm the case content and hash-check copy are visible.</li>
+              <li>Check the verdict/result panel: it should explain unique humans, one vote each, and the 70/20/10 fee split.</li>
+              <li>Scroll to the panel addresses and explorer links.</li>
+            </ol>
+            <div class="callout warn">
+              In cohort mode, commit/reveal buttons are disabled by design. Use the juror preview section below
+              for full click-through UX testing.
+            </div>
+          </div>
+          <figure class="shot">
+            <img src="local-testing-tutorial-assets/04-case-detail.png" alt="Resolved case detail with badges, verdict, and panel" />
+            <figcaption class="caption">Resolved case detail: review status, content, verdict, and panel.</figcaption>
+          </figure>
+        </div>
+      </div>
+    </section>
+
+    <section id="juror" class="section">
+      <div class="section-head">
+        <h2>4. Juror UX Without World ID</h2>
+        <p class="small">Goal: test the juror journey locally from onboarding through commit, reveal, missing salt, and resolved result.</p>
+      </div>
+      <div class="section-body">
+        <div class="grid two">
+          <div>
+            <p><span class="route">/onboard</span></p>
+            <ol>
+              <li>Open <code>http://localhost:3000/onboard</code>.</li>
+              <li>Review the three onboarding steps and sybil-rejection evidence panel.</li>
+              <li>Scroll to the amber local-mode notice.</li>
+              <li>Click <span class="click-target">Test juror UX locally</span>.</li>
+            </ol>
+          </div>
+          <figure class="shot">
+            <img src="local-testing-tutorial-assets/05-onboard-local-entry.png" alt="Onboard page with local juror UX link" />
+            <figcaption class="caption">Onboarding local-mode notice links into the juror preview.</figcaption>
+          </figure>
+        </div>
+
+        <div class="grid two">
+          <div>
+            <p><span class="route">/juror-preview</span></p>
+            <ol>
+              <li>Open <code>http://localhost:3000/juror-preview</code>.</li>
+              <li>Confirm the yellow notice says local QA only and no chain state changes.</li>
+              <li>Click <span class="click-target">Start local join preview</span>.</li>
+              <li>Confirm the page advances to <span class="pill">Verified human #21</span> and then the commit screen.</li>
+            </ol>
+          </div>
+          <figure class="shot">
+            <img src="local-testing-tutorial-assets/06-juror-preview-start.png" alt="Juror preview start screen" />
+            <figcaption class="caption">Start of local juror preview. Click "Start local join preview".</figcaption>
+          </figure>
+        </div>
+
+        <div class="grid two">
+          <div>
+            <h3>Commit State</h3>
+            <ol>
+              <li>Choose <span class="click-target">YES</span> or <span class="click-target">NO</span>.</li>
+              <li>Confirm the commitment hash and saved salt preview are shown.</li>
+              <li>Click <span class="click-target">Commit vote locally</span>.</li>
+            </ol>
+          </div>
+          <figure class="shot">
+            <img src="local-testing-tutorial-assets/07-juror-preview-commit.png" alt="Juror preview commit state with YES, NO, and Commit vote locally button" />
+            <figcaption class="caption">Commit state: select a vote, then commit locally.</figcaption>
+          </figure>
+        </div>
+
+        <div class="grid two">
+          <div>
+            <h3>Reveal State</h3>
+            <ol>
+              <li>Confirm the page remembers the committed vote.</li>
+              <li>Click <span class="click-target">Reveal vote locally</span> to finish the happy path.</li>
+              <li>For an error-state check, click <span class="click-target">Preview missing-salt state</span> instead.</li>
+            </ol>
+          </div>
+          <figure class="shot">
+            <img src="local-testing-tutorial-assets/08-juror-preview-reveal.png" alt="Juror preview reveal state with Reveal vote locally and missing salt buttons" />
+            <figcaption class="caption">Reveal state: verify saved ballot copy and reveal action.</figcaption>
+          </figure>
+        </div>
+
+        <div class="grid two">
+          <div>
+            <h3>Missing Salt State</h3>
+            <ol>
+              <li>Click <span class="click-target">Preview missing-salt state</span>.</li>
+              <li>Confirm the reveal button disables or the page clearly explains why reveal cannot proceed.</li>
+              <li>Click <span class="click-target">Reset preview</span> to recover.</li>
+            </ol>
+            <div class="callout good">
+              Expected: the tester should understand that the device-held salt is required to reveal.
+            </div>
+          </div>
+          <figure class="shot">
+            <img src="local-testing-tutorial-assets/09-juror-preview-missing-salt.png" alt="Missing salt state in juror preview" />
+            <figcaption class="caption">Missing salt state: verify the recovery/error copy is understandable.</figcaption>
+          </figure>
+        </div>
+
+        <div class="grid two">
+          <div>
+            <h3>Resolved State</h3>
+            <ol>
+              <li>Use <span class="click-target">Reset preview</span>, then <span class="click-target">Jump to commit</span> if you want to retest quickly.</li>
+              <li>Commit and reveal a vote.</li>
+              <li>Confirm the resolved case shows a verdict, panel, one-person-one-vote copy, and fee split.</li>
+            </ol>
+          </div>
+          <figure class="shot">
+            <img src="local-testing-tutorial-assets/10-juror-preview-resolved.png" alt="Resolved juror preview case" />
+            <figcaption class="caption">Resolved preview: verify verdict and panel language.</figcaption>
+          </figure>
+        </div>
+      </div>
+    </section>
+
+    <section id="dispute" class="section">
+      <div class="section-head">
+        <h2>5. Dispute Opener</h2>
+        <p class="small">Goal: verify the opener UX explains escrow versus yes/no resolution while staying read-only locally.</p>
+      </div>
+      <div class="section-body grid two">
+        <div>
+          <p><span class="route">/dispute</span></p>
+          <ol>
+            <li>Open <code>http://localhost:3000/dispute</code>.</li>
+            <li>Toggle <span class="click-target">Escrow deal</span> and <span class="click-target">Resolution question</span>.</li>
+            <li>Confirm disabled inputs look intentionally disabled, not broken.</li>
+            <li>Click <span class="click-target">Test juror UX locally</span> from the preview note if you need the juror flow.</li>
+          </ol>
+          <div class="callout warn">
+            Expected: no local write happens here. This is a preview of the opener, not a local transaction path.
+          </div>
+        </div>
+        <figure class="shot">
+          <img src="local-testing-tutorial-assets/11-dispute-opener.png" alt="Dispute opener with escrow deal and resolution question tabs" />
+          <figcaption class="caption">Dispute opener: test tabs and disabled local write controls.</figcaption>
+        </figure>
+      </div>
+    </section>
+
+    <section id="about" class="section">
+      <div class="section-head">
+        <h2>6. About and Scope Notes</h2>
+        <p class="small">Goal: verify testers can understand what is simulated, what is on-chain, and what remains capstone-only.</p>
+      </div>
+      <div class="section-body grid two">
+        <div>
+          <p><span class="route">/about</span></p>
+          <ol>
+            <li>Open <code>http://localhost:3000/about</code>.</li>
+            <li>Read the main paragraph and confirm the 3-seat demo caveat is clear.</li>
+            <li>Click the sandbox link if returning to the attack demo.</li>
+            <li>Check that explorer links are available but understand they leave the local app.</li>
+          </ol>
+          <div class="callout good">
+            Expected: the page should be honest about local simulation, source-verified contracts, and capstone-only real human usage.
+          </div>
+        </div>
+        <figure class="shot">
+          <img src="local-testing-tutorial-assets/12-about-scope.png" alt="About page with scope and explorer links" />
+          <figcaption class="caption">About page: scope, sandbox link, and explorer links.</figcaption>
+        </figure>
+      </div>
+    </section>
+
+    <section id="reporting" class="section">
+      <div class="section-head">
+        <h2>7. What Testers Should Report</h2>
+        <p class="small">Use this checklist for feedback after completing the flows above.</p>
+      </div>
+      <div class="section-body">
+        <ul class="checklist">
+          <li><input type="checkbox" /> <span>Could you explain DemoThemis in one sentence after the landing page?</span></li>
+          <li><input type="checkbox" /> <span>Did every local-mode warning feel honest rather than scary or broken?</span></li>
+          <li><input type="checkbox" /> <span>Did the sandbox sliders and buttons respond quickly?</span></li>
+          <li><input type="checkbox" /> <span>Could you find the case list and open a resolved case?</span></li>
+          <li><input type="checkbox" /> <span>Did the juror preview make verify, bond, commit, reveal, and resolved states understandable?</span></li>
+          <li><input type="checkbox" /> <span>Was the missing-salt state clear enough to know what went wrong?</span></li>
+          <li><input type="checkbox" /> <span>Did any disabled button look like a bug rather than intentional local read-only behavior?</span></li>
+          <li><input type="checkbox" /> <span>Were any labels, routes, or screenshots out of date?</span></li>
+        </ul>
+
+        <div class="callout blue">
+          <b>Bug report template:</b>
+          route, device/browser, what you clicked, what you expected, what happened, screenshot if useful,
+          and whether you were in local preview or read-only cohort mode.
+        </div>
+
+        <p class="print-note">
+          Generated for local user testing. Screenshots live in <code>docs/local-testing-tutorial-assets/</code>.
+        </p>
+      </div>
+    </section>
+  </main>
+</body>
+</html>

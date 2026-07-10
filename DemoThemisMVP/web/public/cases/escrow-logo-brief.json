@@ -1,0 +1,25 @@
+{
+  "title": "Logo delivery misses the agreed brief",
+  "question": "Should the payee be paid under the linked terms, given the client claims the delivered logo uses the wrong color system and ships without vector files?",
+  "standard": "rubric",
+  "evidence": [
+    {
+      "label": "Signed project brief listing the required deliverables and color spec",
+      "url": "https://example.com/escrow/logo-brief/signed-brief.pdf"
+    },
+    {
+      "label": "Final files the designer handed over (one PNG, one JPG, no vector source)",
+      "url": "https://example.com/escrow/logo-brief/delivered-files.zip"
+    },
+    {
+      "label": "Client message rejecting the delivery, with a side-by-side of the brief colors and the supplied art",
+      "url": "https://example.com/escrow/logo-brief/client-rejection-thread.txt"
+    },
+    {
+      "label": "Designer's reply offering to convert to vector but disputing the color claim",
+      "url": "https://example.com/escrow/logo-brief/designer-response.txt"
+    }
+  ],
+  "terms": "Avery Quinn (designer) agreed to deliver a final logo to Northbrook Bakery for 800 USD, held in escrow. The brief, signed on 2026-04-02, requires the logo built in the CMYK values listed there (warm brown 0/35/60/40 and cream 0/4/18/2), plus editable vector source files in SVG and AI format alongside the raster exports. Payment releases only when both the color spec and all four file formats are met.",
+  "simulated": true
+}

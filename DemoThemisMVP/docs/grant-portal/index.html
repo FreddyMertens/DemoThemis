@@ -1,0 +1,2068 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="dark">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>DemoThemis — Grant Review Portal</title>
+<meta name="description" content="A navigable review portal for the DemoThemis World Foundation Spark Track grant application." />
+<script src="https://cdn.jsdelivr.net/npm/marked@12.0.0/marked.min.js"></script>
+<style>
+  :root{
+    --bg:#0b0d12; --panel:#12151c; --panel-2:#161a23; --elev:#1b2030;
+    --line:#242a37; --line-2:#2e3548;
+    --txt:#e7eaf2; --txt-dim:#9aa3b8; --txt-faint:#6b7488;
+    --accent:#7c5cff; --accent-2:#5a7bff; --accent-soft:rgba(124,92,255,.14);
+    --ok:#34d399; --ok-soft:rgba(52,211,153,.13);
+    --warn:#fbbf24; --warn-soft:rgba(251,191,36,.13);
+    --bad:#fb7185; --bad-soft:rgba(251,113,133,.13);
+    --code-bg:#0e1118; --radius:14px; --radius-sm:9px;
+    --sb:280px; --toc:236px;
+    --mono:ui-monospace,"SF Mono",SFMono-Regular,Menlo,Consolas,"Liberation Mono",monospace;
+    --sans:-apple-system,BlinkMacSystemFont,"Segoe UI",Inter,Roboto,Helvetica,Arial,sans-serif;
+  }
+  html[data-theme="light"]{
+    --bg:#f6f7fb; --panel:#ffffff; --panel-2:#ffffff; --elev:#ffffff;
+    --line:#e6e8ef; --line-2:#d7dbe6;
+    --txt:#171a21; --txt-dim:#5a6378; --txt-faint:#8a92a6;
+    --accent:#6a44ff; --accent-2:#3f63ff; --accent-soft:rgba(106,68,255,.10);
+    --ok:#0ea371; --ok-soft:rgba(14,163,113,.12);
+    --warn:#b8860b; --warn-soft:rgba(184,134,11,.12);
+    --bad:#e1495f; --bad-soft:rgba(225,73,95,.10);
+    --code-bg:#f1f3f9;
+  }
+  *{box-sizing:border-box}
+  html,body{margin:0;height:100%}
+  body{
+    background:var(--bg); color:var(--txt); font-family:var(--sans);
+    font-size:15.5px; line-height:1.6; -webkit-font-smoothing:antialiased;
+    overflow:hidden;
+  }
+  a{color:var(--accent-2); text-decoration:none}
+  a:hover{text-decoration:underline}
+
+  .app{display:grid; grid-template-columns:var(--sb) minmax(0,1fr) var(--toc); height:100vh}
+
+  /* ---------- sidebar ---------- */
+  .sidebar{background:var(--panel); border-right:1px solid var(--line); display:flex; flex-direction:column; min-height:0}
+  .brand{padding:18px 18px 14px; border-bottom:1px solid var(--line)}
+  .brand h1{font-size:15px; margin:0; letter-spacing:.2px; display:flex; align-items:center; gap:9px}
+  .brand .dot{width:10px;height:10px;border-radius:50%;background:linear-gradient(135deg,var(--accent),var(--accent-2));box-shadow:0 0 0 4px var(--accent-soft)}
+  .brand .sub{color:var(--txt-dim); font-size:12px; margin-top:5px}
+  .search{padding:12px 14px 6px}
+  .search input{
+    width:100%; background:var(--panel-2); border:1px solid var(--line-2); color:var(--txt);
+    border-radius:10px; padding:9px 11px 9px 32px; font-size:13.5px; outline:none;
+    background-image:url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='15' height='15' fill='none' stroke='%239aa3b8' stroke-width='2' viewBox='0 0 24 24'><circle cx='11' cy='11' r='7'/><path d='M21 21l-4.3-4.3'/></svg>");
+    background-repeat:no-repeat; background-position:10px center;
+  }
+  .search input:focus{border-color:var(--accent); box-shadow:0 0 0 3px var(--accent-soft)}
+  nav{overflow-y:auto; padding:6px 10px 18px; flex:1; min-height:0}
+  .group-label{font-size:10.5px; letter-spacing:.13em; text-transform:uppercase; color:var(--txt-faint); margin:16px 10px 6px; font-weight:600}
+  .nav-item{
+    display:flex; align-items:center; gap:9px; width:100%; text-align:left; cursor:pointer;
+    background:transparent; border:0; color:var(--txt-dim); font:inherit; font-size:13.5px;
+    padding:8px 10px; border-radius:9px; line-height:1.3; position:relative;
+  }
+  .nav-item:hover{background:var(--panel-2); color:var(--txt)}
+  .nav-item.active{background:var(--accent-soft); color:var(--txt); font-weight:600}
+  .nav-item.active::before{content:""; position:absolute; left:0; top:7px; bottom:7px; width:3px; border-radius:3px; background:var(--accent)}
+  .nav-item .ni-title{flex:1; min-width:0; overflow:hidden; text-overflow:ellipsis; white-space:nowrap}
+  .pill{font-size:9.5px; font-weight:700; letter-spacing:.04em; text-transform:uppercase; padding:2px 6px; border-radius:20px; white-space:nowrap}
+  .pill.ok{background:var(--ok-soft); color:var(--ok)}
+  .pill.warn{background:var(--warn-soft); color:var(--warn)}
+  .pill.info{background:var(--accent-soft); color:var(--accent-2)}
+  .sb-foot{padding:11px 16px; border-top:1px solid var(--line); color:var(--txt-faint); font-size:11px; display:flex; justify-content:space-between; align-items:center; gap:8px}
+
+  /* ---------- content ---------- */
+  .main{position:relative; overflow-y:auto; min-width:0; scroll-behavior:smooth}
+  .progress{position:sticky; top:0; height:3px; background:transparent; z-index:30}
+  .progress > i{display:block; height:100%; width:0; background:linear-gradient(90deg,var(--accent),var(--accent-2)); transition:width .08s linear}
+  .topbar{
+    position:sticky; top:3px; z-index:20; display:flex; align-items:center; gap:12px;
+    padding:13px 28px; background:color-mix(in srgb,var(--bg) 82%,transparent);
+    backdrop-filter:blur(10px); border-bottom:1px solid var(--line);
+  }
+  .topbar .crumb{font-size:12.5px; color:var(--txt-dim); flex:1; min-width:0; overflow:hidden; text-overflow:ellipsis; white-space:nowrap}
+  .topbar .crumb b{color:var(--txt)}
+  .iconbtn{background:var(--panel-2); border:1px solid var(--line-2); color:var(--txt-dim); width:34px; height:34px; border-radius:9px; cursor:pointer; display:grid; place-items:center; flex:none}
+  .iconbtn:hover{color:var(--txt); border-color:var(--accent)}
+  .navbtns{display:flex; gap:6px}
+  .navbtns button{padding:0 11px; height:34px; gap:6px; width:auto; font-size:12.5px; align-items:center}
+  .hamburger{display:none}
+
+  .doc{max-width:792px; margin:0 auto; padding:34px 40px 120px}
+  .doc-head{margin-bottom:26px; padding-bottom:18px; border-bottom:1px solid var(--line)}
+  .doc-head .src{display:inline-flex; align-items:center; gap:7px; font-family:var(--mono); font-size:11.5px; color:var(--txt-faint); background:var(--panel); border:1px solid var(--line); padding:3px 9px; border-radius:7px; margin-bottom:12px}
+  .doc-head h1.dt{font-size:27px; line-height:1.2; margin:0 0 6px; letter-spacing:-.01em}
+  .doc-head .meta{color:var(--txt-dim); font-size:12.5px; display:flex; gap:14px; flex-wrap:wrap}
+
+  /* markdown */
+  .md{font-size:15.5px}
+  .md h1,.md h2,.md h3,.md h4{line-height:1.25; letter-spacing:-.01em; scroll-margin-top:80px}
+  .md h1{font-size:24px; margin:34px 0 14px}
+  .md h2{font-size:20px; margin:38px 0 12px; padding-top:8px}
+  .md h3{font-size:16.5px; margin:26px 0 8px; color:var(--txt)}
+  .md h4{font-size:14px; margin:20px 0 6px; color:var(--txt-dim); text-transform:none}
+  .md h2::before{content:""; display:block; height:1px; background:var(--line); margin:0 0 18px}
+  .md p{margin:12px 0}
+  .md ul,.md ol{margin:12px 0; padding-left:22px}
+  .md li{margin:5px 0}
+  .md li::marker{color:var(--accent)}
+  .md strong{color:var(--txt); font-weight:680}
+  .md hr{border:0; border-top:1px solid var(--line); margin:28px 0}
+  .md a{border-bottom:1px solid transparent}
+  .md a:hover{border-bottom-color:var(--accent-2); text-decoration:none}
+  .md blockquote{margin:16px 0; padding:12px 16px; background:var(--panel); border-left:3px solid var(--accent); border-radius:0 10px 10px 0; color:var(--txt-dim)}
+  .md blockquote p{margin:6px 0}
+  .md code{font-family:var(--mono); font-size:.86em; background:var(--code-bg); border:1px solid var(--line); padding:1.5px 6px; border-radius:6px; color:var(--txt)}
+  .md pre{background:var(--code-bg); border:1px solid var(--line); border-radius:11px; padding:15px 16px; overflow:auto; margin:16px 0; line-height:1.5}
+  .md pre code{background:transparent; border:0; padding:0; font-size:12.8px; color:var(--txt-dim)}
+  .tablewrap{overflow-x:auto; margin:18px 0; border:1px solid var(--line); border-radius:11px}
+  .md table{border-collapse:collapse; width:100%; font-size:13.6px}
+  .md thead th{background:var(--panel-2); text-align:left; font-weight:650; color:var(--txt); padding:10px 13px; border-bottom:1px solid var(--line-2); position:sticky; top:0; white-space:nowrap}
+  .md td{padding:9px 13px; border-bottom:1px solid var(--line); vertical-align:top}
+  .md tbody tr:last-child td{border-bottom:0}
+  .md tbody tr:nth-child(even){background:color-mix(in srgb,var(--panel) 50%,transparent)}
+  .md td code{font-size:.8em; word-break:break-all}
+  .md img{max-width:100%}
+
+  /* ---------- toc ---------- */
+  .toc{border-left:1px solid var(--line); overflow-y:auto; padding:18px 16px; min-height:0}
+  .toc .tl{font-size:10.5px; letter-spacing:.13em; text-transform:uppercase; color:var(--txt-faint); font-weight:600; margin:6px 8px 12px}
+  .toc a{display:block; color:var(--txt-dim); font-size:12.5px; padding:5px 9px; border-radius:7px; border-left:2px solid transparent; line-height:1.35}
+  .toc a:hover{color:var(--txt); background:var(--panel); text-decoration:none}
+  .toc a.h3{padding-left:20px; font-size:12px}
+  .toc a.active{color:var(--accent-2); border-left-color:var(--accent); background:var(--accent-soft); font-weight:600}
+  .toc .empty{color:var(--txt-faint); font-size:12px; padding:8px}
+
+  /* ---------- overview ---------- */
+  .ov{max-width:920px; margin:0 auto; padding:34px 40px 120px}
+  .hero{padding:26px 28px; background:radial-gradient(120% 140% at 0% 0%,var(--accent-soft),transparent 60%),var(--panel); border:1px solid var(--line); border-radius:18px; margin-bottom:22px}
+  .hero .tag{display:inline-flex; align-items:center; gap:7px; font-size:11.5px; font-weight:600; color:var(--accent-2); background:var(--accent-soft); padding:4px 11px; border-radius:20px; margin-bottom:14px}
+  .hero h1{font-size:30px; margin:0 0 8px; letter-spacing:-.02em; line-height:1.15}
+  .hero p{margin:0; color:var(--txt-dim); font-size:15px; max-width:62ch}
+  .statgrid{display:grid; grid-template-columns:repeat(auto-fit,minmax(140px,1fr)); gap:13px; margin:22px 0}
+  .stat{background:var(--panel); border:1px solid var(--line); border-radius:14px; padding:15px 16px}
+  .stat .v{font-size:23px; font-weight:720; letter-spacing:-.02em; line-height:1}
+  .stat .l{color:var(--txt-dim); font-size:12px; margin-top:7px}
+  .stat .v.ok{color:var(--ok)} .stat .v.acc{color:var(--accent-2)} .stat .v.warn{color:var(--warn)}
+  .ov h2{font-size:17px; margin:30px 0 4px; letter-spacing:-.01em}
+  .ov .h2sub{color:var(--txt-dim); font-size:13px; margin:0 0 14px}
+  .cardgrid{display:grid; grid-template-columns:repeat(auto-fill,minmax(248px,1fr)); gap:13px}
+  .card{text-align:left; cursor:pointer; background:var(--panel); border:1px solid var(--line); border-radius:14px; padding:16px 17px; color:var(--txt); transition:border-color .15s,transform .15s}
+  .card:hover{border-color:var(--accent); transform:translateY(-2px)}
+  .card .ct{font-weight:640; font-size:14.5px; margin-bottom:5px; display:flex; align-items:center; gap:8px}
+  .card .cd{color:var(--txt-dim); font-size:12.7px; line-height:1.5}
+  .card .cg{font-size:10px; letter-spacing:.1em; text-transform:uppercase; color:var(--txt-faint); margin-bottom:9px; font-weight:600}
+  .checks{background:var(--panel); border:1px solid var(--line); border-radius:14px; padding:8px 6px}
+  .chk{display:flex; gap:11px; padding:9px 13px; align-items:flex-start; border-bottom:1px solid var(--line)}
+  .chk:last-child{border-bottom:0}
+  .chk .ic{flex:none; width:18px; height:18px; border-radius:50%; display:grid; place-items:center; font-size:11px; margin-top:1px; font-weight:800}
+  .chk.done .ic{background:var(--ok-soft); color:var(--ok)} .chk.pend .ic{background:var(--warn-soft); color:var(--warn)} .chk.gate .ic{background:var(--bad-soft); color:var(--bad)}
+  .chk .ct{font-size:13.6px; font-weight:560}
+  .chk .cs{font-size:12.3px; color:var(--txt-dim); margin-top:2px}
+  .chk .tagx{margin-left:auto; flex:none}
+  .addrtable{overflow-x:auto; border:1px solid var(--line); border-radius:13px; margin-top:6px}
+  .addrtable table{border-collapse:collapse; width:100%; font-size:12.8px}
+  .addrtable th{background:var(--panel-2); text-align:left; padding:9px 13px; border-bottom:1px solid var(--line-2); font-weight:620}
+  .addrtable td{padding:8px 13px; border-bottom:1px solid var(--line); font-family:var(--mono); font-size:11.6px}
+  .addrtable td:first-child{font-family:var(--sans); font-size:12.6px; color:var(--txt)}
+  .addrtable tr:last-child td{border-bottom:0}
+  .note{font-size:12.3px; color:var(--txt-faint); margin-top:10px}
+
+  .fallback{background:var(--warn-soft); border:1px solid var(--warn); color:var(--warn); padding:12px 15px; border-radius:11px; margin-bottom:18px; font-size:13px}
+
+  ::-webkit-scrollbar{width:10px;height:10px}
+  ::-webkit-scrollbar-thumb{background:var(--line-2); border-radius:10px; border:2px solid var(--bg)}
+  ::-webkit-scrollbar-thumb:hover{background:var(--txt-faint)}
+
+  /* ---------- responsive ---------- */
+  @media (max-width:1180px){ .app{grid-template-columns:var(--sb) minmax(0,1fr)} .toc{display:none} }
+  @media (max-width:820px){
+    .app{grid-template-columns:1fr}
+    .sidebar{position:fixed; z-index:60; width:86%; max-width:320px; height:100vh; transform:translateX(-100%); transition:transform .22s ease; box-shadow:0 0 60px rgba(0,0,0,.5)}
+    body.nav-open .sidebar{transform:none}
+    .scrim{position:fixed; inset:0; background:rgba(0,0,0,.5); z-index:55; opacity:0; pointer-events:none; transition:opacity .2s}
+    body.nav-open .scrim{opacity:1; pointer-events:auto}
+    .hamburger{display:grid}
+    .doc,.ov{padding:24px 20px 100px}
+    .navbtns .lbl{display:none}
+  }
+</style>
+</head>
+<body>
+<div class="scrim" data-close-nav></div>
+<div class="app">
+  <!-- SIDEBAR -->
+  <aside class="sidebar">
+    <div class="brand">
+      <h1><span class="dot"></span> DemoThemis</h1>
+      <div class="sub">Grant Review Portal · World Spark Track</div>
+    </div>
+    <div class="search"><input id="search" type="text" placeholder="Search sections…  ( / )" autocomplete="off" spellcheck="false" /></div>
+    <nav id="nav"></nav>
+    <div class="sb-foot">
+      <span id="genstamp">built 2026-07-10</span>
+      <span>jurorCount() = 0</span>
+    </div>
+  </aside>
+
+  <!-- CONTENT -->
+  <main class="main" id="main">
+    <div class="progress"><i id="bar"></i></div>
+    <div class="topbar">
+      <button class="iconbtn hamburger" id="hamburger" title="Menu" aria-label="Menu">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 6h18M3 12h18M3 18h18"/></svg>
+      </button>
+      <div class="crumb" id="crumb"></div>
+      <div class="navbtns">
+        <button class="iconbtn" id="prev" title="Previous (←)"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M15 18l-6-6 6-6"/></svg></button>
+        <button class="iconbtn" id="next" title="Next (→)"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 18l6-6-6-6"/></svg></button>
+      </div>
+      <button class="iconbtn" id="theme" title="Toggle theme">
+        <svg id="ic-moon" width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 12.8A9 9 0 1111.2 3a7 7 0 009.8 9.8z"/></svg>
+        <svg id="ic-sun" width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="display:none"><circle cx="12" cy="12" r="4.5"/><path d="M12 2v2M12 20v2M2 12h2M20 12h2M5 5l1.5 1.5M17.5 17.5L19 19M19 5l-1.5 1.5M6.5 17.5L5 19"/></svg>
+      </button>
+    </div>
+    <div id="view"></div>
+  </main>
+
+  <!-- TOC -->
+  <aside class="toc"><div class="tl">On this page</div><div id="toc"></div></aside>
+</div>
+
+<!-- ====== OVERVIEW (custom dashboard) ====== -->
+<template id="tpl-overview">
+  <div class="ov">
+    <div class="hero">
+      <span class="tag">● Spark-ready · capstone pending</span>
+      <h1>Everything assembled for the grant, in one place</h1>
+      <p>DemoThemis is a decentralized arbitration court whose jury is gated by <b>on-chain World ID</b> — one verified human, one vote, instead of one dollar, one vote. The point isn't just Sybil-resistance: where a stake-weighted oracle (UMA, Kleros) is bought once — acquire a majority of the stake and you decide this case and every future case for free — DemoThemis draws each panel at <b>random, after the question is posed</b>, from the whole verified-human pool. There's no known set of jurors to buy, so to swing a specific verdict you'd have to pre-corrupt a near-majority of the <b>entire pool</b>, re-pay it for <b>every case</b>, and still only get a <i>probability</i> — one that collapses as the pool, the case volume, and the value at stake grow (the at-scale design — pool width, parallel pᴺ panels, appeals — is modeled in the labeled sandbox; the live court is a 3/3 cost-and-liveness demo). This portal collects the full application, priced milestone plan, positioning, independent diligence, and live on-chain evidence. Pick a card or use the sidebar.</p>
+    </div>
+
+    <div class="statgrid">
+      <div class="stat"><div class="v ok">6</div><div class="l">source-verified mainnet contracts</div></div>
+      <div class="stat"><div class="v">77</div><div class="l">Foundry tests (invariants + fuzz)</div></div>
+      <div class="stat"><div class="v ok">97.2%</div><div class="l">line coverage (measured)</div></div>
+      <div class="stat"><div class="v acc">$50k</div><div class="l">3-month roadmap · $14k Spark lead</div></div>
+      <div class="stat"><div class="v warn">0</div><div class="l">jurorCount() — capstone not yet run</div></div>
+    </div>
+
+    <h2>What's in here</h2>
+    <p class="h2sub">Nine documents, grouped. Links between them stay inside this portal.</p>
+    <div class="cardgrid" id="ov-cards"></div>
+
+    <h2 style="margin-top:34px">Status — what's left before submission</h2>
+    <p class="h2sub">From the independent review's critical path. Green = done · amber = pending the capstone · red = hard eligibility gate.</p>
+    <div class="checks">
+      <div class="chk done"><span class="ic">✓</span><div><div class="ct">Milestones priced + budget written</div><div class="cs">$14k Spark (M1+M5) + $36k Scale follow-on = $50k, milestone-gated; M6 user-testing is the largest line.</div></div><span class="tagx pill ok">done</span></div>
+      <div class="chk done"><span class="ic">✓</span><div><div class="ct">Application copy written</div><div class="cs">12 sections, leads with on-chain World ID, hardened by a 4-lens reviewer panel.</div></div><span class="tagx pill ok">done</span></div>
+      <div class="chk done"><span class="ic">✓</span><div><div class="ct">Deployment-JSON honesty leak fixed</div><div class="cs">Stale "3 real humans register here" line reconciled to jurorCount()==0.</div></div><span class="tagx pill ok">done</span></div>
+      <div class="chk pend"><span class="ic">◷</span><div><div class="ct">Run the 3-human mainnet capstone</div><div class="cs">The master technical key — flips "Deep World ID usage" + "Working demo" to proven.</div></div><span class="tagx pill warn">pending</span></div>
+      <div class="chk pend"><span class="ic">◷</span><div><div class="ct">Record the demo video + fill the trace table</div><div class="cs">Best filmed during the capstone, then a 5-minute paste.</div></div><span class="tagx pill warn">pending</span></div>
+      <div class="chk gate"><span class="ic">!</span><div><div class="ct">Flip the repo public</div><div class="cs">Open-source is required; pre-scan for secrets, sequence after the capstone traces.</div></div><span class="tagx pill warn">gate</span></div>
+      <div class="chk gate"><span class="ic">!</span><div><div class="ct">Confirm KYC, sanctions, tax residency + payout mechanics</div><div class="cs">Location facts recorded: one UK resident; one Baltimore, Maryland work-visa resident. Current Mini App Grants materials say U.S. builders are eligible; final payout still depends on KYC/grant terms.</div></div><span class="tagx pill warn">gate</span></div>
+    </div>
+
+    <h2 style="margin-top:34px">Deployed on World Chain mainnet (chain 480)</h2>
+    <p class="h2sub">Capstone-ready Production-verifier instance — source-verified on worldscan. MockUSD is valueless.</p>
+    <div class="addrtable">
+      <table>
+        <thead><tr><th>Contract</th><th>Address</th></tr></thead>
+        <tbody>
+          <tr><td>MockUSD</td><td><a href="https://worldscan.org/address/0x70ECE5DcAA68741BF41F6A4Aa0af3a8D44e4497a#code" target="_blank" rel="noopener">0x70ECE5DcAA68741BF41F6A4Aa0af3a8D44e4497a</a></td></tr>
+          <tr><td>WorldIDGate → Production verifier</td><td><a href="https://worldscan.org/address/0x0540f47842a31C681dce76E856b4b76fcCc53Fbe#code" target="_blank" rel="noopener">0x0540f47842a31C681dce76E856b4b76fcCc53Fbe</a></td></tr>
+          <tr><td>JurorRegistry (registerWithPermit2)</td><td><a href="https://worldscan.org/address/0x226974149087b36769a54B998acfe4087eEb7F84#code" target="_blank" rel="noopener">0x226974149087b36769a54B998acfe4087eEb7F84</a></td></tr>
+          <tr><td>RewardPool</td><td><a href="https://worldscan.org/address/0xAF96A65A6b9643451E33cAf96717d071eDae04A0#code" target="_blank" rel="noopener">0xAF96A65A6b9643451E33cAf96717d071eDae04A0</a></td></tr>
+          <tr><td>DisputeCourt (3/3)</td><td><a href="https://worldscan.org/address/0xCDF427D18da8C2e8CCf9a95310bC38857EEf795A#code" target="_blank" rel="noopener">0xCDF427D18da8C2e8CCf9a95310bC38857EEf795A</a></td></tr>
+          <tr><td>DealEscrow</td><td><a href="https://worldscan.org/address/0xefc898F9C4FC805111041676b720CB478BE67c47#code" target="_blank" rel="noopener">0xefc898F9C4FC805111041676b720CB478BE67c47</a></td></tr>
+        </tbody>
+      </table>
+    </div>
+    <p class="note">Full clickable enforcement traces (valid registration, forged-proof revert, duplicate-human revert) and the Sepolia cohort are in <a href="#" data-goto="demo">Demo — on-chain evidence</a>.</p>
+  </div>
+</template>
+
+<script type="text/markdown" data-id="application" data-title="Grant application" data-group="The application" data-badge="done" data-source="docs/GRANT_APPLICATION.md" data-desc="The 12-section submission copy — led by on-chain World ID and hardened against reviewer rebuttals.">
+# DemoThemis — World Foundation Spark Track application
+
+## 1. Summary
+
+**DemoThemis is a decentralized arbitration court where every juror seat is gated by World ID
+4.0 verified _on-chain_ — the real Groth16 proof is checked inside the registration
+transaction, and a reused human reverts. One verified human, one juror seat; not one dollar,
+one vote. The court is deployed and source-verified on World Chain mainnet — the live 3-human capstone is the last step.** It is, to our
+knowledge, the first dispute-resolution Mini App in World App, and the first arbitration court
+to seat its jurors by personhood rather than capital (dated 2026-06-20 scan — see §6).
+
+## 2. The problem
+
+Every marketplace, P2P trade, freelance deal, and prediction market needs a way to settle
+disputes. Today that means a centralized operator (a trust bottleneck) or a *decentralized*
+court that decides by money. The two live decentralized courts decide by capital: **Kleros**
+draws jurors in proportion to PNK **stake** (stake-weighted sortition), and **UMA's** DVM is a
+**one-token-one-vote** oracle with no jury draw at all. Either way, influence tracks tokens, so
+a well-capitalized actor can **buy a verdict** and reuse the position case after case. That is
+the exact failure World ID was built to fix for voting — and nobody has applied it to
+adjudication. Inside World App there is **no dispute-resolution primitive at all**,
+so every marketplace flow runs its own siloed, operator-run dispute desk.
+
+## 3. The solution
+
+DemoThemis replaces *stake-weighting* with *personhood*. A juror joins by verifying with
+**World ID 4.0 on-chain** (the Groth16 proof is checked inside the registration transaction)
+and posting a small bond; the sybil gate gives **one human one seat on every wallet**. For each
+case a panel is drawn **at random, after** the question is fixed — so an attacker cannot know
+or choose who will sit on it. Jurors vote and the majority decides, with the fee split and the
+settlement enforced atomically on-chain. Because seats are random verified people, not coins,
+there is no panel to buy: to land a bribed majority on a specific case you must pre-corrupt a
+near-majority of the **entire human pool** and merely hope the draw seats enough of them — for
+only a *probability*, not certainty. Cost-to-capture therefore scales with **pool width**
+(fraction needed × pool size × bribe-per-human), and because every case re-draws a fresh
+random panel, **nothing carries over — you pay the whole pool-corruption cost again, per
+case**, while high-value cases add parallel panels and appeals that raise the bar further (§7).
+Unlike out-staking a stake-weighted oracle once and deciding every case for free, influence
+here is not targetable, not reusable, and does not amortize.
+
+Two case types ship today: an **escrow dispute** (fund a deal, raise a dispute, the court
+decides who gets paid, settlement is atomic) and a **yes/no question** (the neutral resolver
+surface). Three surfaces, one Next.js app: the **World App Mini App** (the live juror flow), a
+**pure-browser sandbox** that simulates the full mechanism (so a reviewer needs no wallet), and
+a read-only **scale cohort**.
+
+The yes/no question type is the neutral resolver surface. Any World App, escrow flow,
+marketplace, DAO, or data product can route an objective question to the court and receive a
+personhood-resolved on-chain answer. **M4 funds the resolution SDK and the first neutral yes/no
+pilot integration** to start the case-flow flywheel. If a prediction-style product later consumes
+that resolver, it is a separate consumer of the court, not the grant-funded product.
+
+> **Honest scope note (carried through this application):** the live mainnet instance runs a
+> **3-seat panel drawn from a 3-juror pool (3/3)** — chosen to prove the full flow cheaply. With
+> 3 jurors and 3 seats, every juror is always on the panel, so the random draw isn't doing real
+> work yet: which jurors get drawn only starts to matter once the pool is larger than the panel
+> (the M3b milestone widens the pool; the M1 VRF upgrade then hardens the randomness). The real
+> capture-resistance — where flipping a verdict costs more as the pool grows, across parallel
+> panels — is funded roadmap, not the shipped 3/3 demo. We say this up front rather than let a
+> reviewer find it in the contract.
+
+## 4. Why World — deep, on-chain World ID usage *(the core of the application)*
+
+This is not "we call IDKit." World ID is the **load-bearing primitive of the mechanism**, used
+on-chain and across the stack:
+
+- **On-chain World ID 4.0.** `WorldIDVerifier.verify` runs the **real Groth16 check inside the
+  registration transaction**, not as a cloud callback. Personhood is enforced by the chain.
+- **Sybil gate.** The identity-derived nullifier gives one human one seat; a reused human
+  **reverts on-chain**. This is what makes "one human, one vote" real.
+- **Wallet-bound proofs.** The proof is bound to the registering wallet (`signalHash`
+  recomputed on-chain), so a **stolen or replayed proof reverts** before the check.
+- **MiniKit walletAuth (SIWE)** for the juror session; **Permit2 single-tap onboard** (verify +
+  faucet + bond in one sponsored batch, because World App auto-revokes plain ERC-20 approvals);
+  **sponsored gas** so verified humans pay nothing; **deep-link** straight to a case.
+- **Open, permissionless onboarding.** Any Orb- or Device-verified human can juror — no wealth
+  gate, no exam — so the bench scales to capable people anywhere, not just the well-capitalized
+  (World's inclusion mission, applied to *who gets to judge*; juror quality-scoring is funded M3b).
+
+World ID isn't a login here — it gates juror eligibility by personhood, not
+capital. That is why we lead with it: the grant's most-valued axis is the project's
+central mechanism, not a feature.
+
+## 5. Working demo — what's real on-chain vs. what's roadmap
+
+The MVP is **deployed and source-verified on World Chain mainnet today** (the live 3-human
+capstone is the last step), built solo at the founder's expense. One honesty rule: **simulated data is labeled simulated, everywhere.**
+
+| ✅ Real & on-chain today (mainnet, source-verified) | ◷ Roadmap (funded milestone) |
+|---|---|
+| World ID 4.0 verified **in the transaction** (real Groth16) | VRF/drand draw randomness — M1 |
+| **Nullifier sybil gate** (one human, one seat) | Receipt-free MACI-style ballots — M2 |
+| **Wallet-bound** proof (a stolen proof reverts) | Appeal ladder (7→15→31) + parallel pᴺ panels — M3b |
+| Random two-step panel draw, **after** the question (exhaustive at the 3/3 demo size) | Juror reputation / Wilson gate — M3b |
+| Commit/reveal voting *(receipt-ful — see §7)* | Reward-pool cyclic payout — M3a |
+| 70/20/10 fee split + 2% escrow fee; **slash-to-pool, never to winners** | Optimistic fast path (~95% settle free) — M3a |
+| **Atomic** escrow settlement | Resolution SDK + first neutral yes/no pilot integration — M4 |
+| **No admin override**: no upgrade, no pause, no fund-extraction path, no override of any in-flight case | Independent security review — M5 |
+| 6 source-verified contracts · 77 Foundry tests · **97.2% line / 93.7% statement coverage** (measured) · invariants + fuzz | |
+
+**Status — one step remains.** On-chain World ID enforcement is **proven** by three Step-3.5
+explorer traces (a valid registration, a forged-proof revert, a duplicate-human revert), using
+World ID **Simulator/Staging** identities so the path is shown human-free for cents. The
+capstone-ready **Production**-verifier instance is deployed and source-verified; the **3-human
+mainnet capstone** — scheduled within the application window — is the last step, and everything
+it depends on is already live. It is also **juror user-test #0**, the first run of the real
+onboard → commit → reveal → payout loop with verified humans, which the funded **M6** milestone
+then scales into moderated rounds. Until the capstone runs, `jurorCount() == 0`, stated plainly.
+
+One residual assumption, disclosed: the gate relies on the verifier **reverting** (not
+returning false) on a forged proof. This is empirically confirmed on the Staging verifier; the
+equivalent **Production**-verifier forged-proof revert trace is a named **M1** acceptance
+artifact, captured at the capstone.
+
+**For the reviewer in 60 seconds** (no wallet needed): watch the *buy-this-verdict* attack demo
+(a token court flips to the lie; the human court holds) → click through to the source-verified
+contracts and resolved cohort cases on the explorer → open the read-only Mini App over that
+history. Links in §12.
+
+## 6. Differentiation — and the expert rebuttals, handled
+
+Decentralized arbitration is a real, respected category; we don't claim to have invented it. We
+claim one defensible inversion — **the eligibility set for the juror draw**:
+
+- **The draw is not the novelty; the eligibility set is.** Kleros already draws jurors randomly
+  and post-question (so did Aragon Court, before it was deprecated) — so randomness isn't our
+  claim. What we change is *who is eligible to be drawn*: bonded **stake** (them) vs
+  **one-verified-human-one-seat** (us).
+- **The live decentralized courts decide by capital.** Kleros sortition ∝ PNK stake; UMA is
+  one-token-one-vote; Aragon Court (now deprecated — Aragon wound the project down) seated
+  stake-/activation-based "guardians." Tellingly, even **Kleros's "Humanity Court,"** which rules
+  on *who is a unique human*, still seats its **jurors by stake** — the registry is
+  personhood-gated, the bench is not. DemoThemis gates the **bench**.
+- **"But World ID is itself a sybil/dedup primitive — isn't this just a better sybil gate?"**
+  Yes, and that is the point. Prior personhood systems (Proof-of-Humanity and descendants) gate
+  *who may stake*; influence is still drawn by capital. Putting personhood at the **draw
+  itself** is the novel step, and World ID is the first production-grade primitive that makes a
+  personhood-gated eligibility set **cheap and sybil-hard**.
+- **Inside World:** a June 2026 scan of the World App catalog and **every** Community Grant
+  recipient (Wave 0 + Wave 1) found **no** dispute-resolution, arbitration, juror, or escrow
+  project — the closest funded work is one-human-one-vote *governance/voting* (Wonderland,
+  Votexx, zkSnap, Agora, World Poll), which makes collective decisions, not two-party
+  adjudications with bonds, evidence, and settlement.
+
+We scope the "first" claims honestly: "to our knowledge," "in the World ecosystem," from a dated
+2026-06-20 scan — not an exhaustive crawl. Full scan: [docs/DIFFERENTIATION.md](DIFFERENTIATION.md).
+
+## 7. Security model — stated honestly
+
+What's bought today, and what isn't:
+
+- **The live ballot is receipt-_ful_.** Commit/reveal lets a juror reveal their vote — and the
+  secret salt that hid it — to *prove* how they voted, so the **live MVP is vote-buyable in principle** — on the degenerate 3/3 panel (where the pool *is* the panel) a briber
+  needs only the two known jurors and can verify compliance. At scale the personhood gate changes
+  the attack entirely: because the panel is drawn at random after the question, there is no known
+  set to buy, so a briber must pre-corrupt a near-majority of the **whole pool**, per case, for
+  only a chance — and **receipt-free MACI-style
+  ballots (M2)** remove even their ability to *verify* that corruption paid off. The court is un-buyable only with
+  **both** — which is why M2 is the single highest-priority mechanism upgrade after the live
+  court is hardened.
+- **Capture-resistance scales with pool width, case volume, and the stakes — and that is roadmap, not the 3/3 demo.** Because the panel is drawn at random after the question, an attacker can't target it; to even attempt a flip they must pre-corrupt a near-majority of the whole pool and hope the draw cooperates. So the price tracks **pool width × case volume × value-at-stake**, never a flat panel bribe: widen the pool and a fixed budget's flip-probability collapses (in the sandbox, bribing ~19.2% of a 200k pool buys only a ~2.91% chance to flip a single panel); raise the stakes and several **independent parallel panels must all agree**, so odds multiply pᴺ — the chance of flipping collapses from ~1/5 to 1/125 to 1/3000 as panels go 1→3→5 (M3b) — while any captured panel is **appealed into a larger one (7→15→31)**, forcing re-capture at higher cost; and because every case re-draws, **none of it amortizes — the attacker pays again, per case**. The live 3-seat instance is a
+  liveness/cost demo (where, by design, a small bribe flips the toy panel); it is **not** this
+  security regime. The hard part — provable, sybil-resistant on-chain personhood at the juror
+  draw — is **shipped**; widening it is funded engineering, not new research.
+- **No admin override — an affirmative trust asset, verifiable from the source-verified
+  bytecode.** No upgradeability, no pause, no fund-extraction path, no override of any in-flight
+  case. The entire admin surface is `setEscrow`/`setCourt` (one-shot wiring, revert if already
+  set) and a deployer phase-clock (`setDurations`, affecting only cases opened afterward).
+  `RewardPool` has no payout function in the MVP.
+- **Quality is measured privately, not assumed (M3b).** Funded juror reputation pays **accuracy above an
+  obvious-vote baseline** — leave-one-out scoring, a lenient Wilson-interval suspension gate,
+  draw rate capped at 3× a newcomer — while exact scores, case histories, payments, penalties,
+  and refunds remain private. Jurors prove only an eligible reputation band and correct private
+  updates; the public sees aggregate accounting. This rewards being *right*, not merely agreeing, designing
+  out the consensus-collapse/herding failure that stake courts share while protecting honest
+  dissent. Panel sizes (7→15→31) follow the **Condorcet jury theorem**: odd panels of
+  better-than-chance humans converge on the truth as they grow. This scoring is interactive today
+  in the /sandbox reputation demo.
+- **Open edges, named (the honesty rule applied to attacks).** Two we don't yet close: *ambiguous
+  questions* — today a tie or no-quorum resolves to status quo (question NO / escrow refunds the
+  payer), so a genuinely unanswerable question defaults to NO; an explicit **Invalid/void
+  outcome**, flagged when independent parallel panels split on a truly ambiguous question, is
+  funded roadmap (M3). And *credential rental* — a verified human can rent their seat; the
+  per-draw liveness check that closes it is out of MVP scope. We surface both rather than let a
+  reviewer find them.
+
+## 8. Traction & technical credibility
+
+The MVP was **shipped solo by the founder in ~1 month** — the funded roadmap is delivered by
+both co-founders in parallel (§9, §11) — to a standard meant to survive scrutiny:
+
+- **6 source-verified contracts on World Chain mainnet** (5 core + the World ID gate; chain
+  480, real Production World ID 4.0 verifier) + a **~20-juror Sepolia cohort** with resolved
+  cases (scale/history demo).
+- **77 Foundry tests** with real system invariants (token conservation, registry solvency,
+  bonded-juror) plus fuzz; **97.2% line / 93.7% statement coverage** (measured via `forge
+  coverage`, not asserted).
+- **No external audit is claimed anywhere** — an independent security review is funded
+  **milestone M5**, in the requested Spark tranche.
+- The MVP went through an adversarial pre-submission review; the correctness items it surfaced
+  (escrow timeout/refund, partial-slash guard, a Production-verifier forged-proof pre-check) are
+  folded into **M1** rather than papered over.
+
+## 9. Milestones, timeline & budget
+
+The requested Spark grant funds the path from honest single-panel demo to a **hardened,
+randomness-backed, independently-reviewed** live court with the first real human on-chain. The
+larger mechanism build is pre-scoped as a Scale-track follow-on, unlocked by that live usage.
+Every tranche releases only on a verifiable acceptance artifact; **no upfront tranche**,
+clawback-compatible. Delivered by **two co-founders in parallel** (same person-effort, half the
+calendar — Spark in ~1 month, the full roadmap in ~3), and **priced lean and capped at
+US$50,000**, below comparable mainnet-protocol grants. AI makes development the cheap
+part, so the weight is shifted into the human-intensive work it doesn't cheapen: the roadmap
+**ends with juror UX + moderated user-testing (M6, the largest line)** — because whether
+real humans complete the onboard → commit → *return-to-reveal* loop is the court's highest-risk
+surface (a no-show forfeits a bond and can deadlock a panel) and is exactly what World rewards:
+real usage.
+
+**Spark grant requested — US$14,000 (~1 month):**
+
+| # | Milestone | Acceptance artifact | Cost |
+|---|---|---|---|
+| M1 | VRF/drand randomness + correctness hardening + Production-verifier forged-proof pre-check | verified randomness contract + draw trace; expanded tests; the forged-proof revert trace | $4,000 |
+| M5 | Independent security review of the live court | published report; criticals/highs resolved | $10,000 |
+
+**Pre-scoped Scale follow-on — US$36,000 (Months 2–3):** M2 receipt-free ballots ($8k) ·
+M3a optimistic path + reward payout ($4k) · M3b reputation + appeal ladder + parallel panels
+($6k) · M4 resolution SDK + first neutral yes/no pilot integration ($5k) · **M6 juror UX
+hardening + moderated user-testing ($13k) — the largest line, final step.** **Full roadmap:
+US$50,000, ~3 months.**
+
+Full bottom-up pricing, effort estimates, acceptance criteria, the timeline, the WLD payout
+mapping, and unit economics: **[docs/GRANT_BUDGET.md](GRANT_BUDGET.md)**.
+
+## 10. Sustainability & go-to-market
+
+DemoThemis stays what §1 calls it — a **personhood-gated arbitration court** — and this section is about how that court goes from empty to self-sustaining. Two fees are built in already: a **2% escrow fee** (retained only when a deal is disputed; refunded on a clean release) and a **flat 2 MUSD per-question case fee** — two distinct mechanisms, both split 70/20/10 (jurors / reward pool / protocol) on-chain today, in **valueless test tokens, so there is no real fee revenue yet** (`jurorCount() == 0` until the capstone). The meter exists; what it lacks is a **first source of repeatable cases** to turn on.
+
+A juror court is a **two-sided system**: it needs verified jurors *and* a steady stream of cases,
+and it is useless empty. The cold-start plan therefore starts with the broadest grant-safe
+surface: a **resolution SDK** that lets any World App consumer route a yes/no question to the
+court, plus one controlled pilot integration that proves the path end to end. Escrow disputes
+remain the headline application, but they are naturally sparse; repeatable yes/no resolutions
+give the court enough case flow to train jurors, show earnings, and build public history.
+
+The pilot is deliberately framed as a **consumer of the resolver**, not as the grant deliverable.
+The grant builds neutral infrastructure: open SDK, documented API, source-verified settlement
+path, and explorer-traced outcomes. DemoThemis takes no bet, sets no odds, holds no stake, and
+does not require any reviewer to approve a market product in order to approve the court.
+Prediction-style products are one possible high-volume consumer because they need objective
+answers, but the same SDK serves escrow, marketplaces, DAO decisions, service-level disputes,
+and any World App flow that needs a credibly neutral yes/no result.
+
+That case flow compounds in two ways. First, every cleanly-settled case becomes a public answer
+record that can grade jurors against reality; the same volume that funds the bench also calibrates
+it (the §7 reputation scoring, live in the /sandbox demo). Second, the SDK makes adoption modular:
+external apps do not need to build their own dispute desk, juror pool, World ID proof path, or
+settlement contracts. They can call the court and inherit the public resolution history.
+
+So the sustainability claim is simple: **fee volume, not a follow-on grant, is the path to
+self-sustaining**. The 2% disputed-escrow fee and flat per-question fee are already modeled
+on-chain in valueless tokens; M4 turns the question side into reusable infrastructure, and M6
+tests whether real verified humans reliably complete the juror loop that earns those fees.
+
+## 11. Team & eligibility
+
+- **Co-founders:** «founder legal name» and «co-founder legal name» — a two-person founding
+  team. The founder **shipped the MVP solo in ~1 month** (the public commit history reflects a
+  single implementer); the funded roadmap is split across both co-founders and delivered in
+  parallel, which is why it completes in **half the calendar at the same person-effort** (and
+  cost — see §9 and the budget).
+- **Signatory of record:** «founder» signs the grant agreement and receives the grant funds/WLD
+  if approved (the co-founders split internally), which keeps a **single KYC/payee chain**. This
+  is a disbursement arrangement, not a statement of seniority — both are equal co-founders.
+- **Advisor:** an academic advisor, **team member only** — kept out of the signatory/KYC chain.
+- **Bus factor — actively de-risked:** two co-founders rather than a solo founder, on top of a
+  fully open-source (MIT), source-verified, documented codebase whose tests + invariants make it
+  legible to any successor. Continuity does not depend on any one person.
+- **Eligibility facts recorded:** one co-founder is a **United Kingdom resident**; the other is
+  based in **Baltimore, Maryland, United States on a work visa**. This records location/residency
+  facts only; it does **not** assert U.S. citizenship or tax residency.
+- **What is 100% certain from current public materials:** the current World Foundation Grants page
+  lists Spark Track for small teams/early founders building Mini Apps, and World's June 2026
+  developer update says the Mini App Grants Program is **"now open to United States builders"**.
+  Therefore U.S. location is not presented here as an automatic application disqualifier.
+- **What is also 100% certain from current legal terms:** applicants still need to satisfy
+  sanctions/export-control restrictions, KYC/AML, tax, and lawful-use obligations; certain
+  Worldcoin Grant features may not be available to New York residents/entities. Baltimore,
+  Maryland is not New York.
+- **What is not 100% certain from public sources:** whether any particular work-visa resident can
+  personally receive WLD, whether the Foundation prefers a specific payee/signatory structure, and
+  whether any grant-agreement-specific restriction changes the payout route. Final eligibility
+  depends on KYC, sanctions screening, applicant citizenship/tax-residency answers, WLD/token
+  availability, and the signed grant agreement.
+- **Source links for the eligibility note:** [World Foundation Grants](https://world.org/grants),
+  [World Dev Summer update](https://world.org/blog/developers/world-dev-summer-build-for-world-network-get-rewarded),
+  and [World Foundation User Terms](https://world.org/legal/user-terms-and-conditions).
+- **Open source:** MIT licensed; repository public at submission; all contracts source-verified.
+
+## 12. Links & artifacts (one live artifact per claim)
+
+> **Before submission, the demo entry points must not be empty** — the live-site, attack-demo,
+> and repo links gate the "working demo" score and are independent of the capstone. The
+> capstone / sponsored-gas / video rows may stay pending until the capstone run.
+
+| Claim / item | Link |
+|---|---|
+| Live site (browser demo, no wallet) | `«https://… production URL — fill before submission»` |
+| Buy-this-verdict attack demo (sandbox) | `«/sandbox on the live site — fill before submission»` |
+| Source repository (MIT) | `«https://github.com/… — public at submission»` |
+| Source-verified mainnet contracts | [worldscan.org](https://worldscan.org) — addresses in [README](../README.md#deployed-contracts) |
+| On-chain World ID enforcement traces (Step 3.5) | [docs/DEMO.md](DEMO.md) |
+| Sepolia scale cohort | [docs/DEMO.md](DEMO.md) |
+| 3-human capstone traces (registrations + resolved cases) | `«paste after the capstone run»` |
+| Sponsored-gas trace | `«capture during the capstone»` |
+| Demo video (3–4 min) | `«Loom / YouTube-unlisted — record during the capstone»` |
+| Honest scope & roadmap | [docs/MECHANISM_DELTA.md](MECHANISM_DELTA.md) |
+| Budget & milestones | [docs/GRANT_BUDGET.md](GRANT_BUDGET.md) |
+| Differentiation scan | [docs/DIFFERENTIATION.md](DIFFERENTIATION.md) |
+
+---
+
+### Pre-submission checklist (the artifacts this copy promises)
+
+- [ ] Fill the demo entry points in §12 (live site, attack demo, repo) — **independent of the
+      capstone; do these first.**
+- [ ] Run the 3-human mainnet capstone → flip §5 status, fill the §12 capstone + sponsored-gas rows.
+- [ ] Record + link the demo video (best filmed during the capstone).
+- [ ] Flip the repo public (after the capstone traces land; pre-scan for secrets first).
+- [ ] Confirm final citizenship, tax-residency, sanctions/export-control, KYC/AML, and payout-recipient answers for both co-founders (§11); do not use the old "non-US" shortcut.
+- [ ] Fill every `«...»`: applicant name, production URL, repo URL, payout wallet.
+- [ ] Confirm the final third-party audit quote for M5 and the MACI library for M2 (GRANT_BUDGET.md).
+
+</script>
+<script type="text/markdown" data-id="budget" data-title="Budget &amp; milestones" data-group="The application" data-badge="done" data-source="docs/GRANT_BUDGET.md" data-desc="The priced $50k / 3-month plan: $14k Spark + $36k Scale, with user-testing (M6) as the largest line.">
+# Funded-milestone plan, budget & timeline — World Spark Track
+
+The post-MVP build the grant funds, priced bottom-up and tied to verifiable acceptance
+criteria. The MVP is already built and source-verified on World Chain mainnet at the
+founders' own expense; this grant funds the path from *honest single-panel demo* to a
+*VRF-randomized, receipt-free, appeal-laddered, independently-reviewed* court — and ends with
+**moderated juror user-testing**, the roadmap's single largest line, because whether real
+humans complete the juror loop is what decides if the court works at all.
+
+> ## The ask
+>
+> **Spark grant requested: US$14,000** — Milestones **M1 + M5**: verifiable randomness +
+> correctness hardening + an **independent security review** of the already-live court. This
+> makes the deployed single-panel court production-grade and gets the first real human
+> on-chain. It is the highest-leverage, genuinely Spark-sized slice of the roadmap.
+>
+> **Pre-scoped Scale-track follow-on: US$36,000** — Milestones **M2–M4** (receipt-free ballots,
+> the appeal-ladder/reputation/optimistic layer, and the resolution SDK + first neutral yes/no
+> pilot integration) **plus M6 — juror UX hardening + moderated user-testing, the
+> largest single line and the final step.** **Full roadmap: US$50,000.**
+>
+> **Where the money goes:** AI-assisted development is now the cheap part, so the build
+> milestones are lean and the savings go into the human-intensive work AI does *not* cheapen —
+> **moderated user testing & UX (M6, US$13,000, the biggest line)**, the true test of whether
+> verified humans will juror through the court.
+>
+> **Delivered by two co-founders working in parallel** — the Spark milestones in **~1 month**,
+> the full roadmap in **~3 months** — at the same person-effort, and the same cost, as a solo
+> build (see *Why the budget holds at half the timeline*, below).
+>
+> Every tranche is released only on its acceptance criteria (each an on-chain or repo-
+> verifiable artifact); **no upfront tranche**, clawback-compatible. Disbursed in **WLD** at
+> the tranche-date rate per the grant agreement.
+
+---
+
+## Pricing method (stated so the numbers are auditable)
+
+- **Labor is priced in person-effort, not calendar time** — a blended **US$2,200 /
+  person-week** (≈ US$55/hr), well below market senior-Solidity contractor rates
+  (US$150–250/hr). The two co-founders are mission-aligned and the grant funds focused build
+  time, not agency overhead. The MVP — 6 source-verified mainnet contracts, 77 Foundry tests
+  (>90% line coverage), a full browser sandbox, and the on-chain World ID 4.0 path — was
+  **shipped solo by the founder in ~1 month of focused effort**, which is the capital-efficiency
+  evidence behind this rate; the funded roadmap is split across **both co-founders** to deliver
+  in parallel.
+- **Development is the cheap part; user testing is where the money goes.** AI-assisted
+  development compresses each build milestone, so the engineering lines are small
+  and the **largest single line is M6 — moderated user testing & UX ($13k)**, which AI does not
+  make cheaper (it is human time: recruiting World ID-verified testers, running sessions on real
+  phones, instrumenting drop-off, and iterating). The cap is held at **US$50,000** by the
+  sub-market rate and this dev→user-testing reallocation, not by cutting scope.
+- **Milestone 5 (security review) is a third-party pass-through, not labor** — a quote for an
+  independent firm, not founder time. Remediation of findings is folded into the M1 labor line
+  (fixes land before M5's acceptance), so M5 is the review fee only.
+- **Pass-throughs** (VRF/drand subscription, mainnet gas, infra, user-test participant
+  incentives) are itemized — World App sponsors end-user gas; cranking gas is cents; the bulk of
+  pass-through is M6's tester incentives + devices.
+- Figures are **USD**; disbursement is in **WLD at each tranche's date** per the grant
+  agreement. *(pw = person-week; milestone $ = labor + pass-through.)*
+
+### Spark grant (the requested US$14,000)
+
+| | Effort | Labor | Pass-through | **Total** |
+|---|---|---|---|---|
+| **M1** — VRF/drand randomness + core hardening | 1.5 pw | $3,300 | $700 | **$4,000** |
+| **M5** — Independent security review (live court + M1) | — | — | $10,000 | **$10,000** |
+| | | | | **$14,000** |
+
+### Scale-track follow-on (pre-scoped, US$36,000)
+
+| | Effort | Labor | Pass-through | **Total** |
+|---|---|---|---|---|
+| **M2** — Receipt-free ballots (MACI-library integration + bonded-coordinator wrapper) | 3.5 pw | $7,700 | $300 | **$8,000** |
+| **M3a** — Optimistic fast path + reward-pool cyclic payout | 1.5 pw | $3,300 | $700 | **$4,000** |
+| **M3b** — Juror reputation + appeal ladder + parallel pᴺ panels | 2.5 pw | $5,500 | $500 | **$6,000** |
+| **M4** — Resolution SDK + first neutral yes/no pilot integration | 2.0 pw | $4,400 | $600 | **$5,000** |
+| **M6** — Juror UX hardening + moderated user-testing *(largest line, final step)* | 4.0 pw | $8,800 | $4,200 | **$13,000** |
+| | | | | **$36,000** |
+
+**Full roadmap: US$50,000** (~15 person-weeks labor at $2,200/pw = $33,000 + ~$7,000
+pass-throughs + the $10,000 third-party review). **Capped at US$50k** — dev held lean, the
+weight shifted into user testing.
+
+---
+
+## Why the budget holds at half the timeline
+
+**The budget prices person-effort, not calendar time** — ~15 person-weeks of work plus a fixed
+third-party audit. That work does not get cheaper by finishing sooner: the same milestones are
+delivered, just concurrently. DemoThemis is built by **two co-founders working in parallel**,
+which compresses the same ~15 person-weeks into roughly **half the calendar at the same total
+cost**.
+
+For the Foundation this is **strictly better at an identical price**: the live, audited,
+human-on-chain court — and every later milestone — lands sooner, the grant's capital is deployed
+faster, and the **clawback-exposure window is shorter**. The rate stays the lean
+**$2,200/person-week** — two mission-aligned builders, no agency overhead, no PM markup; we are
+not charging for the parallelism, only delivering it.
+
+One honest caveat: the one element that is **calendar-bound rather than team-bound** is the
+external security review (M5) — two builders do not speed up the auditor — so we **overlap** it
+with the build (it starts the moment M1 freezes the on-chain surface) rather than claiming the
+team shortens it. The two-person team also directly **de-risks the bus-factor** concern a
+solo-founder application raises.
+
+## Timeline
+
+The **Spark grant (M1 + M5) completes in ~1 month** from grant-agreement signing; the full
+roadmap in **~3 months** — half the calendar of a solo build, identical person-effort.
+Illustrative anchor: signed **July 2026** → Spark milestones done **early August 2026**; full
+roadmap **October 2026**.
+
+```
+Month        1                    2                 3
+  Spark  ├ M1 (wk 1–2) ┤
+         ├──── M5 review ────┤   (external; overlaps the build)
+  Scale            ├─ M2 ─┤
+                          ├ M3a / M3b ┤   ← two co-founders, parallel tracks
+                                      ├─ M4 ─┤
+                                            ├ M6 ┤  ← juror UX + user-testing (the last step)
+```
+
+---
+
+## Milestone detail (deliverable → acceptance criteria → cost)
+
+Each milestone discharges against an **on-chain or repo-verifiable artifact**, in the same
+self-evidencing style as the MVP (source-verified contracts + explorer traces, not prose).
+With two builders, M1 is split (randomness on one track, the correctness-hardening items on the
+other); in the Scale phase one co-founder drives M2 while the other drives M3a/M3b; both run the
+M6 user-testing sessions jointly at the end.
+
+### — Spark grant (requested) —
+
+### M1 — VRF/drand draw randomness + core hardening — **$4,000** (Weeks 1–2)
+
+**Deliverable.** Replace the MVP's `blockhash`-seeded two-step draw (a documented,
+sequencer-influenceable stand-in) with a verifiable randomness source (drand beacon or
+Chainlink VRF on World Chain), and land the correctness hardening surfaced by the MVP's own
+pre-submission review:
+- a party-callable **escrow timeout/refund** so a disputed deal can never strand principal if
+  its court case can't fill a panel;
+- a registry **partial-slash guard** (deactivate a juror whose bond drops below the full bond)
+  so the "active juror is always fully bonded" invariant holds independent of the caller;
+- zero-address guards on the one-shot wiring functions;
+- a pre-onboard **forged-proof check against the Production World ID verifier**, captured as a
+  trace — closing the one load-bearing assumption in the MVP's `WorldIDGate` (it relies on the
+  verifier *reverting*, not returning false, on a bad proof; confirmed on Staging, to be
+  confirmed on Production).
+
+**Acceptance criteria.** New randomness contract deployed and **source-verified** on World
+Chain; a panel-draw trace whose seed is the published beacon/VRF output; expanded Foundry suite
+(incl. an escrow-stuck-funds test and a partial-slash test) green at >90% coverage; the
+Production-verifier forged-proof revert trace in `docs/DEMO.md`.
+
+**Cost.** 1.5 person-weeks ($3,300) + $700 (VRF subscription / mainnet gas). AI-assisted, split
+across both builders — under a calendar week.
+
+### M5 — Independent security review — **$10,000** (Weeks 1–4, overlaps the build — pass-through)
+
+**Deliverable.** A third-party security review of the live court (the deployed five core
+contracts + the World ID gate + the M1 changes — the code that will actually have humans and,
+eventually, value on it) by an independent firm. The MVP **claims no audit anywhere**; this
+funds the real thing. Priced as a **quote, not founder labor**, and **calendar-bound by the
+firm, not the team** — it starts as soon as M1 freezes the surface and runs alongside the build.
+
+**Acceptance criteria.** Published review report (or summary + resolved-findings log) linked
+from the repo; all critical/high findings resolved with diffs.
+
+**Cost.** $10,000 third-party pass-through — the **lean end** of the $10–15k range for a focused
+review of ~1,300 lines of Solidity (no novel-cryptography surface yet — that arrives with M2,
+which carries its own re-review share in the Scale phase).
+
+### — Scale-track follow-on (pre-scoped) —
+
+### M2 — Receipt-free ballots, MACI-style v1 — **$8,000** (Month 2)
+
+**Deliverable.** Replace commit/reveal (which can *prove* how a juror voted, so it is
+vote-buyable in principle — the MVP's own notes call it a "known-insufficient stand-in") with
+receipt-free ballots: encrypted votes with a bonded coordinator, hiding both juror identity and
+vote. **Scope is integration, not new cryptography** — built on an existing audited MACI library
+plus the bonded-coordinator wrapper and the court tally adapter, which keeps the band tight. Driven by one co-founder in parallel with M3a/M3b.
+
+**Acceptance criteria.** Encrypted-ballot contracts source-verified on mainnet; an end-to-end
+resolved case where the explorer shows **no juror's vote is publicly linkable before or after the tally**, including through a payment, penalty, refund, reputation update, or reusable pseudonym; a
+written threat-model note on the coordinator bond; encrypt → tally → resolve tests green. A
+re-review of this novel-mechanism surface is included as M2's pass-through share.
+
+**Cost.** 3.5 person-weeks ($7,700) + $300 (MACI tooling / re-review share).
+
+### M3a — Optimistic fast path + reward-pool cyclic payout — **$4,000** (Months 2–3)
+
+**Deliverable.** A bonded-assertion **optimistic fast path** (the ~95% free-settlement layer —
+an established-art estimate for optimistic-assertion oracles à la UMA, not an MVP-measured
+figure), and the **reward-pool gated cyclic payout** (recency-weighted private distribution to active
+jurors, with only the aggregate and its correctness proof public), turning today's passive sink into a working juror incentive.
+
+**Acceptance criteria.** Each feature deployed and source-verified, each with an explorer trace
+(an optimistic settle that never reaches a jury; a proved aggregate reward-pool distribution that does not expose an individual juror's amount).
+
+**Cost.** 1.5 person-weeks ($3,300) + $700 gas/infra.
+
+### M3b — Juror reputation + appeal ladder + parallel panels — **$6,000** (Month 3)
+
+**Deliverable.** **Private juror reputation commitments** (leave-one-out, Wilson-gated, draw-rate capped at 3× a
+newcomer, with exact scores, case histories, penalties, and refunds hidden); the **appeal ladder** (7→15→31 seats); and **parallel pᴺ panels** above a value line,
+so capture cost rises with the pot. This is the milestone that turns the live demo's single
+3-seat panel into the real capture-resistant regime.
+
+**Acceptance criteria.** Each sub-feature deployed and source-verified, each with an explorer
+trace (a draw proved from a private eligible reputation band; an appeal escalating a panel and privately reversing a vindicated juror's update; parallel panels that must
+agree). Public data exposes only one-case pseudonyms, required proofs, and aggregate accounting. Sandbox numbers and on-chain behavior reconciled.
+
+**Cost.** 2.5 person-weeks ($5,500) + $500 gas/infra.
+
+### M4 — Resolution SDK + first neutral yes/no pilot integration — **$5,000** (Month 3, Scale-track)
+
+**Deliverable.** A thin TypeScript **resolution SDK** + documented API so any World App
+consumer can route a yes/no question into the court for a neutral on-chain outcome in a few
+lines, plus one controlled pilot integration that proves the resolver path on mainnet. This is
+the cold-start engine: a juror court is two-sided (jurors *and* cases), so the SDK gives escrow
+flows, marketplaces, DAOs, service-level disputes, and objective yes/no products a reusable way
+to call the same personhood-gated court. Prediction-style products are one possible high-volume
+consumer, but the grant-funded deliverable is the resolver infrastructure and pilot, not a
+market. DemoThemis takes no bet, sets no odds, holds no stake.
+
+**Acceptance criteria.** Published SDK (npm + docs) **and** a pilot integration resolving at
+least one **personhood-resolved yes/no outcome** through DemoThemis on mainnet, traced on the
+explorer, with the same SDK path shown resolving a disputed-deal case. The deliverable is solely
+team-discharged and clawback-clean: SDK, docs, integration, and explorer trace.
+
+**Cost.** 2.0 person-weeks ($4,400) + $600 (infra / integration).
+
+### M6 — Juror UX hardening + moderated user-testing — **$13,000** (the final step; the largest line)
+
+**Deliverable.** The last step before broad launch — and the one that decides whether real
+humans complete the juror loop, which is why it is the **single largest line** in the
+budget. AI compresses the build; it does not compress the cost of getting real humans through
+the flow. Run **moderated user-testing sessions with real World ID-verified jurors** through the
+full flow (onboard → faucet/bond → commit → **return to reveal** → payout), instrument
+**completion and drop-off** at every step — especially the **reveal-return rate**, the court's
+single highest-risk surface (a juror who doesn't come back to reveal no-shows, forfeits their
+bond, and can deadlock a small panel) — fix the friction the sessions expose, and run an
+**accessibility pass** (non-color state cues, clear phase timers, salt/redirect handling). The
+3-human capstone is juror-test #0; this milestone scales it into iterative rounds.
+
+**Acceptance criteria.** ≥2–3 moderated testing rounds with verified-human jurors; a measured
+**juror-flow completion rate and reveal-return rate** with a before/after friction report; the
+resulting fixes shipped to the live Mini App; a completed accessibility checklist.
+
+**Cost.** 4.0 person-weeks ($8,800) + $4,200 (participant recruitment + incentives across rounds
++ test devices). The pass-through is large *on purpose* — recruiting and paying real verified
+testers is the human cost AI cannot remove, and it is the most decisive spend in the plan.
+
+---
+
+## Sustainability past the grant
+
+The grant is **one-time and milestone-gated**; it does not fund operations indefinitely. The court is fee-bearing by construction — a **2% escrow fee** (retained only when a deal is disputed; refunded on a clean release) and a **flat 2 MUSD per-question case fee** — two distinct mechanisms, both split 70/20/10 (jurors / reward pool / protocol) on-chain today, in valueless test tokens. **There is no real fee revenue yet** (`jurorCount() == 0` until the capstone), and a fee with no case flow earns nothing — so the cold-start question is where the *cases* come from.
+
+The constraint is that a juror court is **two-sided**: it needs jurors *and* a steady stream of
+cases, and it is useless empty. **Disputes are sparse and reactive** because they only fire when
+a deal goes wrong, so they cannot seed the system early by themselves. M4 solves that without
+making the grant about a market: it funds a reusable **resolution SDK** and one neutral pilot
+integration so repeatable yes/no cases can flow through the same court that settles escrows.
+
+The grant funds the resolver, never a market. DemoThemis takes no bet, sets no odds, holds no
+stake, and does not depend on any one consumer. Prediction-style products can be high-volume
+callers of the SDK because they need objective answers, but the same interface serves escrow,
+marketplaces, DAO decisions, service-level disputes, and any World App flow needing a credibly
+neutral yes/no outcome.
+
+Illustrative unit economics remain simple and grant-safe: at the **2% escrow fee** a $1,000
+disputed deal yields ~$20 across the 70/20/10 split, and each resolved question carries the
+**flat 2 MUSD case fee** on the same split. A few hundred resolved cases/month would cover a
+maintenance person-week. **Fee volume, not a follow-on grant, is the path to self-sustaining**;
+the **Scale track** is the next step once the court has live usage.
+
+## Payout mapping (how this lands on the grant's mechanics)
+
+- **No upfront tranche.** Each milestone is paid on its acceptance criteria — the Foundation's
+  exposure is never more than one milestone ahead of delivered, verifiable work.
+- **WLD at the tranche-date rate**, per the grant agreement; USD figures above are the basis.
+- **Clawback-compatible.** Every tranche is tied to an on-chain/repo artifact, so non-delivery
+  is objectively checkable, and every milestone is **discharged solely by the team** (no gate
+  hangs on a third party).
+- **Two co-founders, one signatory of record.** DemoThemis is built by two co-founders;
+  «founder» is the **signatory of record** for the grant agreement and the fund recipient (the
+  co-founders split internally), which keeps a **single KYC/payee chain**. Recorded residency
+  facts: one co-founder is a United Kingdom resident; the other is based in Baltimore, Maryland,
+  United States on a work visa. Current public World Mini App Grants materials say the program is
+  open to United States builders, so U.S. location is not treated as an automatic application
+  blocker here. Final payout remains subject to KYC/AML, sanctions/export-control screening,
+  applicant citizenship/tax-residency answers, WLD/token availability, and the signed grant
+  agreement. The academic advisor remains a team member only.
+
+> Placeholders to confirm before submission: «founder legal name», «co-founder legal name +
+> citizenship/tax-residency/KYC answers», «WLD payout wallet», «final third-party audit quote
+> (M5)», «MACI library chosen (M2)».
+
+</script>
+<script type="text/markdown" data-id="differentiation" data-title="Differentiation" data-group="Positioning" data-badge="" data-source="docs/DIFFERENTIATION.md" data-desc="The dated competitive scan: personhood-gated juries vs stake-weighted courts, with rebuttals handled.">
+# Differentiation scan + paragraph (§10 task a)
+
+The honest competitive positioning for the grant application — backed by a dated,
+sourced scan of the World App catalog, the World/Worldcoin grant recipients, and the
+decentralized-arbitration category. Pairs with the verified UMA/Kleros/centralized
+comparison in [PITCH_REVIEW.md](PITCH_REVIEW.md) and the storyboard.
+
+---
+
+## The scan (2026-06-20)
+
+**1. Grant RFPs / focus areas.** World's grant programs are **Spark** (early-stage
+Mini Apps), **Scale** (growth), and **Developer Rewards** (usage-based). The page
+names **no RFP topic or category** for dispute resolution, arbitration, escrow, or
+trust infrastructure — use cases are open-ended under the broad themes of "digital
+identity, global financial inclusion, and collaborative infrastructures."
+→ *DemoThemis is a net-new capability, not an entry in a crowded, named category.*
+Source: [world.org/grants](https://world.org/grants).
+
+**2. Past grant recipients (Wave 0 ≈28 + Wave 1 ≈16, ~44 funded projects).** **None**
+is a dispute-resolution system, arbitration court, juror mechanism, or escrow
+protocol. The closest funded work is **one-human-one-vote governance / voting**:
+- Wave 0 — *Clade Club* (merit-weighted DAO voting), *TheVoice* (majority/quadratic/
+  conviction voting), *Votexx* (coercion-resistant voting), *Wonderland* (Sybil-proof
+  voting, orb-verified addresses only), *Wallfacer / POPGDP* (sybil-resistant grant
+  voting).
+- Wave 1 — *zkSnap* (private voting), *Agora* (governance framework), *World Poll*
+  (incentivized global polling).
+
+These make **collective decisions**; none adjudicates a **two-party dispute** with
+bonded jurors, evidence, and a binding settlement. Sources:
+[Wave 1 recipients](https://world.org/blog/announcements/meet-worldcoin-wave1-community-grants-recipients) ·
+[Wave 0 recipients](https://world.org/blog/world/worldcoin-builders-wave0-grant-recipients-advancing-tech-tree).
+
+**3. World App Mini App catalog.** 150+ Mini Apps as of early 2025 (≈$8.8M WLD
+transacted); the scan surfaced no dispute-resolution/arbitration app. P2P-trading and
+marketplace flows exist (and use their own siloed, operator-run dispute desks) — these
+are **potential customers** of a neutral court, not competitors.
+
+**4. Decentralized arbitration as a category (off-World).** Live and respected, but
+**capital-weighted**: Kleros selects jurors by **PNK stake** (sortition ∝ stake) and
+UMA's DVM is **token-weighted** (1 UMA = 1 vote). Tellingly, even **Kleros's "Humanity
+Court,"** which arbitrates *who is a unique human* (for Proof of Humanity), still
+selects its **jurors by stake** — the registry is gated by personhood, the bench is
+not. DemoThemis inverts this. Sources:
+[Kleros Humanity Court](https://blog.kleros.io/complete-guide-to-staking-in-kleros-humanity-court/) ·
+[Kleros whitepaper](https://kleros.io/assets/whitepaper.pdf).
+
+**Honest scoping.** This reflects a single 2026-06-20 scan of the World App catalog
+signal and both published grant waves — not an exhaustive crawl of all 150+ Mini Apps.
+The category claim is therefore "none found in this scan," and the "first" claims are
+scoped to "to our knowledge" + "in the World ecosystem," which the evidence supports.
+We do **not** claim decentralized arbitration doesn't exist (Kleros and UMA do) — only
+that no **personhood-gated** one does, and none in World.
+
+---
+
+## Differentiation paragraph (application-ready)
+
+> Decentralized arbitration is a real, respected category — Kleros and UMA are live in
+> production — but both decide by **capital**, and that is a one-time, knowable price:
+> buy a majority of stake once and you don't just win this case, you own every future
+> case for free — influence there is targetable, reusable, and amortizing. DemoThemis
+> removes that surface at its root. Because the jury is gated by **personhood, not
+> capital**, and the panel is drawn at random *after* the question from the whole
+> verified-human pool, there is no known set of jurors to buy: to land a bribed majority
+> on a specific case you would have to pre-corrupt a near-majority of the *entire* human
+> pool and merely hope the draw seats enough of them — paying the full pool-corruption
+> cost again, per case, for only a probability that shrinks as the pool, the case volume,
+> and the value at stake grow. Cost-to-capture stops being a flat bribe and becomes
+> pool-width × case-volume × value-at-stake. None of it is built on personhood — tellingly,
+> even Kleros's "Humanity Court," which rules on *who is a unique human*, still selects its
+> jurors **by stake**. Inside the World ecosystem the gap is starker: a June 2026 scan of
+> the World App Mini App catalog and every World Community Grant recipient (Wave 0 and Wave
+> 1) found **no dispute-resolution, arbitration, juror, or escrow project** — the closest
+> funded work is one-human-one-vote *governance and voting* (Wonderland, Votexx, zkSnap,
+> Agora, World Poll), which makes collective decisions, not two-party adjudications with
+> bonds, evidence, and settlement. **DemoThemis inverts the decentralized-justice model —
+> it uses proof-of-personhood, the primitive the World ecosystem is built on, as the juror
+> gate itself** — so influence can no longer be bought once and reused: every case re-draws
+> a fresh random panel, nothing carries to the next, and high-value cases fan out to several
+> independent panels that must all agree (capture odds multiply pᴺ) with any captured panel
+> appealed into a larger one. That makes it, to our knowledge, the first one-human-one-vote
+> arbitration court and the first dispute-resolution app in World App, pairing on-chain World
+> ID verification with bonded commit/reveal voting and atomic on-chain escrow settlement.
+
+## One-line version (for the summary / pitch)
+
+> The decentralized courts that exist (Kleros, UMA) pick jurors by **stake**, so a verdict
+> has a price: buy a stake majority once and you decide every case after it for free. No
+> World App or World-grant project does dispute resolution at all. DemoThemis gates the jury
+> by **personhood instead of capital** and draws a fresh random panel after each question —
+> so there's no set of jurors to buy and no influence to reuse: you'd have to re-corrupt much
+> of the entire human pool, per case, for only a chance.
+
+</script>
+<script type="text/markdown" data-id="mechanism" data-title="Real vs roadmap" data-group="Positioning" data-badge="" data-source="docs/MECHANISM_DELTA.md" data-desc="Exactly what's on-chain today vs. what each funded milestone adds — the honesty map.">
+# MECHANISM_DELTA — MVP vs the full DemoThemis design
+
+The full mechanism lives in the pitch site (`reference/demothemis-site/`, chapters 2/3/8). The MVP deliberately builds a smaller thing: a complete, honest map of what's shipped vs. what's funded — we know exactly what's left and have priced it as the roadmap below. The honesty rule: simulated data is labeled simulated, everywhere; the non-simulated chain slice is the source-verified mainnet contracts plus the World ID verifier path; real human usage begins only after the 3-human capstone runs. No human has registered yet.
+
+### What's real on-chain vs. what's simulated
+
+| ✅ Real & on-chain today (mainnet, source-verified) | ◷ Simulated / roadmap (labeled, funded-milestone) |
+|---|---|
+| World ID 4.0 verified **in the transaction** (`WorldIDVerifier.verify`, real Groth16) | Receipt-free MACI ballots — milestone #2 |
+| Identity-derived **nullifier sybil gate** (one human, one seat, every wallet) | VRF / drand draw randomness — milestone #1 |
+| **Wallet-bound** proof (a stolen proof reverts) | Appeal ladder (7→15→31 seats) — milestone #3 |
+| Random panel drawn **after** the question | Parallel pᴺ panels above a value line — milestone #3 |
+| Commit / reveal voting | Juror reputation / Wilson gate — milestone #3 |
+| 70/20/10 fee split + 2% escrow fee; **slash-to-pool, never to winners** | Reward-pool cyclic payout — milestone #3 |
+| **Atomic** escrow settlement (`resolve → escrow.settle`) | Optimistic fast path (~95% settle free) — milestone #3 |
+| **No admin override** (wire-once + phase clock are the entire admin surface) | (external security review — milestone #5) |
+| 77 Foundry tests (invariants + fuzz), >90% coverage, all sources verified | |
+
+## On-chain in the MVP (the five contracts)
+
+| Area | Full design | MVP | Why / where it returns |
+|---|---|---|---|
+| Sybil gate | World ID proof verified on-chain in the registry | Abstracted behind `ISybilGate`. The **Sepolia cohort uses `MockSybilGate`**, a labeled stand-in (the cohort wallets are scripted-and-disclosed anyway). The **mainnet capstone-ready instance uses real World ID 4.0** (`WorldIDVerifier.verify`). | The spike found World ID 4.0 moved verification to a new mainnet-only contract (docs/SPIKE.md). The interface abstraction lets the same registry logic run under either; real personhood is demonstrated at the capstone, while the non-simulated verifier path is deployed on mainnet. |
+| Juror anonymity | One-case pseudonyms and receiving keys; encrypted ballots hide identity and vote; exact reputation, reserve, case history, individual payments, penalties, and refunds stay private. The public gets eligibility/reserve proofs, the aggregate tally, and aggregate accounting. | **Juror addresses and revealed votes are fully public on-chain.** | Encrypted/receipt-free ballots plus private consequence accounting are funded milestones #2–3. Commit/reveal stands in. |
+| Ballot secrecy | Receipt-free (MACI-style threshold encryption + silent re-keying). The reference **explicitly rejects commit/reveal**: "a voting system that can prove obedience is a voting system with a payment rail bolted on" (breaking-the-court.html). | **Commit/reveal** — a juror can reveal their salt to prove their vote, so it is vote-buyable in principle. A known-insufficient *stand-in*, not the design. | Receipt-freeness is funded-milestone #2; the sandbox contrasts the two and the attack demo shows why it matters. |
+| Slash destination | Every slashed dollar → the **reward pool, never to the winning jurors**; individual debits stay private while only the aggregate transfer and its proof are public. | **Honored on-chain but not private.** Slashes (and the 20% reward cut) flow to `RewardPool`; jurors are paid only the 70% fee cut. | The destination rule is implemented; private consequence accounting returns with funded milestones #2–3. |
+| Fee split | 70 jurors / 20 reward pool / 10 protocol (the-design.html) | **70 / 20 / 10 on-chain.** | Implemented. |
+| Reward-pool payout | The pool **pays active, high-quality jurors privately** through a gated cyclic distribution (Wilson-gated, recency-weighted); only the aggregate and its proof are public. It **rewards jurors, never compensates victims**. | **Passive sink on-chain.** `RewardPool` receives the 20% cut + every slash + rounding dust and exposes only `balance()`. It has **no payout/distribute function at all**. | The private gated distribution is funded-milestone #3 and is shown only in the sandbox. The MUSD-conservation invariant treats the pool as a terminal balance, so adding an on-chain payout would break it (and is flagged as scope creep in the plan, §11). |
+| Wrong-side slashing | A private margin-scaled debit is settled **post-appeal** and privately reversed if vindicated; the public sees only proved aggregate accounting | **Deferred.** Minority voters are not slashed on-chain; only no-shows are penalized (a public liveness forfeit → reward pool). | First-round coherence slashing is the conformity machine the reference warns against — it needs the appeal ladder to be fair. Private slash-to-truth + ladder + vindication returns in milestone #3. |
+| Draw randomness | drand / VRF | **`blockhash`-based** two-step draw (records `drawBlock = block.number + 1`, anyone cranks once it exists). Kills panel precompute, but is sequencer-influenceable in principle. | drand/VRF is funded-milestone #1. Documented limitation. |
+| Optimistic fast path | Bonded assertion + challenge window settles ~95% of cases free, off the jury | **Not built as contracts.** Demo cases go straight to the jury on purpose (the court is the novel claim). | Established art (UMA); funded milestone. Represented in the sandbox funnel and as a grayed-out step in the Mini App timeline. |
+| Dispute ladder + parallel panels | Panels 7 → 15 → 31 (three-floor rung bond, *not* a flat ×2), near-tie discount, two clocks; **above a value line, N independent panels (1/3/5) that must all agree**, so capture odds multiply `pᴺ` and attack cost rises with the pot past the 31-seat ceiling | **Single panel**, one automatic redraw on quorum miss, then status quo. No ladder, no parallel panels on-chain; the mainnet 3-seat panel is a deliberate demo size and security scales with pool width. | All panel-scaling structure is sandbox-only; the parallel-panels "pricing a takeover above the ceiling" is a centerpiece of the attack demo. |
+| Reputation / watchers | Private baseline-credited reputation commitments, Wilson 0.70 suspension gate, and privately proved draw bands **capped at 3× a newcomer**; exact scores and case histories are never public | **None on-chain** — the MVP draws uniformly at random, so there is no reputation weighting to cap. | Sandbox-only; private commitments and proofs return in milestone #3. |
+| Economic parameters | Endogenous — each value a function of its driver (`toupdate.md` part 2) | **Fixed**: $5 bond, 2 MUSD question fee, 2% escrow fee, 7/14 (cohort) or 3/3 (mainnet) panels. | MVP uses shipped constants; endogenous economics is a design-track item, not an MVP one; mainnet capture-resistance scales with the funded pool/panel width, not this demo size. |
+| Withdrawal | — | A withdrawn juror's **nullifier stays spent** (one seat per human); they `postBond()` to rejoin rather than re-verifying. | Keeps the sybil gate strict and simple. |
+| Token | USDC / WLD | **MockUSD**, a valueless 6-decimal token with a public faucet, on every instance. | Production token choice is a funded-milestone decision; no real money is at stake anywhere. |
+| Tie / no-quorum | — | Tie → status quo (question NO / escrow refunds payer). Fewer than ⌈panel/2⌉+1 reveals → one free redraw, then status quo. | One juror must never decide a deal alone; cases must never brick. An explicit **Invalid/void outcome** for genuinely ambiguous questions (flagged when parallel panels split) is funded-milestone #3; today ambiguity defaults to status-quo-NO. |
+
+## Simulated in the sandbox only (clearly labeled)
+
+The case funnel (optimistic step + ~95% free settlement), the full dispute ladder, juror reputation (Wilson-interval gate), watchers / loser-side petitions, private invite rooms, and populations of simulated jurors. All generated data, badged as simulation.
+
+## Out of the MVP entirely
+
+Governance (both tokens, voting, the constitutional firewall); the prediction market as a product (parimutuel pools, ERC-20 graduation, order books); per-draw face check; the justice-clock collusion audit; the reward-pool payout (the `RewardPool` **is** on-chain and accrues slashes + the 20% cut, but it is a passive sink — the Wilson-gated, recency-weighted cyclic distribution to active jurors is sandbox-only, funded-milestone #3); juror seniority gates; external audits.
+
+## Funded-milestone roadmap (what the grant pays for, post-MVP)
+
+1. drand/VRF draw randomness + mainnet deployment of the core court.
+2. Receipt-free ballots (MACI-style, bonded coordinator v1) — hides juror addresses and votes.
+3. Optimistic assertion fast path + juror reputation + dispute ladder on-chain + the reward-pool gated cyclic payout (Wilson-gated, recency-weighted distribution to active jurors).
+4. Resolution / oracle SDK + first prediction-market integration (escrow/marketplace a later consumer of the same SDK).
+5. Security review. (No external audit is claimed anywhere in the MVP.)
+6. Juror UX hardening + moderated user-testing — the final step and the roadmap's largest line; AI makes the build cheap, so the weight goes to getting real verified humans through the juror loop.
+
+## Step 3 — sandbox build notes (appended as the simulation was built)
+
+The `/sandbox` engine ports the reference math verbatim so its numbers match the pitch
+site exactly. A few details where the simulation is narrower than the prose, or differs
+from the on-chain core, are recorded here.
+
+- **The appeal-bond "three floors" are two floors in the ported code.** The reference
+  widget (`hybrid-juror-system.html` ~452-538) computes `bond = max(panelCost, capFloor)`
+  where `panelCost = panel * FEE` (the juror-cost floor) and `capFloor = LAMBDA * odds *
+  stake` (the anti-re-roll / capture floor). The surrounding prose names three floors
+  (juror-cost, anti-re-roll, delay-rent), but the published JS has no delay-rent term. The
+  sandbox ports the reference JS verbatim (two floors) so its bond figures match the pitch
+  site; the delay-rent floor is described in copy as a roadmap refinement, not computed.
+  Noted in `web/src/lib/sim/court-math.ts`.
+
+- **Case-fee number differs by widget, by design.** The deployed core court charges a
+  **2 MUSD** case fee, and the sandbox core-court walkthrough mirrors that (with the
+  70/20/10 split, integer-cent math, slashes + dust → reward pool). The reference
+  attack/ladder math uses **FEE = $1.50** (`hybrid-juror-system.html`), and the
+  bribe-price floor is `fee($1.50) + bondAtRisk($5) + reputationValue($0)`. Each sandbox
+  widget keeps its own source-of-truth number rather than forcing one: the core-court
+  widget mirrors the chain ($2), the attack/ladder widgets mirror the reference ($1.50).
+  Both are labeled.
+
+- **`reputationValue = $0` in the bribe-price floor.** The full design adds the present
+  value of a juror's future reward-pool income to the cost of corrupting them. The MVP has
+  no on-chain reward-pool payout, so that term is zero. Noted in
+  `web/src/lib/sim/attack.ts`.
+
+- **The token-court model is authored fresh** (no reference code exists for it):
+  `P(flip) = 1` once `budget >= 0.5 * totalStake` at a chosen token price, plus a
+  "second case free" reuse flag. The human-court side uses the ported combinatorics.
+
+- **Everything in `/sandbox` is simulated.** Simulated juror populations, simulated
+  per-juror accuracies, simulated cases. The route carries a fixed simulation badge and
+  every widget carries a "simulated" tag. No sandbox number is presented as real usage.
+  The "~95% settle free" optimistic-funnel figure is attributed to the roadmap, never to
+  MVP behavior. The seeded PRNG (mulberry32, fixed default seed) is for reproducibility of
+  the curves and the "run 100 cases" sweep, not a randomness-security claim.
+
+## Step 3.5 — on-chain World ID 4.0 (the IDKit → `WorldIDVerifier.verify` mapping)
+
+This is the build contract that the gate (`contracts/src/sybil/WorldIDGate.sol`) and the
+frontend (`web/src/app/register-onchain/page.tsx`) must agree on. It is **empirically
+verified** (a live `cast call` to the World ID 4.0 Staging verifier
+`0x703a6316c975DEabF30b637c155edD53e24657DB` on WC mainnet returned `0x` for a valid World
+ID Simulator `proof_of_human` v4 staging proof and reverted `0x7fcdd1f4` for a forged one).
+
+The deployed verifier signature (arg order is fixed by the contract):
+`verify(uint256 nullifier, uint256 action, uint64 rpId, uint256 nonce, uint256 signalHash, uint64 expiresAtMin, uint64 issuerSchemaId, uint256 credentialGenesisIssuedAtMin, uint256[5] proof)`
+— it **reverts** on a bad proof and returns nothing on success.
+
+| `verify` arg | type | source in the IDKit v4 response | notes |
+|---|---|---|---|
+| `nullifier` | uint256 | `responses[0].nullifier` | RP-scoped per-human nullifier; the registry rejects reuse (the sybil gate). Identity-derived, **independent of the signal** — so the same human on two wallets shares it. |
+| `action` | uint256 | **computed**, not from the response: `uint256(keccak256("juror-registration")) >> 8` | The top-level `response.action` is the action *string*. The `>> 8` hashToField shift is REQUIRED: the un-shifted keccak exceeds the BN254 field and reverts `PublicInputNotInField()` (`0xa54f8e27`). Value: `0x00d6f0d2ac0113e07a903cc011df10d5da49fbd368c0ecc3c8257c9bce73e3ed`. |
+| `rpId` | uint64 | the `rp_id` string with `rp_` stripped | `rp_1ddcf8ba2efe3f36` → `0x1ddcf8ba2efe3f36`. |
+| `nonce` | uint256 | top-level `result.nonce` | The request nonce, echoed back. |
+| `signalHash` | uint256 | `responses[0].signal_hash` | = idkit-core `hashSignal(signal)`. For an address signal (`0x`+40 hex) it is `keccak256(20 raw bytes) >> 8`, **byte-identical** to the gate's on-chain `uint256(keccak256(abi.encodePacked(addr))) >> 8`. The gate recomputes it from the registering wallet and asserts equality — **binding the proof to the wallet**, so a stolen proof fails. |
+| `expiresAtMin` | uint64 | `responses[0].expires_at_min` | |
+| `issuerSchemaId` | uint64 | `responses[0].issuer_schema_id` | `1` = proof_of_human. |
+| `credentialGenesisIssuedAtMin` | uint256 | `0` | Absent in the response; pass 0. |
+| `proof` | uint256[5] | `responses[0].proof` | First 4 elements are the Groth16 limbs, the **5th is the Merkle root**. Corrupting limbs 0–3 reverts `0x7fcdd1f4`; corrupting the Merkle root reverts `InvalidMerkleRoot()` (`0x9dd854d3`). |
+
+**The gate's `bytes proof`** is `abi.encode(nullifier, action, rpId, nonce, signalHash, expiresAtMin, issuerSchemaId, credentialGenesisIssuedAtMin, uint256[5] proof)` — the eight v4 scalars in declared order plus the fixed `uint256[5]`. This is a **fully static** 416-byte blob; the array MUST be encoded as `uint256[5]` (fixed), never a dynamic `uint256[]`. This encoding is **distinct from `MockSybilGate`'s** 2-tuple `abi.encode(uint256 nullifier, address signal)` (the cohort/test gate) — do not conflate the two.
+
+**The IDKit request** (`register-onchain/page.tsx`) must use the `proofOfHuman` preset with
+`allow_legacy_proofs: false` and **`environment: 'staging'`** (REQUIRED — it defaults to
+`'production'`, which the World ID Simulator rejects outright), and pass the registering
+**wallet address** as the `signal`. Step 5 (real Orb/Device humans) drops back to the
+`'production'` environment + the Production verifier `0x00000000009E00F9FE82CfeeBB4556686da094d7`;
+the gate, action, rpId, and encoding are unchanged — only `WORLD_ID_VERIFIER` differs.
+
+**What is NOT simulated here:** the mainnet WorldIDGate runs a *real* Groth16 verification.
+The only Step-3.5 concession is the **Staging** verifier + World ID **Simulator** identities
+(so the path is proven human-free for cents); they are real v4 proofs verified by the real
+verifier contract, labeled as Simulator-sourced in `docs/DEMO.md`. The Step-5 capstone is where
+real humans will use the Production verifier.
+
+## Step 5 — mainnet capstone (Permit2 onboard, B5, sponsored transactions)
+
+The capstone-ready mainnet instance (chain 480) deploys the same five contracts against
+the **Production** World ID verifier
+(`0x00000000009E00F9FE82CfeeBB4556686da094d7`, Orb/Device), 3/3 panel. Step-5 additions and
+their honest status:
+
+- **Permit2 bond deposit (the World App onboard path).** `JurorRegistry.registerWithPermit2`
+  is added in Step 5: it runs the same one-human-one-seat enrolment as `register`, but pulls
+  the 5 MUSD bond through canonical **Permit2** (`0x000000000022D473030F116dDEE9F6B43aC78BA3`,
+  confirmed on WC mainnet) instead of a direct ERC-20 allowance. World App auto-revokes plain
+  `approve(registry)` allowances but auto-approves tokens to Permit2, so the classic
+  approve-then-register breaks in World App. The onboard sends one sponsored batch:
+  `Permit2.approve(bondToken, registry, BOND, 0)` then `registerWithPermit2(signal, proof)`,
+  which pulls the bond with `Permit2.transferFrom`. This is the **Allowance-Transfer** pattern
+  the World docs document for Mini Apps (`docs.world.org/mini-apps/commands/send-transaction`),
+  not Permit2 SignatureTransfer — chosen because it is the documented, signature-placeholder-free
+  path that the installed `@worldcoin/minikit-js` supports. The classic `register` (ERC-20
+  allowance) remains for the desktop/dev/cohort path and the B5 page.
+
+- **B5 — the `/app/dev` paste-a-proof page.** A dev-only (`NEXT_PUBLIC_SHOW_DEV`) desktop tool:
+  paste a World ID Simulator completion JSON, and the server (`/api/dev-register`,
+  `DEV_PRIVATE_KEY`) abi.encodes the gate proof for the active instance and runs faucet +
+  classic approve + `register`. On the cohort it drives `MockSybilGate`; on mainnet the real
+  `WorldIDGate`. It exists to exercise registration from a browser without World App; it is not
+  a user-facing feature and is off in production.
+
+- **Sponsored transactions — honest status.** World App sponsors gas for verified humans on
+  whitelisted Mini App transactions; the onboard (register), commit, and reveal use
+  `MiniKit.sendTransaction` against mainnet. This write path runs **only inside World App** and
+  cannot be exercised in a desktop browser or CI, so it is **verified on-device at the human
+  capstone**, not before. Until that trace exists the UI copy (GasBadge, dispute/case notes) is
+  deliberately forward-looking and does not claim a specific sponsored tx has succeeded — the
+  honesty rule applied to a deferred-until-on-device feature. The commit/reveal commitment binds
+  `keccak256(abi.encode(vote, salt, caseId, juror))` to the voter's wallet (vote + salt persist
+  to localStorage so reveal can replay them).
+
+- **What stays simulated / labeled.** Everything in §"Simulated in the sandbox only" is
+  unchanged. The Step-5 capstone cases (`web/public/cases/{q,escrow}-capstone.json`) are real
+  mainnet cases (`simulated: false`); the cohort remains the labeled `MockSybilGate` scale demo.
+
+</script>
+<script type="text/markdown" data-id="review" data-title="Independent review" data-group="Diligence" data-badge="" data-source="docs/INDEPENDENT_REVIEW.md" data-desc="Adversarial multi-agent audit: verified strengths, weak spots, and the critical path to submission.">
+# Independent review — weak spots & what's left
+
+An adversarial, multi-agent audit of the project run on 2026-06-20 (25 agents across
+contracts, web, tests, grant-claims, and repo hygiene; serious findings were
+re-verified by independent skeptics). It is separate from the team's own
+[GRANT_READINESS.md](GRANT_READINESS.md): the job here was to verify the claims and find
+the weak spots the self-assessment missed.
+
+## Bottom line
+
+The build is **real and unusually honest** — it survived an adversarial audit.
+The gap to submission is **execution + writing, not engineering**. The findings below are
+the things worth fixing or disclosing before a reviewer sees them.
+
+**Verified strengths (the defensible core):**
+
+- **"77 Foundry tests" is exact**, and **coverage is 97.17% line / 93.66% statement /
+  92.86% function** (measured with `forge coverage` — the ">90%" claim is conservative).
+- **Secrets are clean** — `.env` was never committed, history is scrubbed, `.gitignore`
+  is correct.
+- **Slash-to-pool, atomic settlement, fee conservation, commit/reveal binding,
+  wallet-bound proofs, and "no admin override"** all check out against the code.
+- **Real Groth16 World ID check in-transaction**; the Production verifier address is the
+  genuine Production contract, not a mislabeled Staging one.
+- The **honesty rule is implemented consistently in the UI**; nothing claims humans have
+  used the mainnet court while `jurorCount()==0`.
+
+## Weak spots that actually matter
+
+### A. Smart-contract correctness & security
+
+1. **🔴 Disputed escrow funds can be permanently locked.** `settle()` is the only exit
+   from `Disputed`; if the court case can never fill a panel (the 3/3 pool drops below 3,
+   or a single redraw no-show permanently excludes a juror), the principal is stranded
+   with no timeout/refund. Turns "atomic settlement" into "atomic when it settles,
+   unrecoverable when it doesn't." → add a party-callable timeout/refund (folded into
+   funded milestone M1), or document it as an accepted MVP limit + add a test.
+2. **🔴 The headline claim could be falsified live.** `WorldIDGate` ignores the verifier's
+   return value and relies on it **reverting** on a forged proof — confirmed only against
+   Staging. If the **Production** verifier returns `false` instead of reverting, the gate
+   **fails open** and "a forged proof reverts" is falsified on camera at the capstone.
+   → send a forged proof to the Production gate via `cast` and confirm it reverts *before*
+   any human onboards (an M1 acceptance artifact).
+3. **🟠 Partial-slash leaves an under-bonded juror in the draw pool** (latent today —
+   the sole slasher always full-slashes — but breaks the stated invariant if a future
+   partial slash lands; zero test coverage of the branch).
+4. **🟠 A single $5 bond covers unlimited concurrent panels** — the liveness penalty
+   doesn't scale with abandoned panels; untested overlapping-case path.
+5. **🟠 No on-chain proof freshness** (nonce/expiry decoded but unchecked); anti-replay
+   rests on the per-instance nullifier mapping only.
+
+> Already fine (verified): the blockhash panel-randomness weakness is **not** an
+> over-claim — it is disclosed as funded-milestone #1 in four docs, and the live chain is
+> an OP-stack L2.
+
+### B. The capstone is a one-shot with unguarded landmines
+
+None of these are in the runbook, and each is invisible until a real phone runs it:
+
+- **3/3 deadlock** if any of the 3 humans is also the case opener / a deal party (the
+  excluded party leaves 2 < 3, so the panel can never be drawn). Forbid it, or add a 4th
+  human buffer.
+- **Duration sequencing trap** — `setDurations` must run *before* the case is opened, or
+  the 60s window deadlocks the demo.
+- **Faucet-in-batch revert** for a returning wallet on the 24h cooldown reverts the whole
+  onboard batch — pre-fund the 3 wallets and rehearse on a throwaway.
+- **Constructor immutables never `cast`-verified** against the deployment JSON — a wrong
+  arg makes every real proof revert opaquely.
+- **No contingency plan** if the capstone fails or the verifier misbehaves.
+
+### C. Honesty / consistency leaks (the differentiator is honesty, so these hurt extra)
+
+- **🟠 The deployment JSON** said *"mainnet-live… 3 real humans register here"* while
+  `jurorCount()==0`. *(Fixed during this engagement.)*
+- **🟠 "$13 to flip a 3-seat panel"** still sits inline on the cost-to-corrupt chart, one
+  footnote from "can't be bought." Reframe as a deliberate liveness/cost demo whose
+  security property is pool width.
+- **🟠 "First dispute-resolution app in World App"** reads as absolute in the README vs the
+  scoped evidence ("none found in one dated scan").
+- **🟠 Differentiation gaps:** omit **Aragon Court**, and don't confront the *"World ID is
+  itself a sybil primitive of the Proof-of-Humanity lineage"* reframing — the two
+  strongest reviewer rebuttals. *(Both addressed in the new application copy.)*
+- Contract NatSpec (in source-verified bytecode) still says "mainnet live instance" — can't
+  be changed without redeploy; disclose rather than retroactively edit.
+
+### D. Web & repo hygiene
+
+- **🟠 `/api/dev-register` is an unauthenticated private-key relayer** when
+  `NEXT_PUBLIC_SHOW_DEV='true'` — inert in prod (double-gated), but the only guard is an
+  env boolean. Add real authz; hard-fail when `!IS_COHORT`.
+- **🟠 The `(protected)` route group isn't actually access-controlled** (auth redirect
+  commented out) — no fund risk, but contradicts the "protected" label.
+- **🟠 [MECHANISM_DELTA.md](MECHANISM_DELTA.md) cites a non-existent `toupdate.md`** — the
+  one dangling doc ref.
+- Dead template scaffolding (Pay/Verify/UserInfo); root metadata still "Template Mini App";
+  `.claude/` untracked but not gitignored (risks a careless `git add .` on the public flip).
+
+## What's left to do before submitting
+
+The team's own ordering ("capstone first") is sound. The critical path:
+
+**Hard gates (binary — void the application):**
+
+1. **Repo is private** → open-source fails; a reviewer hits a 404. Flip public *after* the
+   capstone traces land; pre-scan for secrets first.
+2. **Applicant location facts are recorded, but final eligibility is KYC-dependent** — one
+   co-founder is a UK resident; one is based in Baltimore, Maryland, United States on a work visa.
+   Current public Mini App Grants materials say the program is open to United States builders;
+   final citizenship, tax-residency, sanctions/export-control, and payout answers still need to
+   be confirmed by the applicants.
+3. **Applicant KYC** has no artifact — precondition for payout; can be slow; start now.
+
+**MVP-completeness gates (the headline claim):**
+
+4. **3-human mainnet capstone never run** (`jurorCount()==0`) — the master technical key;
+   flips "Deep World ID usage" + "Working demo" from partial to proven. Add the forged-proof
+   pre-check, constructor-arg `cast` check, and duration check as runbook pre-flight gates.
+5. **No demo video** (film it during the capstone).
+6. **Fill the DEMO.md Step-5 trace table** (5-min paste, blocked on the capstone).
+
+**Buildable-now writing track (capstone-independent — start in parallel today):**
+
+7. **Price the milestones** — *done* ([GRANT_BUDGET.md](GRANT_BUDGET.md)).
+8. **Write the application copy** — *done* ([GRANT_APPLICATION.md](GRANT_APPLICATION.md)).
+9. **Unscored rubric dimensions:** license-fit, team/track-record (two co-founders — bus-factor de-risked),
+   budget justification, milestone→acceptance-criteria mapping (covered in the new docs).
+10. **Privacy/data-handling note** for a personhood Mini App (World App review expects it).
+
+> The scheduling insight: eligibility/KYC and the writing track are **independent of the
+> capstone**. They are the long pole that binds the submission date even after a perfect
+> demo — so run them in parallel, not behind it.
+
+</script>
+<script type="text/markdown" data-id="readiness" data-title="Readiness audit" data-group="Diligence" data-badge="" data-source="docs/GRANT_READINESS.md" data-desc="The team's own rubric-by-rubric readiness assessment and what's left.">
+# Grant readiness — World Spark Track
+
+**Verdict:** an unusually strong and unusually *honest* application that is **not yet
+submittable** — but the gap is execution and writing, **not engineering**. The build
+is genuinely real: 6 source-verified contracts live on World Chain mainnet, an
+on-chain World ID 4.0 sybil gate with self-evidencing enforcement traces, the
+comparative attack demo, 77 Foundry tests (>90% coverage), and a ~20-juror Sepolia
+cohort. **One action — the 3-human capstone — is the master key:** it moves
+`jurorCount` off 0, flips the two most-scored axes from *partial* to *proven*, and
+unblocks the video, the trace tables, and going public.
+
+*Live-verified 2026-06-20: mainnet `jurorCount()=0` and `caseCount()=0` (capstone has
+never run) · repo `isPrivate=true` · live site 200 · cohort ≈ 20 jurors.*
+
+---
+
+## Requirements vs. the Spark rubric
+
+| Requirement | Status | The gap |
+|---|---|---|
+| Clear problem statement | ✅ strong (copy unwritten) | The problem is demonstrable (the attack demo), but the one-paragraph application framing isn't finalized. |
+| Working demo / prototype | ✅ real, **two holes** | Live + source-verified + sandbox + 3 real enforcement traces. Holes: the 3-human mainnet run hasn't executed (`jurorCount=0`); no demo video. |
+| **Deep World ID usage** *(highest-scored)* | ⚠️ **partial** | Architecturally deep + self-evidencing on the *negative* paths. But the affirmative proof — a **real human** verifying through the **Production** verifier — doesn't exist yet; every trace to date is Simulator/**Staging**. The capstone makes it *proven*. |
+| Realistic milestones + timeline | ⚠️ partial | A coherent 5-item roadmap exists, but it's **unpriced** (no USD) and **untimed** (ordering only). Not yet a fundable plan. |
+| Open source | ⚠️ **fails today** | MIT LICENSE present + contracts source-verified, but the repo is **PRIVATE** — a reviewer hits a 404. Must flip public before submission. |
+| Sustainability | ✅ addressed | 70/20/10 fee economics on-chain (zero real revenue until the capstone). GTM resolved: a **first-party prediction market resolved by the personhood court** is the cold-start demand seed; the grant funds the **neutral resolver**, the market is a separate product (stakes/licensing out of scope). Circularity defused — demand is external/proven (Polymarket ~$26B in Q1 2026), the SDK is open to all consumers. See GRANT_APPLICATION §10. |
+| Eligibility — applicant location | ✅ recorded / ⚠️ final KYC pending | Known facts: one co-founder is a UK resident; one is based in Baltimore, Maryland, United States on a work visa. Current public World Mini App Grants materials say the program is open to United States builders, so U.S. location is not treated as an automatic application blocker. |
+| Eligibility — KYC / sanctions / payout | ⚠️ pending | Final status is not knowable from public docs alone. Each applicant must answer citizenship, tax residency, sanctions/export-control, KYC/AML, and grant-agreement questions directly; WLD/token payout remains geography- and compliance-dependent. |
+| Honesty / labeling | ✅ a genuine strength | Consistent labeling everywhere. Only risk: the volume of disclaimers can *read* as "under-built" — a framing fix, not a failure. |
+
+---
+
+## What's left (the critical path)
+
+**Owner key:** 🧑 you / demo-day · 🛠 buildable now · 🔀 either
+
+1. **🧑 Run the 3-human mainnet capstone** *(the gating deliverable — everything keys off it)*
+   Smoke-test by self-registering as juror #1 (Portal preview QR) → `capstone-mainnet.sh durations 600 600` → 3 humans register (Production verifier, in-tx) → run the question case → run the escrow case. Tooling is fully built (`scripts/capstone-mainnet.sh`, `docs/CAPSTONE_RUNBOOK.md`). Blocker: 3 verified humans + phones — not headless-runnable.
+2. **🧑 Record + upload the demo video** (attack-demo hook → real mainnet phone flow → Step-3.5 reverts). Best filmed *during* the capstone so the Production-verifier flow is real on camera. Highest persuasion-per-minute for a reviewer who won't install World App.
+3. **🛠 Fill the DEMO.md Step-5 trace table** — paste the 3 registration + 2 case tx links. (5-min edit; blocked only on #1.)
+4. **🔀 Flip the repo public** — `gh repo edit FreddyMertens/DemoThemisMVP --visibility public`. Sequenced after #1–#2 so a cold reviewer sees real traces, not a "pending" table — but **must** flip before submission.
+5. **🛠 Price the 5 milestones in USD** *(independent of the capstone — start now)*. Method: effort-weeks × blended rate + pass-throughs; milestone 5 (security review) priced as a third-party audit quote, not labor; milestone 3 carries the largest band; map onto the no-upfront-tranche / installment reality.
+6. **✅ Differentiation scan + paragraph — DONE** ([`DIFFERENTIATION.md`](DIFFERENTIATION.md)). The 2026-06-20 scan of the World App catalog + every Wave 0/1 grant recipient confirmed **no World dispute-resolution/arbitration/escrow project exists** (closest = governance/voting), and that off-World courts (Kleros, UMA) are stake-weighted. The application-ready paragraph is written; drop it into the differentiation section.
+7. **🛠 Write the application copy** (~12 sections; lead with the World ID axis; source the honesty/scope section verbatim from `MECHANISM_DELTA.md` so demo + application tell one story; link an artifact per claim using the §10 table).
+8. **🧑 Confirm citizenship/tax residency + complete KYC** — location facts are recorded, but final eligibility/payout is still a KYC/grant-agreement gate. Keep the professor team-member-only.
+9. **🛠 Add the "Live demo" link to the pitch site** (separate public repo) + **🛠 final link/QA sweep** (every cited URL resolves).
+
+---
+
+## What could be better (improvements, leverage-ranked)
+
+1. **🔴 high — the 3-seat panel undercuts "truth isn't for sale."** The storyboard honestly notes the live court's bribe floor is ~$6.50/juror → ~$13 to flip a 3-seat panel; a skeptic connects "live court" to "$13 to flip." **Fix:** frame the 3-seat panel everywhere as a deliberate liveness/cost-demo size whose security property is *pool width* — a parameter sweep, **not** new research (the sandbox P(flip) curve shows the collapse). The claim becomes "the hard part (provable on-chain personhood) is shipped; scaling it is funded, not a research risk." Never let "$13 to flip" sit near "truth isn't for sale" without it.
+2. **🔴 high — honesty protection in the README.** *(Applied)* "mainnet live" could read as "humans have used it" while `jurorCount=0`; softened to "deployed & wired; capstone pending."
+3. **🔴 high — elevate the World-stack depth.** The strongest World-ID-specific assets (MiniKit walletAuth/SIWE, **sponsored gas**, Permit2 single-tap onboard, deep-link-to-case) are buried as caveats. During the capstone, capture a **sponsored-tx trace** and elevate the stack-depth list to a first-class application bullet — markedly deeper than "we call IDKit," on the highest-weighted axis.
+4. **✅ sustainability — resolved.** GTM decided: the cold-start demand seed is a **first-party prediction market resolved by the personhood court** (Polymarket-scale demand, settled one-human-one-vote instead of by UMA's token vote); the grant funds the **neutral resolver / SDK**, the market is a separate product (its stakes/licensing out of grant scope). Escrow/marketplace flows are a **later** consumer of the same SDK. Circularity defused via external proven demand + an open SDK. See GRANT_APPLICATION §10 / GRANT_BUDGET "Sustainability".
+5. **🟠 medium — reframe honesty from a wall of disclaimers into rigor.** Lead with **one** crisp "Real & on-chain vs Simulated/roadmap" table (stated once), then short-tag. Present `MECHANISM_DELTA` as "we know exactly what's left and priced it" (engineering maturity), not a confession list.
+6. **🟢 low — surface execution credibility in the written feasibility section** (not the deck): "5 contracts, 77 Foundry tests incl. invariants + fuzz, >90% coverage, all sources verified; no external audit is claimed — a security review is funded-milestone #5." Pre-empts "is this audited?" honestly.
+
+---
+
+## Do next, in order
+
+1. **Run the capstone** (then immediately fill the trace table). It's the master key — it makes `jurorCount` non-zero and flips *Deep World ID usage* and *Working demo* from partial to proven.
+2. **Record + link the video; flip the repo public** — clears the open-source row and gives the browser-only reviewer the most persuasive artifact.
+3. **In parallel (capstone-independent):** price the 5 milestones, run the catalog/RFP scan + write the differentiation paragraph, then draft the application copy. Also confirm citizenship/tax residency, sanctions/export-control status, KYC, and payout-recipient details — these remain final eligibility gates regardless of merit.
+
+</script>
+<script type="text/markdown" data-id="readme" data-title="Project README" data-group="The live build" data-badge="" data-source="README.md" data-desc="What's real on-chain, the World stack usage, and the deployed addresses.">
+# DemoThemis MVP
+
+A working demo of the **DemoThemis arbitration court** for the World Foundation
+Spark Track grant: a juror court gated by **on-chain World ID 4.0**, running on
+World Chain, with a browser sandbox that simulates the full mechanism.
+
+## Why it's different
+
+The decentralized courts that exist — **Kleros** and **UMA** — pick jurors by
+**stake**, so influence tracks capital; and inside the World ecosystem, no Mini App
+or grant project does dispute resolution at all. **DemoThemis is, to our knowledge,
+the first to gate the jury by _personhood_ instead of capital** — one verified human,
+one vote — and the first dispute-resolution app in World App. Token-weighted courts (UMA, Kleros) are bought once — acquire a majority of stake, a fixed and
+knowable price, and you own that verdict and every future one for free. DemoThemis removes that
+target: the panel is drawn at random **after** the question, from the whole verified-human pool,
+so an attacker can't know or pick who will judge their case. To land a bribed majority they'd have
+to pre-corrupt a near-majority of the **entire pool** — and still only get a chance, not a verdict
+(bribing ~19% of a 200k pool yields a ~2.9% shot at flipping one panel). It doesn't amortize: a
+fresh panel is drawn for every case, so the whole pool-corruption cost is paid again, per case,
+while the price climbs with pool width, case volume, and value at stake (above a value line,
+independent panels must all agree, multiplying the odds ~1/5 → 1/125 → 1/3000, and any captured
+panel is appealed into a larger one). Cost-to-capture scales with pool width × case volume ×
+value-at-stake — never a flat panel bribe. Full scan +
+comparison: [docs/DIFFERENTIATION.md](docs/DIFFERENTIATION.md).
+
+**Status: Step 5 of 5 — mainnet deployed & wired; the live 3-human capstone is the
+last step.** The court contracts are built and tested (77 Foundry tests, >90%
+coverage); the browser sandbox and the comparative "buy this verdict" attack demo
+are done; a ~20-juror scale demo with resolved cases runs on the World Chain
+**Sepolia cohort**; and a capstone-ready 3/3 mainnet instance over the **Production**
+World ID 4.0 verifier is **deployed and source-verified**, with a single-tap World App
+juror onboard path (`registerWithPermit2`, sponsored-gas trace pending at the
+capstone) and on-chain commit/reveal. The mainnet deployment uses a single 3-seat
+panel on purpose: it proves the mechanism end-to-end. At 3/3 the pool equals the panel, so this
+demo *is* cheaply flippable — that's a liveness/cost demo, not the security claim. Capture-
+resistance is the at-scale property: because the panel is drawn at random after the question, an
+attacker can't target it and must instead corrupt a near-majority of the whole pool, per case,
+for only a probability — so cost rises with pool width (plus parallel pᴺ panels and the appeal
+ladder above a value line). Widening the pool and panel and turning on parallel panels + appeals
+is funded-milestone work, not a research risk; the full regime is shown in the labeled sandbox. On-chain World ID verification is **proven** by the three
+Step-3.5 enforcement
+traces (a valid registration, a forged-proof revert, a duplicate-human revert) —
+using World ID **Simulator / Staging** identities, labeled as such. The
+Production-verifier path is wired and awaiting the live **3-human capstone**
+(`docs/CAPSTONE_RUNBOOK.md`); no real human has registered on the Production-verifier
+instance yet (`jurorCount() == 0`). See [docs/DEMO.md](docs/DEMO.md)
+for the clickable explorer traces.
+
+### What's real on-chain vs. what's simulated
+
+| ✅ Real & on-chain today (mainnet, source-verified) | ◷ Simulated / roadmap (labeled, funded-milestone) |
+|---|---|
+| World ID 4.0 verified **in the transaction** (`WorldIDVerifier.verify`, real Groth16) | Receipt-free MACI ballots — milestone #2 |
+| Identity-derived **nullifier sybil gate** (one human, one seat, every wallet) | VRF / drand draw randomness — milestone #1 |
+| **Wallet-bound** proof (a stolen proof reverts) | Appeal ladder (7→15→31 seats) — milestone #3 |
+| Random panel drawn **after** the question | Parallel pᴺ panels above a value line — milestone #3 |
+| Commit / reveal voting | Juror reputation / Wilson gate — milestone #3 |
+| 70/20/10 fee split + 2% escrow fee; **slash-to-pool, never to winners** | Reward-pool cyclic payout — milestone #3 |
+| **Atomic** escrow settlement (`resolve → escrow.settle`) | Optimistic fast path (~95% settle free) — milestone #3 |
+| **No admin override** (wire-once + phase clock are the entire admin surface) | (external security review — milestone #5) |
+| 77 Foundry tests (invariants + fuzz), >90% coverage, all sources verified | |
+
+### How DemoThemis uses the World stack  (deeper than "we call IDKit")
+
+- **On-chain World ID 4.0** — `WorldIDVerifier.verify` runs the real Groth16 check
+  **inside the registration transaction**, not a cloud callback.
+- **Sybil gate** — the identity-derived nullifier gives one human one seat on every
+  wallet; a reused human reverts on-chain.
+- **Wallet-bound proofs** — a stolen or replayed proof reverts before the check.
+- **MiniKit walletAuth (SIWE)** — World App wallet sign-in for the juror session.
+- **Permit2 single-tap onboard** — verify + faucet + bond in one sponsored batch
+  (World App auto-revokes plain ERC-20 approvals, so the bond pulls through Permit2).
+- **Sponsored gas** — verified humans pay nothing (to be captured as a worldscan trace
+  at the capstone: gas paid by the sponsor, the user's balance unchanged).
+- **Deep-link** — open the Mini App straight to onboarding or a specific case.
+
+Three surfaces, one Next.js app:
+
+- **`/sandbox`** — a pure-browser simulation of the full mechanism (ladder,
+  reputation, reward-pool payout, watchers) and the flagship token-court-vs-human-court
+  attack demo. No wallet needed. Everything here is labeled **simulated**.
+- **`/` + the Mini App** (`/onboard`, `/home`, `/case/[id]`, `/dispute`, `/about`) —
+  the World App Mini App. Read-only in a desktop browser; the capstone juror flow
+  runs on mainnet through World App.
+- The **Sepolia cohort** — seeded scale-and-history demo, rendered read-only
+  (labeled `MockSybilGate` stand-in; the real World ID verifier path is on mainnet).
+
+## Deployed contracts
+
+**World Chain mainnet (chain 480) — capstone-ready Production-verifier instance**
+(source-verified on [worldscan](https://worldscan.org); 3/3 demo panel over the real World
+ID 4.0 Production verifier — a liveness/cost demo, cheaply flippable on purpose; the security
+claim is the at-scale regime where, because panels are drawn at random per case, capture cost
+scales with pool width, parallel panels, and appeals). Source:
+`contracts/deployments/worldchain-mainnet.json`.
+
+| Contract | Address |
+|---|---|
+| MockUSD | `0x70ECE5DcAA68741BF41F6A4Aa0af3a8D44e4497a` |
+| WorldIDGate | `0x0540f47842a31C681dce76E856b4b76fcCc53Fbe` |
+| JurorRegistry | `0x226974149087b36769a54B998acfe4087eEb7F84` |
+| RewardPool | `0xAF96A65A6b9643451E33cAf96717d071eDae04A0` |
+| DisputeCourt | `0xCDF427D18da8C2e8CCf9a95310bC38857EEf795A` |
+| DealEscrow | `0xefc898F9C4FC805111041676b720CB478BE67c47` |
+
+**World Chain Sepolia (chain 4801) — the cohort** (scale/history demo, 7/14,
+`MockSybilGate`, verified on Blockscout). Source:
+`contracts/deployments/worldchain-sepolia.json`.
+
+| Contract | Address |
+|---|---|
+| MockUSD | `0xeA5241F1becCE7B3F72bf501bEa16eA976f1600F` |
+| JurorRegistry | `0x7677ad08d0844e1Df2693242F2195F2b2fD9c622` |
+| RewardPool | `0x1509A82F35da8fCb9428449dCc9120C102c153A9` |
+| DisputeCourt | `0x1bAa18851E3E425278aFfe041b75004727F500AF` |
+| DealEscrow | `0x61110aDAca47eb0E82D5dE75F3de6F1f1b4fe596` |
+
+## Layout
+
+```
+contracts/   Foundry project: MockUSD, JurorRegistry, DisputeCourt, DealEscrow, RewardPool
+             + the ISybilGate abstraction (MockSybilGate cohort / WorldIDGate mainnet)
+web/         Next.js app: / landing, the (protected) Mini App, /sandbox simulator, /app/dev
+docs/        SPIKE, IMPLEMENTATION_PLAN context, DEMO (explorer traces), MECHANISM_DELTA,
+             CAPSTONE_RUNBOOK (mainnet go-live)
+scripts/     deploy/seed/keeper/capstone shell helpers (run in WSL)
+```
+
+The full build plan is [IMPLEMENTATION_PLAN.md](IMPLEMENTATION_PLAN.md); every MVP
+vs full-design simplification is in [docs/MECHANISM_DELTA.md](docs/MECHANISM_DELTA.md).
+
+## Quickstart
+
+Contracts (Foundry runs in WSL on the build machine; CI on ubuntu is the arbiter):
+
+```bash
+cd contracts
+forge build
+forge test          # 77 tests
+```
+
+Web (Node 20+, pnpm 9):
+
+```bash
+cd web
+pnpm install
+pnpm gen:contracts  # regenerate ABIs from ../contracts/out (after a forge build)
+pnpm dev            # http://localhost:3000
+```
+
+## Environment
+
+- **Foundry** (repo-root `.env`, see `.env.example`): `PRIVATE_KEY` (deployer; never
+  a personal key), optional `vm.envOr` overrides `PANEL_SIZE` / `MIN_POOL` /
+  `COMMIT_DURATION` / `REVEAL_DURATION` (defaults 7/14/60/60), and `WORLD_ID_VERIFIER`
+  — set it to deploy the real `WorldIDGate` (Staging `0x703a…` or Production
+  `0x0000…94d7`); unset deploys the cohort `MockSybilGate`. RPCs are `foundry.toml`
+  `[rpc_endpoints]` aliases (`worldchain_sepolia` / `worldchain_mainnet`).
+- **Web** (`web/.env.local`, see `web/.env.sample`): `NEXT_PUBLIC_CHAIN_ID` (480
+  mainnet capstone-ready / 4801 cohort read-only), `NEXT_PUBLIC_APP_ID`, `RP_ID`,
+  `RP_SIGNING_KEY`, `AUTH_SECRET` / `AUTH_TRUST_HOST` / `HMAC_SECRET_KEY` / `AUTH_URL`,
+  and for the B5 dev page `NEXT_PUBLIC_SHOW_DEV` + `DEV_PRIVATE_KEY` (keep off in
+  production).
+
+## Honesty rule
+
+Simulated data is labeled simulated, everywhere, every time. The sandbox is a
+simulation; the mainnet contracts and World ID verifier path are the non-simulated
+on-chain slice; the test tokens (MockUSD) are valueless on every network. World App
+gas sponsorship for the juror flow is verified on-device at the human capstone,
+not claimed before.
+
+## License
+
+MIT — see [LICENSE](LICENSE).
+
+</script>
+<script type="text/markdown" data-id="demo" data-title="Demo — on-chain evidence" data-group="The live build" data-badge="" data-source="docs/DEMO.md" data-desc="Clickable explorer traces: real World ID enforcement, the Sepolia cohort, and the pending capstone.">
+# DEMO — on-chain evidence
+
+The self-evidencing artifacts behind the grant's claims: clickable explorer
+traces, not markdown assertions. It holds the **Step 3.5** evidence (real on-chain
+World ID 4.0 verification on World Chain mainnet, Staging verifier), the **Step 4**
+Sepolia cohort history, and the **Step 5** capstone-ready Production-verifier
+instance. The Step-5 human-capstone trace links and the demo video land in the
+Step 5 section as the capstone run happens.
+
+## Step 3.5 — World ID 4.0 verified on-chain (World Chain mainnet, chain 480)
+
+The court's one-human-one-seat claim is carried by a real `WorldIDVerifier.verify`
+(World ID 4.0 Groth16) running inside the juror-registration transaction, and a
+forged/duplicate proof reverting on-chain. Proven here against the World ID 4.0
+**Staging** verifier with World ID **Simulator** identities — real v4 proofs, real
+verifier contract, no Orb, cents of gas. Step 5 swaps to the **Production** verifier
+for the 3-human capstone (the only change is the verifier address).
+
+> Honesty note: the registering identities below are World ID **Simulator** staging
+> identities (labeled simulated). What is NOT simulated is the verification: the
+> deployed `WorldIDVerifier` contract runs the real Groth16 check on-chain.
+
+### Deployed instance (source of the addresses: `contracts/deployments/worldchain-mainnet.json`)
+
+| Contract | Address | Deploy tx |
+|---|---|---|
+| JurorRegistry | [`0xbf7E6F32E3BcfC419d8E6D3BD15e425638A51445`](https://worldscan.org/address/0xbf7E6F32E3BcfC419d8E6D3BD15e425638A51445) | [`0xb1d95a…81ebd`](https://worldscan.org/tx/0xb1d95a21367bf77579d9f737cca2adfcdc2bac27ad15dc1eef4eaaff8b481ebd) |
+| WorldIDGate | [`0x423a0F942EadEf2FFA54c2A9aa2f4B8b6836A3f7`](https://worldscan.org/address/0x423a0F942EadEf2FFA54c2A9aa2f4B8b6836A3f7) | [`0x5c14ad…d2864`](https://worldscan.org/tx/0x5c14adb418d28ee41f1591089cafb9bc230ec26fd9c62338797605ec15bd2864) |
+| MockUSD | [`0x117C7ba5bC479Ef62D9Edd64f1737c3dDF55022b`](https://worldscan.org/address/0x117C7ba5bC479Ef62D9Edd64f1737c3dDF55022b) | [`0x14f30c…b91af`](https://worldscan.org/tx/0x14f30c03f9054a435d3bceb9849284431d0d1ba3cae2575426503e4f7b8b91af) |
+| RewardPool | [`0xaDa374F411E798a58A5B79F205fcf82B1A4DC5C6`](https://worldscan.org/address/0xaDa374F411E798a58A5B79F205fcf82B1A4DC5C6) | — |
+| DisputeCourt | [`0xAFC1c20700fB9961E2Fb848B0fa590c95095C523`](https://worldscan.org/address/0xAFC1c20700fB9961E2Fb848B0fa590c95095C523) | — |
+| DealEscrow | [`0x00DA249677cf53c01e8A967Fd32d3a8C595e1E7F`](https://worldscan.org/address/0x00DA249677cf53c01e8A967Fd32d3a8C595e1E7F) | — |
+
+The gate points at the World ID 4.0 **Staging** verifier
+[`0x703a6316c975DEabF30b637c155edD53e24657DB`](https://worldscan.org/address/0x703a6316c975DEabF30b637c155edD53e24657DB)
+(verified on-chain: `gate.verifier()` = `0x703a…`, `gate.action()` =
+`keccak256("juror-registration") >> 8`, `gate.rpId()` = `0x1ddcf8ba2efe3f36`).
+
+### The three enforcement transactions
+
+Generated from two World ID Simulator proofs of the **same** identity (one bound to
+the deployer, one to a second wallet), via `scripts/prove-sybil-mainnet.sh`.
+
+| # | What | Expected | Tx |
+|---|---|---|---|
+| 1 | **Forged** proof (one Groth16 limb flipped) → `register` | reverts INSIDE `WorldIDVerifier.verify` (`0x7fcdd1f4`) | [`0xd955739e…becf5`](https://worldscan.org/tx/0xd955739e1f78ec9c46c83343ff87998c0ca6f3089ac9eecf9567158afe0becf5) — status 0, reverted |
+| 2 | **Valid** proof → `register` | SUCCESS — `WorldIDVerifier.verify` called in-tx and passes; juror #1, nullifier stored | [`0xe1ad43e8…84c70`](https://worldscan.org/tx/0xe1ad43e86e500b3475da73de10829412126ec7a885654fb1003dfcca9b984c70) — status 1, 571k gas (the bulk is the on-chain Groth16 check) |
+| 3 | **Duplicate** human (same nullifier, second wallet) → `register` | reverts `NullifierAlreadyUsed` in the registry — the one-human-one-seat gate | [`0x9f9946f6…4187d`](https://worldscan.org/tx/0x9f9946f658d16f431922f58f052e1aaab095828d14aed57a2709c5e88b24187d) — status 0, `0xcad2ae02` |
+
+> Tx #2 is the headline: open it on worldscan and the internal-calls / trace shows
+> `JurorRegistry.register` → `WorldIDGate.verify` → `WorldIDVerifier.verify` at
+> `0x703a…` succeeding in the same transaction. Tx #1 shows that call reverting on a
+> forged proof; Tx #3 shows a second wallet with the same human's nullifier rejected.
+
+### Reproduce
+
+1. `cd web && pnpm dev`, open `/register-onchain`, set the signal to the registering
+   wallet, click **Generate**, paste the `connectorURI` into
+   [simulator.worldcoin.org](https://simulator.worldcoin.org) (pick a "Verified (All)"
+   identity), and copy the emitted `bytes proof`. Repeat for the second wallet using
+   the **same** identity.
+2. `PROOF_A=0x… PROOF_B=0x… REPO_ROOT=/mnt/c/dev/DemoThemisMVP bash scripts/prove-sybil-mainnet.sh`
+3. Inspect any tx: `cast run <txhash> --rpc-url https://worldchain-mainnet.g.alchemy.com/public`
+
+## Step 4 — the Sepolia cohort (chain 4801, simulated scale demo)
+
+The free scale-and-history demo: ~20 scripted jurors and a mix of resolved cases
+across both types, gated by the labeled `MockSybilGate` stand-in (the real on-chain
+World ID claim lives on mainnet, above). All cohort data is **simulated and
+disclosed** — the honesty rule. Source: `contracts/deployments/worldchain-sepolia.json`.
+
+| Contract | Address |
+|---|---|
+| JurorRegistry | [`0x7677…c622`](https://worldchain-sepolia.explorer.alchemy.com/address/0x7677ad08d0844e1Df2693242F2195F2b2fD9c622) |
+| DisputeCourt | [`0x1bAa…00AF`](https://worldchain-sepolia.explorer.alchemy.com/address/0x1bAa18851E3E425278aFfe041b75004727F500AF) |
+| DealEscrow | [`0x6111…e596`](https://worldchain-sepolia.explorer.alchemy.com/address/0x61110aDAca47eb0E82D5dE75F3de6F1f1b4fe596) |
+| RewardPool | [`0x1509…53A9`](https://worldchain-sepolia.explorer.alchemy.com/address/0x1509A82F35da8fCb9428449dCc9120C102c153A9) |
+| MockUSD | [`0xeA52…600F`](https://worldchain-sepolia.explorer.alchemy.com/address/0xeA5241F1becCE7B3F72bf501bEa16eA976f1600F) |
+
+Seeded via `scripts/seed-cohort-full.sh`: 20 jurors, ~8 resolved cases (question +
+escrow, varied YES/NO question outcomes; all settled escrows resolved to the payee
+on this snapshot), and case 1 left Open with an empty panel awaiting a fresh draw —
+its first panel of 7 committed jurors all no-showed, were slashed, and the case was
+redrawn. Kept mid-motion by the keeper (`.github/workflows/keeper.yml`), which drives
+one full case per run.
+
+### Sybil rejection on the cohort (the negative path)
+
+Even behind the labeled `MockSybilGate`, the registry rejects a reused nullifier —
+the one-human-one-seat guarantee. A fresh wallet re-presenting an already-used
+human's nullifier reverts `NullifierAlreadyUsed` (`0xcad2ae02`), the same selector
+as the mainnet duplicate revert above:
+
+[`0x930212e9…40afcf`](https://worldchain-sepolia.explorer.alchemy.com/tx/0x930212e9fa1281ab664f9f1a88dcb95d06d4d399f10d33682a4ab0749540afcf) — status 0, reverted.
+
+The Mini App surfaces this on the Become-a-juror screen alongside the two mainnet
+World ID reverts (forged proof → verifier revert; same human second wallet →
+NullifierAlreadyUsed).
+
+## Step 5 — capstone-ready mainnet instance + the 3-human capstone (chain 480)
+
+The non-simulated chain slice: real World ID 4.0 over the **Production** verifier
+(`0x00000000009E00F9FE82CfeeBB4556686da094d7`, Orb/Device), deployed and wired for
+the 3-human capstone in World App on World Chain mainnet. MockUSD is valueless;
+the 3/3 panel is a labeled demo parameter. The same `WorldIDGate` proven against
+the Staging verifier in Step 3.5 — only the verifier address changed. No real
+human has registered yet.
+
+### Capstone-ready instance (deployed + source-verified on worldscan, block 31256151)
+
+Source: `contracts/deployments/worldchain-mainnet.json`.
+
+| Contract | Address |
+|---|---|
+| MockUSD | [`0x70ECE5…497a`](https://worldscan.org/address/0x70ECE5DcAA68741BF41F6A4Aa0af3a8D44e4497a#code) |
+| WorldIDGate (→ Production verifier) | [`0x0540f4…3Fbe`](https://worldscan.org/address/0x0540f47842a31C681dce76E856b4b76fcCc53Fbe#code) |
+| JurorRegistry (`registerWithPermit2`) | [`0x226974…7F84`](https://worldscan.org/address/0x226974149087b36769a54B998acfe4087eEb7F84#code) |
+| RewardPool | [`0xAF96A6…04A0`](https://worldscan.org/address/0xAF96A65A6b9643451E33cAf96717d071eDae04A0#code) |
+| DisputeCourt (3/3) | [`0xCDF427…795A`](https://worldscan.org/address/0xCDF427D18da8C2e8CCf9a95310bC38857EEf795A#code) |
+| DealEscrow | [`0xefc898…7c47`](https://worldscan.org/address/0xefc898F9C4FC805111041676b720CB478BE67c47#code) |
+
+On-chain reads confirm the wiring: `WorldIDGate.verifier()` = the Production
+verifier, `action` = `keccak256("juror-registration") >> 8`, `rpId` =
+`0x1ddcf8ba2efe3f36`; `JurorRegistry.PERMIT2()` = canonical Permit2 (the World App
+bond path). The juror onboard batches `Permit2.approve` → `registerWithPermit2`
+(World App auto-revokes plain ERC-20 allowances); the sponsored-gas proof is the
+pending capstone trace row below.
+
+### Capstone traces (filled at the demo-day capstone run)
+
+> Pending the capstone run — not yet executed (registry juror count is 0 at deploy).
+> The runbook is `docs/CAPSTONE_RUNBOOK.md`; the helper is
+> `scripts/capstone-mainnet.sh`.
+
+| # | What | Tx / link |
+|---|---|---|
+| 1 | Human #1 registers (WorldIDVerifier.verify Production in-tx) | _pending_ |
+| 2 | Human #2 registers | _pending_ |
+| 3 | Human #3 registers | _pending_ |
+| 4 | Sponsored-tx proof (World App gas paid by sponsor; user's balance unchanged) | _pending_ |
+| 5 | Question case opened → drawn → committed → revealed → resolved | _pending_ |
+| 6 | Escrow deal created → disputed → drawn → resolved → settled | _pending_ |
+| — | Demo video (3–4 min) | _pending_ |
+
+## Demo video script (3–4 min, captioned; Loom or YouTube-unlisted)
+
+Lead with the hook, then the real mainnet flow, then the scale history.
+
+1. **The hook (~0:20) — the attack demo.** Open `/sandbox` → the "buy this verdict"
+   widget. Same question, same attacker budget, side by side: the **token-weighted
+   court** bar fills past 50% and the verdict flips to the lie — then flips a second
+   case for free ("reusable forever"). The **human court** holds; the P(flip)-vs-budget
+   curve collapses as pool size grows. One line: *"On a token court, truth is for sale.
+   On DemoThemis, it isn't."*
+2. **Join the court on mainnet (~1:20) — the phone.** In World App, open the Mini App
+   (QR / deep link) → **Become a juror** → **Verify with World ID & join** (Orb) →
+   "You are a juror" (one person, one vote; sponsored-gas trace captured at the
+   capstone). A case is drawn → **Commit your vote** → later **Reveal** → the
+   result panel after the capstone ("3 verified humans decided this;
+   none could vote twice"). Show the worldscan tx.
+3. **See it's real (~0:50).** The source-verified contracts on worldscan; the Step-3.5
+   forged-proof revert (fails inside `WorldIDVerifier.verify`) and the duplicate-human
+   `NullifierAlreadyUsed` revert — the one-human-one-seat guarantee shown by what the
+   court refuses.
+4. **The scale history (~0:30) — Sepolia cohort.** ~20 jurors and resolved cases across
+   both types on the explorer, kept mid-motion by the keeper (labeled simulated).
+5. **Close (~0:10).** "Open the sandbox, scan the QR, join the court." Show the live URL.
+
+</script>
+<script type="text/markdown" data-id="capstone" data-title="Capstone runbook" data-group="The live build" data-badge="pending" data-source="docs/CAPSTONE_RUNBOOK.md" data-desc="The operational checklist for the 3-human mainnet go-live.">
+# Step 5 capstone runbook — mainnet go-live
+
+The operational checklist for the live mainnet slice: Developer Portal
+whitelisting, Vercel config, the 3-human capstone, and going public. The live
+instance (World Chain mainnet, chain 480) is deployed and source-verified — see
+`contracts/deployments/worldchain-mainnet.json` and `web/src/lib/contracts.ts`
+(`LIVE`). MockUSD is valueless; the 3/3 panel is a labeled demo parameter.
+
+Live instance addresses:
+
+| Contract | Address |
+|---|---|
+| MockUSD | `0x70ECE5DcAA68741BF41F6A4Aa0af3a8D44e4497a` |
+| WorldIDGate (→ Production verifier) | `0x0540f47842a31C681dce76E856b4b76fcCc53Fbe` |
+| JurorRegistry (`registerWithPermit2`) | `0x226974149087b36769a54B998acfe4087eEb7F84` |
+| RewardPool | `0xAF96A65A6b9643451E33cAf96717d071eDae04A0` |
+| DisputeCourt (3/3) | `0xCDF427D18da8C2e8CCf9a95310bC38857EEf795A` |
+| DealEscrow | `0xefc898F9C4FC805111041676b720CB478BE67c47` |
+| Permit2 (canonical) | `0x000000000022D473030F116dDEE9F6B43aC78BA3` |
+
+---
+
+## 1. Developer Portal whitelisting (do this first — blocks every World App tx)
+
+In the Developer Portal (developer.worldcoin.org), open the mainnet app
+(`app_7bdfda4db4e2f59dd4a2427cd2bd860d`) → **Configuration → Advanced** (Mini App
+permissions). A `sendTransaction` touching any non-whitelisted contract **or
+token** is rejected with `invalid_contract`, so this must be complete before the
+humans onboard.
+
+**Contract Entrypoints** — add all six, plus Permit2 (the onboard calls
+`Permit2.approve` directly):
+
+- `0x70ECE5DcAA68741BF41F6A4Aa0af3a8D44e4497a` — MockUSD (`faucet`)
+- `0x226974149087b36769a54B998acfe4087eEb7F84` — JurorRegistry (`registerWithPermit2`)
+- `0xCDF427D18da8C2e8CCf9a95310bC38857EEf795A` — DisputeCourt (`commit`, `reveal`)
+- `0xefc898F9C4FC805111041676b720CB478BE67c47` — DealEscrow
+- `0x0540f47842a31C681dce76E856b4b76fcCc53Fbe` — WorldIDGate
+- `0x000000000022D473030F116dDEE9F6B43aC78BA3` — **Permit2** (required for the bond approve)
+
+**Permit2 Tokens** — add:
+
+- `0x70ECE5DcAA68741BF41F6A4Aa0af3a8D44e4497a` — MockUSD (the bond token)
+
+> The Sepolia cohort never transacts through World App, so it needs no
+> whitelisting. This is the mainnet app only.
+
+---
+
+## 2. Vercel production config
+
+For the World App QR to register on mainnet, the deployment World App opens must
+target chain 480. Set on the Vercel **Production** environment:
+
+- `NEXT_PUBLIC_CHAIN_ID=480` — point the live app at the mainnet instance (the
+  default 4801 keeps the read-only cohort scale demo; pick per deployment).
+- `NEXT_PUBLIC_SHOW_DEV=false` — keep `/app/dev` off in production. **Do not** set
+  `DEV_PRIVATE_KEY` in production.
+- Existing vars stay: `NEXT_PUBLIC_APP_ID`, `RP_ID`, `RP_SIGNING_KEY`,
+  `AUTH_SECRET`, `AUTH_TRUST_HOST`, `HMAC_SECRET_KEY`, `AUTH_URL` (the production URL).
+
+The App URL in the Developer Portal must match the production deployment so the
+Mini App loads.
+
+---
+
+## 3. The 3-human capstone
+
+The 3 World ID-verified humans (Orb preferred; the Production verifier also
+accepts Device) do **register / commit / reveal themselves in World App** (gas
+sponsored). The helper script `scripts/capstone-mainnet.sh` drives only the
+non-juror parts from the deployer. Run it from the repo root in WSL.
+
+Sequence (durations are extended so humans have time to vote):
+
+1. **Extend phase durations** (deployer-only), so commit + reveal aren't a 60s
+   scramble:
+   ```bash
+   bash scripts/capstone-mainnet.sh durations 600 600   # 10 min commit / 10 min reveal
+   ```
+2. **3 humans register.** Each opens the Mini App (via the QR / deep link),
+   taps **Verify with World ID & join** on the Become-a-juror screen. Their
+   registration runs `WorldIDVerifier.verify` (Production) in-tx and posts the
+   5 MUSD bond via Permit2. Capture at least one registration worldscan trace
+   showing the sponsored tx path (gas paid by the sponsor, the user's balance
+   unchanged) for `docs/DEMO.md`. Watch the count:
+   ```bash
+   bash scripts/capstone-mainnet.sh status    # wait until jurorCount = 3
+   ```
+3. **Open the question case** (case type B), then crank the draw:
+   ```bash
+   bash scripts/capstone-mainnet.sh open-question   # prints the caseId, e.g. 0
+   bash scripts/capstone-mainnet.sh draw 0
+   ```
+4. **3 humans commit, then reveal** on that case in World App (Case detail →
+   Commit your vote → later, Reveal your vote). Then crank the resolve once the
+   reveal window passes:
+   ```bash
+   bash scripts/capstone-mainnet.sh resolve 0
+   ```
+5. **Open + dispute the escrow deal** (case type A; payer = deployer, payee a
+   non-juror wallet), draw, the humans commit + reveal, resolve:
+   ```bash
+   bash scripts/capstone-mainnet.sh open-escrow     # prints the caseId, e.g. 1
+   bash scripts/capstone-mainnet.sh draw 1
+   # humans commit + reveal in World App
+   bash scripts/capstone-mainnet.sh resolve 1
+   ```
+6. **Leave both cases resolved on the explorer.** Capture the trace links and add
+   them to `docs/DEMO.md` (the "Step 5 — mainnet capstone" section skeleton is
+   already there). Include the sponsored-tx proof row: a World App transaction
+   where worldscan shows sponsor-paid gas and the user's balance unchanged.
+
+Notes:
+- A 3-seat panel has no slack for exclusions, so the escrow parties must be
+  non-juror wallets (the script uses the deployer as payer and a derived payee).
+- Cranking (`draw`, `resolve`) is permissionless — anyone can run those steps; the
+  script just uses the deployer for convenience.
+- If a human misses the reveal window, their bond is forfeited to the reward pool
+  and the case resolves by the revealed majority (or status quo under quorum). For
+  a clean demo, keep all three reachable for both commit and reveal.
+
+---
+
+## 4. Going public (before submitting the application)
+
+- [ ] Repo public + MIT `LICENSE` (already present) — flip visibility on GitHub.
+- [ ] README quickstart + env contract current (done in Step 5).
+- [ ] Vercel production deployed and reachable; the App URL in the Portal matches.
+- [ ] `docs/DEMO.md` links all resolve (cohort + mainnet Step-3.5 traces + the new
+      capstone traces + the sandbox + the QR/deep link).
+- [ ] Demo video recorded (3–4 min; see `docs/DEMO.md` → video script) and linked.
+- [ ] Pitch-site "Live demo" link added (separate repo `DemoThemis`).
+- [ ] `§10` grant table (IMPLEMENTATION_PLAN.md) has a live artifact per row.
+
+</script>
+<script>window.__HTML_DOCS__ = [{"id":"storyboard","title":"Demo video storyboard","group":"The live build","file":"storyboard.html","desc":"Shot-by-shot plan for the 3–4 minute demo video (hook → mainnet flow → scale history)."}];</script>
+
+
+<script>
+(function(){
+  "use strict";
+  var $ = function(s,c){return (c||document).querySelector(s)};
+  var $$ = function(s,c){return Array.prototype.slice.call((c||document).querySelectorAll(s))};
+
+  // ---- collect docs ----
+  var scripts = $$('script[type="text/markdown"]');
+  var docs = scripts.map(function(s){
+    return { id:s.getAttribute('data-id'), title:s.getAttribute('data-title'),
+             group:s.getAttribute('data-group'), badge:s.getAttribute('data-badge')||'',
+             source:s.getAttribute('data-source')||'', desc:s.getAttribute('data-desc')||'',
+             md:s.textContent };
+  });
+  // standalone HTML pages (e.g. the storyboard) — shown in an embedded iframe
+  var htmlDocs = (window.__HTML_DOCS__||[]).map(function(h){
+    return { id:h.id, title:h.title, group:h.group, badge:h.badge||'', source:h.file, desc:h.desc||'', htmlFile:h.file };
+  });
+  docs = docs.concat(htmlDocs);
+  var overview = { id:'overview', title:'Overview', group:'Start here', badge:'', desc:'The dashboard: stats, status, and a map of everything in here.' };
+  var entries = [overview].concat(docs);
+  var order = entries.map(function(e){return e.id});
+  var byId = {}; entries.forEach(function(e){byId[e.id]=e});
+
+  // ---- build sidebar nav ----
+  var nav = $('#nav'), groups = [], gmap = {};
+  entries.forEach(function(e){ if(!gmap[e.group]){gmap[e.group]=[];groups.push(e.group)} gmap[e.group].push(e) });
+  groups.forEach(function(g){
+    var lab = document.createElement('div'); lab.className='group-label'; lab.textContent=g; nav.appendChild(lab);
+    gmap[g].forEach(function(e){
+      var b=document.createElement('button'); b.className='nav-item'; b.dataset.id=e.id;
+      var t=document.createElement('span'); t.className='ni-title'; t.textContent=e.title; b.appendChild(t);
+      if(e.badge){ var p=document.createElement('span'); var cls=e.badge.indexOf('done')>-1?'ok':(e.badge.indexOf('pend')>-1?'warn':'info'); p.className='pill '+cls; p.textContent=e.badge.replace(/^(done|pend|info):/,''); b.appendChild(p) }
+      b.addEventListener('click',function(){ go(e.id) });
+      nav.appendChild(b);
+    });
+  });
+
+  // ---- overview cards ----
+  function buildOverviewCards(root){
+    var grid = $('#ov-cards', root); if(!grid) return;
+    docs.forEach(function(e){
+      var c=document.createElement('button'); c.className='card';
+      c.innerHTML = '<div class="cg">'+esc(e.group)+'</div><div class="ct">'+esc(e.title)+'</div><div class="cd">'+esc(e.desc||'')+'</div>';
+      c.addEventListener('click',function(){ go(e.id) });
+      grid.appendChild(c);
+    });
+    $$('[data-goto]',root).forEach(function(a){ a.addEventListener('click',function(ev){ev.preventDefault();go(a.dataset.goto)}) });
+  }
+
+  // ---- render ----
+  var view=$('#view'), main=$('#main'), tocEl=$('#toc'), crumb=$('#crumb');
+  var headingObserver=null;
+  function render(id){
+    var e=byId[id]; if(!e) id='overview', e=byId.overview;
+    view.innerHTML='';
+    if(id==='overview'){
+      var node=document.importNode($('#tpl-overview').content,true);
+      view.appendChild(node); buildOverviewCards(view);
+      crumb.innerHTML='<b>Overview</b>'; tocEl.innerHTML='<div class="empty">—</div>';
+      main.scrollTop=0; setBar(); return;
+    }
+    if(e.htmlFile){
+      var w2=document.createElement('div'); w2.className='doc'; w2.style.maxWidth='none';
+      var h2=document.createElement('div'); h2.className='doc-head';
+      h2.innerHTML='<div class="src">🎬 '+esc(e.source)+'</div><h1 class="dt">'+esc(e.title)+'</h1>'+
+        '<div class="meta"><span>'+esc(e.group)+'</span><span>·</span><a href="'+esc(e.htmlFile)+'" target="_blank" rel="noopener">open full page ↗</a></div>';
+      w2.appendChild(h2);
+      var fr=document.createElement('iframe'); fr.src=e.htmlFile; fr.setAttribute('title',e.title);
+      fr.style.cssText='width:100%;height:calc(100vh - 210px);border:1px solid var(--line);border-radius:12px;background:#fff';
+      w2.appendChild(fr); view.appendChild(w2);
+      crumb.innerHTML='<b>'+esc(e.title)+'</b>'; tocEl.innerHTML='<div class="empty">Standalone page</div>';
+      main.scrollTop=0; setBar(); return;
+    }
+    var wrap=document.createElement('div'); wrap.className='doc';
+    var head=document.createElement('div'); head.className='doc-head';
+    var words=(e.md.trim().split(/\s+/).length); var mins=Math.max(1,Math.round(words/200));
+    head.innerHTML='<div class="src">📄 '+esc(e.source||(e.id+'.md'))+'</div><h1 class="dt">'+esc(e.title)+'</h1>'+
+      '<div class="meta"><span>'+esc(e.group)+'</span><span>·</span><span>'+words.toLocaleString()+' words · '+mins+' min read</span></div>';
+    wrap.appendChild(head);
+    var body=document.createElement('div'); body.className='md';
+    if(window.marked && window.marked.parse){
+      try{ body.innerHTML = window.marked.parse(e.md,{gfm:true,breaks:false,headerIds:false,mangle:false}); }
+      catch(err){ body.appendChild(rawFallback(e.md)); }
+    } else {
+      var fb=document.createElement('div'); fb.className='fallback'; fb.textContent='Markdown renderer offline — showing raw source. (Connect to the internet once to load the renderer.)';
+      body.appendChild(fb); body.appendChild(rawFallback(e.md));
+    }
+    wrap.appendChild(body); view.appendChild(wrap);
+    enhance(body, e.title);
+    main.scrollTop=0; setBar();
+  }
+  function rawFallback(md){ var pre=document.createElement('pre'); var c=document.createElement('code'); c.textContent=md; pre.appendChild(c); return pre; }
+
+  // ---- enhance rendered markdown: tables, links, headings, toc ----
+  function slug(t){ return t.toLowerCase().replace(/[^\w\s-]/g,'').trim().replace(/\s+/g,'-').slice(0,60) }
+  function enhance(body, title){
+    $$('table',body).forEach(function(t){ if(t.parentElement.className==='tablewrap')return; var w=document.createElement('div'); w.className='tablewrap'; t.parentNode.insertBefore(w,t); w.appendChild(t) });
+    // links: internal .md -> portal nav; external -> new tab
+    $$('a',body).forEach(function(a){
+      var href=a.getAttribute('href')||'';
+      if(/^https?:/.test(href)){ a.target='_blank'; a.rel='noopener'; return; }
+      var m=href.match(/([A-Za-z0-9_\-]+)\.md(#.*)?$/);
+      if(m){ var base=m[1]; var tgt=docs.filter(function(d){return (d.source||'').replace(/\.md$/,'').split('/').pop()===base || d.id===base.toLowerCase()})[0];
+        if(tgt){ a.setAttribute('href','#'+tgt.id); a.addEventListener('click',function(ev){ev.preventDefault();go(tgt.id)}); }
+      }
+    });
+    // headings -> ids + toc
+    var hs=$$('h2,h3',body); tocEl.innerHTML='';
+    if(!hs.length){ tocEl.innerHTML='<div class="empty">No subsections</div>'; }
+    var used={};
+    hs.forEach(function(h){
+      var s=slug(h.textContent)||'s'; if(used[s])s+='-'+(++used[s]); used[s]=1; h.id=s;
+      var a=document.createElement('a'); a.href='#'+s; a.textContent=h.textContent; a.className=h.tagName==='H3'?'h3':'';
+      a.addEventListener('click',function(ev){ ev.preventDefault(); var t=document.getElementById(s); if(t)main.scrollTo({top:t.offsetTop-70,behavior:'smooth'}); });
+      tocEl.appendChild(a);
+    });
+    crumb.innerHTML='<b>'+esc(title)+'</b>';
+    // scrollspy
+    if(headingObserver)headingObserver.disconnect();
+    if(hs.length){
+      headingObserver=new IntersectionObserver(function(ents){
+        ents.forEach(function(en){ if(en.isIntersecting){ var id=en.target.id;
+          $$('.toc a').forEach(function(x){x.classList.toggle('active', x.getAttribute('href')==='#'+id)}); } });
+      },{root:main, rootMargin:'-70px 0px -75% 0px', threshold:0});
+      hs.forEach(function(h){headingObserver.observe(h)});
+    }
+  }
+  function esc(s){ return (s||'').replace(/[&<>"]/g,function(c){return {'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]}) }
+
+  // ---- nav state / routing ----
+  var cur='overview';
+  function setActive(id){ $$('.nav-item').forEach(function(b){b.classList.toggle('active',b.dataset.id===id)}); var a=$('.nav-item.active'); if(a)a.scrollIntoView({block:'nearest'}); }
+  function go(id){ if(!byId[id])id='overview'; cur=id; if(location.hash!=='#'+id)history.pushState(null,'','#'+id); render(id); setActive(id); document.body.classList.remove('nav-open'); }
+  function fromHash(){ var h=(location.hash||'').replace('#',''); go(byId[h]?h:'overview'); }
+
+  // prev/next
+  $('#prev').addEventListener('click',function(){ var i=order.indexOf(cur); if(i>0)go(order[i-1]) });
+  $('#next').addEventListener('click',function(){ var i=order.indexOf(cur); if(i<order.length-1)go(order[i+1]) });
+
+  // ---- search ----
+  $('#search').addEventListener('input',function(e){
+    var q=e.target.value.trim().toLowerCase();
+    var anyByGroup={};
+    entries.forEach(function(en){
+      var hit = !q || en.title.toLowerCase().indexOf(q)>-1 || (en.desc||'').toLowerCase().indexOf(q)>-1 || (en.md||'').toLowerCase().indexOf(q)>-1;
+      var btn=$('.nav-item[data-id="'+en.id+'"]'); if(btn)btn.style.display=hit?'':'none';
+      anyByGroup[en.group]=anyByGroup[en.group]||hit;
+    });
+    $$('.group-label').forEach(function(l){ anyByGroup[l.textContent]; l.style.display=anyByGroup[l.textContent]?'':'none'; });
+  });
+
+  // ---- theme ----
+  function applyTheme(t){ document.documentElement.setAttribute('data-theme',t); $('#ic-moon').style.display=t==='dark'?'':'none'; $('#ic-sun').style.display=t==='dark'?'none':''; try{localStorage.setItem('dt-theme',t)}catch(e){} }
+  $('#theme').addEventListener('click',function(){ applyTheme(document.documentElement.getAttribute('data-theme')==='dark'?'light':'dark') });
+  (function(){ var t='dark'; try{t=localStorage.getItem('dt-theme')||'dark'}catch(e){} applyTheme(t) })();
+
+  // ---- progress bar ----
+  var bar=$('#bar');
+  function setBar(){ var h=main.scrollHeight-main.clientHeight; bar.style.width=(h>0?(main.scrollTop/h*100):0)+'%'; }
+  main.addEventListener('scroll',setBar,{passive:true});
+
+  // ---- mobile nav ----
+  $('#hamburger').addEventListener('click',function(){ document.body.classList.toggle('nav-open') });
+  $$('[data-close-nav]').forEach(function(x){x.addEventListener('click',function(){document.body.classList.remove('nav-open')})});
+
+  // ---- keyboard ----
+  document.addEventListener('keydown',function(e){
+    if(e.target.tagName==='INPUT'){ if(e.key==='Escape')e.target.blur(); return; }
+    if(e.key==='/'){ e.preventDefault(); $('#search').focus(); }
+    else if(e.key==='ArrowLeft'){ var i=order.indexOf(cur); if(i>0)go(order[i-1]) }
+    else if(e.key==='ArrowRight'){ var i=order.indexOf(cur); if(i<order.length-1)go(order[i+1]) }
+    else if(e.key==='t'){ $('#theme').click() }
+  });
+
+  window.addEventListener('popstate',fromHash);
+  fromHash();
+})();
+</script>
+</body>
+</html>

@@ -1,0 +1,25 @@
+{
+  "network": "World Chain Sepolia",
+  "chainId": 4801,
+  "instance": "cohort",
+  "note": "Step-4 redeploy with the FINAL economics (RewardPool + 70/20/10 + reward-pool-routed slashes + dust-to-pool). Supersedes the step-2 deployment, whose bytecode predated those fixes. Gated by MockSybilGate (labeled simulated stand-in; the on-chain World ID claim lives on mainnet v4, see contracts/deployments/worldchain-mainnet.json + docs/DEMO.md). Seeded + kept mid-motion by the keeper (.github/workflows/keeper.yml).",
+  "params": { "panelSize": 7, "minPool": 14, "commitDuration": 60, "revealDuration": 60 },
+  "deployer": "0xe8E539aa5c3E74453892DAd479Bf9feB51CF516c",
+  "protocol": "0xe8E539aa5c3E74453892DAd479Bf9feB51CF516c",
+  "sourcesVerified": false,
+  "sybilGate": "MockSybilGate (labeled stand-in; see docs/MECHANISM_DELTA.md)",
+  "deployBlock": 30639105,
+  "contracts": {
+    "MockUSD": "0xeA5241F1becCE7B3F72bf501bEa16eA976f1600F",
+    "MockSybilGate": "0x4E223cB71eD4E350Cf1A7f687206eA336d32807E",
+    "JurorRegistry": "0x7677ad08d0844e1Df2693242F2195F2b2fD9c622",
+    "RewardPool": "0x1509A82F35da8fCb9428449dCc9120C102c153A9",
+    "DisputeCourt": "0x1bAa18851E3E425278aFfe041b75004727F500AF",
+    "DealEscrow": "0x61110aDAca47eb0E82D5dE75F3de6F1f1b4fe596"
+  },
+  "explorer": "https://worldchain-sepolia.explorer.alchemy.com",
+  "supersedes": {
+    "note": "step-2 cohort, pre-reward-pool economics",
+    "DisputeCourt": "0xAFC1c20700fB9961E2Fb848B0fa590c95095C523"
+  }
+}

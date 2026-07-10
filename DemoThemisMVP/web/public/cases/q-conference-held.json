@@ -1,0 +1,12 @@
+{
+  "title": "Conference held as announced",
+  "type": "question",
+  "standard": "objective",
+  "question": "Did DevSummit 2026 take place on its announced date of 2026-06-10?",
+  "resolution": "YES if the event was held on 2026-06-10; NO if cancelled or rescheduled.",
+  "evidence": [
+    { "label": "Official schedule (archived)", "url": "https://example.com/devsummit/schedule" },
+    { "label": "Press coverage", "url": "https://example.com/news/devsummit-2026" }
+  ],
+  "simulated": true
+}
