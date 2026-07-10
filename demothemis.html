@@ -198,7 +198,7 @@ body.theme-solve { --accent: #2f62cf; --accent-soft: #e6edfa; --accent-ink: #214
   <div class="meta">
     <span class="pill">Start here</span>
     <span>Simple version: 4 min</span>
-    <span>Under the hood: 35 min</span>
+    <span>Under the hood: 20 min</span>
     <span class="dot">&bull;</span>
     <span>Chapter 1 of 6</span>
   </div>
@@ -224,7 +224,7 @@ body.theme-solve { --accent: #2f62cf; --accent-soft: #e6edfa; --accent-ink: #214
         </details>
       </li>
       <li class="toc-part">
-        <a class="toc-main" href="#deep-dive">Under the hood<span class="toc-time">35 min reference</span></a>
+        <a class="toc-main" href="#deep-dive">Under the hood<span class="toc-time">20 min reference</span></a>
         <details>
           <summary>Show sections</summary>
           <ul>
@@ -297,7 +297,7 @@ body.theme-solve { --accent: #2f62cf; --accent-soft: #e6edfa; --accent-ink: #214
   <section class="reveal" id="disputes-courts">
     <p class="sec-label">Disputes and courts</p>
     <h2>Appeals, finality, and the two kinds of truth</h2>
-    <p>Appeals are priced by the live case: enough to pay the next panel, enough to make panel-grinding unprofitable, and enough to compensate for delay. If a wider pool makes capture odds tiny, appeal costs fall toward the cost of seating the next panel. Settlement always finishes, but collusion reports can keep running after the money moves.</p>
+    <p>Appeals cover the next panel, panel-grinding risk, and delay. A wider pool can push the price toward panel cost. The intended ladder is finite, though launch rules still need explicit exits for failed panels and proofs; later collusion reports never reopen settled money.</p>
     <p>There are also two kinds of cases. Objective cases ask questions reality can later grade, like a price, match, shipment, or market outcome. Rubric cases ask whether work met a spec or whether a listing matched what was delivered. Both share the same court constitution: random draw, private ballots, appeal ladder. The grader changes.</p>
   </section>
 
@@ -305,13 +305,13 @@ body.theme-solve { --accent: #2f62cf; --accent-soft: #e6edfa; --accent-ink: #214
     <p class="sec-label">Bootstrap</p>
     <h2>PredictionMoMo gives the court its first work</h2>
     <p>DemoThemis needs cases, fees, and a track record before outside apps trust it. PredictionMoMo supplies all three. Markets need resolution. Traders pay fees. Clean market outcomes become resolved cases for aptitude tests. That lets the court prove itself on paid work before it asks Uber-scale, eBay-scale, or Airbnb-scale apps to route disputes through it.</p>
-    <p class="deep-note"><b>You now have the whole model:</b> neutral escrow, verified humans, one sealed draw, per-draw presence checks, receipt-free ballots, live reserves, larger panels, appeals, resolved cases for aptitude tests, careful-juror scoring, objective and rubric courts, and the PredictionMoMo bootstrap. The under-the-hood section below opens the mechanics and the interactive widgets that test each claim.</p>
+    <p class="deep-note">That is the whole model. Continue for the mechanics and interactive stress tests behind each claim.</p>
   </section>
 
   <section class="reveal part-marker" id="deep-dive">
-    <p class="sec-label">35 min reference</p>
+    <p class="sec-label">20 min reference</p>
     <h2>Under the hood</h2>
-    <p>The simple version gives the map. This section opens the machinery: why a shared arbiter matters, how the court blocks capture, and how juror quality improves when many disputes do not have a ready-made resolved case for aptitude tests. Read straight through, or jump to the layer whose assumptions you want to inspect.</p>
+    <p>Read straight through, or jump to the layer whose assumptions you want to inspect.</p>
     <div class="underhood-map">
       <a href="#trust-layer"><span class="eyebrow">Problem and role</span><b>Why a neutral court matters</b><span>Online trust is already rented from arbiters. DemoThemis turns that backstop into shared protocol escrow.</span></a>
       <a href="#capture-resistance"><span class="eyebrow">Attack resistance</span><b>How capture gets priced out</b><span>Verified humans, live reserves, sealed randomness, face checks, receipt-free ballots, and panel scaling each remove a different shortcut.</span></a>
@@ -322,27 +322,15 @@ body.theme-solve { --accent: #2f62cf; --accent-soft: #e6edfa; --accent-ink: #214
   <section class="reveal part-marker" id="trust-layer">
     <p class="sec-label">Problem and role</p>
     <h2>Why a neutral court matters</h2>
-    <p>Start with the product-level reason DemoThemis matters: online trust is already arbitration, but today's arbiters are platform-owned, bank-owned, or token-owned.</p>
-  </section>
-
-  <section class="reveal">
-    <p class="lead">You never really trusted the stranger whose spare room you booked. You trusted the arbiter standing behind the deal. Make that arbiter fair, impossible to buy, and cheap enough, and every app will want to stand behind it too.</p>
-    <p>Book a room in a city you have never visited, from a host you will never meet, and hand over your money days before you arrive. On paper this is reckless. In practice you do it without blinking.</p>
-    <p>You can do it because someone has promised to step in if it goes wrong. The platform will refund you. Your card issuer will reverse the charge. A pile of reviews will punish a host who cheats. You are not trusting the host. You are trusting the arbiter behind the host.</p>
-  </section>
-
-  <section class="reveal">
-    <p class="sec-label">The hidden utility</p>
-    <h2>Trust is something you rent</h2>
-    <p>That arbiter is everywhere once you look. Every marketplace, every gig app, every ad auction, every app store is, underneath, a machine for settling the question of who was right when two strangers disagree. It is the part that makes the rest safe to use.</p>
-    <p>Today you rent it. The platform owns the arbiter, charges a fee for standing behind the deal, and gets the final say on every call. Most of the time that is fine. The trouble shows up at the edges. The arbiter and the seller are often the same company, so the appeal goes to the house. The fee is baked into every transaction whether or not a dispute ever happens. And a big enough party can lean on the call, because the arbiter answers to revenue, not to you.</p>
-    <p>The alternatives only move the trap around. Ask your bank to reverse the charge and you wait weeks for a ruling that costs more to reach than the dispute was worth. Reach for the newer on-chain courts and the verdict goes to whoever holds the most tokens, the failure <a href="demothemis.html#capture-resistance">the court mechanics</a> take apart. Platform, bank, or token vote, every arbiter on the table is conflicted, slow, or for sale.</p>
+    <p class="lead">You never really trusted the stranger whose spare room you booked. You trusted the arbiter standing behind the deal. Make that arbiter neutral, hard to capture, and affordable, and more apps can rely on it.</p>
+    <p>Booking a room from a stranger and paying before arrival looks reckless on paper. It feels ordinary because a platform promises to refund you, a card issuer can reverse the charge, and reviews punish repeat cheating. The safety comes from the arbiter behind the stranger.</p>
+    <p>Every marketplace, gig app, ad auction, and app store rents this backstop from a platform, bank, or token vote. The result can be house-owned, slow, expensive, or buyable by the largest holders. DemoThemis turns that hidden utility into shared protocol escrow.</p>
   </section>
 
   <section class="reveal">
     <p class="sec-label">One court, many apps</p>
     <h2>Build the arbiter once, share it everywhere</h2>
-    <p>Now picture the arbiter as a neutral public utility instead of a feature each company rebuilds in private. A court of verified humans, drawn at random, who cannot be bought, attached to protocol escrow that already holds the money. Any app can route a deal through it and trust the result, because the app does not control the funds, the court, or the other side.</p>
+    <p>A court of randomly drawn, verified humans sits behind escrow that already holds the money. Any app can route a deal through it because the app controls neither the funds nor the verdict.</p>
 
     <figure class="diagram reveal">
       <div class="diagram-inner">
@@ -362,21 +350,13 @@ body.theme-solve { --accent: #2f62cf; --accent-soft: #e6edfa; --accent-ink: #214
       <figcaption>Many apps, one shared arbiter. <b>The court answers to none of them, which is exactly why all of them can use it.</b></figcaption>
     </figure>
 
-    <p>For a decentralized app this is the missing piece. The app can bring users, evidence, and interface, but the deal funds sit in neutral protocol escrow before anything goes wrong. If a dispute appears, the court decides and the protocol releases or refunds by rule. Trust moves from the app's promise to the escrow itself, and the overhead that each app used to carry alone becomes one shared cost.</p>
+    <p>The app still supplies users, evidence, and interface, but the protocol locks the deal funds before trouble starts. If a dispute appears, the court decides and escrow releases or refunds by rule. Each app replaces its private backstop with one shared cost.</p>
   </section>
 
   <section class="reveal">
     <p class="sec-label">Why shared history compounds</p>
     <h2>The history is useful without being public</h2>
-    <p>Here is the turn that makes it more than a cheaper arbiter. Each locked case moves funds and leaves enough history to grade adjudication quality: who served, how panels split, which rulings survived appeal, and which calls later proved reliable. The court keeps the canonical case record inside the juror system. The parties and the requesting app get a signed verdict receipt. Juror scoring gets only the minimum case data it needs.</p>
-    <p>That is history's job. It is not a public reputation feed. It is the evidence needed to identify careful arbitrators, keep future panels strong, and let permitted parties verify that escrow paid by rule. Public prediction markets still resolve publicly because traders need settlement. Private arbitrations stay private by default.</p>
-  </section>
-
-  <section class="reveal">
-    <p class="sec-label">Why a standard, not a feature</p>
-    <h2>The padlock, again</h2>
-    <p>Web traffic used to travel in the clear. A padlock and the letter "s" in https changed that, not by law but by expectation. Once enough sites were encrypted, the ones that were not started to feel unsafe, and browsers began to say so out loud. The standard won because skipping it became the suspicious choice.</p>
-    <p>A shared, unbuyable court can follow the same path. Early on it is a nice option for a handful of apps. Past some point, routing deal funds through escrow no single party controls, with a verdict the right people can verify, becomes the thing a careful customer expects. That is the destination. The rest of this series is the route: first DemoThemis, the court itself; then PredictionMoMo, the market that pays for it; then the way the two switch each other on.</p>
+    <p>Each case leaves only the history needed to grade juror quality and prove escrow followed the verdict: who served, how the panel split, whether an appeal changed the result, and whether reality later confirmed it. This is not a public reputation feed. Parties and the requesting app receive a signed receipt, while scoring receives the minimum case data it needs. Public markets resolve publicly because traders need settlement; private arbitrations stay private by default.</p>
   </section>
 
   <section class="reveal part-marker" id="capture-resistance">
@@ -385,31 +365,23 @@ body.theme-solve { --accent: #2f62cf; --accent-soft: #e6edfa; --accent-ink: #214
     <p>The court replaces plutocratic arbitration lock by lock: verified humans, random panels, live reserves, private ballots, and panels that grow with the stakes.</p>
   </section>
 
-  <div class="product product-feature court reveal">
-    <h3>Protocol escrow: the most ambitious human infrastructure ever made</h3>
-    <p><span class="lab">Goal:</span> a protocol escrow and arbitration service so good that customers want every online deal to run through it, from Uber to eBay to Airbnb to AdSense. Apps bring demand and interface; DemoThemis holds the funds, decides disputes, and releases or refunds by rule.</p>
-    <p><span class="lab">How:</span> robust, ungameable mechanics with proof of personhood to overcome the need for plutocracy. PredictionMoMo supplies the first demand, data, and escrow volume.</p>
-    <p><span class="lab">Using Worldcoin to ensure 1 juror = 1 human:</span> a World ID iris scan makes each arbitrator one unique person with one vote, a face check on their own phone confirms presence at every draw, and settlement runs on-chain with gas sponsored for verified humans.</p>
-  </div>
-
   <section class="reveal">
     <p class="sec-label">The wrong foundation</p>
     <h2>When votes are tokens, verdicts have a price</h2>
     <p class="lead">Token courts sell the gavel to the deepest pocket. This court seats verified humans instead: a live reserve priced by workload, a die nobody can re-roll, a face check that proves a real person is voting, and a ballot that cannot prove how it voted. Buying it means buying people, one at a time, in the dark.</p>
-    <p>Every on-chain court before this one runs on the same quiet rule: stake a token, cast a vote, and the side holding more tokens decides what is true. Read that rule the way an attacker reads it. The verdict has a sticker price, and the sticker price is half the tokens.</p>
-    <p>This is not a thought experiment. Large UMA holders have pushed disputed Polymarket resolutions through against what many traders read as plain reality, and the system behaved exactly as designed while they did it. Weight followed the wallet. The court was for sale and somebody shopped.</p>
-    <p>The receipts are in the <a href="prediction-market.html#exploited-arbiter">PredictionMoMo chapter</a>: the Ukraine mineral-deal market, the Zelenskyy suit market, the Strategy Bitcoin-sale market, and the conflict reporting around UMA voters resolving markets they could also bet on. That is the exploited arbitration layer this design replaces.</p>
-    <p>So this court swaps the foundation. <b>One human, one vote.</b> Every juror seat is a World ID, an iris-verified proof of personhood that no wallet can mint twice and no exchange can sell in bulk. A verdict is no longer something you buy on a market; it is something you would have to assemble out of bought humans, each recruited separately, each a fresh chance to be caught. Most questions never even reach this room. The <a href="prediction-market.html">market chapter</a> shows how roughly 95% of cases settle themselves through a watched assertion window. The court exists for the contested few, which is exactly why it has to be the hardest thing in the system to corrupt.</p>
-    <p>The rest of this chapter is the pricing-out, lock by lock. Each lock targets a different attacker, and a buyer has to beat all of them at once.</p>
+    <p>In a token court, voting weight follows the wallet, so a majority has a market price. Disputed Polymarket resolutions show the problem in practice; the evidence is in the <a href="prediction-market.html#exploited-arbiter">PredictionMoMo chapter</a>.</p>
+    <p>That is not merely a bad implementation. If stake is voting power, the protocol works as written when the largest holder wins. An attacker reads the rule as a price list: acquire enough tokens and buy the verdict.</p>
+    <p>DemoThemis swaps the foundation to <b>one human, one vote</b>. Every seat is backed by a World ID that no wallet can mint twice or exchange can sell in bulk. An attacker must recruit people separately, keep them present, land them in a sealed draw, and somehow enforce their private votes. Roughly 95% of questions settle through a watched assertion window; the contested few face every lock below at once.</p>
   </section>
 
   <section class="reveal">
     <p class="sec-label">The seat</p>
     <h2>The self-pricing seat</h2>
-    <p>What should a seat on a court like this cost? The instinct says: pick a number high enough to hurt. The instinct is wrong. A fixed price is a guess, and guesses age badly.</p>
-    <p>Start with what the reserve is actually for. Bribery is handled by the encrypted ballot below, because a bribe you cannot verify is a bribe you do not pay. Rented seats are handled by the face check. Strip those jobs away and the reserve has exactly one left: make careless voting unprofitable. A juror who flips a coin instead of reading the case must lose more to slashes than they collect in fees. That is the whole job.</p>
-    <p><b>Let's define the variables in the game mechanics at play</b>. The court watches three live things: what a juror earns for a vote, how much extra error carelessness creates, and how many unresolved votes that juror is carrying before slashes settle. The required reserve is just income at risk divided by the careless-error penalty. If demand rises faster than active jurors, each juror carries more work and the reserve rises. If more jurors join, the work spreads out and the reserve falls. No one picks a magic dollar amount. The seat prices itself from the court's own traffic.</p>
-    <p>Why not round up to something impressive anyway? Because past the live floor, a bigger reserve makes the court less safe. Security here comes from pool width: a coordinated bloc inside a pool of tens of thousands almost never lands a panel majority, while the same bloc inside a thin pool owns the place. Every unit of reserve above the laziness floor buys no additional honesty and silently evicts honest jurors, while the attacker's recruits, who are paid to be there, do not leave. Try to beat the widget.</p>
+    <p>Picking a fixed reserve that merely looks painful is a guess, and guesses age badly as fees, workload, and the juror pool change.</p>
+    <p>The reserve has one job: make coin-flipping lose more to penalties than it earns in fees. Bribery belongs to the encrypted ballot; rented seats belong to the face check. The court therefore derives the minimum reserve from pay per vote, the extra error caused by carelessness, and the number of unresolved votes still at risk. More work raises it; more active jurors spread the work and lower it.</p>
+    <p>Verified humans opt in without buying a governance token or posting the reserve upfront: the protocol fronts the live reserve and sponsors the required gas. The juror's private account still receives any final debit, so free entry does not make careless service free.</p>
+    <p>In plain terms, the floor is the income exposed while outcomes are pending divided by the expected penalty from the extra mistakes carelessness creates. The inputs are observable court traffic, not a governance guess, so the seat reprices itself as conditions change.</p>
+    <p>A reserve above that live floor makes the court less safe. It evicts honest jurors and thins the pool while paid recruits stay, increasing their share. The widget shows why the best reserve sits just above the laziness floor, not at an impressive fixed number.</p>
 
     <div class="widget reveal">
       <div class="widget-head"><span class="live"></span> The live reserve, derived then stress-tested</div>
@@ -434,14 +406,14 @@ body.theme-solve { --accent: #2f62cf; --accent-soft: #e6edfa; --accent-ink: #214
       <p style="font-family:var(--sans);font-size:.86rem;color:var(--faint);margin:1rem 0 0">Illustrative. Juror turnout falls as the reserve rises; the attacker's recruits do not, so their share of a shrinking pool grows. Slide the reserve right and watch security get worse as the entry burden gets bigger. The sweet spot sits just above the laziness floor and moves with workload.</p>
     </div>
 
-    <p>A court with many low-reserve jurors beats a court with a few high-reserve jurors against every attack in this chapter, and it is not close. The discipline survives in the slash, not the headline size: a wrong-side vote forfeits a slice of the reserve scaled by how lopsided the verdict was, settled only after appeals finish, refunded in full if a later panel vindicates the vote. The individual debit stays private; only the aggregate transfer into the reward pool and a proof that every debit followed the rule are public. The pool pays active, high-quality jurors, never the winning panel, so a majority earns nothing extra by convicting its dissenters.</p>
+    <p>Discipline sits in the penalty, not the headline reserve: a wrong-side vote loses a larger slice after a lopsided final verdict and a smaller one after a near tie. Settlement waits for appeals, and later vindication reverses the update. Individual debits stay private; only the aggregate reward-pool transfer and proof of correct updates are public. The pool pays active, high-quality jurors, never the winning panel, so a majority gains nothing by penalizing dissent.</p>
   </section>
 
   <section class="reveal">
     <p class="sec-label">The draw</p>
     <h2>The sealed die</h2>
-    <p>A wide pool only protects you if the draw out of it is honest. Here is the integration failure the draw has to survive. Apps bring users and evidence, but they cannot be allowed to choose the case ID, trigger time, cancellation point, or replacement rules in a way that lets them shop for a friendly panel. If a hacked marketplace could lock a deal, infer the panel, abandon it, and try again under a fresh identity or later beacon, a small bloc would stop playing one fair lottery and start grinding many. Grinding turns a 1% pool share into a certainty, given enough chances.</p>
-    <p>The fix is a die with a tamper-proof seal at the protocol boundary. The draw binds to two things the app cannot rewrite: the escrowed case and a public randomness beacon, a service that publishes a fresh, unpredictable value on a fixed schedule that nobody, including us, can steer. One locked escrow, one committed case, one roll. Funds and dispute contents are locked before the panel exists, so there is no panel to shop, and anyone can re-run the math afterward to confirm the panel is exactly what the beacon dictated. One screen rides on top of the roll: a seat whose own wallet holds a position in the disputed market is skipped by deterministic replacement, the way a juror who knows the defendant is sent home. The attacker's strategy collapses from asking the app for another draw to taking what the die gives you. Watch the difference between those two worlds.</p>
+    <p>If an app can change a case ID, trigger time, cancellation point, or replacement rule after inferring the panel, it can grind draws until a small bloc wins. Even a one-percent bloc becomes almost certain to succeed if it may discard enough unfriendly panels.</p>
+    <p>The protocol instead binds one locked escrow and committed case to one value from a public randomness beacon: a service that publishes fresh, unpredictable numbers on a fixed schedule that no app or court operator can steer. Funds and case contents lock before the panel exists, and anyone can reproduce the draw afterward. A selected seat whose wallet holds the disputed position is skipped by deterministic replacement. The app gets one roll, not a panel-shopping interface.</p>
 
     <div class="widget reveal">
       <div class="widget-head"><span class="live"></span> One roll versus the grind</div>
@@ -460,7 +432,7 @@ body.theme-solve { --accent: #2f62cf; --accent-soft: #e6edfa; --accent-ink: #214
         <div class="stat"><div class="k">Re-rolls to capture</div><div class="v accent" id="g3tries">&hellip;</div></div>
         <div class="stat"><div class="k">Expected re-rolls</div><div class="v" id="g3exp">&hellip;</div></div>
       </div>
-      <p style="font-family:var(--sans);font-size:.86rem;color:var(--faint);margin:1rem 0 0">Gold dots are the attacker's seats. The left button is production: one verifiable roll, bound to the escrowed case. The right button is the integration failure the protocol boundary deletes, kept here so you can see what it was worth. A 20% bloc captures a 7-seat panel in a handful of re-rolls when an app can grind draws, and almost never when it gets exactly one.</p>
+      <p style="font-family:var(--sans);font-size:.86rem;color:var(--faint);margin:1rem 0 0">Gold dots are the attacker's seats. The left button models the intended production rule: one verifiable roll bound to the case. The right shows the deleted integration failure. A 20% bloc can capture a 7-seat panel after a handful of app-controlled re-rolls, but rarely in one draw.</p>
     </div>
 
     <p><b>Notice what the seal does not do:</b> It does not shrink the honest capture odds; a bloc still owns its fair share of lottery tickets. The die is sealed, not loaded in our favor. Shrinking those odds is the job of pool width, covered above, and panel size, covered below. The locks divide the labor on purpose.</p>
@@ -469,9 +441,9 @@ body.theme-solve { --accent: #2f62cf; --accent-soft: #e6edfa; --accent-ink: #214
   <section class="reveal">
     <p class="sec-label">The face check</p>
     <h2>The same person, every time</h2>
-    <p>Now a quieter attack. A one-time iris scan at sign-up does nothing to stop a juror from handing their phone, or their login, to someone else afterward. A credential rented out to an operator across the world is one verified human on paper and zero in the seat. A hundred such seats pointed at one language model would look like a hundred independent jurors and vote like one. Identity checked once is identity rented forever.</p>
-    <p>So the court checks at the moment of voting. When the die picks your seat, your World App runs the same on-device face match it already uses for sensitive actions, on an attested phone, and only a pass unlocks the ballot. The match runs on the phone against the template stored there and reports one bit, pass or fail. No central face database is ever built, because a face library big enough to protect a court would just be a second privacy bomb. An annual re-scan does the slow version of the same job, retiring dead and abandoned credentials so the pool counts only living, reachable humans. The diagram is the whole argument: each check shrinks the window in which someone other than the enrolled human can run the seat.</p>
-    <p>The privacy boundary is part of the mechanism. DemoThemis never asks for the scan, stores the scan, or sees the face template. World App performs the check locally, and the court only accepts a short-lived, draw-bound proof: this World-ID-backed seat is present for this case now. It is not a reusable login token, not a name, not a face, and not a global identity handle.</p>
+    <p>A one-time iris scan cannot stop someone renting out their phone or login later. A hundred rented credentials controlled by one operator would look like a hundred independent humans and vote like one.</p>
+    <p>When a seat is drawn, World App therefore performs an on-device face match on an attested phone; only a pass unlocks the ballot. An annual re-scan provides a slower backstop by retiring dead and abandoned credentials, but only the per-draw check closes the rental window for the case itself.</p>
+    <p>The privacy boundary is strict: DemoThemis never receives the scan or face template. It accepts only a short-lived, draw-bound proof that the World-ID-backed seat is present for this case now&mdash;not a name, face, reusable login, or global identity handle.</p>
 
     <figure class="diagram reveal">
       <div class="diagram-inner">
@@ -484,16 +456,16 @@ body.theme-solve { --accent: #2f62cf; --accent-soft: #e6edfa; --accent-ink: #214
       <figcaption>The red bar is the window in which someone other than the enrolled human can operate the seat. <b>Each check shrinks it; only the per-draw check shrinks it below the length of a case.</b></figcaption>
     </figure>
 
-    <p>Say plainly what no check can prove: that the human in the seat is voting their own mind. A willing accomplice who personally sits down and votes as told passes every face check ever built, because they really are who they claim to be. That case is handled by money and math instead. The slash makes obedient wrong votes expensive, and the encrypted ballot in the next section makes the instruction unenforceable, since the accomplice can take the cash and vote however they like with no way for the payer to ever know. A conspiracy that cannot audit its members is not a conspiracy. It is a donation.</p>
-    <p><b>The honest cost here is friction:</b> A juror asleep at draw time misses the check, so every draw carries a grace window and standby seats that switch on when one goes silent. A miss costs a small reliability ding, never a slash, because punishing sleep like treachery is how you empty a pool.</p>
+    <p>No face check can prove that a willing accomplice is voting their own mind; they really are the enrolled person. That limitation belongs to the other locks: the reserve makes obedient wrong votes costly, while the encrypted ballot lets the accomplice take the money and disobey without the payer ever knowing.</p>
+    <p><b>The cost is friction:</b> a juror may be asleep or offline when drawn. A grace window and standby seats cover missed checks, and a miss earns a small reliability ding, never a slash. Treating ordinary absence like treachery would empty the pool.</p>
   </section>
 
   <section class="reveal">
     <p class="sec-label">The ballot</p>
     <h2>The ballot nobody can sell</h2>
-    <p>Picture someone with money who wants to fix a verdict. They already have the list of drawn jurors, and they do not need the whole panel, just a majority. But a buyer pays only for a vote they can confirm was really cast their way. No proof of delivery, no payment. That requirement is the whole weak spot, so the court aims straight at it and makes proving your vote impossible, even for a juror who wants to sell.</p>
-    <p>The simple scheme would have been commit-and-reveal: publish a hash of your vote now, open it later, and let anyone check the two match. We rejected it for one reason the demo below makes physical. It prints a receipt. The same hash that proves your honesty to the protocol proves your obedience to a briber, and a voting system that can prove obedience is a voting system with a payment rail bolted on.</p>
-    <p>The court starts from a different question: not how to hide a vote, but how to count votes without ever opening one. Every ballot is locked with the court's threshold key, and a juror can silently re-key at any time, swapping their locked vote for a new one. So a receipt of an encrypted NO proves nothing: you might have re-keyed to YES a minute later, and nothing public changes. The transcript still verifies and still proves exactly nothing, because every juror has the same trick and the briber knows it. The re-key is only half of it. The locked ballots are added together while they stay locked, and the only thing the key ever opens is the final total, never a single ballot, with a zero-knowledge proof so anyone can confirm the count is honest. No single ballot is ever opened, by anyone, including the people who run the count. There is no peek to sell, because there is no peek. A bribe that cannot confirm delivery is a bribe nobody pays. Try to collect.</p>
+    <p>A vote buyer pays only when they can prove delivery. Commit-and-reveal fails because the juror publishes a vote hash and later opens it: the same receipt that proves honesty to the protocol proves obedience to a briber.</p>
+    <p>DemoThemis instead locks every ballot under a threshold scheme and lets the juror silently replace it without any public sign. An encrypted NO receipt proves only what was submitted once, not whether the counted ballot later became YES. The briber cannot know which valid submission was final.</p>
+    <p>Ballots are then added while they remain encrypted. Only the aggregate total opens, with a zero-knowledge proof that the count followed the rules; no individual ballot opens, even to tally operators. This is stronger than hiding a public vote behind an administrator. It removes the individual result anyone could sell.</p>
 
     <div class="widget reveal">
       <div class="widget-head"><span class="live"></span> Sell your vote, if you can</div>
@@ -513,8 +485,7 @@ body.theme-solve { --accent: #2f62cf; --accent-soft: #e6edfa; --accent-ink: #214
       <p style="font-family:var(--sans);font-size:.86rem;color:var(--faint);margin:1rem 0 0">Under commit-reveal the receipt is proof and the trade clears. Under threshold voting with re-keying, the same receipt proves nothing, because you may have re-keyed one minute later, and no briber pays for maybe.</p>
     </div>
 
-    <p>The bribery market does not lose a fight here. It loses the ability to write a contract it can enforce, and a market that cannot enforce delivery does not clear at any price.</p>
-    <p>Pin down what a briber actually has to work with, because the design splits the world on purpose. Some things are public by design: which one-time pseudonymous seats were drawn for a case has to be visible, or nobody could re-check the draw against the randomness beacon and confirm the panel was honest. Each case uses a new pseudonym and receiving key, so appearances cannot be joined into one public juror history. The scans that prove the human behind a seat never leave their phone, no biometric library exists, and no record anywhere maps a seat to a name.</p>
+    <p>The diagram shows the deliberate boundary. Drawn seats must be public enough for anyone to reproduce the panel, but each case uses a new pseudonym and receiving key. The public can verify selection without joining one person's appearances into a voting history.</p>
 
     <figure class="diagram reveal">
       <div class="diagram-inner">
@@ -526,7 +497,7 @@ body.theme-solve { --accent: #2f62cf; --accent-soft: #e6edfa; --accent-ink: #214
             <div class="row2">The final tally, with its proof attached.</div>
           </div>
           <div class="pane hid">
-            <h4>What they can never see</h4>
+            <h4>What the protocol does not reveal</h4>
             <div class="row2">Any juror's name or face. The scans stay on the phone; a seat is a pseudonym.</div>
             <div class="row2">Which way any seat voted, on any case, ever. Only the tally decrypts.</div>
             <div class="row2">Any juror's exact reserve, reputation, case history, individual payment, slash, or appeal refund.</div>
@@ -537,45 +508,24 @@ body.theme-solve { --accent: #2f62cf; --accent-soft: #e6edfa; --accent-ink: #214
       <figcaption>The split is deliberate. <b>The public gets one-case pseudonyms, aggregate accounting, and proofs that the rules were followed; it never gets the private history that could turn a penalty or payment into a vote receipt.</b></figcaption>
     </figure>
 
-    <p>So the worst a briber can do is shout an offer at a list of one-case pseudonyms, and the worst a juror can do back is take the money and vote however they wanted anyway. The one privacy a juror has to guard themselves is their own: tell the neighborhood you hold a seat and you have spent the anonymity the protocol gave you for that case.</p>
-    <p>One honest note about the machinery underneath, because this section made a strong promise: that nobody, not even the people running the count, ever opens a single ballot. There is no centralized fallback for that promise. The tally setup is acceptable only if no operator ever receives a usable ballot-opening key: the secret is generated in a distributed or keyless ceremony, any setup artifact is unusable after initialization, and the only public output is the aggregate tally with a zero-knowledge proof anyone can check. A design where one party creates, holds, or promises to delete the key is rejected, because a security argument with a hidden admin key is not a security argument.</p>
-    <p>The same boundary continues after the tally. Exact scores, reserves, rewards, slashes, and refunds live inside private commitments. Zero-knowledge proofs reveal only the fact needed now&mdash;enough reserve, an eligible reputation band, a valid private update&mdash;while batched totals prove that money balanced. A direct public payment or penalty tied to a seat is rejected because it would recreate the vote receipt the ballot removed.</p>
+    <p>A juror can still disclose that they hold a seat; the protocol cannot protect anonymity they reveal themselves. Even then, replacing the ballot means a transcript does not prove what ultimately counted.</p>
+    <p><b>No administrator key is allowed.</b> The tally is acceptable only if no operator ever receives a usable ballot-opening key. Setup must be distributed or keyless, so independent participants create the capability together without one party holding it; initialization artifacts become unusable afterward; and the sole output is an aggregate tally with a public zero-knowledge proof. A party that creates, holds, or merely promises to delete a complete key breaks the guarantee.</p>
+    <p>Privacy continues after tallying. Exact scores, reserves, rewards, penalties, and refunds stay inside private commitments&mdash;sealed account records whose rules can still be proved. Zero-knowledge proofs reveal only what is needed now, such as enough reserve, an eligible reputation band, or a valid private update, while batched totals prove the money balances. A public payment or penalty tied to a seat would recreate the receipt.</p>
   </section>
 
   <section class="reveal">
     <p class="sec-label">The panel</p>
     <h2>Panels that grow with the pot</h2>
-    <p>One panel size would be the wrong shape for a court that hears both $40 listing disputes and $200,000 escrows. So panels scale with the stakes: 7 seats for the small cases, 15 for the serious ones, 31 for the largest, and a <a href="demothemis.html#quality-engine">dispute ladder</a> that climbs those same rungs on appeal. The largest panels add one more gate, and it is deliberately not a financial one: 31-seat draws come only from jurors with long case histories. Seniority is the single credential that costs an honest juror nothing to earn and an attacker years to fake, which is exactly the asymmetry a gate should have.</p>
-
-    <figure class="diagram reveal">
-      <div class="diagram-inner">
-        <div class="flow">
-          <div class="node"><span class="ic">&#128065;</span><span class="lbl">Iris scan, once</span><span class="sub">one World ID, one seat</span></div>
-          <span class="arrow">&rarr;</span>
-          <div class="node"><span class="ic">&#127915;</span><span class="lbl">Opt in, free</span><span class="sub">protocol fronts the live reserve</span></div>
-          <span class="arrow">&rarr;</span>
-          <div class="node"><span class="ic">&#127922;</span><span class="lbl">Drawn by the beacon</span><span class="sub">one roll, bound to the case</span></div>
-          <span class="arrow">&rarr;</span>
-          <div class="node"><span class="ic">&#128100;</span><span class="lbl">Face check</span><span class="sub">on-device, attested phone</span></div>
-          <span class="arrow">&rarr;</span>
-          <div class="node"><span class="ic">&#128274;</span><span class="lbl">Encrypted vote</span><span class="sub">re-keyable, no receipts</span></div>
-          <span class="arrow">&rarr;</span>
-          <div class="node is-accent"><span class="ic">&#9878;</span><span class="lbl">Paid or slashed</span><span class="sub">private update, aggregate proof</span></div>
-        </div>
-      </div>
-      <figcaption>The life of a seat, end to end. <b>At no step does more money buy more voice; it buys a larger panel of strangers you still cannot reach.</b></figcaption>
-    </figure>
-
-    <p>That is the panel: a jury sized to the case, drawn from a pool the reserve is not allowed to thin. It is enough for the cases the court hears every day. It is not yet enough for the rare giant, because the rule that panels grow with the pot has a top rung, and the largest prizes sit right on top of it.</p>
+    <p>A $40 listing dispute and a $200,000 escrow should not buy the same protection. Panels therefore scale with stakes: 7 seats for small cases, 15 for serious ones, and 31 for the largest, with appeals climbing the same rungs.</p>
+    <p>A private proof of long service gates 31-seat draws. Seniority costs an honest juror nothing but takes an attacker years to fake, the useful asymmetry a financial barrier cannot provide. Money buys more strangers, never more voice for one person. The rare giant still needs protection above this top rung.</p>
   </section>
 
   <section class="reveal">
     <p class="sec-label">The ceiling</p>
     <h2>What happens above the biggest panel</h2>
-    <p>Panels climb 7, 15, 31, and then they stop. Thirty-one is the largest jury the court will seat, so a five million dollar case and a fifty million dollar case are heard by the same thirty-one strangers. Read that twice, because it is the one spot where the design breaks its own promise. Every other lock grows with the money at stake. This one grows, then flattens, and an attacker reads that flat line as an invitation. They do not care about the thousand small cases. They care about the single giant one parked on the ceiling, where the prize keeps climbing and the jury does not.</p>
-    <p>The obvious patch is a bigger jury, and it is the wrong one. A larger panel is a louder microphone for whoever the pool already leans toward. When the honest jurors are the majority that is a gift; the day a bloc has quietly tilted the pool it is a disaster, because the bigger panel now reports the bloc's answer with more confidence, not less. Size was never the source of safety here. The width of the pool was. So the fix cannot be one larger jury. It has to be more juries.</p>
-    <p>Above a value line, the court stops seating one panel and seats several at once, each drawn fresh by the same sealed die from the same wide pool, all hearing the case together. The verdict stands only if they agree. Picture the attack again under that rule. To bend the outcome you no longer have to win one unlikely lottery. You have to win every lottery in the row, on the same roll, with no chance to try again. Fall short of a majority on any single panel and the disagreement trips an alarm instead of printing a verdict.</p>
-    <p>Here is why that is far more than a small improvement: odds that are merely unlikely become hopeless once you multiply them. Say a pool has thinned enough that a bloc could take one panel a fifth of the time, already a bad day for the court. Two panels at once cut that to one in twenty-five, three to one in a hundred and twenty-five, five to one in three thousand. And since the number of panels is set by the size of the pot, the cost of the attack climbs with the prize again. The dial the ceiling took away is handed back. Drag the bloc's share up into the danger zone below, the pool share where a lone panel really can fall, and watch a capturable jury turn into an uncapturable set.</p>
+    <p>A 31-seat ceiling would leave a $5 million and $50 million case protected by the same jury while the attack prize keeps growing. Simply making one jury bigger is unsafe: it amplifies whichever side already dominates the pool, reporting a tilted pool's answer with greater confidence. Pool width, not one enormous sample, is the real protection.</p>
+    <p>Above a value line, DemoThemis instead draws several non-overlapping 31-seat panels at once and requires all of them to agree. Any disagreement raises an alarm rather than printing a verdict.</p>
+    <p>An attacker must now win every independent panel on the same sealed roll. If one panel falls one time in five, three together fall only one time in 125. Adding panels as the pot grows restores the rising takeover price.</p>
 
     <div class="widget reveal">
       <div class="widget-head"><span class="live"></span> Pricing a takeover above the ceiling</div>
@@ -598,27 +548,20 @@ body.theme-solve { --accent: #2f62cf; --accent-soft: #e6edfa; --accent-ink: #214
       <p style="font-family:var(--sans);font-size:.86rem;color:var(--faint);margin:1rem 0 0">Gold dots are the bloc's seats that landed on a panel; a panel needs 16 of 31 to fall. One panel can get unlucky on a single roll. <b>Asking several to fall on the same roll multiplies long odds into far longer ones.</b></p>
     </div>
 
-    <p><b>Two honest notes:</b> The panels are drawn without overlap, so a bloc cannot reuse one corrupted juror across them, which makes the true odds even longer than the plain multiplication above. And owning a majority of every panel inside one short window is the very coordination the encrypted ballot already made unenforceable, since a juror can take the money on all of them and still vote honestly on all of them. Parallel panels do not replace the other locks. They are the floor beneath the tallest cases, the piece that keeps the price of a takeover rising no matter how large the pot grows.</p>
-    <p><b>Stand back from the whole court:</b> The verdict has no token to corner, the seats are humans drawn by a die that rolls once, the face check confirms the same person who signed up, the ballots cannot testify, and the largest cases must clear not one jury but a row of them at the same instant. The remaining question is the one a skeptic should ask next: how does the court know which of those humans to trust more over time? That is a grading problem, handled by <a href="demothemis.html#quality-engine">the juror quality system</a>, where settled markets become resolved cases for aptitude tests and reputation is earned the slow way.</p>
+    <p>Non-overlap stops one corrupted seat appearing twice, making the actual odds better than simple multiplication with replacement. Receipt-free voting also makes the required coordination unenforceable: a recruited juror can take payment and vote honestly on every panel. Parallel panels supplement rather than replace the wide pool, sealed draw, and private ballot.</p>
   </section>
 
   <section class="reveal part-marker" id="quality-engine">
     <p class="sec-label">Juror quality</p>
     <h2>How careful jurors stand out</h2>
-    <p>The quality system explains how DemoThemis rewards careful jurors when the court often cannot look up a clean answer sheet.</p>
-  </section>
-
-  <section class="reveal">
-    <p class="lead">A court has to sort its good jurors from its bad ones, and it never learns the right answer to grade them against. Here is how it manages, built from scratch, in plain English, one idea at a time.</p>
-    <p>A teacher grading a quiz holds the answer sheet. A court grading its own jurors holds nothing. The verdict those jurors just produced is the only answer in the room.</p>
-    <p>That is the spot <a href="demothemis.html#capture-resistance">the court</a> puts you in. The draw is random, the ballots are encrypted, and the live reserve makes carelessness a losing bet on any single case. But across a thousand cases you still want the careful jurors drawn more and paid more, and the careless ones drawn less, and you have to sort them without ever learning which verdicts were right. The truth is the product. You cannot also use it as the rubric.</p>
+    <p class="lead">A teacher has an answer sheet; a court often has only the verdict it just produced. DemoThemis must reward careful jurors without treating that verdict as unquestionable truth.</p>
+    <p>Across many cases, careful jurors should be drawn and paid more while careless ones receive less. But the court cannot simply declare its own majority correct: the truth is often the product it was asked to decide. The scoring system therefore needs evidence from both peers and reality.</p>
   </section>
 
   <section class="reveal">
     <p class="sec-label">The grader's paradox</p>
     <h2>Agreement is the wrong thing to pay for</h2>
-    <p>The obvious fix is to grade jurors on agreement: vote with your panel's majority and your score goes up. It is cheap, and it quietly ruins the court. Once agreement is the metric, the smart move is not to read the case. It is to guess what the room will say and say it first. Everyone votes the safe, popular answer, the panel converges harder, the scores all look wonderful, and the court has stopped measuring anything. A wrong verdict that everyone joins counts, by this rubric, as a perfect day.</p>
-    <p>Herding is not a rare risk. It is the equilibrium, the place the system rolls to and stays.</p>
+    <p>Grade jurors on matching the majority and the safe strategy becomes guessing the room instead of reading the case. The diagram shows how a wrong consensus can produce perfect-looking scores.</p>
 
     <figure class="diagram reveal">
       <div class="diagram-inner">
@@ -635,7 +578,7 @@ body.theme-solve { --accent: #2f62cf; --accent-soft: #e6edfa; --accent-ink: #214
       <figcaption>The herding loop, four steps from rule to ruin. <b>A court that pays for agreement ends up with flawless scores and no information.</b></figcaption>
     </figure>
 
-    <p>So the design ties the grade to two outside anchors, neither of which a herd can vote its way around. The first is a supply of questions where reality eventually publishes the answer: settled markets that pass a curation step become resolved cases for aptitude tests, and <a href="hybrid-juror-prediction-market-integration.html">the loop chapter</a> shows where that supply comes from. The second anchor is this page: a scoring rule that refuses to pay for agreement itself, and pays only for the part of a vote that carried information.</p>
+    <p>This is not a rare edge case. Once agreement determines careers, herding is the stable strategy: independent judgment adds risk but no reward. The design instead combines curated questions that reality can grade with a rule that pays only for information beyond the obvious majority. <a href="hybrid-juror-prediction-market-integration.html">The loop chapter</a> explains where the graded questions come from.</p>
   </section>
 
   <section class="reveal">
@@ -648,21 +591,21 @@ body.theme-solve { --accent: #2f62cf; --accent-soft: #e6edfa; --accent-ink: #214
         <span class="step-n">1</span>
         <div class="step-body">
           <h3>Leave one out</h3>
-          <p>Take your vote off the panel and look at what the other jurors decided on their own. You are scored against them, not against yourself, so your own ballot can never prop up its own grade. On a 31-seat panel, your reference is the other 30.</p>
+          <p>Remove your vote and compare it with the others, so your ballot cannot prop up its own grade. On a 31-seat panel, the reference is the other 30.</p>
         </div>
       </li>
       <li>
         <span class="step-n">2</span>
         <div class="step-body">
           <h3>Subtract the obvious</h3>
-          <p>Before any credit is paid, the score asks what a juror who never opened the file would have guessed. If the rest of the panel split 29 to 2, the headline alone called it, so matching them earns roughly nothing. Credit starts only above that baseline.</p>
+          <p>Ask what someone who never opened the file could guess. Matching a 29-to-2 landslide earns roughly nothing; credit starts above that baseline.</p>
         </div>
       </li>
       <li>
         <span class="step-n">3</span>
         <div class="step-body">
           <h3>Weight by margin</h3>
-          <p>A 16 to 15 split means the case was genuinely hard and a guess was a coin flip. Landing on the right side of that earns a lot, and the weight scales smoothly between the coin flip and the landslide. The score answers one running question: how often are you right when being right was hard?</p>
+          <p>A 16-to-15 split was hard, so landing on the right side earns more. Weight scales down toward a landslide: how often are you right when being right was difficult?</p>
         </div>
       </li>
     </ol>
@@ -695,14 +638,14 @@ body.theme-solve { --accent: #2f62cf; --accent-soft: #e6edfa; --accent-ink: #214
       <figcaption>Same agreement rate, opposite value. <b>The baseline subtraction is what makes reading the case the only strategy that earns.</b></figcaption>
     </figure>
 
-    <p>Those resolved cases feed aptitude tests inside the same score. When a market settles cleanly and the settlement passes curation, the outcome becomes a graded question with the final result attached, and jurors who ruled on it are scored against reality instead of against each other. These aptitude tests keep the peer score honest: a pool that drifted into a comfortable shared error would keep agreeing with itself, but it cannot keep agreeing with the scoreboard reality posts. The sharpest resolved cases for aptitude tests come from settled private markets, questions that never had a public page, so a juror cannot even look them up. To supplement this natural supply, the protocol will also introduce synthetic test cases and establish a sustainable, decentralized governance mechanism for generating them (TBA). <b>Peer agreement above the obvious, anchored by curated resolved cases for aptitude tests</b>, is the whole rule. Everything else on this page is plumbing for it.</p>
+    <p>Clean market outcomes become aptitude tests only after curation, then jurors are scored against reality instead of each other. This prevents a whole pool from agreeing comfortably with its own mistake. Private-market questions are especially useful because they never had a public page for jurors to look up. Synthetic cases and a sustainable decentralized process for creating them remain to be designed. The complete rule is <b>peer agreement above the obvious, anchored by curated real outcomes</b>.</p>
   </section>
 
   <section class="reveal">
     <p class="sec-label">The reputation dial</p>
     <h2>A score with an error bar attached</h2>
-    <p>The per-case credits build into a private reputation commitment, and that reputation is deliberately not a single number. It is a beta distribution, which is a precise way of saying a best guess plus an honest error bar: a juror at 80% over 12 cases and a juror at 80% over 140 cases have the same average and very different evidence behind it. The system carries the 95% interval over a rolling window of the last 50 to 150 cases, but publishes neither the exact score nor the cases behind it.</p>
-    <p>The private dial drives two everyday things. Draw rate: a juror proves the eligible weight band without revealing their score, and no band can be drawn more than three times as often as a newcomer because <a href="demothemis.html#capture-resistance">the court's</a> security is the width of its active pool. Per-case pay also scales inside private accounting, so accuracy compounds into income without publishing a score-sized payment. Suspension exists too, but it sits behind a gate, and the gate has an unusual rule. It refuses to act on a guess.</p>
+    <p>Per-case credits form a private reputation commitment. Mathematically it is a beta distribution: a best estimate plus an honest error bar, not one naked percentage. An 80% record over 12 cases is therefore not treated like 80% over 140.</p>
+    <p>The system carries a 95% interval over a rolling window of the latest 50 to 150 cases. Neither the exact score nor its case history is published; a juror proves only the band or threshold needed for the current action. The table shows what that private dial may change.</p>
 
     <div class="dial-wrap reveal">
       <table class="dial-table">
@@ -736,59 +679,57 @@ body.theme-solve { --accent: #2f62cf; --accent-soft: #e6edfa; --accent-ink: #214
         <div class="stat"><div class="k">95% interval</div><div class="v" id="cgCI">&hellip;</div></div>
         <div class="stat"><div class="k">Status</div><div class="v" id="cgStatus"><span class="pill-s ps-build">&hellip;</span></div></div>
       </div>
-      <p style="font-family:var(--sans);font-size:.86rem;color:var(--faint);margin:1rem 0 0">Suspension fires only when the entire interval sits below the 0.70 bar, which takes confident evidence, not a bad week. The leniency protects honest dissent; in the meantime, pay and vote weight do the everyday work of rewarding accuracy.</p>
     </div>
 
-    <p>Drag the case slider and watch the band shrink. A juror at 65% over 8 cases straddles the bar from both sides: maybe careless, maybe unlucky, the math honestly cannot tell yet, so the gate does nothing. The same 65% over 140 cases is a different fact. The band has pulled in tight, the whole interval sits under the bar, and the suspension is no longer a judgment call. It is a measurement.</p>
-    <p>Pay does not stop at the per-case fee. The 20% slice of every settlement fee, plus forfeited juror and appeal bonds, gathers into a reward pool that pays out privately on a regular cycle to jurors who prove they clear the quality and recency gates. The public sees the pool total and a proof of correct distribution, not each juror's amount. The pool is decoupled from any one verdict, so it can reward a track record without exposing or bending a vote.</p>
+    <p>The three-times draw cap matters because court security comes from a wide active pool, not a small class of stars. Accuracy still compounds into more work and private income, but no juror dominates selection.</p>
+    <p>A 20% slice of settlement fees plus forfeited bonds funds periodic private rewards for jurors who prove they meet quality and recency gates. Only the pool total and proof of correct distribution are public, so the reward cannot expose or bend one verdict.</p>
   </section>
 
   <section class="reveal">
     <p class="sec-label">Lenient on purpose</p>
     <h2>Why the gate waits so long</h2>
-    <p>A stricter gate sounds like higher standards. It is really a herding machine. If one rough stretch can end a career, the rational juror stops taking positions on hard cases and votes whatever the room will obviously say, because the obvious vote is the safe one. You would pay for accuracy with one hand and punish independence with the other, and the second instinct wins. So the suspension bar is set low, 0.70, and it acts only when the full interval is below it. A juror has to be confidently, persistently worse than that before the court shows them the door.</p>
-    <p>Leniency at the bottom does not mean softness everywhere. Full vote weight has a stricter bar: the interval has to sit clear of the line on the high side before a juror's ballot counts at full strength, and the private pay and draw dials track the score the whole way. A coasting juror earns less and is drawn less long before any gate fires, and the live reserve is already forfeiting margin-scaled slices on wrong-side votes. Individual debits stay private while the aggregate transfer to the reward pool is proved publicly. Low effort turns unprofitable years before it turns suspendable. The gate is the last resort, not the incentive.</p>
-    <p>And the design protects its most valuable juror: the one who disagrees with the whole panel and turns out to be right. A wrong-side slash is settled against the post-appeal outcome, not the first verdict. When a 15-seat panel gets it wrong and the 31-seat appeal overturns them, the original dissenter's private debit and score update are reversed, and the overturned majority takes the loss instead. No named public refund reveals who dissented. Dissent on a near-tie was already cheap, because the slash scales with margin. Vindicated dissent costs nothing at all, and that arithmetic keeps independent minds in the pool.</p>
+    <p>A hair-trigger suspension rule would reward safe majority guesses. If one rough stretch could end a career, rational jurors would avoid hard positions and follow the apparent room. Suspension therefore fires only when the full interval is below 0.70, meaning the evidence is confidently and persistently poor.</p>
+    <p>Leniency at that last gate is not softness everywhere. Private pay, draw rate, vote weight, and margin-scaled reserve penalties respond earlier; only their aggregate transfer is public. Low effort becomes unprofitable before uncertain evidence ends a career.</p>
+    <p>Wrong-side updates use the <b>post-appeal</b> outcome, not the first panel's verdict. If a 31-seat appeal overturns a 15-seat panel, the original dissenter's private debit and score update are reversed, while the overturned majority takes the loss. No public refund identifies the dissenter. Near-tie penalties were already small; vindicated dissent costs nothing.</p>
   </section>
 
   <section class="reveal">
     <p class="sec-label">Disputes</p>
     <h2>The ladder, and the two clocks</h2>
-    <p>Lose a verdict and still believe you are right? Then climb. An appeal redraws the case at the next panel size, 7 to 15 to 31, never the same size twice, so every retry faces a wider panel and worse odds for whoever is wrong. The price of each rung is not a number anyone picked. It is the highest of three floors computed from the live case: enough to pay the next panel's jurors, enough to beat the value of re-rolling (the attacker's capture odds times the stake at issue), and enough to rent the delay it imposes on everyone's money. A near-tie verdict discounts the climb, because a 16 to 15 split is the court itself admitting doubt, and the discount never dips below the floor that keeps grinding unprofitable.</p>
-    <p>There are two ways onto the ladder. Post the rung's bond alone, or gather a petition from the losing side: at least 5% of its verified humans, each staking a small refundable sliver. So a lone dissenter with conviction can climb solo, and a thousand sore losers have to pay with sincerity rather than a click. A failed climb forfeits its bond to the reward pool. A vindicated one is refunded with a bonus taken from the overturned majority's slashes, the same arithmetic that makes honest dissent free in the section above. Each verdict then stays open to appeal for a full week before it hardens: time enough for the slowest petition to gather, and affordable because tokenized positions keep trading while the clock runs.</p>
-    <p>And then the ladder ends, on purpose. The top rung's verdict is final: the pot pays, the tokens redeem, and no later discovery reopens settled money, because escrow that can be reopened forever is escrow nobody can build on. What never ends is the other clock. Anyone can later report evidence of collusion, but any correlation test must run over encrypted histories and publish only a proof of the rule breach, never a linkable voting history. Proven cliques lose their private bonds and eligibility, and the aggregate forfeiture feeds the reward pool. Two clocks, deliberately unsynchronized: settlement always finishes, justice never closes, and neither can hold the other hostage.</p>
+    <p>An appeal redraws at the next size, 7 to 15 to 31. Its bond is the highest of three live floors: pay the next panel, make re-rolling unprofitable (capture odds times the stake), and compensate for delay. Near ties receive a discount, but never below those floors.</p>
+    <p>A loser can post the bond alone or gather at least 5% of losing-side verified humans, each staking a refundable share. This lets one convinced dissenter climb without letting thousands of sore losers appeal with costless clicks. Failed appeals fund the reward pool; vindicated appellants receive a private refund and bonus.</p>
+    <p>Each rung uses one published <b>2&ndash;8 week</b> window. If nobody funds the next rung&mdash;or the 31-seat rung ends&mdash;the verdict becomes final and escrow settles. Launch rules still need bounded exits for failed quorum, exhausted standbys, proof failure, and panel disagreement. Later collusion can change private bonds and eligibility, not settled money.</p>
 
     <figure class="diagram reveal">
       <div class="diagram-inner">
         <div class="clocks">
           <div class="clock money">
-            <h4>The settlement clock &middot; always ends</h4>
+            <h4>The settlement clock &middot; finite ladder</h4>
             <div class="step">Verdict at 7 seats</div>
-            <div class="step">Appeal: bond or loser-side petition, floors price the rung, one month to file</div>
+            <div class="step">Appeal: bond or loser-side petition, with the configured 2&ndash;8-week window</div>
             <div class="step">15 seats, then 31, never the same size twice</div>
             <div class="step">Final verdict: the money pays out</div>
-            <p class="ends">Finality in a week if unchallenged, a month or two if it is contested, a few months at most when fought to the final panel, and settled escrow never reopens.</p>
+            <p class="ends">On the specified path, finality takes one window if unchallenged, plus one per appealed rung. Launch rules still need bounded exception exits.</p>
           </div>
           <div class="clock justice">
-            <h4>The justice clock &middot; never closes</h4>
-            <div class="step">Anyone reports a verdict, anytime, even years later</div>
-            <div class="step">Vote-correlation audit hunts the clique</div>
-            <div class="step">Proven colluders: bonds slashed, World IDs banned</div>
-            <div class="step">Colluders slashed and banned, their bonds feeding the reward pool</div>
+            <h4>The justice clock &middot; remains open</h4>
+            <div class="step">Anyone reports evidence of collusion, even years later</div>
+            <div class="step">Encrypted-history audit tests the published rule</div>
+            <div class="step">Proven colluders lose private bonds and eligibility; aggregate forfeiture funds the pool</div>
             <p class="ends">No deadline, and not one settled dollar held hostage.</p>
           </div>
         </div>
       </div>
-      <figcaption>The dispute system is two clocks that refuse to share gears. <b>Money runs on the fast one, accountability runs forever, and a cheater can finish the case yet never outrun the audit.</b></figcaption>
+      <figcaption><b>Settlement and accountability use separate clocks:</b> finality closes the ordinary payment path; later proven collusion changes private bonds and eligibility, not the payout.</figcaption>
     </figure>
   </section>
 
   <section class="reveal">
     <p class="sec-label">The appeal bond</p>
     <h2>Why a wider pool makes appeals cheaper</h2>
-    <p>Go back to those three floors for a moment, because one of them should have worried you. Two are plainly small: pay the next panel's jurors, and rent the delay the appeal imposes. The middle one reads differently. The attacker's capture odds times the stake at issue. On a ten-million-dollar case that sounds like a ten-million-dollar bond, a toll only the rich could pay, which would hand the whole ladder to whoever already has the deepest pockets. If that were how it worked, the appeal would become the very thing it exists to prevent. It is the opposite, and the reason is the property the court is already built on.</p>
-    <p>Capture odds are not a fixed number. They are set by the width of the pool. A bloc that is one in a hundred of a wide pool almost never lands a panel majority, so a bond equal to capture odds times the stake is the prize times a probability the pool has already crushed toward zero. On a healthy pool that middle floor rounds to nothing and drops out, and the rung falls back to the small floor: just cover the next panel. The stake climbs, the panel grows from 7 to 15 to 31, the odds of capturing it collapse faster than the prize rises, and appealing a ten-million-dollar verdict ends up costing about what it takes to pay thirty-one strangers for an afternoon. The wider and safer the court becomes, the cheaper it is to use. For once, security and affordability pull the same way.</p>
-    <p>The floor only wakes up where it should, in a thin pool. A brand-new market with a few hundred active jurors really can be swung by a determined bloc, so there the capture term rises to the prize times that genuine risk, plus a small safety factor, until the attack is not worth trying. Honest appellants in that thin corner pay more too, which is the court being honest: this pool is not yet wide enough to settle that much money for pocket change. Grow it and the cost falls on its own, with no parameter to retune. The bond defends against a bloc up to a set size; anything larger is the work of the parallel panels and the collusion audit, not the price tag. Drag the two sliders and watch the floors trade places.</p>
+    <p>The capture floor is probability times stake, not the whole stake. A ten-million-dollar case does not automatically require a ten-million-dollar bond. In a wide pool, a small bloc almost never wins a panel majority, so multiplying the prize by that tiny probability can drive the capture floor below the simple cost of seating the next panel.</p>
+    <p>As stakes grow, panels expand from 7 to 15 to 31 and capture odds can collapse faster than the prize rises. On a healthy pool, an appeal therefore falls back toward juror pay plus delay compensation. Security and affordability improve together.</p>
+    <p><b>The thin-pool limitation is real.</b> A new court with few active jurors is easier to swing, so the capture floor rises and honest appellants pay more too. That is not a hidden tax; it is a warning that the pool cannot yet settle that much money cheaply. Growing the pool lowers the price without retuning the rule. Parallel panels and later collusion audits handle blocs beyond the bond's stated threat model.</p>
 
     <div class="widget reveal">
       <div class="widget-head"><span class="live"></span> What does it cost to appeal?</div>
@@ -811,15 +752,14 @@ body.theme-solve { --accent: #2f62cf; --accent-soft: #e6edfa; --accent-ink: #214
       <p style="font-family:var(--sans);font-size:.86rem;color:var(--faint);margin:1rem 0 0">The bond you pay is whichever floor is taller. On a wide pool the green floor wins and stays flat and cheap no matter how large the stake; only a thin pool lets the blue capture floor rise.</p>
     </div>
 
-    <p>One number, set by the width of the pool, doing two jobs at once: pricing an attacker out of the largest cases and letting everyone else onto the ladder for the cost of a panel. The cheapest court to appeal in is the one that is hardest to capture.</p>
   </section>
 
   <section class="reveal">
     <p class="sec-label">Two courts</p>
     <h2>Two courts, one constitution</h2>
-    <p>Everything above assumes reality will eventually grade the question. Did bitcoin close above $100k, did the package arrive, who won the match: these belong to the objective court, where resolved cases for aptitude tests pile up and a lone bonded dissenter can always appeal a panel into a larger one. But some disputes will never get a scoreboard. Was the logo delivered to spec, was the apartment as described. No future fact arrives to settle them, so a court that pretends otherwise is grading its jurors against a resolved case for aptitude tests that does not exist.</p>
-    <p>The design's answer is a second court, not a stretched one. The rubric court is a separate product with its own track record, never borrowing the objective court's statistics, because they measure a different skill. It opens narrow, on rubric-checkable cases only: files against a spec, a photo against a listing, where most of the judgment is verification with a thin rim of opinion. Its jurors are graded on three signals that exist without a fixed external result: coherence with their own rubric scores, accuracy at predicting how the panel will split, and whether their verdicts survive the appeal ladder. Community-standard cases, the pure reasonable-person disputes, come later, once the narrow court has appeal data behind it. Either way the parties are told the standard up front, before they file. Both courts share the same constitution underneath: the same random draw, the same encrypted ballots, the same ladder. Only the grader changes.</p>
-    <p>Routing between them takes exactly one bit: will reality post the answer? Try it.</p>
+    <p>If reality will post an answer&mdash;a closing price, delivery record, or match result&mdash;the objective court can grade against it and turn curated outcomes into future aptitude tests. A lone bonded dissenter can still appeal into a wider panel.</p>
+    <p>Some questions never receive that scoreboard: whether files met a specification or a listing matched what arrived. A separate rubric court opens narrowly for evidence checked against a stated rubric. It keeps its own reputation history because rubric judgment and objective forecasting measure different skills. Its three signals are coherence between item scores and verdict, accuracy in predicting the panel split, and whether decisions survive appeal.</p>
+    <p>Pure community-standard disputes open only after that narrower court has enough appeal-tested evidence. Parties are told the standard before filing. Both courts share the random draw, private ballots, and appeal ladder; only the promised standard and grader change.</p>
 
     <div class="widget reveal">
       <div class="widget-head"><span class="live"></span> Which court does your question go to?</div>

@@ -35,6 +35,17 @@
 
     * { box-sizing: border-box; }
     html { scroll-behavior: smooth; }
+    .visually-hidden {
+      position: absolute !important;
+      width: 1px;
+      height: 1px;
+      padding: 0;
+      margin: -1px;
+      overflow: hidden;
+      clip: rect(0, 0, 0, 0);
+      white-space: nowrap;
+      border: 0;
+    }
     body {
       margin: 0;
       background: var(--paper);
@@ -424,6 +435,13 @@
     .source-list { color: var(--muted); font-family: var(--sans); font-size: .8rem; line-height: 1.55; }
     .source-list li { padding-left: .2rem; }
     .source-list a { overflow-wrap: anywhere; }
+    .appendix {
+      overflow: hidden;
+      padding: 0;
+    }
+    .appendix details:first-child { border-top: 0; }
+    .appendix summary { padding: 1rem 1.3rem; font-size: .9rem; }
+    .appendix .detail-body { color: var(--ink); font-family: var(--serif); font-size: .95rem; }
     .final-verdict {
       padding: 1.5rem;
       border: 2px solid var(--court);
@@ -504,7 +522,7 @@
 
   <header class="hero">
     <div class="hero-inner">
-      <p class="eyebrow">Independent project review · 9 July 2026</p>
+      <p class="eyebrow">Independent project review · updated 10 July 2026</p>
       <h1>DemoThemis &amp; PredictionMoMo</h1>
       <p class="dek">The big idea, how it could work, what is already built, and what still needs proof.</p>
       <div class="meta-row" aria-label="Review details">
@@ -516,8 +534,8 @@
       <div class="status-banner" role="note" aria-label="Important project status">
         <span class="status-icon" aria-hidden="true">!</span>
         <div>
-          <strong>Project status: interactive concept, not a working money app.</strong>
-          <p>The repository contains a polished website, calculators, and simulated journeys. It does not yet contain the real court, prediction market, smart contracts, wallets, World ID connection, private voting system, or live funds.</p>
+          <strong>Project status: deployed MVP, not production-ready.</strong>
+          <p>A source-verified World Chain slice includes World ID registration wiring, commit/reveal voting, escrow settlement, and fee routing with valueless test tokens. The live three-human capstone, receipt-free ballots, production randomness, hardened appeals and reputation, and an independent audit are still unfinished.</p>
         </div>
       </div>
     </div>
@@ -530,7 +548,7 @@
         <h2 id="quick-answer-title">What is this project?</h2>
         <p class="lead">People lock money around a question. If they disagree about the answer, randomly selected, verified people study the evidence, vote, and decide who receives the money.</p>
 
-        <div class="grid-3">
+        <div class="grid-2">
           <article class="card product-card market">
             <p class="mini-label">Product one</p>
             <h3>PredictionMoMo</h3>
@@ -539,26 +557,18 @@
           <article class="card product-card court">
             <p class="mini-label">Product two</p>
             <h3>DemoThemis</h3>
-            <p>A proposed online court. When people disagree, it would ask a randomly chosen group of verified humans to review the evidence and decide the result.</p>
-          </article>
-          <article class="card product-card">
-            <p class="mini-label">Why together?</p>
-            <h3>Each product helps the other</h3>
-            <p>The market could give the new court cases, fees, and a track record. The court could give the market a neutral way to settle disputed outcomes.</p>
+            <p>A human-juror court design with a deployed MVP slice. When people disagree, randomly selected, verified humans review evidence and decide the result.</p>
           </article>
         </div>
 
         <div class="plain-answer">
-          <strong>Simple analogy:</strong> PredictionMoMo is the game. DemoThemis is the referee. Escrow is the locked prize box that neither side can open until the referee finishes.
+          <strong>Why combine them?</strong> The market supplies cases and fees; the court supplies neutral resolution. Escrow keeps the money locked until the decision is final.
         </div>
 
         <div class="score-grid" aria-label="Overall assessment">
-          <div class="score-card good"><b>Product idea</b><span>Strong, unusual, and worth testing.</span></div>
-          <div class="score-card good"><b>Interactive explanation</b><span>Clear, polished, and persuasive.</span></div>
-          <div class="score-card good"><b>Static website</b><span>Healthy build and small attack surface.</span></div>
-          <div class="score-card warn"><b>Protocol design</b><span>Interesting, but several core rules are incomplete.</span></div>
-          <div class="score-card bad"><b>Real implementation</b><span>No contracts, wallet, court, or identity integration yet.</span></div>
-          <div class="score-card bad"><b>Ready for real money?</b><span>No. It remains a research prototype.</span></div>
+          <div class="score-card good"><b>Idea and explanation</b><span>Strong, unusual, clearly taught, and worth testing.</span></div>
+          <div class="score-card warn"><b>Deployed MVP</b><span>A real on-chain slice exists; its small panel and current ballot are demonstrations, not the full security design.</span></div>
+          <div class="score-card bad"><b>Production readiness</b><span>Not ready for real money: core mechanisms, live usage, and outside review remain unfinished.</span></div>
         </div>
       </section>
 
@@ -566,7 +576,7 @@
         <p class="section-label">The problem</p>
         <h2 id="problem-title">Why build a new referee?</h2>
         <p>Online deals and prediction markets need a trusted answer when people disagree. A company-controlled referee may favor the company. A token vote may give the richest wallets the most power.</p>
-        <p>DemoThemis tries a different base rule: one verified human can hold one juror seat. World ID is proposed as the proof that a juror is one unique person.</p>
+        <p>DemoThemis tries a different base rule: one verified human can hold one juror seat. The MVP wires World ID into registration; the full design still needs to prove that identity, privacy, recovery, and juror selection work safely together.</p>
         <div class="callout warning">
           <strong>Important limit</strong>
           “One human, one seat” can make it harder to create thousands of fake jurors. It does not prove that a person is honest, skilled, independent, awake, or impossible to pressure.
@@ -577,17 +587,18 @@
         <p class="section-label">The proposed journey</p>
         <h2 id="how-title">How one market could work</h2>
         <ol class="flow">
-          <li><b>Write a clear question</b><span>A creator asks something that should later have a YES or NO answer.</span></li>
-          <li><b>Lock money in escrow</b><span>People choose a side. The money goes into a locked software box, not to the winner yet.</span></li>
-          <li><b>Let the shared pool show the odds</b><span>The balance between the two sides becomes the displayed price. Early bets may receive extra weight.</span></li>
-          <li><b>Add fixed-price offers</b><span>A trader can offer a set price instead of accepting the shared pool’s changing odds.</span></li>
-          <li><b>Graduate a healthy market</b><span>If the market meets proposed liquidity tests, claims become wallet-held YES and NO tokens.</span></li>
-          <li><b>Propose the final answer</b><span>Someone posts an answer and risks a bond, which is money they can lose for being wrong.</span></li>
-          <li><b>Watch for a challenge</b><span>If nobody objects during the window, the answer pays. A challenged answer goes to court.</span></li>
-          <li><b>Draw verified human jurors</b><span>A public random process chooses a panel. A phone-based check is proposed to prove each juror is present.</span></li>
-          <li><b>Review evidence and vote privately</b><span>Jurors study the case. The system is meant to reveal only the total, not each person’s vote.</span></li>
-          <li><b>Appeal, finalize, and pay</b><span>A losing side may ask a larger panel to check the result. The final answer unlocks the escrow.</span></li>
+          <li><b>Create a question and lock funds</b><span>A creator writes a gradeable YES-or-NO question; participants choose sides while escrow holds the money.</span></li>
+          <li><b>Trade the possible answers</b><span>A shared pool shows changing odds, while fixed-price offers let traders name a price.</span></li>
+          <li><b>Post a bonded answer</b><span>Someone proposes the result and risks money for being wrong. If nobody challenges it, the market settles.</span></li>
+          <li><b>Challenge and draw jurors</b><span>A disputed answer triggers a random panel of verified humans, with a presence check proposed for each seat.</span></li>
+          <li><b>Review, vote, and appeal</b><span>Jurors study the evidence and the full design keeps individual votes private. A losing side may request a larger panel.</span></li>
+          <li><b>Finalize and release escrow</b><span>The final answer pays the winning claims and routes the court’s fees.</span></li>
         </ol>
+
+        <details>
+          <summary>Market details kept outside the main journey</summary>
+          <div class="detail-body"><p>Early pool positions may receive extra weight. A market that meets defined liquidity tests may later turn claims into wallet-held YES and NO tokens. Fixed offers, graduation, fee math, and token conversion still need exact conservation rules.</p></div>
+        </details>
 
         <div class="grid-2">
           <div class="card">
@@ -612,9 +623,9 @@
           <div class="loop-step">Finished cases build a record</div>
           <div class="loop-step">A stronger court attracts markets</div>
         </div>
-        <p class="loop-note">Text equivalent: markets → cases → fees → jurors and learning data → trust → more markets.</p>
+        <p class="visually-hidden">Markets create cases; cases create fees; fees pay jurors; finished cases build a record; and a stronger court attracts more markets.</p>
         <div class="plain-answer">
-          <strong>Proposed fee:</strong> 2% at settlement. Of that fee, 70% would pay jurors, 20% would fund longer-term juror rewards, and 10% would pay operating costs. PredictionMoMo may add up to another 1% business margin. These are design numbers, not live fees.
+          <strong>Fees:</strong> The on-chain MVP routes valueless test-token fees 70% to jurors, 20% to a reward pool, and 10% to operations. The wider product proposes a 2% settlement fee and up to another 1% PredictionMoMo margin; it has no real fee revenue yet.
         </div>
       </section>
 
@@ -623,7 +634,7 @@
         <h2 id="status-title">What exists today?</h2>
         <div class="table-wrap" role="region" aria-label="Implementation status table" tabindex="0">
           <table>
-            <caption>Clicking a simulated button shows the intended experience. It does not perform a blockchain transaction or prove that the mechanism is safe.</caption>
+            <caption>The deployed slice is real software, but its valueless tokens and narrow demo panel do not prove the production design safe.</caption>
             <thead>
               <tr>
                 <th scope="col">Area</th>
@@ -633,14 +644,13 @@
               </tr>
             </thead>
             <tbody>
-              <tr><th scope="row">Website</th><td><span class="tag built">Built</span></td><td>Eight public pages, diagrams, glossary, navigation, responsive styles.</td><td>A clear project-status page, team, roadmap, and conversion path.</td></tr>
-              <tr><th scope="row">Attack model</th><td><span class="tag simulated">Simulated</span></td><td>Sliders, presets, assumptions, attack cards, scenario checks.</td><td>Independent calibration, real data, correlated-failure testing.</td></tr>
-              <tr><th scope="row">Product journey</th><td><span class="tag simulated">Simulated</span></td><td>A 13-event walkthrough with mock application screens.</td><td>Real accounts, wallets, persistence, transactions, failure states.</td></tr>
-              <tr><th scope="row">Prediction market</th><td><span class="tag proposed">Proposed</span></td><td>Written mechanics and small interactive examples.</td><td>Contracts, exact token math, collateral, live trading, audits.</td></tr>
-              <tr><th scope="row">Human court</th><td><span class="tag proposed">Proposed</span></td><td>Panel, appeal, scoring, and incentive design.</td><td>Juror service, evidence system, final state machine, live testing.</td></tr>
-              <tr><th scope="row">World ID</th><td><span class="tag unproven">Unproven</span></td><td>A described role for proof of personhood and presence.</td><td>SDK/API integration, privacy design, recovery and outage handling.</td></tr>
-              <tr><th scope="row">Private ballots</th><td><span class="tag unproven">Unproven</span></td><td>A proposed threshold-encryption and re-voting idea.</td><td>Exact protocol, proofs, implementation, audit, privacy-safe slashing.</td></tr>
-              <tr><th scope="row">Real-money safety</th><td><span class="tag critical">Not ready</span></td><td>No live funds are handled by this repository.</td><td>Contracts, audits, operations, privacy and legal approval.</td></tr>
+              <tr><th scope="row">Explanation site</th><td><span class="tag built">Built</span></td><td>Diagrams, calculators, references, and guided journeys.</td><td>Team, public specification, contact route, and terms.</td></tr>
+              <tr><th scope="row">Court MVP</th><td><span class="tag built">Deployed</span></td><td>Source-verified World Chain contracts, commit/reveal voting, escrow settlement, and 70/20/10 fee routing.</td><td>Live three-human capstone and a wider, hardened court.</td></tr>
+              <tr><th scope="row">World ID path</th><td><span class="tag built">Wired</span></td><td>World ID 4.0 verifier in registration and duplicate-nullifier rejection.</td><td>Production-human capstone, recovery, outage, and privacy operations.</td></tr>
+              <tr><th scope="row">Browser evidence</th><td><span class="tag simulated">Mixed</span></td><td>Sandbox, attack model, guided flow, and chain-data dashboard.</td><td>Independent calibration, full failure journeys, and live-user evidence.</td></tr>
+              <tr><th scope="row">PredictionMoMo</th><td><span class="tag proposed">Proposed</span></td><td>Written market mechanics and interactive examples.</td><td>Contracts, exact token accounting, collateral, live trading, and audits.</td></tr>
+              <tr><th scope="row">Production court</th><td><span class="tag unproven">Unfinished</span></td><td>Panel, privacy, appeal, reputation, and incentive designs.</td><td>Receipt-free ballots, production randomness, hardened appeals and reputation, and independent review.</td></tr>
+              <tr><th scope="row">Real-money safety</th><td><span class="tag critical">Not ready</span></td><td>Only valueless MockUSD is used.</td><td>Completed mechanisms, operations, audits, privacy review, and legal approval.</td></tr>
             </tbody>
           </table>
         </div>
@@ -649,14 +659,27 @@
       <section class="section-block" id="strengths" aria-labelledby="strengths-title">
         <p class="section-label">What works well</p>
         <h2 id="strengths-title">The project has real strengths</h2>
-        <div class="strength-list">
+        <div class="grid-3">
           <article class="strength"><h3>Strong bootstrap idea</h3><p>The market could give a new court its first cases, income, and public history.</p></article>
-          <article class="strength"><h3>Excellent teaching prototype</h3><p>The widgets turn difficult ideas into controls a reviewer can explore.</p></article>
-          <article class="strength"><h3>Attacks are discussed openly</h3><p>Bribery, fake identities, lazy jurors, collusion, appeals, and capture are not ignored.</p></article>
-          <article class="strength"><h3>Wealth is not meant to equal jury power</h3><p>The court tries to count verified people instead of simply counting tokens.</p></article>
-          <article class="strength"><h3>Healthy static-site engineering</h3><p>The public build is allowlisted, dependencies are local, and baseline browser headers are present.</p></article>
-          <article class="strength"><h3>Uncertainty is partly visible</h3><p>The attack model labels many inputs as low-confidence or future assumptions.</p></article>
+          <article class="strength"><h3>Real, clearly bounded MVP</h3><p>The source-verified on-chain slice and teaching widgets make the proposal inspectable without pretending it is finished.</p></article>
+          <article class="strength"><h3>Attacks are discussed openly</h3><p>Bribery, fake identities, collusion, appeals, capture, and uncertain assumptions are visible.</p></article>
         </div>
+      </section>
+
+      <section class="section-block" id="resolved-decisions" aria-labelledby="resolved-title">
+        <p class="section-label">Resolved design decision</p>
+        <h2 id="resolved-title">Private votes require private consequences</h2>
+        <article class="finding medium" id="finding-ballot-privacy">
+          <div class="finding-head">
+            <span class="finding-number">01</span>
+            <div><span class="status">Resolved in design · implementation must prove it</span><h3>Can a secret vote remain secret?</h3></div>
+          </div>
+          <div class="finding-body">
+            <p>Yes—if exact reputation, reserves, payments, penalties, refunds, and case history also stay private. The public should see one-case pseudonyms, limited eligibility proofs, the aggregate tally, and aggregate accounting, never a named consequence that reveals a vote.</p>
+            <p><b>Still required:</b> audited private commitments, batched accounting, aggregate-only tallying, and unlinkable payouts.</p>
+          </div>
+          <details><summary>Remaining implementation work and evidence</summary><div class="detail-body"><p>The rule is “public proofs and aggregate accounting; private votes, histories, balances, reputation, penalties, refunds, and payments.” Each case uses a new pseudonym and receiving key. Zero-knowledge proofs reveal only eligibility, a reputation band, sufficient reserve, and correct private updates. Correlation checks must run over encrypted histories and reveal only a proved rule breach. Threshold encryption alone does not force aggregate-only decryption, so the commitments, batched accounting, metadata boundary, and unlinkable payout flow still require specification and independent audit.</p><p class="evidence"><b>Repository evidence:</b> <code>demothemis.html:463–513, 646–725</code>.</p></div></details>
+        </article>
       </section>
 
       <section class="section-block" id="critical-questions" aria-labelledby="questions-title">
@@ -665,18 +688,6 @@
         <p class="lead">These do not mean the idea cannot work. They mean the project must answer them before it can safely hold real money.</p>
 
         <div class="findings">
-          <article class="finding" id="finding-ballot-privacy">
-            <div class="finding-head">
-              <span class="finding-number">01</span>
-              <div><span class="status">Resolved in design · implementation must prove it</span><h3>Can a secret vote remain secret?</h3></div>
-            </div>
-            <div class="finding-body">
-              <p>The design now keeps each juror’s exact reputation, reserve, payments, penalties, refunds, and case history private. The public sees one-case pseudonyms, eligibility and reserve proofs, the aggregate tally, and aggregate accounting—never a named consequence that could reveal a vote.</p>
-              <div class="why"><div><b>Why it matters</b><span>A public payment or punishment could become a voting receipt even when the ballot itself stayed encrypted.</span></div><div><b>What remains</b><span>Specify, implement, and audit the private commitments, batched accounting, aggregate-only tally, and unlinkable payout flow.</span></div></div>
-            </div>
-            <details><summary>Technical detail and evidence</summary><div class="detail-body"><p>The corrected rule is “public proofs and aggregate accounting; private votes, histories, balances, reputation, penalties, refunds, and payments.” Each case uses a new pseudonym and receiving key. Zero-knowledge proofs reveal only eligibility, a reputation band, sufficient reserve, and correct private updates. Correlation checks must run over encrypted histories and reveal only a proved rule breach. Ordinary threshold encryption still does not automatically force aggregate-only decryption, so the production protocol and its metadata boundary require independent review.</p><p class="evidence"><b>Repository evidence:</b> <code>demothemis.html:493–542, 702–751, 759</code>.</p></div></details>
-          </article>
-
           <article class="finding" id="finding-finality">
             <div class="finding-head">
               <span class="finding-number">02</span>
@@ -686,7 +697,7 @@
               <p>Large cases may use several juries and require every jury to agree. One honest disagreement, missing panel, or malicious holdout could stop the money from paying.</p>
               <div class="why"><div><b>Why it matters</b><span>An attacker may not need to control the verdict. Delaying it forever could be cheaper.</span></div><div><b>What to do</b><span>Define quorum, deadlines, replacement rules, how panels combine, and a final fallback that always ends.</span></div></div>
             </div>
-            <details><summary>Technical detail and evidence</summary><div class="detail-body"><p>The simulator raises one-panel capture probability to the number of panels. That models how hard it is to capture every panel, but not how easy it may be to cause one disagreement. It also leaves out shared evidence errors, juror outages, abstentions, and correlated mistakes.</p><p class="evidence"><b>Repository evidence:</b> <code>demothemis.html:574–575</code>; <code>game-theory.html:1020–1021</code>.</p></div></details>
+            <details><summary>Technical detail and evidence</summary><div class="detail-body"><p>The simulator raises one-panel capture probability to the number of panels. That models how hard it is to capture every panel, but not how easy it may be to cause one disagreement. It also leaves out shared evidence errors, juror outages, abstentions, and correlated mistakes.</p><p class="evidence"><b>Repository evidence:</b> <code>demothemis.html:519–551</code>; <code>game-theory.html:1020–1021</code>.</p></div></details>
           </article>
 
           <article class="finding" id="finding-token-accounting">
@@ -720,9 +731,9 @@
             </div>
             <div class="finding-body">
               <p>An answer that nobody challenged is not always true. It may only be small, obscure, or badly timed. Turning unnoticed mistakes into juror test questions could teach the court the wrong lesson.</p>
-              <div class="why"><div><b>Why it matters</b><span>Bad training data can make a confident system consistently wrong.</span></div><div><b>What to do</b><span>Separate court verdicts from outside facts, require evidence quality rules, audit watchers, and define who can create synthetic tests.</span></div></div>
+              <p><b>Next:</b> Separate court verdicts from outside facts, govern evidence quality and synthetic tests, and audit watchers.</p>
             </div>
-            <details><summary>Technical detail and evidence</summary><div class="detail-body"><p>Private markets may also be used as hidden tests, but participants could collude to plant a false answer. Synthetic-test governance is explicitly marked “TBA.” The market token can lower the curation bar even though governance copy says it cannot affect court test data, creating an indirect leak through the claimed firewall.</p><p class="evidence"><b>Repository evidence:</b> <code>demothemis.html:635–695</code>; <code>governance.html:111, 147, 234</code>.</p></div></details>
+            <details><summary>Risk, next step, and evidence</summary><div class="detail-body"><div class="why"><div><b>Why it matters</b><span>Bad training data can make a confident system consistently wrong.</span></div><div><b>What to do</b><span>Separate court verdicts from outside facts, require evidence-quality rules, audit watchers, and define who may create synthetic tests.</span></div></div><p>Private markets may also be used as hidden tests, but participants could collude to plant a false answer. Synthetic-test governance is explicitly left open. The market token can lower the curation bar even though governance copy says it cannot affect court test data, creating an indirect leak through the claimed firewall.</p><p class="evidence"><b>Repository evidence:</b> <code>demothemis.html:584–641</code>; <code>governance.html:107–123, 139–147, 237–248</code>.</p></div></details>
           </article>
 
           <article class="finding medium" id="finding-conflicts">
@@ -732,9 +743,9 @@
             </div>
             <div class="finding-body">
               <p>A juror may hide an interest in another wallet or through a third party. An attacker may also send tiny unwanted tokens to a juror so that the juror looks conflicted and gets replaced.</p>
-              <div class="why"><div><b>Why it matters</b><span>Replacement rules can be attacked, while hidden interests may still pass the screen.</span></div><div><b>What to do</b><span>Use a pre-draw snapshot, ignore unsolicited dust, hide summons, define exposure rules, and limit juror trading during a case.</span></div></div>
+              <p><b>Next:</b> Use pre-draw snapshots, ignore unsolicited dust, hide summons, define exposure rules, and limit trading during a case.</p>
             </div>
-            <details><summary>Technical detail and evidence</summary><div class="detail-body"><p>Drawn pseudonyms and wallets are meant to be public for audit, while outcome tokens continue trading during court review. That creates targeting, chain-analysis, hedging, and possible insider-trading problems. Positions may also be hidden through custodians, lending pools, derivatives, or parlays.</p><p class="evidence"><b>Repository evidence:</b> <code>demothemis.html:443, 516, 523–525</code>; <code>prediction-market.html:486–488</code>.</p></div></details>
+            <details><summary>Risk, next step, and evidence</summary><div class="detail-body"><div class="why"><div><b>Why it matters</b><span>Replacement rules can be attacked, while hidden interests may still pass the screen.</span></div><div><b>What to do</b><span>Use a pre-draw snapshot, ignore unsolicited dust, hide summons, define exposure rules, and limit juror trading during a case.</span></div></div><p>Case-specific pseudonyms and the draw must remain auditable while outcome tokens continue trading during review. That creates targeting, chain-analysis, hedging, and possible insider-trading problems. Positions may also be hidden through custodians, lending pools, derivatives, or parlays.</p><p class="evidence"><b>Repository evidence:</b> <code>demothemis.html:412–438, 488–508</code>; <code>prediction-market.html:486–488</code>.</p></div></details>
           </article>
 
           <article class="finding medium" id="finding-upgrades">
@@ -744,9 +755,9 @@
             </div>
             <div class="finding-body">
               <p>A truly unchangeable constitution cannot fix a serious bug. An upgradeable constitution needs someone or some process with upgrade power. That power can become another capture risk.</p>
-              <div class="why"><div><b>Why it matters</b><span>Financial software needs both strong limits and a safe way to respond to failures.</span></div><div><b>What to do</b><span>Define ownership, guardians, pauses, upgrades, delays, migrations, key custody, user exits, and emergency limits.</span></div></div>
+              <p><b>Next:</b> Specify guarded pauses, upgrades, delays, migrations, key custody, user exits, and emergency limits.</p>
             </div>
-            <details><summary>Technical detail and evidence</summary><div class="detail-body"><p>The court token uses square-root token weight, service multipliers, a per-person cap, and a 4% active-weight quorum. The denominator, low-turnout behavior, and manipulation of paid service history need specification. Paying fees to manufacture service is not automatically useless if the governance power gained is worth more than the burn.</p><p class="evidence"><b>Repository evidence:</b> <code>governance.html:153–176, 220, 227–243</code>.</p></div></details>
+            <details><summary>Risk, next step, and evidence</summary><div class="detail-body"><div class="why"><div><b>Why it matters</b><span>Financial software needs both strong limits and a safe way to respond to failures.</span></div><div><b>What to do</b><span>Define ownership, guardians, pauses, upgrades, delays, migrations, key custody, user exits, and emergency limits.</span></div></div><p>The court token uses square-root token weight, service multipliers, a per-person cap, and a 4% active-weight quorum. The denominator, low-turnout behavior, and manipulation of paid service history need specification. Paying fees to manufacture service is not automatically useless if the governance power gained is worth more than the burn.</p><p class="evidence"><b>Repository evidence:</b> <code>governance.html:153–181, 202–223, 227–248</code>.</p></div></details>
           </article>
 
           <article class="finding medium" id="finding-state-machines">
@@ -755,17 +766,10 @@
               <div><span class="status">High · incomplete state machines</span><h3>What happens when real life is messy?</h3></div>
             </div>
             <div class="finding-body">
-              <p>The happy path is clear. Many failure paths are not. The rules need an ending for cancelled events, missing jurors, conflicting evidence, broken collateral, and more.</p>
-              <div class="why"><div><b>Why it matters</b><span>Most serious financial bugs live in unusual transitions, not the normal path.</span></div><div><b>What to do</b><span>Write a complete state diagram and invariants before writing smart contracts.</span></div></div>
-              <ul>
-                <li>No one proposes an answer, or two people propose different answers.</li>
-                <li>An event is cancelled, delayed, partly complete, or impossible to grade.</li>
-                <li>Too few jurors answer, a juror withdraws, or several panels disagree.</li>
-                <li>Collateral loses value, is frozen, or moves across a failed bridge.</li>
-                <li>An upgrade, pause, migration, refund, or final appeal is required.</li>
-              </ul>
+              <p>The run-through now maps the happy path and named failure exits, but several amber exits remain deliberately unresolved. Cancelled events, missing jurors, panel disagreement, collateral failure, migration, and recovery still need executable rules.</p>
+              <p><b>Next:</b> Turn every unresolved exit into a specified transition and invariant before extending the contracts.</p>
             </div>
-            <details><summary>Technical detail and evidence</summary><div class="detail-body"><p>Appeal timing also differs across the site: one place says a full week, another says one month, and governance permits two to eight weeks. Bond sizing, fee rounding, dust, replay, double finalization, and emergency recovery are not specified.</p><p class="evidence"><b>Repository evidence:</b> <code>demothemis.html:755, 764</code>; <code>governance.html:241</code>.</p></div></details>
+            <details><summary>Missing paths, next step, and evidence</summary><div class="detail-body"><div class="why"><div><b>Why it matters</b><span>Most serious financial bugs live in unusual transitions, not the normal path.</span></div><div><b>What to do</b><span>Specify every unresolved transition and its invariants before extending the contracts.</span></div></div><ul><li>No answer, or competing answers.</li><li>A cancelled, delayed, partial, or ungradeable event.</li><li>Too few jurors, withdrawal, or panel disagreement.</li><li>Frozen, depegged, or bridged collateral.</li><li>An upgrade, pause, migration, refund, or final appeal.</li></ul><p>Appeal timing is now aligned to a governance-configurable 2–8-week window recorded per case. The launch value, timeout transitions, bond sizing, fee rounding, dust, replay, double finalization, and emergency recovery still need tests and specification.</p><p class="evidence"><b>Repository evidence:</b> <code>the-design.html:1289–1347, 2024–2367</code>; <code>demothemis.html:698–725</code>; <code>governance.html:248</code>.</p></div></details>
           </article>
 
           <article class="finding medium" id="finding-world-id">
@@ -774,10 +778,10 @@
               <div><span class="status">High · external dependency</span><h3>Does World ID provide every required feature?</h3></div>
             </div>
             <div class="finding-body">
-              <p>World ID may help prove that one account belongs to one unique person. The project still needs to prove that draw-time presence, privacy between cases, recovery, reputation, and on-chain checks work together as described.</p>
-              <div class="why"><div><b>Why it matters</b><span>A provider outage, false rejection, stolen phone, replay, or policy change could stop the court.</span></div><div><b>What to do</b><span>Build a small integration test before treating the exact identity flow as available infrastructure.</span></div></div>
+              <p>The MVP proves on-chain verifier wiring and duplicate-nullifier rejection. It does not yet prove that real-human onboarding, draw-time presence, privacy between cases, recovery, reputation, and outages work together.</p>
+              <p><b>Next:</b> Complete the human capstone, then test presence, recovery, privacy, and outage paths.</p>
             </div>
-            <details><summary>Technical detail and evidence</summary><div class="detail-body"><p>Current World documentation supports privacy-preserving proof of human and on-chain verification. It describes high-assurance Orb-backed uniqueness separately from Selfie Check, which is labeled beta. The repository’s exact mix of persistent eligibility, draw-bound face continuity, unlinkable case proofs, private reputation commitments, and contract enforcement is not demonstrated.</p><p class="evidence"><b>Repository evidence:</b> <code>demothemis.html:470–487</code>. <b>External sources:</b> World ID Overview and On-chain Verification, listed below.</p></div></details>
+            <details><summary>Risk, next step, and evidence</summary><div class="detail-body"><div class="why"><div><b>Why it matters</b><span>An outage, false rejection, stolen phone, replay, or policy change could stop the court.</span></div><div><b>What to do</b><span>Complete the three-human capstone, then test presence, recovery, privacy, and outage paths before relying on the full identity flow.</span></div></div><p>World documentation supports privacy-preserving proof of human and on-chain verification. It describes high-assurance Orb-backed uniqueness separately from Selfie Check, which is labeled beta. The source-verified MVP wires the Production verifier, while current enforcement traces use Simulator/Staging identities and no real person has completed the Production-verifier capstone. The fuller mix of persistent eligibility, draw-bound face continuity, unlinkable case proofs, private reputation commitments, and contract enforcement remains unproven.</p><p class="evidence"><b>Repository evidence:</b> <code>mvp.html:145–172</code>; <code>DemoThemisMVP/README.md:26–60</code>; <code>demothemis.html:441–460</code>. <b>External sources:</b> World ID Overview and On-chain Verification, listed in the appendix.</p></div></details>
           </article>
 
           <article class="finding medium" id="finding-law">
@@ -786,164 +790,150 @@
               <div><span class="status">High · law and operations</span><h3>Can it legally and safely handle real money?</h3></div>
             </div>
             <div class="finding-body">
-              <p>Prediction markets, gambling, financial products, customer funds, identity checks, sanctions, and consumer protection have different rules in different countries. “Any topic, any country, no account” is not a safe launch promise.</p>
-              <div class="why"><div><b>Why it matters</b><span>A technically working market can still be illegal, inaccessible, or unsafe for customers.</span></div><div><b>What to do</b><span>Choose one launch region, restrict market types, and obtain specialist legal, compliance, and responsible-gambling advice.</span></div></div>
+              <p>The public copy now says “eligible, clearly worded markets,” but eligibility still has no launch-region, topic, age, identity, sanctions, or licensing rules. Those rules differ by country.</p>
+              <p><b>Next:</b> Choose one launch region, restrict market types, and obtain specialist legal, compliance, and responsible-gambling advice.</p>
             </div>
-            <details><summary>Technical detail and evidence</summary><div class="detail-body"><p>In the United States, the CFTC says public prediction-market contracts may be swaps or futures and a public market may need designated-contract-market registration. Great Britain requires an appropriate licence to provide remote gambling to British consumers, including when the operator is based abroad. A real service also needs market surveillance, customer-fund controls, AML/sanctions processes, age rules, complaints, incident response, and operational monitoring.</p><p class="evidence"><b>External sources:</b> CFTC 2026 Prediction Markets notice and UK Gambling Commission remote-sector guidance, listed below. This review is not legal advice.</p></div></details>
+            <details><summary>Risk, next step, and evidence</summary><div class="detail-body"><div class="why"><div><b>Why it matters</b><span>A technically working market can still be illegal, inaccessible, or unsafe for customers.</span></div><div><b>What to do</b><span>Choose one launch region, restrict market types, and obtain specialist legal, compliance, and responsible-gambling advice.</span></div></div><p>In the United States, the CFTC says public prediction-market contracts may be swaps or futures and a public market may need designated-contract-market registration. Great Britain requires an appropriate licence to provide remote gambling to British consumers, including when the operator is based abroad. A real service also needs market surveillance, customer-fund controls, AML/sanctions processes, age rules, complaints, incident response, and operational monitoring.</p><p class="evidence"><b>External sources:</b> CFTC 2026 Prediction Markets notice and UK Gambling Commission remote-sector guidance, listed in the appendix. This review is not legal advice.</p></div></details>
           </article>
         </div>
       </section>
 
-      <section class="section-block" id="product-ux" aria-labelledby="ux-title">
-        <p class="section-label">Communication and usability</p>
-        <h2 id="ux-title">Product and website critique</h2>
-        <div class="grid-2">
-          <div class="card">
-            <h3>Make the message more trustworthy</h3>
-            <ul>
-              <li>Replace “bulletproof,” “unbuyable,” and “no chance of getting scammed.”</li>
-              <li>Say “designed to raise attack costs under stated assumptions.”</li>
-              <li>Show <b>Built</b>, <b>Simulated</b>, <b>Proposed</b>, and <b>Unproven</b> on every key page.</li>
-              <li>Separate a true five-minute tour from the full technical reference.</li>
-              <li>Add the team, roadmap, grant request, source/spec link, contact route, risks, privacy, and terms.</li>
-            </ul>
-          </div>
-          <div class="card">
-            <h3>Make the journeys more honest</h3>
-            <ul>
-              <li>The 13-event “one market” tour is really a service blueprint with many different actors.</li>
-              <li>Label whether the user is a creator, trader, watcher, juror, loser, or winner.</li>
-              <li>Show quiet settlement before the rare full appeal path.</li>
-              <li>Add failed identity checks, bad wording, missing liquidity, juror timeout, panel disagreement, and cancelled markets.</li>
-              <li>Let reviewers share an exact simulator state through the URL.</li>
-            </ul>
-          </div>
+      <section class="section-block" id="recommendations" aria-labelledby="recommendations-title">
+        <p class="section-label">Product, protocol, and usability</p>
+        <h2 id="recommendations-title">A shorter, safer development path</h2>
+        <div class="roadmap">
+          <article class="road-step"><h3>Keep claims and status current</h3><p>Maintain the new deployed, simulated, proposed, and unfinished labels as implementation changes; keep safety claims conditional and reading times honest.</p></article>
+          <article class="road-step"><h3>Complete one official specification</h3><p>Define every role, state, deadline, failure path, equation, trust assumption, privacy promise, and upgrade rule; archive conflicting drafts.</p></article>
+          <article class="road-step"><h3>Test the four hardest mechanisms</h3><p>Stress private tally and consequence accounting, World ID presence and privacy, pool-to-token conservation, and replacement plus guaranteed finality. Include unsafe and correlated scenarios.</p></article>
+          <article class="road-step"><h3>Harden one narrow path</h3><p>Finish the three-human capstone, then prove one objective binary case with one valueless asset, production randomness, a wider panel, one appeal, receipt-free voting, failures, and final settlement.</p></article>
+          <article class="road-step"><h3>Obtain outside review</h3><p>Cryptography, contracts, economics, identity, privacy, accessibility, operations, and law all need specialist review before real funds.</p></article>
         </div>
-
         <div class="callout warning">
-          <strong>The reading-time promise should be corrected.</strong>
-          The home page calls six chapters “about a 7 minute tour,” while chapter one alone offers a four-minute overview plus a 35-minute reference. The static prose is already roughly 19,000 words before all generated simulator text.
+          <strong>Defer extra complexity.</strong>
+          Parlays, lending collateral, court tokens, private markets, rubric courts, permanent collusion audits, and broad marketplace arbitration should wait until the narrow path works.
         </div>
 
-        <h3>Accessibility priorities</h3>
-        <ul>
-          <li>Darken faint text and small green labels so they meet contrast rules.</li>
-          <li>Keep a visible keyboard focus ring on every range slider and button.</li>
-          <li>Use native controls or <code>aria-pressed</code> for selected options.</li>
-          <li>Add <code>aria-current</code> to active navigation and a skip link before repeated menus.</li>
-          <li>Announce only the small result that changed, not an entire rebuilt mock screen.</li>
-          <li>Always pair color with words such as Safe, Warning, or Failed.</li>
-        </ul>
+        <details>
+          <summary>Product, journey, and accessibility checklist</summary>
+          <div class="detail-body">
+            <div class="grid-3">
+              <div>
+                <h3>Message</h3>
+                <ul><li>Keep safety claims tied to stated assumptions.</li><li>Maintain the short-tour and technical-reference split.</li><li>Add the team, roadmap, grant request, specification, contact, risks, privacy, and terms.</li></ul>
+              </div>
+              <div>
+                <h3>Journeys</h3>
+                <ul><li>Label each actor in the service blueprint.</li><li>Show quiet settlement before a full appeal.</li><li>Add failed identity, bad wording, low liquidity, timeout, panel split, and cancellation paths.</li><li>Make exact simulator states shareable by URL.</li></ul>
+              </div>
+              <div>
+                <h3>Accessibility</h3>
+                <ul><li>Meet contrast rules and keep visible keyboard focus.</li><li>Use native controls or <code>aria-pressed</code>, plus <code>aria-current</code> in navigation.</li><li>Announce only changed results and pair color with words such as Safe, Warning, or Failed.</li></ul>
+              </div>
+            </div>
+          </div>
+        </details>
       </section>
 
       <section class="section-block" id="engineering" aria-labelledby="engineering-title">
         <p class="section-label">Code and operations</p>
         <h2 id="engineering-title">Repository review</h2>
-        <p>The website is healthy for a prototype. It will become harder to maintain if it keeps growing in its current form.</p>
+        <p>The explanation site is healthy for a prototype, and the separate MVP workspace now contains contracts, an application, tests, documentation, and an MIT licence. Their different evidence levels must stay explicit.</p>
         <div class="table-wrap" role="region" aria-label="Engineering strengths and gaps" tabindex="0">
           <table>
             <caption>Current repository engineering</caption>
             <thead><tr><th scope="col">Healthy today</th><th scope="col">Needs improvement</th></tr></thead>
             <tbody>
-              <tr><td>Explicit public-file allowlist prevents internal drafts from shipping.</td><td>No README, package manifest, lockfile, standard command list, or project licence.</td></tr>
+              <tr><td>Explicit public-file allowlist prevents internal drafts from shipping.</td><td>The explanation-site root still lacks a concise README, package manifest, standard command list, and licence.</td></tr>
               <tr><td>Build checks local links, metadata, routes, and internal-file leakage.</td><td>Large HTML files mix content, CSS, state, formulas, rendering, and events.</td></tr>
               <tr><td>Popper and Tippy are stored locally with their licences.</td><td>Navigation and public-page lists are repeated in several files.</td></tr>
               <tr><td>Baseline CSP, frame protection, referrer, MIME, and permissions headers are live.</td><td>Inline scripts and styles require the weaker <code>unsafe-inline</code> CSP rule.</td></tr>
-              <tr><td>The model validator and eight-page smoke test pass.</td><td>CI does not execute full browser journeys, inspect console errors, or run accessibility scans.</td></tr>
-              <tr><td>The site has no current login, database, upload, or payment attack surface.</td><td>Older Markdown disagrees with the current public design, including the rejected commit-reveal ballot.</td></tr>
+              <tr><td>The model validator and site smoke tests pass.</td><td>CI does not execute full browser journeys, inspect console errors, or run accessibility scans.</td></tr>
+              <tr><td>The MVP documents source-verified deployments and a substantial contract test suite.</td><td>The live three-human capstone, production hardening, and independent audit are still pending.</td></tr>
+              <tr><td>The explanation site itself has no login, upload, or payment surface.</td><td>The MVP adds identity, wallet, transaction, and contract risks that need a separate threat model and operations plan.</td></tr>
             </tbody>
           </table>
         </div>
         <div class="callout">
-          <strong>Recommended repository boundary</strong>
-          Keep this repository as the explanation and prototype site. Put contracts, identity integration, cryptography, indexing, evidence storage, and dispute services in a separate, clearly documented implementation workspace.
+          <strong>Keep the boundary clear</strong>
+          Treat this site as the explanation and prototype, and <code>DemoThemisMVP</code> as implementation evidence. Maintain one shared status map so deployed facts, simulations, and future mechanisms do not drift apart.
         </div>
       </section>
 
-      <section class="section-block" id="roadmap" aria-labelledby="roadmap-title">
-        <p class="section-label">Practical next steps</p>
-        <h2 id="roadmap-title">A safer development path</h2>
-        <div class="roadmap">
-          <article class="road-step"><h3>Tell readers the exact status</h3><p>Clearly label what is built, simulated, proposed, measured, audited, and still unknown. Remove absolute safety claims.</p></article>
-          <article class="road-step"><h3>Write one official specification</h3><p>Define every role, state, deadline, failure path, equation, trust assumption, privacy promise, and upgrade rule. Archive or remove conflicting old drafts.</p></article>
-          <article class="road-step"><h3>Test the four hardest ideas separately</h3><p>Prototype private tally plus slashing; World ID presence plus privacy; pool-to-token accounting; and jury replacement plus guaranteed finality.</p></article>
-          <article class="road-step"><h3>Make the simulator adversarial</h3><p>Add unsafe presets, correlated mistakes, poisoned test data, no-watcher periods, juror denial-of-service, low turnout, and independently chosen assumptions.</p></article>
-          <article class="road-step"><h3>Build one small testnet path</h3><p>One objective binary market, one collateral asset, one seven-person jury, one appeal, and one final payout. No real money.</p></article>
-          <article class="road-step"><h3>Seek outside review before real funds</h3><p>Cryptography, smart contracts, economics, identity, privacy, accessibility, operations, and law all need specialist review.</p></article>
+      <section class="section-block" id="appendix" aria-labelledby="appendix-title">
+        <p class="section-label">Optional reference</p>
+        <h2 id="appendix-title">Evidence and reference appendix</h2>
+        <p>The review method, plain-language definitions, and source list remain available without slowing the main reading path.</p>
+        <div class="card appendix">
+          <details id="verification">
+            <summary>What was checked and the limits of this review</summary>
+            <div class="detail-body">
+              <ul>
+                <li>Mapped the explanation site, separate MVP workspace, and deployment boundary.</li>
+                <li>Read the product, court, market, governance, bootstrap, model, build, test, MVP-status, and grant documentation.</li>
+                <li>Ran <code>node tools/build-site.js</code>, <code>node tools/validate-gamelab.js</code>, and <code>node tools/smoke-site.js</code>. All passed at review time.</li>
+                <li>Used the rendered site on desktop and a narrow viewport; tested navigation, a guided event, and the private-vote model control.</li>
+                <li>Checked browser warnings, security headers, the public-file boundary, the MVP evidence page, and documented deployment traces.</li>
+              </ul>
+              <p class="callout"><strong>Scope limit</strong>This is a product, repository, security-design, and credibility review—not a contract or cryptography audit, economic certification, privacy impact assessment, or legal opinion. The deployed slice uses valueless test tokens and has not completed its live three-human capstone.</p>
+            </div>
+          </details>
+
+          <details id="glossary">
+            <summary>Short glossary</summary>
+            <div class="detail-body">
+              <dl class="glossary-grid">
+                <div><dt>Prediction market</dt><dd>A place where people put money behind different answers.</dd></div>
+                <div><dt>Protocol</dt><dd>A shared rulebook carried out by software.</dd></div>
+                <div><dt>Escrow</dt><dd>Money locked until the rules say who receives it.</dd></div>
+                <div><dt>Collateral</dt><dd>Money or assets backing a promise or claim.</dd></div>
+                <div><dt>Token</dt><dd>A digital claim ticket. It is not automatically company ownership.</dd></div>
+                <div><dt>Assertion</dt><dd>Someone’s proposed final answer.</dd></div>
+                <div><dt>Challenge</dt><dd>A formal objection to the proposed answer.</dd></div>
+                <div><dt>Bond</dt><dd>Money risked to discourage dishonest or careless claims.</dd></div>
+                <div><dt>Juror panel</dt><dd>A small group selected to decide a dispute.</dd></div>
+                <div><dt>Verified human</dt><dd>A person who has proved uniqueness, not honesty or skill.</dd></div>
+                <div><dt>Private ballot</dt><dd>A vote that should not reveal how one person voted.</dd></div>
+                <div><dt>Appeal</dt><dd>A request for another, usually larger, panel to check a ruling.</dd></div>
+                <div><dt>Finality</dt><dd>The point when the decision pays and cannot reopen.</dd></div>
+                <div><dt>Governance</dt><dd>The process used to change system rules.</dd></div>
+                <div><dt>Aptitude test</dt><dd>A quiz estimating whether a juror understands a topic.</dd></div>
+                <div><dt>Sybil attack</dt><dd>One person pretending to be many people.</dd></div>
+                <div><dt>Smart contract</dt><dd>Blockchain code that moves assets according to rules.</dd></div>
+                <div><dt>Threshold encryption</dt><dd>A lock that needs several key holders to cooperate before it opens.</dd></div>
+              </dl>
+            </div>
+          </details>
+
+          <details id="sources">
+            <summary>Key sources</summary>
+            <div class="detail-body">
+              <ol class="source-list">
+                <li><a href="index.html">Project home page</a>, especially claims and chapter map around <code>index.html:49–153</code>.</li>
+                <li><a href="mvp.html">Working MVP evidence page</a> and <code>DemoThemisMVP/README.md</code>, especially deployment status, real-versus-simulated boundaries, and open milestones.</li>
+                <li><a href="demothemis.html">DemoThemis design</a>, especially lifecycle, private ballots, panels, scoring, and appeals around <code>demothemis.html:240–776</code>.</li>
+                <li><a href="game-theory.html">Break the court model</a> and <a href="assumptions.js">its assumption list</a>, including model computation around <code>game-theory.html:612–1127</code>.</li>
+                <li><a href="prediction-market.html">PredictionMoMo design</a>, including tokenization, pool birth, fixed offers, resolution, and parlays around <code>prediction-market.html:180–554</code>.</li>
+                <li><a href="hybrid-juror-prediction-market-integration.html">Bootstrap-loop economics</a>, including watcher and aptitude-test assumptions.</li>
+                <li><a href="governance.html">Governance design</a>, especially the two-token firewall around <code>governance.html:99–272</code>.</li>
+                <li><a href="tools/build-site.js">Build script</a>, <a href="tools/validate-gamelab.js">model validator</a>, and <a href="tools/smoke-site.js">site smoke test</a>.</li>
+                <li><a href="https://docs.world.org/world-id/overview">World ID Overview</a>, World developer documentation, reviewed 9 July 2026.</li>
+                <li><a href="https://docs.world.org/world-id/idkit/onchain-verification">World ID On-chain Verification</a>, World developer documentation, reviewed 9 July 2026.</li>
+                <li><a href="https://docs.world.org/world-id/credentials/11">World ID Selfie Check</a>, World developer documentation, reviewed 9 July 2026.</li>
+                <li><a href="https://www.cftc.gov/LawRegulation/FederalRegister/proposedrules/2026-05105.html">Prediction Markets: Advance Notice of Proposed Rulemaking</a>, U.S. Commodity Futures Trading Commission, 16 March 2026.</li>
+                <li><a href="https://www.gamblingcommission.gov.uk/licensees-and-businesses/licences-and-fees/sector/remote">Remote-sector guidance</a>, UK Gambling Commission, reviewed 9 July 2026.</li>
+                <li><a href="https://link.springer.com/chapter/10.1007/978-3-032-05036-6_4">Threshold Receipt-Free Voting with Server-Side Vote Validation</a>, E-Vote-ID 2025.</li>
+              </ol>
+            </div>
+          </details>
         </div>
-        <div class="callout warning">
-          <strong>Defer the extra complexity.</strong>
-          Parlays, lending collateral, the court token, private markets, rubric courts, permanent collusion audits, and broad marketplace arbitration should wait until the narrow testnet path works.
-        </div>
-      </section>
-
-      <section class="section-block" id="verification" aria-labelledby="verification-title">
-        <p class="section-label">Review method</p>
-        <h2 id="verification-title">What was checked</h2>
-        <ul>
-          <li>Mapped the tracked repository files and deployment boundary.</li>
-          <li>Read the product, court, market, governance, bootstrap, model, build, and test code.</li>
-          <li>Ran <code>node tools/build-site.js</code>, <code>node tools/validate-gamelab.js</code>, and <code>node tools/smoke-site.js</code>. All passed.</li>
-          <li>Used the rendered site on desktop and a narrow viewport.</li>
-          <li>Tested the mobile menu, disabled the private-vote safety lock, and confirmed the bribe result changed from failing to working.</li>
-          <li>Stepped through the first guided workflow event and checked browser warnings and errors.</li>
-          <li>Checked the live deployment’s browser-security headers and confirmed internal review files return 404.</li>
-        </ul>
-        <p class="callout"><strong>Scope limit</strong>This is a product, repository, security-design, and credibility review. It is not a smart-contract audit, cryptographic proof, economic certification, privacy impact assessment, or legal opinion, because the real implementation does not yet exist.</p>
-      </section>
-
-      <section class="section-block" id="glossary" aria-labelledby="glossary-title">
-        <p class="section-label">Plain words</p>
-        <h2 id="glossary-title">Short glossary</h2>
-        <dl class="glossary-grid">
-          <div><dt>Prediction market</dt><dd>A place where people put money behind different answers.</dd></div>
-          <div><dt>Protocol</dt><dd>A shared rulebook carried out by software.</dd></div>
-          <div><dt>Escrow</dt><dd>Money locked until the rules say who receives it.</dd></div>
-          <div><dt>Collateral</dt><dd>Money or assets backing a promise or claim.</dd></div>
-          <div><dt>Token</dt><dd>A digital claim ticket. It is not automatically company ownership.</dd></div>
-          <div><dt>Assertion</dt><dd>Someone’s proposed final answer.</dd></div>
-          <div><dt>Challenge</dt><dd>A formal objection to the proposed answer.</dd></div>
-          <div><dt>Bond</dt><dd>Money risked to discourage dishonest or careless claims.</dd></div>
-          <div><dt>Juror panel</dt><dd>A small group selected to decide a dispute.</dd></div>
-          <div><dt>Verified human</dt><dd>A person who has proved uniqueness. This is not proof of honesty or skill.</dd></div>
-          <div><dt>Private ballot</dt><dd>A vote that should not reveal how one person voted.</dd></div>
-          <div><dt>Appeal</dt><dd>A request for another, usually larger, panel to check a ruling.</dd></div>
-          <div><dt>Finality</dt><dd>The point when the decision pays and cannot reopen.</dd></div>
-          <div><dt>Governance</dt><dd>The process used to change system rules.</dd></div>
-          <div><dt>Aptitude test</dt><dd>A quiz used to estimate whether a juror understands a topic.</dd></div>
-          <div><dt>Sybil attack</dt><dd>One person pretending to be many different people.</dd></div>
-          <div><dt>Smart contract</dt><dd>Blockchain code that moves assets according to rules.</dd></div>
-          <div><dt>Threshold encryption</dt><dd>A lock that needs several key holders to cooperate before it opens.</dd></div>
-        </dl>
-      </section>
-
-      <section class="section-block" id="sources" aria-labelledby="sources-title">
-        <p class="section-label">Evidence</p>
-        <h2 id="sources-title">Key sources</h2>
-        <ol class="source-list">
-          <li><a href="index.html">Project home page</a>, especially claims and chapter map around <code>index.html:49–139</code>.</li>
-          <li><a href="demothemis.html">DemoThemis design</a>, especially lifecycle, private ballots, panels, scoring, and appeals around <code>demothemis.html:239–818</code>.</li>
-          <li><a href="game-theory.html">Break the court model</a> and <a href="assumptions.js">its assumption list</a>, including model computation around <code>game-theory.html:612–1127</code>.</li>
-          <li><a href="prediction-market.html">PredictionMoMo design</a>, including tokenization, pool birth, fixed offers, resolution, and parlays around <code>prediction-market.html:180–554</code>.</li>
-          <li><a href="hybrid-juror-prediction-market-integration.html">Bootstrap-loop economics</a>, including watcher and aptitude-test assumptions.</li>
-          <li><a href="governance.html">Governance design</a>, especially the two-token firewall around <code>governance.html:98–254</code>.</li>
-          <li><a href="tools/build-site.js">Build script</a>, <a href="tools/validate-gamelab.js">model validator</a>, and <a href="tools/smoke-site.js">site smoke test</a>.</li>
-          <li><a href="https://docs.world.org/world-id/overview">World ID Overview</a>, World developer documentation, reviewed 9 July 2026.</li>
-          <li><a href="https://docs.world.org/world-id/idkit/onchain-verification">World ID On-chain Verification</a>, World developer documentation, reviewed 9 July 2026.</li>
-          <li><a href="https://docs.world.org/world-id/credentials/11">World ID Selfie Check</a>, World developer documentation, reviewed 9 July 2026.</li>
-          <li><a href="https://www.cftc.gov/LawRegulation/FederalRegister/proposedrules/2026-05105.html">Prediction Markets: Advance Notice of Proposed Rulemaking</a>, U.S. Commodity Futures Trading Commission, 16 March 2026.</li>
-          <li><a href="https://www.gamblingcommission.gov.uk/licensees-and-businesses/licences-and-fees/sector/remote">Remote-sector guidance</a>, UK Gambling Commission, reviewed 9 July 2026.</li>
-          <li><a href="https://link.springer.com/chapter/10.1007/978-3-032-05036-6_4">Threshold Receipt-Free Voting with Server-Side Vote Validation</a>, E-Vote-ID 2025.</li>
-        </ol>
       </section>
 
       <section class="section-block" id="verdict" aria-labelledby="verdict-title">
         <p class="section-label">Final assessment</p>
         <h2 id="verdict-title">Bottom line</h2>
         <div class="final-verdict">
-          <p>DemoThemis and PredictionMoMo form a thoughtful and unusual idea. The strongest part is the loop in which a prediction market gives a new human-jury court its first cases, fees, and learning data. The website explains that idea very well.</p>
-          <p>Today, however, this is an interactive proposal, not a working or proven financial system. Its hardest questions involve ballot privacy, guaranteed final decisions, token accounting, hidden conflicts, upgrades, identity, and law. The right next step is a small, exact specification and testnet experiment, not stronger safety claims.</p>
-          <p class="one-line">In one line: promising idea, excellent explanation, incomplete protocol, and not ready for real money.</p>
+          <p>The market-to-court bootstrap is a strong idea, and a source-verified MVP now demonstrates World ID registration wiring, commit/reveal voting, and settlement with valueless test tokens. The full market, receipt-free privacy, production randomness, reliable finality, exact token accounting, hardened appeals and reputation, live-human evidence, and independent review remain unfinished.</p>
+          <p class="one-line">In one line: promising design, real MVP slice, incomplete production protocol, and not ready for real money.</p>
         </div>
       </section>
     </main>
@@ -958,13 +948,11 @@
           <li><a href="#bootstrap-loop">The bootstrap loop</a></li>
           <li><a href="#status">What exists today</a></li>
           <li><a href="#strengths">Strengths</a></li>
+          <li><a href="#resolved-decisions">Resolved privacy decision</a></li>
           <li><a href="#critical-questions">Critical questions</a></li>
-          <li><a href="#product-ux">Product and UX</a></li>
+          <li><a href="#recommendations">Recommended path</a></li>
           <li><a href="#engineering">Repository review</a></li>
-          <li><a href="#roadmap">Recommended path</a></li>
-          <li><a href="#verification">What was checked</a></li>
-          <li><a href="#glossary">Glossary</a></li>
-          <li><a href="#sources">Sources</a></li>
+          <li><a href="#appendix">Evidence appendix</a></li>
           <li><a href="#verdict">Bottom line</a></li>
         </ol>
       </nav>
@@ -974,7 +962,7 @@
   <footer>
     <div class="footer-inner">
       <strong>DemoThemis &amp; PredictionMoMo · Comprehensive Project Review</strong>
-      <span>Review date: 9 July 2026 · Static document · No live financial system tested</span>
+      <span>Updated 10 July 2026 · Static review · Valueless on-chain MVP inspected</span>
     </div>
   </footer>
 </body>

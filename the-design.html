@@ -1223,7 +1223,7 @@
   <section class="reveal" id="system-run">
     <p class="sec-label">Playable run</p>
     <h2>Run the whole system</h2>
-    <p>Tap through one market from first bet to final appeal. Each step is a mock app screen, so the form, ticket, wallet, jury draw, ballot, checkout, or receipt shows what changed.</p>
+    <p>Tap through one market from first bet to final appeal. Each mock screen shows what changed.</p>
 
     <div class="run-game reveal">
         <div class="run-control-panel" aria-label="Simulation controls">
@@ -1273,7 +1273,7 @@
                   <div class="unlock" data-component="draw"><b>Random draw <span class="tag">locked</span></b><small>A public beacon draws one panel; no re-roll grinding.</small></div>
                   <div class="unlock" data-component="personhood"><b>Face check <span class="tag">locked</span></b><small>The drawn World-ID-backed human must be present for this case.</small></div>
                   <div class="unlock" data-component="ballot"><b>Private ballot <span class="tag">locked</span></b><small>Encrypted ballots and re-keying make vote receipts worthless.</small></div>
-                  <div class="unlock" data-component="reserve"><b>Live reserve <span class="tag">locked</span></b><small>Lazy wrong votes lose pending income; slashes feed rewards.</small></div>
+                  <div class="unlock" data-component="reserve"><b>Live reserve <span class="tag">locked</span></b><small>Final private debits fund a proved aggregate reward transfer.</small></div>
                   <div class="unlock" data-component="appeal"><b>Appeal floors <span class="tag">locked</span></b><small>Rungs price the next panel, attack risk, and delay rent.</small></div>
                   <div class="unlock" data-component="finality"><b>Finality plus reports <span class="tag">locked</span></b><small>Escrow ends; collusion reports never expire.</small></div>
                   <div class="unlock" data-component="keys"><b>Aptitude tests <span class="tag">locked</span></b><small>Clean resolved markets become test cases for juror quality.</small></div>
@@ -1288,7 +1288,7 @@
   <section class="state-machine" id="system-state-machine" aria-labelledby="state-machine-title">
     <p class="sec-label">The complete state map</p>
     <h2 id="state-machine-title">Every route through one market</h2>
-    <p class="state-machine-intro">The simulator above follows the long, dramatic route: a false answer is challenged, a jury rules, and the loser appeals. That is only one path. The map below keeps the common quiet settlement, every product branch, the full court loop, and the failure exits in view at the same time.</p>
+    <p class="state-machine-intro">The simulator follows one disputed appeal. This map adds quiet settlement, alternative product branches, and failure exits.</p>
     <p class="machine-primer"><span class="machine-primer-mark" aria-hidden="true">?</span><span><b>A state machine is a map of “where are we now?” and “what may happen next?”</b> Choose a route to light it once, or select any state to unfold who acts, where the money sits, and what moves the system forward.</span></p>
 
     <div class="machine-shell" id="systemStateMachine" data-route="all">
@@ -1332,7 +1332,7 @@
         <div class="machine-foundation-grid">
           <div class="machine-foundation-item"><b>Custody and proof</b>Funds lock before an unknown panel exists. One bound random draw, live presence checks, private ballots, and an aggregate tally protect each disputed case.</div>
           <div class="machine-foundation-item"><b>Two governments</b>The market token may tune business settings, including a 0–1% margin above the court invoice. Person-weighted court governance may tune court settings. Neither is the judge in an active case.</div>
-          <div class="machine-foundation-item"><b>Constitutional firewall</b>The court invoice routes first, company money cannot buy the bench, final money never reopens, and later collusion reports punish people rather than rewrite payment.</div>
+          <div class="machine-foundation-item"><b>Constitutional firewall</b>The court invoice routes first, the market token cannot appoint or pay the bench, final money never reopens, and later collusion reports punish people rather than rewrite payment.</div>
         </div>
       </section>
 
@@ -1585,13 +1585,13 @@
     },
     {
       title: "First verdict lands",
-      sub: "Slashes feed rewards.",
+      sub: "Consequences stay pending.",
       mission: "Publish the tally proof",
-      text: "The tally opens only as an aggregate with a proof. Wrong-side votes on a lopsided case lose a private slice of reserve; only the aggregate transfer and proof are public.",
+      text: "The tally opens only as an aggregate proof. Private reserve updates are computed and proved, but nothing is debited until the last appeal outcome.",
       nodes: ["ballot", "verdict"],
       features: ["instant", "fixed", "tokens", "private", "trade", "parlay"],
       components: ["escrow", "watcher", "draw", "personhood", "ballot", "reserve"],
-      tokens: ["Verdict proof", "Reward pool"],
+      tokens: ["Verdict proof", "Pending private updates"],
       pot: 118000,
       yes: .28,
       claims: "Tokens repriced",
@@ -1600,9 +1600,9 @@
       panel: "15-person result",
       keys: 0,
       fees: 2360,
-      loop: ["cases", "fees", "jurors", "rep"],
+      loop: ["cases", "fees", "jurors"],
       log: "The verdict changes prices, but the losing side can still climb.",
-      actions: ["Publish proof", "Verify reward total"]
+      actions: ["Publish proof", "Verify pending totals"]
     },
     {
       title: "Appeal climbs",
@@ -1621,7 +1621,7 @@
       panel: "31 verified people",
       keys: 0,
       fees: 2360,
-      loop: ["cases", "fees", "jurors", "rep"],
+      loop: ["cases", "fees", "jurors"],
       log: "Appeals are allowed, but every retry gets bigger, pricier, and finite.",
       actions: ["Pay appeal", "View appeal panel"]
     },
@@ -1629,11 +1629,11 @@
       title: "Finality and memory",
       sub: "The case pays out and teaches.",
       mission: "Close escrow, feed the loop",
-      text: "The appeal verdict finalizes the market. Escrow pays out and never reopens. The clean record becomes a resolved case for aptitude tests, fees pay jurors, and the public outcome improves the court's track record for the next market.",
+      text: "The appeal verdict finalizes the market. Escrow pays once, final-outcome juror updates settle privately, and a clean public result can become a resolved case for aptitude tests.",
       nodes: ["appeal", "final", "keys"],
       features: ["instant", "fixed", "tokens", "private", "trade", "parlay"],
       components: ["escrow", "watcher", "draw", "personhood", "ballot", "reserve", "appeal", "finality", "keys"],
-      tokens: ["Final payout", "Aptitude test case", "Juror score update"],
+      tokens: ["Final payout", "Aptitude test case", "Private juror updates"],
       pot: 118000,
       yes: .02,
       claims: "Redeemable payout",
@@ -1751,13 +1751,13 @@
     },
     {
       lane: "Finality loop",
-      title: "Verdict and slashes",
-      body: "The tally opens as an aggregate proof. Wrong-side reserve can be debited privately while only the aggregate reward-pool transfer is public.",
+      title: "Verdict; updates pending",
+      body: "The tally opens as an aggregate proof. Private juror updates and their aggregate totals are proved now, then applied only after the final appeal outcome.",
       change: "First verdict lands",
-      why: "The court can punish lazy or wrong votes without paying the winning panel extra.",
+      why: "Waiting protects an honest dissenter if a larger panel reverses the result.",
       next: "Appeal ladder",
       tone: "final",
-      results: ["The aggregate proof lands and reprices the unresolved claims.", "Private debits fund a proved aggregate transfer without identifying a juror's vote."]
+      results: ["The aggregate proof lands and reprices the unresolved claims.", "Private updates remain pending until the appeal ladder ends."]
     },
     {
       lane: "Finality loop",
@@ -1772,12 +1772,12 @@
     {
       lane: "Finality loop",
       title: "Aptitude test case",
-      body: "The final result pays escrow and closes the market. The clean record becomes a resolved case for aptitude tests that improves juror scoring for later cases.",
+      body: "The final result pays escrow, applies shielded juror updates, and closes the market. Its public outcome can become an aptitude-test case while juror histories remain private.",
       change: "Escrow closed",
       why: "The market is over, but the court is stronger for the next one.",
       next: "More demand",
       tone: "final",
-      results: ["Winning claims redeem and the market cannot reopen.", "The resolved case for aptitude tests updates juror scoring for future cases.", "A stronger public record makes the next market easier to trust."]
+      results: ["Winning claims redeem and the market cannot reopen.", "Final juror debits, refunds, and rewards settle through private updates with proved public totals.", "The resolved case can grade future aptitude tests without publishing juror histories."]
     }
   ];
 
@@ -1849,14 +1849,14 @@
       label: "Private vote",
       headline: "Cast encrypted ballots with no useful receipt.",
       look: "This is a juror workspace: evidence, ballot, and live reserve are all visible.",
-      use: "Seal the ballot, then view the reserve.",
+      use: "Seal the ballot, then check your private reserve.",
       notice: "A briber cannot rely on a screenshot or receipt to prove delivery."
     },
     {
       label: "Verdict proof",
       headline: "Publish the aggregate result.",
-      look: "The court result page combines the proof, market repricing, and reward movement.",
-      use: "Publish the proof, then view the reward update.",
+      look: "The court result page combines the proof, market repricing, and pending private updates.",
+      use: "Publish the proof, then verify the pending totals.",
       notice: "Individual votes stay private while the aggregate verdict becomes public and tradable."
     },
     {
@@ -1877,11 +1877,11 @@
 
   var EVENT_CONTINUATIONS = [
     {
-      action: "Go to deployed market page",
+      action: "Open simulated market page",
       from: "Market creator",
       to: "Bettor / trader",
       targetTitle: "Market page",
-      note: "The creator shares the live URL; traders now price the public market."
+      note: "The creator shares the market URL; traders now price the public market."
     },
     {
       action: "Open fixed-price offers",
@@ -1950,7 +1950,7 @@
       action: "Review appeal price",
       from: "Court observer",
       to: "Losing side",
-      targetTitle: "Aggregate reward movement",
+      targetTitle: "Pending private updates",
       note: "The losing side decides whether a larger panel is worth paying for."
     },
     {
@@ -2181,7 +2181,7 @@
       id: "appeal-gate", phase: "judge", order: 7, kind: "decision", title: "Was a valid appeal funded?",
       short: "A solo bond or a verified losing-side petition can pay for the next rung.",
       routes: ["dispute", "exceptions"], sim: [11],
-      detail: "The next rung costs the highest of panel pay, attack-risk pricing, and delay rent. The chapters disagree on the exact duration, so the safe state label is simply a configured appeal window.",
+      detail: "The next rung costs the highest of panel pay, attack-risk pricing, and delay rent. Governance selects the deadline within the constitutional 2-to-8-week range, and the case records that value before voting begins.",
       actor: "Losing party or at least 5% of losing-side verified people", money: "Appeal bond or petition stakes lock", condition: "Before the configured appeal deadline", next: "Final result, or a larger new panel"
     },
     {
@@ -2208,10 +2208,10 @@
     },
     {
       id: "settle-funds", phase: "finish", order: 2, title: "Settle funds and route the invoice",
-      short: "One transaction pays each product form, routes fees, and settles bonds, reserves, refunds, bonuses, and slashes.",
+      short: "One final operation pays public escrow, routes fees, and proves shielded juror updates in aggregate.",
       routes: ["quiet", "dispute", "exceptions"], sim: [12],
-      detail: "Settlement is atomic, not two clocks. Pool winners split the pot, tokens redeem, private escrow and parlays follow their result, and the constitutional invoice routes first: 70% juror pay, 20% reward pool, 10% operations. Appeal and juror consequences use the final outcome.",
-      actor: "Settlement and accounting contracts", money: "Routes from escrow to entitled wallets and constitutional destinations", condition: "The final release rule is available", next: "Permanent closed record"
+      detail: "Settlement is atomic, not two clocks. Pool winners split the pot, tokens redeem, private escrow and parlays follow the final result, and the 70/20/10 invoice routes first. Juror debits, refunds, bonuses, scores, and pay update inside shielded commitments; batched proofs expose only balanced totals, never a wallet-level consequence.",
+      actor: "Settlement contracts plus private-account proofs", money: "Public escrow routes normally; individual juror amounts remain shielded", condition: "The final release rule is available", next: "Permanent closed record"
     },
     {
       id: "closed-record", phase: "finish", order: 4, title: "Market closes permanently",
@@ -2899,14 +2899,14 @@
     {
       actor: { title: "Drawn juror", sub: "live person check", icon: "person", tone: "good", mark: "ID" },
       core: { title: "Private ballot", sub: "encrypted and re-keyed", icon: "ballot", tone: "accent", mark: "VOTE" },
-      result: { title: "Reserve at risk", sub: "lazy votes can be slashed", icon: "reserve", tone: "bad", mark: "RISK" },
+      result: { title: "Private reserve", sub: "lazy votes risk a private debit", icon: "reserve", tone: "bad", mark: "RISK" },
       chips: [["No receipt", "accent"], ["Bribe breaks", "good"], ["Reserve live", "bad"]]
     },
     {
       actor: { title: "Sealed votes", sub: "only aggregate opens", icon: "ballot", tone: "accent", mark: "BOX" },
       core: { title: "Verdict proof", sub: "tally changes prices", icon: "verdict", tone: "accent", mark: "PROOF" },
-      result: { title: "Reward pool", sub: "wrong reserve flows out", icon: "pool", tone: "good", mark: "PAY" },
-      chips: [["Aggregate tally", "accent"], ["Wrong-side slash", "bad"], ["Rewards funded", "good"]]
+      result: { title: "Pending updates", sub: "wait for final verdict", icon: "reserve", tone: "soft", mark: "WAIT" },
+      chips: [["Aggregate tally", "accent"], ["Private updates", "bad"], ["Not settled", "soft"]]
     },
     {
       actor: { title: "Losing side", sub: "wants another panel", icon: "person", tone: "bad", mark: "LOSE" },
@@ -3029,8 +3029,8 @@
       headline: "The court publishes the aggregate result",
       sub: "The tally opens as a proof of the final count, not as individual public ballots.",
       status: "First verdict landed",
-      flow: [["You do", "Read the verdict proof."], ["App shows", "The market price reprices around the result."], ["Protocol does", "Privately updates reserves and proves the aggregate reward transfer."]],
-      fields: [["Verdict", "NO wins first panel", "The aggregate result is public."], ["Individual votes", "Still private", "The proof does not expose each juror."], ["Reserve update", "Private", "Only the aggregate transfer and proof are public."], ["Appeal", "Still available", "The losing side can climb."]],
+      flow: [["You do", "Read the verdict proof."], ["App shows", "The market price reprices around the result."], ["Protocol does", "Computes shielded updates and proves pending totals; applies them only after finality."]],
+      fields: [["Verdict", "NO wins first panel", "The aggregate result is public."], ["Individual votes", "Still private", "The proof does not expose each juror."], ["Reserve update", "Pending/private", "No debit is applied before the final outcome."], ["Appeal", "Still available", "The losing side can climb."]],
       behind: ["The verdict is enough to move the market, but not necessarily final if the losing side appeals.", "Private consequence accounting prevents a penalty from becoming a vote receipt."]
     },
     {
@@ -3232,15 +3232,15 @@
       status: "Proof posted",
       title: "First verdict lands",
       subtitle: "The tally is public; individual votes stay private.",
-      tabs: ["Proof", "Price", "Rewards"],
+      tabs: ["Proof", "Price", "Pending"],
       metrics: [["Verdict", "NO"], ["Appeal", "Open"], ["Privacy", "Kept"]],
       summary: "The verdict can move markets without exposing individual ballot receipts.",
       sideTitle: "After verdict",
-      sideRows: [["Claims", "Repriced"], ["Reserve update", "Private"], ["Next", "Appeal option"]],
+      sideRows: [["Claims", "Repriced"], ["Reserve update", "Pending/private"], ["Next", "Appeal option"]],
       components: [
         { type: "bars", title: "Tally proof", hot: 0, bars: [["NO", 73, "bad"], ["YES", 27, "good"]] },
         { type: "bars", title: "Market price", hot: 0, bars: [["YES", 28, "good"], ["NO", 72, "bad"]] },
-        { type: "receipt", wide: true, title: "Reward pool", hot: 1, value: "Aggregate transfer verified", note: "Individual debits and payments remain private." }
+        { type: "receipt", wide: true, title: "Pending juror updates", hot: 1, value: "Aggregate totals proved", note: "No consequence applies before the final outcome." }
       ]
     },
     {
@@ -3273,7 +3273,7 @@
       sideRows: [["Winners", "Paid"], ["Market", "Final"], ["Court", "Stronger"]],
       components: [
         { type: "receipt", title: "Redeem", hot: 0, value: "Winning claims paid", note: "The market cannot reopen." },
-        { type: "list", title: "Court record", hot: 1, rows: [["Resolved case", "Saved"], ["Juror record", "Updated"], ["Future tests", "Better"]] },
+        { type: "list", title: "Court record", hot: 1, rows: [["Resolved case", "Saved"], ["Juror updates", "Private"], ["Future tests", "Better"]] },
         { type: "route", wide: true, title: "Loop", hot: 2, steps: [["1", "Payout", "done"], ["2", "Save court record", "done"], ["3", "Next market", "easier"]] }
       ]
     }
@@ -3474,20 +3474,20 @@
     {
       template: "verdict-page",
       product: "DemoThemis Court",
-      tabs: ["Verdict", "Market", "Rewards"],
+      tabs: ["Verdict", "Market", "Pending"],
       section: "Verdict",
       title: "First verdict lands",
       subtitle: "Aggregate proof is public while individual votes remain private.",
       status: "Proof posted",
       intent: { why: "See what the verdict means for your position", money: "NO leads; appeal still open", next: "Watch deadline or trade" },
       kpis: [["Verdict", "NO"], ["Appeal", "Open"], ["Privacy", "Kept"]],
-      summary: "This should look like a court result page with proof, market repricing, and aggregate reward movement.",
+      summary: "This should look like a provisional court result with proof, market repricing, and pending private updates.",
       sideTitle: "After verdict",
-      sideRows: [["Claims", "Repriced"], ["Reserve update", "Private"], ["Appeal", "Available"]],
+      sideRows: [["Claims", "Repriced"], ["Reserve update", "Pending/private"], ["Appeal", "Available"]],
       blocks: [
         { type: "proof", title: "Aggregate tally", hot: 0, result: "NO wins 11-4", note: "Individual ballots remain private." },
         { type: "odds", title: "Market repricing", hot: 0, yes: 28, no: 72 },
-        { type: "route", title: "Aggregate reward movement", hot: 1, steps: [["1", "Prove private debits", "valid"], ["2", "Publish aggregate transfer", "done"], ["3", "Hide individual amounts", "safe"]] }
+        { type: "route", title: "Pending private updates", hot: 1, steps: [["1", "Compute from provisional result", "ready"], ["2", "Prove pending totals", "valid"], ["3", "Wait for final verdict", "safe"]] }
       ]
     },
     {
@@ -3524,7 +3524,7 @@
       sideRows: [["Winners", "Paid"], ["Market", "Closed"], ["Court", "Stronger"]],
       blocks: [
         { type: "closed", title: "Market receipt", hot: 0, value: "Paid and closed" },
-        { type: "table", title: "Court record", hot: 1, rows: [["Resolved case", "Saved", "aptitude tests"], ["Juror record", "Updated", "future cases"], ["Public proof", "Available", "trust"]] },
+        { type: "table", title: "Court record", hot: 1, rows: [["Resolved case", "Saved", "aptitude tests"], ["Juror updates", "Private", "future cases"], ["Public proof", "Available", "trust"]] },
         { type: "route", title: "Bootstrap loop", hot: 2, steps: [["1", "Payout", "done"], ["2", "Save court record", "done"], ["3", "Next market", "easier"]] }
       ]
     }
@@ -3985,7 +3985,7 @@
         blocks: [
           { type: "proof", title: "Aggregate tally", result: "Sealed", note: "The proof has not been posted yet." },
           { type: "odds", title: "Market repricing", yes: 51, no: 49 },
-          { type: "route", title: "Aggregate reward movement", steps: [["1", "Wait for proof", "pending"], ["2", "Publish aggregate", "pending"], ["3", "Hide individual amounts", "private"]] }
+          { type: "route", title: "Pending private updates", steps: [["1", "Wait for proof", "pending"], ["2", "Prove pending totals", "pending"], ["3", "Apply after finality", "private"]] }
         ]
       },
       steps: [
@@ -3996,27 +3996,27 @@
           result: "Aggregate proof posted",
           after: {
             status: "Proof posted",
-            primary: "Verify reward total",
+            primary: "Verify pending totals",
             kpis: [["Verdict", "NO"], ["Appeal", "Open"], ["Privacy", "Kept"]],
             blocks: [
               { type: "proof", title: "Aggregate tally", result: "NO wins 11-4", note: "Individual ballots remain private." },
               { type: "odds", title: "Market repricing", yes: 28, no: 72 },
-              { type: "route", title: "Aggregate reward movement", steps: [["1", "Prove private debits", "ready"], ["2", "Publish aggregate transfer", "next"], ["3", "Hide individual amounts", "safe"]] }
+              { type: "route", title: "Pending private updates", steps: [["1", "Compute from provisional result", "ready"], ["2", "Prove pending totals", "next"], ["3", "Wait for final verdict", "safe"]] }
             ]
           }
         },
         {
-          cue: "Tap Verify reward total",
+          cue: "Tap Verify pending totals",
           target: "block",
-          targetTitle: "Aggregate reward movement",
-          result: "Aggregate transfer proved",
+          targetTitle: "Pending private updates",
+          result: "Pending totals proved",
           after: {
-            status: "Rewards funded",
-            primary: "Total verified",
+            status: "Updates pending",
+            primary: "Totals verified",
             kpis: [["Verdict", "NO"], ["Aggregate", "Proved"], ["Individuals", "Private"]],
             blocks: [
-              { type: "route", title: "Aggregate reward movement", steps: [["1", "Prove private debits", "done"], ["2", "Publish aggregate transfer", "done"], ["3", "Hide individual amounts", "safe"]] },
-              { type: "receipt", title: "Reward pool", value: "Aggregate transfer verified", note: "No named debit can reveal a vote." },
+              { type: "route", title: "Pending private updates", steps: [["1", "Compute from provisional result", "done"], ["2", "Prove pending totals", "done"], ["3", "Wait for final verdict", "safe"]] },
+              { type: "receipt", title: "Pending updates", value: "Aggregate totals verified", note: "No debit is applied before the final outcome." },
               { type: "odds", title: "Market repricing", yes: 28, no: 72 }
             ]
           }
@@ -4069,7 +4069,7 @@
         kpis: [["Payout", "Ready"], ["Wallet", "0x7c...42"], ["Record", "Pending"]],
         blocks: [
           { type: "closed", title: "Market receipt", value: "Final verdict" },
-          { type: "table", title: "Court record", rows: [["Resolved case", "Waiting", "aptitude tests"], ["Juror record", "Pending", "future cases"], ["Public proof", "Available", "trust"]] },
+          { type: "table", title: "Court record", rows: [["Resolved case", "Waiting", "aptitude tests"], ["Juror updates", "Private", "future cases"], ["Public proof", "Available", "trust"]] },
           { type: "route", title: "Bootstrap loop", steps: [["1", "Payout", "next"], ["2", "Save court record", "pending"], ["3", "Next market", "pending"]] }
         ]
       },
@@ -4087,7 +4087,7 @@
             blocks: [
               { type: "closed", title: "Market receipt", value: "Paid and closed" },
               { type: "route", title: "Bootstrap loop", steps: [["1", "Payout", "done"], ["2", "Save court record", "next"], ["3", "Next market", "pending"]] },
-              { type: "table", title: "Court record", rows: [["Resolved case", "Waiting", "aptitude tests"], ["Juror record", "Pending", "future cases"], ["Public proof", "Available", "trust"]] }
+              { type: "table", title: "Court record", rows: [["Resolved case", "Waiting", "aptitude tests"], ["Juror updates", "Private", "future cases"], ["Public proof", "Available", "trust"]] }
             ]
           }
         },
@@ -4102,7 +4102,7 @@
             intent: { why: "Collect payout and move on", money: "Court record improves future juror tests", next: "Create the next market" },
             kpis: [["Payout", "Paid"], ["Record", "Saved"], ["Next market", "Ready"]],
             blocks: [
-              { type: "table", title: "Court record", rows: [["Resolved case", "Saved", "aptitude tests"], ["Juror record", "Updated", "future cases"], ["Public proof", "Available", "trust"]] },
+              { type: "table", title: "Court record", rows: [["Resolved case", "Saved", "aptitude tests"], ["Juror updates", "Private", "future cases"], ["Public proof", "Available", "trust"]] },
               { type: "route", title: "Bootstrap loop", steps: [["1", "Payout", "done"], ["2", "Save court record", "done"], ["3", "Next market", "next"]] },
               { type: "receipt", title: "Court memory", value: "Better juror selection", note: "Clean outcomes become resolved cases for aptitude tests." }
             ]
@@ -4154,7 +4154,7 @@
     "Seal ballot": "Submit an encrypted ballot without creating a transferable receipt.",
     "Check my reserve": "Open the juror's private reserve meter without publishing its amount or history.",
     "Publish proof": "Publish the aggregate tally without exposing individual votes.",
-    "Verify reward total": "Verify the aggregate reward transfer without exposing any juror's debit or payment.",
+    "Verify pending totals": "Verify the pending aggregate totals without exposing or applying any juror's update.",
     "Pay appeal": "Pay the minimum floor needed to open the next appeal rung.",
     "View appeal panel": "Show the larger verified panel for the paid appeal.",
     "Redeem tokens": "Redeem winning claims after the verdict is final.",
@@ -4429,11 +4429,11 @@
       svg += node(54, 104, 126, 82, "Ballots", "sealed set", "soft", hot0);
       svg += node(254, 88, 142, 102, "Tally proof", "aggregate only", "accent", hot0);
       svg += node(468, 88, 124, 102, "Verdict", "YES loses", "bad", hot0);
-      svg += node(560, 216, 118, 58, "Reward pool", "slash inflow", "good", hot1);
+      svg += node(548, 216, 130, 58, "Updates", "pending appeal", "soft", hot1);
       svg += flow(180, 144, 254, 140, "accent", hot0);
       svg += flow(396, 140, 468, 140, "bad", hot0);
       svg += flow(530, 190, 596, 216, "good", hot1);
-      svg += chip(460, 218, "slashed", "bad", hot1);
+      svg += chip(448, 218, "not final", "soft", hot1);
     } else if (index === 11) {
       svg += person(82, 142, "losing side", "bad", hot0);
       svg += node(190, 96, 136, 92, "Appeal floor", "pay rung", "bad", hot0);
@@ -4448,7 +4448,7 @@
       svg += node(50, 94, 126, 90, "Escrow", "final", "accent", hot0);
       svg += node(258, 80, 122, 74, "Payout", "redeem YES/NO", "good", hot0);
       svg += node(258, 190, 122, 74, "Aptitude test case", "clean record", "accent", hot1);
-      svg += node(500, 96, 136, 76, "Juror record", "updated", "good", hot1);
+      svg += node(500, 96, 136, 76, "Juror update", "private", "good", hot1);
       svg += node(500, 210, 136, 56, "Next demand", "more trust", "soft", hot2);
       svg += flow(176, 139, 258, 118, "good", hot0);
       svg += flow(176, 139, 258, 226, "accent", hot1);
@@ -4949,7 +4949,6 @@
     var copy = makeEl("div", "sim-step-copy");
     copy.appendChild(makeEl("strong", "", guide.label));
     copy.appendChild(makeEl("b", "", guide.headline));
-    copy.appendChild(makeEl("span", "sim-step-summary", eventSimulationCopy(item, focus)));
     copy.appendChild(makeEl("span", "", guide.look));
     var path = makeEl("span", "sim-step-path");
     path.appendChild(makeEl("b", "", "Path: "));
@@ -6012,12 +6011,6 @@
       tone: "market"
     };
     renderStageArt(item, focus);
-  }
-
-  function eventSimulationCopy(item, focus) {
-    var summary = focus && focus.body ? focus.body : item.text;
-    var firstSentence = summary.split(". ")[0].replace(/\.$/, "");
-    return "This event simulates how " + firstSentence.charAt(0).toLowerCase() + firstSentence.slice(1) + ".";
   }
 
   function renderControls() {

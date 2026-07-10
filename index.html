@@ -3,14 +3,13 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>PredictionMoMo and DemoThemis: open markets, unbuyable arbitration</title>
-<meta name="description" content="Two products, one machine. PredictionMoMo lets anyone open a prediction market with pocket change. DemoThemis gives markets and escrowed deals arbitration run by verified humans that money cannot capture.">
+<title>PredictionMoMo and DemoThemis: markets with human arbitration</title>
+<meta name="description" content="Two products, one machine. PredictionMoMo starts prediction markets with pocket change. DemoThemis gives markets and escrowed deals verified-human arbitration designed to resist capital capture.">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@500;700&family=Newsreader:opsz,wght@6..72,200..700&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="assets/styles.css">
 <style>
-  .products-title { font-family: var(--serif); font-size: clamp(1.3rem, 2.8vw, 1.6rem); font-weight: 560; letter-spacing: -.012em; margin: 2.2rem 0 -.4rem; }
   .products { display: grid; grid-template-columns: 1fr 1fr; gap: 1rem; margin: 1.6rem 0; }
   @media (max-width: 640px) { .products { grid-template-columns: 1fr; } }
   .product { border-radius: var(--radius); border: 1px solid var(--line); background: var(--surface); padding: 1.4rem 1.5rem; box-shadow: var(--shadow); font-family: var(--sans); }
@@ -49,13 +48,13 @@
 
 <header class="hero reveal">
   <p class="kicker">What we are building</p>
-  <h1>Two products: A bullet proof arbitration platform available to anyone for anything and an exceptional prediction market to seed it with demand</h1>
-  <p class="dek">Two products, one engine: the market brings questions, fees, and resolved cases for aptitude tests; the court brings escrow, verified jurors, and verdicts the biggest wallet cannot simply buy.</p>
+  <h1>A human court, bootstrapped by a prediction market.</h1>
+  <p class="dek">PredictionMoMo brings questions, fees, and resolved cases for aptitude tests. DemoThemis brings escrow, verified jurors, and verdicts the biggest wallet cannot simply buy.</p>
   <div class="meta">
     <span class="pill">Start here</span>
-    <span>Six chapters</span>
+    <span>4 min overview &middot; 20 min court reference</span>
     <span class="dot">&bull;</span>
-    <span>About a 7 minute tour</span>
+    <span>Most other chapters: 5&ndash;10 min</span>
   </div>
 </header>
 
@@ -65,31 +64,28 @@
     <p class="sec-label">The products</p>
     <h2>PredictionMoMo markets, DemoThemis arbitration</h2>
 
-    <p>Every market ends with a ruling: did the thing happen or not? Polymarket, the biggest prediction market in the world, hands that ruling to a protocol called UMA. Anyone can post a bond and propose an answer. If nobody objects within two hours, it stands. If someone does, UMA's token holders vote on the truth, one token one vote, and voters who side against the majority lose part of their stake. So the rational move is to follow the biggest wallets, and disputed markets have settled against plain reality because of it. Whoever holds enough tokens holds the verdict.</p>
-    <p>Polymarket already proved that public prediction markets can work at huge scale. PredictionMoMo pushes on a different surface: a market that can start from a tiny first bet, stay private among friends, turn positions into wallet-native collateral, and settle through a court of verified humans instead of a token vote. The six features below are the product upgrade unlocked by that arbitration layer, turning a betting site into something bigger: protocol escrow with arbitration built in.</p>
-
-    <h3 class="products-title">The two products: PredictionMoMo and DemoThemis</h3>
+    <p>Every prediction market needs a final ruling. Polymarket routes disputes through UMA's token-weighted vote; PredictionMoMo instead sends challenges to verified humans. That arbitration layer lets a market start tiny, stay private when needed, tokenize positions, and remain tradeable through a dispute. The <a href="prediction-market.html">market chapter</a> explains the mechanics.</p>
     <div class="products">
       <div class="product market">
         <span class="pk">Product one</span>
-        <h3>PredictionMoMo: a prediction market with 6 novel features</h3>
+        <h3>PredictionMoMo: six market features</h3>
         <ol>
-          <li>Arbitration not gameable by UMA whales: no chance of getting scammed.</li>
-          <li>Liquid markets tokenize into ERC-20 YES and NO tokens you self-custody; this lets you provide liquidity and earn interest, post them as collateral, and trade them with leverage.</li>
-          <li>Anyone can open private, invite-only markets and still have a world-class third-party escrow and dispute system: post your side at any odds you name, invite the other side, and the odds stay fixed for everyone who joins.</li>
-          <li>Start a new prediction market instantly, on any topic, with any liquidity, even with less than a dollar.</li>
-          <li>With self-custody tokens that stay tradeable during disputes and resolution windows, you can exit the market at any time if there is liquidity. This also means there is no rush to close dispute windows, allowing retroactive changes to resolution windows where necessary.</li>
-          <li>Native peer-to-peer parlays on liquid markets. By integrating Conditional Tokens Framework (CTF) via token splitting, bettors get live odds and early cashouts without the protocol or a "bookie" ever taking bankruptcy risk.</li>
+          <li>Challenged outcomes go to verified-human arbitration, not a token-weighted court.</li>
+          <li>Liquid markets become self-custodied ERC-20 YES and NO tokens for liquidity, collateral, and leverage.</li>
+          <li>Private invite-only markets offer fixed odds with third-party escrow and dispute resolution.</li>
+          <li>An eligible, clearly worded market can open with less than a dollar.</li>
+          <li>Claims remain tradeable through dispute windows, so holders can exit whenever liquidity exists.</li>
+          <li>CTF token splitting enables peer-to-peer parlays, live odds, and early cashouts without bookie bankruptcy risk.</li>
         </ol>
       </div>
       <div class="product court">
         <span class="pk">Product two</span>
-        <h3>Protocol escrow: the most ambitious human infrastructure ever made</h3>
-        <p><span class="lab">Goal:</span> a protocol escrow and arbitration service so good that customers want every online deal to run through it, from Uber to eBay to Airbnb to AdSense. Apps bring demand and interface; DemoThemis holds the funds, decides disputes, and releases or refunds by rule.</p>
-        <p><span class="lab">How:</span> robust, ungameable mechanics with proof of personhood to overcome the need for plutocracy. PredictionMoMo supplies the first demand, data, and escrow volume.</p>
-        <p><span class="lab">Using Worldcoin to ensure 1 juror = 1 human:</span> a World ID iris scan makes each arbitrator one unique person with one vote, a face check on their own phone confirms presence at every draw, and settlement runs on-chain with gas sponsored for verified humans.</p>
+        <h3>DemoThemis: protocol escrow with human arbitration</h3>
+        <p>Apps provide the interface and demand; DemoThemis holds funds, resolves disputes, and releases or refunds them by rule. PredictionMoMo supplies its first cases and revenue.</p>
+        <p>The full design adds World-ID uniqueness, per-draw presence checks, sealed draws, receipt-free ballots, private reputation, sponsored gas, and expanding appeals. The deployed slice currently proves World ID registration wiring, commit/reveal voting, escrow settlement, and fee routing.</p>
       </div>
     </div>
+    <p>Together they separate the customer-facing market from neutral adjudication. PredictionMoMo is the court's first client, not its limit: marketplaces and online agreements can later use the same escrow and verdict layer without adopting the market.</p>
   </section>
 
   <section class="reveal">
@@ -100,17 +96,17 @@
       <a class="map-card" href="demothemis.html">
         <span class="stage">Chapter 01</span>
         <h3>DemoThemis</h3>
-        <p>The simple version and the full mechanics: neutral escrow, verified human juries, private ballots, appeals, and juror scoring.</p>
+        <p>Neutral escrow, verified juries, private ballots, appeals, and juror scoring.</p>
       </a>
       <a class="map-card" href="game-theory.html">
         <span class="stage">Chapter 02</span>
         <h3>Break the court</h3>
-        <p>Try the attack model: move the knobs, stress the assumptions, and see which bad strategies can still make money.</p>
+        <p>Move the knobs and see which attacks can still make money.</p>
       </a>
       <a class="map-card" href="prediction-market.html">
         <span class="stage">Chapter 03</span>
         <h3>PredictionMoMo</h3>
-        <p>Markets anyone can open, born as a shared pot with no market maker to bleed, grown into plain tokens you custody yourself.</p>
+        <p>Markets born as shared pots, then graduated into self-custodied tokens.</p>
       </a>
       <a class="map-card" href="the-design.html">
         <span class="stage">Chapter 04</span>
@@ -120,28 +116,22 @@
       <a class="map-card" href="hybrid-juror-prediction-market-integration.html">
         <span class="stage">Chapter 05</span>
         <h3>The bootstrap loop</h3>
-        <p>Markets supply the court with paid cases, fees, resolved cases for aptitude tests, and proof before outside apps have to trust it.</p>
+        <p>How markets supply paid cases, juror tests, revenue, and proof.</p>
       </a>
       <a class="map-card" href="governance.html">
         <span class="stage">Chapter 06</span>
         <h3>Governance</h3>
-        <p>One token, two ballots: weight is the square root of tokens per verified person, multiplied by use of the product itself.</p>
+        <p>Separate governments for the market business and the neutral court.</p>
       </a>
     </div>
 
     <aside class="callout" aria-labelledby="working-mvp-title">
       <p class="sec-label">Working MVP</p>
       <h3 id="working-mvp-title">Move from the design to the product</h3>
-      <p>The six chapters explain the system. The working MVP lets you try its browser sandbox and continue into the live app.</p>
+      <p>The chapters explain the design; the working MVP lets you try the sandbox and live app.</p>
+      <p>Today it demonstrates source-verified World Chain contracts, World ID registration, commit/reveal voting, and escrow settlement. Receipt-free ballots, production randomness, and hardened appeals and reputation remain roadmap work.</p>
       <p><a href="mvp.html"><strong>Explore the working MVP &rarr;</strong></a></p>
     </aside>
-  </section>
-
-  <section class="reveal">
-    <p class="sec-label">How to read it</p>
-    <h2>Pick a door</h2>
-    <p>Start with <a href="demothemis.html">DemoThemis</a> <span class="tag-level tag-start">start here</span> for the simple version and the full mechanism. If you are short on time, <a href="the-design.html">the run-through</a> plays the whole system in one chain. If you want to test the design, open <a href="game-theory.html">Break the court</a>.</p>
-    <p>Every chapter has chapter navigation, a progress bar at the top, and a contents list on the longer ones, so you can always tell where you are and how much is left.</p>
   </section>
 
   <footer class="endnote reveal">

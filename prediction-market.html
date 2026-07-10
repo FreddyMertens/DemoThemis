@@ -96,7 +96,7 @@
 <header class="hero reveal">
   <p class="kicker">PredictionMoMo</p>
   <h1>How PredictionMoMo works: betting pools, fixed odds, and ERC-20 tokens</h1>
-  <p class="dek">This chapter follows the six PredictionMoMo promises: arbitration whales cannot buy, self-custody YES and NO tokens, private markets with neutral escrow, instant market creation from the first bet, tradeable claims during disputes, and peer-to-peer parlays without bookie risk.</p>
+  <p class="dek">This chapter follows six PredictionMoMo features: arbitration designed to resist capital capture, self-custody YES and NO tokens, private markets with neutral escrow, creation from the first bet, tradeable claims during disputes, and peer-to-peer parlays without bookie risk.</p>
   <div class="meta">
     <span class="pill">Prediction markets</span>
     <span>10 min read</span>
@@ -110,10 +110,10 @@
   <div class="product product-feature market reveal">
     <h3>PredictionMoMo: a prediction market with 6 novel features</h3>
     <ol class="product-jumps">
-      <li><a href="#exploited-arbiter">Arbitration not gameable by UMA whales: no chance of getting scammed.</a></li>
+      <li><a href="#exploited-arbiter">Arbitration designed to resist token-weighted whale capture.</a></li>
       <li><a href="#self-custody-tokens">Liquid markets tokenize into ERC-20 YES and NO tokens you self-custody; this lets you provide liquidity and earn interest, post them as collateral, and trade them with leverage.</a></li>
-      <li><a href="#private-markets">Anyone can open private, invite-only markets and still have a world-class third-party escrow and dispute system: post your side at any odds you name, invite the other side, and the odds stay fixed for everyone who joins.</a></li>
-      <li><a href="#start-market">Start a new prediction market instantly, on any topic, with any liquidity, even with less than a dollar.</a></li>
+      <li><a href="#private-markets">Eligible users can open private, invite-only markets with third-party escrow: name the odds, invite the other side, and keep those odds fixed for everyone who joins.</a></li>
+      <li><a href="#start-market">Start an eligible, clearly worded market from the first escrowed bet, even with less than a dollar.</a></li>
       <li><a href="#tradeable-disputes">With self-custody tokens that stay tradeable during disputes and resolution windows, you can exit the market at any time if there is liquidity. This also means there is no rush to close dispute windows, allowing retroactive changes to resolution windows where necessary.</a></li>
       <li><a href="#peer-to-peer-parlays">Native peer-to-peer parlays on liquid markets. By integrating Conditional Tokens Framework (CTF) via token splitting, bettors get live odds and early cashouts without the protocol or a "bookie" ever taking bankruptcy risk.</a></li>
     </ol>
@@ -121,7 +121,7 @@
 
   <section id="exploited-arbiter" class="reveal">
     <p class="sec-label">Value prop 1</p>
-    <h2>1. Arbitration not gameable by whales</h2>
+    <h2>1. Arbitration designed to resist whale capture</h2>
     <p class="lead">Prediction markets do not fail when traders disagree. They fail when everyone has to stop trading the event and start trading whoever gets to define the event. UMA showed one version plainly: token-weighted truth turns a disputed outcome into a governance market with a whale chart attached.</p>
     <p>The point is not that every disputed Polymarket resolution was corrupt. Some were genuinely ambiguous. The point is worse: the resolution layer made whale weight, voter conflicts, and after-the-fact rule fights part of the price discovery. Four episodes explain why PredictionMoMo cannot inherit UMA's court.</p>
 
@@ -175,10 +175,10 @@
       </div>
     </div>
 
-    <p class="oracle-note"><b>The conclusion is simple:</b> a prediction market needs an arbiter neither whales nor the venue itself can own. UMA shows the whale failure: token weight becomes adjudication weight. Kalshi's Khamenei dispute shows the house failure: the venue can write the exception and then judge the exception. PredictionMoMo's answer is not a nicer token vote or a more trusted operator. It removes both from the final verdict.</p>
-    <p>Easy markets still clear through bonded assertions, but contested markets go to verified humans, randomly drawn, voting privately, with one person counted once. That is the service upgrade: a market where the price can move freely, but the court cannot be bought by the biggest wallet or rewritten by the house.</p>
+    <p class="oracle-note"><b>The conclusion:</b> a prediction market needs an arbiter not automatically controlled by token weight or the venue. UMA shows the whale failure; Kalshi's Khamenei dispute shows the house failure. PredictionMoMo removes both from direct control of the final verdict.</p>
+    <p>Easy markets still clear through bonded assertions, but contested markets go to randomly drawn verified humans voting privately, with one person counted once. The biggest wallet and the venue no longer control the verdict by rule; willing accomplices, pool quality, and implementation risk still matter.</p>
 
-    <h3>How a market ends without a bought judge</h3>
+    <h3>How a market ends without a token-weighted judge</h3>
     <p><b>The event happens:</b> Now somebody has to say so, and this is where most markets quietly hand the job back to a trusted operator. Here the job is open to anyone, and it runs in three moves.</p>
 
     <ol class="stepper reveal">
@@ -227,7 +227,7 @@
       <figcaption>One hundred markets, one ending each. <b>Roughly ninety five settle without a juror lifting a finger, and the court exists for the rest.</b></figcaption>
     </figure>
 
-    <p>The contested few cross into <a href="demothemis.html#court-deep-dive">the court</a>: a panel of verified humans, drawn by a public beacon, voting in encrypted ballots, with a dispute ladder above them for the truly stubborn. The money is already inside protocol escrow, so the verdict is not advice; it is the release rule. And the quiet settlements are not wasted. Every one that passes curation becomes a resolved case for aptitude tests that grades the jurors, which is the engine <a href="hybrid-juror-prediction-market-integration.html">the loop chapter</a> is about.</p>
+    <p>The contested few cross into <a href="demothemis.html#capture-resistance">the court</a>: a panel of verified humans, drawn by a public beacon, voting in encrypted ballots, with a dispute ladder above them for the truly stubborn. The money is already inside protocol escrow, so the verdict is not advice; it is the release rule. And the quiet settlements are not wasted. Every one that passes curation becomes a resolved case for aptitude tests that grades the jurors, which is the engine <a href="hybrid-juror-prediction-market-integration.html">the loop chapter</a> is about.</p>
   </section>
 
   <section id="self-custody-tokens" class="reveal">
@@ -566,7 +566,7 @@
       <figcaption>The 2% settlement fee, split once. <b>The split sums to one, so no dollar is ever promised twice.</b></figcaption>
     </figure>
 
-    <p>That is PredictionMoMo: an arbiter whales cannot buy, claims you hold yourself, private markets with neutral escrow, markets born from a dime, dispute windows that do not freeze trade, and parlays without bookie risk. The next chapter closes the circuit, because the same settled markets that pay the jurors are also what teach the court who its best jurors are.</p>
+    <p>That is PredictionMoMo: capture-resistant arbitration, self-held claims, neutral private escrow, dime-sized market starts, tradeable disputes, and parlays without bookie risk. The next chapter shows how settled markets both pay jurors and help identify the careful ones.</p>
   </section>
 
   <footer class="endnote reveal">
