@@ -25,74 +25,121 @@ export default function SandboxPage() {
         <p className="sbx-sec-label">Courtroom simulator</p>
         <h1>Buy this verdict</h1>
         <p className="sbx-prose">
-          A client-side simulation of the DemoThemis arbitration court. The headline below puts a
-          token-weighted oracle next to a one-human-one-vote court and lets you try to buy each one.
-          Every number is an illustrative model on the design&apos;s published parameters, and the
-          curves are seeded so they reproduce exactly.
+          Try to buy the same verdict in two court models. This seeded, client-side simulation uses
+          the published design parameters; the same seed reproduces the same results.
         </p>
-        <div className="sbx-seedbar">
-          <span className="sbx-mono">seed: {seed}</span>
-          <button className="sbx-btn sbx-btn-ghost" onClick={reroll}>
-            Re-roll seed
-          </button>
-          {seed !== DEFAULT_SEED && (
-            <button className="sbx-btn sbx-btn-ghost" onClick={reset}>
-              Reset to default
-            </button>
-          )}
-        </div>
       </header>
 
       {!mounted ? (
         <LoadingSkeletons />
       ) : (
         <>
-          <WidgetBoundary name="attack demo">
-            <AttackDemo seed={seed} />
-          </WidgetBoundary>
-          <WidgetBoundary name="optimistic funnel">
-            <FunnelReadout />
-          </WidgetBoundary>
-          <WidgetBoundary name="core court">
-            <CoreCourt seed={seed} />
-          </WidgetBoundary>
+          <section className="sbx-primary" aria-label="Core simulation journey">
+            <WidgetBoundary name="attack demo">
+              <AttackDemo seed={seed} />
+            </WidgetBoundary>
+          </section>
 
-          <div style={{ margin: '2.5rem 0 0' }}>
-            <p className="sbx-sec-label">The full mechanism</p>
-            <h2>What the chain does not do, simulated</h2>
-            <p className="sbx-prose">
-              The MVP ships the core court on-chain. Everything below is the rest of the published
-              design, running here as a simulation only: the appeal ladder, juror reputation, the
-              reward-pool payout, watchers, and both case types. None of it is on-chain yet, and each
-              gap is listed in docs/MECHANISM_DELTA.md.
-            </p>
-          </div>
+          <details className="sbx-seed-details sbx-guide-details">
+            <summary>
+              <span>How to use this simulator</span>
+              <span>3 short steps</span>
+            </summary>
+            <section className="sbx-orientation" aria-labelledby="sbx-start-title">
+              <div className="sbx-orientation-head">
+                <p className="sbx-sec-label">Guide</p>
+                <h2 id="sbx-start-title">Three things to try</h2>
+              </div>
+              <ol className="sbx-steps">
+                <li>
+                  <span aria-hidden="true">1</span>
+                  <div>
+                    <strong>Set an attack budget</strong>
+                    <p>Compare a stake vote with a drawn human panel.</p>
+                  </div>
+                </li>
+                <li>
+                  <span aria-hidden="true">2</span>
+                  <div>
+                    <strong>Follow the funnel</strong>
+                    <p>See why a jury should be the last resort.</p>
+                  </div>
+                </li>
+                <li>
+                  <span aria-hidden="true">3</span>
+                  <div>
+                    <strong>Run the court</strong>
+                    <p>Draw a panel, reveal votes, and settle fees.</p>
+                  </div>
+                </li>
+              </ol>
+            </section>
+          </details>
 
-          <WidgetBoundary name="dispute ladder">
-            <LadderDemo />
-          </WidgetBoundary>
-          <WidgetBoundary name="reputation gate">
-            <ReputationDemo />
-          </WidgetBoundary>
-          <WidgetBoundary name="reward-pool payout">
-            <RewardPayoutDemo seed={seed} />
-          </WidgetBoundary>
-          <WidgetBoundary name="watchers">
-            <WatchersDemo />
-          </WidgetBoundary>
-          <WidgetBoundary name="case browser">
-            <CaseBrowser seed={seed} />
-          </WidgetBoundary>
+          <details className="sbx-seed-details">
+            <summary>
+              <span>Simulation settings</span>
+              <span className="sbx-mono">Seed {seed}</span>
+            </summary>
+            <div className="sbx-seedbar" aria-label="Simulation seed controls">
+              <button className="sbx-btn sbx-btn-ghost" onClick={reroll}>
+                Re-roll seed
+              </button>
+              {seed !== DEFAULT_SEED && (
+                <button className="sbx-btn sbx-btn-ghost" onClick={reset}>
+                  Reset seed
+                </button>
+              )}
+              <p>Changing the seed changes simulated people while keeping the model reproducible.</p>
+            </div>
+          </details>
+
+          <section className="sbx-primary" aria-label="Remaining core simulation journey">
+            <WidgetBoundary name="optimistic funnel">
+              <FunnelReadout />
+            </WidgetBoundary>
+            <WidgetBoundary name="core court">
+              <CoreCourt seed={seed} />
+            </WidgetBoundary>
+          </section>
+
+          <details className="sbx-advanced">
+            <summary>
+              <span className="sbx-advanced-summary">
+                <span className="sbx-advanced-title">
+                  <strong>Simulated full design: advanced mechanics</strong>
+                  <span className="sbx-simtag">Simulation · roadmap</span>
+                </span>
+                <small>Appeals, reputation, reward payouts, watchers, and example cases</small>
+              </span>
+            </summary>
+            <div className="sbx-advanced-body">
+              <p className="sbx-prose">
+                These funded-design mechanics are interactive models, not live MVP features. Each
+                widget remains labeled, and every gap is documented in docs/MECHANISM_DELTA.md.
+              </p>
+              <WidgetBoundary name="dispute ladder">
+                <LadderDemo />
+              </WidgetBoundary>
+              <WidgetBoundary name="reputation gate">
+                <ReputationDemo />
+              </WidgetBoundary>
+              <WidgetBoundary name="reward-pool payout">
+                <RewardPayoutDemo seed={seed} />
+              </WidgetBoundary>
+              <WidgetBoundary name="watchers">
+                <WatchersDemo />
+              </WidgetBoundary>
+              <WidgetBoundary name="case browser">
+                <CaseBrowser seed={seed} />
+              </WidgetBoundary>
+            </div>
+          </details>
         </>
       )}
 
-      <footer style={{ marginTop: '2.5rem', fontFamily: 'var(--sans)', fontSize: '.82rem', color: 'var(--faint)' }}>
-        <p>
-          Simulation only. The on-chain court (real World ID registration, real commit/reveal, the
-          70/20/10 payout) lives at <a href="/home">/home</a>. The simulation adds the appeal ladder,
-          reputation, the reward-pool payout, and watchers on top. None of that is on-chain in the
-          MVP. It is all listed in docs/MECHANISM_DELTA.md.
-        </p>
+      <footer className="sbx-footer">
+        <a href="/home">Compare this model with the on-chain MVP →</a>
       </footer>
     </>
   );

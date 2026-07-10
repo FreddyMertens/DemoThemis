@@ -21,18 +21,18 @@ import { useCourtTx } from '@/lib/tx';
 const STEPS = [
   {
     n: 1,
-    title: 'Verify a unique human',
-    body: 'A World ID 4.0 proof is checked on-chain and bound to your wallet. One person, one juror seat — no wallet can do it twice.',
+    title: 'Verify with World ID',
+    body: 'Proves one unique person and binds that seat to your wallet.',
   },
   {
     n: 2,
-    title: 'Post a $5 bond through Permit2',
-    body: 'World App, MiniKit, and Permit2 batch the valueless MUSD bond path so the court can pull the bond in one onboard.',
+    title: 'Post a 5 MUSD demo bond',
+    body: 'The token is valueless; World App submits the bond and registration together.',
   },
   {
     n: 3,
-    title: 'Join the drawable pool',
-    body: 'You become eligible to be drawn onto random panels. Withdraw the bond any time you are not empaneled.',
+    title: 'Join the juror pool',
+    body: 'You can be drawn for cases and withdraw when you are not serving.',
   },
 ];
 
@@ -70,7 +70,7 @@ export default function Onboard() {
       }
 
       setPhase('submitting');
-      setNote('Posting your $5 bond and joining the court…');
+      setNote('Posting your 5 MUSD demo bond and joining the court…');
       const balance = await musdBalanceOf(wallet);
       const batch = [
         ...(balance < BOND ? [courtTx.faucet()] : []), // top up if short (100 MUSD/day)
@@ -96,6 +96,86 @@ export default function Onboard() {
   const busy = phase === 'verifying' || phase === 'submitting';
   const verifiedHumanLabel = verifiedIndex == null ? 'Verified human' : `Verified human #${verifiedIndex}`;
 
+  const actionPanel = IS_COHORT ? (
+    <div className="rounded-xl border border-amber-300 bg-amber-50 p-4 text-center text-amber-900">
+      <p className="text-sm font-semibold">This simulated cohort is read-only.</p>
+      <p className="mt-1 text-xs">Try the complete juror journey locally without a proof, wallet signature, or funds.</p>
+      <Link
+        href="/juror-preview"
+        className="mt-3 block rounded-lg bg-amber-900 px-3 py-2.5 text-center text-sm font-semibold text-white"
+      >
+        Try a sample juror case →
+      </Link>
+    </div>
+  ) : phase === 'done' ? (
+    <div className="rounded-xl border border-emerald-300 bg-emerald-50 p-4 text-center">
+      <p className="text-base font-bold text-emerald-900">You&apos;re a juror.</p>
+      <p className="mt-1 text-sm text-emerald-800">
+        {verifiedHumanLabel}. This World ID now has one seat; another wallet cannot register it again.
+      </p>
+      {tx.txHash && (
+        <a
+          href={explorerTx(tx.txHash)}
+          target="_blank"
+          rel="noreferrer"
+          className="mt-2 inline-block text-xs font-medium text-emerald-700 underline"
+        >
+          View registration on worldscan ↗
+        </a>
+      )}
+      <Link
+        href="/home"
+        className="mt-3 block w-full rounded-xl bg-slate-900 px-4 py-3 text-sm font-semibold text-white"
+      >
+        Go to the court
+      </Link>
+    </div>
+  ) : !wallet ? (
+    <div className="rounded-xl border border-slate-200 bg-white p-4 text-center">
+      <p className="text-sm font-semibold text-slate-800">Sign in with World App to join</p>
+      <p className="mb-3 mt-1 text-xs text-slate-500">Verify with World ID and post the valueless 5 MUSD demo bond.</p>
+      <AuthButton />
+    </div>
+  ) : !isInstalled ? (
+    <div className="rounded-xl border border-slate-200 bg-white p-4 text-center">
+      <p className="text-sm font-semibold text-slate-800">Open this Mini App in World App to join</p>
+      <div className="mt-3">
+        <AuthButton />
+      </div>
+    </div>
+  ) : (
+    <div className="space-y-2">
+      <button
+        onClick={onboard}
+        disabled={busy}
+        className="w-full rounded-xl bg-slate-900 px-4 py-3 text-sm font-semibold text-white disabled:opacity-60"
+      >
+        {phase === 'verifying'
+          ? 'Verifying with World ID…'
+          : phase === 'submitting'
+            ? 'Posting bond & joining…'
+            : 'Verify with World ID & join'}
+      </button>
+      {busy && (
+        <div className="flex gap-2 text-[11px] text-slate-500" aria-live="polite">
+          <span className={phase === 'verifying' ? 'font-semibold text-slate-800' : ''}>1. Verify human</span>
+          <span>→</span>
+          <span className={phase === 'submitting' ? 'font-semibold text-slate-800' : ''}>2. Bond & register</span>
+        </div>
+      )}
+      {note && (
+        <p
+          className={`rounded-lg px-3 py-2 text-xs ${
+            phase === 'error' ? 'bg-rose-50 text-rose-700' : 'bg-slate-50 text-slate-500'
+          }`}
+          role={phase === 'error' ? 'alert' : 'status'}
+        >
+          {note}
+        </p>
+      )}
+    </div>
+  );
+
   return (
     <>
       <Page.Header className="p-0">
@@ -110,127 +190,40 @@ export default function Onboard() {
       </Page.Header>
       <Page.Main className="flex flex-col items-stretch gap-4 mb-20">
         <InstanceBanner />
-
-        <div className="rounded-xl border border-slate-200 bg-white p-4 text-center">
-          <p className="text-sm font-semibold text-slate-900">
-            The World stack handles the hard parts: one person, one vote, wallet-bound proof, Permit2 bond, and
-            sponsored mainnet transaction path.
-          </p>
-          <div className="mt-2 flex justify-center">
+        {actionPanel}
+        {!IS_COHORT && (
+          <div className="flex justify-center">
             <GasBadge />
           </div>
-        </div>
-
-        <div className="space-y-2">
-          {STEPS.map((s) => (
-            <div key={s.n} className="flex gap-3 rounded-xl border border-slate-200 bg-white p-3">
-              <div className="flex h-7 w-7 shrink-0 items-center justify-center rounded-full bg-slate-900 text-sm font-bold text-white">
-                {s.n}
-              </div>
-              <div>
-                <p className="text-sm font-semibold text-slate-800">{s.title}</p>
-                <p className="text-xs text-slate-500">{s.body}</p>
-              </div>
-            </div>
-          ))}
-        </div>
-
-        <SybilDemo />
-
-        {IS_COHORT ? (
-          <div className="rounded-xl border border-amber-300 bg-amber-50 p-3 text-xs leading-snug text-amber-900">
-            <p>
-              This cohort&apos;s ~20 jurors register through a labeled stand-in (MockSybilGate), so you can&apos;t join
-              it from here. The <span className="font-semibold">real</span> on-chain World ID 4.0 gate runs on World
-              Chain mainnet — the reverts above show it rejecting a forged proof and a duplicate human. A real human
-              registration is the on-device capstone step.
-            </p>
-            <Link
-              href="/juror-preview"
-              className="mt-3 block rounded-lg bg-amber-900 px-3 py-2 text-center text-xs font-semibold text-white"
-            >
-              Test juror UX locally
-            </Link>
-          </div>
-        ) : phase === 'done' ? (
-          <div className="rounded-xl border border-emerald-300 bg-emerald-50 p-4 text-center">
-            <p className="text-base font-bold text-emerald-900">🎉 You are a juror.</p>
-            <p className="mt-1 text-sm font-semibold text-emerald-900">{verifiedHumanLabel}: one person, one vote.</p>
-            <p className="mt-1 text-sm text-emerald-800">No wallet can do this twice.</p>
-            <p className="mt-1 text-xs leading-snug text-emerald-700">
-              Your identity nullifier is now spent in this registry; a second wallet for the same human would revert
-              instead of creating another seat.
-            </p>
-            {tx.txHash && (
-              <a
-                href={explorerTx(tx.txHash)}
-                target="_blank"
-                rel="noreferrer"
-                className="mt-2 inline-block text-xs font-medium text-emerald-700 underline"
-              >
-                View your registration on worldscan ↗
-              </a>
-            )}
-            <Link
-              href="/home"
-              className="mt-3 block w-full rounded-xl bg-slate-900 px-4 py-3 text-sm font-semibold text-white"
-            >
-              Go to the court
-            </Link>
-          </div>
-        ) : !wallet ? (
-          <div className="rounded-xl border border-slate-200 bg-white p-4 text-center">
-            <p className="text-sm font-semibold text-slate-800">Sign in before joining the court</p>
-            <p className="mb-3 mt-1 text-xs text-slate-500">
-              World App signs a one-time wallet message, then returns you here to verify personhood and post the
-              valueless MockUSD bond.
-            </p>
-            <AuthButton />
-          </div>
-        ) : !isInstalled ? (
-          <div className="rounded-xl border border-slate-200 bg-white p-4 text-center">
-            <p className="text-sm font-semibold text-slate-800">Joining happens in World App</p>
-            <p className="mt-1 text-xs text-slate-500">
-              Open this Mini App inside World App on your phone: walletAuth signs you in, World ID verifies personhood,
-              and Permit2 posts the bond. On desktop this screen is read-only.
-            </p>
-          </div>
-        ) : (
-          <div className="space-y-2">
-            <button
-              onClick={onboard}
-              disabled={busy}
-              className="w-full rounded-xl bg-slate-900 px-4 py-3 text-sm font-semibold text-white disabled:opacity-60"
-            >
-              {phase === 'verifying'
-                ? 'Verifying with World ID…'
-                : phase === 'submitting'
-                  ? 'Posting bond & joining…'
-                  : 'Verify with World ID & join'}
-            </button>
-            {/* two-step progress */}
-            {busy && (
-              <div className="flex gap-2 text-[11px] text-slate-500">
-                <span className={phase === 'verifying' ? 'font-semibold text-slate-800' : ''}>1. Verify human</span>
-                <span>→</span>
-                <span className={phase === 'submitting' ? 'font-semibold text-slate-800' : ''}>2. Bond & register</span>
-              </div>
-            )}
-            {note && (
-              <p
-                className={`rounded-lg px-3 py-2 text-xs ${
-                  phase === 'error' ? 'bg-rose-50 text-rose-700' : 'bg-slate-50 text-slate-500'
-                }`}
-              >
-                {note}
-              </p>
-            )}
-            <p className="text-[11px] leading-snug text-slate-400">
-              World App will sponsor gas for verified humans at the capstone trace. The bond is valueless MockUSD; the
-              3/3 panel is a labeled demo parameter.
-            </p>
-          </div>
         )}
+
+        <details className="court-disclosure">
+          <summary>
+            How joining works <span>3 steps</span>
+          </summary>
+          <div className="court-disclosure-content space-y-2">
+            {STEPS.map((s) => (
+              <div key={s.n} className="flex gap-3 rounded-xl border border-slate-200 bg-white p-3">
+                <div className="flex h-7 w-7 shrink-0 items-center justify-center rounded-full bg-slate-900 text-sm font-bold text-white">
+                  {s.n}
+                </div>
+                <div>
+                  <p className="text-sm font-semibold text-slate-800">{s.title}</p>
+                  <p className="text-xs text-slate-500">{s.body}</p>
+                </div>
+              </div>
+            ))}
+          </div>
+        </details>
+
+        <details className="court-disclosure">
+          <summary>
+            Why one human can only join once <span>on-chain evidence</span>
+          </summary>
+          <div className="court-disclosure-content">
+            <SybilDemo />
+          </div>
+        </details>
       </Page.Main>
     </>
   );

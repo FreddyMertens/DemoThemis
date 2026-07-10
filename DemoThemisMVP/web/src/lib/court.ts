@@ -91,12 +91,38 @@ export async function getCase(id: number): Promise<CaseView> {
   };
 }
 
-/** All cases, newest first (the seeded history is the cohort's main content). */
+const caseCache = new Map<number, CaseView>();
+let cachedCaseCount = 0;
+
+/** All cases, newest first. Resolved history is immutable, so cache it and only
+ * refetch new or still-active cases on each poll. */
 export async function listCases(): Promise<CaseView[]> {
   const n = await caseCount();
-  if (n === 0) return [];
-  const cases = await Promise.all(Array.from({ length: n }, (_, i) => getCase(i)));
-  return cases.reverse();
+  if (n === 0) {
+    caseCache.clear();
+    cachedCaseCount = 0;
+    return [];
+  }
+
+  if (n < cachedCaseCount) caseCache.clear();
+
+  const idsToRefresh = Array.from({ length: n }, (_, id) => id).filter((id) => {
+    const cached = caseCache.get(id);
+    return !cached || cached.phase !== 'Resolved';
+  });
+
+  // Avoid hitting the public RPC with the entire seeded history at once.
+  const batchSize = 24;
+  for (let offset = 0; offset < idsToRefresh.length; offset += batchSize) {
+    const ids = idsToRefresh.slice(offset, offset + batchSize);
+    const fresh = await Promise.all(ids.map((id) => getCase(id)));
+    fresh.forEach((courtCase) => caseCache.set(courtCase.id, courtCase));
+  }
+
+  cachedCaseCount = n;
+  return Array.from({ length: n }, (_, index) => caseCache.get(n - 1 - index)).filter(
+    (courtCase): courtCase is CaseView => courtCase !== undefined,
+  );
 }
 
 export type DealView = {

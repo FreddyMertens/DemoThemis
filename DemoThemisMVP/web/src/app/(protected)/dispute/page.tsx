@@ -5,20 +5,14 @@ import { useState } from 'react';
 import { Page } from '@/components/PageLayout';
 import { CourtTopBar } from '@/components/CourtTopBar';
 import { InstanceBanner } from '@/components/InstanceBanner';
-import { IS_COHORT } from '@/lib/chain';
 
 function PreviewNote() {
   return (
     <div className="court-preview-note" role="note">
       <span>Preview only</span>
       <div>
-        <strong>Dispute creation is not enabled in this public review build.</strong>
-        <p>
-          {IS_COHORT
-            ? 'This cohort is read-only. On mainnet, a non-juror wallet opens the case; jurors verify, commit, and reveal inside World App through the sponsored-gas path.'
-            : 'The mainnet path opens a case from a non-juror wallet; the juror flow runs in World App through the sponsored-gas path captured at the capstone.'}
-        </p>
-        {IS_COHORT && <Link href="/juror-preview">Test the juror flow locally →</Link>}
+        <strong>Case creation is disabled in this public review.</strong>
+        <Link href="/sandbox">Try the complete flow in the sandbox →</Link>
       </div>
     </div>
   );
@@ -30,7 +24,7 @@ export default function Dispute() {
   return (
     <>
       <Page.Header className="p-0">
-        <CourtTopBar title="Open a dispute" />
+        <CourtTopBar title="Case preview" />
       </Page.Header>
       <Page.Main className="flex flex-col items-stretch gap-4 mb-20">
         <InstanceBanner />
@@ -49,62 +43,55 @@ export default function Dispute() {
             aria-pressed={tab === 'question'}
             className={`flex-1 rounded-lg border px-3 py-2 text-sm font-medium ${tab === 'question' ? 'border-slate-800 bg-slate-900 text-white' : 'border-slate-200 text-slate-500'}`}
           >
-            Resolution question
+            Yes/no question
           </button>
         </div>
 
         {tab === 'escrow' ? (
-          <div className="space-y-3 rounded-xl border border-slate-200 bg-white p-4">
-            <p className="text-sm text-slate-600">
-              Fund a deal to a payee with a <span className="font-semibold">2% fee</span> held on top. Release pays the
-              payee and refunds the fee — no court cost. If you dispute, the fee funds a juror case asking{' '}
-              <em>&ldquo;should the payee be paid under the linked terms?&rdquo;</em>
+          <section className="court-case-preview" aria-label="Escrow deal preview">
+            <p>
+              Deposit a payment plus a 2% fee. Releasing pays the payee and returns the fee; disputing sends the case to
+              jurors.
             </p>
-            <label className="block text-xs font-medium text-slate-500">
-              Payee address
-              <input
-                disabled
-                placeholder="0x…"
-                className="mt-1 w-full rounded-lg border border-slate-200 bg-slate-50 px-2 py-1.5 text-sm"
-              />
-            </label>
-            <label className="block text-xs font-medium text-slate-500">
-              Amount (MUSD)
-              <input
-                disabled
-                placeholder="50"
-                className="mt-1 w-full rounded-lg border border-slate-200 bg-slate-50 px-2 py-1.5 text-sm"
-              />
-            </label>
-            <button
-              disabled
-              className="w-full cursor-not-allowed rounded-lg bg-slate-200 px-3 py-2 text-sm font-semibold text-slate-500"
-            >
-              Create deal
-            </button>
-          </div>
+            <dl className="court-case-facts">
+              <div>
+                <dt>Fee</dt>
+                <dd>2% held</dd>
+              </div>
+              <div>
+                <dt>No dispute</dt>
+                <dd>Fee returned</dd>
+              </div>
+              <div>
+                <dt>Dispute</dt>
+                <dd>Jurors decide</dd>
+              </div>
+            </dl>
+            <p className="court-case-sample">
+              Sample juror question: “Should the payee be paid under the linked terms?”
+            </p>
+          </section>
         ) : (
-          <div className="space-y-3 rounded-xl border border-slate-200 bg-white p-4">
-            <p className="text-sm text-slate-600">
-              Open a yes/no resolution question with a <span className="font-semibold">2 MUSD</span> fee. A random panel
-              of verified humans is drawn, votes by private commit/reveal, and the majority resolves it. The fee splits
-              70/20/10 (jurors / reward pool / protocol).
+          <section className="court-case-preview" aria-label="Yes or no question preview">
+            <p>
+              Pay 2 MUSD to ask a drawn panel of verified humans a yes/no question. Votes stay sealed until reveal.
             </p>
-            <label className="block text-xs font-medium text-slate-500">
-              Question
-              <input
-                disabled
-                placeholder="Did X happen by date Y?"
-                className="mt-1 w-full rounded-lg border border-slate-200 bg-slate-50 px-2 py-1.5 text-sm"
-              />
-            </label>
-            <button
-              disabled
-              className="w-full cursor-not-allowed rounded-lg bg-slate-200 px-3 py-2 text-sm font-semibold text-slate-500"
-            >
-              Open question (2 MUSD)
-            </button>
-          </div>
+            <dl className="court-case-facts">
+              <div>
+                <dt>Fee</dt>
+                <dd>2 MUSD</dd>
+              </div>
+              <div>
+                <dt>Ballot</dt>
+                <dd>Sealed → reveal</dd>
+              </div>
+              <div>
+                <dt>Fee split</dt>
+                <dd>70 · 20 · 10</dd>
+              </div>
+            </dl>
+            <p className="court-case-sample">70% jurors · 20% reward pool · 10% protocol</p>
+          </section>
         )}
       </Page.Main>
     </>

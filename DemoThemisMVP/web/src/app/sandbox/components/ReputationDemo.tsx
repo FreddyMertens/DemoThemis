@@ -159,9 +159,9 @@ export function ReputationDemo() {
       </div>
 
       <p className="sbx-note warn">
-        Juror reputation and the confidence gate are sandbox models of the funded-milestone design,
-        not on-chain in the MVP. The deployed court draws uniformly at random. See
-        docs/MECHANISM_DELTA.md.
+        <b>Simulation and privacy:</b> this screen exposes a score only to explain the model. The
+        production design keeps each juror&apos;s reputation and punishment history private; implementing
+        that privacy is funded work, not an MVP feature. The deployed court currently draws uniformly.
       </p>
     </Widget>
   );

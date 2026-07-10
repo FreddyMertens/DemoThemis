@@ -1,7 +1,7 @@
 'use client';
 
 import Link from 'next/link';
-import { useEffect, useMemo, useState } from 'react';
+import { useEffect, useMemo, useRef, useState } from 'react';
 import { encodeAbiParameters, keccak256, type Address, type Hex } from 'viem';
 import { CourtTopBar } from '@/components/CourtTopBar';
 import { Page } from '@/components/PageLayout';
@@ -20,6 +20,16 @@ const STORE_KEY = 'demothemis-local-juror-preview';
 type Stage = 'join' | 'commit' | 'reveal' | 'resolved';
 type JoinPhase = 'idle' | 'verifying' | 'bonding' | 'done';
 type SavedBallot = { vote: boolean; salt: Hex };
+
+function isBytes32(value: unknown): value is Hex {
+  return typeof value === 'string' && /^0x[0-9a-fA-F]{64}$/.test(value);
+}
+
+function isSavedBallot(value: unknown): value is SavedBallot {
+  if (!value || typeof value !== 'object') return false;
+  const ballot = value as Partial<SavedBallot>;
+  return typeof ballot.vote === 'boolean' && isBytes32(ballot.salt);
+}
 
 function phaseFor(stage: Stage): Phase {
   if (stage === 'commit') return 'Commit';
@@ -49,30 +59,46 @@ function StepPill({ active, done, label }: { active: boolean; done: boolean; lab
 export default function JurorPreview() {
   const [stage, setStage] = useState<Stage>('join');
   const [joinPhase, setJoinPhase] = useState<JoinPhase>('idle');
-  const [vote, setVote] = useState(true);
+  const [vote, setVote] = useState<boolean | null>(null);
   const [salt, setSalt] = useState<Hex>('0x');
   const [saved, setSaved] = useState<SavedBallot | null>(null);
+  const joinTimers = useRef<number[]>([]);
 
   useEffect(() => {
     const raw = localStorage.getItem(STORE_KEY);
     if (raw) {
       try {
-        const parsed = JSON.parse(raw) as SavedBallot;
-        setSaved(parsed);
-        setVote(parsed.vote);
-        setSalt(parsed.salt);
-        setStage('reveal');
-        setJoinPhase('done');
-        return;
+        const parsed: unknown = JSON.parse(raw);
+        if (isSavedBallot(parsed)) {
+          setSaved(parsed);
+          setVote(parsed.vote);
+          setSalt(parsed.salt);
+          setStage('reveal');
+          setJoinPhase('done');
+          return;
+        }
       } catch {
-        localStorage.removeItem(STORE_KEY);
+        /* Invalid local data is cleared below. */
       }
+      localStorage.removeItem(STORE_KEY);
     }
     setSalt(randomSalt());
   }, []);
 
+  useEffect(
+    () => () => {
+      joinTimers.current.forEach((timer) => window.clearTimeout(timer));
+    },
+    [],
+  );
+
+  function clearJoinTimers() {
+    joinTimers.current.forEach((timer) => window.clearTimeout(timer));
+    joinTimers.current = [];
+  }
+
   const commitment = useMemo<Hex>(() => {
-    if (salt === '0x') return '0x';
+    if (salt === '0x' || vote === null) return '0x';
     return keccak256(
       encodeAbiParameters(
         [{ type: 'bool' }, { type: 'bytes32' }, { type: 'uint256' }, { type: 'address' }],
@@ -82,15 +108,20 @@ export default function JurorPreview() {
   }, [salt, vote]);
 
   function startJoinPreview() {
+    clearJoinTimers();
     setJoinPhase('verifying');
-    window.setTimeout(() => setJoinPhase('bonding'), 450);
-    window.setTimeout(() => {
-      setJoinPhase('done');
-      setStage('commit');
-    }, 900);
+    joinTimers.current = [
+      window.setTimeout(() => setJoinPhase('bonding'), 450),
+      window.setTimeout(() => {
+        setJoinPhase('done');
+        setStage('commit');
+        joinTimers.current = [];
+      }, 900),
+    ];
   }
 
   function commitLocalVote() {
+    if (vote === null || salt === '0x') return;
     const ballot = { vote, salt };
     localStorage.setItem(STORE_KEY, JSON.stringify(ballot));
     setSaved(ballot);
@@ -103,11 +134,12 @@ export default function JurorPreview() {
   }
 
   function resetPreview() {
+    clearJoinTimers();
     localStorage.removeItem(STORE_KEY);
     setStage('join');
     setJoinPhase('idle');
     setSaved(null);
-    setVote(true);
+    setVote(null);
     setSalt(randomSalt());
   }
 
@@ -155,8 +187,7 @@ export default function JurorPreview() {
           {!joined ? (
             <>
               <p className="mt-2 text-sm leading-relaxed text-slate-600">
-                The preview compresses the World ID proof, Permit2 approval, MockUSD faucet, and registry join into one
-                local sequence.
+                This sample combines the World ID check, demo bond, and registration into one safe local step.
               </p>
               <button
                 onClick={startJoinPreview}
@@ -183,10 +214,9 @@ export default function JurorPreview() {
             </>
           ) : (
             <div className="mt-2 rounded-lg border border-emerald-200 bg-emerald-50 p-3">
-              <p className="text-sm font-semibold text-emerald-900">Verified human #21: one person, one vote.</p>
+              <p className="text-sm font-semibold text-emerald-900">Verified human #21: one juror seat.</p>
               <p className="mt-1 text-xs leading-snug text-emerald-700">
-                In the real path, the identity nullifier is spent in the registry; a second wallet for the same human
-                would revert instead of creating another seat.
+                In the real path, the registry marks this World ID as used; another wallet cannot add another seat.
               </p>
             </div>
           )}
@@ -210,36 +240,58 @@ export default function JurorPreview() {
 
             {stage === 'commit' && (
               <div className="mt-3 rounded-xl border border-slate-200 bg-slate-50 p-3">
-                <h3 className="text-sm font-semibold text-slate-800">Commit your vote</h3>
+                <h3 className="text-sm font-semibold text-slate-800">Choose and seal your vote</h3>
                 <div className="mt-2 flex gap-2">
                   <button
                     onClick={() => setVote(true)}
+                    aria-pressed={vote === true}
                     className={`flex-1 rounded-lg border px-3 py-2 text-sm font-medium ${
-                      vote ? 'border-emerald-400 bg-emerald-50 text-emerald-800' : 'border-slate-200 text-slate-500'
+                      vote === true
+                        ? 'border-emerald-400 bg-emerald-50 text-emerald-800'
+                        : 'border-slate-200 text-slate-500'
                     }`}
                   >
-                    YES
+                    Pay payee
                   </button>
                   <button
                     onClick={() => setVote(false)}
+                    aria-pressed={vote === false}
                     className={`flex-1 rounded-lg border px-3 py-2 text-sm font-medium ${
-                      !vote ? 'border-rose-400 bg-rose-50 text-rose-800' : 'border-slate-200 text-slate-500'
+                      vote === false
+                        ? 'border-rose-400 bg-rose-50 text-rose-800'
+                        : 'border-slate-200 text-slate-500'
                     }`}
                   >
-                    NO
+                    Refund payer
                   </button>
                 </div>
-                <p className="mt-2 break-all text-[10px] text-slate-400">
-                  commitment keccak(vote, salt, caseId, your address) = {commitment.slice(0, 22)}...
+                <p className="mt-2 rounded-lg bg-white px-2.5 py-2 text-xs leading-snug text-slate-600">
+                  Your choice is not preselected. This device keeps the secret key needed for the reveal step.
                 </p>
-                <p className="mt-1 break-all text-[10px] text-slate-400">
-                  salt saved on this device = {salt.slice(0, 22)}...
-                </p>
+                <details className="mt-2 rounded-lg border border-slate-200 bg-white p-2.5 text-xs text-slate-600">
+                  <summary className="cursor-pointer font-semibold text-slate-700">Technical ballot data</summary>
+                  <div className="mt-2 space-y-1.5">
+                    <p>The commitment binds the vote, device secret, case, and juror address.</p>
+                    {vote === null ? (
+                      <p>Choose an outcome to generate the commitment hash.</p>
+                    ) : (
+                      <>
+                        <p className="break-all font-mono text-[10px] text-slate-500">
+                          keccak(vote, salt, caseId, your address): {commitment.slice(0, 22)}...
+                        </p>
+                        <p className="break-all font-mono text-[10px] text-slate-500">
+                          device secret: {salt.slice(0, 22)}...
+                        </p>
+                      </>
+                    )}
+                  </div>
+                </details>
                 <button
                   onClick={commitLocalVote}
-                  className="mt-3 w-full rounded-lg bg-slate-900 px-3 py-2 text-xs font-semibold text-white"
+                  disabled={vote === null || salt === '0x'}
+                  className="mt-3 w-full rounded-lg bg-slate-900 px-3 py-2 text-xs font-semibold text-white disabled:opacity-60"
                 >
-                  Commit vote locally
+                  Seal vote locally
                 </button>
               </div>
             )}
@@ -249,12 +301,12 @@ export default function JurorPreview() {
                 <h3 className="text-sm font-semibold text-slate-800">Reveal your vote</h3>
                 {saved ? (
                   <p className="mt-1 text-xs text-slate-500">
-                    You committed <span className="font-semibold">{saved.vote ? 'YES' : 'NO'}</span>. Reveal it now so
-                    it counts toward the verdict.
+                    You committed <span className="font-semibold">{saved.vote ? 'Pay payee' : 'Refund payer'}</span>.
+                    Reveal it now so it counts toward the verdict.
                   </p>
                 ) : (
-                  <p className="mt-1 rounded-lg bg-rose-50 p-2 text-xs text-rose-700">
-                    No saved ballot found on this device. The salt is needed to reveal.
+                  <p role="alert" className="mt-1 rounded-lg bg-rose-50 p-2 text-xs text-rose-700">
+                    No ballot key on this device. Reveal from the device used to seal the vote.
                   </p>
                 )}
                 <button
@@ -264,22 +316,13 @@ export default function JurorPreview() {
                 >
                   Reveal vote locally
                 </button>
-                <button
-                  onClick={() => {
-                    localStorage.removeItem(STORE_KEY);
-                    setSaved(null);
-                  }}
-                  className="mt-2 w-full rounded-lg border border-slate-200 px-3 py-2 text-xs font-semibold text-slate-600"
-                >
-                  Preview missing-salt state
-                </button>
               </div>
             )}
 
             {stage === 'resolved' && (
               <div className="mt-3 rounded-xl border border-emerald-200 bg-emerald-50 p-3 text-sm text-emerald-900">
                 <p className="font-semibold">
-                  3 local preview humans decided this: one person, one vote, no wallet voted twice.
+                  3 sample jurors decided this with one registry seat and one vote each.
                 </p>
                 <p className="mt-1 text-xs">
                   Fee pool {fmtMusd(BigInt(2_000_000))} MUSD split 70/20/10. Verdict:{' '}
@@ -301,24 +344,39 @@ export default function JurorPreview() {
           </section>
         )}
 
-        <div className="grid grid-cols-2 gap-2">
-          <button
-            onClick={() => {
-              setJoinPhase('done');
-              setStage('commit');
-              if (salt === '0x') setSalt(randomSalt());
-            }}
-            className="rounded-lg border border-slate-200 px-3 py-2 text-xs font-semibold text-slate-600"
-          >
-            Jump to commit
-          </button>
-          <button
-            onClick={resetPreview}
-            className="rounded-lg border border-slate-200 px-3 py-2 text-xs font-semibold text-slate-600"
-          >
-            Reset preview
-          </button>
-        </div>
+        <details className="rounded-xl border border-slate-200 bg-white p-3 text-xs text-slate-600">
+          <summary className="cursor-pointer font-semibold text-slate-700">QA controls</summary>
+          <div className="mt-3 grid gap-2 sm:grid-cols-2">
+            <button
+              onClick={() => {
+                clearJoinTimers();
+                setJoinPhase('done');
+                setStage('commit');
+                if (salt === '0x') setSalt(randomSalt());
+              }}
+              className="rounded-lg border border-slate-200 px-3 py-2 text-xs font-semibold text-slate-600"
+            >
+              Jump to commit
+            </button>
+            {stage === 'reveal' && (
+              <button
+                onClick={() => {
+                  localStorage.removeItem(STORE_KEY);
+                  setSaved(null);
+                }}
+                className="rounded-lg border border-slate-200 px-3 py-2 text-xs font-semibold text-slate-600"
+              >
+                Preview missing-salt state
+              </button>
+            )}
+            <button
+              onClick={resetPreview}
+              className="rounded-lg border border-slate-200 px-3 py-2 text-xs font-semibold text-slate-600"
+            >
+              Reset preview
+            </button>
+          </div>
+        </details>
       </Page.Main>
     </>
   );

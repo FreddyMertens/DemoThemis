@@ -65,22 +65,13 @@ export function RewardPayoutDemo({ seed }: { seed: number }) {
         </div>
       </div>
 
-      <div style={{ display: 'flex', flexDirection: 'column', gap: '.4rem' }}>
+      <div className="sbx-payout-list">
         {rows.map((r) => (
-          <div key={r.id} style={{ display: 'flex', alignItems: 'center', gap: '.6rem' }}>
-            <span className="sbx-mono" style={{ fontSize: '.78rem', width: '3.4rem', color: 'var(--faint)' }}>
+          <div key={r.id} className="sbx-payout-row">
+            <span className="sbx-mono sbx-payout-id">
               #{r.id}
             </span>
-            <div
-              style={{
-                flex: 1,
-                height: 22,
-                background: 'var(--bg)',
-                borderRadius: 6,
-                overflow: 'hidden',
-                border: '1px solid var(--line)',
-              }}
-            >
+            <div className="sbx-payout-track">
               <div
                 style={{
                   height: '100%',
@@ -89,10 +80,7 @@ export function RewardPayoutDemo({ seed }: { seed: number }) {
                 }}
               />
             </div>
-            <span
-              className="sbx-sans"
-              style={{ fontSize: '.78rem', width: '8.5rem', textAlign: 'right', color: 'var(--muted)' }}
-            >
+            <span className="sbx-sans sbx-payout-amount">
               {r.eligible ? (
                 <>
                   {courtMoney(r.share.amount)}{' '}
@@ -112,6 +100,11 @@ export function RewardPayoutDemo({ seed }: { seed: number }) {
         Share is proportional to coherence times recency (recent service is weighted up), and only
         jurors who clear the 0.70 gate are paid. This is a sandbox model of the funded-milestone
         payout, not on-chain in the MVP. The on-chain pool is a passive sink.
+      </p>
+      <p className="sbx-note warn">
+        <b>Privacy:</b> juror IDs and amounts are visible here only to explain the simulation. The
+        production design keeps individual payments, reserves, reputation, and punishment history
+        private; that privacy layer is funded work, not an MVP feature.
       </p>
     </Widget>
   );

@@ -15,52 +15,53 @@ export default function About() {
         <InstanceBanner />
 
         <section className="court-about-card">
-          <p className="court-about-kicker">The mechanism</p>
-          <h2>Human arbitration, without purchased voting power.</h2>
+          <p className="court-about-kicker">Build status</p>
+          <h2>What is real in this MVP?</h2>
           <p className="court-about-dek">
-            DemoThemis settles disputes with verified humans instead of token-weighted stake. Its mainnet deployment
-            deliberately uses a three-seat demo panel; expanding the pool and panel is funded milestone work.
+            DemoThemis uses verified humans—not token balances—to settle disputes. This build clearly separates what
+            is live, simulated, and still pending.
           </p>
           <div className="court-about-steps">
             <article>
               <span>01</span>
-              <strong>One human, one seat</strong>
-              <p>One World ID cannot return through a second wallet to gain another juror seat.</p>
+              <strong>Live</strong>
+              <p>Core contracts, escrow settlement, commit/reveal, and the World ID verifier path.</p>
             </article>
             <article>
               <span>02</span>
-              <strong>A late random draw</strong>
-              <p>The panel is chosen after the question is filed, so it cannot be targeted early.</p>
+              <strong>Simulated</strong>
+              <p>The wider product journey, scale cohort, appeals, reputation, rewards, and watchers.</p>
             </article>
             <article>
               <span>03</span>
-              <strong>A sealed, bonded vote</strong>
-              <p>Commit/reveal hides early votes; a bond puts careless participation at risk.</p>
+              <strong>Pending</strong>
+              <p>The final three-person test, production randomness, receipt-free ballots, and security review.</p>
             </article>
           </div>
         </section>
 
         <div className="court-about-links">
           <a href="/sandbox">
-            <span>Try</span> The “buy this verdict” sandbox
+            <span>Try</span> Verdict-attack sandbox
           </a>
           <a href={explorerAddress(addr.registry)} target="_blank" rel="noreferrer">
-            <span>Verify ↗</span>{' '}
-            {IS_COHORT ? "This cohort's JurorRegistry" : 'Mainnet JurorRegistry and World ID 4.0 verifier'}
+            <span>Verify ↗</span> {IS_COHORT ? 'Cohort JurorRegistry' : 'Mainnet JurorRegistry'}
           </a>
           <a href={explorerAddress(addr.court)} target="_blank" rel="noreferrer">
-            <span>Verify ↗</span> This instance&apos;s DisputeCourt
+            <span>Verify ↗</span> DisputeCourt
           </a>
           <a href="/demothemis.html">
-            <span>Read</span> The full DemoThemis design
+            <span>Read</span> Full design
           </a>
         </div>
 
-        <p className="rounded-xl bg-slate-50 px-3 py-2 text-xs leading-snug text-slate-500">
-          {IS_COHORT
-            ? 'The juror/case history shown in this app is the simulated Sepolia cohort (labeled simulated everywhere). The non-simulated chain slice is the source-verified mainnet contracts plus the World ID verifier path; real human usage begins at the capstone.'
-            : 'This is the capstone-ready mainnet instance with valueless MockUSD. No real money is at stake; the demo panel size is a disclosed parameter, and no real human has registered yet.'}
-        </p>
+        <details className="court-disclosure">
+          <summary>What the product is—and is not</summary>
+          <div className="court-disclosure-content text-xs leading-relaxed text-slate-600">
+            DemoThemis is a neutral resolver for escrow, marketplace conflicts, and objective yes/no questions. It
+            takes no bet, sets no odds, and holds no stake. Integrations use the court; they are not the court itself.
+          </div>
+        </details>
       </Page.Main>
     </>
   );

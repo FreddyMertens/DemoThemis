@@ -103,13 +103,6 @@ export function AttackDemo({ seed }: { seed: number }) {
 
   return (
     <Widget title="The comparative attack: buy this verdict">
-      <p className="sbx-prose">
-        Two oracles answer the same question under the same attacker budget. One sells the verdict
-        to whoever stakes the most. The other gives one verified human one vote and draws a random panel only after the question — so the attacker can never know or pick who will sit, and never reuses an answer. To touch a specific verdict you cannot bribe the panel; you must pre-corrupt a near-majority of the whole human pool and hope the draw seats them, paying it again every case. This is the sandbox/design model;
-        the live MVP is a single 3-seat demo panel, and security scales with pool width. Move the
-        budget and watch.
-      </p>
-
       <div className="sbx-controls">
         <Slider
           label="Attacker budget"
@@ -120,48 +113,63 @@ export function AttackDemo({ seed }: { seed: number }) {
           onChange={setBudget}
           display={courtMoney(budget)}
         />
-        <Slider
-          label="Token price (drives the token court's stake)"
-          value={tokenPrice}
-          min={0.05}
-          max={2}
-          step={0.05}
-          onChange={setTokenPrice}
-          display={`$${tokenPrice.toFixed(2)} / token`}
-        />
-        <Slider
-          label="Human pool width (verified humans)"
-          value={poolWidthK}
-          min={10}
-          max={1000}
-          step={10}
-          onChange={setPoolWidthK}
-          display={`${(N).toLocaleString('en-US')}`}
-        />
-        <Slider
-          label="Bribe price per juror (floor = fee $1.50 + bond $5 + reputation $0)"
-          value={bribePrice}
-          min={1}
-          max={50}
-          step={0.5}
-          onChange={setBribePrice}
-          display={courtMoney(bribePrice)}
-        />
-        <div className="sbx-row">
-          <label>Panel size</label>
-          <Seg options={PANEL_OPTIONS} value={panelSize} onChange={setPanelSize} label="Panel size" />
-        </div>
       </div>
+
+      <p className="sbx-prose">
+        Give both courts the same attacker budget. A stake vote prices control at a majority of the
+        stake; DemoThemis requires bribing enough of the wider human pool before the panel is drawn.
+        The live MVP uses three seats; larger pools and panels are funded scaling.
+      </p>
+
+      <details className="sbx-inline-details">
+        <summary>
+          <strong>Tune assumptions</strong>
+          <span>Token price, pool width, bribe price, and panel size</span>
+        </summary>
+        <div className="sbx-inline-details-body sbx-controls">
+          <Slider
+            label="Token price (drives the token court's stake)"
+            value={tokenPrice}
+            min={0.05}
+            max={2}
+            step={0.05}
+            onChange={setTokenPrice}
+            display={`$${tokenPrice.toFixed(2)} / token`}
+          />
+          <Slider
+            label="Human pool width (verified humans)"
+            value={poolWidthK}
+            min={10}
+            max={1000}
+            step={10}
+            onChange={setPoolWidthK}
+            display={N.toLocaleString('en-US')}
+          />
+          <Slider
+            label="Bribe price per juror (floor = fee $1.50 + bond $5 + reputation $0)"
+            value={bribePrice}
+            min={1}
+            max={50}
+            step={0.5}
+            onChange={setBribePrice}
+            display={courtMoney(bribePrice)}
+          />
+          <div className="sbx-row">
+            <label>Panel size</label>
+            <Seg options={PANEL_OPTIONS} value={panelSize} onChange={setPanelSize} label="Panel size" />
+          </div>
+        </div>
+      </details>
 
       {/* ---- the money shot: two verdicts side by side ---- */}
       <div className="sbx-compare">
         <div className="sbx-col bad">
-          <h4>
+          <h3>
             <span>Stake-weighted oracle</span>
             <span className="sbx-sans" style={{ fontSize: '.72rem', color: 'var(--faint)' }}>
               naive stake vote
             </span>
-          </h4>
+          </h3>
           <div className="sbx-fillbar" aria-label="attacker share of stake">
             <div
               className="fill bad"
@@ -192,12 +200,12 @@ export function AttackDemo({ seed }: { seed: number }) {
         </div>
 
         <div className="sbx-col good">
-          <h4>
+          <h3>
             <span>DemoThemis human court</span>
             <span className="sbx-sans" style={{ fontSize: '.72rem', color: 'var(--faint)' }}>
-              one human, one vote
+              one human, one seat
             </span>
-          </h4>
+          </h3>
           <div className="sbx-pdots" style={{ gridTemplateColumns: `repeat(${panelSize}, 1fr)` }}>
             {drawnSeats.map((c, i) => (
               <div
@@ -221,87 +229,92 @@ export function AttackDemo({ seed }: { seed: number }) {
             </button>
           </div>
           <p className="sbx-sans" style={{ fontSize: '.86rem', margin: '.6rem 0 0', color: 'var(--muted)' }}>
-            Because the panel is drawn at random after the question, the attacker cannot buy the panel — only the pool. This budget bribes <b>{human.K.toLocaleString('en-US')}</b> of {N.toLocaleString('en-US')}{' '}humans ({pctText(human.frac)} of the pool), and a fresh random draw still seats a captured majority only <b>{pctText(human.pFlip)}</b> of the time — a chance, not a verdict.
+            In this model, the panel is drawn after filing, so the attacker must target the wider
+            pool rather than a known panel. This budget bribes <b>{human.K.toLocaleString('en-US')}</b>{' '}
+            of {N.toLocaleString('en-US')} humans ({pctText(human.frac)} of the pool), and a fresh draw
+            seats a captured majority only <b>{pctText(human.pFlip)}</b> of the time.
           </p>
           <p className="sbx-note good" style={{ marginTop: '.6rem' }}>
-            And you start over next case: a fresh panel, fresh bribes, and any panel you do capture is
-            appealed into a bigger one. Nothing here is reusable.
+            A new case draws a new panel, so capture is not automatically reusable. Larger-panel
+            appeals are simulated below as funded design work.
           </p>
         </div>
       </div>
 
-      {/* ---- the P(flip) vs budget curve ---- */}
-      <h3 style={{ marginTop: '1.6rem' }}>Probability of flipping the verdict, by budget</h3>
-      <FlipChart curve={curve} budget={budget} />
-      <div className="sbx-legend">
-        <span>
-          <i style={{ background: 'var(--bad)' }} /> Stake vote (a step: bought, then permanent)
-        </span>
-        <span>
-          <i style={{ background: 'var(--good)' }} /> Human court (pool-corruption odds, re-paid per case)
-        </span>
-        <span>
-          <i style={{ background: 'var(--accent)', width: 3, height: 12 }} /> your budget
-        </span>
-      </div>
-      <p className="sbx-note">
-        Widen the human pool and the green curve collapses to the right: security is pool{' '}
-        <b>width</b>. The stake vote does not move, because its price is half the stake no matter how
-        many honest stakers exist. The live MVP proves the mechanism with a deliberately small
-        3-seat panel; larger pools and panels are funded-milestone scaling, not new research.
-        Honesty check at this budget: a 1,000-draw simulation captured{' '}
-        <b>{mc.toLocaleString('en-US')} / 1,000</b> panels (the model says {pctText(human.pFlip)}).
-      </p>
+      <details className="sbx-inline-details sbx-math-details">
+        <summary>
+          <strong>Explore the attack math</strong>
+          <span>Probability curve, simulation check, and roadmap parallel panels</span>
+        </summary>
+        <div className="sbx-inline-details-body">
+          {/* ---- the P(flip) vs budget curve ---- */}
+          <h3>Probability of flipping the verdict, by budget</h3>
+          <FlipChart curve={curve} budget={budget} />
+          <div className="sbx-legend">
+            <span>
+              <i style={{ background: 'var(--bad)' }} /> Stake vote (a step: bought, then permanent)
+            </span>
+            <span>
+              <i style={{ background: 'var(--good)' }} /> Human court (pool-corruption odds, re-paid per case)
+            </span>
+            <span>
+              <i style={{ background: 'var(--accent)', width: 3, height: 12 }} /> your budget
+            </span>
+          </div>
+          <p className="sbx-note">
+            Widening the human pool pushes the green curve right. The live MVP uses a deliberately small 3-seat panel;
+            larger pools and panels are funded scaling. At this budget, 1,000 simulated draws captured{' '}
+            <b>{mc.toLocaleString('en-US')} panels</b> (the model says {pctText(human.pFlip)}).
+          </p>
 
-      {/* ---- above the ceiling: parallel panels ---- */}
-      <h3 style={{ marginTop: '1.6rem' }}>Above the ceiling: parallel panels</h3>
-      <p className="sbx-prose">
-        Past the 31-seat panel, the design sends a high-value case to several independent panels at
-        once that must all agree. Capture odds do not add, they multiply: p becomes p
-        <sup>N</sup>. This is sandbox/roadmap scaling; the live MVP is a single 3-seat panel. Pool{' '}
-        {PARALLEL.POOL}, {PARALLEL.SEATS} seats, majority {PARALLEL.MAJ}.
-      </p>
-      <div className="sbx-controls">
-        <Slider
-          label="Share of the pool corrupted"
-          value={sharePct}
-          min={1}
-          max={100}
-          step={1}
-          onChange={setSharePct}
-          display={`${sharePct}% (${K_pp} of ${PARALLEL.POOL})`}
-        />
-        <div className="sbx-row">
-          <label>Case value (parallel panels)</label>
-          <Seg
-            options={[
-              { label: '1 panel', value: 1 },
-              { label: '3 panels', value: 3 },
-              { label: '5 panels', value: 5 },
-            ]}
-            value={parallelN}
-            onChange={setParallelN}
-            label="parallel panels"
-          />
-        </div>
-      </div>
-      <div className="sbx-readout">
-        {ppRows.map((r) => (
-          <div className="sbx-stat" key={r.panels}>
-            <div className="k">
-              {r.panels} panel{r.panels > 1 ? 's' : ''} must agree
-            </div>
-            <div className={`v ${r.panels === parallelN ? 'accent' : ''}`}>
-              {r.oneIn === Infinity ? 'never' : `1 in ${Math.round(r.oneIn).toLocaleString('en-US')}`}
+          {/* ---- above the ceiling: parallel panels ---- */}
+          <h3 style={{ marginTop: '1.6rem' }}>Roadmap: parallel panels</h3>
+          <p className="sbx-prose">
+            High-value cases can be modeled with several independent panels that must all agree. This is roadmap
+            simulation, not a live MVP feature. Pool {PARALLEL.POOL}, {PARALLEL.SEATS} seats, majority {PARALLEL.MAJ}.
+          </p>
+          <div className="sbx-controls">
+            <Slider
+              label="Share of the pool corrupted"
+              value={sharePct}
+              min={1}
+              max={100}
+              step={1}
+              onChange={setSharePct}
+              display={`${sharePct}% (${K_pp} of ${PARALLEL.POOL})`}
+            />
+            <div className="sbx-row">
+              <label>Case value (parallel panels)</label>
+              <Seg
+                options={[
+                  { label: '1 panel', value: 1 },
+                  { label: '3 panels', value: 3 },
+                  { label: '5 panels', value: 5 },
+                ]}
+                value={parallelN}
+                onChange={setParallelN}
+                label="parallel panels"
+              />
             </div>
           </div>
-        ))}
-      </div>
-      <p className="sbx-note">
-        One panel falls {pctText(ppOne)} of the time. Demanding all {parallelN} agree drops that to{' '}
-        <b>{pctText(ppAll)}</b>. The same bloc that is a coin flip against one panel is a rounding
-        error against five.
-      </p>
+          <div className="sbx-readout">
+            {ppRows.map((r) => (
+              <div className="sbx-stat" key={r.panels}>
+                <div className="k">
+                  {r.panels} panel{r.panels > 1 ? 's' : ''} must agree
+                </div>
+                <div className={`v ${r.panels === parallelN ? 'accent' : ''}`}>
+                  {r.oneIn === Infinity ? 'never' : `1 in ${Math.round(r.oneIn).toLocaleString('en-US')}`}
+                </div>
+              </div>
+            ))}
+          </div>
+          <p className="sbx-note">
+            One panel falls {pctText(ppOne)} of the time. Demanding all {parallelN} agree drops that to{' '}
+            <b>{pctText(ppAll)}</b>.
+          </p>
+        </div>
+      </details>
     </Widget>
   );
 }

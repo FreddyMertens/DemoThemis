@@ -13,15 +13,15 @@ export function SimulatedBadge({ className = '' }: { className?: string }) {
   );
 }
 
-/// Sponsored mainnet sendTransaction via MiniKit is verified on-device at the human
-/// capstone, not before, so this is phrased forward-looking (the honesty rule).
+/// Sponsored mainnet sendTransaction via MiniKit is verified on-device at the final
+/// human test, not before, so this is phrased forward-looking (the honesty rule).
 /// Shown on register/vote actions (one of the "How we use Worldcoin" claims).
 export function GasBadge({ className = '' }: { className?: string }) {
   return (
     <span
       className={`inline-flex items-center gap-1 rounded-full bg-emerald-100 px-2 py-0.5 text-[10px] font-semibold text-emerald-800 ${className}`}
     >
-      ⚡ World App will sponsor verified-human transactions
+      World App gas · final test pending
     </span>
   );
 }

@@ -68,11 +68,10 @@ export function CoreCourt({ seed }: { seed: number }) {
   return (
     <Widget title="The core court: draw, commit, reveal, verdict, payout">
       <p className="sbx-prose">
-        This is the machine the attack demo rests on, and it mirrors the deployed contract exactly: a
-        random panel is drawn, jurors commit a hashed vote then reveal it, the majority wins, and the
-        $2 case fee splits 70/20/10 between coherent jurors, the reward pool, and the protocol. No-show
-        bonds and the rounding dust go to the reward pool, never to the other jurors. In this sandbox,
-        each simulated juror represents one World ID nullifier: one human, one seat, no duplicate wallet.
+        This models the deployed court&apos;s core flow: draw, commit, reveal, decide, and split the 2 MUSD
+        demo fee 70/20/10. No-show bonds and rounding dust go to the reward pool. Each simulated
+        identity can fill one seat. Production randomness and receipt-free ballot privacy are funded
+        work, not features of this MVP.
       </p>
 
       <div className="sbx-controls">
@@ -248,9 +247,8 @@ function CaseDetail({
       )}
 
       <p className="sbx-note good">
-        {decided} unique {decided === 1 ? 'human' : 'humans'} decided this. None could vote twice: one
-        identity-derived nullifier gives one seat across every wallet. The panel was drawn at random only
-        after the question, and each vote was sealed until reveal.
+        {decided} simulated {decided === 1 ? 'identity' : 'identities'} revealed a vote. Each could fill
+        one seat, the panel was drawn after the question, and ballot choices stayed sealed until reveal.
       </p>
     </div>
   );

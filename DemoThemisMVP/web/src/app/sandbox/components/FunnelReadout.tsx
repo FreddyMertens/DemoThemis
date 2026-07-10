@@ -18,9 +18,9 @@ export function FunnelReadout() {
   return (
     <Widget title="The optimistic funnel: the jury is the backstop">
       <p className="sbx-prose">
-        Most matters never reach a panel. A deal that completes is released for free, and a bonded
-        assertion settles the large majority of questions on a challenge window before any jury is
-        drawn. The court is the rare last resort, not the everyday cost.
+        This models the full-design funnel: completed deals release directly, while a planned bonded
+        assertion settles most questions before a jury is drawn. The deployed MVP skips that planned
+        step and sends demo cases straight to the jury.
       </p>
 
       <div className="sbx-controls">
@@ -70,9 +70,7 @@ export function FunnelReadout() {
         {funnel.juryCount.toLocaleString('en-US')} of {funnel.totalMatters.toLocaleString('en-US')}.
       </p>
       <p className="sbx-note warn">
-        Honesty note: the bonded-assertion layer (the ~95%-settle-free path) is{' '}
-        <b>not in the MVP</b>. It is a funded-milestone item, shown here as the roadmap. MVP demo
-        cases go straight to the jury on purpose, because the court is the part being proven.
+        <b>Roadmap only:</b> the bonded-assertion layer is funded work, not an MVP feature.
       </p>
     </Widget>
   );

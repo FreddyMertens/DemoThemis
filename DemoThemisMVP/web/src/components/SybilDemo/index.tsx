@@ -23,15 +23,10 @@ function Row({ href, label, detail }: { href: string; label: string; detail: str
 
 export function SybilDemo() {
   return (
-    <div className="rounded-xl border border-slate-200 bg-slate-50 p-3">
-      <h3 className="text-sm font-semibold text-slate-900">One human, one seat — the negative path</h3>
+    <div>
+      <h3 className="text-sm font-semibold text-slate-900">Three rejection tests</h3>
       <p className="mt-1 text-xs text-slate-500">
-        The guarantee is proven by what the court <em>refuses</em>: a second wallet for the same human,
-        or a forged proof, reverts on-chain.
-      </p>
-      <p className="mt-1 text-xs text-slate-500">
-        The nullifier is tied to the person, not the wallet, so 10,000 wallets still buy zero extra
-        juror seats.
+        The registry rejects a forged proof and the same human returning through another wallet.
       </p>
       <div className="mt-2 space-y-1.5">
         <Row

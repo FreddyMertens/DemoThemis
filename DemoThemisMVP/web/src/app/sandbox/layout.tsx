@@ -4,7 +4,7 @@ import './sandbox.css';
 export const metadata: Metadata = {
   title: 'DemoThemis sandbox: buy this verdict',
   description:
-    'A client-side simulation of the DemoThemis arbitration court. Watch a token-weighted oracle get bought and a one-human-one-vote court hold. Illustrative model on the published parameters.',
+    'A client-side simulation comparing a token-weighted oracle with a court that draws one seat per verified human. Illustrative model using the published design parameters.',
 };
 
 export default function SandboxLayout({ children }: { children: React.ReactNode }) {

@@ -7,11 +7,18 @@ const PHASE_STYLE: Record<Phase, string> = {
   Resolvable: 'bg-amber-100 text-amber-800',
   Resolved: 'bg-emerald-100 text-emerald-800',
 };
+const PHASE_LABEL: Record<Phase, string> = {
+  Open: 'Open',
+  Commit: 'Commit',
+  Reveal: 'Reveal',
+  Resolvable: 'Ready to resolve',
+  Resolved: 'Resolved',
+};
 
 export function PhaseBadge({ phase }: { phase: Phase }) {
   return (
     <span className={`inline-flex items-center rounded-full px-2 py-0.5 text-xs font-semibold ${PHASE_STYLE[phase]}`}>
-      {phase}
+      {PHASE_LABEL[phase]}
     </span>
   );
 }
@@ -24,7 +31,7 @@ export function CaseTypeBadge({ caseType }: { caseType: number }) {
         escrow ? 'bg-indigo-50 text-indigo-700' : 'bg-teal-50 text-teal-700'
       }`}
     >
-      {escrow ? 'Escrow deal' : 'Resolution question'}
+      {escrow ? 'Escrow deal' : 'Yes/no question'}
     </span>
   );
 }
@@ -74,9 +81,11 @@ export function EmptyState({ children }: { children: React.ReactNode }) {
 export function ErrorState({ error }: { error: string }) {
   return (
     <div className="rounded-xl border border-rose-200 bg-rose-50 p-4 text-sm text-rose-700">
-      <p className="font-semibold">Couldn&apos;t reach the chain</p>
-      <p className="mt-1 break-all text-xs">{error}</p>
-      <p className="mt-2 text-xs text-rose-500">Retrying automatically…</p>
+      <p className="font-semibold">Couldn&apos;t load court data. Retrying…</p>
+      <details className="mt-2 text-xs">
+        <summary className="cursor-pointer font-semibold">Technical error</summary>
+        <p className="mt-1 break-all">{error}</p>
+      </details>
     </div>
   );
 }

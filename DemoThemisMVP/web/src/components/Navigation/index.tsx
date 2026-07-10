@@ -11,7 +11,7 @@ import { usePathname, useRouter } from 'next/navigation';
  */
 const TABS = [
   { value: 'home', label: 'Court', href: '/home', icon: <Home /> },
-  { value: 'dispute', label: 'Open', href: '/dispute', icon: <PlusCircle /> },
+  { value: 'dispute', label: 'Case preview', href: '/dispute', icon: <PlusCircle /> },
   { value: 'about', label: 'About', href: '/about', icon: <InfoCircle /> },
 ] as const;
 

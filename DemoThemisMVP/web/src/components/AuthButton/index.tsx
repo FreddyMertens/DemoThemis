@@ -54,8 +54,7 @@ export const AuthButton = () => {
     return (
       <div className="space-y-3 text-center">
         <p className="text-sm leading-relaxed text-slate-600">
-          Wallet sign-in is available inside World App. You can still explore the
-          complete simulation in this browser.
+          Sign-in works only in World App. You can use the complete sandbox here.
         </p>
         <Button asChild fullWidth size="lg" variant="primary">
           <a href={worldAppLink} target="_blank" rel="noreferrer">

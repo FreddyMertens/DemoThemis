@@ -1,6 +1,6 @@
 'use client';
 
-import { Component, ReactNode, useEffect, useState } from 'react';
+import { Component, ReactNode, useEffect, useId, useState } from 'react';
 
 /** A pitch-site widget card: uppercase head, live dot, and a "simulated" tag. */
 export function Widget({
@@ -12,9 +12,10 @@ export function Widget({
   simulated?: boolean;
   children: ReactNode;
 }) {
+  const headingId = useId();
   return (
-    <section className="sbx-widget">
-      <div className="sbx-widget-head">
+    <section className="sbx-widget" aria-labelledby={headingId}>
+      <h2 id={headingId} className="sbx-widget-head">
         <span className="sbx-live" aria-hidden />
         {title}
         {simulated && (
@@ -22,7 +23,7 @@ export function Widget({
             Simulated
           </span>
         )}
-      </div>
+      </h2>
       {children}
     </section>
   );

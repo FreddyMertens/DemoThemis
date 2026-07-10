@@ -5,7 +5,7 @@ import Link from 'next/link';
 import { usePathname } from 'next/navigation';
 
 const CHAPTERS = [
-  { label: 'Home', href: '/' },
+  { label: 'Proposal home', href: '/' },
   { number: '01', label: 'DemoThemis', href: '/demothemis.html' },
   { number: '02', label: 'Break the court', href: '/game-theory.html' },
   { number: '03', label: 'PredictionMoMo', href: '/prediction-market.html' },
@@ -21,7 +21,7 @@ const CHAPTERS = [
 
 const MVP_ROUTES = [
   {
-    label: 'Overview',
+    label: 'Start',
     href: '/app',
     match: (path: string) => path === '/' || path.startsWith('/app'),
   },
@@ -39,7 +39,7 @@ const MVP_ROUTES = [
       ),
   },
   {
-    label: 'Open case',
+    label: 'Case preview',
     href: '/dispute',
     match: (path: string) => path.startsWith('/dispute'),
   },
@@ -110,7 +110,7 @@ export function SiteChrome() {
           aria-controls="site-chapters"
           onClick={() => setOpen((value) => !value)}
         >
-          <span>Chapters</span>
+          <span>Proposal</span>
           <i aria-hidden="true">
             <b />
             <b />
@@ -131,7 +131,7 @@ export function SiteChrome() {
       </div>
 
       <nav ref={contextNavRef} className="mvp-context-nav" aria-label="MVP sections">
-        <span className="mvp-context-label">Inside the MVP</span>
+        <span className="mvp-context-label">MVP</span>
         <div className="mvp-context-links">
           {MVP_ROUTES.map((item) => {
             const active = item.match(pathname);
@@ -147,9 +147,6 @@ export function SiteChrome() {
             );
           })}
         </div>
-        <span className="mvp-live-status">
-          <i aria-hidden="true" /> World Chain · valueless MUSD
-        </span>
       </nav>
     </header>
   );
