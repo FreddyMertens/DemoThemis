@@ -20,6 +20,13 @@
   --bad-soft: #fbe8e2;
   --warning: #b56c12;
   --warning-soft: #fff1d8;
+  /* Calm three-card rhythm: eucalyptus, iris, and honey on warm paper. */
+  --triad-mint: color-mix(in srgb, var(--good-soft) 72%, var(--surface));
+  --triad-mint-border: color-mix(in srgb, var(--good) 24%, var(--line));
+  --triad-lavender: color-mix(in srgb, var(--accent-soft) 74%, var(--surface));
+  --triad-lavender-border: color-mix(in srgb, var(--accent) 22%, var(--line));
+  --triad-amber: color-mix(in srgb, var(--warning-soft) 72%, var(--surface));
+  --triad-amber-border: color-mix(in srgb, var(--warning) 22%, var(--line));
   --radius: 16px;
   --shadow: 0 1px 2px rgba(46, 40, 30, 0.05), 0 12px 30px -14px rgba(46, 40, 30, 0.14);
   --shadow-lg: 0 2px 6px rgba(46, 40, 30, 0.06), 0 26px 54px -24px rgba(46, 40, 30, 0.22);
@@ -540,11 +547,12 @@ a {
 
 .app-truth-strip {
   display: grid;
+  overflow: hidden;
   margin: 1rem 0 0;
   grid-template-columns: repeat(3, 1fr);
   border: 1px solid var(--line-strong);
   border-radius: 16px;
-  background: var(--surface);
+  background: transparent;
   box-shadow: var(--shadow);
 }
 
@@ -558,6 +566,21 @@ a {
 
 .app-truth-item + .app-truth-item {
   border-left: 1px solid var(--line);
+}
+
+.app-truth-item:nth-child(1) {
+  background: var(--triad-mint);
+  box-shadow: inset 0 3px 0 color-mix(in srgb, var(--good) 68%, transparent);
+}
+
+.app-truth-item:nth-child(2) {
+  background: var(--triad-lavender);
+  box-shadow: inset 0 3px 0 color-mix(in srgb, var(--accent) 68%, transparent);
+}
+
+.app-truth-item:nth-child(3) {
+  background: var(--triad-amber);
+  box-shadow: inset 0 3px 0 color-mix(in srgb, var(--warning) 68%, transparent);
 }
 
 .app-truth-signal {
@@ -886,6 +909,31 @@ a {
   box-shadow: var(--shadow);
 }
 
+.app-evidence-group:nth-child(1) {
+  border-color: var(--triad-mint-border);
+  background: var(--triad-mint);
+}
+
+.app-evidence-group:nth-child(2) {
+  border-color: var(--triad-lavender-border);
+  background: var(--triad-lavender);
+}
+
+.app-evidence-group:nth-child(3) {
+  border-color: var(--triad-amber-border);
+  background: var(--triad-amber);
+}
+
+.app-evidence-group:nth-child(1) .app-evidence-icon {
+  background: var(--good-soft);
+  color: #096b4c;
+}
+
+.app-evidence-group:nth-child(3) .app-evidence-icon {
+  background: var(--warning-soft);
+  color: #8b510a;
+}
+
 .app-evidence-group > h3 {
   margin: 1rem 0 0.35rem;
   color: var(--ink);
@@ -919,7 +967,7 @@ a {
   gap: 0.55rem;
   border: 1px solid var(--line);
   border-radius: 10px;
-  background: var(--surface-soft);
+  background: color-mix(in srgb, var(--surface) 82%, transparent);
   color: var(--ink);
   font-size: 0.7rem;
   font-weight: 650;
@@ -1082,8 +1130,9 @@ a {
   min-height: 10rem;
   padding: 1.25rem;
   flex-direction: column;
-  border-top: 2px solid var(--accent);
-  border-radius: 0 0 13px 13px;
+  border: 1px solid var(--line);
+  border-top-width: 3px;
+  border-radius: 13px;
   background: var(--surface);
   color: var(--ink);
   text-decoration: none;
@@ -1091,6 +1140,24 @@ a {
   transition:
     transform 140ms ease,
     box-shadow 140ms ease;
+}
+
+.app-next-card:nth-child(1) {
+  border-color: var(--triad-mint-border);
+  border-top-color: var(--good);
+  background: var(--triad-mint);
+}
+
+.app-next-card:nth-child(2) {
+  border-color: var(--triad-lavender-border);
+  border-top-color: var(--accent);
+  background: var(--triad-lavender);
+}
+
+.app-next-card:nth-child(3) {
+  border-color: var(--triad-amber-border);
+  border-top-color: var(--warning);
+  background: var(--triad-amber);
 }
 
 .app-next-card:hover {
@@ -1105,6 +1172,14 @@ a {
   font-weight: 700;
   letter-spacing: 0.07em;
   text-transform: uppercase;
+}
+
+.app-next-card:nth-child(1) span {
+  color: #096b4c;
+}
+
+.app-next-card:nth-child(3) span {
+  color: #8b510a;
 }
 
 .app-next-card strong {
@@ -1330,6 +1405,21 @@ a {
   grid-template-columns: repeat(3, minmax(0, 1fr));
 }
 
+.court-page .flex.gap-2:has(> div.flex-1.rounded-xl) > div:nth-child(1) {
+  border-color: var(--triad-mint-border) !important;
+  background: var(--triad-mint) !important;
+}
+
+.court-page .flex.gap-2:has(> div.flex-1.rounded-xl) > div:nth-child(2) {
+  border-color: var(--triad-lavender-border) !important;
+  background: var(--triad-lavender) !important;
+}
+
+.court-page .flex.gap-2:has(> div.flex-1.rounded-xl) > div:nth-child(3) {
+  border-color: var(--triad-amber-border) !important;
+  background: var(--triad-amber) !important;
+}
+
 .court-instance {
   overflow: hidden;
   width: 100%;
@@ -1484,6 +1574,21 @@ a {
   background: var(--surface-soft);
 }
 
+.court-case-facts div:nth-child(1) {
+  border-color: var(--triad-mint-border);
+  background: var(--triad-mint);
+}
+
+.court-case-facts div:nth-child(2) {
+  border-color: var(--triad-lavender-border);
+  background: var(--triad-lavender);
+}
+
+.court-case-facts div:nth-child(3) {
+  border-color: var(--triad-amber-border);
+  background: var(--triad-amber);
+}
+
 .court-case-facts dt {
   color: var(--faint);
   font-size: 0.62rem;
@@ -1633,6 +1738,24 @@ a {
   background: color-mix(in srgb, var(--surface) 82%, transparent);
 }
 
+.court-about-steps article:nth-child(1) {
+  border-color: var(--triad-mint-border);
+  background: var(--triad-mint);
+  box-shadow: inset 0 3px 0 color-mix(in srgb, var(--good) 68%, transparent);
+}
+
+.court-about-steps article:nth-child(2) {
+  border-color: var(--triad-lavender-border);
+  background: var(--triad-lavender);
+  box-shadow: inset 0 3px 0 color-mix(in srgb, var(--accent) 68%, transparent);
+}
+
+.court-about-steps article:nth-child(3) {
+  border-color: var(--triad-amber-border);
+  background: var(--triad-amber);
+  box-shadow: inset 0 3px 0 color-mix(in srgb, var(--warning) 68%, transparent);
+}
+
 .court-about-steps span,
 .court-about-links span {
   color: var(--accent);
@@ -1641,6 +1764,14 @@ a {
   font-weight: 750;
   letter-spacing: 0.045em;
   text-transform: uppercase;
+}
+
+.court-about-steps article:nth-child(1) > span {
+  color: #096b4c;
+}
+
+.court-about-steps article:nth-child(3) > span {
+  color: #8b510a;
 }
 
 .court-about-steps strong {

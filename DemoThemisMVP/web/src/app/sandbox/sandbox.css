@@ -21,6 +21,12 @@
   --bad: #d4523c;
   --bad-soft: #fbe8e2;
   --gold: #c79a14;
+  --triad-mint: color-mix(in srgb, var(--good-soft) 72%, var(--surface));
+  --triad-mint-border: color-mix(in srgb, var(--good) 24%, var(--line));
+  --triad-lavender: color-mix(in srgb, var(--accent-soft) 74%, var(--surface));
+  --triad-lavender-border: color-mix(in srgb, var(--accent) 22%, var(--line));
+  --triad-amber: color-mix(in srgb, #fff1d8 72%, var(--surface));
+  --triad-amber-border: color-mix(in srgb, #b56c12 22%, var(--line));
   --shadow: 0 1px 2px rgba(46, 40, 30, 0.05), 0 12px 30px -14px rgba(46, 40, 30, 0.14);
   --shadow-lg: 0 2px 6px rgba(46, 40, 30, 0.06), 0 26px 54px -24px rgba(46, 40, 30, 0.22);
   --radius: 16px;
@@ -167,9 +173,24 @@
 }
 .sbx-steps li {
   display: flex;
+  padding: 0.75rem;
   align-items: flex-start;
   gap: 0.65rem;
   min-width: 0;
+  border: 1px solid var(--line);
+  border-radius: 11px;
+}
+.sbx-steps li:nth-child(1) {
+  border-color: var(--triad-mint-border);
+  background: var(--triad-mint);
+}
+.sbx-steps li:nth-child(2) {
+  border-color: var(--triad-lavender-border);
+  background: var(--triad-lavender);
+}
+.sbx-steps li:nth-child(3) {
+  border-color: var(--triad-amber-border);
+  background: var(--triad-amber);
 }
 .sbx-steps li > span {
   display: grid;
@@ -183,6 +204,14 @@
   font-family: var(--sans);
   font-size: 0.78rem;
   font-weight: 700;
+}
+.sbx-steps li:nth-child(1) > span {
+  background: var(--good-soft);
+  color: #096b4c;
+}
+.sbx-steps li:nth-child(3) > span {
+  background: #fff1d8;
+  color: #8b510a;
 }
 .sbx-steps strong {
   display: block;
@@ -563,6 +592,18 @@
   border: 1px solid var(--line);
   border-radius: 12px;
   padding: 0.85rem 1rem;
+}
+.sbx-readout:has(> .sbx-stat:nth-child(3):last-child) > .sbx-stat:nth-child(1) {
+  border-color: var(--triad-mint-border);
+  background: var(--triad-mint);
+}
+.sbx-readout:has(> .sbx-stat:nth-child(3):last-child) > .sbx-stat:nth-child(2) {
+  border-color: var(--triad-lavender-border);
+  background: var(--triad-lavender);
+}
+.sbx-readout:has(> .sbx-stat:nth-child(3):last-child) > .sbx-stat:nth-child(3) {
+  border-color: var(--triad-amber-border);
+  background: var(--triad-amber);
 }
 .sbx-stat .k {
   font-family: var(--sans);
