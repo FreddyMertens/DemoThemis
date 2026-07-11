@@ -11,6 +11,8 @@ interface ClientProvidersProps {
   session: Session | null; // Use the appropriate type for session from next-auth
 }
 
+const miniKitAppId = process.env.NEXT_PUBLIC_APP_ID;
+
 /**
  * ClientProvider wraps the app with essential context providers.
  *
@@ -26,7 +28,7 @@ interface ClientProvidersProps {
 export default function ClientProviders({ children, session }: ClientProvidersProps) {
   return (
     <ErudaProvider>
-      <MiniKitProvider>
+      <MiniKitProvider props={miniKitAppId ? { appId: miniKitAppId } : undefined}>
         <SessionProvider session={session}>{children}</SessionProvider>
       </MiniKitProvider>
     </ErudaProvider>
