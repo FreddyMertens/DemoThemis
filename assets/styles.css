@@ -18,6 +18,13 @@
   --good-soft: #e2f5ed;
   --bad: #d4523c;
   --bad-soft: #fbe8e2;
+  /* Three-part reading rhythm: eucalyptus, iris, and honey on warm paper. */
+  --triad-mint: color-mix(in srgb, #e2f5ed 72%, var(--surface));
+  --triad-mint-border: color-mix(in srgb, #0f9b70 24%, var(--line));
+  --triad-lavender: color-mix(in srgb, #ece9fc 74%, var(--surface));
+  --triad-lavender-border: color-mix(in srgb, #5a4bd6 22%, var(--line));
+  --triad-amber: color-mix(in srgb, #fff1d8 72%, var(--surface));
+  --triad-amber-border: color-mix(in srgb, #b56c12 22%, var(--line));
   --shadow: 0 1px 2px rgba(46, 40, 30, .05), 0 12px 30px -14px rgba(46, 40, 30, .14);
   --shadow-lg: 0 2px 6px rgba(46, 40, 30, .06), 0 26px 54px -24px rgba(46, 40, 30, .22);
   --radius: 16px;
@@ -305,6 +312,67 @@ input[type=range]::-moz-range-thumb { width: 22px; height: 22px; border-radius: 
 .stat .k { font-family: var(--sans); font-size: .74rem; letter-spacing: .04em; text-transform: uppercase; color: var(--faint); }
 .stat .v { font-family: var(--sans); font-weight: 700; font-size: 1.5rem; line-height: 1.1; margin-top: .25rem; font-variant-numeric: tabular-nums; letter-spacing: -.02em; }
 .stat .v.accent { color: var(--accent-ink); }
+
+/* Exact three-card groups share one calm scan pattern. Other group sizes stay neutral. */
+.readout:has(> .stat:nth-child(3):last-child) > .stat:nth-child(1) {
+  border-color: var(--triad-mint-border);
+  background: var(--triad-mint);
+}
+.readout:has(> .stat:nth-child(3):last-child) > .stat:nth-child(2) {
+  border-color: var(--triad-lavender-border);
+  background: var(--triad-lavender);
+}
+.readout:has(> .stat:nth-child(3):last-child) > .stat:nth-child(3) {
+  border-color: var(--triad-amber-border);
+  background: var(--triad-amber);
+}
+
+/* Three-step explanations keep their timeline while gaining card-level separation. */
+.stepper:has(> li:nth-child(3):last-child) > li .step-body {
+  border: 1px solid var(--line);
+  border-radius: 12px;
+  padding: .85rem 1rem;
+}
+.stepper:has(> li:nth-child(3):last-child) > li:nth-child(1) .step-body {
+  border-color: var(--triad-mint-border);
+  background: var(--triad-mint);
+}
+.stepper:has(> li:nth-child(3):last-child) > li:nth-child(2) .step-body {
+  border-color: var(--triad-lavender-border);
+  background: var(--triad-lavender);
+}
+.stepper:has(> li:nth-child(3):last-child) > li:nth-child(3) .step-body {
+  border-color: var(--triad-amber-border);
+  background: var(--triad-amber);
+}
+.stepper:has(> li:nth-child(3):last-child) > li:nth-child(1) .step-n {
+  border-color: var(--triad-mint-border);
+  background: #e2f5ed;
+  color: #096b4c;
+}
+.stepper:has(> li:nth-child(3):last-child) > li:nth-child(3) .step-n {
+  border-color: var(--triad-amber-border);
+  background: #fff1d8;
+  color: #8b510a;
+}
+
+/* Three-node proposal diagrams use the same rhythm without recoloring their arrows. */
+body .coldstart > .ring:nth-of-type(1),
+body .exhaust > .e:nth-of-type(1) {
+  border-color: var(--triad-mint-border);
+  background: var(--triad-mint);
+}
+body .coldstart > .ring:nth-of-type(2),
+body .exhaust > .e:nth-of-type(2) {
+  border-color: var(--triad-lavender-border);
+  background: var(--triad-lavender);
+}
+body .coldstart > .ring:nth-of-type(3),
+body .diagram-inner .exhaust > .e:nth-of-type(3) {
+  border-color: var(--triad-amber-border);
+  background: var(--triad-amber);
+  color: var(--ink);
+}
 .btn {
   font-family: var(--sans); font-weight: 600; font-size: .9rem;
   background: var(--accent); color: #fff; border: none;
@@ -499,6 +567,9 @@ input[type=range]::-moz-range-thumb { width: 22px; height: 22px; border-radius: 
   font-family: var(--sans);
 }
 .mvp-truth-strip > div { display: grid; grid-template-columns: auto 1fr; gap: .1rem .55rem; align-items: center; background: var(--surface); padding: 1rem; }
+.mvp-truth-strip > div:nth-child(1) { background: var(--triad-mint); box-shadow: inset 0 3px 0 color-mix(in srgb, #0f9b70 68%, transparent); }
+.mvp-truth-strip > div:nth-child(2) { background: var(--triad-lavender); box-shadow: inset 0 3px 0 color-mix(in srgb, #5a4bd6 68%, transparent); }
+.mvp-truth-strip > div:nth-child(3) { background: var(--triad-amber); box-shadow: inset 0 3px 0 color-mix(in srgb, #b56c12 68%, transparent); }
 .mvp-truth-strip strong { font-size: .84rem; line-height: 1.2; }
 .mvp-truth-strip small { grid-column: 2; color: var(--muted); font-size: .72rem; line-height: 1.4; }
 .mvp-signal { grid-row: span 2; width: .65rem; height: .65rem; border-radius: 50%; background: var(--faint); box-shadow: 0 0 0 4px color-mix(in srgb, var(--faint) 13%, transparent); }
@@ -549,6 +620,9 @@ input[type=range]::-moz-range-thumb { width: 22px; height: 22px; border-radius: 
 .mvp-route-card::before { content: ""; position: absolute; inset: 0 0 auto; height: 4px; background: var(--accent); }
 .mvp-route-card.is-court::before { background: var(--good); }
 .mvp-route-card.is-world::before { background: linear-gradient(90deg, #161a24, #5a4bd6); }
+.mvp-route-card.is-sandbox { border-color: var(--triad-lavender-border); background: var(--triad-lavender); }
+.mvp-route-card.is-court { border-color: var(--triad-mint-border); background: var(--triad-mint); }
+.mvp-route-card.is-world { border-color: var(--triad-amber-border); background: var(--triad-amber); }
 .mvp-route-top { display: flex; justify-content: space-between; gap: .8rem; align-items: center; margin-bottom: 2.1rem; }
 .mvp-route-number { color: var(--faint); font: 700 .72rem/1 var(--mono); }
 .mvp-status-tag { border-radius: 999px; padding: .3rem .55rem; color: var(--accent-ink); background: var(--accent-soft); font: 700 .66rem/1 var(--sans); text-transform: uppercase; letter-spacing: .05em; }
@@ -577,6 +651,24 @@ input[type=range]::-moz-range-thumb { width: 22px; height: 22px; border-radius: 
 .mvp-lock-grid article > span { display: grid; place-items: center; width: 1.8rem; height: 1.8rem; margin-bottom: 1rem; border-radius: 50%; color: #fff; background: var(--accent); font: 750 .7rem/1 var(--mono); }
 .mvp-lock-grid h3 { font-size: .95rem; }
 .mvp-lock-grid p { color: var(--muted); font: 500 .77rem/1.55 var(--sans); }
+
+/* The run-through's three constitutional foundations are compact cards, not a flat text row. */
+.machine-foundation-grid > .machine-foundation-item:nth-child(1) {
+  border: 1px solid var(--triad-mint-border);
+  background: var(--triad-mint);
+}
+.machine-foundation-grid > .machine-foundation-item:nth-child(2) {
+  border: 1px solid var(--triad-lavender-border);
+  background: var(--triad-lavender);
+}
+.machine-foundation-grid > .machine-foundation-item:nth-child(3) {
+  border: 1px solid var(--triad-amber-border);
+  background: var(--triad-amber);
+}
+.machine-foundation-grid > .machine-foundation-item {
+  border-radius: 10px;
+  padding: .62rem .68rem;
+}
 
 .mvp-scope-note { display: grid; grid-template-columns: minmax(12rem, .65fr) minmax(16rem, 1.35fr); gap: 1rem 2rem; align-items: start; border: 1px solid color-mix(in srgb, var(--mvp-amber) 28%, var(--line)); border-radius: 20px; padding: 1.5rem; background: linear-gradient(135deg, var(--surface), var(--mvp-amber-soft)); box-shadow: var(--shadow); }
 .mvp-scope-note h2 { margin-bottom: 0; }
