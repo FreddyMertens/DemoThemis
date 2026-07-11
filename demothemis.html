@@ -25,8 +25,7 @@
   .simple-step::before { content: counter(lifecycle, decimal-leading-zero); grid-area: number; display: grid; place-items: center; width: 2.35rem; height: 2.35rem; border-radius: 10px; background: var(--accent-soft); color: var(--accent-ink); font-family: var(--mono); font-size: .72rem; font-weight: 700; letter-spacing: .02em; }
   .simple-step h3 { grid-area: title; align-self: end; margin: 0; color: var(--ink); font-size: .96rem; line-height: 1.3; }
   .simple-step p { grid-area: copy; max-width: 52ch; margin: 0; color: var(--muted); font-size: .86rem; line-height: 1.5; }
-  .simple-step:last-child { grid-column: 1 / -1; border-color: color-mix(in srgb, var(--accent) 45%, var(--line-strong)); background: linear-gradient(135deg, var(--accent-soft), var(--surface) 72%); }
-  .simple-step:last-child::before { background: var(--accent); color: #fff; }
+  .simple-step:last-child { grid-column: 1 / -1; }
   .simple-list { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: .7rem 1rem; margin: 1.1rem 0 1.3rem; font-family: var(--sans); }
   .simple-list div { border-top: 1px solid var(--line); padding-top: .75rem; }
   .simple-list b { display: block; font-size: .9rem; margin-bottom: .25rem; color: var(--ink); }
