@@ -39,6 +39,11 @@
   .underhood-map .eyebrow { display: block; font-family: var(--mono); font-size: .72rem; font-weight: 700; color: var(--accent-ink); margin-bottom: .4rem; text-transform: uppercase; letter-spacing: .04em; }
   .underhood-map b { display: block; color: var(--ink); margin-bottom: .35rem; }
   .underhood-map span:last-child { display: block; color: var(--muted); font-size: .86rem; line-height: 1.5; }
+  .underhood-map > a:nth-child(1) { border-color: var(--triad-mint-border); background: var(--triad-mint); }
+  .underhood-map > a:nth-child(2) { border-color: var(--triad-lavender-border); background: var(--triad-lavender); }
+  .underhood-map > a:nth-child(3) { border-color: var(--triad-amber-border); background: var(--triad-amber); }
+  .underhood-map > a:nth-child(1) .eyebrow { color: #096b4c; }
+  .underhood-map > a:nth-child(3) .eyebrow { color: #8b510a; }
   .toc-grouped .toc-parts { columns: 1; border-left: 0; margin-top: .45rem; }
   .toc-grouped .toc-part { margin: 0 0 .65rem; }
   .toc-grouped .toc-main { color: var(--accent-ink); font-weight: 700; padding: .3rem .85rem .2rem; border-left: 2px solid var(--accent); margin-left: -2px; }
@@ -89,10 +94,15 @@
   .stagebox { background: var(--bg); border: 1px solid var(--line-strong); border-radius: 12px; padding: 1rem 1.1rem; font-family: var(--sans); font-size: .9rem; margin-bottom: 1rem; min-height: 6.2rem; }
   .stagebox .mono { font-family: var(--mono); font-size: .8rem; color: var(--accent-ink); word-break: break-all; }
 
-  .livewin { display: flex; flex-direction: column; gap: .7rem; font-family: var(--sans); }
+  .livewin { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: .7rem; font-family: var(--sans); }
+  .livewin .lw { border: 1px solid var(--line); border-radius: 12px; padding: .8rem; }
+  .livewin .lw:nth-child(1) { border-color: var(--triad-mint-border); background: var(--triad-mint); }
+  .livewin .lw:nth-child(2) { border-color: var(--triad-lavender-border); background: var(--triad-lavender); }
+  .livewin .lw:nth-child(3) { border-color: var(--triad-amber-border); background: var(--triad-amber); }
   .lw .lwk { font-size: .82rem; color: var(--muted); margin-bottom: .2rem; display: flex; justify-content: space-between; }
   .lw .lwt { height: 30px; border-radius: 8px; background: var(--line); border: 1px solid var(--line-strong); overflow: hidden; }
   .lw .lwt > span { display: block; height: 100%; background: linear-gradient(90deg, var(--bad), #7a3c00); border-radius: 0 8px 8px 0; }
+  @media (max-width: 640px) { .livewin { grid-template-columns: 1fr; } }
 
   .stat .v { font-size: clamp(1.05rem, 4.2vw, 1.5rem); }
   .stat .v .verdict, .stat .v .chip { white-space: normal; line-height: 1.5; }

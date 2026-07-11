@@ -192,6 +192,9 @@
   .fake-flow-step { border: 1px solid var(--line); border-radius: 10px; background: var(--bg); padding: .64rem; min-width: 0; }
   .fake-flow-step b { display: block; color: var(--ink); font-size: .82rem; line-height: 1.25; }
   .fake-flow-step span { display: block; color: var(--muted); font-size: .72rem; line-height: 1.3; margin-top: .22rem; }
+  .fake-flow > .fake-flow-step:nth-child(1) { border-color: var(--triad-mint-border); background: var(--triad-mint); }
+  .fake-flow > .fake-flow-step:nth-child(2) { border-color: var(--triad-lavender-border); background: var(--triad-lavender); }
+  .fake-flow > .fake-flow-step:nth-child(3) { border-color: var(--triad-amber-border); background: var(--triad-amber); }
   .fake-grid { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: .52rem; }
   .fake-field { border: 1px solid var(--line); border-radius: 10px; background: var(--bg); padding: .62rem; min-width: 0; }
   .fake-field .k { color: var(--faint); font-size: .64rem; font-weight: 850; letter-spacing: .06em; text-transform: uppercase; }
@@ -229,6 +232,9 @@
   .app-metric { border: 1px solid var(--line); border-radius: 10px; background: var(--bg); padding: .55rem; min-width: 0; }
   .app-metric span { display: block; color: var(--faint); font-size: .6rem; font-weight: 900; letter-spacing: .07em; line-height: 1.1; text-transform: uppercase; }
   .app-metric b { display: block; color: var(--ink); font-size: .9rem; line-height: 1.14; margin-top: .2rem; overflow-wrap: anywhere; }
+  .app-metrics > .app-metric:nth-child(1) { border-color: var(--triad-mint-border); background: var(--triad-mint); }
+  .app-metrics > .app-metric:nth-child(2) { border-color: var(--triad-lavender-border); background: var(--triad-lavender); }
+  .app-metrics > .app-metric:nth-child(3) { border-color: var(--triad-amber-border); background: var(--triad-amber); }
   .app-grid { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: .56rem; min-width: 0; }
   .app-panel { position: relative; display: grid; gap: .5rem; min-width: 0; border: 1px solid var(--line); border-radius: 12px; background: var(--surface); box-shadow: var(--shadow); padding: .66rem; overflow: hidden; transition: border-color .16s ease, transform .16s ease, background .16s ease; }
   .app-panel.wide { grid-column: 1 / -1; }
@@ -439,6 +445,12 @@
   .intent-item b { display: block; margin-top: .18rem; color: var(--ink); font-size: .78rem; line-height: 1.22; overflow-wrap: anywhere; }
   .intent-item.money { border-color: color-mix(in srgb, var(--good) 28%, var(--line)); background: color-mix(in srgb, var(--good-soft) 36%, var(--bg)); }
   .intent-item.money b { color: var(--good); }
+  .live-kpis > .live-kpi:nth-child(1),
+  .live-intent > .intent-item:nth-child(1) { border-color: var(--triad-mint-border); background: var(--triad-mint); }
+  .live-kpis > .live-kpi:nth-child(2),
+  .live-intent > .intent-item:nth-child(2) { border-color: var(--triad-lavender-border); background: var(--triad-lavender); }
+  .live-kpis > .live-kpi:nth-child(3),
+  .live-intent > .intent-item:nth-child(3) { border-color: var(--triad-amber-border); background: var(--triad-amber); }
   .live-field { display: grid; gap: .22rem; }
   .live-field label { color: var(--faint); font-size: .62rem; letter-spacing: .08em; text-transform: uppercase; font-weight: 900; }
   .live-input { border: 1px solid var(--line-strong); border-radius: 11px; background: var(--bg); color: var(--ink); padding: .58rem .64rem; font-size: .88rem; font-weight: 850; line-height: 1.2; min-width: 0; }

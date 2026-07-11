@@ -28,6 +28,16 @@
   .funnel .f-all { width: 100%; background: var(--accent); }
   .funnel .f-quiet { width: 95%; background: var(--good); }
   .funnel .f-court { width: 5%; background: var(--bad); }
+  .funnel > div { border: 1px solid var(--line); border-radius: 12px; padding: .8rem; }
+  .funnel > div:nth-child(1) { border-color: var(--triad-mint-border); background: var(--triad-mint); }
+  .funnel > div:nth-child(2) { border-color: var(--triad-lavender-border); background: var(--triad-lavender); }
+  .funnel > div:nth-child(3) { border-color: var(--triad-amber-border); background: var(--triad-amber); }
+
+  .robustness-cards { display: grid; gap: .8rem; margin-bottom: 1rem; font-family: var(--sans); }
+  .robustness-card { border: 1px solid var(--line-strong); border-radius: 10px; padding: 1rem; }
+  .robustness-card:nth-child(1) { border-color: var(--triad-mint-border); background: var(--triad-mint); }
+  .robustness-card:nth-child(2) { border-color: var(--triad-lavender-border); background: var(--triad-lavender); }
+  .robustness-card:nth-child(3) { border-color: var(--triad-amber-border); background: var(--triad-amber); }
 
   /* pool vs book table */
   .parts-wrap { overflow-x: auto; }
@@ -241,8 +251,8 @@
       <div class="widget-head"><span class="live"></span> The Robustness Lock</div>
       <div class="pmnarr" id="robNarr">Adjust the market conditions to unlock tokenization.</div>
       
-      <div style="display:grid; gap:.8rem; font-family:var(--sans); margin-bottom:1rem;">
-        <div style="padding:1rem; border:1px solid var(--line-strong); border-radius:10px; background:var(--surface)">
+      <div class="robustness-cards">
+        <div class="robustness-card">
           <div style="display:flex; justify-content:space-between; margin-bottom:.5rem; font-size:.9rem; font-weight:600; color:var(--ink)">
             <span><span class="ic">&#127919;</span> Disagreement Floor</span>
             <span id="robDisStat" style="color:var(--bad)">&#10007; min(YES, NO) &gt; $5k</span>
@@ -257,7 +267,7 @@
           </div>
         </div>
 
-        <div style="padding:1rem; border:1px solid var(--line-strong); border-radius:10px; background:var(--surface)">
+        <div class="robustness-card">
           <div style="display:flex; justify-content:space-between; margin-bottom:.5rem; font-size:.9rem; font-weight:600; color:var(--ink)">
             <span><span class="ic">&#128202;</span> Maker Depth</span>
             <span id="robMakStat" style="color:var(--bad)">&#10007; Standing Offers &gt; $1k</span>
@@ -271,7 +281,7 @@
           </div>
         </div>
 
-        <div style="padding:1rem; border:1px solid var(--line-strong); border-radius:10px; background:var(--surface)">
+        <div class="robustness-card">
           <div style="display:flex; justify-content:space-between; margin-bottom:.5rem; font-size:.9rem; font-weight:600; color:var(--ink)">
             <span><span class="ic">&#8987;</span> Time-Weighted Lock</span>
             <span id="robTimStat" style="color:var(--bad)">&#10007; Hold for 24 Hours</span>
