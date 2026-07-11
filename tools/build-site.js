@@ -13,7 +13,6 @@ const publicFiles = [
   "the-design.html",
   "hybrid-juror-prediction-market-integration.html",
   "governance.html",
-  "glossary.html",
   "mvp.html",
   "assumptions.js",
   "assets/common.js",

@@ -40,5 +40,6 @@ for (const name of fs.readdirSync(dist)) {
 
 // A public/index.html would collide with src/app/page.tsx during `next build`.
 fs.rmSync(path.join(publicDir, "index.html"), { force: true });
+fs.rmSync(path.join(publicDir, "glossary.html"), { force: true });
 
 console.log("Prepared proposal pages inside the unified Next.js public directory");

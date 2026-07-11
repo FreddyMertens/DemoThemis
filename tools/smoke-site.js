@@ -15,11 +15,12 @@ const publicHtml = [
   "the-design.html",
   "hybrid-juror-prediction-market-integration.html",
   "governance.html",
-  "glossary.html",
   "mvp.html"
 ];
 
 const forbiddenPublicPaths = [
+  "/glossary",
+  "/glossary.html",
   "/SKILL.md",
   "/review.md",
   "/toupdate.md",
@@ -154,9 +155,7 @@ function checkMvpNavigation(file, html, failures) {
 
   const navTargets = openingTagAttributeValues(siteNav[0], "a", "href");
   assert(navTargets.includes("/"), `${file} primary navigation missing root-relative Home link`, failures);
-  assert(navTargets.includes("glossary.html"), `${file} primary navigation missing glossary.html`, failures);
   assert(navTargets.includes("mvp.html"), `${file} primary navigation missing mvp.html`, failures);
-  assert(navTargets.indexOf("mvp.html") === navTargets.indexOf("glossary.html") + 1, `${file} should place the MVP immediately after the glossary in primary navigation`, failures);
 }
 
 function checkProposalHomeLinks(file, html, failures) {
@@ -315,18 +314,6 @@ function checkBuiltHtml(failures) {
   assert(/id=["']RT1seg["']/i.test(demoThemis), "DemoThemis chapter missing case-router widget", failures);
   assert(/id=["']abStake["']/i.test(demoThemis), "DemoThemis chapter missing appeal-bond widget", failures);
   assert(/class=["'][^"']*vhub/i.test(demoThemis), "DemoThemis chapter missing shared-arbiter diagram", failures);
-
-  const glossary = readDist("glossary.html");
-  assert(/Glossary of DemoThemis terms/i.test(glossary), "glossary missing title", failures);
-  assert(/id=["']termSearch["']/i.test(glossary), "glossary missing search input", failures);
-  assert(/data-term-card/i.test(glossary), "glossary missing term cards", failures);
-  assert(/PredictionMoMo/i.test(glossary), "glossary missing PredictionMoMo term", failures);
-  assert(/World ID/i.test(glossary), "glossary missing World ID term", failures);
-  assert(/Receipt-free ballot/i.test(glossary), "glossary missing receipt-free ballot term", failures);
-  assert(/Live reserve/i.test(glossary), "glossary missing live reserve term", failures);
-  assert(/Aptitude tests/i.test(glossary), "glossary missing Aptitude tests term", failures);
-  assert(/Resolved cases for aptitude tests/i.test(glossary), "glossary missing resolved cases for aptitude tests term", failures);
-  assert(/Court token/i.test(glossary), "glossary missing governance terms", failures);
 
   const runThrough = readDist("the-design.html");
   checkStateMachineData(runThrough, failures);

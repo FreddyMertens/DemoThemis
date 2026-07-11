@@ -16,7 +16,6 @@ const CHAPTERS = [
     href: '/hybrid-juror-prediction-market-integration.html',
   },
   { number: '06', label: 'Governance', href: '/governance.html' },
-  { label: 'Glossary', href: '/glossary.html' },
 ] as const;
 
 const MVP_ROUTES = [
