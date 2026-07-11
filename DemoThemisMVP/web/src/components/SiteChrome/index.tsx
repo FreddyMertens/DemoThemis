@@ -125,7 +125,7 @@ export function SiteChrome() {
             </a>
           ))}
           <Link className="is-active" href="/app" aria-current="page">
-            Live MVP
+            Live Demo MVP
           </Link>
         </nav>
       </div>

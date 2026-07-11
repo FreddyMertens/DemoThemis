@@ -134,7 +134,7 @@ export default function Home() {
     <main className="app-overview" id="main-content" tabIndex={-1}>
       <section className="app-hero" aria-labelledby="app-hero-title">
         <div>
-          <p className="app-kicker">Live MVP · World Chain</p>
+          <p className="app-kicker">Live Demo MVP · World Chain</p>
           <h1 id="app-hero-title">A court of verified humans.</h1>
           <p className="app-hero-dek">
             Verified humans are drawn after a case opens, cast votes sealed until reveal, and settle escrow—so wealth
