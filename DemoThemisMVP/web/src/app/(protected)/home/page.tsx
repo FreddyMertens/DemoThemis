@@ -5,6 +5,7 @@ import { useState } from 'react';
 import { Page } from '@/components/PageLayout';
 import { CourtTopBar } from '@/components/CourtTopBar';
 import { InstanceBanner } from '@/components/InstanceBanner';
+import { MissionProgress } from '@/components/MissionProgress';
 import { SimulatedBadge } from '@/components/Badges';
 import {
   CaseTypeBadge,
@@ -24,6 +25,16 @@ const CASE_PAGE_SIZE = 12;
 type CaseFilter = 'all' | 'active' | 'resolved';
 
 function CaseCard({ c }: { c: CaseView }) {
+  const nextAction =
+    c.phase === 'Commit'
+      ? 'Vote now'
+      : c.phase === 'Reveal'
+        ? 'Reveal now'
+        : c.phase === 'Resolved'
+          ? 'View ruling'
+          : c.phase === 'Resolvable'
+            ? 'Awaiting resolution'
+            : 'Waiting for panel';
   return (
     <Link
       href={`/case/${c.id}`}
@@ -31,9 +42,10 @@ function CaseCard({ c }: { c: CaseView }) {
     >
       <div className="flex items-center justify-between gap-2">
         <span className="text-sm font-semibold text-slate-900">Case #{c.id}</span>
-        <PhaseBadge phase={c.phase} />
+        <span className="court-case-action">{nextAction} →</span>
       </div>
       <div className="mt-2 flex flex-wrap items-center gap-1.5">
+        <PhaseBadge phase={c.phase} />
         <CaseTypeBadge caseType={c.caseType} />
         {c.phase === 'Resolved' && <OutcomeBadge caseType={c.caseType} outcome={c.outcome} />}
         {c.redraws > 0 && (
@@ -68,13 +80,30 @@ export default function Home() {
   return (
     <>
       <Page.Header className="p-0">
-        <CourtTopBar title="DemoThemis Court" />
+        <CourtTopBar title={IS_COHORT ? 'Court evidence' : 'Live court'} />
       </Page.Header>
       <Page.Main className="flex flex-col items-stretch justify-start gap-4 mb-20">
+        <MissionProgress current={3} />
+
+        <section className="court-mission-brief is-live" aria-labelledby="live-objective">
+          <span aria-hidden="true">03</span>
+          <div>
+            <p>Final mission</p>
+            <h2 id="live-objective">Compare the practice run with the real deployment.</h2>
+            <small>
+              {IS_COHORT
+                ? 'This board is a labeled, read-only scale simulation. The mainnet contracts are linked separately.'
+                : 'The contracts are live. The final independent three-person trace is still pending.'}
+            </small>
+          </div>
+        </section>
+
         <InstanceBanner />
 
         <div className="flex items-center justify-between">
-          <h2 className="text-base font-semibold text-slate-800">Court cases</h2>
+          <h2 className="text-base font-semibold text-slate-800">
+            {IS_COHORT ? 'Practice case board' : 'Live case board'}
+          </h2>
           <SimulatedBadge />
         </div>
 

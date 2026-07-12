@@ -16,7 +16,7 @@ export function Widget({
   return (
     <section className="sbx-widget" aria-labelledby={headingId}>
       <h2 id={headingId} className="sbx-widget-head">
-        <span className="sbx-live" aria-hidden />
+        <span className="sbx-widget-dot" aria-hidden />
         {title}
         {simulated && (
           <span className="sbx-simtag" title="This widget is a simulation, not live data.">
@@ -46,13 +46,15 @@ export function Slider({
   onChange: (v: number) => void;
   display: string;
 }) {
+  const inputId = useId();
   return (
     <div>
       <div className="sbx-row">
-        <label>{label}</label>
-        <b>{display}</b>
+        <label htmlFor={inputId}>{label}</label>
+        <output htmlFor={inputId}>{display}</output>
       </div>
       <input
+        id={inputId}
         type="range"
         min={min}
         max={max}
@@ -80,6 +82,7 @@ export function Seg<T extends string | number>({
     <div className="sbx-seg" role="group" aria-label={label}>
       {options.map((o) => (
         <button
+          type="button"
           key={String(o.value)}
           className={o.value === value ? 'active' : ''}
           onClick={() => onChange(o.value)}

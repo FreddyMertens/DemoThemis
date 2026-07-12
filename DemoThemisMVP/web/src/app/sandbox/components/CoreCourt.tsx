@@ -18,7 +18,7 @@ const usd = (micro: number) => courtMoney(micro / MUSD);
 
 export function CoreCourt({ seed }: { seed: number }) {
   const [population, setPopulation] = useState(200);
-  const [panelSize, setPanelSize] = useState(7);
+  const [panelSize, setPanelSize] = useState(3);
   const [revealPct, setRevealPct] = useState(92);
 
   const simKey = `${seed}:${population}`;
@@ -67,46 +67,47 @@ export function CoreCourt({ seed }: { seed: number }) {
 
   return (
     <Widget title="The core court: draw, commit, reveal, verdict, payout">
-      <p className="sbx-prose">
-        This models the deployed court&apos;s core flow: draw, commit, reveal, decide, and split the 2 MUSD
-        demo fee 70/20/10. No-show bonds and rounding dust go to the reward pool. Each simulated
-        identity can fill one seat. Production randomness and receipt-free ballot privacy are funded
-        work, not features of this MVP.
-      </p>
+      <p className="sbx-action-prompt">Run one case with the live MVP&apos;s three-seat default.</p>
 
-      <div className="sbx-controls">
-        <Slider
-          label="Juror population"
-          value={population}
-          min={20}
-          max={500}
-          step={10}
-          onChange={setPopulation}
-          display={`${population} humans`}
-        />
-        <Slider
-          label="Reveal rate (the rest are slashed no-shows)"
-          value={revealPct}
-          min={50}
-          max={100}
-          step={1}
-          onChange={setRevealPct}
-          display={`${revealPct}%`}
-        />
-        <div className="sbx-row">
-          <label>Panel size</label>
-          <Seg
-            options={[
-              { label: '3', value: 3 },
-              { label: '7', value: 7 },
-              { label: '15', value: 15 },
-            ]}
-            value={panelSize}
-            onChange={setPanelSize}
-            label="panel size"
+      <details className="sbx-inline-details">
+        <summary>
+          <strong>Change the case settings</strong>
+          <span>Population, reveal rate, and panel size</span>
+        </summary>
+        <div className="sbx-inline-details-body sbx-controls">
+          <Slider
+            label="Juror population"
+            value={population}
+            min={20}
+            max={500}
+            step={10}
+            onChange={setPopulation}
+            display={`${population} humans`}
           />
+          <Slider
+            label="Reveal rate (the rest are slashed no-shows)"
+            value={revealPct}
+            min={50}
+            max={100}
+            step={1}
+            onChange={setRevealPct}
+            display={`${revealPct}%`}
+          />
+          <div className="sbx-row">
+            <span>Panel size</span>
+            <Seg
+              options={[
+                { label: '3', value: 3 },
+                { label: '7', value: 7 },
+                { label: '15', value: 15 },
+              ]}
+              value={panelSize}
+              onChange={setPanelSize}
+              label="panel size"
+            />
+          </div>
         </div>
-      </div>
+      </details>
 
       <div style={{ display: 'flex', gap: '.6rem', flexWrap: 'wrap', marginBottom: '1rem' }}>
         <button
@@ -151,10 +152,14 @@ export function CoreCourt({ seed }: { seed: number }) {
         </div>
       )}
 
-      {last && <CaseDetail outcome={last} panelSize={panelSize} slashes={slashesThisCase} />}
+      {last && (
+        <div aria-live="polite">
+          <CaseDetail outcome={last} panelSize={panelSize} slashes={slashesThisCase} />
+        </div>
+      )}
 
       {sweep && (
-        <div>
+        <div aria-live="polite">
           <div className="sbx-readout">
             <Stat k="Verdicts matching the truth" v={`${sweep.correct} / ${sweep.cases}`} tone="good" />
             <Stat k="Court accuracy" v={`${(sweep.accuracy * 100).toFixed(1)}%`} tone="good" />
@@ -175,6 +180,20 @@ export function CoreCourt({ seed }: { seed: number }) {
           </p>
         </div>
       )}
+
+      <details className="sbx-inline-details">
+        <summary>
+          <strong>What this court run models</strong>
+          <span>Live mechanics and funded gaps</span>
+        </summary>
+        <div className="sbx-inline-details-body">
+          <p className="sbx-prose">
+            The deployed core flow draws a panel, seals votes until reveal, decides the verdict, and splits the 2 MUSD
+            demo fee 70/20/10. No-show bonds and rounding dust enter the reward pool. Each simulated identity fills one
+            seat. Production randomness and receipt-free ballot privacy remain funded work, not MVP features.
+          </p>
+        </div>
+      </details>
     </Widget>
   );
 }
@@ -199,12 +218,15 @@ function CaseDetail({
       {/* the drawn panel */}
       <div className="sbx-pdots" style={{ gridTemplateColumns: `repeat(${panelSize}, 1fr)`, marginBottom: '.6rem' }}>
         {outcome.votes.map((v, i) => (
-          <div
+          <span
             key={i}
             className={`sbx-dot draw ${!v.revealed ? '' : v.vote === outcome.outcome ? 'hold' : 'win'}`}
-            title={!v.revealed ? 'no-show (slashed)' : v.vote ? 'voted YES' : 'voted NO'}
+            aria-label={`Seat ${i + 1}: ${!v.revealed ? 'no-show, slashed' : v.vote === outcome.outcome ? 'coherent vote' : 'dissenting vote'}`}
+            role="img"
             style={!v.revealed ? { background: 'var(--line-strong)', opacity: 0.5 } : undefined}
-          />
+          >
+            {!v.revealed ? '–' : v.vote === outcome.outcome ? '✓' : '×'}
+          </span>
         ))}
       </div>
 

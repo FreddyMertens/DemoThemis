@@ -210,7 +210,7 @@ a {
 
 .site-menu-button {
   display: inline-flex;
-  min-height: 2.55rem;
+  min-height: 2.75rem;
   margin-left: auto;
   padding: 0.5rem 0.72rem;
   align-items: center;
@@ -289,6 +289,10 @@ a {
 .mvp-context-links a.is-active {
   background: var(--accent-soft);
   box-shadow: none;
+}
+
+.mvp-route-short {
+  display: none;
 }
 
 .site-app-content {
@@ -1207,6 +1211,250 @@ a {
 }
 
 /* --------------------------------------------------------------------------
+   Guided player journey
+   -------------------------------------------------------------------------- */
+
+.app-play-home .app-hero {
+  min-height: 0;
+  padding: clamp(2rem, 4vw, 3.4rem);
+}
+
+.app-play-home .app-hero h1 {
+  max-width: 14ch;
+  font-size: clamp(2.8rem, 4.8vw, 4.45rem);
+}
+
+.app-quest-card .app-mechanism-step {
+  min-height: 4.35rem;
+}
+
+.app-home-drawers {
+  display: grid;
+  max-width: 58rem;
+  margin: 1.25rem auto 0;
+  gap: 0.7rem;
+}
+
+.app-home-drawer {
+  overflow: hidden;
+  border: 1px solid var(--line-strong);
+  border-radius: 15px;
+  background: var(--surface);
+  box-shadow: var(--shadow);
+}
+
+.app-home-drawer > summary {
+  position: relative;
+  min-height: 4.35rem;
+  padding: 0.85rem 3.2rem 0.85rem 1.05rem;
+  cursor: pointer;
+  list-style: none;
+}
+
+.app-home-drawer > summary::-webkit-details-marker {
+  display: none;
+}
+
+.app-home-drawer > summary::after {
+  position: absolute;
+  top: 50%;
+  right: 1.15rem;
+  color: var(--accent);
+  content: '›';
+  font-size: 1.5rem;
+  line-height: 1;
+  transform: translateY(-50%);
+  transition: transform 150ms ease;
+}
+
+.app-home-drawer[open] > summary::after {
+  transform: translateY(-50%) rotate(90deg);
+}
+
+.app-home-drawer > summary > span,
+.app-home-drawer > summary strong,
+.app-home-drawer > summary small {
+  display: block;
+}
+
+.app-home-drawer > summary strong {
+  color: var(--ink);
+  font-size: 0.9rem;
+}
+
+.app-home-drawer > summary small {
+  margin-top: 0.2rem;
+  color: var(--muted);
+  font-size: 0.76rem;
+}
+
+.app-home-drawer-body {
+  padding: 1.1rem;
+  border-top: 1px solid var(--line);
+}
+
+.app-home-drawer-body .app-concept-grid,
+.app-home-drawer-body .app-evidence-groups {
+  margin-top: 0;
+}
+
+.app-drawer-links {
+  display: flex;
+  margin-top: 0.9rem;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+}
+
+.app-drawer-links a {
+  display: inline-flex;
+  min-height: 2.75rem;
+  padding: 0.65rem 0.8rem;
+  align-items: center;
+  border: 1px solid var(--line);
+  border-radius: 9px;
+  color: var(--accent-ink);
+  font-size: 0.76rem;
+  font-weight: 700;
+  text-decoration: none;
+}
+
+.mission-progress {
+  overflow: hidden;
+  border: 1px solid var(--line-strong);
+  border-radius: 15px;
+  background: var(--surface);
+  box-shadow: var(--shadow);
+  font-family: var(--font-app-sans), Inter, sans-serif;
+}
+
+.mission-progress-head {
+  display: flex;
+  min-height: 2.65rem;
+  padding: 0.55rem 0.85rem;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.7rem;
+  border-bottom: 1px solid var(--line);
+}
+
+.mission-progress-head span {
+  color: var(--accent);
+  font-size: 0.75rem;
+  font-weight: 800;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+
+.mission-progress-head strong {
+  color: var(--muted);
+  font-size: 0.75rem;
+}
+
+.mission-progress ol {
+  display: grid;
+  margin: 0;
+  padding: 0.45rem;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 0.35rem;
+  list-style: none;
+}
+
+.mission-progress a {
+  display: flex;
+  min-height: 3rem;
+  padding: 0.55rem 0.65rem;
+  align-items: center;
+  gap: 0.55rem;
+  border-radius: 10px;
+  color: var(--muted);
+  font-size: 0.78rem;
+  font-weight: 700;
+  line-height: 1.25;
+  text-decoration: none;
+}
+
+.mission-progress li.is-active a {
+  background: var(--accent-soft);
+  color: var(--accent-ink);
+}
+
+.mission-progress li.is-complete a {
+  background: var(--good-soft);
+  color: #096b4c;
+}
+
+.mission-progress-number {
+  display: grid;
+  width: 1.7rem;
+  height: 1.7rem;
+  flex: none;
+  place-items: center;
+  border: 1px solid var(--line-strong);
+  border-radius: 50%;
+  background: var(--surface);
+  color: var(--muted);
+  font-size: 0.68rem;
+}
+
+.mission-progress li.is-active .mission-progress-number {
+  border-color: var(--accent);
+  background: var(--accent);
+  color: #fff;
+}
+
+.mission-progress li.is-complete .mission-progress-number {
+  border-color: var(--good);
+  background: var(--good);
+  color: #fff;
+}
+
+@media (min-width: 681px) {
+  .mission-progress {
+    display: grid;
+    grid-template-columns: auto minmax(0, 1fr);
+  }
+
+  .mission-progress-head {
+    min-width: 10.5rem;
+    min-height: 3.9rem;
+    flex-direction: column;
+    align-items: flex-start;
+    justify-content: center;
+    border-right: 1px solid var(--line);
+    border-bottom: 0;
+  }
+
+  .mission-progress ol {
+    align-items: center;
+  }
+}
+
+@media (min-width: 900px) {
+  :root {
+    --site-chrome-height: 4.25rem;
+  }
+
+  .site-primary {
+    min-height: var(--site-chrome-height);
+  }
+
+  .mvp-context-nav {
+    position: absolute;
+    top: 0;
+    left: 50%;
+    min-height: var(--site-chrome-height);
+    padding-top: 0;
+    padding-bottom: 0;
+    transform: translateX(-50%);
+    border-top: 0;
+  }
+
+  .mvp-context-label {
+    display: none;
+  }
+}
+
+/* --------------------------------------------------------------------------
    Court application frame
    -------------------------------------------------------------------------- */
 
@@ -1279,6 +1527,163 @@ a {
 /* Route pages used to reserve their own dock space. The frame now owns it once. */
 .court-page-main.mb-20 {
   margin-bottom: 0 !important;
+}
+
+.court-mission-brief {
+  display: grid;
+  padding: 0.95rem;
+  grid-template-columns: auto 1fr;
+  align-items: center;
+  gap: 0.85rem;
+  border: 1px solid color-mix(in srgb, var(--accent) 28%, var(--line));
+  border-radius: 13px;
+  background: var(--accent-soft);
+  color: var(--accent-ink);
+}
+
+.court-mission-brief.is-live {
+  border-color: color-mix(in srgb, var(--good) 28%, var(--line));
+  background: var(--good-soft);
+  color: #0b6045;
+}
+
+.court-mission-brief > span {
+  display: grid;
+  width: 2.65rem;
+  height: 2.65rem;
+  place-items: center;
+  border-radius: 11px;
+  background: var(--accent);
+  color: #fff;
+  font-size: 0.7rem;
+  font-weight: 800;
+}
+
+.court-mission-brief.is-live > span {
+  background: var(--good);
+}
+
+.court-mission-brief p,
+.court-mission-brief h2,
+.court-mission-brief small {
+  margin: 0;
+}
+
+.court-mission-brief p {
+  font-size: 0.75rem;
+  font-weight: 800;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+
+.court-mission-brief h2 {
+  margin-top: 0.15rem;
+  font-size: 0.9rem;
+  font-weight: 750;
+  line-height: 1.35;
+}
+
+.court-mission-brief small {
+  display: block;
+  margin-top: 0.2rem;
+  color: color-mix(in srgb, currentColor 75%, var(--muted));
+  font-size: 0.78rem;
+  line-height: 1.45;
+}
+
+.juror-local-progress {
+  display: grid;
+  padding: 0.35rem;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: 0.3rem;
+  border: 1px solid var(--line);
+  border-radius: 12px;
+  background: var(--surface-soft);
+}
+
+.juror-step {
+  display: flex;
+  min-height: 2.75rem;
+  padding: 0.45rem;
+  align-items: center;
+  justify-content: center;
+  gap: 0.35rem;
+  border-radius: 9px;
+  color: var(--muted);
+  font-size: 0.75rem;
+  font-weight: 700;
+  text-align: center;
+}
+
+.juror-step i {
+  color: var(--faint);
+  font-style: normal;
+}
+
+.juror-step.is-active {
+  background: var(--accent);
+  color: #fff;
+}
+
+.juror-step.is-active i {
+  color: #fff;
+}
+
+.juror-step.is-done {
+  background: var(--good-soft);
+  color: #096b4c;
+}
+
+.juror-step.is-done i {
+  color: var(--good);
+}
+
+.juror-mission-complete {
+  display: grid;
+  margin-top: 0.75rem;
+  padding: 0.9rem;
+  grid-template-columns: auto 1fr;
+  gap: 0.75rem;
+  border: 1px solid color-mix(in srgb, var(--good) 30%, var(--line));
+  border-radius: 12px;
+  background: var(--good-soft);
+  color: #0b6045;
+}
+
+.juror-mission-complete > span {
+  display: grid;
+  width: 2rem;
+  height: 2rem;
+  place-items: center;
+  border-radius: 50%;
+  background: var(--good);
+  color: #fff;
+  font-weight: 800;
+}
+
+.juror-mission-complete p {
+  margin: 0;
+}
+
+.juror-mission-complete a {
+  display: inline-flex;
+  min-height: 2.75rem;
+  margin-top: 0.65rem;
+  padding: 0.6rem 0.8rem;
+  align-items: center;
+  border-radius: 9px;
+  background: var(--accent);
+  color: #fff;
+  font-size: 0.74rem;
+  font-weight: 750;
+  text-decoration: none;
+}
+
+.court-case-action {
+  color: var(--accent-ink);
+  font-size: 0.75rem;
+  font-weight: 750;
+  white-space: nowrap;
 }
 
 .court-nav-dock {
@@ -1362,7 +1767,7 @@ a {
 .court-page input,
 .court-page textarea,
 .court-page select {
-  min-height: 2.65rem;
+  min-height: 2.75rem;
   border-color: var(--line-strong) !important;
   background: var(--surface) !important;
   color: var(--ink);
@@ -1384,6 +1789,10 @@ a {
 .court-page button:not(:disabled),
 .court-page a {
   touch-action: manipulation;
+}
+
+.court-page button {
+  min-height: 2.75rem;
 }
 
 .court-page button.text-white {
@@ -1943,13 +2352,34 @@ a.text-slate-950 {
 
 @media (max-width: 680px) {
   :root {
-    --site-chrome-height: 6.15rem;
+    --site-chrome-height: 3.6rem;
   }
 
-  .site-primary,
-  .mvp-context-nav {
+  .site-chrome {
+    backdrop-filter: none;
+  }
+
+  .site-primary {
+    min-height: var(--site-chrome-height);
     padding-right: 1rem;
     padding-left: 1rem;
+  }
+
+  .mvp-context-nav {
+    position: fixed;
+    z-index: 95;
+    bottom: max(0.65rem, env(safe-area-inset-bottom));
+    left: 50%;
+    overflow: visible;
+    width: min(28rem, calc(100% - 1rem));
+    min-height: 3.55rem;
+    padding: 0.35rem;
+    transform: translateX(-50%);
+    border: 1px solid var(--line-strong);
+    border-radius: 17px;
+    background: color-mix(in srgb, var(--surface) 94%, transparent);
+    box-shadow: 0 16px 42px -16px rgba(35, 38, 46, 0.38);
+    backdrop-filter: blur(18px);
   }
 
   .mvp-context-label {
@@ -1957,12 +2387,31 @@ a.text-slate-950 {
   }
 
   .mvp-context-links {
+    display: grid;
+    width: 100%;
     margin-left: 0;
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+    gap: 0.2rem;
   }
 
   .mvp-context-links a {
-    min-height: 2.1rem;
-    padding: 0.42rem 0.66rem;
+    min-height: 2.85rem;
+    padding: 0.45rem 0.25rem;
+    justify-content: center;
+    font-size: 0.72rem;
+    text-align: center;
+  }
+
+  .mvp-route-long {
+    display: none;
+  }
+
+  .mvp-route-short {
+    display: inline;
+  }
+
+  .site-app-content {
+    padding-bottom: 4.7rem;
   }
 
   .app-overview {
@@ -1972,6 +2421,10 @@ a.text-slate-950 {
   .app-hero {
     padding: 1.5rem;
     border-radius: 21px;
+  }
+
+  .app-play-home .app-hero {
+    min-height: 0;
   }
 
   .app-hero h1 {
@@ -1999,6 +2452,30 @@ a.text-slate-950 {
   .app-truth-item + .app-truth-item {
     border-top: 1px solid var(--line);
     border-left: 0;
+  }
+
+  .app-home-drawer-body .app-evidence-groups,
+  .app-home-drawer-body .app-concept-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .mission-progress a {
+    min-height: 3.25rem;
+    padding: 0.45rem;
+    flex-direction: column;
+    justify-content: center;
+    gap: 0.3rem;
+    font-size: 0.75rem;
+    text-align: center;
+  }
+
+  .mission-progress-head {
+    display: none;
+  }
+
+  .mission-progress-number {
+    width: 1.55rem;
+    height: 1.55rem;
   }
 
   .app-section {

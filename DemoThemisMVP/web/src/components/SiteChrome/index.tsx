@@ -20,32 +20,31 @@ const CHAPTERS = [
 
 const MVP_ROUTES = [
   {
-    label: 'Start',
+    label: 'Play',
+    shortLabel: 'Play',
     href: '/app',
     match: (path: string) => path === '/' || path.startsWith('/app'),
   },
   {
-    label: 'Sandbox',
+    label: 'Guided demo',
+    shortLabel: 'Demo',
     href: '/sandbox',
-    match: (path: string) => path.startsWith('/sandbox'),
+    match: (path: string) => path.startsWith('/sandbox') || path.startsWith('/juror-preview'),
   },
   {
     label: 'Court',
+    shortLabel: 'Court',
     href: '/home',
     match: (path: string) =>
-      ['/home', '/case', '/onboard', '/juror-preview', '/register-onchain', '/verify-onchain'].some((route) =>
+      ['/home', '/case', '/onboard', '/register-onchain', '/verify-onchain'].some((route) =>
         path.startsWith(route),
       ),
   },
   {
-    label: 'Case preview',
-    href: '/dispute',
-    match: (path: string) => path.startsWith('/dispute'),
-  },
-  {
-    label: 'About',
+    label: 'Build status',
+    shortLabel: 'Status',
     href: '/about',
-    match: (path: string) => path.startsWith('/about'),
+    match: (path: string) => path.startsWith('/about') || path.startsWith('/dispute'),
   },
 ] as const;
 
@@ -140,8 +139,10 @@ export function SiteChrome() {
                 href={item.href}
                 className={active ? 'is-active' : undefined}
                 aria-current={active ? 'page' : undefined}
+                aria-label={item.label}
               >
-                {item.label}
+                <span className="mvp-route-long" aria-hidden="true">{item.label}</span>
+                <span className="mvp-route-short" aria-hidden="true">{item.shortLabel}</span>
               </Link>
             );
           })}

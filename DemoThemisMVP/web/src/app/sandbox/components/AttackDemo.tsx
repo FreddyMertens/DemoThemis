@@ -43,12 +43,12 @@ function drawPanelColluders(rng: () => number, N: number, panel: number, K: numb
   return seats;
 }
 
-export function AttackDemo({ seed }: { seed: number }) {
+export function AttackDemo({ seed, onInteract }: { seed: number; onInteract?: () => void }) {
   const [budget, setBudget] = useState(250_000);
   const [tokenPrice, setTokenPrice] = useState(0.5);
   const [poolWidthK, setPoolWidthK] = useState(200); // thousands of verified humans
   const [bribePrice, setBribePrice] = useState(bribePriceFloor());
-  const [panelSize, setPanelSize] = useState(7);
+  const [panelSize, setPanelSize] = useState(3);
   const [parallelN, setParallelN] = useState(1);
   const [sharePct, setSharePct] = useState(43);
 
@@ -101,8 +101,18 @@ export function AttackDemo({ seed }: { seed: number }) {
 
   const tokenSharePct = Math.min(100, (budget / token.totalStakeUsd) * 100);
 
+  const changeBudget = (nextBudget: number) => {
+    setBudget(nextBudget);
+    onInteract?.();
+  };
+
+  const drawAnotherPanel = () => {
+    setDrawNonce((n) => n + 1);
+    onInteract?.();
+  };
+
   return (
-    <Widget title="The comparative attack: buy this verdict">
+    <Widget title="Attack scoreboard">
       <div className="sbx-controls">
         <Slider
           label="Attacker budget"
@@ -110,16 +120,120 @@ export function AttackDemo({ seed }: { seed: number }) {
           min={0}
           max={1_000_000}
           step={5000}
-          onChange={setBudget}
+          onChange={changeBudget}
           display={courtMoney(budget)}
         />
       </div>
 
-      <p className="sbx-prose">
-        Give both courts the same attacker budget. A stake vote prices control at a majority of the
-        stake; DemoThemis requires bribing enough of the wider human pool before the panel is drawn.
-        The live MVP uses three seats; larger pools and panels are funded scaling.
-      </p>
+      <div className="sbx-headline-score" aria-live="polite" aria-atomic="true">
+        <div className={token.flipped ? 'is-lost' : 'is-held'}>
+          <span>Token court</span>
+          <strong>{token.flipped ? 'Verdict bought' : 'Still holding'}</strong>
+        </div>
+        <div className={drawnCaptured ? 'is-lost' : 'is-held'}>
+          <span>Human court</span>
+          <strong>{drawnCaptured ? 'Panel captured' : 'Verdict holds'}</strong>
+          <small>{drawnColluders}/{panelSize} seats bribed</small>
+        </div>
+        <button className="sbx-btn" onClick={drawAnotherPanel}>
+          Draw another panel
+        </button>
+      </div>
+
+      {/* ---- the detailed comparison, kept behind the headline result ---- */}
+      <details className="sbx-comparison-drawer">
+        <summary>See both court breakdowns</summary>
+        <div className="sbx-compare sbx-compare-details">
+        <div className="sbx-col bad">
+          <h3>
+            <span>Stake-weighted oracle</span>
+            <span className="sbx-sans" style={{ fontSize: '.72rem', color: 'var(--faint)' }}>
+              naive stake vote
+            </span>
+          </h3>
+          <div className="sbx-fillbar" aria-label="attacker share of stake">
+            <div
+              className="fill bad"
+              style={{ width: `${Math.max(tokenSharePct, 8)}%` }}
+            >
+              {tokenSharePct >= 8 ? `${tokenSharePct.toFixed(0)}% of stake` : ''}
+            </div>
+            <div className="mid" />
+          </div>
+          <div style={{ marginTop: '.7rem' }}>
+            {token.flipped ? (
+              <Verdict level="high">Verdict bought</Verdict>
+            ) : (
+              <Verdict level="good">Holds for now</Verdict>
+            )}
+          </div>
+          <p className="sbx-sans" style={{ fontSize: '.86rem', margin: '.6rem 0 0', color: 'var(--muted)' }}>
+            Costs <b>{courtMoney(token.costToFlip)}</b> to control a voting majority (half the staked
+            value). {token.flipped ? 'The budget clears it.' : 'The budget falls short.'}
+          </p>
+          {token.flipped && (
+            <p className="sbx-note warn" style={{ marginTop: '.6rem' }}>
+              Bought voting weight can be reused on the next dispute.
+            </p>
+          )}
+        </div>
+
+        <div className="sbx-col good">
+          <h3>
+            <span>DemoThemis human court</span>
+            <span className="sbx-sans" style={{ fontSize: '.72rem', color: 'var(--faint)' }}>
+              one human, one seat
+            </span>
+          </h3>
+          <div className="sbx-pdots" style={{ gridTemplateColumns: `repeat(${panelSize}, 1fr)` }}>
+            {drawnSeats.map((c, i) => (
+              <span
+                key={i}
+                className={`sbx-dot draw ${c ? 'win' : 'hold'}`}
+                aria-label={c ? `Seat ${i + 1}: bribed` : `Seat ${i + 1}: honest`}
+                role="img"
+              >
+                {c ? '×' : '✓'}
+              </span>
+            ))}
+          </div>
+          <div style={{ marginTop: '.7rem', display: 'flex', gap: '.5rem', alignItems: 'center', flexWrap: 'wrap' }}>
+            {drawnCaptured ? (
+              <Verdict level="high">This panel fell</Verdict>
+            ) : (
+              <Verdict level="good">Verdict holds</Verdict>
+            )}
+            <span className="sbx-sans" style={{ fontSize: '.8rem', color: 'var(--muted)' }}>
+              {drawnColluders}/{panelSize} bribed on this draw
+            </span>
+          </div>
+          <p className="sbx-sans" style={{ fontSize: '.86rem', margin: '.6rem 0 0', color: 'var(--muted)' }}>
+            The budget reaches <b>{pctText(human.frac)}</b> of the wider human pool. A random panel is
+            captured <b>{pctText(human.pFlip)}</b> of the time.
+          </p>
+          <p className="sbx-note good" style={{ marginTop: '.6rem' }}>
+            A new case draws a new panel, so the attacker must try again.
+          </p>
+        </div>
+        </div>
+      </details>
+
+      <details className="sbx-inline-details">
+        <summary>
+          <strong>Why did the courts behave differently?</strong>
+          <span>Read the comparison in plain language</span>
+        </summary>
+        <div className="sbx-inline-details-body">
+          <p className="sbx-prose">
+            A stake vote prices control at a majority of the stake. DemoThemis instead requires bribing enough of a
+            wider human pool before the panel is drawn, then winning a fresh random draw for every case.
+          </p>
+          <p className="sbx-prose">
+            Real token courts can add slashing and escalating appeals; their influence still ultimately tracks
+            capital. DemoThemis changes the unit of jury power to one verified human per seat.
+          </p>
+        </div>
+      </details>
 
       <details className="sbx-inline-details">
         <summary>
@@ -155,91 +269,11 @@ export function AttackDemo({ seed }: { seed: number }) {
             display={courtMoney(bribePrice)}
           />
           <div className="sbx-row">
-            <label>Panel size</label>
+            <span>Panel size</span>
             <Seg options={PANEL_OPTIONS} value={panelSize} onChange={setPanelSize} label="Panel size" />
           </div>
         </div>
       </details>
-
-      {/* ---- the money shot: two verdicts side by side ---- */}
-      <div className="sbx-compare">
-        <div className="sbx-col bad">
-          <h3>
-            <span>Stake-weighted oracle</span>
-            <span className="sbx-sans" style={{ fontSize: '.72rem', color: 'var(--faint)' }}>
-              naive stake vote
-            </span>
-          </h3>
-          <div className="sbx-fillbar" aria-label="attacker share of stake">
-            <div
-              className="fill bad"
-              style={{ width: `${Math.max(tokenSharePct, 8)}%` }}
-            >
-              {tokenSharePct >= 8 ? `${tokenSharePct.toFixed(0)}% of stake` : ''}
-            </div>
-            <div className="mid" />
-          </div>
-          <div style={{ marginTop: '.7rem' }}>
-            {token.flipped ? (
-              <Verdict level="high">Verdict bought</Verdict>
-            ) : (
-              <Verdict level="good">Holds for now</Verdict>
-            )}
-          </div>
-          <p className="sbx-sans" style={{ fontSize: '.86rem', margin: '.6rem 0 0', color: 'var(--muted)' }}>
-            Costs <b>{courtMoney(token.costToFlip)}</b> to control a voting majority (half the staked
-            value). {token.flipped ? 'The budget clears it.' : 'The budget falls short.'}
-          </p>
-          {token.flipped && (
-            <p className="sbx-note warn" style={{ marginTop: '.6rem' }}>
-              In a pure stake vote, a bought majority stays bought &mdash; the next verdict is free.
-              Real oracles like UMA &amp; Kleros add slashing and escalating appeals, but influence
-              still tracks capital.
-            </p>
-          )}
-        </div>
-
-        <div className="sbx-col good">
-          <h3>
-            <span>DemoThemis human court</span>
-            <span className="sbx-sans" style={{ fontSize: '.72rem', color: 'var(--faint)' }}>
-              one human, one seat
-            </span>
-          </h3>
-          <div className="sbx-pdots" style={{ gridTemplateColumns: `repeat(${panelSize}, 1fr)` }}>
-            {drawnSeats.map((c, i) => (
-              <div
-                key={i}
-                className={`sbx-dot draw ${c ? 'win' : 'hold'}`}
-                title={c ? 'bribed' : 'honest'}
-              />
-            ))}
-          </div>
-          <div style={{ marginTop: '.7rem', display: 'flex', gap: '.5rem', alignItems: 'center', flexWrap: 'wrap' }}>
-            {drawnCaptured ? (
-              <Verdict level="high">This panel fell</Verdict>
-            ) : (
-              <Verdict level="good">Verdict holds</Verdict>
-            )}
-            <span className="sbx-sans" style={{ fontSize: '.8rem', color: 'var(--muted)' }}>
-              {drawnColluders}/{panelSize} bribed on this draw
-            </span>
-            <button className="sbx-btn sbx-btn-ghost" onClick={() => setDrawNonce((n) => n + 1)}>
-              Draw a panel
-            </button>
-          </div>
-          <p className="sbx-sans" style={{ fontSize: '.86rem', margin: '.6rem 0 0', color: 'var(--muted)' }}>
-            In this model, the panel is drawn after filing, so the attacker must target the wider
-            pool rather than a known panel. This budget bribes <b>{human.K.toLocaleString('en-US')}</b>{' '}
-            of {N.toLocaleString('en-US')} humans ({pctText(human.frac)} of the pool), and a fresh draw
-            seats a captured majority only <b>{pctText(human.pFlip)}</b> of the time.
-          </p>
-          <p className="sbx-note good" style={{ marginTop: '.6rem' }}>
-            A new case draws a new panel, so capture is not automatically reusable. Larger-panel
-            appeals are simulated below as funded design work.
-          </p>
-        </div>
-      </div>
 
       <details className="sbx-inline-details sbx-math-details">
         <summary>

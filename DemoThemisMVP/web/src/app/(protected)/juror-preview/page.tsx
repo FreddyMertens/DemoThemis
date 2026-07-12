@@ -4,6 +4,7 @@ import Link from 'next/link';
 import { useEffect, useMemo, useRef, useState } from 'react';
 import { encodeAbiParameters, keccak256, type Address, type Hex } from 'viem';
 import { CourtTopBar } from '@/components/CourtTopBar';
+import { MissionProgress } from '@/components/MissionProgress';
 import { Page } from '@/components/PageLayout';
 import { CaseTypeBadge, OutcomeBadge, PhaseBadge } from '@/components/court-ui';
 import type { Phase } from '@/lib/court';
@@ -47,10 +48,9 @@ function randomSalt(): Hex {
 function StepPill({ active, done, label }: { active: boolean; done: boolean; label: string }) {
   return (
     <span
-      className={`rounded-full px-2 py-1 text-[11px] font-semibold ${
-        active ? 'bg-slate-900 text-white' : done ? 'bg-emerald-100 text-emerald-800' : 'bg-slate-100 text-slate-500'
-      }`}
+      className={`juror-step${active ? ' is-active' : done ? ' is-done' : ''}`}
     >
+      <i aria-hidden="true">{done ? '✓' : active ? '●' : '○'}</i>
       {label}
     </span>
   );
@@ -150,33 +150,39 @@ export default function JurorPreview() {
     <>
       <Page.Header className="p-0">
         <CourtTopBar
-          title="Juror UX preview"
+          title="Mission 2: Take the juror seat"
           startAdornment={
-            <Link href="/onboard" className="text-sm text-slate-500">
-              Back
+            <Link href="/sandbox" className="text-sm text-slate-500">
+              ← Mission 1
             </Link>
           }
         />
       </Page.Header>
       <Page.Main className="mb-20 flex flex-col items-stretch gap-4">
-        <section className="rounded-xl border border-amber-300 bg-amber-50 p-3 text-xs leading-snug text-amber-900">
-          Local QA only. No World ID prompt, no wallet signature, no transaction, and no chain state is changed. This
-          page previews the juror screens that are otherwise gated by World App.
+        <MissionProgress current={2} />
+
+        <section className="court-mission-brief" aria-labelledby="juror-objective">
+          <span aria-hidden="true">02</span>
+          <div>
+            <p>Current objective</p>
+            <h2 id="juror-objective">Read the case and cast one sealed-until-reveal vote.</h2>
+            <small>Practice mode: no World ID prompt, wallet signature, transaction, or chain state.</small>
+          </div>
         </section>
 
-        <div className="flex flex-wrap gap-1.5">
+        <div className="juror-local-progress" aria-label="Juror mission steps">
           <StepPill label="Join" active={stage === 'join'} done={joined} />
-          <StepPill label="Commit" active={stage === 'commit'} done={stage === 'reveal' || stage === 'resolved'} />
+          <StepPill label="Seal vote" active={stage === 'commit'} done={stage === 'reveal' || stage === 'resolved'} />
           <StepPill label="Reveal" active={stage === 'reveal'} done={stage === 'resolved'} />
-          <StepPill label="Resolved" active={stage === 'resolved'} done={stage === 'resolved'} />
+          <StepPill label="Ruling" active={stage === 'resolved'} done={stage === 'resolved'} />
         </div>
 
         <section className="rounded-xl border border-slate-200 bg-white p-4">
           <div className="flex items-start justify-between gap-3">
             <div>
-              <p className="text-xs font-semibold uppercase tracking-widest text-slate-500">Local juror</p>
+              <p className="text-xs font-semibold uppercase tracking-widest text-slate-500">Your juror seat</p>
               <h2 className="mt-1 text-lg font-bold text-slate-950">
-                {joined ? 'Verified human #21' : 'Become a juror'}
+                {joined ? 'Verified human #21' : 'Join the sample court'}
               </h2>
             </div>
             <span className="rounded-full bg-sky-100 px-2 py-1 text-[10px] font-semibold uppercase text-sky-700">
@@ -198,7 +204,7 @@ export default function JurorPreview() {
                   ? 'Verifying unique human...'
                   : joinPhase === 'bonding'
                     ? 'Posting local bond...'
-                    : 'Start local join preview'}
+                  : 'Join the sample court'}
               </button>
               {joinPhase !== 'idle' && (
                 <div className="mt-2 flex gap-2 text-[11px] text-slate-500">
@@ -230,7 +236,8 @@ export default function JurorPreview() {
               {stage === 'resolved' && <OutcomeBadge caseType={1} outcome />}
             </div>
 
-            <h2 className="mt-3 text-base font-semibold text-slate-950">Case #LOCAL-777</h2>
+            <p className="mt-3 text-xs font-semibold uppercase tracking-widest text-slate-400">Practice case 777</p>
+            <h2 className="mt-1 text-base font-semibold text-slate-950">Logo delivery dispute</h2>
             <p className="mt-1 text-sm text-slate-600">
               Should the payee be paid for the completed logo brief under the linked terms?
             </p>
@@ -320,14 +327,16 @@ export default function JurorPreview() {
             )}
 
             {stage === 'resolved' && (
-              <div className="mt-3 rounded-xl border border-emerald-200 bg-emerald-50 p-3 text-sm text-emerald-900">
-                <p className="font-semibold">
-                  3 sample jurors decided this with one registry seat and one vote each.
-                </p>
-                <p className="mt-1 text-xs">
-                  Fee pool {fmtMusd(BigInt(2_000_000))} MUSD split 70/20/10. Verdict:{' '}
-                  <span className="font-semibold">payee paid</span>.
-                </p>
+              <div className="juror-mission-complete" aria-live="polite">
+                <span aria-hidden="true">✓</span>
+                <div>
+                  <p className="font-semibold">Mission complete: the payee is paid.</p>
+                  <p className="mt-1 text-xs">
+                    Three sample jurors used one seat and one vote each. The {fmtMusd(BigInt(2_000_000))} MUSD fee
+                    pool split 70/20/10.
+                  </p>
+                  <Link href="/home">Start mission 3: check court evidence →</Link>
+                </div>
               </div>
             )}
 
@@ -345,7 +354,7 @@ export default function JurorPreview() {
         )}
 
         <details className="rounded-xl border border-slate-200 bg-white p-3 text-xs text-slate-600">
-          <summary className="cursor-pointer font-semibold text-slate-700">QA controls</summary>
+          <summary className="cursor-pointer font-semibold text-slate-700">Replay and test states</summary>
           <div className="mt-3 grid gap-2 sm:grid-cols-2">
             <button
               onClick={() => {

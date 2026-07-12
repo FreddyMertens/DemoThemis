@@ -13,8 +13,7 @@ export default function SandboxLayout({ children }: { children: React.ReactNode 
       <div className="sbx-badge" role="note">
         <span className="sbx-badge-dot" aria-hidden />
         <span>
-          <b>Simulation.</b> Illustrative model on the design&apos;s published parameters. The on-chain demo is
-          available in the <a href="/home">live court</a>.
+          <b>Practice</b> · no wallet · no real money
         </span>
       </div>
       <main className="sbx-wrap" id="main-content" tabIndex={-1}>

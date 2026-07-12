@@ -10,28 +10,15 @@ const worldAppLink = appId
   : 'https://worldcoin.org/mini-app';
 
 const truthItems = [
-  {
-    label: 'Live',
-    detail: 'Core contracts and the World ID verifier path.',
-    tone: 'live',
-  },
-  {
-    label: 'Simulated',
-    detail: 'The full browser journey and roadmap features.',
-    tone: 'simulated',
-  },
-  {
-    label: 'Pending',
-    detail: 'The final three-person mainnet test.',
-    tone: 'pending',
-  },
+  { label: 'Live', detail: 'Core contracts and World ID verifier.', tone: 'live' },
+  { label: 'Simulated', detail: 'The guided browser journey.', tone: 'simulated' },
+  { label: 'Pending', detail: 'The final three-person test.', tone: 'pending' },
 ] as const;
 
-const mechanismSteps = [
-  ['One human, one seat', 'World ID stops another wallet adding another seat.'],
-  ['Panel drawn after opening', 'The case exists before its jurors are selected.'],
-  ['Votes sealed until reveal', 'Early votes cannot steer the rest of the panel.'],
-  ['Ruling settles funds', 'The verdict moves escrow and fees together.'],
+const missionSteps = [
+  ['Set the attack', 'Give the verdict buyer a budget.'],
+  ['Take a juror seat', 'Choose, seal, and reveal one vote.'],
+  ['Check court evidence', 'See what is deployed and what is pending.'],
 ] as const;
 
 const evidence = [
@@ -131,39 +118,34 @@ function EvidenceGroup({ group }: { group: (typeof evidenceGroups)[number] }) {
 
 export default function Home() {
   return (
-    <main className="app-overview" id="main-content" tabIndex={-1}>
+    <main className="app-overview app-play-home" id="main-content" tabIndex={-1}>
       <section className="app-hero" aria-labelledby="app-hero-title">
         <div>
-          <p className="app-kicker">Live Demo MVP · World Chain</p>
-          <h1 id="app-hero-title">A court of verified humans.</h1>
+          <p className="app-kicker">3-minute guided demo · no wallet</p>
+          <h1 id="app-hero-title">Can money buy this verdict?</h1>
           <p className="app-hero-dek">
-            Verified humans are drawn after a case opens, cast votes sealed until reveal, and settle escrow—so wealth
-            cannot buy extra jury power.
+            Play the attacker, serve as a juror, then compare the simulation with the live court.
           </p>
           <p className="app-hero-note">
-            The core contracts are live. The wallet-free sandbox demonstrates the wider flow; the final three-person
-            test is still pending.
+            Nothing here uses real money. The guided path is local, safe, and resets whenever you want.
           </p>
           <div className="app-actions" aria-label="MVP actions">
             <Link className="app-button is-primary" href="/sandbox">
-              Try without a wallet <span aria-hidden="true">→</span>
+              Start mission 1 <span aria-hidden="true">→</span>
             </Link>
             <Link className="app-button" href="/home">
-              View live court status
+              Skip to court evidence
             </Link>
-            <a className="app-button is-quiet" href={worldAppLink} target="_blank" rel="noreferrer">
-              Open in World App <span aria-hidden="true">↗</span>
-            </a>
           </div>
         </div>
 
-        <aside className="app-mechanism-card" aria-label="How a case moves through DemoThemis">
+        <aside className="app-mechanism-card app-quest-card" aria-label="Your guided demo missions">
           <div className="app-mechanism-top">
-            <span>One case · four steps</span>
-            <span className="app-mechanism-live">Contracts live</span>
+            <span>Your quest · three missions</span>
+            <span className="app-mechanism-live">Ready</span>
           </div>
           <div className="app-mechanism-flow">
-            {mechanismSteps.map(([title, body], index) => (
+            {missionSteps.map(([title, body], index) => (
               <div className="app-mechanism-step" key={title}>
                 <span>{String(index + 1).padStart(2, '0')}</span>
                 <div>
@@ -174,8 +156,8 @@ export default function Home() {
             ))}
           </div>
           <div className="app-mechanism-result">
-            <span>A new panel is drawn for each case.</span>
-            <strong>Settled</strong>
+            <span>One clear action at a time.</span>
+            <strong>~3 min</strong>
           </div>
         </aside>
       </section>
@@ -192,82 +174,58 @@ export default function Home() {
         ))}
       </section>
 
-      <section className="app-section app-compare-section" aria-labelledby="switch-title">
-        <div className="app-section-heading">
-          <div>
-            <p className="app-section-kicker">The difference</p>
-            <h2 id="switch-title">Change what money can buy.</h2>
+      <section className="app-home-drawers" aria-label="Optional background and proof">
+        <details className="app-home-drawer">
+          <summary>
+            <span>
+              <strong>Why is this court harder to buy?</strong>
+              <small>The short explanation</small>
+            </span>
+          </summary>
+          <div className="app-home-drawer-body">
+            <div className="app-concept-grid">
+              <article className="app-concept-card">
+                <span className="app-card-number">TOKEN COURT</span>
+                <h3>Buy influence once.</h3>
+                <p>Purchased voting weight can be reused across disputes.</p>
+              </article>
+              <article className="app-concept-card is-inversion">
+                <span className="app-card-number">DEMOTHEMIS</span>
+                <h3>Draw people each time.</h3>
+                <p>One verified person per seat, with a fresh panel for every case.</p>
+              </article>
+            </div>
+            <div className="app-drawer-links">
+              <a href="/demothemis.html">Read the full security design →</a>
+              <Link href="/dispute">See the supported case types →</Link>
+            </div>
           </div>
-          <p>World ID makes a human—not a wallet or token balance—the unit of jury power.</p>
-        </div>
+        </details>
 
-        <div className="app-concept-grid">
-          <article className="app-concept-card">
-            <span className="app-card-number">TOKEN COURT</span>
-            <h3>Buy influence once.</h3>
-            <p>Keep reusing the same purchased voting weight across disputes.</p>
-          </article>
-          <article className="app-concept-card is-inversion">
-            <span className="app-card-number">DEMOTHEMIS</span>
-            <h3>Draw people each time.</h3>
-            <p>One verified person per seat, with a new panel after each case opens.</p>
-          </article>
-        </div>
-
-        <details className="app-enforcement">
-          <summary>How one human stays one seat</summary>
-          <p>
-            Registration spends an identity-derived nullifier on-chain. The same person cannot return through another
-            wallet; a forged World ID proof fails inside the production verifier.
-          </p>
-          <a href="/demothemis.html">Read the full security design →</a>
+        <details className="app-home-drawer">
+          <summary>
+            <span>
+              <strong>What is actually live?</strong>
+              <small>Six public proof links</small>
+            </span>
+          </summary>
+          <div className="app-home-drawer-body">
+            <div className="app-evidence-groups">
+              {evidenceGroups.map((group) => (
+                <EvidenceGroup group={group} key={group.title} />
+              ))}
+            </div>
+            <div className="app-drawer-links">
+              <Link href="/about">Open the full build status →</Link>
+              <a href={worldAppLink} target="_blank" rel="noreferrer">
+                Open in World App ↗
+              </a>
+            </div>
+          </div>
         </details>
       </section>
 
-      <section className="app-section" aria-labelledby="proof-title">
-        <div className="app-proof-head">
-          <div>
-            <p className="app-section-kicker">Evidence, grouped by claim</p>
-            <h2 id="proof-title">Verify it yourself.</h2>
-          </div>
-          <Link className="app-text-link" href="/about">
-            What is real in this build? →
-          </Link>
-        </div>
-        <div className="app-evidence-groups">
-          {evidenceGroups.map((group) => (
-            <EvidenceGroup group={group} key={group.title} />
-          ))}
-        </div>
-      </section>
-
-      <section className="app-section" aria-labelledby="next-title">
-        <div className="app-proof-head">
-          <div>
-            <p className="app-section-kicker">Choose one next step</p>
-            <h2 id="next-title">Read, try, or inspect.</h2>
-          </div>
-        </div>
-        <div className="app-next-grid">
-          <a className="app-next-card" href="/demothemis.html">
-            <span>Read · chapter 01</span>
-            <strong>Understand the design</strong>
-            <small>The plain-language explanation of the court and the problem it solves.</small>
-          </a>
-          <Link className="app-next-card" href="/sandbox">
-            <span>Try · no wallet</span>
-            <strong>Attempt to buy a verdict</strong>
-            <small>Change the attacker’s budget and compare both courts.</small>
-          </Link>
-          <Link className="app-next-card" href="/home">
-            <span>Inspect · on-chain</span>
-            <strong>View live court status</strong>
-            <small>Read public court data and continue through World App.</small>
-          </Link>
-        </div>
-      </section>
-
-      <footer className="app-overview-footer">All MUSD shown here is a valueless demo token. No real money is used.</footer>
+      <footer className="app-overview-footer">MUSD is a valueless demo token. No real money is used.</footer>
     </main>
   );
 }

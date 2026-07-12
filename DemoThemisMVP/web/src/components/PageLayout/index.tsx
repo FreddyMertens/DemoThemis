@@ -12,11 +12,11 @@ export const Page = (props: { children: ReactNode; className?: string }) => {
 
 const Header = (props: { children: ReactNode; className?: string }) => {
   return (
-    <header
+    <div
       className={twMerge('court-page-header flex flex-col justify-center px-6 pt-6 pb-3 z-10', clsx(props.className))}
     >
       {props.children}
-    </header>
+    </div>
   );
 };
 
