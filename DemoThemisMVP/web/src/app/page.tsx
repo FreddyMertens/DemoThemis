@@ -6,9 +6,9 @@ const worldAppLink = appId
   : 'https://worldcoin.org/mini-app';
 
 const missionSteps = [
-  ['Set the attack', 'Give the verdict buyer a budget.'],
-  ['Take a juror seat', 'Choose, seal, and reveal one vote.'],
-  ['Explore the court', 'Browse cases and see how rulings settle.'],
+  ['Test fresh panels', 'A captured panel does not automatically control the next case.'],
+  ['Cast a sealed vote', 'One verified human, one vote bound until reveal.'],
+  ['Audit the ruling', 'Follow the case from panel draw to payout.'],
 ] as const;
 
 export default function Home() {
@@ -16,17 +16,17 @@ export default function Home() {
     <main className="app-overview app-play-home" id="main-content" tabIndex={-1}>
       <section className="app-hero" aria-labelledby="app-hero-title">
         <div>
-          <p className="app-kicker">3-minute guided demo · no wallet</p>
-          <h1 id="app-hero-title">Can money buy this verdict?</h1>
+          <p className="app-kicker">Interactive robustness demo · no wallet</p>
+          <h1 id="app-hero-title">See why this verdict is hard to buy.</h1>
           <p className="app-hero-dek">
-            Play the attacker, serve as a juror, then explore the court.
+            Stress-test a fresh human jury, cast a sealed vote, then audit the ruling.
           </p>
           <p className="app-hero-note">
             Nothing here uses real money. The guided path is local, safe, and resets whenever you want.
           </p>
           <div className="app-actions" aria-label="MVP actions">
             <Link className="app-button is-primary" href="/sandbox">
-              Start mission 1 <span aria-hidden="true">→</span>
+              Test the three defenses <span aria-hidden="true">→</span>
             </Link>
             <Link className="app-button" href="/home">
               Open the court
@@ -39,7 +39,7 @@ export default function Home() {
 
         <aside className="app-mechanism-card app-quest-card" aria-label="Your guided demo missions">
           <div className="app-mechanism-top">
-            <span>Your quest · three missions</span>
+            <span>Three defenses · three missions</span>
             <span className="app-mechanism-live">Ready</span>
           </div>
           <div className="app-mechanism-flow">
@@ -64,7 +64,7 @@ export default function Home() {
         <details className="app-home-drawer">
           <summary>
             <span>
-              <strong>Why is this court harder to buy?</strong>
+              <strong>What makes this court robust?</strong>
               <small>The short explanation</small>
             </span>
           </summary>

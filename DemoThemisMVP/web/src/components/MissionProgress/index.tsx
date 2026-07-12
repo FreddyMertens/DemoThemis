@@ -1,9 +1,9 @@
 import Link from 'next/link';
 
 const MISSIONS = [
-  { number: 1, label: 'Try the attack', href: '/sandbox' },
-  { number: 2, label: 'Serve as juror', href: '/juror-preview' },
-  { number: 3, label: 'Explore the court', href: '/home' },
+  { number: 1, label: 'Test fresh panels', href: '/sandbox' },
+  { number: 2, label: 'Cast a sealed vote', href: '/juror-preview' },
+  { number: 3, label: 'Audit a ruling', href: '/home' },
 ] as const;
 
 export function MissionProgress({ current }: { current: 1 | 2 | 3 }) {

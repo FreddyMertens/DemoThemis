@@ -112,7 +112,7 @@ export function AttackDemo({ seed, onInteract }: { seed: number; onInteract?: ()
   };
 
   return (
-    <Widget title="Attack scoreboard">
+    <Widget title="Fresh-panel defense">
       <div className="sbx-controls">
         <Slider
           label="Attacker budget"
@@ -127,16 +127,17 @@ export function AttackDemo({ seed, onInteract }: { seed: number; onInteract?: ()
 
       <div className="sbx-headline-score" aria-live="polite" aria-atomic="true">
         <div className={token.flipped ? 'is-lost' : 'is-held'}>
-          <span>Token court</span>
-          <strong>{token.flipped ? 'Verdict bought' : 'Still holding'}</strong>
+          <span>Stake vote</span>
+          <strong>{token.flipped ? 'Control bought' : 'Control holds'}</strong>
+          <small>{token.flipped ? 'Bought control can be reused' : 'Budget below majority cost'}</small>
         </div>
         <div className={drawnCaptured ? 'is-lost' : 'is-held'}>
-          <span>Human court</span>
-          <strong>{drawnCaptured ? 'Panel captured' : 'Verdict holds'}</strong>
-          <small>{drawnColluders}/{panelSize} seats bribed</small>
+          <span>DemoThemis</span>
+          <strong>{pctText(human.pFlip)} capture chance</strong>
+          <small>{drawnCaptured ? 'This draw fell' : 'This draw held'} · {drawnColluders}/{panelSize} seats bribed</small>
         </div>
         <button className="sbx-btn" onClick={drawAnotherPanel}>
-          Draw another panel
+          Draw fresh panel
         </button>
       </div>
 
@@ -220,8 +221,8 @@ export function AttackDemo({ seed, onInteract }: { seed: number; onInteract?: ()
 
       <details className="sbx-inline-details">
         <summary>
-          <strong>Why did the courts behave differently?</strong>
-          <span>Read the comparison in plain language</span>
+          <strong>Why doesn&apos;t panel control carry over?</strong>
+          <span>Every case starts with a fresh draw</span>
         </summary>
         <div className="sbx-inline-details-body">
           <p className="sbx-prose">

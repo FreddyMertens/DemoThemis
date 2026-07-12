@@ -8,7 +8,7 @@ import { MissionProgress } from '@/components/MissionProgress';
 import { Page } from '@/components/PageLayout';
 import { CaseTypeBadge, OutcomeBadge, PhaseBadge } from '@/components/court-ui';
 import type { Phase } from '@/lib/court';
-import { fmtMusd, shortAddr } from '@/lib/format';
+import { shortAddr } from '@/lib/format';
 
 const PREVIEW_JUROR = '0x7a8b4c2d8f3e9a01b6c5d4e3f2a1908765432101' as Address;
 const PANEL = [
@@ -150,7 +150,7 @@ export default function JurorPreview() {
     <>
       <Page.Header className="p-0">
         <CourtTopBar
-          title="Mission 2: Take the juror seat"
+          title="Mission 2: Cast a sealed vote"
           startAdornment={
             <Link href="/sandbox" className="text-sm text-slate-500">
               ← Mission 1
@@ -165,7 +165,7 @@ export default function JurorPreview() {
           <span aria-hidden="true">02</span>
           <div>
             <p>Current objective</p>
-            <h2 id="juror-objective">Read the case and cast one sealed-until-reveal vote.</h2>
+            <h2 id="juror-objective">Use one sample seat, then keep your vote sealed until reveal.</h2>
             <small>Practice mode: no World ID prompt, wallet signature, transaction, or chain state.</small>
           </div>
         </section>
@@ -330,12 +330,11 @@ export default function JurorPreview() {
               <div className="juror-mission-complete" aria-live="polite">
                 <span aria-hidden="true">✓</span>
                 <div>
-                  <p className="font-semibold">Mission complete: the payee is paid.</p>
+                  <p className="font-semibold">Defense tested: one seat, one sealed vote.</p>
                   <p className="mt-1 text-xs">
-                    Three sample jurors used one seat and one vote each. The {fmtMusd(BigInt(2_000_000))} MUSD fee
-                    pool split 70/20/10.
+                    Your sample ballot stayed sealed until reveal, then counted once in the ruling.
                   </p>
-                  <Link href="/home">Start mission 3: explore the court →</Link>
+                  <Link href="/home">Audit the ruling →</Link>
                 </div>
               </div>
             )}

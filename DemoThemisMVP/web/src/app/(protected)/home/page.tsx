@@ -89,11 +89,11 @@ export default function Home() {
           <span aria-hidden="true">03</span>
           <div>
             <p>Mission 3</p>
-            <h2 id="live-objective">Browse cases and see how rulings move.</h2>
+            <h2 id="live-objective">Open a case and follow its path from panel draw to payout.</h2>
             <small>
               {IS_COHORT
-                ? 'This case board is a labeled, read-only simulation.'
-                : 'Open a case to view its current phase, required action, and ruling.'}
+                ? 'This case board is simulated and read-only; each ruling still follows the court lifecycle.'
+                : 'Each case exposes its current phase, required action, ruling, and settlement.'}
             </small>
           </div>
         </section>
@@ -111,8 +111,10 @@ export default function Home() {
           <>
             <div className="flex items-center justify-between gap-3 rounded-xl border border-slate-200 bg-white p-3">
               <div>
-                <p className="text-sm font-semibold text-slate-800">The jury is the final backstop.</p>
-                <p className="mt-0.5 text-xs leading-snug text-slate-500">A faster challenge window is planned.</p>
+                <p className="text-sm font-semibold text-slate-800">Every ruling follows a visible path.</p>
+                <p className="mt-0.5 text-xs leading-snug text-slate-500">
+                  Panel drawn → votes sealed → votes revealed → ruling paid.
+                </p>
               </div>
               <Link
                 href="/onboard"

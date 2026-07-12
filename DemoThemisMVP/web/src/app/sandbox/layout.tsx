@@ -2,7 +2,7 @@ import type { Metadata } from 'next';
 import './sandbox.css';
 
 export const metadata: Metadata = {
-  title: 'DemoThemis sandbox: buy this verdict',
+  title: 'DemoThemis sandbox: stress-test the verdict',
   description:
     'A client-side simulation comparing a token-weighted oracle with a court that draws one seat per verified human. Illustrative model using the published design parameters.',
 };

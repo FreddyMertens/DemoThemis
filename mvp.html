@@ -4,7 +4,7 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>DemoThemis MVP: try the working court</title>
-<meta name="description" content="Try the DemoThemis MVP: use the guided browser sandbox, explore the court, or continue into World App.">
+<meta name="description" content="Try the DemoThemis MVP in a guided sandbox: stress-test fresh panels, cast a sealed vote, audit a ruling, or continue into World App.">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@500;700&family=Newsreader:opsz,wght@6..72,200..700&display=swap" rel="stylesheet">
@@ -32,8 +32,8 @@
 
 <header class="hero mvp-hero reveal">
   <p class="kicker">Live Demo MVP</p>
-  <h1>See the court work.</h1>
-  <p class="dek">The proposal explains the idea. This page lets you use it: start with the wallet-free guided demo, explore the court, or continue into World App.</p>
+  <h1>See the court&rsquo;s defenses work.</h1>
+  <p class="dek">Stress-test a fresh panel, cast a sealed vote, and follow the ruling to payout&mdash;all before entering World App.</p>
   <div class="mvp-hero-actions" aria-label="MVP quick actions">
     <a class="mvp-button primary" href="#try-mvp">Preview the MVP</a>
     <a class="mvp-button secondary" href="/app">Open the full MVP</a>
@@ -51,8 +51,8 @@
     <div class="mvp-section-head">
       <div>
         <p class="sec-label">Start here &middot; no wallet needed</p>
-        <h2 id="try-title">Try the attack-and-court sandbox</h2>
-        <p>The preview below opens the real browser sandbox full-screen. It uses seeded pretend people and valueless balances so you can compare attacks, move a case through the court, test appeals, and reset everything freely.</p>
+        <h2 id="try-title">Stress-test the court&rsquo;s defenses</h2>
+        <p>The browser sandbox uses seeded pretend people and valueless balances. Give an attacker a budget, redraw the panel, and see why bought influence does not automatically carry into the next case.</p>
       </div>
       <a class="mvp-text-link" href="/sandbox">Open full screen</a>
     </div>
@@ -68,18 +68,18 @@
         <span class="mvp-preview-main">
           <span class="mvp-preview-copy">
             <span class="mvp-preview-kicker">Courtroom simulator</span>
-            <strong class="mvp-preview-title">Buy this verdict</strong>
-            <span class="mvp-preview-description">Put a token-weighted oracle beside a one-human-one-vote court, give the attacker a budget, and try to buy each result.</span>
+            <strong class="mvp-preview-title">Fresh panels reset control</strong>
+            <span class="mvp-preview-description">Give the attacker a budget, then redraw: bought stake persists, but a fresh human panel must be won again for every case.</span>
             <span class="mvp-preview-launch">Launch interactive sandbox <span aria-hidden="true">&#8599;</span></span>
           </span>
           <span class="mvp-preview-model">
-            <span class="mvp-preview-model-head"><strong>The comparative attack</strong><em>Simulated</em></span>
-            <span class="mvp-preview-question">Can an attacker afford this verdict?</span>
+            <span class="mvp-preview-model-head"><strong>The fresh-panel defense</strong><em>Simulated</em></span>
+            <span class="mvp-preview-question">Does bought control carry into the next case?</span>
             <span class="mvp-preview-budget"><span>Attacker budget</span><strong>$250k</strong></span>
             <span class="mvp-preview-slider" aria-hidden="true"><i></i></span>
             <span class="mvp-preview-results">
-              <span><small>Token court</small><strong class="is-bad">Affordable</strong></span>
-              <span><small>Human court</small><strong class="is-good">Blocked</strong></span>
+              <span><small>Bought stake</small><strong class="is-bad">Persists</strong></span>
+              <span><small>Human panel</small><strong class="is-good">Must redraw</strong></span>
             </span>
           </span>
         </span>
@@ -95,8 +95,8 @@
     <div class="mvp-route-grid">
       <article class="mvp-route-card is-sandbox">
         <div class="mvp-route-top"><span class="mvp-route-number">01</span><span class="mvp-status-tag is-simulated">Simulation</span></div>
-        <h3>Watch the attack demo</h3>
-        <p>Compare token-weighted and human juries, run the court funnel, appeal a verdict, update reputation, and replay the case.</p>
+        <h3>Stress-test the defenses</h3>
+        <p>Compare reusable stake control with fresh human panels, then inspect the wider court simulator.</p>
         <ul class="mvp-route-facts"><li>No wallet</li><li>No real funds</li><li>Safe to reset</li></ul>
         <a href="/sandbox">Launch sandbox</a>
       </article>
@@ -123,57 +123,42 @@
     <div class="mvp-section-head">
       <div>
         <p class="sec-label">Evidence, not theatre</p>
-        <h2 id="proof-title">What is working today?</h2>
-        <p>The MVP separates deployed proof, simulation, and unfinished work instead of blending them into one claim.</p>
+        <h2 id="proof-title">Three defenses you can trace today</h2>
+        <p>Each claim is tied to a working mechanism, from identity check to final settlement.</p>
       </div>
       <a class="mvp-text-link" href="/about">Read scope notes</a>
     </div>
 
     <div class="mvp-proof-grid">
       <article class="mvp-proof-card is-live">
-        <span class="mvp-proof-kicker">Deployed</span>
-        <h3>On-chain now</h3>
+        <span class="mvp-proof-kicker">Identity defense</span>
+        <h3>One human, one seat</h3>
         <ul>
           <li>Source-verified World Chain contracts</li>
           <li>World ID 4.0 verifier inside registration</li>
           <li>Duplicate-human nullifier rejection</li>
-          <li>Commit/reveal ballot and escrow settlement</li>
-          <li>70 / 20 / 10 fee routing</li>
         </ul>
       </article>
       <article class="mvp-proof-card is-simulated">
-        <span class="mvp-proof-kicker">Demonstrated</span>
-        <h3>Simulated safely</h3>
+        <span class="mvp-proof-kicker">Panel defense</span>
+        <h3>A new draw for every case</h3>
         <ul>
-          <li>Attack-cost comparison</li>
-          <li>Case funnel and juror workflow</li>
-          <li>Appeals and provisional verdicts</li>
-          <li>Reputation, watcher, and reward behavior</li>
-          <li>Seeded cases that can be reset</li>
+          <li>Cases draw jurors after they open</li>
+          <li>One seat per registered human</li>
+          <li>Commit/reveal binds each ballot</li>
+          <li>No-shows trigger redraw or safe fallback</li>
         </ul>
       </article>
-      <article class="mvp-proof-card is-pending">
-        <span class="mvp-proof-kicker">Still open</span>
-        <h3>Not claimed as finished</h3>
+      <article class="mvp-proof-card is-settlement">
+        <span class="mvp-proof-kicker">Settlement defense</span>
+        <h3>The ruling moves the money</h3>
         <ul>
-          <li>Three independent humans completing the capstone</li>
-          <li>Production-grade randomness and ballot privacy</li>
-          <li>Hardened appeal and reputation layers</li>
-          <li>Independent security review</li>
-          <li>Dispute creation—the current form is a preview</li>
+          <li>Resolve counts revealed votes by rule</li>
+          <li>Escrow releases or refunds by verdict</li>
+          <li>Fees route 70 / 20 / 10 atomically</li>
+          <li>Public events leave an audit trail</li>
         </ul>
       </article>
-    </div>
-  </section>
-
-  <section class="mvp-mechanism reveal" aria-labelledby="mechanism-title">
-    <p class="sec-label">From proposal to software</p>
-    <h2 id="mechanism-title">Four important locks you can trace</h2>
-    <div class="mvp-lock-grid">
-      <article><span>1</span><h3>One person</h3><p>World ID gates juror registration and a spent nullifier stops the same human returning through another wallet.</p></article>
-      <article><span>2</span><h3>One panel</h3><p>The court selects a small demo jury after the dispute exists, rather than letting the richest accounts appoint themselves.</p></article>
-      <article><span>3</span><h3>One sealed round</h3><p>Jurors commit a hidden vote first and reveal later, so early votes cannot steer the rest of the panel.</p></article>
-      <article><span>4</span><h3>One settlement</h3><p>The final result routes escrow and fees atomically, keeping the court decision tied to the money movement.</p></article>
     </div>
   </section>
 

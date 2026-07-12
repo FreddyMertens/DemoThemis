@@ -25,10 +25,10 @@ export default function SandboxPage() {
   return (
     <>
       <header className="sbx-header sbx-game-header">
-        <p className="sbx-sec-label">Mission 1 · play the attacker</p>
-        <h1>Try to buy the verdict</h1>
+        <p className="sbx-sec-label">Mission 1 · test fresh panels</p>
+        <h1>Stress-test the verdict</h1>
         <p className="sbx-prose">
-          Move the budget, compare both results, then draw a new panel. Red means bought; green means held.
+          Move the budget. Bought stake can be reused; DemoThemis draws a fresh human jury for every case.
         </p>
       </header>
 
@@ -37,8 +37,8 @@ export default function SandboxPage() {
       {!mounted ? (
         <LoadingSkeleton />
       ) : (
-        <section className="sbx-primary" aria-label="Attack mission">
-          <WidgetBoundary name="attack demo">
+        <section className="sbx-primary" aria-label="Fresh-panel mission">
+          <WidgetBoundary name="fresh-panel demo">
             <AttackDemo seed={seed} onInteract={() => setMissionAttempted(true)} />
           </WidgetBoundary>
         </section>
@@ -51,15 +51,17 @@ export default function SandboxPage() {
       >
         <span className="sbx-complete-mark" aria-hidden="true">{missionAttempted ? '✓' : '1'}</span>
         <div>
-          <p>{missionAttempted ? 'Mission cleared' : 'One move left'}</p>
-          <h2 id="next-mission-title">{missionAttempted ? 'Take the juror seat.' : 'Try the control above.'}</h2>
+          <p>{missionAttempted ? 'Fresh-panel defense tested' : 'One move left'}</p>
+          <h2 id="next-mission-title">
+            {missionAttempted ? 'Next: cast a sealed vote.' : 'Test the fresh-panel defense.'}
+          </h2>
           <small>
             {missionAttempted
-              ? 'Join locally, read one case, seal your vote, reveal it, and watch the ruling settle.'
-              : 'Move the attacker budget or draw another panel to reveal the next mission.'}
+              ? 'Use one sample seat, seal your choice, then reveal it when voting closes.'
+              : 'Move the attacker budget or draw a fresh panel to reveal the next defense.'}
           </small>
         </div>
-        {missionAttempted && <Link href="/juror-preview">Start mission 2 <span aria-hidden="true">→</span></Link>}
+        {missionAttempted && <Link href="/juror-preview">Test sealed voting <span aria-hidden="true">→</span></Link>}
       </section>
 
       <details className="sbx-seed-details">
@@ -108,7 +110,7 @@ export default function SandboxPage() {
       </details>
 
       <footer className="sbx-footer">
-        Want to skip ahead? <a href="/home">Open the live court →</a>
+        Want to skip ahead? <a href="/home">Audit a ruling →</a>
       </footer>
     </>
   );
