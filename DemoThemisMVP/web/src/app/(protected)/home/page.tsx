@@ -80,7 +80,7 @@ export default function Home() {
   return (
     <>
       <Page.Header className="p-0">
-        <CourtTopBar title={IS_COHORT ? 'Court evidence' : 'Live court'} />
+        <CourtTopBar title="Court" />
       </Page.Header>
       <Page.Main className="flex flex-col items-stretch justify-start gap-4 mb-20">
         <MissionProgress current={3} />
@@ -88,12 +88,12 @@ export default function Home() {
         <section className="court-mission-brief is-live" aria-labelledby="live-objective">
           <span aria-hidden="true">03</span>
           <div>
-            <p>Final mission</p>
-            <h2 id="live-objective">Compare the practice run with the real deployment.</h2>
+            <p>Mission 3</p>
+            <h2 id="live-objective">Browse cases and see how rulings move.</h2>
             <small>
               {IS_COHORT
-                ? 'This board is a labeled, read-only scale simulation. The mainnet contracts are linked separately.'
-                : 'The contracts are live. The final independent three-person trace is still pending.'}
+                ? 'This case board is a labeled, read-only simulation.'
+                : 'Open a case to view its current phase, required action, and ruling.'}
             </small>
           </div>
         </section>
@@ -192,7 +192,7 @@ export default function Home() {
             <p className="mt-1 text-xs">
               {IS_COHORT
                 ? 'Resolved cases appear here as the keeper advances them.'
-                : 'The final three-person test has not run. You can try the full flow now.'}
+                : 'No cases are open right now. You can still try the complete sample flow.'}
             </p>
             <div className="court-empty-actions">
               <Link href="/sandbox">Try a sample case</Link>

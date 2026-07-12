@@ -13,12 +13,12 @@ export function InstanceBanner() {
       <summary>
         <i aria-hidden="true" />
         <strong>{label}</strong>
-        <span>What is real?</span>
+        <span>About this data</span>
       </summary>
       <p>
         {IS_COHORT
-          ? 'This case history is simulated. The mainnet contracts and World ID 4.0 verifier path are live; the final three-person test is pending.'
-          : 'World ID 4.0 gates juror seats. The core contracts are live; the final three-person test is still pending.'}
+          ? 'This case history is a read-only simulation. It does not represent activity by real jurors.'
+          : 'World ID 4.0 gates juror seats. This screen reads the court contracts on World Chain.'}
       </p>
     </details>
   );

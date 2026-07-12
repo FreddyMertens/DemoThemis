@@ -335,7 +335,7 @@ export default function JurorPreview() {
                     Three sample jurors used one seat and one vote each. The {fmtMusd(BigInt(2_000_000))} MUSD fee
                     pool split 70/20/10.
                   </p>
-                  <Link href="/home">Start mission 3: check court evidence →</Link>
+                  <Link href="/home">Start mission 3: explore the court →</Link>
                 </div>
               </div>
             )}

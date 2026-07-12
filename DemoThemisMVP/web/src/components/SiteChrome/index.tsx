@@ -40,12 +40,6 @@ const MVP_ROUTES = [
         path.startsWith(route),
       ),
   },
-  {
-    label: 'Build status',
-    shortLabel: 'Status',
-    href: '/about',
-    match: (path: string) => path.startsWith('/about') || path.startsWith('/dispute'),
-  },
 ] as const;
 
 export function SiteChrome() {

@@ -2390,7 +2390,7 @@ a.text-slate-950 {
     display: grid;
     width: 100%;
     margin-left: 0;
-    grid-template-columns: repeat(4, minmax(0, 1fr));
+    grid-template-columns: repeat(3, minmax(0, 1fr));
     gap: 0.2rem;
   }
 
