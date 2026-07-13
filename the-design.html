@@ -332,6 +332,10 @@
   .sim-toast-body { font-family: var(--sans); font-size: 0.82rem; line-height: 1.25; font-weight: 800; color: #f1f5f9; }
   .sim-tooltip { position: fixed; z-index: 9999; left: 0; top: 0; max-width: min(19rem, calc(100vw - 1.25rem)); border: 1px solid color-mix(in srgb, var(--accent) 28%, transparent); border-radius: 11px; background: color-mix(in srgb, var(--ink) 94%, #111); color: #fff; box-shadow: 0 18px 36px rgba(31, 36, 48, .22); padding: .58rem .66rem; font-family: var(--sans); font-size: .72rem; line-height: 1.34; opacity: 0; pointer-events: none; transform: translateY(4px); transition: opacity .12s ease, transform .12s ease; }
   .sim-tooltip.is-visible { opacity: 1; transform: translateY(0); }
+  .sim-help { display: inline-grid; place-items: center; width: 1.5rem; height: 1.5rem; min-width: 1.5rem; border: 1px solid var(--line-strong); border-radius: 50%; background: var(--bg); color: var(--accent-ink); padding: 0; font-family: var(--sans); font-size: .72rem; line-height: 1; font-weight: 950; letter-spacing: 0; text-transform: none; cursor: help; box-shadow: none; flex: 0 0 auto; transition: border-color .12s ease, background .12s ease, color .12s ease, box-shadow .12s ease; }
+  .sim-help:hover,
+  .sim-help:focus-visible,
+  .sim-help[aria-expanded="true"] { border-color: var(--accent); background: var(--accent-soft); color: var(--accent-ink); box-shadow: 0 0 0 3px color-mix(in srgb, var(--accent) 18%, transparent); outline: 0; }
   .app-row { display: flex; justify-content: space-between; gap: .6rem; align-items: baseline; border-top: 1px solid color-mix(in srgb, var(--line) 74%, transparent); padding-top: .42rem; color: var(--muted); font-size: .72rem; line-height: 1.25; }
   .app-row:first-of-type { border-top: 0; padding-top: 0; }
   .app-row b { color: var(--ink); font-size: .78rem; text-align: right; overflow-wrap: anywhere; }
@@ -452,6 +456,7 @@
   .live-card-title { display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: .36rem .6rem; color: var(--ink); font-size: .86rem; line-height: 1.15; font-weight: 900; }
   .block-title-main { display: inline-flex; align-items: center; gap: .38rem; min-width: 0; }
   .block-title-main b { min-width: 0; overflow-wrap: anywhere; }
+  .block-title-main .sim-help { margin-left: .06rem; }
   .block-icon { display: inline-grid; place-items: center; width: 1.45rem; height: 1.45rem; border: 1px solid color-mix(in srgb, var(--accent) 26%, var(--line)); border-radius: 999px; background: var(--accent-soft); color: var(--accent-ink); flex: 0 0 auto; }
   .block-icon svg { display: block; width: .9rem; height: .9rem; fill: none; stroke: currentColor; stroke-width: 2.25; stroke-linecap: round; stroke-linejoin: round; }
   .live-card-title span { color: var(--faint); font-size: .62rem; letter-spacing: .08em; text-transform: uppercase; }
@@ -486,7 +491,9 @@
   .live-kpis > .live-kpi:nth-child(3),
   .live-intent > .intent-item:nth-child(3) { border-color: var(--triad-amber-border); background: var(--triad-amber); }
   .live-field { display: grid; gap: .22rem; }
+  .live-field-label { display: flex; align-items: center; justify-content: flex-start; gap: .28rem; min-width: 0; }
   .live-field label { color: var(--faint); font-size: .62rem; letter-spacing: .08em; text-transform: uppercase; font-weight: 900; }
+  .live-field-label .sim-help { width: 1.25rem; height: 1.25rem; min-width: 1.25rem; font-size: .64rem; }
   .live-input { border: 1px solid var(--line-strong); border-radius: 11px; background: var(--bg); color: var(--ink); padding: .58rem .64rem; font-size: .88rem; font-weight: 850; line-height: 1.2; min-width: 0; }
   .live-control { display: block; width: 100%; box-sizing: border-box; font-family: inherit; }
   .live-textarea { min-height: 4.5rem; resize: vertical; }
@@ -503,11 +510,15 @@
   .liquidity-side[aria-pressed="false"] { opacity: .62; background: var(--bg); }
   .liquidity-amount { display: grid; grid-template-columns: auto minmax(0, 1fr); grid-template-rows: auto 1fr; align-items: center; column-gap: .28rem; min-width: 0; border: 1px solid var(--line-strong); border-radius: 11px; background: var(--bg); color: var(--ink); padding: .32rem .5rem; }
   .liquidity-amount:focus-within { border-color: var(--accent); box-shadow: 0 0 0 2px var(--accent-soft); }
-  .liquidity-caption { grid-column: 1 / -1; color: var(--faint); font-size: .56rem; line-height: 1; font-weight: 900; text-transform: uppercase; }
+  .liquidity-caption-row { grid-column: 1 / -1; display: flex; align-items: center; gap: .26rem; min-width: 0; }
+  .liquidity-caption { color: var(--faint); font-size: .56rem; line-height: 1; font-weight: 900; text-transform: uppercase; }
+  .liquidity-caption-row .sim-help,
+  .liquidity-preview-label .sim-help { width: 1.18rem; height: 1.18rem; min-width: 1.18rem; font-size: .6rem; }
   .liquidity-currency { color: var(--muted); font-weight: 900; }
   .liquidity-input { width: 100%; min-width: 0; border: 0; background: transparent; color: var(--ink); padding: .08rem 0 0; font-family: inherit; font-size: .9rem; line-height: 1.1; font-weight: 900; }
   .liquidity-preview { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: .55rem; border-top: 1px solid var(--line); padding-top: .48rem; }
-  .liquidity-preview span { min-width: 0; }
+  .liquidity-preview > * { min-width: 0; }
+  .liquidity-preview-label { display: flex; align-items: center; gap: .26rem; min-width: 0; }
   .liquidity-preview small { display: block; color: var(--faint); font-size: .6rem; line-height: 1; font-weight: 900; text-transform: uppercase; }
   .liquidity-preview b { display: block; margin-top: .18rem; color: var(--ink); font-size: .78rem; line-height: 1.15; overflow-wrap: anywhere; }
   .big-odds { display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); border: 1px solid var(--line); border-radius: 13px; overflow: hidden; }
@@ -698,7 +709,7 @@
   .product-demo.sim-ultra .live-head h4 { font-size: .86rem; }
   .product-demo.sim-ultra .live-card { padding: .34rem; gap: .24rem; border-radius: 9px; }
   .product-demo.sim-ultra .live-card-title { display: flex; gap: .22rem; font-size: .72rem; }
-  .product-demo.sim-ultra .live-card-title > span:last-child { display: none; }
+  .product-demo.sim-ultra .live-card-title > .step-link-badge { display: none; }
   .product-demo.sim-ultra .block-icon { width: 1.05rem; height: 1.05rem; }
   .product-demo.sim-ultra .block-icon svg { width: .68rem; height: .68rem; }
   .product-demo.sim-ultra .big-odds,
@@ -847,7 +858,7 @@
     .live-head h4 { font-size: .86rem; }
     .live-card { padding: .34rem; gap: .24rem; border-radius: 9px; }
     .live-card-title { display: flex; gap: .22rem; font-size: .72rem; }
-    .live-card-title > span:last-child { display: none; }
+    .live-card-title > .step-link-badge { display: none; }
     .block-icon { width: 1.05rem; height: 1.05rem; }
     .block-icon svg { width: .68rem; height: .68rem; }
     .big-odds,
@@ -1441,14 +1452,14 @@
     color-scheme: dark;
   }
   .product-mode-panel[data-product-mode] {
-    --product-text-caption: .7rem;
-    --product-text-meta: .74rem;
-    --product-text-body: .8rem;
-    --product-text-control: .8rem;
-    --product-text-subtitle: .88rem;
-    --product-text-title: .98rem;
-    --product-text-display: 1.16rem;
-    --product-text-figure: 1.42rem;
+    --product-text-caption: .75rem;
+    --product-text-meta: .8rem;
+    --product-text-body: .875rem;
+    --product-text-control: .875rem;
+    --product-text-subtitle: .98rem;
+    --product-text-title: 1.08rem;
+    --product-text-display: 1.3rem;
+    --product-text-figure: 1.62rem;
   }
   .product-mode-panel[data-product-mode] .run-control-panel,
   .product-mode-panel[data-product-mode] .sim-step-guide,
@@ -1470,21 +1481,26 @@
   .product-mode-panel[data-product-mode="momo"] .run-control-panel,
   .product-mode-panel[data-product-mode="momo"] .sim-step-guide,
   .product-mode-panel[data-product-mode="momo"] .sim-live-preview {
-    --bg: #f3e2c8;
-    --surface: #fcefd9;
-    --ink: #2b241d;
-    --ink-soft: #4b4036;
-    --muted: #6b5b4d;
-    --faint: #725f50;
-    --line: #e1c59f;
-    --line-strong: #c99c66;
-    --accent: #ae510f;
-    --accent-soft: #f2c48e;
-    --accent-ink: #725000;
-    --good: #0d7b73;
-    --good-soft: #def2ed;
-    --bad: #a84432;
-    --bad-soft: #f1d8d0;
+    --bg: #f2e3cd;
+    --surface: #fff7e8;
+    --ink: #251f1a;
+    --ink-soft: #43372e;
+    --muted: #655244;
+    --faint: #70513b;
+    --line: #dcb98d;
+    --line-strong: #b9824c;
+    --accent: #ad520f;
+    --accent-soft: #f4cf9d;
+    --accent-ink: #6f4400;
+    --good: #087068;
+    --good-soft: #d9efea;
+    --bad: #9d3f30;
+    --bad-soft: #f3d9d1;
+    --action-fill: #ad520f;
+    --action-ink: #fff9ed;
+    --continue-fill: #087068;
+    --continue-ink: #ffffff;
+    --shadow: 0 4px 12px rgba(91, 57, 24, .08);
   }
   .product-mode-panel[data-product-mode="momo"] .run-control-panel,
   .product-mode-panel[data-product-mode="momo"] .sim-step-guide,
@@ -1493,35 +1509,33 @@
     border-color: color-mix(in srgb, var(--accent) 38%, var(--line));
   }
   .product-mode-panel[data-product-mode="momo"] .simulator-island {
-    border-color: #d6ae7b;
-    background: #f3e2c8;
+    border-color: #d3aa77;
+    background: #f2e3cd;
   }
   .product-mode-panel[data-product-mode="themis"] .run-control-panel,
   .product-mode-panel[data-product-mode="themis"] .sim-step-guide,
   .product-mode-panel[data-product-mode="themis"] .sim-live-preview,
   .product-mode-panel[data-product-mode="themis"] .simulator-island {
-    --bg: #171c1f;
-    --surface: #20272b;
-    --ink: #f2efe5;
-    --ink-soft: #d2d7d5;
-    --muted: #aeb7b8;
-    --faint: #899599;
-    --line: #354047;
-    --line-strong: #52606a;
-    --accent: #326c91;
-    --accent-soft: #263f52;
-    --accent-ink: #a9d5f2;
-    --good: #9caf78;
-    --good-soft: #293527;
-    --bad: #d78368;
-    --bad-soft: #452b27;
-    --triad-mint: #26372f;
-    --triad-mint-border: #466b59;
-    --triad-lavender: #2e3045;
-    --triad-lavender-border: #5c6590;
-    --triad-amber: #3b3223;
-    --triad-amber-border: #7a6340;
-    --shadow: 0 10px 24px rgba(0, 0, 0, .28);
+    --bg: #151a1d;
+    --surface: #232a2e;
+    --ink: #f6f2e8;
+    --ink-soft: #d9dfdc;
+    --muted: #bdc6c6;
+    --faint: #a0acae;
+    --line: #3e4a50;
+    --line-strong: #65737b;
+    --accent: #3e7fa8;
+    --accent-soft: #29475b;
+    --accent-ink: #c3e7ff;
+    --good: #b6c98f;
+    --good-soft: #2c3929;
+    --bad: #e49a7f;
+    --bad-soft: #4b302b;
+    --action-fill: #2f7199;
+    --action-ink: #f7fcff;
+    --continue-fill: #b6c98f;
+    --continue-ink: #172017;
+    --shadow: 0 4px 14px rgba(0, 0, 0, .22);
   }
   .product-mode-panel[data-product-mode="themis"] .run-control-panel,
   .product-mode-panel[data-product-mode="themis"] .sim-step-guide,
@@ -1530,8 +1544,8 @@
     border-color: color-mix(in srgb, var(--accent) 38%, var(--line));
   }
   .product-mode-panel[data-product-mode="themis"] .simulator-island {
-    border-color: #46545d;
-    background: #171c1f;
+    border-color: #4b5960;
+    background: #151a1d;
   }
   .product-mode-panel[data-product-mode="themis"] :where(
     .sim-step-badge, .sim-step-copy strong, .app-eyebrow,
@@ -1666,7 +1680,7 @@
 
   .product-mode-panel[data-product-mode] .product-demo .sim-live-preview :where(
     .fake-screen-name, .fake-mini, .fake-field .k,
-    .app-eyebrow, .app-metric span, .app-panel .mini, .app-receipt strong,
+    .app-eyebrow, .app-metric span, .app-panel .mini, .app-receipt strong, .sim-help,
     .app-action-card .mini, .live-card-title span, .live-kpi span,
     .liquidity-caption, .liquidity-preview small,
     .intent-item span, .live-field label, .sim-toast-header,
@@ -1780,6 +1794,295 @@
     .product-mode-nav.is-awaiting-selection .product-tab-icon { width: 2.5rem; height: 2.5rem; }
     .product-mode-nav.is-awaiting-selection .product-tab-copy strong { font-size: .9rem; }
     .product-mode-nav.is-awaiting-selection .product-tab-event { display: inline-flex; }
+  }
+
+  /* Scan-first app hierarchy: neutral structure, semantic color, readable type. */
+  .product-mode-panel[data-product-mode] .product-demo .sim-live-preview {
+    background: var(--bg);
+  }
+  .product-mode-panel[data-product-mode] .product-demo .sim-app-viewport,
+  .product-mode-panel[data-product-mode] .product-demo .app-window,
+  .product-mode-panel[data-product-mode] .product-demo .live-page {
+    background: var(--bg);
+  }
+  .product-mode-panel[data-product-mode] .product-demo .app-nav {
+    min-height: 3.6rem;
+    border-bottom-color: var(--line-strong);
+    background: var(--surface);
+    padding: .7rem .82rem;
+  }
+  .product-mode-panel[data-product-mode] .product-demo .app-brand {
+    font-size: var(--product-text-subtitle);
+    line-height: var(--product-leading-tight);
+  }
+  .product-mode-panel[data-product-mode] .product-demo .app-tabs span,
+  .product-mode-panel[data-product-mode] .product-demo .app-nav-chip {
+    font-size: var(--product-text-meta);
+    line-height: var(--product-leading-ui);
+  }
+  .product-mode-panel[data-product-mode] .product-demo .app-tabs span {
+    border-bottom-width: 3px;
+    padding: .34rem .1rem .3rem;
+  }
+  .product-mode-panel[data-product-mode] .product-demo .app-nav-chip {
+    color: var(--muted);
+    padding-block: .25rem;
+  }
+  .product-mode-panel[data-product-mode] .product-demo .sim-browser-back {
+    min-height: 2.4rem;
+  }
+  .product-mode-panel[data-product-mode] .product-demo .live-page {
+    gap: .8rem;
+    padding: .86rem;
+  }
+  .product-mode-panel[data-product-mode] .product-demo .live-main {
+    gap: .7rem;
+  }
+  .product-mode-panel[data-product-mode] .product-demo .live-head {
+    border: 1px solid var(--line-strong);
+    border-left: 4px solid var(--accent);
+    border-radius: 8px;
+    background: color-mix(in srgb, var(--surface) 92%, var(--accent-soft));
+    padding: .78rem .82rem;
+    box-shadow: none;
+  }
+  .product-mode-panel[data-product-mode] .product-demo .live-head h4 {
+    margin-top: .12rem;
+    color: var(--ink);
+  }
+  .product-mode-panel[data-product-mode] .product-demo .live-head p {
+    max-width: 48rem;
+    margin-top: .28rem;
+    color: var(--ink-soft);
+  }
+  .product-mode-panel[data-product-mode] .product-demo .live-status {
+    min-height: 1.8rem;
+    border-color: color-mix(in srgb, var(--good) 50%, var(--line));
+    color: var(--good);
+    padding: .3rem .62rem;
+    font-size: var(--product-text-meta);
+    line-height: var(--product-leading-tight);
+  }
+  .product-mode-panel[data-product-mode] .product-demo .live-status.warn {
+    border-color: color-mix(in srgb, var(--bad) 52%, var(--line));
+    color: var(--bad);
+  }
+  .product-mode-panel[data-product-mode] .product-demo .live-card {
+    gap: .58rem;
+    border-color: var(--line);
+    border-radius: 8px;
+    background: var(--surface);
+    padding: .76rem;
+    box-shadow: var(--shadow);
+  }
+  .product-mode-panel[data-product-mode] .product-demo .live-card.awaiting-action {
+    border-color: var(--accent);
+    background: color-mix(in srgb, var(--surface) 88%, var(--accent-soft));
+    box-shadow: inset 4px 0 0 var(--accent), var(--shadow);
+  }
+  .product-mode-panel[data-product-mode] .product-demo .live-card.hot {
+    border-color: var(--accent);
+    background: color-mix(in srgb, var(--surface) 72%, var(--accent-soft));
+  }
+  .product-mode-panel[data-product-mode] .product-demo .live-card.is-continuation-target,
+  .product-mode-panel[data-product-mode] .product-demo .live-card.good {
+    background: color-mix(in srgb, var(--surface) 78%, var(--good-soft));
+  }
+  .product-mode-panel[data-product-mode] .product-demo .live-card.bad {
+    background: color-mix(in srgb, var(--surface) 78%, var(--bad-soft));
+  }
+  .product-mode-panel[data-product-mode] .product-demo .live-card-title {
+    gap: .42rem .62rem;
+    color: var(--ink);
+  }
+  .product-mode-panel[data-product-mode] .product-demo .block-title-main {
+    gap: .46rem;
+  }
+  .product-mode-panel[data-product-mode] .product-demo .block-icon {
+    width: 1.65rem;
+    height: 1.65rem;
+    border-color: var(--line);
+    border-radius: 6px;
+    background: var(--bg);
+    color: var(--muted);
+  }
+  .product-mode-panel[data-product-mode] .product-demo :is(
+    .page-create-market .block-fields,
+    .page-live-market .block-odds,
+    .page-order-book .block-table,
+    .page-wallet-unlock :is(.block-checklist, .block-tokens),
+    .page-private-room .block-participants,
+    .page-parlay-slip .block-legs,
+    .page-resolution-dashboard .block-scoreboard,
+    .page-dispute-handoff .block-ticket,
+    .page-jury-draw .block-beacon,
+    .page-juror-workspace .block-evidence,
+    .page-verdict-page .block-proof,
+    .page-appeal-checkout .block-checkout,
+    .page-final-receipt .block-closed
+  ) {
+    border-left: 4px solid var(--accent);
+  }
+  .product-mode-panel[data-product-mode] .product-demo :is(
+    .page-create-market .block-fields,
+    .page-live-market .block-odds,
+    .page-order-book .block-table,
+    .page-wallet-unlock :is(.block-checklist, .block-tokens),
+    .page-private-room .block-participants,
+    .page-parlay-slip .block-legs,
+    .page-resolution-dashboard .block-scoreboard,
+    .page-dispute-handoff .block-ticket,
+    .page-jury-draw .block-beacon,
+    .page-juror-workspace .block-evidence,
+    .page-verdict-page .block-proof,
+    .page-appeal-checkout .block-checkout,
+    .page-final-receipt .block-closed
+  ) .block-icon {
+    border-color: color-mix(in srgb, var(--accent) 46%, var(--line));
+    background: var(--accent-soft);
+    color: var(--accent-ink);
+  }
+  .product-mode-panel[data-product-mode] .product-demo :is(
+    .block-proof,
+    .block-closed,
+    .live-card.is-continuation-target
+  ) .block-icon {
+    border-color: color-mix(in srgb, var(--good) 48%, var(--line));
+    background: var(--good-soft);
+    color: var(--good);
+  }
+  .product-mode-panel[data-product-mode] .product-demo .live-kpis {
+    grid-template-columns: repeat(auto-fit, minmax(min(10rem, 100%), 1fr));
+    gap: .5rem;
+  }
+  .product-mode-panel[data-product-mode] .product-demo .live-kpis:has(> .live-kpi:only-child) {
+    grid-template-columns: minmax(10rem, 18rem);
+    justify-content: start;
+  }
+  .product-mode-panel[data-product-mode] .product-demo .live-kpi,
+  .product-mode-panel[data-product-mode] .product-demo .live-kpis > .live-kpi:nth-child(n) {
+    min-height: 3.35rem;
+    border-color: var(--line);
+    border-radius: 8px;
+    background: var(--surface);
+    padding: .58rem .66rem;
+  }
+  .product-mode-panel[data-product-mode] .product-demo .live-kpi span {
+    color: var(--faint);
+  }
+  .product-mode-panel[data-product-mode] .product-demo .live-kpi b {
+    margin-top: .12rem;
+    color: var(--ink);
+  }
+  .product-mode-panel[data-product-mode] .product-demo :is(
+    .live-input,
+    .liquidity-side,
+    .liquidity-amount,
+    .side-button,
+    .app-ballot button
+  ) {
+    min-height: 2.7rem;
+    border-radius: 7px;
+  }
+  .product-mode-panel[data-product-mode] .product-demo .live-input {
+    border-color: var(--line-strong);
+    background: var(--bg);
+    padding: .62rem .68rem;
+  }
+  .product-mode-panel[data-product-mode] .product-demo .liquidity-input {
+    min-height: 1.65rem;
+  }
+  .product-mode-panel[data-product-mode] .product-demo :is(
+    .mini-row,
+    .check-item,
+    .face-check,
+    .checkout-row,
+    .app-route-step
+  ) {
+    min-height: 2.25rem;
+  }
+  .product-mode-panel[data-product-mode] .product-demo :is(
+    .mini-row,
+    .check-item,
+    .face-check,
+    .checkout-row,
+    .app-row,
+    .app-route-step
+  ) {
+    color: var(--muted);
+  }
+  .product-mode-panel[data-product-mode] .product-demo :is(
+    .mini-row b,
+    .check-item b,
+    .face-check b,
+    .checkout-row b,
+    .app-row b,
+    .app-route-step span:nth-child(2)
+  ) {
+    color: var(--ink);
+  }
+  .product-mode-panel[data-product-mode] .product-demo .app-route-step i {
+    width: 1.5rem;
+    height: 1.5rem;
+    font-size: var(--product-text-caption);
+    line-height: 1;
+  }
+  .product-mode-panel[data-product-mode] .product-demo .sim-live-preview .app-route-step span:last-child {
+    font-size: var(--product-text-meta);
+    line-height: var(--product-leading-ui);
+  }
+  .product-mode-panel[data-product-mode] .product-demo .sim-app-action {
+    min-height: 2.7rem;
+    border-color: var(--action-fill);
+    border-radius: 7px;
+    background: var(--action-fill);
+    color: var(--action-ink);
+    padding: .58rem .92rem;
+  }
+  .product-mode-panel[data-product-mode] .product-demo .sim-app-action::after {
+    background: color-mix(in srgb, currentColor 18%, transparent);
+    color: currentColor;
+  }
+  .product-mode-panel[data-product-mode] .product-demo .sim-app-action:hover,
+  .product-mode-panel[data-product-mode] .product-demo .sim-app-action:focus-visible {
+    border-color: color-mix(in srgb, var(--action-fill) 84%, var(--ink));
+    background: color-mix(in srgb, var(--action-fill) 84%, var(--ink));
+    color: var(--action-ink);
+  }
+  .product-mode-panel[data-product-mode] .product-demo .sim-app-action.app-continue-action {
+    border-color: var(--continue-fill);
+    background: var(--continue-fill);
+    color: var(--continue-ink);
+  }
+  .product-mode-panel[data-product-mode] .product-demo .sim-app-action.app-continue-action:hover,
+  .product-mode-panel[data-product-mode] .product-demo .sim-app-action.app-continue-action:focus-visible {
+    border-color: color-mix(in srgb, var(--continue-fill) 84%, var(--ink));
+    background: color-mix(in srgb, var(--continue-fill) 84%, var(--ink));
+    color: var(--continue-ink);
+  }
+  .product-mode-panel[data-product-mode] .product-demo .block-ticket .ticket-total b,
+  .product-mode-panel[data-product-mode] .product-demo .evidence-tabs span.on {
+    background: var(--action-fill);
+    color: var(--action-ink);
+  }
+  .product-mode-panel[data-product-mode] .product-demo .page-appeal-checkout .app-seat-grid {
+    grid-template-columns: repeat(11, minmax(0, 1fr));
+    gap: .3rem;
+  }
+
+  @container run-stage (max-width: 620px) {
+    .product-mode-panel[data-product-mode] .product-demo .live-page { padding: .62rem; }
+    .product-mode-panel[data-product-mode] .product-demo .live-main { gap: .56rem; }
+    .product-mode-panel[data-product-mode] .product-demo .live-head,
+    .product-mode-panel[data-product-mode] .product-demo .live-card { padding: .68rem; }
+    .product-mode-panel[data-product-mode] .product-demo .live-kpis:has(> .live-kpi:only-child) { grid-template-columns: 1fr; }
+    .product-mode-panel[data-product-mode] .product-demo .page-appeal-checkout .app-seat-grid { grid-template-columns: repeat(7, minmax(0, 1fr)); }
+  }
+  @container run-stage (max-width: 380px) {
+    .product-mode-panel[data-product-mode] .product-demo .live-page { padding: .46rem; }
+    .product-mode-panel[data-product-mode] .product-demo .live-head,
+    .product-mode-panel[data-product-mode] .product-demo .live-card { padding: .6rem; }
+    .product-mode-panel[data-product-mode] .product-demo .page-appeal-checkout .app-seat-grid { grid-template-columns: repeat(6, minmax(0, 1fr)); }
   }
 </style>
 </head>
@@ -3353,6 +3656,65 @@
     return text + " is an option in the " + cleanTip(context || "current") + " screen.";
   }
 
+  function makeHelpTip(label, tip) {
+    var button = makeEl("button", "sim-help", "?");
+    button.type = "button";
+    button.setAttribute("aria-label", "Explain " + cleanTip(label || "this item"));
+    button.setAttribute("aria-controls", "simTooltip");
+    button.setAttribute("aria-expanded", "false");
+    return tagInfo(button, tip);
+  }
+
+  var BLOCK_HELP_BY_TYPE = {
+    fields: "These values define the terms that will be saved or submitted from this screen.",
+    choice: "This control selects which outcome claim the next action uses.",
+    liquidity: "Set separate YES and NO amounts before publishing. Every funded amount is locked in escrow and determines the opening odds.",
+    receipt: "This receipt records what the previous action produced and what remains true afterward.",
+    odds: "These are the market's current implied YES and NO probabilities. Prices move as orders are filled.",
+    ticket: "This ticket previews the exact position, price, stake, or claim that the next action will submit.",
+    table: "This list shows the live records or offers used by the current step, with the best or newest row first.",
+    route: "This route shows the ordered protocol steps and whether each one is pending, conditional, or complete.",
+    tokens: "These outcome tokens are portable wallet assets. Each one pays only if its named outcome wins.",
+    checklist: "Every check must pass before this state change is allowed to complete.",
+    participants: "This panel shows who is in the private room and which side or invitation state each person has.",
+    messages: "This feed records the negotiation or case messages visible to the current participants.",
+    legs: "Each leg is filled from its own live market. The combined position is created only if every leg can fill.",
+    scoreboard: "This is the named external result source used to support the proposed market outcome.",
+    countdown: "This timer is the remaining window for the current review, challenge, or appeal action.",
+    handoff: "This handoff shows which market state becomes a court case and what information crosses between the products.",
+    beacon: "Public randomness and the case seed create one reproducible jury draw that cannot be rerolled.",
+    seats: "Filled seats are selected for this panel; unfilled seats are outside the current draw or rung.",
+    faceChecks: "Presence checks confirm that each selected juror is a live, verified human before voting.",
+    evidence: "Jurors review the submitted source material here before sealing a private ballot.",
+    ballot: "The selected vote is encrypted and remains private until the aggregate verdict proof is produced.",
+    bars: "These meters show the relative strength or completion of the current measured states.",
+    proof: "This proof lets anyone verify that the verdict was counted correctly without revealing individual ballots.",
+    checkout: "This checkout shows the appeal payment, bond, and larger jury rung that will be created if funded.",
+    closed: "This state is final: appeals are exhausted, settlement is complete, and the market can be redeemed."
+  };
+
+  function blockHelpText(block) {
+    var item = block || {};
+    var explanation = cleanTip(item.help || BLOCK_HELP_BY_TYPE[item.type] || "This panel contains the information used by the current event step.");
+    return cleanTip(item.title) ? cleanTip(item.title) + ": " + explanation : explanation;
+  }
+
+  function fieldHelpText(label, context) {
+    var name = cleanTip(label);
+    var screen = cleanTip(context || "current form");
+    if (/resolve condition/i.test(name)) return "The exact rule and source used to decide YES or NO. It is fixed before funds are committed so settlement cannot change later.";
+    if (/^question$/i.test(name)) return "The claim traders evaluate. It should be answerable as YES or NO under the written resolve condition.";
+    if (/close time/i.test(name)) return "The last time normal market trading is allowed before the result and review process begins.";
+    if (/outcome|answer/i.test(name)) return "The proposed YES or NO result that this " + screen + " will submit or challenge.";
+    if (/odds|price|limit/i.test(name)) return "The locked price for this order. A matching trade fills this price before using the next available liquidity.";
+    if (/stake|bond|amount|cost/i.test(name)) return "The funds committed by this " + screen + ". The preview shows what is locked, spent, or placed at risk.";
+    if (/source|evidence/i.test(name)) return "The material used to support the proposed result and later reviewed if the answer is challenged.";
+    if (/return|shares|payout/i.test(name)) return "The estimated position or payout produced if this ticket fills under the displayed terms.";
+    if (/fill/i.test(name)) return "The order-routing rule that decides which available liquidity is consumed first.";
+    if (/^buy$/i.test(name)) return "The outcome claim and size this ticket will purchase when submitted.";
+    return name + " is the value the " + screen + " uses when this step is submitted.";
+  }
+
   function installSimTooltips() {
     if (document.getElementById("simTooltip")) return;
     var tip = makeEl("div", "sim-tooltip");
@@ -3361,6 +3723,7 @@
     tip.setAttribute("aria-hidden", "true");
     document.body.appendChild(tip);
     var activeTarget = null;
+    var pinnedTarget = null;
 
     function isSimTipTarget(target) {
       return target && target.closest && target.closest(".sim-live-preview [data-sim-tip]");
@@ -3381,15 +3744,19 @@
     function show(target) {
       var text = target && target.getAttribute("data-sim-tip");
       if (!text) return;
+      if (activeTarget && activeTarget !== target && activeTarget.classList.contains("sim-help")) activeTarget.setAttribute("aria-expanded", "false");
       activeTarget = target;
       tip.textContent = text;
       tip.setAttribute("aria-hidden", "false");
       tip.classList.add("is-visible");
+      if (target.classList.contains("sim-help")) target.setAttribute("aria-expanded", "true");
       position(target);
     }
 
-    function hide(target) {
+    function hide(target, force) {
       if (target && activeTarget && target !== activeTarget) return;
+      if (!force && pinnedTarget && activeTarget === pinnedTarget) return;
+      if (activeTarget && activeTarget.classList.contains("sim-help")) activeTarget.setAttribute("aria-expanded", "false");
       activeTarget = null;
       tip.classList.remove("is-visible");
       tip.setAttribute("aria-hidden", "true");
@@ -3413,11 +3780,45 @@
       var target = isSimTipTarget(event.target);
       if (target) hide(target);
     });
+    document.addEventListener("click", function (event) {
+      var target = isSimTipTarget(event.target);
+      if (target && target.classList.contains("sim-help")) {
+        if (pinnedTarget === target) {
+          pinnedTarget = null;
+          hide(target, true);
+        } else {
+          if (pinnedTarget) hide(pinnedTarget, true);
+          pinnedTarget = target;
+          show(target);
+        }
+        return;
+      }
+      if (pinnedTarget) {
+        var previous = pinnedTarget;
+        pinnedTarget = null;
+        hide(previous, true);
+      }
+    });
+    document.addEventListener("keydown", function (event) {
+      if (event.key !== "Escape" || !activeTarget) return;
+      var previous = activeTarget;
+      pinnedTarget = null;
+      hide(previous, true);
+      previous.focus();
+    });
     document.addEventListener("mousemove", function () {
       if (activeTarget) position(activeTarget);
     });
-    window.addEventListener("scroll", function () { hide(activeTarget); }, true);
-    window.addEventListener("resize", function () { hide(activeTarget); });
+    window.addEventListener("scroll", function () {
+      var previous = activeTarget;
+      pinnedTarget = null;
+      hide(previous, true);
+    }, true);
+    window.addEventListener("resize", function () {
+      var previous = activeTarget;
+      pinnedTarget = null;
+      hide(previous, true);
+    });
   }
 
   function getActionEl() {
@@ -5487,7 +5888,10 @@
     (rows || []).forEach(function (row, index) {
       var field = makeEl("div", "live-field");
       var label = makeEl("label", "", row[0]);
+      var labelRow = makeEl("div", "live-field-label");
       var controlType = row[2] || "";
+      labelRow.appendChild(label);
+      labelRow.appendChild(makeHelpTip(row[0], fieldHelpText(row[0], context)));
       if (editable || controlType === "textarea") {
         var id = "live-field-" + stage + "-" + cleanTip(context || "form").replace(/[^a-z0-9]+/gi, "-").toLowerCase() + "-" + index;
         var control = document.createElement(controlType === "textarea" ? "textarea" : "input");
@@ -5506,10 +5910,10 @@
           });
         }
         label.htmlFor = id;
-        field.appendChild(label);
+        field.appendChild(labelRow);
         field.appendChild(control);
       } else {
-        field.appendChild(label);
+        field.appendChild(labelRow);
         field.appendChild(makeEl("div", "live-input", row[1]));
       }
       root.appendChild(field);
@@ -5876,6 +6280,7 @@
     var titleMain = makeEl("span", "block-title-main");
     titleMain.appendChild(makeBlockIcon(type));
     titleMain.appendChild(makeEl("b", "", block.title || ""));
+    titleMain.appendChild(makeHelpTip(block.title || blockTypeLabel(type), blockHelpText(block)));
     title.appendChild(titleMain);
     if (isHot) title.appendChild(makeEl("span", "step-link-badge", currentActionLabel()));
     card.appendChild(title);
@@ -5892,14 +6297,20 @@
     } else if (type === "liquidity") {
       var liquidityGrid = makeEl("div", "liquidity-grid");
       var liquidityPreview = makeEl("div", "liquidity-preview");
-      var oddsPreview = makeEl("span");
-      var escrowPreview = makeEl("span");
+      var oddsPreview = makeEl("div", "liquidity-preview-item");
+      var escrowPreview = makeEl("div", "liquidity-preview-item");
       var oddsPreviewValue = makeEl("b");
       var escrowPreviewValue = makeEl("b");
+      var oddsPreviewLabel = makeEl("div", "liquidity-preview-label");
+      var escrowPreviewLabel = makeEl("div", "liquidity-preview-label");
       liquidityPreview.setAttribute("aria-live", "polite");
-      oddsPreview.appendChild(makeEl("small", "", "Opening odds"));
+      oddsPreviewLabel.appendChild(makeEl("small", "", "Opening odds"));
+      oddsPreviewLabel.appendChild(makeHelpTip("opening odds", "The funded YES and NO amounts are converted into the market's first implied probabilities."));
+      oddsPreview.appendChild(oddsPreviewLabel);
       oddsPreview.appendChild(oddsPreviewValue);
-      escrowPreview.appendChild(makeEl("small", "", "Opening escrow"));
+      escrowPreviewLabel.appendChild(makeEl("small", "", "Opening escrow"));
+      escrowPreviewLabel.appendChild(makeHelpTip("opening escrow", "The total creator-funded liquidity locked behind the market when it is published."));
+      escrowPreview.appendChild(escrowPreviewLabel);
       escrowPreview.appendChild(escrowPreviewValue);
       liquidityPreview.appendChild(oddsPreview);
       liquidityPreview.appendChild(escrowPreview);
@@ -5919,9 +6330,12 @@
         var tone = offer[2] || "";
         var liquidityOffer = makeEl("div", "liquidity-offer");
         var sideButton = makeEl("button", "liquidity-side " + tone, side);
-        var amountLabel = makeEl("label", "liquidity-amount");
+        var amountField = makeEl("div", "liquidity-amount");
+        var captionRow = makeEl("div", "liquidity-caption-row");
+        var amountLabel = makeEl("label", "liquidity-caption", "Liquidity");
         var amountInput = document.createElement("input");
         var amountId = "opening-liquidity-" + key;
+        var liquidityTip = side + " opening liquidity is the amount locked behind " + side + " before publishing. It contributes to the opening odds and remains in escrow for traders to take.";
         amountInput.className = "liquidity-input";
         amountInput.id = amountId;
         amountInput.type = "number";
@@ -5932,6 +6346,7 @@
         amountInput.setAttribute("aria-label", side + " opening liquidity in dollars");
         sideButton.type = "button";
         sideButton.setAttribute("aria-label", "Toggle " + side + " opening liquidity");
+        tagInfo(sideButton, liquidityTip);
 
         function syncLiquidityOffer() {
           var amount = safeLiquidityAmount(amountInput.value);
@@ -5950,11 +6365,13 @@
         syncLiquidityOffer();
 
         amountLabel.htmlFor = amountId;
-        amountLabel.appendChild(makeEl("span", "liquidity-caption", "Liquidity"));
-        amountLabel.appendChild(makeEl("span", "liquidity-currency", "$"));
-        amountLabel.appendChild(amountInput);
+        captionRow.appendChild(amountLabel);
+        captionRow.appendChild(makeHelpTip(side + " opening liquidity", liquidityTip));
+        amountField.appendChild(captionRow);
+        amountField.appendChild(makeEl("span", "liquidity-currency", "$"));
+        amountField.appendChild(amountInput);
         liquidityOffer.appendChild(sideButton);
-        liquidityOffer.appendChild(amountLabel);
+        liquidityOffer.appendChild(amountField);
         liquidityGrid.appendChild(liquidityOffer);
       });
       card.appendChild(liquidityGrid);

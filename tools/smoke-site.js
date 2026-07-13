@@ -443,6 +443,12 @@ function checkCompactAppViews(html, failures) {
   assert(/document\.createElement\(controlType\s*===\s*"textarea"\s*\?\s*"textarea"\s*:\s*"input"\)/.test(html), "editable market forms must use native inputs and textareas", failures);
   assert(/amountInput\.type\s*=\s*"number"/.test(html) && /amountInput\.addEventListener\("input",\s*syncLiquidityOffer\)/.test(html), "opening-liquidity amounts must be editable native numeric controls", failures);
   assert(/liquidityPreview\.setAttribute\("aria-live",\s*"polite"\)/.test(html) && /Opening odds/.test(html) && /Opening escrow/.test(html), "opening-liquidity controls must expose live odds and escrow feedback", failures);
+  assert(/function\s+makeHelpTip\s*\(/.test(html) && /className\s*=\s*"sim-help"|makeEl\("button",\s*"sim-help",\s*"\?"\)/.test(html), "event explainers must use a visible question-mark control", failures);
+  assert(/titleMain\.appendChild\(makeHelpTip\(block\.title\s*\|\|\s*blockTypeLabel\(type\),\s*blockHelpText\(block\)\)\)/.test(html), "every event app card must expose a hoverable explainer", failures);
+  assert(/labelRow\.appendChild\(makeHelpTip\(row\[0\],\s*fieldHelpText\(row\[0\],\s*context\)\)\)/.test(html), "event form and ticket fields must expose field-level explainers", failures);
+  assert(/makeHelpTip\(side\s*\+\s*" opening liquidity",\s*liquidityTip\)/.test(html) && /makeHelpTip\("opening odds"/.test(html) && /makeHelpTip\("opening escrow"/.test(html), "opening-liquidity inputs and previews must each expose an explainer", failures);
+  assert(/aria-controls",\s*"simTooltip"/.test(html) && /aria-expanded",\s*"false"/.test(html) && /event\.key\s*!==\s*"Escape"/.test(html), "event explainers must support focus, touch pinning, and Escape dismissal", failures);
+  assert(!/\.live-card-title\s*>\s*span:last-child\s*\{\s*display:\s*none/.test(html) && /\.live-card-title\s*>\s*\.step-link-badge\s*\{\s*display:\s*none/.test(html), "compact views must keep card titles and their explainer controls visible", failures);
   assert(/grid-column:\s*span\s+var\(--live-span,\s*4\)/.test(html), "app cards must consume their content-aware grid spans", failures);
   assert(/main\.setAttribute\("data-block-count",\s*String\(blocks\.length\)\)/.test(html), "app view must expose its rendered block count", failures);
   assert(/live-main\.live-layout-1[\s\S]*?block-proof/.test(html), "single-state proof views must use a horizontal reading layout", failures);
@@ -502,7 +508,7 @@ function checkProductFontAssets(html, failures) {
   assert(/\.product-mode-panel\[data-product-mode\]\s+\.sim-step-guide/i.test(html), "current event guide must inherit product typography", failures);
   assert(/\.product-mode-panel\[data-product-mode=["']momo["']\]\s+\.run-control-panel/i.test(html) && /\.product-mode-panel\[data-product-mode=["']themis["']\]\s+\.run-control-panel/i.test(html), "event transport controls must inherit each product palette", failures);
   assert(/\.product-mode-panel\[data-product-mode=["']momo["']\]\s+\.sim-step-guide/i.test(html) && /\.product-mode-panel\[data-product-mode=["']themis["']\]\s+\.sim-step-guide/i.test(html), "current event guide must inherit each product palette", failures);
-  assert(/--product-text-caption:\s*\.7rem/i.test(html) && /--product-text-display:\s*1\.16rem/i.test(html) && /--product-text-figure:\s*1\.42rem/i.test(html), "product typography must use a shared semantic type scale", failures);
+  assert(/--product-text-caption:\s*\.75rem/i.test(html) && /--product-text-body:\s*\.875rem/i.test(html) && /--product-text-display:\s*1\.3rem/i.test(html) && /--product-text-figure:\s*1\.62rem/i.test(html), "product typography must use a readable shared semantic type scale", failures);
   assert(/--product-weight-control:\s*800/i.test(html) && /--product-weight-control:\s*650/i.test(html), "product typography must compensate weights per font family", failures);
   assert(/--product-leading-copy:\s*1\.4/i.test(html) && /--product-leading-copy:\s*1\.46/i.test(html), "product typography must compensate line spacing per font family", failures);
   assert(/\.sim-live-preview\s+:where\(\*\)\s*\{\s*letter-spacing:\s*0/i.test(html), "product typography must remove font-dependent tracking", failures);
@@ -523,7 +529,18 @@ function checkProductFontAssets(html, failures) {
     }
     assert(uncoveredMicrocopy.length === 0, "product typography leaves sub-caption text unnormalized: " + uncoveredMicrocopy.join(", "), failures);
   }
-  assert(/--bg:\s*#f3e2c8/i.test(html) && /--surface:\s*#fcefd9/i.test(html) && /--accent:\s*#ae510f/i.test(html) && /--accent-ink:\s*#725000/i.test(html), "PredictionMoMo must use the amber parchment reading palette", failures);
+  assert(/--bg:\s*#f2e3cd/i.test(html) && /--surface:\s*#fff7e8/i.test(html) && /--accent:\s*#ad520f/i.test(html) && /--accent-ink:\s*#6f4400/i.test(html), "PredictionMoMo must use the high-contrast amber parchment reading palette", failures);
+  assert(/\.live-kpis:has\(>\s*\.live-kpi:only-child\)/i.test(html), "single app metrics must stay compact instead of becoming a full-width banner", failures);
+  assert(/\.page-appeal-checkout\s+\.app-seat-grid\s*\{[^}]*repeat\(11/i.test(html), "appeal panels must use a dense desktop seat grid", failures);
+  assert(/--action-fill:\s*#ad520f/i.test(html) && /--continue-fill:\s*#087068/i.test(html), "PredictionMoMo app actions need distinct brand and continuation colors", failures);
+  assert(/--action-fill:\s*#2f7199/i.test(html) && /--continue-ink:\s*#172017/i.test(html), "DemoThemis actions need a readable dark-theme foreground pairing", failures);
+  assert(/\.page-create-market\s+\.block-fields/i.test(html) && /\.page-final-receipt\s+\.block-closed/i.test(html), "every app view must expose a scan-first anchor surface", failures);
+  assert(/\.live-kpis\s*>\s*\.live-kpi:nth-child\(n\)[\s\S]{0,220}background:\s*var\(--surface\)/i.test(html), "app metrics must use neutral structure instead of decorative category colors", failures);
+  const scanHierarchyStart = html.indexOf("/* Scan-first app hierarchy");
+  const scanHierarchyCss = scanHierarchyStart >= 0 ? html.slice(scanHierarchyStart, html.indexOf("</style>", scanHierarchyStart)) : "";
+  for (const template of ["create-market", "live-market", "order-book", "wallet-unlock", "private-room", "parlay-slip", "resolution-dashboard", "dispute-handoff", "jury-draw", "juror-workspace", "verdict-page", "appeal-checkout", "final-receipt"]) {
+    assert(scanHierarchyCss.includes(`.page-${template}`), `scan-first hierarchy is missing the ${template} app view`, failures);
+  }
   assert(!/#b83c32|#f7f2e8|#fffdf8/i.test(html), "PredictionMoMo must not retain the red or near-white palette", failures);
 }
 
@@ -584,8 +601,8 @@ function checkBuiltHtml(failures) {
   assert(/\.product-mode-panel\[data-product-mode=["']momo["']\]\s+\.sim-live-preview/i.test(runThrough), "PredictionMoMo theme must be scoped to the app preview", failures);
   assert(/\.product-mode-panel\[data-product-mode=["']themis["']\]\s+\.sim-live-preview/i.test(runThrough), "DemoThemis theme must be scoped to the app preview", failures);
   assert(/data-product-mode=["']themis["'][^}]*color-scheme:\s*dark/i.test(runThrough), "DemoThemis event workflow must use dark native controls", failures);
-  assert(/--bg:\s*#171c1f/i.test(runThrough) && /--surface:\s*#20272b/i.test(runThrough) && /--ink:\s*#f2efe5/i.test(runThrough), "DemoThemis dark surface palette is missing", failures);
-  assert(/--accent:\s*#326c91/i.test(runThrough) && /--accent-ink:\s*#a9d5f2/i.test(runThrough), "DemoThemis must separate filled and text accent contrast", failures);
+  assert(/--bg:\s*#151a1d/i.test(runThrough) && /--surface:\s*#232a2e/i.test(runThrough) && /--ink:\s*#f6f2e8/i.test(runThrough), "DemoThemis dark surface palette is missing", failures);
+  assert(/--accent:\s*#3e7fa8/i.test(runThrough) && /--accent-ink:\s*#c3e7ff/i.test(runThrough), "DemoThemis must separate filled and text accent contrast", failures);
   assert(/data-product-mode=["']themis["']\]\s+\.simulator-island/i.test(runThrough), "DemoThemis dark theme must cover the full simulator workspace", failures);
   assert(!/--(?:bg|surface):\s*(?:#fffefa|#f3f5f2)/i.test(runThrough), "DemoThemis must not retain its light surfaces", failures);
   assert(!/entry\.group\.mode\s*===\s*mode/.test(runThrough), "event navigator must keep every product's event groups visible", failures);
