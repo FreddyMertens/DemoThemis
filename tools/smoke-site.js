@@ -281,6 +281,252 @@ function checkStateMachineData(html, failures) {
   assert(/function\s+initSystemStateMachine\s*\(/.test(html) && /initSystemStateMachine\s*\(\s*\)\s*;/.test(html), "state machine initialization is missing", failures);
 }
 
+function checkProductModeData(html, failures) {
+  const start = html.indexOf("var PRODUCT_MODES =");
+  const end = html.indexOf("var stage =", start);
+  assert(start >= 0 && end > start, "run-through product-mode data block is missing or malformed", failures);
+  if (start < 0 || end <= start) return;
+
+  try {
+    const context = {};
+    const source = html.slice(start, end) + "\nthis.__productModes = PRODUCT_MODES;";
+    vm.runInNewContext(source, context, { filename: "the-design.product-modes.js" });
+    const modes = context.__productModes;
+    assert(modes.momo && modes.momo.start === 0, "PredictionMoMo tab must start at Event 01", failures);
+    assert(modes.themis && modes.themis.start === 6, "DemoThemis tab must start at Event 07", failures);
+    assert(modes.momo.label === "PredictionMoMo" && modes.themis.label === "DemoThemis", "product-mode labels are incorrect", failures);
+  } catch (error) {
+    failures.push("run-through product-mode data cannot be evaluated: " + error.message);
+  }
+}
+
+function checkProductStageGroups(html, failures) {
+  const start = html.indexOf("var STAGE_GROUPS =");
+  const end = html.indexOf("var PRODUCT_MODES =", start);
+  assert(start >= 0 && end > start, "run-through stage-group data block is missing or malformed", failures);
+  if (start < 0 || end <= start) return;
+
+  try {
+    const context = {};
+    const source = html.slice(start, end) + "\nthis.__stageGroups = STAGE_GROUPS;";
+    vm.runInNewContext(source, context, { filename: "the-design.stage-groups.js" });
+    const groups = context.__stageGroups;
+    const momo = groups.filter((group) => group.mode === "momo");
+    const themis = groups.filter((group) => group.mode === "themis");
+    assert(momo.length === 2 && momo[0].start === 0 && momo[momo.length - 1].end === 5, "PredictionMoMo navigator must contain only Events 01-06", failures);
+    assert(themis.length === 3 && themis[0].start === 6 && themis[themis.length - 1].end === 12, "DemoThemis navigator must contain only Events 07-13", failures);
+    assert(groups.every((group) => group.mode === "momo" || group.mode === "themis"), "every event group must belong to a product mode", failures);
+    assert(!/visibleGroups[\s\S]{0,240}\.filter\s*\(/.test(html), "event navigator must show every product's groups together", failures);
+    assert(/groupEl\.setAttribute\(["']data-stage-mode["'],\s*group\.mode\)/.test(html), "event groups must retain their individual product themes", failures);
+    assert(/steps\.setAttribute\(["']data-stage-mode["'],\s*drawerGroup\.mode\)/.test(html), "expanded event lists must retain their individual product themes", failures);
+  } catch (error) {
+    failures.push("run-through stage-group data cannot be evaluated: " + error.message);
+  }
+}
+
+function checkCompactAppViews(html, failures) {
+  const start = html.indexOf("var APP_PAGES =");
+  const end = html.indexOf("var CONTROL_COACH_COPY =", start);
+  assert(start >= 0 && end > start, "run-through app-view data block is missing or malformed", failures);
+  if (start < 0 || end <= start) return;
+
+  let pages;
+  let flows;
+  try {
+    const context = {};
+    const source = html.slice(start, end) + "\nthis.__appViews = { pages: APP_PAGES, flows: APP_FLOWS };";
+    vm.runInNewContext(source, context, { filename: "the-design.app-views.js" });
+    pages = context.__appViews.pages;
+    flows = context.__appViews.flows;
+  } catch (error) {
+    failures.push("run-through app-view data cannot be evaluated: " + error.message);
+    return;
+  }
+
+  assert(pages.length === 13 && flows.length === 13, "app simulator must define all 13 event views and flows", failures);
+
+  function mergePage(base, patch) {
+    return Object.assign({}, base || {}, patch || {});
+  }
+
+  const snapshots = [];
+  pages.forEach((basePage, eventIndex) => {
+    const flow = flows[eventIndex] || { steps: [] };
+    snapshots.push({ event: eventIndex + 1, state: "base", page: basePage });
+    let current = mergePage(basePage, flow.start);
+    snapshots.push({ event: eventIndex + 1, state: "start", page: current, targetTitle: flow.steps && flow.steps[0] && flow.steps[0].targetTitle });
+
+    (flow.steps || []).forEach((step, stepIndex) => {
+      if (step.target === "block") {
+        const targetExists = (current.blocks || []).some((block) => block.title === step.targetTitle);
+        assert(targetExists, `Event ${eventIndex + 1} step ${stepIndex + 1} is missing current target block: ${step.targetTitle}`, failures);
+      }
+      current = mergePage(current, step.after);
+      const nextStep = flow.steps && flow.steps[stepIndex + 1];
+      snapshots.push({ event: eventIndex + 1, state: `after-${stepIndex + 1}`, page: current, targetTitle: nextStep && nextStep.targetTitle });
+    });
+  });
+
+  for (const snapshot of snapshots) {
+    const label = `Event ${snapshot.event} ${snapshot.state}`;
+    const blocks = snapshot.page.blocks || [];
+    assert(blocks.length <= 3, `${label} exceeds the compact three-block app-view ceiling`, failures);
+    assert(!blocks.some((block) => /preview/i.test(block.title || "")), `${label} contains a future preview block`, failures);
+    assert(!(snapshot.page.kpis || []).some((kpi) => /^next(?:\s|$)/i.test(kpi[0] || "")), `${label} contains a forward-looking KPI`, failures);
+  }
+
+  const layoutStart = html.indexOf("var LIVE_BLOCK_LAYOUT_WEIGHTS =");
+  const layoutEnd = html.indexOf("function renderLiveBlock", layoutStart);
+  assert(layoutStart >= 0 && layoutEnd > layoutStart, "content-aware app layout functions are missing", failures);
+  if (layoutStart >= 0 && layoutEnd > layoutStart) {
+    const layoutContext = { currentTargetTitle: null };
+    layoutContext.blockIsCurrentTarget = (block) => block.title === layoutContext.currentTargetTitle;
+    layoutContext.blockIsContinuationTarget = () => false;
+    try {
+      const layoutSource = html.slice(layoutStart, layoutEnd) + "\nthis.__layout = { weights: LIVE_BLOCK_LAYOUT_WEIGHTS, plan: liveBlockSpanPlan };";
+      vm.runInNewContext(layoutSource, layoutContext, { filename: "the-design.app-layout.js" });
+      const knownTypes = new Set();
+
+      for (const snapshot of snapshots) {
+        const blocks = snapshot.page.blocks || [];
+        if (!blocks.length) continue;
+        blocks.forEach((block) => knownTypes.add(block.type));
+        layoutContext.currentTargetTitle = snapshot.targetTitle || null;
+        const spans = Array.from(layoutContext.__layout.plan(blocks));
+        const minimum = blocks.length === 1 ? 12 : blocks.length === 2 ? 5 : 3;
+        const maximum = blocks.length === 1 ? 12 : blocks.length === 2 ? 7 : 6;
+        const label = `Event ${snapshot.event} ${snapshot.state}`;
+        assert(spans.length === blocks.length, `${label} layout plan does not cover every block`, failures);
+        assert(spans.reduce((sum, span) => sum + span, 0) === 12, `${label} layout plan leaves horizontal grid space unused`, failures);
+        assert(spans.every((span) => span >= minimum && span <= maximum), `${label} layout plan creates an unreadable card width`, failures);
+
+        if (snapshot.targetTitle) {
+          const targetIndex = blocks.findIndex((block) => block.title === snapshot.targetTitle);
+          layoutContext.currentTargetTitle = null;
+          const neutralSpans = Array.from(layoutContext.__layout.plan(blocks));
+          assert(targetIndex < 0 || spans[targetIndex] >= neutralSpans[targetIndex], `${label} makes the current-action card smaller`, failures);
+        }
+      }
+
+      for (const type of knownTypes) {
+        assert(Object.prototype.hasOwnProperty.call(layoutContext.__layout.weights, type), `app layout has no density weight for block type: ${type}`, failures);
+      }
+    } catch (error) {
+      failures.push("content-aware app layout cannot be evaluated: " + error.message);
+    }
+  }
+
+  const eventOne = pages[0];
+  const marketForm = (eventOne.blocks || []).find((block) => block.title === "Market form");
+  const startingPosition = (eventOne.blocks || []).find((block) => block.title === "Starting position");
+  assert(marketForm && !(marketForm.rows || []).some((row) => /^category$/i.test(row[0])), "Event 01 market form must omit demo-only category metadata", failures);
+  const resolveCondition = marketForm && (marketForm.rows || []).find((row) => /^resolve condition$/i.test(row[0]));
+  assert(marketForm && marketForm.editable && resolveCondition && resolveCondition[2] === "textarea", "Event 01 must provide an editable resolve-condition textarea", failures);
+  const openingOffers = startingPosition && startingPosition.offers || [];
+  assert(startingPosition && startingPosition.type === "liquidity" && openingOffers.some((offer) => offer[0] === "YES" && offer[1] === "yes") && openingOffers.some((offer) => offer[0] === "NO" && offer[1] === "no"), "Event 01 must provide independent YES and NO opening-liquidity controls", failures);
+  assert(!(startingPosition && startingPosition.options), "Event 01 must not embed the opening amount inside a side label", failures);
+  assert(!eventOne.intent && (eventOne.kpis || []).length === 0, "Event 01 must open without explanatory or summary strips", failures);
+
+  const privateDraftFields = snapshots
+    .filter((snapshot) => snapshot.event === 5)
+    .flatMap((snapshot) => (snapshot.page.blocks || []).filter((block) => block.type === "fields"));
+  assert(privateDraftFields.length > 0 && privateDraftFields.every((block) => block.editable && (block.rows || []).some((row) => /^resolve condition$/i.test(row[0]) && row[2] === "textarea")), "private-room authoring states must expose the same editable resolve condition", failures);
+
+  assert(!/function\s+renderIntentStrip\s*\(/.test(html), "app views must not render the removed Why/Money/Next strip", failures);
+  assert(!/title\.appendChild\(makeEl\("span",\s*"",\s*blockTypeLabel\(type\)\)\)/.test(html), "app cards must not repeat internal block-type labels", failures);
+  assert(!/headActions\.appendChild\(makeEl\("div",\s*"app-nav-chip",\s*chrome\.context\)\)/.test(html), "app header must not duplicate navigation context", failures);
+  assert(/function\s+compactPageKpis\s*\(/.test(html), "app KPI rendering must remove values already visible in the current blocks", failures);
+  assert(/var\s+marketLiquidityDraft\s*=\s*\{\s*yes:\s*\.1,\s*no:\s*0\s*\}/.test(html), "Event 01 opening-liquidity draft state is missing", failures);
+  assert(/function\s+applyOpeningLiquidityDraft\s*\(/.test(html) && /block\.title\s*===\s*"Opening odds"/.test(html), "published opening odds must derive from the entered liquidity", failures);
+  assert(/function\s+applyResolveConditionDraft\s*\(/.test(html) && /block\.title\s*===\s*"Market page"[^\n]*marketResolveConditionDraft/.test(html), "the written market resolve condition must persist onto the published page", failures);
+  assert(/block\.title\s*===\s*"Locked terms"[^\n]*privateResolveConditionDraft/.test(html), "the private-room resolve condition must persist when terms lock", failures);
+  assert(/document\.createElement\(controlType\s*===\s*"textarea"\s*\?\s*"textarea"\s*:\s*"input"\)/.test(html), "editable market forms must use native inputs and textareas", failures);
+  assert(/amountInput\.type\s*=\s*"number"/.test(html) && /amountInput\.addEventListener\("input",\s*syncLiquidityOffer\)/.test(html), "opening-liquidity amounts must be editable native numeric controls", failures);
+  assert(/liquidityPreview\.setAttribute\("aria-live",\s*"polite"\)/.test(html) && /Opening odds/.test(html) && /Opening escrow/.test(html), "opening-liquidity controls must expose live odds and escrow feedback", failures);
+  assert(/grid-column:\s*span\s+var\(--live-span,\s*4\)/.test(html), "app cards must consume their content-aware grid spans", failures);
+  assert(/main\.setAttribute\("data-block-count",\s*String\(blocks\.length\)\)/.test(html), "app view must expose its rendered block count", failures);
+  assert(/live-main\.live-layout-1[\s\S]*?block-proof/.test(html), "single-state proof views must use a horizontal reading layout", failures);
+  assert(/block-fields:is\(\.live-span-6,\s*\.live-span-7,\s*\.live-span-12\)/.test(html), "wide form views must distribute fields across available space", failures);
+  assert(/\.product-demo\.sim-tight\s+\.live-main\.live-layout-1[\s\S]*?\.live-main\.live-layout-3[\s\S]*?grid-column:\s*1\s*\/\s*-1/.test(html), "compact odd-card layouts must fill their final row", failures);
+  assert(/\.product-demo\.sim-tight\s+\.live-page:is\(\.page-create-market,\s*\.page-private-room\)[^}]*grid-column:\s*1\s*\/\s*-1/.test(html), "compact authoring forms must stack at a readable width", failures);
+  assert(/\.check-item b\s*\{[^}]*flex:\s*0\s+0\s+auto[^}]*overflow-wrap:\s*normal[^}]*white-space:\s*nowrap/.test(html), "short checklist statuses must remain atomic", failures);
+  assert(/\.face-check b\s*\{[^}]*flex:\s*0\s+0\s+auto[^}]*overflow-wrap:\s*normal[^}]*white-space:\s*nowrap/.test(html), "short presence statuses must remain atomic", failures);
+  assert((html.match(/\.sim-app-viewport\s*\{[^}]*min-height:\s*0/g) || []).length >= 1, "app viewport must crop the old empty minimum height", failures);
+  assert(/filter\(function\s*\(label\)\s*\{\s*return\s*!\/\^next\$\/i\.test\(label\);\s*\}\)/.test(html), "app navigation must suppress the redundant Next tab", failures);
+  assert(!/makeEl\(["']button["'],\s*["']app-nav-action["']/.test(html), "app navigation must not duplicate each event's primary action", failures);
+  assert(/makeEl\("span",\s*"",\s*"Total"\)/.test(html), "app ticket totals must use a concrete label instead of Preview", failures);
+}
+
+function checkProductFontAssets(html, failures) {
+  const cssPath = "assets/fonts/product-app-fonts.css";
+  const fontFiles = [
+    "alegreya-sans-regular.ttf",
+    "alegreya-sans-medium.ttf",
+    "alegreya-sans-bold.ttf",
+    "alegreya-sans-extrabold.ttf",
+    "alegreya-sans-black.ttf",
+    "literata-ui-variable.ttf",
+    "noto-serif-tibetan-ui-variable.ttf",
+    "noto-sans-symbols-2-ui.ttf"
+  ];
+  const licenseFiles = [
+    "OFL-Alegreya-Sans.txt",
+    "OFL-Literata.txt",
+    "OFL-Noto-Serif-Tibetan.txt",
+    "OFL-Noto-Sans-Symbols-2.txt"
+  ];
+
+  assert(/assets\/fonts\/product-app-fonts\.css/i.test(html), "run-through is missing its self-hosted product font stylesheet", failures);
+  const builtCssPath = path.join(outDir, cssPath);
+  assert(fs.existsSync(builtCssPath), "product font stylesheet was not copied to dist", failures);
+  if (!fs.existsSync(builtCssPath)) return;
+
+  const css = fs.readFileSync(builtCssPath, "utf8");
+  for (const file of fontFiles) {
+    const builtPath = path.join(outDir, "assets", "fonts", file);
+    assert(fs.existsSync(builtPath) && fs.statSync(builtPath).size > 1000, `product font asset missing or empty: ${file}`, failures);
+    assert(css.includes(file), `product font stylesheet does not reference ${file}`, failures);
+  }
+  for (const file of licenseFiles) {
+    assert(fs.existsSync(path.join(outDir, "assets", "fonts", file)), `product font license missing: ${file}`, failures);
+  }
+  assert(/font-family:\s*["']Alegreya Sans App["']/i.test(css), "PredictionMoMo font face is missing", failures);
+  assert(/font-family:\s*["']Literata App["']/i.test(css) && /font-weight:\s*200\s+900/i.test(css), "DemoThemis variable font range is missing", failures);
+  assert(/font-family:\s*["']Noto Serif Tibetan App["']/i.test(css) && /unicode-range:\s*U\+0F00-0FFF/i.test(css), "Tibetan fallback range is missing", failures);
+  assert(/font-family:\s*["']Noto Sans Symbols 2 App["']/i.test(css), "UI symbol fallback is missing", failures);
+  assert((css.match(/size-adjust:\s*107%/gi) || []).length === 5 && /font-family:\s*["']Literata App["'][\s\S]*?size-adjust:\s*97%/i.test(css), "product fonts must share normalized optical sizing", failures);
+  assert(/font-family:\s*["']Noto Sans Symbols 2 App["'][\s\S]*?size-adjust:\s*72%/i.test(css), "UI symbol fallback must match the product cap height", failures);
+  assert(/font-family:\s*["']Noto Serif Tibetan App["'][\s\S]*?size-adjust:\s*95%/i.test(css), "Tibetan fallback must match the product cap height", failures);
+  assert(/font-synthesis:\s*none/i.test(html) && /font-variant-numeric:\s*lining-nums\s+tabular-nums/i.test(html), "product typography must disable synthetic styles and use stable numeric widths", failures);
+  assert(/\.product-mode-panel\[data-product-mode\]\s+\.run-control-panel/i.test(html), "event transport controls must inherit product typography", failures);
+  assert(/\.product-mode-panel\[data-product-mode\]\s+\.sim-step-guide/i.test(html), "current event guide must inherit product typography", failures);
+  assert(/\.product-mode-panel\[data-product-mode=["']momo["']\]\s+\.run-control-panel/i.test(html) && /\.product-mode-panel\[data-product-mode=["']themis["']\]\s+\.run-control-panel/i.test(html), "event transport controls must inherit each product palette", failures);
+  assert(/\.product-mode-panel\[data-product-mode=["']momo["']\]\s+\.sim-step-guide/i.test(html) && /\.product-mode-panel\[data-product-mode=["']themis["']\]\s+\.sim-step-guide/i.test(html), "current event guide must inherit each product palette", failures);
+  assert(/--product-text-caption:\s*\.7rem/i.test(html) && /--product-text-display:\s*1\.16rem/i.test(html) && /--product-text-figure:\s*1\.42rem/i.test(html), "product typography must use a shared semantic type scale", failures);
+  assert(/--product-weight-control:\s*800/i.test(html) && /--product-weight-control:\s*650/i.test(html), "product typography must compensate weights per font family", failures);
+  assert(/--product-leading-copy:\s*1\.4/i.test(html) && /--product-leading-copy:\s*1\.46/i.test(html), "product typography must compensate line spacing per font family", failures);
+  assert(/\.sim-live-preview\s+:where\(\*\)\s*\{\s*letter-spacing:\s*0/i.test(html), "product typography must remove font-dependent tracking", failures);
+  const normalizationMarker = html.indexOf("/* Optical type normalization");
+  assert(normalizationMarker >= 0, "product typography normalization block is missing", failures);
+  if (normalizationMarker >= 0) {
+    const sourceCss = html.slice(0, normalizationMarker);
+    const normalizationCss = html.slice(normalizationMarker);
+    const uncoveredMicrocopy = [];
+    for (const match of sourceCss.matchAll(/([^{}@]+)\{([^{}]*)\}/g)) {
+      const selector = match[1].trim().replace(/\s+/g, " ");
+      if (/\.machine-/.test(selector)) continue;
+      if (!/(?:product-demo|app-|live-|sim-|tutorial|stage-|run-progress|event-|fake-|intent-|odds-|wallet-|participant|message|leg-|team-|countdown|beacon-|face-|evidence-|proof-|checkout)/.test(selector)) continue;
+      const sizeMatch = match[2].match(/font-size:\s*([0-9.]+)rem/);
+      if (!sizeMatch || Number(sizeMatch[1]) >= 0.7 || /::(?:before|after)/.test(selector)) continue;
+      const classes = Array.from(selector.matchAll(/\.([a-zA-Z0-9_-]+)/g), (item) => item[1]).filter((name) => !/^sim-(?:tight|ultra|compact)$/.test(name));
+      if (!classes.some((name) => normalizationCss.includes("." + name))) uncoveredMicrocopy.push(selector);
+    }
+    assert(uncoveredMicrocopy.length === 0, "product typography leaves sub-caption text unnormalized: " + uncoveredMicrocopy.join(", "), failures);
+  }
+  assert(/--bg:\s*#f3e2c8/i.test(html) && /--surface:\s*#fcefd9/i.test(html) && /--accent:\s*#ae510f/i.test(html) && /--accent-ink:\s*#725000/i.test(html), "PredictionMoMo must use the amber parchment reading palette", failures);
+  assert(!/#b83c32|#f7f2e8|#fffdf8/i.test(html), "PredictionMoMo must not retain the red or near-white palette", failures);
+}
+
 function checkBuiltHtml(failures) {
   for (const file of publicHtml) {
     const html = readDist(file);
@@ -317,7 +563,42 @@ function checkBuiltHtml(failures) {
 
   const runThrough = readDist("the-design.html");
   checkStateMachineData(runThrough, failures);
-  assert(/Run through the whole system/i.test(runThrough), "run-through chapter missing new title", failures);
+  checkProductModeData(runThrough, failures);
+  checkProductStageGroups(runThrough, failures);
+  checkCompactAppViews(runThrough, failures);
+  checkProductFontAssets(runThrough, failures);
+  assert(/End-to-end resolution run-through/i.test(runThrough), "run-through chapter missing neutral title", failures);
+  assert(/id=["']productTabMomo["']/i.test(runThrough), "run-through missing PredictionMoMo parent tab", failures);
+  assert(/id=["']productTabThemis["']/i.test(runThrough), "run-through missing DemoThemis parent tab", failures);
+  assert(/id=["']productModePanel["'][^>]*role=["']tabpanel["']/i.test(runThrough), "run-through product switch is missing its tabpanel", failures);
+  assert(/id=["']productTabMomo["'][^>]*aria-selected=["']false["']/i.test(runThrough) && /id=["']productTabThemis["'][^>]*aria-selected=["']false["']/i.test(runThrough), "run-through must start without a preselected product", failures);
+  assert(/id=["']productModePanel["'][^>]*\shidden(?:\s|>)/i.test(runThrough), "event workflow must stay hidden until a product is selected", failures);
+  assert(/var\s+productModeSelected\s*=\s*false/i.test(runThrough) && /productModePanel\.hidden\s*=\s*false/i.test(runThrough), "product selection must reveal the event workflow", failures);
+  assert(/class=["'][^"']*product-mode-nav[^"']*is-awaiting-selection/i.test(runThrough), "initial product chooser must receive center-stage styling", failures);
+  assert(/productModeNav\.classList\.remove\(["']is-awaiting-selection["']\)/i.test(runThrough), "product chooser must compact after selection", failures);
+  assert(/\.product-mode-nav\.is-awaiting-selection\s+\.product-tab/i.test(runThrough) && /\.product-tab:hover/i.test(runThrough), "product choices must expose strong interactive affordances", failures);
+  assert(/background:\s*color-mix\(in srgb,\s*var\(--choice-soft\)/i.test(runThrough) && /border:\s*1px solid color-mix\(in srgb,\s*var\(--choice-accent\)/i.test(runThrough), "product choices must carry restrained brand color", failures);
+  assert(/\.product-mode-nav\.is-awaiting-selection\s+\.product-tab\s*\{[^}]*background:\s*var\(--choice-accent\)/i.test(runThrough), "initial product choices must use solid button backgrounds", failures);
+  assert(/\.product-mode-nav\.is-awaiting-selection\s+\.product-tab:active/i.test(runThrough) && /\.product-mode-nav\.is-awaiting-selection\s+\.product-tab-event\s*\{\s*display:\s*inline-flex/i.test(runThrough), "initial product choices must keep pressed and start affordances at small widths", failures);
+  assert(/function\s+selectProductMode\s*\(/.test(runThrough), "run-through product tabs are not wired to simulation state", failures);
+  assert(/\.product-mode-panel\[data-product-mode=["']momo["']\]\s+\.sim-live-preview/i.test(runThrough), "PredictionMoMo theme must be scoped to the app preview", failures);
+  assert(/\.product-mode-panel\[data-product-mode=["']themis["']\]\s+\.sim-live-preview/i.test(runThrough), "DemoThemis theme must be scoped to the app preview", failures);
+  assert(/data-product-mode=["']themis["'][^}]*color-scheme:\s*dark/i.test(runThrough), "DemoThemis event workflow must use dark native controls", failures);
+  assert(/--bg:\s*#171c1f/i.test(runThrough) && /--surface:\s*#20272b/i.test(runThrough) && /--ink:\s*#f2efe5/i.test(runThrough), "DemoThemis dark surface palette is missing", failures);
+  assert(/--accent:\s*#326c91/i.test(runThrough) && /--accent-ink:\s*#a9d5f2/i.test(runThrough), "DemoThemis must separate filled and text accent contrast", failures);
+  assert(/data-product-mode=["']themis["']\]\s+\.simulator-island/i.test(runThrough), "DemoThemis dark theme must cover the full simulator workspace", failures);
+  assert(!/--(?:bg|surface):\s*(?:#fffefa|#f3f5f2)/i.test(runThrough), "DemoThemis must not retain its light surfaces", failures);
+  assert(!/entry\.group\.mode\s*===\s*mode/.test(runThrough), "event navigator must keep every product's event groups visible", failures);
+  assert(/data-stage-mode=["']momo["']/i.test(runThrough) && /data-stage-mode=["']themis["']/i.test(runThrough), "event navigator must preserve distinct product group themes", failures);
+  assert(/\.product-tab\[data-product-mode=["']momo["']\]\[aria-selected=["']true["']\]/i.test(runThrough), "PredictionMoMo selection must carry its functional accent", failures);
+  assert(/\.product-tab\[data-product-mode=["']themis["']\]\[aria-selected=["']true["']\]/i.test(runThrough), "DemoThemis selection must carry its functional accent", failures);
+  assert(/\.product-mode-panel\[data-product-mode\]\s+\.event-navigator-toggle/i.test(runThrough), "event navigator interactions must inherit product typography", failures);
+  assert(/\.sim-live-preview\s+\.app-tabs\s+span\.on/i.test(runThrough), "active app tabs must carry the selected product accent", failures);
+  assert(!/--navigator-band|--app-band|\.event-nav-label::before|\.app-nav::before|conic-gradient|\.app-brand\s+\.dot/i.test(runThrough), "purely decorative product motifs should stay removed", failures);
+  assert(!/sim-frame-label|sim-window-dots|sim-live-dot/i.test(runThrough), "duplicated simulator chrome should stay removed", failures);
+  assert(!/<body[^>]*class=["'][^"']*product-(?:momo|themis)/i.test(runThrough), "product theme must not be applied to the page body", failures);
+  assert(/<p\s+class=["']kicker["']>End-to-end run-through<\/p>/i.test(runThrough), "run-through masthead must stay product-neutral", failures);
+  assert(/DemoThemis Intake/i.test(runThrough), "DemoThemis entry event is not branded as court intake", failures);
   assert(/id=["']stageRail["']/i.test(runThrough), "run-through chapter missing stage rail", failures);
   assert(/id=["']focusScene["']/i.test(runThrough), "run-through missing focused one-step scene", failures);
   assert(/id=["']productDemo["']/i.test(runThrough), "run-through missing product mock screen", failures);

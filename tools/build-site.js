@@ -22,7 +22,20 @@ const publicFiles = [
   "assets/vendor/tippy-6.3.7.LICENSE",
   "assets/vendor/tippy-6.3.7.css",
   "assets/vendor/tippy-6.3.7.umd.min.js",
-  "assets/vendor/tippy-shift-away-6.3.7.css"
+  "assets/vendor/tippy-shift-away-6.3.7.css",
+  "assets/fonts/product-app-fonts.css",
+  "assets/fonts/alegreya-sans-regular.ttf",
+  "assets/fonts/alegreya-sans-medium.ttf",
+  "assets/fonts/alegreya-sans-bold.ttf",
+  "assets/fonts/alegreya-sans-extrabold.ttf",
+  "assets/fonts/alegreya-sans-black.ttf",
+  "assets/fonts/literata-ui-variable.ttf",
+  "assets/fonts/noto-serif-tibetan-ui-variable.ttf",
+  "assets/fonts/noto-sans-symbols-2-ui.ttf",
+  "assets/fonts/OFL-Alegreya-Sans.txt",
+  "assets/fonts/OFL-Literata.txt",
+  "assets/fonts/OFL-Noto-Serif-Tibetan.txt",
+  "assets/fonts/OFL-Noto-Sans-Symbols-2.txt"
 ];
 
 const internalNamePatterns = [

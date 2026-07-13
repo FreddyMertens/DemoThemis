@@ -3,12 +3,13 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Run through the whole system: one market from dime to appealed verdict</title>
-<meta name="description" content="A playable run-through of PredictionMoMo and DemoThemis: open a market with a dime, grow it into self-custody tokens, trade through dispute, route it through arbitration, and climb the appeal ladder to finality.">
+<title>End-to-end resolution run-through</title>
+<meta name="description" content="A playable end-to-end simulation of market creation, claims, disputes, human arbitration, appeals, and finality.">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@500;700&family=Newsreader:opsz,wght@6..72,200..700&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="assets/styles.css">
+<link rel="stylesheet" href="assets/fonts/product-app-fonts.css">
 <style>
   button, input[type="button"], input[type="submit"], [role="button"] { cursor: pointer; user-select: none; -webkit-user-select: none; }
   button[disabled], input[type="button"][disabled], input[type="submit"][disabled], [role="button"][disabled] { cursor: default; }
@@ -39,7 +40,7 @@
   .event-navigator-toggle { flex: 0 0 auto; }
   .event-navigator-toggle { display: inline-flex; align-items: center; justify-content: center; gap: .34rem; width: fit-content; border: 1px solid color-mix(in srgb, var(--line-strong) 74%, transparent); border-radius: 999px; background: color-mix(in srgb, var(--surface) 88%, transparent); color: var(--muted); padding: .18rem .48rem .18rem .54rem; box-shadow: inset 0 1px 0 rgba(255, 255, 255, .62); cursor: pointer; transition: color .14s ease, background .14s ease, border-color .14s ease, box-shadow .14s ease; }
   .event-navigator-toggle::after { content: ""; width: .4rem; height: .4rem; border-right: 2px solid var(--accent-ink); border-bottom: 2px solid var(--accent-ink); transform: translateY(-.08rem) rotate(45deg); transform-origin: center; transition: transform .16s ease; }
-  .event-navigator-toggle:hover { color: var(--accent-ink); border-color: color-mix(in srgb, var(--accent) 28%, var(--line)); background: color-mix(in srgb, var(--accent-soft) 34%, var(--surface)); transform: none; box-shadow: inset 0 1px 0 rgba(255, 255, 255, .7), 0 4px 10px rgba(91, 74, 215, .06); }
+  .event-navigator-toggle:hover { color: var(--accent-ink); border-color: color-mix(in srgb, var(--accent) 28%, var(--line)); background: color-mix(in srgb, var(--accent-soft) 34%, var(--surface)); transform: none; box-shadow: inset 0 1px 0 rgba(255, 255, 255, .7), 0 4px 10px color-mix(in srgb, var(--accent) 6%, transparent); }
   .event-navigator-toggle:focus-visible { outline: 2px solid color-mix(in srgb, var(--accent) 26%, transparent); outline-offset: 2px; }
   .event-navigator-toggle.is-open { color: var(--accent-ink); border-color: color-mix(in srgb, var(--accent) 34%, var(--line)); background: color-mix(in srgb, var(--accent-soft) 42%, var(--surface)); }
   .event-navigator-toggle.is-open::after { transform: translateY(.08rem) rotate(-135deg); }
@@ -48,12 +49,56 @@
   .btn.soft { background: var(--surface); color: var(--accent-ink); border: 1px solid var(--line-strong); cursor: pointer; }
   .btn[disabled] { opacity: .45; cursor: default; transform: none; filter: none; }
 
-  .stage-rail { display: grid; grid-template-columns: repeat(5, minmax(0, 1fr)); align-items: start; gap: .42rem; min-width: 0; margin-top: .5rem; font-family: var(--sans); }
+  .stage-rail { display: grid; grid-template-columns: repeat(auto-fit, minmax(10rem, 1fr)); align-items: start; gap: .42rem; min-width: 0; margin-top: .5rem; font-family: var(--sans); }
   .stage-rail[hidden] { display: none; }
   .stage-group { display: grid; align-content: start; min-width: 0; border: 1px solid color-mix(in srgb, var(--line) 78%, transparent); border-radius: 14px; background: color-mix(in srgb, var(--bg) 88%, #fff); padding: .16rem; transition: border-color .16s ease, background .16s ease, box-shadow .16s ease; }
   .stage-group.open { border-color: color-mix(in srgb, var(--accent) 32%, var(--line)); background: color-mix(in srgb, var(--surface) 88%, #fff); }
-  .stage-group.active { border-color: color-mix(in srgb, var(--accent) 48%, var(--line)); background: linear-gradient(180deg, color-mix(in srgb, var(--accent-soft) 52%, var(--surface)), color-mix(in srgb, var(--surface) 94%, #fff)); box-shadow: 0 7px 16px rgba(91, 74, 215, .08); }
+  .stage-group.active { border-color: color-mix(in srgb, var(--accent) 48%, var(--line)); background: linear-gradient(180deg, color-mix(in srgb, var(--accent-soft) 52%, var(--surface)), color-mix(in srgb, var(--surface) 94%, #fff)); box-shadow: 0 7px 16px color-mix(in srgb, var(--accent) 8%, transparent); }
   .stage-group.complete { border-color: color-mix(in srgb, var(--good) 34%, var(--line)); }
+  .stage-group[data-stage-mode="momo"],
+  .stage-group-steps[data-stage-mode="momo"] {
+    --bg: #f3e2c8;
+    --surface: #fcefd9;
+    --ink: #2b241d;
+    --ink-soft: #4b4036;
+    --muted: #6b5b4d;
+    --faint: #725f50;
+    --line: #e1c59f;
+    --line-strong: #c99c66;
+    --accent: #ae510f;
+    --accent-soft: #f2c48e;
+    --accent-ink: #725000;
+    --good: #0d7b73;
+    --good-soft: #def2ed;
+    --sans: "Alegreya Sans App", "Noto Serif Tibetan App", "Noto Sans Symbols 2 App", system-ui, sans-serif;
+    color-scheme: light;
+    font-family: var(--sans);
+  }
+  .stage-group[data-stage-mode="themis"],
+  .stage-group-steps[data-stage-mode="themis"] {
+    --bg: #171c1f;
+    --surface: #20272b;
+    --ink: #f2efe5;
+    --ink-soft: #d2d7d5;
+    --muted: #aeb7b8;
+    --faint: #899599;
+    --line: #354047;
+    --line-strong: #52606a;
+    --accent: #326c91;
+    --accent-soft: #263f52;
+    --accent-ink: #a9d5f2;
+    --good: #9caf78;
+    --good-soft: #293527;
+    --sans: "Literata App", "Noto Sans Symbols 2 App", Georgia, serif;
+    color-scheme: dark;
+    font-family: var(--sans);
+    font-optical-sizing: auto;
+  }
+  .stage-group[data-stage-mode] .stage-group-toggle,
+  .stage-group-steps[data-stage-mode] .stage-step {
+    font-family: inherit;
+    font-synthesis: none;
+  }
   .stage-rail .stage-group-toggle { display: grid; grid-template-columns: minmax(0, 1fr) auto; grid-template-areas: "name affordance" "range affordance"; align-items: center; column-gap: .46rem; row-gap: .12rem; min-height: 2.6rem; width: 100%; min-width: 0; border: 0; border-radius: 12px; background: transparent; box-shadow: none; color: var(--faint); padding: .32rem .42rem; text-align: left; cursor: pointer; transition: background .14s ease, color .14s ease; }
   .stage-rail .stage-group-toggle:hover { transform: none; border-color: transparent; background: color-mix(in srgb, var(--accent-soft) 36%, transparent); }
   .stage-rail .stage-group-toggle:focus-visible { outline: 3px solid color-mix(in srgb, var(--accent) 26%, transparent); outline-offset: 2px; }
@@ -61,14 +106,14 @@
   .stage-group.active .stage-group-toggle:hover { background: transparent; }
   .stage-group-name { grid-area: name; min-width: 0; color: var(--ink-soft); font-size: .82rem; line-height: 1.02; font-weight: 950; letter-spacing: 0; text-transform: uppercase; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
   .stage-group-range { grid-area: range; justify-self: start; color: var(--faint); font-family: var(--mono); font-size: .7rem; line-height: 1.05; font-weight: 950; letter-spacing: 0; }
-  .stage-group-caret { grid-area: affordance; display: grid; place-items: center; min-width: 2.6rem; height: 1.44rem; border: 1px solid var(--line); border-radius: 999px; background: var(--surface); color: var(--accent-ink); padding: 0 .34rem; font-size: .66rem; line-height: 1; font-weight: 950; }
+  .stage-group-caret { grid-area: affordance; display: grid; place-items: center; width: 1.7rem; height: 1.44rem; border: 1px solid var(--line); border-radius: 999px; background: var(--surface); color: var(--accent-ink); }
+  .stage-group-caret::before { content: ""; width: .38rem; height: .38rem; border-right: 2px solid currentColor; border-bottom: 2px solid currentColor; transform: translateY(-.1rem) rotate(45deg); transition: transform .16s ease; }
+  .stage-group.open:not(.active) .stage-group-caret::before { transform: translateY(.1rem) rotate(225deg); }
   .stage-group.active .stage-group-caret { background: var(--accent); border-color: var(--accent); color: #fff; }
+  .stage-group.active .stage-group-caret::before { width: .4rem; height: .4rem; border: 0; border-radius: 50%; background: currentColor; transform: none; }
   .stage-group.complete .stage-group-caret { color: var(--good); border-color: color-mix(in srgb, var(--good) 36%, var(--line)); background: var(--good-soft); }
   .stage-group.collapsed .stage-group-steps { display: none; }
-  .stage-group-steps { display: grid; grid-column: 1 / -1; gap: .36rem; min-width: 0; border: 1px solid color-mix(in srgb, var(--accent) 26%, var(--line)); border-radius: 15px; background: linear-gradient(180deg, color-mix(in srgb, var(--surface) 94%, #fff), color-mix(in srgb, var(--bg) 96%, #fff)); padding: .42rem; box-shadow: inset 0 1px 0 rgba(255, 255, 255, .7); }
-  .stage-drawer-head { display: grid; grid-template-columns: minmax(0, 1fr) auto; align-items: end; gap: .5rem; min-width: 0; border-bottom: 1px solid color-mix(in srgb, var(--line) 80%, transparent); padding: .04rem .08rem .34rem; }
-  .stage-drawer-title { min-width: 0; color: var(--ink); font-size: .9rem; line-height: 1.05; font-weight: 950; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
-  .stage-drawer-meta { color: var(--muted); font-family: var(--sans); font-size: .72rem; line-height: 1.05; font-weight: 900; white-space: nowrap; }
+  .stage-group-steps { display: grid; grid-column: 1 / -1; gap: .36rem; min-width: 0; border: 1px solid color-mix(in srgb, var(--accent) 26%, var(--line)); border-radius: 10px; background: linear-gradient(180deg, color-mix(in srgb, var(--surface) 94%, #fff), color-mix(in srgb, var(--bg) 96%, #fff)); padding: .42rem; box-shadow: inset 0 1px 0 rgba(255, 255, 255, .7); }
   .stage-step-list { display: grid; grid-template-columns: repeat(auto-fit, minmax(8.8rem, 1fr)); gap: .32rem; min-width: 0; }
   .stage-rail .stage-step { display: grid; grid-template-columns: auto minmax(0, 1fr); align-items: center; gap: .36rem; min-height: 2.36rem; width: 100%; min-width: 0; border: 1px solid var(--line); border-radius: 11px; background: var(--bg); color: var(--muted); padding: .28rem .36rem; text-align: left; cursor: pointer; transition: background .14s ease, border-color .14s ease, transform .14s ease, box-shadow .14s ease; }
   .stage-rail .stage-step:hover { transform: translateY(-1px); border-color: var(--accent); }
@@ -146,32 +191,23 @@
   .sim-step-copy .sim-step-path b { color: var(--accent-ink); font-size: inherit; font-weight: 950; }
   .sim-step-controls { display: grid; gap: .42rem; align-content: stretch; min-width: 0; justify-items: stretch; }
   .sim-live-preview { display: grid; min-width: 0; border: 1px solid color-mix(in srgb, var(--accent) 42%, var(--line)); border-radius: 16px; background: color-mix(in srgb, var(--ink) 5%, var(--surface)); box-shadow: 0 18px 32px rgba(31, 36, 48, .12); overflow: hidden; }
-  .sim-frame-label { display: flex; align-items: center; justify-content: space-between; gap: .6rem; border-bottom: 1px solid color-mix(in srgb, var(--accent) 26%, var(--line)); background: color-mix(in srgb, var(--accent-soft) 62%, var(--surface)); color: var(--accent-ink); padding: .48rem .64rem; font-size: .66rem; line-height: 1.1; font-weight: 950; letter-spacing: .08em; text-transform: uppercase; }
-  .sim-frame-label span:last-child { color: var(--muted); font-size: .62rem; letter-spacing: .04em; text-align: right; }
-  .sim-browser-bar { display: grid; grid-template-columns: auto auto minmax(0, 1fr) auto; gap: .48rem; align-items: center; border-bottom: 1px solid var(--line); background: color-mix(in srgb, var(--bg) 86%, #fff); padding: .42rem .55rem; }
-  .sim-window-dots { display: flex; gap: .22rem; }
-  .sim-window-dots span { width: .45rem; height: .45rem; border-radius: 50%; background: var(--line-strong); }
-  .sim-window-dots span:nth-child(1) { background: #ff6b6b; }
-  .sim-window-dots span:nth-child(2) { background: #f6c85f; }
-  .sim-window-dots span:nth-child(3) { background: #6bcf92; }
+  .sim-browser-bar { display: grid; grid-template-columns: auto minmax(0, 1fr); gap: .48rem; align-items: center; border-bottom: 1px solid var(--line); background: color-mix(in srgb, var(--bg) 86%, #fff); padding: .38rem .55rem; }
   .sim-browser-back { position: relative; display: inline-flex; align-items: center; justify-content: center; gap: .36rem; min-width: 5.85rem; min-height: 2.16rem; border: 1px solid color-mix(in srgb, var(--accent) 30%, var(--line)); border-radius: 999px; background: linear-gradient(180deg, color-mix(in srgb, var(--surface) 98%, #fff), color-mix(in srgb, var(--accent-soft) 44%, var(--surface))); color: var(--accent-ink); padding: .22rem .62rem .22rem .22rem; font-family: var(--sans); font-size: .74rem; line-height: 1; font-weight: 900; box-shadow: 0 7px 16px rgba(31, 36, 48, .1), inset 0 1px 0 rgba(255, 255, 255, .78); cursor: pointer; transition: transform .14s ease, background .14s ease, border-color .14s ease, box-shadow .14s ease, color .14s ease; }
   .sim-browser-back::before { content: none; }
-  .sim-browser-back-icon { position: relative; display: grid; place-items: center; width: 1.58rem; height: 1.58rem; border-radius: 50%; background: var(--accent); color: #fff; box-shadow: 0 6px 12px rgba(91, 74, 215, .2), inset 0 0 0 1px rgba(255, 255, 255, .24); flex: 0 0 auto; transform: translateX(0); }
+  .sim-browser-back-icon { position: relative; display: grid; place-items: center; width: 1.58rem; height: 1.58rem; border-radius: 50%; background: var(--accent); color: #fff; box-shadow: 0 6px 12px color-mix(in srgb, var(--accent) 20%, transparent), inset 0 0 0 1px rgba(255, 255, 255, .24); flex: 0 0 auto; transform: translateX(0); }
   .sim-browser-back-icon::before { content: ""; width: .58rem; height: .58rem; border-left: 3px solid currentColor; border-bottom: 3px solid currentColor; transform: translateX(.12rem) rotate(45deg); }
   .sim-browser-back-icon::after { content: ""; position: absolute; left: .49rem; top: 50%; width: .64rem; height: 3px; border-radius: 999px; background: currentColor; transform: translateY(-50%); }
   .sim-browser-back-label { color: currentColor; font-size: .82rem; letter-spacing: 0; text-transform: none; white-space: nowrap; }
   .sim-browser-back:hover,
-  .sim-browser-back:focus-visible { background: #fff; border-color: color-mix(in srgb, var(--accent) 58%, var(--line)); color: var(--accent); transform: translateY(-1px); box-shadow: 0 10px 20px rgba(91, 74, 215, .16), 0 0 0 3px color-mix(in srgb, var(--accent-soft) 78%, transparent); outline: 0; }
+  .sim-browser-back:focus-visible { background: #fff; border-color: color-mix(in srgb, var(--accent) 58%, var(--line)); color: var(--accent); transform: translateY(-1px); box-shadow: 0 10px 20px color-mix(in srgb, var(--accent) 16%, transparent), 0 0 0 3px color-mix(in srgb, var(--accent-soft) 78%, transparent); outline: 0; }
   .sim-browser-back:not([disabled]) .sim-browser-back-icon { animation: browser-back-icon-nudge 3.2s ease-in-out infinite; }
   .sim-browser-back:hover .sim-browser-back-icon,
-  .sim-browser-back:focus-visible .sim-browser-back-icon { animation: none; background: var(--accent); box-shadow: 0 8px 16px rgba(91, 74, 215, .24), inset 0 0 0 1px rgba(255, 255, 255, .28); transform: translateX(-1px); }
+  .sim-browser-back:focus-visible .sim-browser-back-icon { animation: none; background: var(--accent); box-shadow: 0 8px 16px color-mix(in srgb, var(--accent) 24%, transparent), inset 0 0 0 1px rgba(255, 255, 255, .28); transform: translateX(-1px); }
   .sim-live-preview .sim-browser-back[data-sim-tip]:not([disabled]) { cursor: pointer; }
   .sim-browser-back[disabled] { background: color-mix(in srgb, var(--surface) 88%, #fff); border-color: color-mix(in srgb, var(--line-strong) 80%, var(--line)); color: var(--faint); box-shadow: inset 0 1px 0 rgba(255, 255, 255, .72); cursor: default; transform: none; animation: none; }
   .sim-browser-back[disabled] .sim-browser-back-icon { background: color-mix(in srgb, var(--line) 72%, #fff); color: color-mix(in srgb, var(--faint) 88%, #fff); box-shadow: none; animation: none; }
-  .sim-url { min-width: 0; border: 1px solid var(--line); border-radius: 999px; background: var(--surface); color: var(--muted); padding: .25rem .52rem; font-size: .66rem; line-height: 1.05; font-weight: 800; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
-  .sim-live-dot { display: inline-flex; align-items: center; gap: .28rem; color: var(--good); font-size: .64rem; font-weight: 900; white-space: nowrap; }
-  .sim-live-dot::before { content: ""; width: .43rem; height: .43rem; border-radius: 50%; background: currentColor; box-shadow: 0 0 0 4px var(--good-soft); }
-  .sim-app-viewport { min-width: 0; min-height: clamp(31rem, 64vh, 40rem); background: color-mix(in srgb, var(--surface) 92%, #fff); }
+  .sim-url { min-width: 0; border: 1px solid var(--line); border-radius: 999px; background: var(--surface); color: var(--muted); padding: .25rem .52rem; font-family: var(--mono); font-size: .66rem; line-height: 1.05; font-weight: 800; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+  .sim-app-viewport { min-width: 0; min-height: 0; background: color-mix(in srgb, var(--surface) 92%, #fff); }
   .fake-topbar { display: flex; align-items: center; justify-content: space-between; gap: .8rem; min-width: 0; border-bottom: 1px solid var(--line); padding: .68rem .82rem; background: color-mix(in srgb, var(--bg) 82%, #fff); }
   .fake-brand { display: flex; align-items: center; gap: .55rem; min-width: 0; font-weight: 850; }
   .fake-brand .dot { width: .72rem; height: .72rem; border-radius: 50%; background: var(--accent); box-shadow: 0 0 0 4px var(--accent-soft); flex: 0 0 auto; }
@@ -212,14 +248,12 @@
   .app-window { position: relative; display: grid; grid-template-rows: auto 1fr; width: 100%; max-width: 100%; min-width: 0; min-height: 100%; background: color-mix(in srgb, var(--surface) 92%, #fff); overflow: hidden; }
   .app-nav { display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: .6rem .8rem; min-width: 0; max-width: 100%; border-bottom: 1px solid var(--line); padding: .64rem .78rem; background: color-mix(in srgb, var(--bg) 88%, #fff); }
   .app-brand { display: flex; align-items: center; gap: .5rem; min-width: 0; max-width: 100%; font-weight: 900; }
-  .app-brand .dot { width: .7rem; height: .7rem; border-radius: 50%; background: var(--accent); box-shadow: 0 0 0 4px var(--accent-soft); flex: 0 0 auto; }
   .app-brand span:last-child { min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
   .app-tabs { display: flex; gap: .34rem; min-width: 0; flex: 0 1 auto; overflow: hidden; }
   .app-tabs span { border: 1px solid var(--line); border-radius: 999px; background: var(--surface); color: var(--muted); padding: .24rem .54rem; font-size: .68rem; line-height: 1; font-weight: 850; white-space: nowrap; }
   .app-tabs span.on { background: var(--accent); border-color: var(--accent); color: #fff; }
   .app-nav-tools { display: flex; align-items: center; justify-content: flex-end; gap: .36rem; min-width: 0; flex: 0 1 auto; flex-wrap: wrap; }
   .app-nav-chip { display: inline-flex; align-items: center; min-width: 0; max-width: 12rem; border: 1px solid var(--line); border-radius: 999px; background: var(--surface); color: var(--ink-soft); padding: .25rem .54rem; font-size: .66rem; line-height: 1.05; font-weight: 850; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
-  .app-nav-action { border: 1px solid var(--accent); border-radius: 999px; background: var(--accent); color: #fff; padding: .28rem .62rem; font-family: var(--sans); font-size: .68rem; line-height: 1.05; font-weight: 900; white-space: nowrap; box-shadow: 0 8px 18px color-mix(in srgb, var(--accent) 18%, transparent); }
   .app-layout { display: grid; grid-template-columns: minmax(0, 1fr) minmax(12.5rem, .46fr); gap: .74rem; padding: .78rem; min-width: 0; }
   .app-main, .app-aside { display: grid; align-content: start; gap: .62rem; min-width: 0; }
   .app-hero { border: 1px solid color-mix(in srgb, var(--accent) 38%, var(--line)); border-radius: 12px; background: linear-gradient(180deg, var(--accent-soft), color-mix(in srgb, var(--surface) 82%, #fff)); padding: .74rem; min-width: 0; }
@@ -260,7 +294,6 @@
   .guided-target:focus-visible { transform: translateY(-2px); box-shadow: 0 0 0 3px color-mix(in srgb, var(--good-soft) 82%, transparent), 0 18px 32px rgba(11, 153, 107, .2) !important; }
   .guided-target:hover::before,
   .guided-target:focus-visible::before { animation-duration: 1.7s; opacity: .9; }
-  .app-nav-action.guided-target { background: var(--good); border-color: var(--good); color: #fff; }
   .target-callout { position: fixed; left: var(--coach-left, 1rem); top: var(--coach-top, 1rem); bottom: auto; z-index: 9998; display: grid; gap: .15rem; width: var(--coach-width, min(18rem, calc(100vw - 2rem))); min-width: 0; max-width: calc(100vw - 1rem); max-height: var(--coach-max-height, calc(100vh - 1rem)); overflow: visible; border: 1px solid color-mix(in srgb, var(--good) 42%, var(--line)); border-radius: 14px; background: color-mix(in srgb, var(--ink) 94%, #111); color: #fff; padding: .58rem .68rem; font-family: var(--sans); font-size: .72rem; line-height: 1.24; font-weight: 800; text-align: left; white-space: normal; box-shadow: 0 18px 36px rgba(31, 36, 48, .24); pointer-events: none; transform: none; animation: coachmark-pop .32s ease-out both; transition: opacity 0.15s ease, visibility 0.15s ease; }
   body.is-scrolling .target-callout,
   body.is-touching .target-callout,
@@ -271,10 +304,9 @@
   .target-callout span { color: rgba(255, 255, 255, .78); font-size: .72rem; line-height: 1.28; font-weight: 750; }
   .target-callout::after { content: ""; position: absolute; left: var(--coach-arrow-left, 50%); top: calc(100% - .36rem); width: .72rem; height: .72rem; border-right: 1px solid color-mix(in srgb, var(--good) 42%, var(--line)); border-bottom: 1px solid color-mix(in srgb, var(--good) 42%, var(--line)); background: color-mix(in srgb, var(--ink) 94%, #111); transform: translateX(-50%) rotate(45deg); }
   .target-callout[data-placement="below"]::after { top: -.36rem; border-right: 0; border-bottom: 0; border-left: 1px solid color-mix(in srgb, var(--good) 42%, var(--line)); border-top: 1px solid color-mix(in srgb, var(--good) 42%, var(--line)); }
-  .tutorial-dock { display: grid; gap: .46rem; min-width: 0; border: 1px solid color-mix(in srgb, var(--accent) 24%, var(--line)); border-radius: 13px; background: linear-gradient(180deg, color-mix(in srgb, var(--surface) 96%, #fff), color-mix(in srgb, var(--accent-soft) 54%, var(--surface))); padding: .58rem .62rem; box-shadow: 0 12px 22px rgba(91, 74, 215, .11); }
+  .tutorial-dock { display: grid; gap: .46rem; min-width: 0; border: 1px solid color-mix(in srgb, var(--accent) 24%, var(--line)); border-radius: 13px; background: linear-gradient(180deg, color-mix(in srgb, var(--surface) 96%, #fff), color-mix(in srgb, var(--accent-soft) 54%, var(--surface))); padding: .58rem .62rem; box-shadow: 0 12px 22px color-mix(in srgb, var(--accent) 11%, transparent); }
   .tutorial-top { display: flex; align-items: center; justify-content: space-between; gap: .5rem; min-width: 0; }
   .tutorial-step { color: var(--faint); font-size: .62rem; line-height: 1.1; font-weight: 950; letter-spacing: .08em; text-transform: uppercase; white-space: nowrap; }
-  .tutorial-state { border: 1px solid color-mix(in srgb, var(--accent) 24%, var(--line)); border-radius: 999px; background: var(--surface); color: var(--accent-ink); padding: .22rem .48rem; font-size: .6rem; line-height: 1.05; font-weight: 950; white-space: nowrap; }
   .tutorial-cue { color: var(--ink); font-size: .86rem; line-height: 1.22; font-weight: 950; }
   .tutorial-result { color: var(--muted); font-size: .72rem; line-height: 1.32; }
   .tutorial-dots { display: flex; gap: .24rem; align-items: center; }
@@ -333,7 +365,7 @@
   .app-receipt span { display: block; color: var(--muted); font-size: .72rem; line-height: 1.32; margin-top: .2rem; }
   .app-value { color: var(--ink); font-size: 1.06rem; line-height: 1.15; font-weight: 900; }
   .app-note { color: var(--muted); font-size: .74rem; line-height: 1.32; }
-  .app-action-card { display: grid; gap: .52rem; min-width: 0; border: 2px solid color-mix(in srgb, var(--accent) 34%, var(--line)); border-radius: 15px; background: linear-gradient(180deg, color-mix(in srgb, var(--accent-soft) 62%, var(--surface)), color-mix(in srgb, var(--surface) 94%, #fff)); box-shadow: 0 14px 26px rgba(91, 74, 215, .13); padding: .62rem; }
+  .app-action-card { display: grid; gap: .52rem; min-width: 0; border: 2px solid color-mix(in srgb, var(--accent) 34%, var(--line)); border-radius: 15px; background: linear-gradient(180deg, color-mix(in srgb, var(--accent-soft) 62%, var(--surface)), color-mix(in srgb, var(--surface) 94%, #fff)); box-shadow: 0 14px 26px color-mix(in srgb, var(--accent) 13%, transparent); padding: .62rem; }
   .action-dock-head { display: flex; align-items: center; justify-content: space-between; gap: .5rem; min-width: 0; }
   .app-action-card .mini { display: inline-flex; align-items: center; gap: .32rem; color: var(--accent-ink); font-size: .68rem; line-height: 1.1; font-weight: 950; letter-spacing: .08em; text-transform: uppercase; }
   .app-action-card .mini::before { content: ""; width: .48rem; height: .48rem; border-radius: 50%; background: var(--accent); box-shadow: 0 0 0 4px color-mix(in srgb, var(--accent-soft) 76%, transparent); }
@@ -361,15 +393,15 @@
   .app-action-bar.is-idle button:nth-child(2)::after { animation-delay: 1.2s; }
   .app-action-bar.is-idle button:nth-child(3)::after { animation-delay: 2.4s; }
   .app-action-bar.is-idle button:nth-child(4)::after { animation-delay: 3.6s; }
-  .app-action-bar button:hover { animation: none; transform: translateY(-2px); border-color: var(--accent); background: linear-gradient(180deg, var(--accent), color-mix(in srgb, var(--accent) 82%, #33239b)); color: #fff; box-shadow: 0 16px 30px rgba(91, 74, 215, .26); cursor: pointer; }
+  .app-action-bar button:hover { animation: none; transform: translateY(-2px); border-color: var(--accent); background: linear-gradient(180deg, var(--accent), color-mix(in srgb, var(--accent) 82%, var(--ink))); color: #fff; box-shadow: 0 16px 30px color-mix(in srgb, var(--accent) 26%, transparent); cursor: pointer; }
   .app-action-bar button:hover::before,
   .app-action-bar button.active::before,
   .app-action-bar button:focus-visible::before { animation: none; opacity: 0; }
   .app-action-bar button:hover::after,
   .app-action-bar button.active::after,
   .app-action-bar button:focus-visible::after { animation: none; }
-  .app-action-bar button.active { animation: none; background: linear-gradient(180deg, var(--accent), color-mix(in srgb, var(--accent) 82%, #33239b)); border-color: var(--accent); color: #fff; box-shadow: 0 0 0 3px color-mix(in srgb, var(--accent) 18%, transparent), 0 18px 34px rgba(91, 74, 215, .28); cursor: pointer; }
-  .app-action-bar button:active { transform: translateY(0); box-shadow: 0 8px 16px rgba(91, 74, 215, .18); }
+  .app-action-bar button.active { animation: none; background: linear-gradient(180deg, var(--accent), color-mix(in srgb, var(--accent) 82%, var(--ink))); border-color: var(--accent); color: #fff; box-shadow: 0 0 0 3px color-mix(in srgb, var(--accent) 18%, transparent), 0 18px 34px color-mix(in srgb, var(--accent) 28%, transparent); cursor: pointer; }
+  .app-action-bar button:active { transform: translateY(0); box-shadow: 0 8px 16px color-mix(in srgb, var(--accent) 18%, transparent); }
   .app-action-bar button:focus-visible { animation: none; outline: 3px solid color-mix(in srgb, var(--accent) 32%, transparent); outline-offset: 3px; }
   .action-index { display: grid; place-items: center; width: 1.56rem; height: 1.56rem; border-radius: 50%; background: var(--accent); color: #fff; font-size: .72rem; line-height: 1; flex: 0 0 auto; box-shadow: inset 0 0 0 1px rgba(255, 255, 255, .28); }
   .app-action-bar.is-idle button .action-index { animation: action-index-pop 4.8s cubic-bezier(.2, .7, .18, 1) infinite; }
@@ -394,11 +426,13 @@
   .live-main > .live-head,
   .live-main > .live-intent,
   .live-main > .live-kpis { grid-column: 1 / -1; }
-  .live-main > .live-card { grid-column: span 4; }
-  .live-main > .live-card.wide,
-  .live-main > .live-card.block-ticket,
-  .live-main > .live-card.block-checkout,
-  .live-main > .live-card.block-handoff { grid-column: span 6; }
+  .live-main > .live-card { grid-column: span var(--live-span, 4); }
+  .live-card.live-span-3 { --live-span: 3; }
+  .live-card.live-span-4 { --live-span: 4; }
+  .live-card.live-span-5 { --live-span: 5; }
+  .live-card.live-span-6 { --live-span: 6; }
+  .live-card.live-span-7 { --live-span: 7; }
+  .live-card.live-span-12 { --live-span: 12; }
   .live-head { display: flex; justify-content: space-between; align-items: flex-start; gap: .7rem; border: 1px solid color-mix(in srgb, var(--accent) 38%, var(--line)); border-radius: 13px; background: linear-gradient(180deg, var(--accent-soft), color-mix(in srgb, var(--surface) 84%, #fff)); padding: .72rem; min-width: 0; }
   .live-head h4 { margin: .16rem 0 0; font-size: clamp(1.05rem, 1.8vw, 1.42rem); line-height: 1.08; letter-spacing: 0; }
   .live-head p { margin: .24rem 0 0; color: var(--ink-soft); font-size: .78rem; line-height: 1.34; }
@@ -410,7 +444,7 @@
   .live-card { position: relative; display: grid; align-content: start; gap: .52rem; min-width: 0; border: 1px solid var(--line); border-radius: 13px; background: var(--surface); box-shadow: var(--shadow); padding: .68rem; }
   .live-card.awaiting-action { border-color: color-mix(in srgb, var(--good) 42%, var(--line)); background: color-mix(in srgb, var(--good-soft) 34%, var(--surface)); }
   .live-card.is-continuation-target { border-color: color-mix(in srgb, var(--good) 54%, var(--line)); background: color-mix(in srgb, var(--good-soft) 42%, var(--surface)); box-shadow: 0 0 0 2px color-mix(in srgb, var(--good) 16%, transparent), 0 16px 30px rgba(11, 153, 107, .14); }
-  .live-card.hot { border-color: var(--accent); background: color-mix(in srgb, var(--accent-soft) 76%, var(--surface)); box-shadow: 0 0 0 2px color-mix(in srgb, var(--accent) 24%, transparent), 0 16px 30px rgba(91, 74, 215, .18); animation: app-target-pop .42s ease-out both; }
+  .live-card.hot { border-color: var(--accent); background: color-mix(in srgb, var(--accent-soft) 76%, var(--surface)); box-shadow: 0 0 0 2px color-mix(in srgb, var(--accent) 24%, transparent), 0 16px 30px color-mix(in srgb, var(--accent) 18%, transparent); animation: app-target-pop .42s ease-out both; }
   .live-card.good { border-color: color-mix(in srgb, var(--good) 38%, var(--line)); background: color-mix(in srgb, var(--good-soft) 48%, var(--surface)); }
   .live-card.bad { border-color: color-mix(in srgb, var(--bad) 38%, var(--line)); background: color-mix(in srgb, var(--bad-soft) 48%, var(--surface)); }
   .action-effect { border-left: 3px solid var(--accent); background: color-mix(in srgb, var(--accent-soft) 48%, transparent); color: var(--accent-ink); padding: .4rem .52rem; font-size: .72rem; line-height: 1.32; font-weight: 850; }
@@ -421,9 +455,9 @@
   .block-icon { display: inline-grid; place-items: center; width: 1.45rem; height: 1.45rem; border: 1px solid color-mix(in srgb, var(--accent) 26%, var(--line)); border-radius: 999px; background: var(--accent-soft); color: var(--accent-ink); flex: 0 0 auto; }
   .block-icon svg { display: block; width: .9rem; height: .9rem; fill: none; stroke: currentColor; stroke-width: 2.25; stroke-linecap: round; stroke-linejoin: round; }
   .live-card-title span { color: var(--faint); font-size: .62rem; letter-spacing: .08em; text-transform: uppercase; }
-  .live-card-title .step-link-badge { max-width: 100%; border: 1px solid color-mix(in srgb, var(--accent) 38%, var(--line)); border-radius: 999px; background: var(--accent); color: #fff; padding: .2rem .48rem; font-size: .62rem; line-height: 1.08; letter-spacing: 0; text-transform: none; text-align: center; overflow-wrap: anywhere; box-shadow: 0 8px 16px rgba(91, 74, 215, .16); }
+  .live-card-title .step-link-badge { max-width: 100%; border: 1px solid color-mix(in srgb, var(--accent) 38%, var(--line)); border-radius: 999px; background: var(--accent); color: #fff; padding: .2rem .48rem; font-size: .62rem; line-height: 1.08; letter-spacing: 0; text-transform: none; text-align: center; overflow-wrap: anywhere; box-shadow: 0 8px 16px color-mix(in srgb, var(--accent) 16%, transparent); }
   .live-action-row { display: flex; justify-content: flex-start; align-items: center; min-width: 0; padding-top: .08rem; }
-  .sim-app-action { position: relative; display: inline-flex; align-items: center; justify-content: center; gap: .42rem; width: fit-content; max-width: 100%; min-height: 2.35rem; border: 1px solid var(--accent); border-radius: 999px; background: var(--accent); color: #fff; padding: .52rem .86rem; font-family: var(--sans); font-size: .76rem; line-height: 1.05; font-weight: 950; text-align: center; white-space: normal; box-shadow: 0 10px 20px rgba(91, 74, 215, .2); cursor: pointer; transition: transform .14s ease, box-shadow .14s ease, background .14s ease, border-color .14s ease; }
+  .sim-app-action { position: relative; display: inline-flex; align-items: center; justify-content: center; gap: .42rem; width: fit-content; max-width: 100%; min-height: 2.35rem; border: 1px solid var(--accent); border-radius: 999px; background: var(--accent); color: #fff; padding: .52rem .86rem; font-family: var(--sans); font-size: .76rem; line-height: 1.05; font-weight: 950; text-align: center; white-space: normal; box-shadow: 0 10px 20px color-mix(in srgb, var(--accent) 20%, transparent); cursor: pointer; transition: transform .14s ease, box-shadow .14s ease, background .14s ease, border-color .14s ease; }
   .sim-live-preview .sim-app-action,
   .sim-live-preview .sim-app-action *,
   .sim-live-preview .sim-app-action::after { cursor: pointer; }
@@ -454,10 +488,28 @@
   .live-field { display: grid; gap: .22rem; }
   .live-field label { color: var(--faint); font-size: .62rem; letter-spacing: .08em; text-transform: uppercase; font-weight: 900; }
   .live-input { border: 1px solid var(--line-strong); border-radius: 11px; background: var(--bg); color: var(--ink); padding: .58rem .64rem; font-size: .88rem; font-weight: 850; line-height: 1.2; min-width: 0; }
+  .live-control { display: block; width: 100%; box-sizing: border-box; font-family: inherit; }
+  .live-textarea { min-height: 4.5rem; resize: vertical; }
+  .live-field.is-long { grid-column: 1 / -1; }
   .side-picker { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: .42rem; }
   .side-button { display: grid; place-items: center; min-height: 2.7rem; border: 1px solid var(--line-strong); border-radius: 12px; background: var(--bg); color: var(--ink); font-weight: 950; }
   .side-button.yes { color: var(--good); background: var(--good-soft); border-color: color-mix(in srgb, var(--good) 38%, var(--line)); }
   .side-button.no { color: var(--bad); background: var(--bad-soft); border-color: color-mix(in srgb, var(--bad) 38%, var(--line)); }
+  .liquidity-grid { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: .46rem; }
+  .liquidity-offer { display: grid; grid-template-columns: minmax(3.7rem, auto) minmax(0, 1fr); gap: .38rem; min-width: 0; }
+  .liquidity-side { min-height: 3.2rem; border: 1px solid var(--line-strong); border-radius: 11px; background: var(--bg); color: var(--ink); padding: .48rem .66rem; font-family: inherit; font-weight: 950; cursor: pointer; }
+  .liquidity-side.good { color: var(--good); background: var(--good-soft); border-color: color-mix(in srgb, var(--good) 42%, var(--line)); }
+  .liquidity-side.bad { color: var(--bad); background: var(--bad-soft); border-color: color-mix(in srgb, var(--bad) 42%, var(--line)); }
+  .liquidity-side[aria-pressed="false"] { opacity: .62; background: var(--bg); }
+  .liquidity-amount { display: grid; grid-template-columns: auto minmax(0, 1fr); grid-template-rows: auto 1fr; align-items: center; column-gap: .28rem; min-width: 0; border: 1px solid var(--line-strong); border-radius: 11px; background: var(--bg); color: var(--ink); padding: .32rem .5rem; }
+  .liquidity-amount:focus-within { border-color: var(--accent); box-shadow: 0 0 0 2px var(--accent-soft); }
+  .liquidity-caption { grid-column: 1 / -1; color: var(--faint); font-size: .56rem; line-height: 1; font-weight: 900; text-transform: uppercase; }
+  .liquidity-currency { color: var(--muted); font-weight: 900; }
+  .liquidity-input { width: 100%; min-width: 0; border: 0; background: transparent; color: var(--ink); padding: .08rem 0 0; font-family: inherit; font-size: .9rem; line-height: 1.1; font-weight: 900; }
+  .liquidity-preview { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: .55rem; border-top: 1px solid var(--line); padding-top: .48rem; }
+  .liquidity-preview span { min-width: 0; }
+  .liquidity-preview small { display: block; color: var(--faint); font-size: .6rem; line-height: 1; font-weight: 900; text-transform: uppercase; }
+  .liquidity-preview b { display: block; margin-top: .18rem; color: var(--ink); font-size: .78rem; line-height: 1.15; overflow-wrap: anywhere; }
   .big-odds { display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); border: 1px solid var(--line); border-radius: 13px; overflow: hidden; }
   .odds-side { display: grid; gap: .16rem; padding: .72rem; background: var(--bg); min-width: 0; }
   .odds-side.yes { background: var(--good-soft); color: var(--good); }
@@ -492,7 +544,8 @@
   .wallet-token b { display: block; margin-top: .22rem; font-size: 1.08rem; line-height: 1.1; }
   .check-list { display: grid; gap: .36rem; }
   .check-item { display: flex; justify-content: space-between; align-items: center; gap: .6rem; border: 1px solid var(--line); border-radius: 10px; background: var(--bg); padding: .48rem .56rem; color: var(--muted); font-size: .72rem; }
-  .check-item b { color: var(--good); }
+  .check-item > span { min-width: 0; }
+  .check-item b { color: var(--good); flex: 0 0 auto; overflow-wrap: normal; word-break: normal; white-space: nowrap; }
   .participant-grid { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: .46rem; }
   .participant { border: 1px solid var(--line); border-radius: 13px; background: var(--bg); padding: .62rem; }
   .participant b { display: block; font-size: .92rem; }
@@ -519,7 +572,16 @@
   .beacon-readout code { font-family: var(--mono); color: var(--accent-ink); font-size: .74rem; overflow-wrap: anywhere; }
   .face-checks { display: grid; gap: .32rem; }
   .face-check { display: flex; justify-content: space-between; gap: .5rem; border: 1px solid var(--line); border-radius: 10px; background: var(--bg); padding: .42rem .5rem; color: var(--muted); font-size: .72rem; }
-  .face-check b { color: var(--good); }
+  .face-check > span { min-width: 0; }
+  .face-check b { color: var(--good); flex: 0 0 auto; overflow-wrap: normal; word-break: normal; white-space: nowrap; }
+  .app-route-step span:last-child,
+  .checkout-row b,
+  .ticket-total b,
+  .proof-stamp,
+  .wallet-token b { overflow-wrap: normal; word-break: normal; white-space: nowrap; }
+  .mini-row span:last-child,
+  .app-row b,
+  .liquidity-preview b { overflow-wrap: normal; word-break: normal; }
   .evidence-tabs { display: flex; gap: .34rem; flex-wrap: wrap; }
   .evidence-tabs span { border: 1px solid var(--line); border-radius: 999px; background: var(--bg); padding: .24rem .52rem; font-size: .68rem; font-weight: 900; color: var(--muted); }
   .evidence-tabs span.on { background: var(--accent); border-color: var(--accent); color: #fff; }
@@ -528,6 +590,17 @@
   .checkout-row b { color: var(--ink); }
   .checkout-row.winner { background: var(--accent-soft); border-color: color-mix(in srgb, var(--accent) 34%, var(--line)); color: var(--accent-ink); }
   .closed-stamp { display: grid; place-items: center; min-height: 4.2rem; border: 2px solid color-mix(in srgb, var(--good) 45%, var(--line)); border-radius: 14px; background: var(--good-soft); color: var(--good); font-size: 1.22rem; font-weight: 950; text-transform: uppercase; letter-spacing: .06em; }
+  .product-demo:not(.sim-compact) .live-card.block-fields:is(.live-span-6, .live-span-7, .live-span-12) { grid-template-columns: repeat(auto-fit, minmax(min(9rem, 100%), 1fr)); }
+  .product-demo:not(.sim-compact) .live-card.block-fields:is(.live-span-6, .live-span-7, .live-span-12) > :is(.live-card-title, .live-action-row, .action-effect) { grid-column: 1 / -1; }
+  .product-demo:not(.sim-compact) .live-card.block-receipt:is(.live-span-6, .live-span-7, .live-span-12) { grid-template-columns: minmax(7.5rem, .7fr) minmax(0, 1.3fr); align-items: center; }
+  .product-demo:not(.sim-compact) .live-card.block-receipt:is(.live-span-6, .live-span-7, .live-span-12) > :is(.live-card-title, .live-action-row, .action-effect) { grid-column: 1 / -1; }
+  .product-demo:not(.sim-compact) .live-card.block-checklist.live-span-7 .check-list { grid-template-columns: repeat(3, minmax(0, 1fr)); }
+  .product-demo:not(.sim-compact) .live-main.live-layout-1 > .live-card.block-proof { grid-template-columns: minmax(8rem, .7fr) minmax(0, 1.3fr); align-items: center; }
+  .product-demo:not(.sim-compact) .live-main.live-layout-1 > .live-card.block-proof > .live-card-title { grid-column: 1 / -1; }
+  .product-demo:not(.sim-compact) .live-main.live-layout-1 > .live-card.block-proof > .proof-stamp { grid-column: 1; grid-row: 2; }
+  .product-demo:not(.sim-compact) .live-main.live-layout-1 > .live-card.block-proof > .app-value { grid-column: 1; grid-row: 3; }
+  .product-demo:not(.sim-compact) .live-main.live-layout-1 > .live-card.block-proof > .app-note { grid-column: 2; grid-row: 2 / span 2; align-self: center; }
+  .product-demo:not(.sim-compact) .live-main.live-layout-1 > .live-card.block-proof > :is(.live-action-row, .action-effect) { grid-column: 1 / -1; }
   .product-demo.sim-compact { grid-template-columns: 1fr; min-height: 0; padding: 0; }
   .product-demo.sim-compact .sim-step-guide { grid-template-columns: auto minmax(0, 1fr); }
   .product-demo.sim-compact .sim-step-controls { grid-column: 1 / -1; justify-items: start; border-top: 1px solid var(--line); padding-top: .48rem; }
@@ -572,7 +645,6 @@
   .product-demo.sim-tight .intent-item { padding: .42rem; }
   .product-demo.sim-tight .trade-ticket { grid-template-columns: repeat(2, minmax(0, 1fr)); }
   .product-demo.sim-tight .long-ticket .trade-ticket { grid-template-columns: repeat(2, minmax(0, 1fr)); }
-  .product-demo.sim-tight .sim-frame-label { display: none; }
   .product-demo.sim-tight .sim-browser-bar { gap: .32rem; padding: .24rem .38rem; }
   .product-demo.sim-tight .sim-browser-back { min-width: 5.2rem; min-height: 1.94rem; padding: .16rem .48rem .16rem .18rem; }
   .product-demo.sim-tight .sim-browser-back-icon { width: 1.36rem; height: 1.36rem; }
@@ -582,7 +654,6 @@
   .product-demo.sim-tight .app-nav-tools { flex: 1 1 auto; flex-wrap: nowrap; justify-content: flex-end; }
   .product-demo.sim-tight .app-nav-tools .app-nav-chip { display: none; }
   .product-demo.sim-tight .app-nav-chip { max-width: 9rem; padding: .22rem .42rem; font-size: .6rem; }
-  .product-demo.sim-tight .app-nav-action { display: none; padding: .24rem .5rem; font-size: .62rem; }
   .product-demo.sim-tight .live-field { gap: .16rem; }
   .product-demo.sim-tight .live-field label { font-size: .56rem; }
   .product-demo.sim-tight .live-input { padding: .44rem .46rem; font-size: .76rem; }
@@ -601,11 +672,8 @@
   .product-demo.sim-ultra .sim-step-controls { grid-column: auto; border-top: 1px solid var(--line); padding-top: .48rem; }
   .product-demo.sim-ultra .event-handoff { grid-template-columns: 1fr; }
   .product-demo.sim-ultra .event-handoff b { text-align: center; }
-  .product-demo.sim-ultra .sim-frame-label { display: none; }
   .product-demo.sim-ultra .sim-browser-bar { grid-template-columns: auto minmax(0, 1fr); gap: .24rem; padding: .2rem .32rem; }
-  .product-demo.sim-ultra .sim-window-dots,
-  .product-demo.sim-ultra .sim-url,
-  .product-demo.sim-ultra .sim-live-dot { display: none; }
+  .product-demo.sim-ultra .sim-url { display: none; }
   .product-demo.sim-ultra .sim-browser-back { min-width: 4.7rem; min-height: 1.78rem; padding: .14rem .4rem .14rem .16rem; }
   .product-demo.sim-ultra .sim-browser-back-icon { width: 1.22rem; height: 1.22rem; }
   .product-demo.sim-ultra .sim-browser-back-label { font-size: .7rem; }
@@ -724,7 +792,6 @@
     .intent-item { padding: .42rem; }
     .trade-ticket { grid-template-columns: repeat(2, minmax(0, 1fr)); }
     .long-ticket .trade-ticket { grid-template-columns: repeat(2, minmax(0, 1fr)); }
-    .sim-frame-label { display: none; }
     .sim-browser-bar { gap: .32rem; padding: .24rem .38rem; }
     .sim-browser-back { min-width: 5.2rem; min-height: 1.94rem; padding: .16rem .48rem .16rem .18rem; }
     .sim-browser-back-icon { width: 1.36rem; height: 1.36rem; }
@@ -734,7 +801,6 @@
     .app-nav-tools { flex: 1 1 auto; flex-wrap: nowrap; justify-content: flex-end; }
     .app-nav-tools .app-nav-chip { display: none; }
     .app-nav-chip { max-width: 9rem; padding: .22rem .42rem; font-size: .6rem; }
-    .app-nav-action { display: none; padding: .24rem .5rem; font-size: .62rem; }
     .live-field { gap: .16rem; }
     .live-field label { font-size: .56rem; }
     .live-input { padding: .44rem .46rem; font-size: .76rem; }
@@ -755,11 +821,8 @@
     .sim-step-controls { grid-column: auto; border-top: 1px solid var(--line); padding-top: .48rem; }
     .event-handoff { grid-template-columns: 1fr; }
     .event-handoff b { text-align: center; }
-    .sim-frame-label { display: none; }
     .sim-browser-bar { grid-template-columns: auto minmax(0, 1fr); gap: .24rem; padding: .2rem .32rem; }
-    .sim-window-dots,
-    .sim-url,
-    .sim-live-dot { display: none; }
+    .sim-url { display: none; }
     .sim-browser-back { min-width: 4.7rem; min-height: 1.78rem; padding: .14rem .4rem .14rem .16rem; }
     .sim-browser-back-icon { width: 1.22rem; height: 1.22rem; }
     .sim-browser-back-label { font-size: .7rem; }
@@ -1008,8 +1071,8 @@
   }
   @keyframes app-target-pop {
     0% { transform: translateY(3px); box-shadow: 0 0 0 0 color-mix(in srgb, var(--accent) 0%, transparent), var(--shadow); }
-    62% { transform: translateY(-1px); box-shadow: 0 0 0 4px color-mix(in srgb, var(--accent) 18%, transparent), 0 18px 34px rgba(91, 74, 215, .2); }
-    100% { transform: translateY(0); box-shadow: 0 0 0 2px color-mix(in srgb, var(--accent) 24%, transparent), 0 16px 30px rgba(91, 74, 215, .18); }
+    62% { transform: translateY(-1px); box-shadow: 0 0 0 4px color-mix(in srgb, var(--accent) 18%, transparent), 0 18px 34px color-mix(in srgb, var(--accent) 20%, transparent); }
+    100% { transform: translateY(0); box-shadow: 0 0 0 2px color-mix(in srgb, var(--accent) 24%, transparent), 0 16px 30px color-mix(in srgb, var(--accent) 18%, transparent); }
   }
   @keyframes tutorial-target-sheen {
     0%, 28% { opacity: 0; transform: translateX(-135%); }
@@ -1092,7 +1155,7 @@
   @media (max-width: 980px) {
     body { --maxw: 54rem; --half-maxw: 27rem; }
     .unlock-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); }
-    .stage-rail { grid-template-columns: repeat(3, minmax(0, 1fr)); }
+    .stage-rail { grid-template-columns: repeat(auto-fit, minmax(9.5rem, 1fr)); }
   }
   @media (max-width: 620px) {
     .to-top { display: none; }
@@ -1108,7 +1171,7 @@
     .event-nav-label { font-size: .7rem; }
     .stage-rail { grid-template-columns: repeat(2, minmax(0, 1fr)); gap: .42rem; }
     .stage-group { border-radius: 10px; padding: .36rem; }
-    .stage-group:nth-child(5) { grid-column: 1 / -1; }
+    .stage-group.last-product-group:nth-child(odd) { grid-column: 1 / -1; }
     .stage-group-steps { gap: .28rem; }
     .stage-step-list { grid-template-columns: repeat(2, minmax(0, 1fr)); gap: .28rem; }
     .stage-rail .stage-step { min-height: 2.5rem; border-radius: 8px; }
@@ -1172,12 +1235,11 @@
     .stage-step-list { grid-template-columns: 1fr; }
   }
   @media (min-width: 621px) and (max-height: 800px) {
-    .sim-frame-label { display: none; }
     .sim-browser-bar { padding: .24rem .42rem; gap: .34rem; }
     .sim-browser-back { min-width: 5.2rem; min-height: 1.94rem; padding: .16rem .48rem .16rem .18rem; }
     .sim-browser-back-icon { width: 1.36rem; height: 1.36rem; }
     .sim-browser-back-label { font-size: .76rem; }
-    .sim-app-viewport { min-height: clamp(27rem, 58vh, 35rem); }
+    .sim-app-viewport { min-height: 0; }
     .live-page { padding: .52rem; gap: .46rem; }
     .live-main { gap: .44rem; }
     .live-head { padding: .52rem; }
@@ -1195,6 +1257,530 @@
     .face-check { padding: .38rem .44rem; }
     .app-route { gap: .3rem; }
   }
+
+  /* The chooser stays structurally neutral; product color communicates choice and interaction. */
+  .product-mode-nav {
+    display: grid;
+    grid-template-columns: minmax(9.5rem, .34fr) minmax(0, 1fr);
+    align-items: stretch;
+    gap: .72rem;
+    min-width: 0;
+    border: 1px solid var(--line-strong);
+    border-radius: 8px;
+    background: color-mix(in srgb, var(--surface) 94%, var(--accent-soft));
+    box-shadow: 0 14px 28px -22px rgba(46, 40, 30, .18);
+    padding: .72rem;
+    font-family: var(--sans);
+  }
+  .product-switch-label {
+    display: grid;
+    align-content: center;
+    gap: .2rem;
+    min-width: 0;
+    border-right: 1px solid var(--line);
+    padding: .2rem .72rem .2rem .18rem;
+  }
+  .product-switch-label span {
+    color: var(--accent);
+    font-size: .64rem;
+    line-height: 1;
+    font-weight: 850;
+    letter-spacing: 0;
+    text-transform: uppercase;
+  }
+  .product-switch-label strong {
+    color: var(--ink);
+    font-family: var(--serif);
+    font-size: 1.18rem;
+    line-height: 1.08;
+    font-weight: 620;
+  }
+  .product-switch-label small {
+    color: var(--muted);
+    font-size: .7rem;
+    line-height: 1.25;
+    font-weight: 700;
+  }
+  .product-tabs {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: .5rem;
+    min-width: 0;
+  }
+  .product-tab {
+    --choice-accent: var(--accent);
+    --choice-soft: var(--accent-soft);
+    --choice-on-accent: #fff;
+    appearance: none;
+    display: grid;
+    grid-template-columns: auto minmax(0, 1fr) auto;
+    align-items: center;
+    gap: .54rem;
+    min-width: 0;
+    min-height: 4.15rem;
+    border: 1px solid color-mix(in srgb, var(--choice-accent) 26%, var(--line));
+    border-radius: 6px;
+    background: color-mix(in srgb, var(--choice-soft) 28%, var(--surface));
+    color: var(--muted);
+    padding: .52rem .58rem;
+    text-align: left;
+    box-shadow: inset 0 1px 0 rgba(255, 255, 255, .65), 0 6px 14px -12px rgba(46, 40, 30, .32);
+    cursor: pointer;
+    transition: transform .14s ease, border-color .14s ease, background .14s ease, box-shadow .14s ease, color .14s ease;
+  }
+  .product-tab[data-product-mode="momo"] { --choice-accent: #ae510f; --choice-soft: #f2c48e; --choice-on-accent: #fff6e8; }
+  .product-tab[data-product-mode="themis"] { --choice-accent: #225d8c; --choice-soft: #e1ecf4; --choice-on-accent: #fffefa; }
+  .product-tab:hover { transform: translateY(-2px); color: var(--ink); border-color: color-mix(in srgb, var(--choice-accent) 62%, var(--line)); background: color-mix(in srgb, var(--choice-soft) 44%, var(--surface)); box-shadow: 0 12px 22px -16px color-mix(in srgb, var(--choice-accent) 50%, transparent); }
+  .product-tab:active { transform: translateY(0); box-shadow: inset 0 1px 3px color-mix(in srgb, var(--choice-accent) 14%, transparent); }
+  .product-tab:focus-visible { outline: 3px solid color-mix(in srgb, var(--choice-accent) 32%, transparent); outline-offset: 3px; }
+  .product-tab[aria-selected="true"] {
+    color: var(--choice-on-accent);
+    border-color: var(--accent);
+    background: var(--accent);
+    box-shadow: 0 3px 0 color-mix(in srgb, var(--accent) 72%, var(--ink)), 0 9px 18px -15px color-mix(in srgb, var(--accent) 54%, transparent);
+  }
+  .product-tab[data-product-mode="momo"][aria-selected="true"] { --accent: #ae510f; --accent-soft: #f2c48e; --accent-ink: #725000; }
+  .product-tab[data-product-mode="themis"][aria-selected="true"] { --accent: #225d8c; --accent-soft: #e1ecf4; --accent-ink: #173f62; }
+  .product-tab[data-product-mode="momo"] { font-family: "Alegreya Sans App", "Noto Serif Tibetan App", "Noto Sans Symbols 2 App", system-ui, sans-serif; font-synthesis: none; }
+  .product-tab[data-product-mode="themis"] { font-family: "Literata App", "Noto Sans Symbols 2 App", Georgia, serif; font-optical-sizing: auto; font-synthesis: none; }
+  .product-tab-icon {
+    display: grid;
+    place-items: center;
+    width: 2.32rem;
+    height: 2.32rem;
+    border: 1px solid currentColor;
+    border-radius: 5px;
+    flex: 0 0 auto;
+  }
+  .product-tab-icon svg { display: block; width: 1.2rem; height: 1.2rem; fill: none; stroke: currentColor; stroke-width: 2; stroke-linecap: round; stroke-linejoin: round; }
+  .product-tab[data-product-mode="momo"] .product-tab-icon { color: #884009; background: #f7d8ae; }
+  .product-tab[data-product-mode="themis"] .product-tab-icon { color: #1e527c; background: #e1ecf4; }
+  .product-tab[aria-selected="true"] .product-tab-icon { border-color: color-mix(in srgb, var(--choice-on-accent) 58%, transparent); background: color-mix(in srgb, var(--choice-on-accent) 13%, transparent); color: var(--choice-on-accent); }
+  .product-tab-copy { display: grid; gap: .14rem; min-width: 0; }
+  .product-tab-copy strong { color: color-mix(in srgb, var(--choice-accent) 38%, var(--ink)); font-size: .86rem; line-height: 1.06; font-weight: 900; overflow-wrap: anywhere; }
+  .product-tab-copy small { color: var(--muted); font-size: .65rem; line-height: 1.1; font-weight: 750; }
+  .product-tab[aria-selected="true"] .product-tab-copy strong { color: var(--choice-on-accent); }
+  .product-tab[aria-selected="true"] .product-tab-copy small { color: color-mix(in srgb, var(--choice-on-accent) 92%, transparent); }
+  .product-tab-event {
+    display: inline-flex;
+    align-items: center;
+    justify-self: end;
+    gap: .26rem;
+    border: 1px solid color-mix(in srgb, var(--choice-accent) 30%, var(--line));
+    border-radius: 999px;
+    background: color-mix(in srgb, var(--choice-soft) 58%, var(--surface));
+    color: color-mix(in srgb, var(--choice-accent) 72%, var(--ink));
+    padding: .22rem .38rem;
+    font-family: var(--mono);
+    font-size: .62rem;
+    line-height: 1;
+    font-weight: 850;
+    white-space: nowrap;
+  }
+  .product-tab-event::after { content: ">"; color: var(--choice-accent); font-family: var(--sans); font-size: .72rem; font-weight: 950; transition: transform .14s ease; }
+  .product-tab:hover .product-tab-event::after { transform: translateX(.12rem); }
+  .product-tab[aria-selected="true"] .product-tab-event { border-color: color-mix(in srgb, var(--choice-on-accent) 52%, transparent); background: color-mix(in srgb, var(--choice-on-accent) 13%, transparent); color: var(--choice-on-accent); }
+  .product-tab[aria-selected="true"] .product-tab-event::after { color: var(--choice-on-accent); }
+  .product-mode-nav.is-awaiting-selection {
+    grid-template-columns: 1fr;
+    align-content: center;
+    gap: 1.15rem;
+    min-height: 16rem;
+    padding: 1.4rem;
+  }
+  .product-mode-nav.is-awaiting-selection .product-switch-label {
+    justify-items: center;
+    border-right: 0;
+    padding: 0;
+    text-align: center;
+  }
+  .product-mode-nav.is-awaiting-selection .product-switch-label strong { font-size: 1.72rem; }
+  .product-mode-nav.is-awaiting-selection .product-switch-label small { max-width: 34rem; font-size: .8rem; }
+  .product-mode-nav.is-awaiting-selection .product-tabs { justify-self: center; width: 100%; max-width: 54rem; gap: .78rem; }
+  .product-mode-nav.is-awaiting-selection .product-tab { min-height: 5.8rem; border-color: var(--choice-accent); background: var(--choice-accent); color: var(--choice-on-accent); padding: .82rem .9rem; box-shadow: 0 4px 0 color-mix(in srgb, var(--choice-accent) 70%, var(--ink)), 0 12px 22px -15px color-mix(in srgb, var(--choice-accent) 70%, transparent); }
+  .product-mode-nav.is-awaiting-selection .product-tab:hover { border-color: color-mix(in srgb, var(--choice-accent) 84%, var(--ink)); background: color-mix(in srgb, var(--choice-accent) 88%, var(--ink)); color: var(--choice-on-accent); box-shadow: 0 5px 0 color-mix(in srgb, var(--choice-accent) 66%, var(--ink)), 0 15px 24px -15px color-mix(in srgb, var(--choice-accent) 76%, transparent); }
+  .product-mode-nav.is-awaiting-selection .product-tab:active { transform: translateY(3px); box-shadow: 0 1px 0 color-mix(in srgb, var(--choice-accent) 66%, var(--ink)); }
+  .product-mode-nav.is-awaiting-selection .product-tab-icon { width: 3rem; height: 3rem; border-color: color-mix(in srgb, var(--choice-on-accent) 62%, transparent); background: color-mix(in srgb, var(--choice-on-accent) 13%, transparent); color: var(--choice-on-accent); }
+  .product-mode-nav.is-awaiting-selection .product-tab-icon svg { width: 1.45rem; height: 1.45rem; }
+  .product-mode-nav.is-awaiting-selection .product-tab-copy strong { color: var(--choice-on-accent); font-size: 1.08rem; }
+  .product-mode-nav.is-awaiting-selection .product-tab-copy small { color: color-mix(in srgb, var(--choice-on-accent) 92%, transparent); font-size: .74rem; }
+  .product-mode-nav.is-awaiting-selection .product-tab-event { border-color: color-mix(in srgb, var(--choice-on-accent) 52%, transparent); background: color-mix(in srgb, var(--choice-on-accent) 13%, transparent); color: var(--choice-on-accent); padding: .34rem .48rem; }
+  .product-mode-nav.is-awaiting-selection .product-tab-event::after { color: var(--choice-on-accent); }
+  .product-mode-panel { display: grid; gap: 1rem; min-width: 0; animation: product-mode-reveal .22s ease-out; }
+  .product-mode-panel[hidden] { display: none; }
+  @keyframes product-mode-reveal {
+    from { opacity: 0; transform: translateY(.35rem); }
+    to { opacity: 1; transform: translateY(0); }
+  }
+  @media (prefers-reduced-motion: reduce) {
+    .product-mode-panel { animation: none; }
+  }
+  .product-mode-panel[data-product-mode="momo"] {
+    --product-ui-font: "Alegreya Sans App", "Noto Serif Tibetan App", "Noto Sans Symbols 2 App", system-ui, sans-serif;
+    --product-weight-body: 500;
+    --product-weight-meta: 700;
+    --product-weight-control: 800;
+    --product-weight-title: 800;
+    --product-weight-display: 900;
+    --product-leading-tight: 1.16;
+    --product-leading-ui: 1.26;
+    --product-leading-copy: 1.4;
+    --product-text-gap: .2rem;
+  }
+  .product-mode-panel[data-product-mode="themis"] {
+    --product-ui-font: "Literata App", "Noto Sans Symbols 2 App", Georgia, serif;
+    --product-weight-body: 450;
+    --product-weight-meta: 600;
+    --product-weight-control: 650;
+    --product-weight-title: 700;
+    --product-weight-display: 800;
+    --product-leading-tight: 1.22;
+    --product-leading-ui: 1.32;
+    --product-leading-copy: 1.46;
+    --product-text-gap: .24rem;
+    color-scheme: dark;
+  }
+  .product-mode-panel[data-product-mode] {
+    --product-text-caption: .7rem;
+    --product-text-meta: .74rem;
+    --product-text-body: .8rem;
+    --product-text-control: .8rem;
+    --product-text-subtitle: .88rem;
+    --product-text-title: .98rem;
+    --product-text-display: 1.16rem;
+    --product-text-figure: 1.42rem;
+  }
+  .product-mode-panel[data-product-mode] .run-control-panel,
+  .product-mode-panel[data-product-mode] .sim-step-guide,
+  .product-mode-panel[data-product-mode] .stage-rail,
+  .product-mode-panel[data-product-mode] .event-navigator-toggle,
+  .product-mode-panel[data-product-mode] .sim-live-preview {
+    --sans: var(--product-ui-font);
+    font-family: var(--product-ui-font);
+    font-kerning: normal;
+    font-synthesis: none;
+    font-variant-numeric: lining-nums tabular-nums;
+  }
+  .product-mode-panel[data-product-mode="themis"] .run-control-panel,
+  .product-mode-panel[data-product-mode="themis"] .sim-step-guide,
+  .product-mode-panel[data-product-mode="themis"] .stage-rail,
+  .product-mode-panel[data-product-mode="themis"] .event-navigator-toggle,
+  .product-mode-panel[data-product-mode="themis"] .sim-live-preview { font-optical-sizing: auto; }
+
+  .product-mode-panel[data-product-mode="momo"] .run-control-panel,
+  .product-mode-panel[data-product-mode="momo"] .sim-step-guide,
+  .product-mode-panel[data-product-mode="momo"] .sim-live-preview {
+    --bg: #f3e2c8;
+    --surface: #fcefd9;
+    --ink: #2b241d;
+    --ink-soft: #4b4036;
+    --muted: #6b5b4d;
+    --faint: #725f50;
+    --line: #e1c59f;
+    --line-strong: #c99c66;
+    --accent: #ae510f;
+    --accent-soft: #f2c48e;
+    --accent-ink: #725000;
+    --good: #0d7b73;
+    --good-soft: #def2ed;
+    --bad: #a84432;
+    --bad-soft: #f1d8d0;
+  }
+  .product-mode-panel[data-product-mode="momo"] .run-control-panel,
+  .product-mode-panel[data-product-mode="momo"] .sim-step-guide,
+  .product-mode-panel[data-product-mode="momo"] .sim-live-preview {
+    border-radius: 8px;
+    border-color: color-mix(in srgb, var(--accent) 38%, var(--line));
+  }
+  .product-mode-panel[data-product-mode="momo"] .simulator-island {
+    border-color: #d6ae7b;
+    background: #f3e2c8;
+  }
+  .product-mode-panel[data-product-mode="themis"] .run-control-panel,
+  .product-mode-panel[data-product-mode="themis"] .sim-step-guide,
+  .product-mode-panel[data-product-mode="themis"] .sim-live-preview,
+  .product-mode-panel[data-product-mode="themis"] .simulator-island {
+    --bg: #171c1f;
+    --surface: #20272b;
+    --ink: #f2efe5;
+    --ink-soft: #d2d7d5;
+    --muted: #aeb7b8;
+    --faint: #899599;
+    --line: #354047;
+    --line-strong: #52606a;
+    --accent: #326c91;
+    --accent-soft: #263f52;
+    --accent-ink: #a9d5f2;
+    --good: #9caf78;
+    --good-soft: #293527;
+    --bad: #d78368;
+    --bad-soft: #452b27;
+    --triad-mint: #26372f;
+    --triad-mint-border: #466b59;
+    --triad-lavender: #2e3045;
+    --triad-lavender-border: #5c6590;
+    --triad-amber: #3b3223;
+    --triad-amber-border: #7a6340;
+    --shadow: 0 10px 24px rgba(0, 0, 0, .28);
+  }
+  .product-mode-panel[data-product-mode="themis"] .run-control-panel,
+  .product-mode-panel[data-product-mode="themis"] .sim-step-guide,
+  .product-mode-panel[data-product-mode="themis"] .sim-live-preview {
+    border-radius: 8px;
+    border-color: color-mix(in srgb, var(--accent) 38%, var(--line));
+  }
+  .product-mode-panel[data-product-mode="themis"] .simulator-island {
+    border-color: #46545d;
+    background: #171c1f;
+  }
+  .product-mode-panel[data-product-mode="themis"] :where(
+    .sim-step-badge, .sim-step-copy strong, .app-eyebrow,
+    .action-effect strong, .handoff-arrow
+  ) { color: var(--accent-ink); }
+  .product-mode-panel[data-product-mode="themis"] .action-target::before,
+  .product-mode-panel[data-product-mode="themis"] .run-details summary::marker { color: var(--accent-ink); }
+  .product-mode-panel[data-product-mode="themis"] .sim-browser-back:focus-visible {
+    background: var(--surface);
+    color: var(--accent-ink);
+  }
+
+  .product-mode-panel[data-product-mode] .sim-live-preview .app-tabs { gap: .58rem; }
+  .product-mode-panel[data-product-mode] .sim-live-preview .app-tabs span { border: 0; border-bottom: 2px solid transparent; border-radius: 0; background: transparent; padding: .28rem .08rem; }
+  .product-mode-panel[data-product-mode] .sim-live-preview .app-tabs span.on { border-bottom-color: var(--accent); background: transparent; color: var(--accent-ink); }
+  .product-mode-panel[data-product-mode] .sim-live-preview .app-nav-chip { border: 0; border-left: 1px solid var(--line-strong); border-radius: 0; background: transparent; padding: .2rem .18rem .2rem .5rem; }
+  .product-mode-panel[data-product-mode] .sim-live-preview .app-brand { color: var(--accent-ink); }
+
+  /* Optical type normalization keeps semantic roles aligned across both product fonts. */
+  .product-tab[data-product-mode],
+  .product-tab[data-product-mode] :where(*) {
+    letter-spacing: 0;
+  }
+  .product-tab[data-product-mode] .product-tab-copy strong { font-size: .92rem; line-height: 1.18; }
+  .product-tab[data-product-mode] .product-tab-copy small { font-size: .72rem; line-height: 1.3; }
+  .product-tab[data-product-mode="momo"] .product-tab-copy { gap: .16rem; }
+  .product-tab[data-product-mode="momo"] .product-tab-copy strong { line-height: 1.16; font-weight: 800; }
+  .product-tab[data-product-mode="momo"] .product-tab-copy small { line-height: 1.3; font-weight: 500; }
+  .product-tab[data-product-mode="themis"] .product-tab-copy { gap: .2rem; }
+  .product-tab[data-product-mode="themis"] .product-tab-copy strong { line-height: 1.22; font-weight: 700; }
+  .product-tab[data-product-mode="themis"] .product-tab-copy small { line-height: 1.38; font-weight: 450; }
+  .product-mode-nav.is-awaiting-selection .product-tab[data-product-mode] .product-tab-copy strong { font-size: 1.08rem; }
+  .product-mode-nav.is-awaiting-selection .product-tab[data-product-mode] .product-tab-copy small { font-size: .78rem; }
+
+  .product-mode-panel[data-product-mode] .run-control-panel :where(*),
+  .product-mode-panel[data-product-mode] .stage-rail :where(*),
+  .product-mode-panel[data-product-mode] .product-demo .sim-step-guide :where(*),
+  .product-mode-panel[data-product-mode] .product-demo .sim-live-preview :where(*) {
+    letter-spacing: 0;
+  }
+  .product-mode-panel[data-product-mode] .run-control-panel :where(button),
+  .product-mode-panel[data-product-mode] .product-demo .sim-step-guide :where(button),
+  .product-mode-panel[data-product-mode] .product-demo .sim-live-preview :where(button, input) {
+    font-family: inherit;
+    font-synthesis: none;
+  }
+
+  .product-mode-panel[data-product-mode] .run-control-panel :where(.run-controls .btn) {
+    min-height: 2.3rem;
+    font-size: var(--product-text-control);
+    line-height: var(--product-leading-tight);
+    font-weight: var(--product-weight-control);
+  }
+  .product-mode-panel[data-product-mode] .run-control-panel :where(.run-progress-title) {
+    font-size: var(--product-text-title);
+    line-height: var(--product-leading-tight);
+    font-weight: var(--product-weight-title);
+  }
+  .product-mode-panel[data-product-mode] .run-control-panel :where(.run-progress-stage, .event-nav-label) {
+    font-size: var(--product-text-meta);
+    line-height: var(--product-leading-ui);
+    font-weight: var(--product-weight-meta);
+  }
+  .product-mode-panel[data-product-mode] .run-control-panel :where(.run-progress-count) {
+    font-size: var(--product-text-meta);
+    line-height: var(--product-leading-tight);
+    font-weight: 800;
+  }
+  .product-mode-panel[data-product-mode] .stage-rail :where(.stage-group-name, .step-name) {
+    font-size: var(--product-text-body);
+    line-height: var(--product-leading-ui);
+    font-weight: var(--product-weight-title);
+  }
+  .product-mode-panel[data-product-mode] .stage-rail :where(.stage-group-range, .stage-step .n) {
+    font-size: var(--product-text-caption);
+    line-height: var(--product-leading-tight);
+    font-weight: 800;
+  }
+
+  .product-mode-panel[data-product-mode] .product-demo .sim-step-guide :where(.sim-step-copy) { gap: var(--product-text-gap); }
+  .product-mode-panel[data-product-mode] .product-demo .sim-step-guide :where(.sim-step-badge span, .sim-step-copy strong, .tutorial-step) {
+    font-size: var(--product-text-caption);
+    line-height: var(--product-leading-ui);
+    font-weight: var(--product-weight-meta);
+  }
+  .product-mode-panel[data-product-mode] .product-demo .sim-step-guide :where(.sim-step-copy span, .tutorial-result, .event-continuation p) {
+    font-size: var(--product-text-meta);
+    line-height: var(--product-leading-copy);
+    font-weight: var(--product-weight-body);
+  }
+  .product-mode-panel[data-product-mode] .product-demo .sim-step-guide :where(.sim-step-copy .sim-step-path) {
+    font-size: var(--product-text-meta);
+    line-height: var(--product-leading-ui);
+    font-weight: var(--product-weight-meta);
+  }
+  .product-mode-panel[data-product-mode] .product-demo .sim-step-guide :where(.sim-step-copy b) {
+    font-size: var(--product-text-title);
+    line-height: var(--product-leading-ui);
+    font-weight: var(--product-weight-title);
+  }
+  .product-mode-panel[data-product-mode] .product-demo .sim-step-guide :where(.sim-step-copy .sim-step-path b) {
+    font-size: inherit;
+    line-height: inherit;
+    font-weight: var(--product-weight-title);
+  }
+  .product-mode-panel[data-product-mode] .product-demo .sim-step-guide :where(.sim-step-badge b) {
+    font-size: 1.12rem;
+    line-height: var(--product-leading-tight);
+    font-weight: var(--product-weight-display);
+  }
+  .product-mode-panel[data-product-mode] .product-demo .sim-step-guide :where(.tutorial-cue) {
+    font-size: var(--product-text-subtitle);
+    line-height: var(--product-leading-ui);
+    font-weight: var(--product-weight-title);
+  }
+  .product-mode-panel[data-product-mode] .product-demo .sim-step-guide :where(.event-handoff) {
+    font-size: var(--product-text-meta);
+    line-height: var(--product-leading-ui);
+    font-weight: var(--product-weight-meta);
+  }
+  .product-mode-panel[data-product-mode] .product-demo .sim-step-guide :where(.event-handoff b) {
+    font-size: var(--product-text-caption);
+    line-height: var(--product-leading-tight);
+    font-weight: var(--product-weight-control);
+  }
+  .product-mode-panel[data-product-mode] .product-demo .sim-step-guide :where(.event-continue-button) {
+    font-size: var(--product-text-control);
+    line-height: var(--product-leading-tight);
+    font-weight: var(--product-weight-control);
+  }
+  .product-mode-panel[data-product-mode] .product-demo .sim-step-guide :where(.tutorial-dock) { gap: .5rem; }
+
+  .product-mode-panel[data-product-mode] .product-demo .sim-live-preview :where(
+    .fake-screen-name, .fake-mini, .fake-field .k,
+    .app-eyebrow, .app-metric span, .app-panel .mini, .app-receipt strong,
+    .app-action-card .mini, .live-card-title span, .live-kpi span,
+    .liquidity-caption, .liquidity-preview small,
+    .intent-item span, .live-field label, .sim-toast-header,
+    .action-status, .action-target, .action-effect strong,
+    .odds-side span, .wallet-token span, .team-score span, .countdown span,
+    .evidence-tabs span, .proof-stamp
+  ) {
+    font-size: var(--product-text-caption);
+    line-height: var(--product-leading-ui);
+    font-weight: var(--product-weight-meta);
+  }
+  .product-mode-panel[data-product-mode] .product-demo .sim-live-preview :where(
+    .sim-browser-back, .sim-browser-back-label, .sim-url,
+    .fake-status, .fake-flow-step span, .fake-field .h, .fake-actions button,
+    .fake-explain-row, .fake-ticket span, .app-tabs span, .app-nav-chip,
+    .app-status, .live-status, .app-choice, .app-token,
+    .app-bar-label, .app-list-item, .app-route-step, .app-route-step span:last-child,
+    .app-note, .sim-tooltip, .app-row, .message, .mini-row, .checkout-row,
+    .liquidity-preview b, .liquidity-currency,
+    .action-index, .action-effect, .ticket-total, .check-item,
+    .participant span, .leg-card span, .face-check, .beacon-readout code
+  ) {
+    font-size: var(--product-text-meta);
+    line-height: var(--product-leading-ui);
+    font-weight: var(--product-weight-meta);
+  }
+  .product-mode-panel[data-product-mode] .product-demo .sim-live-preview :where(
+    .fake-sub, .app-hero p, .live-head p, .sim-toast-body,
+    .app-receipt span, .app-note, .sim-tooltip
+  ) {
+    font-size: var(--product-text-body);
+    line-height: var(--product-leading-copy);
+    font-weight: var(--product-weight-body);
+  }
+  .product-mode-panel[data-product-mode] .product-demo .sim-live-preview :where(
+    .app-brand, .app-panel h5, .live-card-title, .fake-ticket b
+  ) {
+    font-size: var(--product-text-subtitle);
+    line-height: var(--product-leading-ui);
+    font-weight: var(--product-weight-title);
+  }
+  .product-mode-panel[data-product-mode] .product-demo .sim-live-preview :where(
+    .fake-question, .app-hero h4, .live-head h4
+  ) {
+    font-size: var(--product-text-display);
+    line-height: var(--product-leading-ui);
+    font-weight: var(--product-weight-display);
+  }
+  .product-mode-panel[data-product-mode] .product-demo .sim-live-preview :where(
+    .fake-field .v, .app-metric b, .live-kpi b, .app-receipt b, .app-value,
+    .wallet-token b, .participant b, .leg-card b
+  ) {
+    font-size: var(--product-text-title);
+    line-height: var(--product-leading-ui);
+    font-weight: var(--product-weight-title);
+  }
+  .product-mode-panel[data-product-mode] .product-demo .sim-live-preview :where(
+    .intent-item b, .app-row b, .app-list-item b, .ticket-total b
+  ) {
+    font-size: var(--product-text-body);
+    line-height: var(--product-leading-ui);
+    font-weight: var(--product-weight-title);
+  }
+  .product-mode-panel[data-product-mode] .product-demo .sim-live-preview :where(
+    .app-action-bar button, .sim-app-action,
+    .event-continue-button, .app-ballot button, .fake-actions button,
+    .liquidity-side, .liquidity-input
+  ) {
+    font-size: var(--product-text-control);
+    line-height: var(--product-leading-tight);
+    font-weight: var(--product-weight-control);
+  }
+  .product-mode-panel[data-product-mode] .product-demo .sim-live-preview :where(.live-input) {
+    font-size: var(--product-text-body);
+    line-height: var(--product-leading-ui);
+    font-weight: var(--product-weight-body);
+  }
+  .product-mode-panel[data-product-mode] .product-demo .sim-live-preview :where(
+    .odds-side b, .team-score b, .countdown b
+  ) {
+    font-size: var(--product-text-figure);
+    line-height: var(--product-leading-tight);
+    font-weight: var(--product-weight-display);
+  }
+  .product-mode-panel[data-product-mode] .product-demo .sim-live-preview :where(.app-panel, .live-card) { gap: .5rem; }
+  .product-mode-panel[data-product-mode] .product-demo .sim-live-preview .live-kpis { grid-template-columns: repeat(auto-fit, minmax(min(9rem, 100%), 1fr)); }
+  .product-demo.sim-tight .live-main.live-layout-1 > .live-card:last-child,
+  .product-demo.sim-tight .live-main.live-layout-3 > .live-card:last-child { grid-column: 1 / -1; }
+  .product-demo.sim-tight .live-page:is(.page-create-market, .page-private-room) .live-card { grid-column: 1 / -1; }
+  .product-demo.sim-ultra .liquidity-grid { grid-template-columns: 1fr; }
+
+  @media (max-width: 720px) {
+    .product-mode-nav { grid-template-columns: 1fr; gap: .56rem; padding: .82rem .54rem .54rem; }
+    .product-switch-label { grid-template-columns: auto minmax(0, 1fr); align-items: baseline; gap: .22rem .5rem; border-right: 0; border-bottom: 1px solid var(--line); padding: .1rem .12rem .48rem; }
+    .product-switch-label strong { font-size: 1rem; }
+    .product-switch-label small { grid-column: 1 / -1; }
+    .product-mode-nav.is-awaiting-selection { gap: .95rem; min-height: 0; padding: 1.05rem .72rem; }
+    .product-mode-nav.is-awaiting-selection .product-switch-label { display: grid; grid-template-columns: 1fr; gap: .22rem; border-bottom: 0; padding: 0; }
+    .product-mode-nav.is-awaiting-selection .product-switch-label strong { font-size: 1.45rem; }
+    .product-mode-nav.is-awaiting-selection .product-switch-label small { grid-column: auto; }
+    .product-mode-nav.is-awaiting-selection .product-tabs { grid-template-columns: 1fr; max-width: 32rem; }
+  }
+  @media (max-width: 470px) {
+    .product-tab { grid-template-columns: auto minmax(0, 1fr); gap: .42rem; min-height: 3.75rem; padding: .44rem; }
+    .product-tab-event { display: none; }
+    .product-tab-copy strong { font-size: .76rem; }
+    .product-tab-copy small { font-size: .61rem; }
+    .product-tab-icon { width: 2rem; height: 2rem; }
+    .product-tab-icon svg { width: 1.05rem; height: 1.05rem; }
+    .product-mode-nav.is-awaiting-selection .product-tab { grid-template-columns: auto minmax(0, 1fr) auto; min-height: 4.8rem; padding: .68rem; }
+    .product-mode-nav.is-awaiting-selection .product-tab-icon { width: 2.5rem; height: 2.5rem; }
+    .product-mode-nav.is-awaiting-selection .product-tab-copy strong { font-size: .9rem; }
+    .product-mode-nav.is-awaiting-selection .product-tab-event { display: inline-flex; }
+  }
 </style>
 </head>
 <body>
@@ -1202,7 +1788,7 @@
 
 <nav class="sitenav" aria-label="Primary">
   <div class="sitenav-inner">
-    <a class="brand" href="/">DemoThemis<span class="dot">.</span></a>
+    <a class="brand" href="/">System Lab<span class="dot">.</span></a>
     <button class="nav-toggle" type="button" aria-label="Menu" aria-expanded="false">&#9776;</button>
     <div class="nav-links">
       <a href="/">Home</a>
@@ -1218,11 +1804,11 @@
 </nav>
 
 <header class="hero run-hero reveal">
-  <p class="kicker">Run-through</p>
-  <h1>Play one market from a dime to an appealed verdict.</h1>
-  <p class="dek">A complete system simulation: create the market, grow the pot, unlock self-custody claims, trade through dispute, route the case through DemoThemis, and climb the appeal ladder to finality.</p>
+  <p class="kicker">End-to-end run-through</p>
+  <h1>Play the whole system from first stake to final resolution.</h1>
+  <p class="dek">Create a market, grow liquidity, unlock self-custody claims, trade through a dispute, route the case into human arbitration, and climb the appeal ladder to finality.</p>
   <div class="meta">
-    <span class="pill">Playable chapter</span>
+    <span class="pill">System simulation</span>
     <span>Chapter 4 of 6</span>
     <span class="dot">&bull;</span>
     <span>One full run</span>
@@ -1237,6 +1823,31 @@
     <p>Tap through one market from first bet to final appeal. Each mock screen shows what changed.</p>
 
     <div class="run-game reveal">
+        <nav class="product-mode-nav is-awaiting-selection" aria-label="Product simulator">
+          <div class="product-switch-label">
+            <span>Simulation entry</span>
+            <strong>Choose a product</strong>
+            <small>Start with market creation or enter at human resolution</small>
+          </div>
+          <div class="product-tabs" role="tablist" aria-label="Choose a product simulation">
+            <button class="product-tab" id="productTabMomo" type="button" role="tab" aria-selected="false" aria-controls="productModePanel" tabindex="0" data-product-mode="momo" aria-label="PredictionMoMo simulation, starting at Event 01">
+              <span class="product-tab-icon" aria-hidden="true">
+                <svg viewBox="0 0 24 24"><path d="M12 16v5"></path><path d="M16 14.64V21"></path><path d="M20 10.66V21"></path><path d="m22 3-8.65 8.65a.5.5 0 0 1-.7 0L9.35 8.35a.5.5 0 0 0-.7 0L2 15"></path><path d="M4 18.46V21"></path><path d="M8 14.66V21"></path></svg>
+              </span>
+              <span class="product-tab-copy"><strong>PredictionMoMo</strong><small>Market creation and trading</small></span>
+              <span class="product-tab-event">Start 01</span>
+            </button>
+            <button class="product-tab" id="productTabThemis" type="button" role="tab" aria-selected="false" aria-controls="productModePanel" tabindex="-1" data-product-mode="themis" aria-label="DemoThemis simulation, starting at Event 07">
+              <span class="product-tab-icon" aria-hidden="true">
+                <svg viewBox="0 0 24 24"><path d="M10 18v-7"></path><path d="M11.12 2.2a2 2 0 0 1 1.76 0l7.84 3.85A.5.5 0 0 1 20.5 7h-17a.5.5 0 0 1-.22-.95z"></path><path d="M14 18v-7"></path><path d="M18 18v-7"></path><path d="M3 22h18"></path><path d="M6 18v-7"></path></svg>
+              </span>
+              <span class="product-tab-copy"><strong>DemoThemis</strong><small>Human jury and appeals</small></span>
+              <span class="product-tab-event">Start 07</span>
+            </button>
+          </div>
+        </nav>
+
+        <div class="product-mode-panel" id="productModePanel" role="tabpanel" hidden>
         <div class="run-control-panel" aria-label="Simulation controls">
           <div class="run-controls">
             <button class="btn alt" id="runBack" type="button">Previous event</button>
@@ -1248,8 +1859,8 @@
                 <span class="run-progress-sep" aria-hidden="true">&middot;</span>
                 <span class="run-progress-stage" id="runControlStage">Market setup</span>
                 <span class="run-progress-sep" aria-hidden="true">&middot;</span>
-                <button class="event-navigator-toggle" id="eventNavigatorToggle" type="button" aria-expanded="false" aria-controls="stageRail">
-                  <span class="event-nav-label">Event navigator</span>
+                <button class="event-navigator-toggle" id="eventNavigatorToggle" type="button" aria-label="Open event navigator" aria-expanded="false" aria-controls="stageRail">
+                  <span class="event-nav-label">Events</span>
                 </button>
               </span>
             </div>
@@ -1265,9 +1876,9 @@
             <summary>Mechanics unlocked so far</summary>
             <div class="unlock-panels">
               <div>
-                <h3>PredictionMoMo features unlocked</h3>
+                <h3>Market features unlocked</h3>
                 <div class="unlock-grid" id="featureGrid">
-                  <div class="unlock" data-feature="instant"><b>Instant market <span class="tag">locked</span></b><small>Open any question with a first bet, even less than a dollar.</small></div>
+                  <div class="unlock" data-feature="instant"><b>Instant market <span class="tag">locked</span></b><small>Open a valid question with funded YES, NO, or two-sided liquidity.</small></div>
                   <div class="unlock" data-feature="fixed"><b>Fixed odds <span class="tag">locked</span></b><small>Post a side at named odds; later bettors fill the locked price first.</small></div>
                   <div class="unlock" data-feature="tokens"><b>Self-custody tokens <span class="tag">locked</span></b><small>Liquid markets become ERC-20 YES and NO claims in user wallets.</small></div>
                   <div class="unlock" data-feature="private"><b>Private markets <span class="tag">locked</span></b><small>Invite-only rooms get neutral escrow and third-party arbitration.</small></div>
@@ -1293,6 +1904,7 @@
             </div>
           </details>
         </section>
+        </div>
     </div>
   </section>
 
@@ -1385,23 +1997,23 @@
   var STAGES = [
     {
       title: "Open the market",
-      sub: "A first bet creates escrow.",
-      mission: "Open with a dime",
-      text: "A market starts when the first person locks any amount into protocol escrow. There is no listing committee, no market maker, and no minimum viable liquidity hiding behind the curtain.",
+      sub: "A written rule and opening liquidity create escrow.",
+      mission: "Set rules and liquidity",
+      text: "A market starts when its creator writes the exact resolve condition and locks any amount beside YES, NO, or both. There is no listing committee or hidden minimum viable liquidity.",
       nodes: ["open"],
       features: ["instant"],
       components: ["escrow"],
-      tokens: ["Dime in escrow"],
+      tokens: ["Opening liquidity in escrow"],
       pot: .1,
       yes: 1,
-      claims: "First tiny bet",
+      claims: "Opening YES/NO liquidity",
       trade: "held in the market until it is liquid",
       court: "No dispute yet",
       panel: "no dispute yet",
       keys: 0,
       fees: 0,
       loop: ["cases"],
-      log: "Market exists because one person cared enough to bet ten cents.",
+      log: "The market opens with a public resolution rule and creator-funded liquidity.",
       actions: ["Publish market", "Open market page"]
     },
     {
@@ -1662,9 +2274,9 @@
     {
       lane: "Market",
       title: "Question opens",
-      body: "A first bet creates the market and locks escrow. The important mechanic is that the protocol does not need a listing committee or minimum liquidity to begin.",
+      body: "A written resolve condition and at least one funded opening offer create the market. The protocol does not need a listing committee or minimum launch size.",
       change: "Market exists",
-      why: "Ten cents in escrow is enough to make the question live.",
+      why: "Even ten cents of creator-funded liquidity is enough to make the question live.",
       next: "Crowd prices it",
       tone: "market",
       results: ["The dime lands in escrow; the question becomes a real market.", "A shareable link pulls the first observers toward the pot."]
@@ -1794,10 +2406,10 @@
   var STEP_GUIDES = [
     {
       label: "Market start",
-      headline: "Post the first tiny bet.",
-      look: "You are looking at a normal create-market form, starting YES position, and public market preview.",
+      headline: "Write the rule and seed the market.",
+      look: "The form pairs an exact resolve condition with separate YES and NO opening-liquidity controls.",
       use: "Publish the market, then open the market page.",
-      notice: "The product moment is simple: a first escrowed stake turns the draft into a live market."
+      notice: "Publishing locks the written rule and every funded opening offer into escrow."
     },
     {
       label: "Live pricing",
@@ -1823,9 +2435,9 @@
     {
       label: "Private wager",
       headline: "Open an invite-only room with the same court path.",
-      look: "The room shows counterparties, locked terms, and escrow instead of public order flow.",
+      look: "The room shows counterparties, editable terms, and the written resolve condition before escrow locks.",
       use: "Invite the counterparty, then lock the fixed odds.",
-      notice: "Privacy changes who can see the wager, not who controls settlement."
+      notice: "Privacy changes who can see the wager, not the need to fix its outcome rule before funding."
     },
     {
       label: "Parlay route",
@@ -1981,14 +2593,28 @@
   ];
 
   var STAGE_GROUPS = [
-    { label: "Market setup", start: 0, end: 3 },
-    { label: "Bet types", start: 4, end: 5 },
-    { label: "Resolution", start: 6, end: 7 },
-    { label: "Jury process", start: 8, end: 10 },
-    { label: "Appeal + loop", start: 11, end: 12 }
+    { label: "Market setup", start: 0, end: 3, mode: "momo" },
+    { label: "Bet types", start: 4, end: 5, mode: "momo" },
+    { label: "Resolution", start: 6, end: 7, mode: "themis" },
+    { label: "Jury process", start: 8, end: 10, mode: "themis" },
+    { label: "Appeal + loop", start: 11, end: 12, mode: "themis" }
   ];
 
+  var PRODUCT_MODES = {
+    momo: {
+      start: 0,
+      label: "PredictionMoMo",
+      tabId: "productTabMomo"
+    },
+    themis: {
+      start: 6,
+      label: "DemoThemis",
+      tabId: "productTabThemis"
+    }
+  };
+
   var stage = 0;
+  var productModeSelected = false;
   var rail = document.getElementById("stageRail");
   var next = document.getElementById("runNext");
   var back = document.getElementById("runBack");
@@ -1996,9 +2622,15 @@
   var runControlEvent = document.getElementById("runControlEvent");
   var runControlStage = document.getElementById("runControlStage");
   var runControlTitle = document.getElementById("runControlTitle");
+  var productTabs = Array.prototype.slice.call(document.querySelectorAll(".product-tab[data-product-mode]"));
+  var productModeNav = document.querySelector(".product-mode-nav");
+  var productModePanel = document.getElementById("productModePanel");
   var actionEl = null;
   var activeAction = -1;
   var activeEventStep = 0;
+  var marketLiquidityDraft = { yes: .1, no: 0 };
+  var marketResolveConditionDraft = "YES if the league publishes City as the final winner; NO otherwise.";
+  var privateResolveConditionDraft = "YES if the league publishes City as the final winner; NO otherwise.";
   var openStageGroup = -1;
   var eventNavigatorOpen = false;
   var artResizeFrame = 0;
@@ -2021,6 +2653,55 @@
   function setText(id, value) {
     var el = document.getElementById(id);
     if (el) el.textContent = value;
+  }
+
+  function productModeForStage(stageIndex) {
+    return stageIndex >= PRODUCT_MODES.themis.start ? "themis" : "momo";
+  }
+
+  function syncProductMode() {
+    if (!productModeSelected) {
+      if (productModeNav) productModeNav.classList.add("is-awaiting-selection");
+      productTabs.forEach(function (tab, index) {
+        tab.setAttribute("aria-selected", "false");
+        tab.tabIndex = index === 0 ? 0 : -1;
+      });
+      if (productModePanel) {
+        productModePanel.hidden = true;
+        productModePanel.removeAttribute("aria-labelledby");
+        productModePanel.removeAttribute("data-product-mode");
+      }
+      return;
+    }
+    if (productModeNav) productModeNav.classList.remove("is-awaiting-selection");
+    var mode = productModeForStage(stage);
+    var config = PRODUCT_MODES[mode];
+    productTabs.forEach(function (tab) {
+      var selected = tab.getAttribute("data-product-mode") === mode;
+      tab.setAttribute("aria-selected", selected ? "true" : "false");
+      tab.tabIndex = selected ? 0 : -1;
+    });
+    if (productModePanel) {
+      productModePanel.hidden = false;
+      productModePanel.setAttribute("aria-labelledby", config.tabId);
+      productModePanel.setAttribute("data-product-mode", mode);
+    }
+    if (rail) rail.setAttribute("aria-label", "All event groups; current product: " + config.label);
+    var focusScene = document.getElementById("focusScene");
+    if (focusScene) focusScene.setAttribute("aria-label", config.label + " simulation workspace");
+  }
+
+  function selectProductMode(mode) {
+    var config = PRODUCT_MODES[mode];
+    if (!config || (productModeSelected && productModeForStage(stage) === mode)) return false;
+    productModeSelected = true;
+    stage = config.start;
+    resetEventFlow(false);
+    openStageGroup = -1;
+    setEventNavigatorOpen(false);
+    allowAutoRevealTarget = false;
+    render();
+    return true;
   }
 
   function makeEl(tag, className, text) {
@@ -2631,7 +3312,7 @@
     if (!root) return;
     root.querySelectorAll(".machine-state").forEach(function (button) {
       var stages = (button.getAttribute("data-sim-stages") || "").split(/\s+/).filter(Boolean).map(Number);
-      var current = stages.indexOf(stage) >= 0;
+      var current = productModeSelected && stages.indexOf(stage) >= 0;
       button.classList.toggle("is-sim-current", current);
       var chip = button.querySelector(".machine-sim-chip");
       if (chip && current) chip.textContent = "Event " + String(stage + 1).padStart(2, "0");
@@ -2937,11 +3618,11 @@
       product: "PredictionMoMo",
       screen: "Create market",
       headline: "Will City win the final?",
-      sub: "A question becomes real as soon as one person locks a first bet.",
+      sub: "A written resolve condition and opening liquidity turn the draft into a market.",
       status: "Market live",
-      flow: [["You do", "Type the question and add $0.10 on YES."], ["App shows", "A public market page with the first price."], ["Protocol does", "Locks the dime in neutral escrow."]],
-      fields: [["Question", "Will City win the final?", "The market starts from the question itself."], ["Starting stake", "$0.10 on YES", "Tiny is fine; the first stake creates the market."], ["Escrow", "Locked before any dispute exists", "The app cannot spend or redirect the pot."], ["Market page", "Live immediately", "Other people can take either side."]],
-      behind: ["A market page is created as soon as the first stake is locked.", "The product action is publish, then trade."]
+      flow: [["You do", "Write the resolve condition and fund YES, NO, or both."], ["App shows", "A public market page with opening odds."], ["Protocol does", "Locks the rule and funded offers in neutral escrow."]],
+      fields: [["Question", "Will City win the final?", "The market starts from the question itself."], ["Resolve condition", "YES if the league publishes City as the final winner; NO otherwise.", "The result source is fixed before anyone trades."], ["Opening liquidity", "$0.10 YES / $0.00 NO", "Each side has its own amount control."], ["Market page", "Live immediately", "Other people can take either side."]],
+      behind: ["A market page is created once the rule and at least one funded offer are locked.", "The product action is publish, then trade."]
     },
     {
       product: "PredictionMoMo",
@@ -2994,7 +3675,7 @@
       behind: ["A parlay feels like a sportsbook feature, but the protocol is not guaranteeing the payout from its own balance sheet.", "The product action is simple: build, preview, submit."]
     },
     {
-      product: "PredictionMoMo",
+      product: "DemoThemis Intake",
       screen: "Resolve market",
       headline: "The match is over. YES is posted.",
       sub: "Someone posts the result with a bond, and a watcher window gives others a paid reason to catch lies.",
@@ -3169,7 +3850,7 @@
       ]
     },
     {
-      product: "PredictionMoMo",
+      product: "DemoThemis Intake",
       section: "Resolve",
       status: "Review window",
       title: "The match is over",
@@ -3296,17 +3977,15 @@
       tabs: ["Create", "Explore", "Portfolio"],
       section: "Create market",
       title: "Will City win the final?",
-      subtitle: "Create a public prediction market with a starting stake.",
+      subtitle: "Define the outcome rule and fund the market's opening sides.",
       status: "Ready to publish",
-      intent: { why: "Turn an opinion into a market", money: "$0.10 starts escrow", next: "Publish, then share the page" },
-      kpis: [["Starting stake", "$0.10"], ["First side", "YES"], ["Visibility", "Public"]],
-      summary: "A user fills a normal market form and the first bet becomes locked escrow immediately.",
+      kpis: [],
+      summary: "The creator writes the resolve condition and independently funds YES, NO, or both before publishing.",
       sideTitle: "Publish preview",
       sideRows: [["Market page", "Ready"], ["Trading", "Opens instantly"], ["Settlement", "Escrowed"]],
       blocks: [
-        { type: "fields", title: "Market form", hot: 0, rows: [["Question", "Will City win the final?"], ["Category", "Sports"], ["Close time", "Sunday 22:00"]] },
-        { type: "choice", title: "Starting position", hot: 0, options: [["YES", "good"], ["NO", "bad"]], note: "Your starting stake sets the opening price." },
-        { type: "receipt", title: "Market preview", hot: 1, value: "app.predictionmomo.com/m/city-final", note: "This is the public page traders will see after publishing." }
+        { type: "fields", title: "Market form", hot: 0, editable: true, rows: [["Question", "Will City win the final?", "input"], ["Close time", "Sunday 22:00", "input"], ["Resolve condition", "YES if the league publishes City as the final winner; NO otherwise.", "textarea"]] },
+        { type: "liquidity", title: "Starting position", hot: 0, offers: [["YES", "yes", "good"], ["NO", "no", "bad"]], note: "Enter an amount beside either side. Every funded offer is locked when the market is published." }
       ]
     },
     {
@@ -3344,7 +4023,7 @@
       blocks: [
         { type: "table", title: "Order book", hot: 0, rows: [["YES 70c", "$500", "maker"], ["YES 73c", "$240", "maker"], ["Liquidity", "available", "best next"]] },
         { type: "ticket", title: "Buy ticket", hot: 0, rows: [["Buy", "$500 YES"], ["Limit", "70c"], ["Fill priority", "Best offer first"]], total: "$350 cost" },
-        { type: "route", title: "Fill preview", hot: 1, steps: [["1", "Take 70c row", "filled"], ["2", "Fill remaining size", "if needed"], ["3", "Refresh book", "live"]] }
+        { type: "route", title: "Fill status", hot: 1, steps: [["1", "Take 70c row", "filled"], ["2", "Fill remaining size", "if needed"], ["3", "Refresh book", "live"]] }
       ]
     },
     {
@@ -3362,8 +4041,7 @@
       sideRows: [["Address", "0x7c...42"], ["Custody", "User"], ["Trading", "Order book"]],
       blocks: [
         { type: "checklist", title: "Graduation checks", hot: 0, rows: [["Real disagreement", "Passed"], ["Maker depth", "Passed"], ["Time alive", "Passed"]] },
-        { type: "tokens", title: "Wallet assets", hot: 0, tokens: [["YES token", "420 YES", "good"], ["NO token", "310 NO", "bad"]] },
-        { type: "table", title: "Order book preview", hot: 1, rows: [["Sell YES", "61c", "$8.4k"], ["Buy NO", "39c", "$6.1k"], ["Transfer", "enabled", "wallet"]] }
+        { type: "tokens", title: "Wallet assets", hot: 0, tokens: [["YES token", "420 YES", "good"], ["NO token", "310 NO", "bad"]] }
       ]
     },
     {
@@ -3381,8 +4059,7 @@
       sideRows: [["Alice", "YES side"], ["Bob", "Needs invite"], ["Settlement", "DemoThemis"]],
       blocks: [
         { type: "participants", title: "Counterparties", hot: 0, people: [["Alice", "YES side ready"], ["Bob", "Not invited yet"]] },
-        { type: "fields", title: "Locked terms", hot: 1, rows: [["Outcome", "City wins"], ["Odds", "YES 60c / NO 40c"], ["Stake", "$10k each"]] },
-        { type: "messages", title: "Room feed", hot: 0, messages: [["me", "Private room drafted"], ["me", "Terms ready before invite"]] }
+        { type: "fields", title: "Draft terms", hot: 1, editable: true, rows: [["Outcome", "City wins", "input"], ["Odds", "YES 60c / NO 40c", "input"], ["Stake", "$10k each", "input"], ["Resolve condition", "YES if the league publishes City as the final winner; NO otherwise.", "textarea"]] }
       ]
     },
     {
@@ -3400,13 +4077,12 @@
       sideRows: [["Leg A", "Filled"], ["Leg B", "Filled"], ["Submit", "All-or-none"]],
       blocks: [
         { type: "legs", title: "Bet slip", hot: 0, legs: [["City wins", "YES 62c"], ["Rain tomorrow", "YES 48c"]], payout: "Est. payout 3.36x" },
-        { type: "route", title: "Fill route", hot: 0, steps: [["1", "Check both legs", "live"], ["2", "Fill live prices", "all-or-none"], ["3", "Create parlay", "done"]] },
-        { type: "receipt", title: "Cashout preview", hot: 1, value: "$128 now", note: "Exit goes back through live market liquidity." }
+        { type: "route", title: "Fill route", hot: 0, steps: [["1", "Check both legs", "live"], ["2", "Fill live prices", "all-or-none"], ["3", "Create parlay", "done"]] }
       ]
     },
     {
       template: "resolution-dashboard",
-      product: "PredictionMoMo Resolve",
+      product: "DemoThemis Intake",
       tabs: ["Result", "Review", "Market"],
       section: "Resolution",
       title: "The match is over",
@@ -3419,9 +4095,7 @@
       sideRows: [["Answer", "Proposed"], ["Review", "Can challenge"], ["Claims", "Still trade"]],
       blocks: [
         { type: "scoreboard", title: "Official source", hot: 0, left: ["City", "2"], right: ["United", "1"], note: "Final" },
-        { type: "ticket", title: "Post answer", hot: 0, rows: [["Outcome", "YES"], ["Bond", "$250"], ["Source", "official score"]], total: "Submit assertion" },
-        { type: "countdown", title: "Review window", hot: [0, 1], value: "23:58", note: "Challenge still possible" },
-        { type: "odds", title: "Market still open", hot: 1, yes: 91, no: 9 }
+        { type: "ticket", title: "Post answer", hot: 0, rows: [["Outcome", "YES"], ["Bond", "$250"], ["Source", "official score"]], total: "Submit assertion" }
       ]
     },
     {
@@ -3433,12 +4107,11 @@
       subtitle: "The false market answer becomes a DemoThemis court case.",
       status: "Court case opened",
       intent: { why: "Challenge a wrong answer before it pays", money: "Bond is at risk; reward if right", next: "Add evidence, then open court" },
-      kpis: [["Flag", "False YES"], ["Reward", "Bond"], ["Next", "Jury draw"]],
+      kpis: [["Flag", "False YES"], ["Reward", "Bond"]],
       summary: "The important visual is the product handoff: market challenge on the left, court intake on the right.",
       sideTitle: "Handoff state",
       sideRows: [["Market", "Still live"], ["Case", "Opened"], ["Decision path", "DemoThemis"]],
       blocks: [
-        { type: "handoff", title: "Product handoff", hot: 1, left: ["PredictionMoMo", "False YES challenged"], right: ["DemoThemis", "Case #1182 opened"] },
         { type: "ticket", title: "Challenge ticket", hot: 0, rows: [["Flagged answer", "YES"], ["Your answer", "NO"], ["Evidence", "Official score"], ["If wrong", "Stake at risk"], ["If right", "Reward bond"]], total: "Stake challenge" },
         { type: "odds", title: "Dispute repricing", hot: 0, yes: 44, no: 56 }
       ]
@@ -3458,8 +4131,7 @@
       sideRows: [["Randomness", "Public"], ["Case seed", "Bound"], ["Face checks", "Pending"]],
       blocks: [
         { type: "beacon", title: "Randomness beacon", hot: 0, code: "0x8fd9...c41a + case #1182", note: "One roll is bound to this case." },
-        { type: "seats", title: "Drawn seats", hot: 0, count: 16, on: 15 },
-        { type: "faceChecks", title: "Presence checks", hot: 1, rows: [["Juror 04", "Present"], ["Juror 09", "Present"], ["Juror 12", "Pending"]] }
+        { type: "seats", title: "Drawn seats", hot: 0, count: 16, on: 15 }
       ]
     },
     {
@@ -3477,8 +4149,7 @@
       sideRows: [["Identity", "Live human"], ["Ballot", "Encrypted"], ["Receipt", "Not useful"]],
       blocks: [
         { type: "evidence", title: "Evidence tabs", hot: 0, tabs: ["Official source", "Market record", "Challenge"], active: "Official source" },
-        { type: "ballot", title: "Encrypted ballot", hot: 0, options: [["YES", "good"], ["NO", "bad"]], note: "No screenshot proves what counted." },
-        { type: "bars", title: "Live reserve", hot: 1, bars: [["Pending pay", 68, "bad"], ["Available", 32, "good"]] }
+        { type: "ballot", title: "Encrypted ballot", hot: 0, options: [["YES", "good"], ["NO", "bad"]], note: "No screenshot proves what counted." }
       ]
     },
     {
@@ -3496,7 +4167,6 @@
       sideRows: [["Claims", "Repriced"], ["Reserve update", "Pending/private"], ["Appeal", "Available"]],
       blocks: [
         { type: "proof", title: "Aggregate tally", hot: 0, result: "NO wins 11-4", note: "Individual ballots remain private." },
-        { type: "odds", title: "Market repricing", hot: 0, yes: 28, no: 72 },
         { type: "route", title: "Pending private updates", hot: 1, steps: [["1", "Compute from provisional result", "ready"], ["2", "Prove pending totals", "valid"], ["3", "Wait for final verdict", "safe"]] }
       ]
     },
@@ -3515,7 +4185,6 @@
       sideRows: [["Panel pay", "Included"], ["Security floor", "Included"], ["Delay", "Priced"]],
       blocks: [
         { type: "checkout", title: "Appeal price", hot: 0, rows: [["Panel pay", "$12.4k"], ["Security floor", "$31.0k"], ["Delay cost", "$8.2k"], ["Wallet", "$44.2k"]], winner: "Security floor sets price" },
-        { type: "seats", title: "Next panel preview", hot: 1, count: 32, on: 31 },
         { type: "receipt", title: "Market status", hot: 0, value: "Claims still trade", note: "Appeal risk remains visible in the market." }
       ]
     },
@@ -3534,8 +4203,7 @@
       sideRows: [["Winners", "Paid"], ["Market", "Closed"], ["Court", "Stronger"]],
       blocks: [
         { type: "closed", title: "Market receipt", hot: 0, value: "Paid and closed" },
-        { type: "table", title: "Court record", hot: 1, rows: [["Resolved case", "Saved", "aptitude tests"], ["Juror updates", "Private", "future cases"], ["Public proof", "Available", "trust"]] },
-        { type: "route", title: "Bootstrap loop", hot: 2, steps: [["1", "Payout", "done"], ["2", "Save court record", "done"], ["3", "Next market", "easier"]] }
+        { type: "table", title: "Court record", hot: 1, rows: [["Resolved case", "Saved", "aptitude tests"], ["Juror updates", "Private", "future cases"], ["Public proof", "Available", "trust"]] }
       ]
     }
   ];
@@ -3551,14 +4219,14 @@
           result: "Market posted",
           after: {
             title: "City wins the final is live",
-            subtitle: "The starting stake is locked and the public market page is ready.",
+            subtitle: "The resolve condition and funded opening offers are locked; the public market page is ready.",
             status: "Market live",
             primary: "Open market page",
-            kpis: [["Market", "Live"], ["Starting stake", "$0.10"], ["Price", "YES 100%"]],
+            kpis: [],
             blocks: [
-              { type: "receipt", title: "Published market", value: "Live public market", note: "The market page is open for traders." },
+              { type: "receipt", title: "Starting position", value: "$0.10 YES", note: "Every funded opening offer is locked in escrow." },
               { type: "odds", title: "Opening odds", yes: 100, no: 0 },
-              { type: "receipt", title: "Market page", value: "app.predictionmomo.com/m/city-final", note: "Anyone can now take either side." }
+              { type: "receipt", title: "Market page", value: "app.predictionmomo.com/m/city-final", note: "The published page carries the written resolve condition." }
             ]
           }
         },
@@ -3569,14 +4237,14 @@
           result: "Market page opened",
           after: {
             title: "Public market page",
-            subtitle: "The market has a public URL, a first price, and escrow behind the opening stake.",
+            subtitle: "The market has a public URL, a fixed resolve condition, and escrow behind its opening liquidity.",
             status: "Ready for traders",
             primary: "Page open",
-            kpis: [["Market", "Public"], ["Opening price", "YES 100%"], ["Trading", "Ready"]],
+            kpis: [],
             blocks: [
               { type: "receipt", title: "Market page", value: "app.predictionmomo.com/m/city-final", note: "The page is ready to share from the browser or app." },
-              { type: "table", title: "Launch summary", rows: [["Question", "Published", "public"], ["Starting stake", "$0.10", "locked"], ["Next", "Crowd prices it", "open"]] },
-              { type: "receipt", title: "Escrow status", value: "Opening stake locked", note: "Trading can begin immediately." }
+              { type: "receipt", title: "Starting position", value: "$0.10 YES", note: "Funded offers were locked before trading began." },
+              { type: "receipt", title: "Escrow status", value: "$0.10 opening liquidity", note: "The resolve condition is fixed and trading can begin immediately." }
             ]
           }
         }
@@ -3628,7 +4296,6 @@
             kpis: [["Balance", "$610"], ["YES", "62%"], ["NO", "38%"]],
             blocks: [
               { type: "odds", title: "Current odds", yes: 62, no: 38 },
-              { type: "table", title: "What changed", rows: [["YES demand", "Raised price", "67c peak"], ["NO demand", "Pushed back", "38c"], ["Market price", "Live", "crowd split"]] },
               { type: "receipt", title: "User position", value: "YES/NO app balance", note: "Before tokenization, the app displays the escrowed position." }
             ]
           }
@@ -3650,21 +4317,20 @@
             blocks: [
               { type: "table", title: "Order book", rows: [["YES 70c", "Filled", "maker"], ["YES 73c", "$240", "maker"], ["Liquidity", "available", "best next"]] },
               { type: "receipt", title: "Fill receipt", value: "$500 YES at 70c", note: "The posted price fills before any next-best liquidity." },
-              { type: "route", title: "Fill preview", steps: [["1", "Take 70c row", "done"], ["2", "Check extra size", "next"], ["3", "Refresh book", "queued"]] }
+              { type: "route", title: "Fill status", steps: [["1", "Take 70c row", "done"], ["2", "Check extra size", "ready"], ["3", "Refresh book", "queued"]] }
             ]
           }
         },
         {
           cue: "Tap Fill remaining size",
           target: "block",
-          targetTitle: "Fill preview",
+          targetTitle: "Fill status",
           result: "Remaining size filled",
           after: {
             status: "Book refreshed",
             primary: "Fill complete",
             kpis: [["Best YES", "73c"], ["Remainder", "Filled"], ["Odds", "Updated"]],
             blocks: [
-              { type: "route", title: "Fill preview", steps: [["1", "70c row filled", "done"], ["2", "Remaining size filled", "done"], ["3", "Book refresh", "live"]] },
               { type: "table", title: "Order book", rows: [["YES 70c", "Filled", "done"], ["YES 73c", "$240", "best"], ["Liquidity", "used", "best next"]] },
               { type: "receipt", title: "Result", value: "Best price first", note: "Fixed odds improve UX without making the protocol a bookie." }
             ]
@@ -3681,8 +4347,7 @@
         kpis: [["Holding", "App balance"], ["Claim", "Ready"], ["Book", "Waiting"]],
         blocks: [
           { type: "checklist", title: "Graduation checks", rows: [["Real disagreement", "Passed"], ["Maker depth", "Passed"], ["Time alive", "Passed"]] },
-          { type: "receipt", title: "Current custody", value: "App balance", note: "The next step moves positions into wallet-held claims." },
-          { type: "table", title: "Book preview", rows: [["Sell YES", "Waiting", "wallet"], ["Buy NO", "Waiting", "wallet"], ["Transfer", "Locked", "until claimed"]] }
+          { type: "receipt", title: "Current custody", value: "App balance", note: "Eligible positions can now move to the wallet." }
         ]
       },
       steps: [
@@ -3715,8 +4380,7 @@
             kpis: [["Wallet", "0x7c...42"], ["Book", "Open"], ["Transfer", "Enabled"]],
             blocks: [
               { type: "tokens", title: "Wallet assets", tokens: [["YES token", "420 YES", "good"], ["NO token", "310 NO", "bad"]] },
-              { type: "table", title: "Order book", rows: [["Sell YES", "61c", "$8.4k"], ["Buy NO", "39c", "$6.1k"], ["Lend YES", "Enabled", "wallet"]] },
-              { type: "receipt", title: "Transfer path", value: "Move, sell, lend", note: "Claims can route outside the original page." }
+              { type: "table", title: "Order book", rows: [["Sell YES", "61c", "$8.4k"], ["Buy NO", "39c", "$6.1k"], ["Lend YES", "Enabled", "wallet"]] }
             ]
           }
         }
@@ -3729,8 +4393,7 @@
         kpis: [["Visibility", "Private"], ["Odds", "Draft"], ["Escrow", "Waiting"]],
         blocks: [
           { type: "participants", title: "Counterparties", people: [["Alice", "YES side ready"], ["Bob", "Not invited yet"]] },
-          { type: "fields", title: "Draft terms", rows: [["Outcome", "City wins"], ["Odds", "YES 60c / NO 40c"], ["Stake", "$10k each"]] },
-          { type: "messages", title: "Room feed", messages: [["me", "Private room created"], ["me", "Terms ready before invite"]] }
+          { type: "fields", title: "Draft terms", editable: true, rows: [["Outcome", "City wins", "input"], ["Odds", "YES 60c / NO 40c", "input"], ["Stake", "$10k each", "input"], ["Resolve condition", "YES if the league publishes City as the final winner; NO otherwise.", "textarea"]] }
         ]
       },
       steps: [
@@ -3745,8 +4408,7 @@
             kpis: [["Visibility", "Private"], ["Bob", "Invited"], ["Escrow", "Waiting"]],
             blocks: [
               { type: "participants", title: "Counterparties", people: [["Alice", "YES side ready"], ["Bob", "Invite sent"]] },
-              { type: "fields", title: "Visible terms", rows: [["Outcome", "City wins"], ["Odds", "YES 60c / NO 40c"], ["Stake", "$10k each"]] },
-              { type: "messages", title: "Room feed", messages: [["me", "Invite sent to Bob"], ["them", "Bob is reviewing"], ["me", "Escrow terms visible before signing"]] }
+              { type: "fields", title: "Visible terms", editable: true, rows: [["Outcome", "City wins", "input"], ["Odds", "YES 60c / NO 40c", "input"], ["Stake", "$10k each", "input"], ["Resolve condition", "YES if the league publishes City as the final winner; NO otherwise.", "textarea"]] }
             ]
           }
         },
@@ -3761,7 +4423,7 @@
             kpis: [["Visibility", "Private"], ["Odds", "Locked"], ["Escrow", "$20k"]],
             blocks: [
               { type: "participants", title: "Counterparties", people: [["Alice", "Signed YES"], ["Bob", "Signed NO"]] },
-              { type: "receipt", title: "Locked terms", value: "YES 60c / NO 40c", note: "$20k is in neutral escrow." },
+              { type: "receipt", title: "Locked terms", value: "YES 60c / NO 40c", note: "$20k and the official-final-result condition are locked in neutral escrow." },
               { type: "receipt", title: "Court route", value: "DemoThemis if challenged", note: "Private order flow still uses public rules." }
             ]
           }
@@ -3782,23 +4444,22 @@
             kpis: [["Legs", "2"], ["Fill mode", "All-or-none"], ["Claim", "Minted"]],
             blocks: [
               { type: "legs", title: "Parlay claim", legs: [["City wins", "YES 62c"], ["Rain tomorrow", "YES 48c"]], payout: "Minted 3.36x claim" },
-              { type: "receipt", title: "Cashout preview", value: "$128 now", note: "Exit quote is available because the legs are live." },
-              { type: "route", title: "Fill route", steps: [["1", "Check both legs", "done"], ["2", "Fill live prices", "done"], ["3", "Create parlay", "done"]] },
-              { type: "receipt", title: "Fill protection", value: "All-or-none fill", note: "If liquidity is missing, the order does not execute." }
+              { type: "receipt", title: "Cashout quote", value: "$128 now", note: "Exit quote is available because the legs are live." },
+              { type: "route", title: "Fill route", steps: [["1", "Check both legs", "done"], ["2", "Fill live prices", "done"], ["3", "Create parlay", "done"]] }
             ]
           }
         },
         {
           cue: "Tap Cash out early",
           target: "block",
-          targetTitle: "Cashout preview",
+          targetTitle: "Cashout quote",
           result: "Cashout quote shown",
           after: {
             status: "Cashout quoted",
             primary: "Quote ready",
             kpis: [["Cashout", "$128"], ["Route", "Live books"], ["Protection", "No partial fill"]],
             blocks: [
-              { type: "receipt", title: "Cashout preview", value: "$128 now", note: "Exit goes back through live market liquidity." },
+              { type: "receipt", title: "Cashout quote", value: "$128 now", note: "Exit goes back through live market liquidity." },
               { type: "route", title: "Exit route", steps: [["1", "Sell City leg", "quoted"], ["2", "Sell Rain leg", "quoted"], ["3", "Return cash", "ready"]] },
               { type: "table", title: "Fill check", rows: [["Leg A", "Liquid", "ok"], ["Leg B", "Liquid", "ok"], ["If not liquid", "Revert", "safe"]] }
             ]
@@ -3813,8 +4474,7 @@
         kpis: [["Posted", "Not yet"], ["Bond", "Ready"], ["Trading", "Open"]],
         blocks: [
           { type: "scoreboard", title: "Official source", left: ["City", "2"], right: ["United", "1"], note: "Final" },
-          { type: "ticket", title: "Post answer", rows: [["Outcome", "YES"], ["Bond", "$250"], ["Source", "official score"]], total: "Submit assertion" },
-          { type: "odds", title: "Market still open", yes: 86, no: 14 }
+          { type: "ticket", title: "Post answer", rows: [["Outcome", "YES"], ["Bond", "$250"], ["Source", "official score"]], total: "Submit assertion" }
         ]
       },
       steps: [
@@ -3861,8 +4521,7 @@
         kpis: [["Flag", "False YES"], ["Bond", "Ready"], ["Case", "Not opened"]],
         blocks: [
           { type: "ticket", title: "Challenge ticket", rows: [["Flagged answer", "YES"], ["Your answer", "NO"], ["Evidence", "Official score"], ["If wrong", "Stake at risk"], ["If right", "Reward bond"]], total: "Stake challenge" },
-          { type: "odds", title: "Dispute repricing", yes: 44, no: 56 },
-          { type: "receipt", title: "Court route", value: "Ready", note: "The case opens only after the challenge is staked." }
+          { type: "odds", title: "Dispute repricing", yes: 44, no: 56 }
         ]
       },
       steps: [
@@ -3892,10 +4551,9 @@
             status: "Court case opened",
             primary: "Case opened",
             intent: { why: "Challenge a wrong answer before it pays", money: "Reward bond waits on verdict", next: "Track jury draw and verdict" },
-            kpis: [["Flag", "False YES"], ["Reward", "Bond"], ["Next", "Jury draw"]],
+            kpis: [["Flag", "False YES"], ["Reward", "Bond"]],
             blocks: [
               { type: "handoff", title: "Product handoff", left: ["PredictionMoMo", "False YES challenged"], right: ["DemoThemis", "Case #1182 opened"] },
-              { type: "receipt", title: "Court intake", value: "Case #1182", note: "The market remains tradeable while the court takes over." },
               { type: "odds", title: "Dispute repricing", yes: 44, no: 56 }
             ]
           }
@@ -3909,8 +4567,7 @@
         kpis: [["Draws", "Pending"], ["Seats", "Not bound"], ["Reroll", "No"]],
         blocks: [
           { type: "beacon", title: "Randomness beacon", code: "0x8fd9...c41a + case #1182", note: "Tap verify to bind one roll to this case." },
-          { type: "seats", title: "Drawn seats", count: 16, on: 0 },
-          { type: "faceChecks", title: "Presence checks", rows: [["Juror 04", "Waiting"], ["Juror 09", "Waiting"], ["Juror 12", "Waiting"]] }
+          { type: "seats", title: "Drawn seats", count: 16, on: 0 }
         ]
       },
       steps: [
@@ -3940,7 +4597,6 @@
             primary: "Checks done",
             kpis: [["Present", "15"], ["Seats", "15"], ["Reroll", "No"]],
             blocks: [
-              { type: "seats", title: "Drawn seats", count: 16, on: 15 },
               { type: "faceChecks", title: "Presence checks", rows: [["Juror 04", "Present"], ["Juror 09", "Present"], ["Juror 12", "Present"]] },
               { type: "receipt", title: "Panel receipt", value: "15 verified humans", note: "Seats are people, not token weight." }
             ]
@@ -3962,7 +4618,6 @@
             intent: { why: "Earn by making the careful call", money: "$92 pay depends on timely honest work", next: "Check reserve, then wait for tally" },
             kpis: [["Earn", "$92"], ["Deadline", "18m"], ["Ballot", "Sealed"]],
             blocks: [
-              { type: "evidence", title: "Evidence tabs", tabs: ["Official source", "Market record", "Challenge"], active: "Official source" },
               { type: "proof", title: "Ballot box", result: "Encrypted vote sealed", note: "No screenshot proves what counted." },
               { type: "bars", title: "Live reserve", bars: [["Pending pay", 58, "bad"], ["Available", 42, "good"]] }
             ]
@@ -3980,8 +4635,7 @@
             kpis: [["Earn", "$92"], ["Deadline", "18m"], ["At-risk pay", "Live"]],
             blocks: [
               { type: "bars", title: "Live reserve", bars: [["Pending pay", 68, "bad"], ["Available", 32, "good"]] },
-              { type: "table", title: "Reserve rule", rows: [["Lazy vote", "At risk", "reserve"], ["Receipt", "None", "private"], ["Bribe proof", "Broken", "re-key"]] },
-              { type: "proof", title: "Ballot box", result: "Sealed", note: "The counted vote stays private until aggregate proof." }
+              { type: "table", title: "Reserve rule", rows: [["Lazy vote", "At risk", "reserve"], ["Receipt", "None", "private"], ["Bribe proof", "Broken", "re-key"]] }
             ]
           }
         }
@@ -3993,9 +4647,7 @@
         primary: "Publish proof",
         kpis: [["Verdict", "Hidden"], ["Appeal", "Pending"], ["Privacy", "Kept"]],
         blocks: [
-          { type: "proof", title: "Aggregate tally", result: "Sealed", note: "The proof has not been posted yet." },
-          { type: "odds", title: "Market repricing", yes: 51, no: 49 },
-          { type: "route", title: "Pending private updates", steps: [["1", "Wait for proof", "pending"], ["2", "Prove pending totals", "pending"], ["3", "Apply after finality", "private"]] }
+          { type: "proof", title: "Aggregate tally", result: "Sealed", note: "The proof has not been posted yet." }
         ]
       },
       steps: [
@@ -4010,8 +4662,7 @@
             kpis: [["Verdict", "NO"], ["Appeal", "Open"], ["Privacy", "Kept"]],
             blocks: [
               { type: "proof", title: "Aggregate tally", result: "NO wins 11-4", note: "Individual ballots remain private." },
-              { type: "odds", title: "Market repricing", yes: 28, no: 72 },
-              { type: "route", title: "Pending private updates", steps: [["1", "Compute from provisional result", "ready"], ["2", "Prove pending totals", "next"], ["3", "Wait for final verdict", "safe"]] }
+              { type: "route", title: "Pending private updates", steps: [["1", "Compute from provisional result", "ready"], ["2", "Prove pending totals", "verify"], ["3", "Wait for final verdict", "safe"]] }
             ]
           }
         },
@@ -4025,7 +4676,6 @@
             primary: "Totals verified",
             kpis: [["Verdict", "NO"], ["Aggregate", "Proved"], ["Individuals", "Private"]],
             blocks: [
-              { type: "route", title: "Pending private updates", steps: [["1", "Compute from provisional result", "done"], ["2", "Prove pending totals", "done"], ["3", "Wait for final verdict", "safe"]] },
               { type: "receipt", title: "Pending updates", value: "Aggregate totals verified", note: "No debit is applied before the final outcome." },
               { type: "odds", title: "Market repricing", yes: 28, no: 72 }
             ]
@@ -4047,8 +4697,7 @@
             intent: { why: "Buy one more review when stakes justify it", money: "$31.0k paid", next: "View the larger appeal panel" },
             kpis: [["Price", "$31.0k"], ["Deadline", "Paid"], ["Market", "Open"]],
             blocks: [
-              { type: "checkout", title: "Appeal price", rows: [["Panel pay", "$12.4k"], ["Security floor", "$31.0k"], ["Delay cost", "$8.2k"], ["Wallet", "$44.2k"]], winner: "Security floor sets price" },
-              { type: "seats", title: "Next panel preview", count: 32, on: 0 },
+              { type: "seats", title: "Appeal panel", count: 32, on: 0 },
               { type: "receipt", title: "Payment receipt", value: "$31.0k appeal paid", note: "The next rung can now draw." }
             ]
           }
@@ -4056,16 +4705,15 @@
         {
           cue: "Tap View appeal panel",
           target: "block",
-          targetTitle: "Next panel preview",
+          targetTitle: "Appeal panel",
           result: "31-seat appeal panel drawn",
           after: {
             status: "Appeal panel drawn",
             primary: "Panel drawn",
             intent: { why: "Buy one more review when stakes justify it", money: "31 verified people now decide", next: "Wait for the appeal verdict" },
-            kpis: [["Next panel", "31"], ["Retries", "Finite"], ["Attack cost", "Higher"]],
+            kpis: [["Panel", "31"], ["Retries", "Finite"], ["Attack cost", "Higher"]],
             blocks: [
-              { type: "seats", title: "Next panel preview", count: 32, on: 31 },
-              { type: "checkout", title: "Appeal price", rows: [["Panel pay", "$12.4k"], ["Security floor", "$31.0k"], ["Delay cost", "$8.2k"], ["Wallet", "$44.2k"]], winner: "Paid and locked" },
+              { type: "seats", title: "Appeal panel", count: 32, on: 31 },
               { type: "receipt", title: "Appeal state", value: "31 verified people", note: "Every retry gets bigger, pricier, and finite." }
             ]
           }
@@ -4079,8 +4727,7 @@
         kpis: [["Payout", "Ready"], ["Wallet", "0x7c...42"], ["Record", "Pending"]],
         blocks: [
           { type: "closed", title: "Market receipt", value: "Final verdict" },
-          { type: "table", title: "Court record", rows: [["Resolved case", "Waiting", "aptitude tests"], ["Juror updates", "Private", "future cases"], ["Public proof", "Available", "trust"]] },
-          { type: "route", title: "Bootstrap loop", steps: [["1", "Payout", "next"], ["2", "Save court record", "pending"], ["3", "Next market", "pending"]] }
+          { type: "table", title: "Court record", rows: [["Resolved case", "Waiting", "aptitude tests"], ["Juror updates", "Private", "future cases"], ["Public proof", "Available", "trust"]] }
         ]
       },
       steps: [
@@ -4096,7 +4743,6 @@
             kpis: [["Payout", "Paid"], ["Wallet", "0x7c...42"], ["Record", "Pending"]],
             blocks: [
               { type: "closed", title: "Market receipt", value: "Paid and closed" },
-              { type: "route", title: "Bootstrap loop", steps: [["1", "Payout", "done"], ["2", "Save court record", "next"], ["3", "Next market", "pending"]] },
               { type: "table", title: "Court record", rows: [["Resolved case", "Waiting", "aptitude tests"], ["Juror updates", "Private", "future cases"], ["Public proof", "Available", "trust"]] }
             ]
           }
@@ -4110,10 +4756,9 @@
             status: "Court memory saved",
             primary: "Create next market",
             intent: { why: "Collect payout and move on", money: "Court record improves future juror tests", next: "Create the next market" },
-            kpis: [["Payout", "Paid"], ["Record", "Saved"], ["Next market", "Ready"]],
+            kpis: [["Payout", "Paid"], ["Record", "Saved"]],
             blocks: [
               { type: "table", title: "Court record", rows: [["Resolved case", "Saved", "aptitude tests"], ["Juror updates", "Private", "future cases"], ["Public proof", "Available", "trust"]] },
-              { type: "route", title: "Bootstrap loop", steps: [["1", "Payout", "done"], ["2", "Save court record", "done"], ["3", "Next market", "next"]] },
               { type: "receipt", title: "Court memory", value: "Better juror selection", note: "Clean outcomes become resolved cases for aptitude tests." }
             ]
           }
@@ -4121,7 +4766,7 @@
         {
           cue: "Tap Create next market",
           target: "block",
-          targetTitle: "Bootstrap loop",
+          targetTitle: "Court memory",
           result: "Loop ready",
           after: {
             title: "The next market starts with a stronger court",
@@ -4131,8 +4776,7 @@
             intent: { why: "Collect payout and move on", money: "Proof and payouts are final", next: "Run another market" },
             kpis: [["Payout", "Paid"], ["Record", "Saved"], ["Demand", "Easier"]],
             blocks: [
-              { type: "route", title: "Bootstrap loop", steps: [["1", "Payout", "done"], ["2", "Save court record", "done"], ["3", "Next market", "ready"]] },
-              { type: "receipt", title: "Next demand", value: "More trust", note: "A stronger court makes the next market easier to use." },
+              { type: "receipt", title: "Demand effect", value: "More trust", note: "A stronger court makes the next market easier to use." },
               { type: "closed", title: "Market receipt", value: "Closed forever" }
             ]
           }
@@ -4142,7 +4786,7 @@
   ];
 
   var CONTROL_COACH_COPY = {
-    "Publish market": "Submit the starting stake and publish the market page.",
+    "Publish market": "Lock the resolve condition and funded opening offers, then publish the market page.",
     "Open market page": "Open the public market page traders will use next.",
     "Buy YES": "Fill a YES trade from the ticket. More YES demand pushes the price up.",
     "Buy NO": "Switch sides and buy NO. Opposing flow pulls the price back.",
@@ -4328,8 +4972,8 @@
     var desc = focus.body;
     var svg = "";
     if (index === 0) {
-      svg += person(82, 142, "first bettor", "accent", hot0);
-      svg += node(186, 96, 138, 88, "Escrow", "dime locked", "accent", hot0);
+      svg += person(82, 142, "creator", "accent", hot0);
+      svg += node(186, 96, 138, 88, "Escrow", "offers locked", "accent", hot0);
       svg += node(405, 86, 158, 105, "New market", "question is live", "good", hot0);
       svg += person(635, 128, "observers", "good", hot1);
       svg += flow(112, 142, 186, 140, "accent", hot0);
@@ -4530,6 +5174,58 @@
     return out;
   }
 
+  function safeLiquidityAmount(value) {
+    var amount = Number(value);
+    return Number.isFinite(amount) ? Math.max(0, amount) : 0;
+  }
+
+  function formatLiquidityAmount(value) {
+    return "$" + safeLiquidityAmount(value).toFixed(2);
+  }
+
+  function openingLiquiditySummary() {
+    var yes = safeLiquidityAmount(marketLiquidityDraft.yes);
+    var no = safeLiquidityAmount(marketLiquidityDraft.no);
+    var funded = [];
+    if (yes > 0) funded.push(formatLiquidityAmount(yes) + " YES");
+    if (no > 0) funded.push(formatLiquidityAmount(no) + " NO");
+    return funded.length ? funded.join(" + ") : "No opening liquidity";
+  }
+
+  function applyOpeningLiquidityDraft(page) {
+    if (stage !== 0 || activeEventStep < 1) return page;
+    var yes = safeLiquidityAmount(marketLiquidityDraft.yes);
+    var no = safeLiquidityAmount(marketLiquidityDraft.no);
+    var total = yes + no;
+    var yesOdds = total > 0 ? Math.round(yes / total * 100) : 50;
+    (page.blocks || []).forEach(function (block) {
+      if (block.title === "Starting position") {
+        block.value = openingLiquiditySummary();
+        block.note = yes > 0 && no > 0 ? "Both funded opening offers are locked in escrow." : "Every funded opening offer is locked in escrow.";
+      } else if (block.title === "Opening odds") {
+        block.yes = yesOdds;
+        block.no = 100 - yesOdds;
+      } else if (block.title === "Escrow status") {
+        block.value = formatLiquidityAmount(total) + " opening liquidity";
+      }
+    });
+    return page;
+  }
+
+  function applyResolveConditionDraft(page) {
+    if (stage === 0 && activeEventStep >= 1) {
+      (page.blocks || []).forEach(function (block) {
+        if (block.title === "Market page") block.note = "Resolves: " + marketResolveConditionDraft;
+      });
+    }
+    if (stage === 4 && activeEventStep >= 2) {
+      (page.blocks || []).forEach(function (block) {
+        if (block.title === "Locked terms") block.note = "$20k is in neutral escrow. Resolves: " + privateResolveConditionDraft;
+      });
+    }
+    return page;
+  }
+
   function currentFlow() {
     return APP_FLOWS[stage] || { steps: [] };
   }
@@ -4562,7 +5258,7 @@
     (flow.steps || []).forEach(function (step, index) {
       if (index < activeEventStep) page = mergePage(page, step.after);
     });
-    return page;
+    return applyResolveConditionDraft(applyOpeningLiquidityDraft(page));
   }
 
   function resetEventFlow(toEnd) {
@@ -4787,39 +5483,71 @@
     });
   }
 
-  function appendLiveRows(root, rows, context) {
-    (rows || []).forEach(function (row) {
+  function appendLiveRows(root, rows, context, editable) {
+    (rows || []).forEach(function (row, index) {
       var field = makeEl("div", "live-field");
-      field.appendChild(makeEl("label", "", row[0]));
-      field.appendChild(makeEl("div", "live-input", row[1]));
+      var label = makeEl("label", "", row[0]);
+      var controlType = row[2] || "";
+      if (editable || controlType === "textarea") {
+        var id = "live-field-" + stage + "-" + cleanTip(context || "form").replace(/[^a-z0-9]+/gi, "-").toLowerCase() + "-" + index;
+        var control = document.createElement(controlType === "textarea" ? "textarea" : "input");
+        control.className = "live-input live-control" + (controlType === "textarea" ? " live-textarea" : "");
+        control.id = id;
+        if (/^resolve condition$/i.test(row[0]) && stage === 0) control.value = marketResolveConditionDraft;
+        else if (/^resolve condition$/i.test(row[0]) && stage === 4) control.value = privateResolveConditionDraft;
+        else control.value = row[1];
+        control.setAttribute("aria-label", row[0]);
+        if (control.tagName === "INPUT") control.type = "text";
+        if (controlType === "textarea") field.classList.add("is-long");
+        if (/^resolve condition$/i.test(row[0])) {
+          control.addEventListener("input", function () {
+            if (stage === 0) marketResolveConditionDraft = control.value;
+            if (stage === 4) privateResolveConditionDraft = control.value;
+          });
+        }
+        label.htmlFor = id;
+        field.appendChild(label);
+        field.appendChild(control);
+      } else {
+        field.appendChild(label);
+        field.appendChild(makeEl("div", "live-input", row[1]));
+      }
       root.appendChild(field);
     });
   }
 
-  function renderIntentStrip(page) {
-    var intent = page && page.intent;
-    if (!intent) return null;
-    var items = [
-      ["Why", intent.why],
-      ["Money", intent.money, "money"],
-      ["Next", intent.next]
-    ].filter(function (item) {
-      return item[1];
-    });
-    if (!items.length) return null;
-    var strip = makeEl("div", "live-intent");
-    items.forEach(function (item) {
-      var box = makeEl("div", "intent-item " + (item[2] || ""));
-      box.appendChild(makeEl("span", "", item[0]));
-      box.appendChild(makeEl("b", "", item[1]));
-      strip.appendChild(box);
-    });
-    return strip;
+  function collectVisibleBlockValues(value, values) {
+    if (value == null) return;
+    if (Array.isArray(value)) {
+      value.forEach(function (item) { collectVisibleBlockValues(item, values); });
+      return;
+    }
+    if (typeof value === "object") {
+      Object.keys(value).forEach(function (key) {
+        if (key !== "hot" && key !== "tone" && key !== "type") collectVisibleBlockValues(value[key], values);
+      });
+      if (value.yes != null) values.add(String(value.yes).toLowerCase() + "%");
+      if (value.no != null) values.add(String(value.no).toLowerCase() + "%");
+      return;
+    }
+    values.add(String(value).trim().toLowerCase());
   }
 
-  function appendLiveKpis(root, kpis, context) {
+  function compactPageKpis(page) {
+    var visibleValues = new Set();
+    collectVisibleBlockValues(page && page.blocks, visibleValues);
+    return (page && page.kpis || []).filter(function (kpi) {
+      var label = String(kpi[0] || "").trim();
+      var value = String(kpi[1] || "").trim().toLowerCase();
+      return !/^next(?:\s|$)/i.test(label) && value && !visibleValues.has(value);
+    });
+  }
+
+  function appendLiveKpis(root, page) {
+    var kpis = compactPageKpis(page);
+    if (!kpis.length) return;
     var wrap = makeEl("div", "live-kpis");
-    (kpis || []).forEach(function (kpi) {
+    kpis.forEach(function (kpi) {
       var item = makeEl("div", "live-kpi");
       item.appendChild(makeEl("span", "", kpi[0]));
       item.appendChild(makeEl("b", "", kpi[1]));
@@ -4860,6 +5588,7 @@
     form: "Form",
     fields: "Form",
     choice: "Choice",
+    liquidity: "Liquidity",
     receipt: "Receipt",
     odds: "Market",
     ticket: "Ticket",
@@ -4889,6 +5618,7 @@
     form: "clipboard-list",
     fields: "clipboard-list",
     choice: "list-checks",
+    liquidity: "coins",
     receipt: "receipt-text",
     odds: "chart-no-axes-combined",
     ticket: "ticket",
@@ -4918,8 +5648,7 @@
     var chrome = PAGE_CHROME[page.template] || {};
     return {
       context: page.context || chrome.context || page.section || "Screen",
-      user: page.user || chrome.user || money(item.pot),
-      primary: page.primary || chrome.primary || (item.actions && item.actions[0]) || "Continue"
+      user: page.user || chrome.user || money(item.pot)
     };
   }
 
@@ -5003,9 +5732,7 @@
     var top = makeEl("div", "tutorial-top");
     var total = steps.length || 1;
     var current = Math.min(activeEventStep + 1, total);
-    var targetKind = step && step.target === "primary" ? "Tap app button" : "Tap app control";
     top.appendChild(makeEl("span", "tutorial-step", isEventComplete() ? "Event complete" : "Step " + current + " of " + total));
-    top.appendChild(makeEl("span", "tutorial-state", isEventComplete() ? (continuation && continuation.restart ? "Run complete" : "Continue") : targetKind));
     dock.appendChild(top);
 
     dock.appendChild(makeEl("div", "tutorial-cue", step ? targetInstruction() : (continuation ? "Next: " + continuation.action : "Run complete")));
@@ -5069,12 +5796,77 @@
     return "app.predictionmomo.com/" + slug;
   }
 
-  function renderLiveBlock(block) {
+  var LIVE_BLOCK_LAYOUT_WEIGHTS = {
+    fields: 7,
+    choice: 5,
+    liquidity: 6,
+    receipt: 4,
+    odds: 5,
+    table: 7,
+    ticket: 7,
+    route: 6,
+    checklist: 7,
+    tokens: 6,
+    participants: 5,
+    legs: 6,
+    scoreboard: 5,
+    countdown: 3,
+    handoff: 7,
+    beacon: 7,
+    seats: 6,
+    faceChecks: 5,
+    evidence: 4,
+    ballot: 7,
+    proof: 5,
+    bars: 5,
+    checkout: 7,
+    closed: 4
+  };
+
+  function liveBlockLayoutWeight(block) {
+    var weight = LIVE_BLOCK_LAYOUT_WEIGHTS[block.type] || 5;
+    if (block.wide) weight += 1;
+    if (blockIsCurrentTarget(block)) weight += 3;
+    else if (blockIsContinuationTarget(block)) weight += 2;
+    return weight;
+  }
+
+  function distributeLiveBlockSpans(weights) {
+    if (!weights.length) return [];
+    if (weights.length === 1) return [12];
+    var minimum = weights.length === 2 ? 5 : 3;
+    var maximum = weights.length === 2 ? 7 : 6;
+    var spans = weights.map(function () { return minimum; });
+    var remaining = 12 - minimum * weights.length;
+    while (remaining > 0) {
+      var best = -1;
+      var bestScore = -Infinity;
+      weights.forEach(function (weight, index) {
+        if (spans[index] >= maximum) return;
+        var score = weight / (spans[index] + 1);
+        if (score > bestScore) {
+          best = index;
+          bestScore = score;
+        }
+      });
+      if (best < 0) break;
+      spans[best] += 1;
+      remaining -= 1;
+    }
+    return spans;
+  }
+
+  function liveBlockSpanPlan(blocks) {
+    return distributeLiveBlockSpans((blocks || []).map(liveBlockLayoutWeight));
+  }
+
+  function renderLiveBlock(block, span) {
     var type = block.type || "panel";
     var isHot = hasHot(block.hot);
     var isCurrentTarget = blockIsCurrentTarget(block);
     var isContinuationTarget = blockIsContinuationTarget(block);
     var card = makeEl("div", "live-card " + blockClassName(type) + " " + (block.tone || ""));
+    card.classList.add("live-span-" + (span || 4));
     if (block.wide) card.classList.add("wide");
     if (type === "ticket" && (block.rows || []).length > 3) card.classList.add("long-ticket");
     if (isHot) card.classList.add("hot");
@@ -5085,19 +5877,88 @@
     titleMain.appendChild(makeBlockIcon(type));
     titleMain.appendChild(makeEl("b", "", block.title || ""));
     title.appendChild(titleMain);
-    title.appendChild(makeEl("span", "", blockTypeLabel(type)));
     if (isHot) title.appendChild(makeEl("span", "step-link-badge", currentActionLabel()));
-    if (isContinuationTarget) title.appendChild(makeEl("span", "step-link-badge", "Next"));
     card.appendChild(title);
 
     if (type === "fields") {
-      appendLiveRows(card, block.rows, block.title || "form");
+      appendLiveRows(card, block.rows, block.title || "form", Boolean(block.editable));
     } else if (type === "choice") {
       var picker = makeEl("div", "side-picker");
       (block.options || []).forEach(function (option) {
         picker.appendChild(tagInfo(makeEl("div", "side-button " + (option[1] || ""), option[0]), optionTip(option[0], block.title), true));
       });
       card.appendChild(picker);
+      if (block.note) card.appendChild(makeEl("div", "app-note", block.note));
+    } else if (type === "liquidity") {
+      var liquidityGrid = makeEl("div", "liquidity-grid");
+      var liquidityPreview = makeEl("div", "liquidity-preview");
+      var oddsPreview = makeEl("span");
+      var escrowPreview = makeEl("span");
+      var oddsPreviewValue = makeEl("b");
+      var escrowPreviewValue = makeEl("b");
+      liquidityPreview.setAttribute("aria-live", "polite");
+      oddsPreview.appendChild(makeEl("small", "", "Opening odds"));
+      oddsPreview.appendChild(oddsPreviewValue);
+      escrowPreview.appendChild(makeEl("small", "", "Opening escrow"));
+      escrowPreview.appendChild(escrowPreviewValue);
+      liquidityPreview.appendChild(oddsPreview);
+      liquidityPreview.appendChild(escrowPreview);
+
+      function updateLiquidityPreview() {
+        var yesAmount = safeLiquidityAmount(marketLiquidityDraft.yes);
+        var noAmount = safeLiquidityAmount(marketLiquidityDraft.no);
+        var totalAmount = yesAmount + noAmount;
+        var yesPercent = totalAmount > 0 ? Math.round(yesAmount / totalAmount * 100) : 50;
+        oddsPreviewValue.textContent = yesPercent + "% YES / " + (100 - yesPercent) + "% NO";
+        escrowPreviewValue.textContent = formatLiquidityAmount(totalAmount);
+      }
+
+      (block.offers || []).forEach(function (offer) {
+        var side = offer[0];
+        var key = offer[1];
+        var tone = offer[2] || "";
+        var liquidityOffer = makeEl("div", "liquidity-offer");
+        var sideButton = makeEl("button", "liquidity-side " + tone, side);
+        var amountLabel = makeEl("label", "liquidity-amount");
+        var amountInput = document.createElement("input");
+        var amountId = "opening-liquidity-" + key;
+        amountInput.className = "liquidity-input";
+        amountInput.id = amountId;
+        amountInput.type = "number";
+        amountInput.min = "0";
+        amountInput.step = "0.01";
+        amountInput.inputMode = "decimal";
+        amountInput.value = safeLiquidityAmount(marketLiquidityDraft[key]).toFixed(2);
+        amountInput.setAttribute("aria-label", side + " opening liquidity in dollars");
+        sideButton.type = "button";
+        sideButton.setAttribute("aria-label", "Toggle " + side + " opening liquidity");
+
+        function syncLiquidityOffer() {
+          var amount = safeLiquidityAmount(amountInput.value);
+          marketLiquidityDraft[key] = amount;
+          sideButton.setAttribute("aria-pressed", amount > 0 ? "true" : "false");
+          liquidityOffer.classList.toggle("is-funded", amount > 0);
+          updateLiquidityPreview();
+        }
+
+        sideButton.addEventListener("click", function () {
+          amountInput.value = safeLiquidityAmount(amountInput.value) > 0 ? "0.00" : "0.10";
+          syncLiquidityOffer();
+          amountInput.focus();
+        });
+        amountInput.addEventListener("input", syncLiquidityOffer);
+        syncLiquidityOffer();
+
+        amountLabel.htmlFor = amountId;
+        amountLabel.appendChild(makeEl("span", "liquidity-caption", "Liquidity"));
+        amountLabel.appendChild(makeEl("span", "liquidity-currency", "$"));
+        amountLabel.appendChild(amountInput);
+        liquidityOffer.appendChild(sideButton);
+        liquidityOffer.appendChild(amountLabel);
+        liquidityGrid.appendChild(liquidityOffer);
+      });
+      card.appendChild(liquidityGrid);
+      card.appendChild(liquidityPreview);
       if (block.note) card.appendChild(makeEl("div", "app-note", block.note));
     } else if (type === "receipt") {
       card.appendChild(makeEl("div", "app-value", block.value));
@@ -5119,7 +5980,7 @@
       var ticket = makeEl("div", "trade-ticket");
       appendLiveRows(ticket, block.rows, block.title || "ticket");
       var total = makeEl("div", "ticket-total");
-      total.appendChild(makeEl("span", "", "Preview"));
+      total.appendChild(makeEl("span", "", "Total"));
       total.appendChild(makeEl("b", "", block.total));
       ticket.appendChild(total);
       card.appendChild(ticket);
@@ -5285,6 +6146,10 @@
     var chrome = pageChrome(page, item);
     var layout = makeEl("div", "live-page page-" + (page.template || "default"));
     var main = makeEl("div", "live-main");
+    var blocks = page.blocks || [];
+    var blockSpans = liveBlockSpanPlan(blocks);
+    main.classList.add("live-layout-" + blocks.length);
+    main.setAttribute("data-block-count", String(blocks.length));
     var head = makeEl("div", "live-head");
     var headMain = makeEl("div", "live-head-main");
     var headActions = makeEl("div", "live-head-actions");
@@ -5292,15 +6157,12 @@
     headMain.appendChild(makeEl("h4", "", page.title));
     headMain.appendChild(makeEl("p", "", page.subtitle));
     headActions.appendChild(makeEl("div", page.template === "dispute-handoff" ? "live-status warn" : "live-status", page.status));
-    headActions.appendChild(makeEl("div", "app-nav-chip", chrome.context));
     head.appendChild(headMain);
     head.appendChild(headActions);
     main.appendChild(head);
-    var intentStrip = renderIntentStrip(page);
-    if (intentStrip) main.appendChild(intentStrip);
-    appendLiveKpis(main, page.kpis, page.section || page.title);
-    (page.blocks || []).forEach(function (block) {
-      main.appendChild(renderLiveBlock(block));
+    appendLiveKpis(main, page);
+    blocks.forEach(function (block, index) {
+      main.appendChild(renderLiveBlock(block, blockSpans[index]));
     });
     layout.appendChild(main);
     return layout;
@@ -5408,13 +6270,8 @@
     root.appendChild(renderStepGuide(item, focus, page, guide, result));
 
     var preview = makeEl("section", "sim-live-preview");
-    preview.setAttribute("aria-label", "Simulated live application view");
-    var frameLabel = makeEl("div", "sim-frame-label");
-    frameLabel.appendChild(makeEl("span", "", "Simulated live application"));
-    frameLabel.appendChild(makeEl("span", "", "Event " + String(stage + 1).padStart(2, "0") + ": " + guide.label));
+    preview.setAttribute("aria-label", page.product + " simulated application, Event " + String(stage + 1).padStart(2, "0") + ": " + guide.label);
     var browserBar = makeEl("div", "sim-browser-bar");
-    var dots = makeEl("div", "sim-window-dots");
-    [1, 2, 3].forEach(function () { dots.appendChild(makeEl("span")); });
     var browserBack = makeEl("button", "sim-browser-back");
     browserBack.type = "button";
     var canGoBack = activeEventStep > 0 || stage > 0;
@@ -5425,28 +6282,21 @@
     browserBack.appendChild(makeEl("span", "sim-browser-back-icon"));
     browserBack.appendChild(makeEl("span", "sim-browser-back-label", "Back"));
     browserBack.addEventListener("click", rewindCurrentEventStep);
-    browserBar.appendChild(dots);
     browserBar.appendChild(browserBack);
     browserBar.appendChild(makeEl("div", "sim-url", simulatedAppUrl(page)));
-    browserBar.appendChild(makeEl("div", "sim-live-dot", "Live preview"));
     var appViewport = makeEl("div", "sim-app-viewport");
     var appWindow = makeEl("div", "app-window " + (focus.tone || "market"));
     var nav = makeEl("div", "app-nav");
     var brand = makeEl("div", "app-brand");
     var tabs = makeEl("div", "app-tabs");
     var navTools = makeEl("div", "app-nav-tools");
-    brand.appendChild(makeEl("span", "dot"));
     brand.appendChild(makeEl("span", "", page.product));
-    (page.tabs || []).forEach(function (label, index) {
+    (page.tabs || []).filter(function (label) { return !/^next$/i.test(label); }).forEach(function (label, index) {
       tabs.appendChild(makeEl("span", index === 0 ? "on" : "", label));
     });
     [chrome.context, chrome.user].forEach(function (label) {
       navTools.appendChild(makeEl("span", "app-nav-chip", label));
     });
-    var primary = makeEl("button", "app-nav-action", chrome.primary);
-    primary.type = "button";
-    applyGuidedTarget(primary, "primary");
-    navTools.appendChild(primary);
     nav.appendChild(brand);
     nav.appendChild(tabs);
     nav.appendChild(navTools);
@@ -5461,7 +6311,6 @@
       appWindow.appendChild(toast);
     }
     appViewport.appendChild(appWindow);
-    preview.appendChild(frameLabel);
     preview.appendChild(browserBar);
     preview.appendChild(appViewport);
     root.appendChild(preview);
@@ -5894,19 +6743,16 @@
   function stageGroupRangeLabel(group) {
     var groupStart = Math.max(0, group.start);
     var groupEnd = Math.min(STAGES.length - 1, group.end);
-    return groupStart === groupEnd ? "Event " + (groupStart + 1) : "Events " + (groupStart + 1) + "-" + (groupEnd + 1);
+    var first = String(groupStart + 1).padStart(2, "0");
+    var last = String(groupEnd + 1).padStart(2, "0");
+    return groupStart === groupEnd ? first : first + "-" + last;
   }
 
   function stageGroupProgressLabel(group, groupActive) {
     if (groupActive) {
-      return "Step " + (stage - Math.max(0, group.start) + 1) + " of " + stageGroupCount(group);
+      return (stage - Math.max(0, group.start) + 1) + " / " + stageGroupCount(group);
     }
     return stageGroupRangeLabel(group);
-  }
-
-  function stageGroupAffordance(group, groupActive, groupExpanded) {
-    if (groupActive) return "Now";
-    return groupExpanded ? "Hide" : "View";
   }
 
   function setEventNavigatorOpen(open) {
@@ -5916,6 +6762,7 @@
     if (eventNavigatorToggle) {
       eventNavigatorToggle.classList.toggle("is-open", eventNavigatorOpen);
       eventNavigatorToggle.setAttribute("aria-expanded", eventNavigatorOpen ? "true" : "false");
+      eventNavigatorToggle.setAttribute("aria-label", (eventNavigatorOpen ? "Close" : "Open") + " all event groups");
     }
     renderRail();
   }
@@ -5937,17 +6784,24 @@
     var selectedGroup = stageGroupIndexForStage(stage);
     if (openStageGroup === selectedGroup) openStageGroup = -1;
     var drawerGroupIndex = openStageGroup >= 0 ? openStageGroup : selectedGroup;
-    STAGE_GROUPS.forEach(function (group, groupIndex) {
+    var visibleGroups = STAGE_GROUPS.map(function (group, groupIndex) {
+      return { group: group, index: groupIndex };
+    });
+    visibleGroups.forEach(function (entry, visibleIndex) {
+      var group = entry.group;
+      var groupIndex = entry.index;
       var groupEl = makeEl("div", "stage-group");
       var groupStart = Math.max(0, group.start);
       var groupEnd = Math.min(STAGES.length - 1, group.end);
       var groupActive = groupIndex === selectedGroup;
-      var groupExpanded = groupActive || groupIndex === openStageGroup;
+      var groupExpanded = groupIndex === drawerGroupIndex;
+      groupEl.setAttribute("data-stage-mode", group.mode);
       if (groupActive) groupEl.classList.add("active");
       if (groupExpanded) groupEl.classList.add("open");
       if (!groupExpanded) groupEl.classList.add("collapsed");
       if (stage > groupEnd) groupEl.classList.add("complete");
       if (stage < groupStart) groupEl.classList.add("upcoming");
+      if (visibleIndex === visibleGroups.length - 1) groupEl.classList.add("last-product-group");
 
       var toggle = makeEl("button", "stage-group-toggle");
       var stepsId = "stageGroupSteps" + groupIndex;
@@ -5957,10 +6811,16 @@
       toggle.setAttribute("aria-label", (groupActive ? "Current category: " : groupExpanded ? "Collapse " : "Open ") + group.label + " events");
       toggle.appendChild(makeEl("span", "stage-group-name", group.label));
       toggle.appendChild(makeEl("span", "stage-group-range", stageGroupProgressLabel(group, groupActive)));
-      toggle.appendChild(makeEl("span", "stage-group-caret", stageGroupAffordance(group, groupActive, groupExpanded)));
+      var affordance = makeEl("span", "stage-group-caret");
+      affordance.setAttribute("aria-hidden", "true");
+      toggle.appendChild(affordance);
       toggle.addEventListener("click", function (event) {
         event.stopPropagation();
-        if (groupActive) return;
+        if (groupActive) {
+          openStageGroup = -1;
+          renderRail();
+          return;
+        }
         openStageGroup = groupExpanded ? -1 : groupIndex;
         renderRail();
       });
@@ -5972,14 +6832,10 @@
     var drawerGroup = STAGE_GROUPS[drawerGroupIndex];
     var drawerStart = Math.max(0, drawerGroup.start);
     var drawerEnd = Math.min(STAGES.length - 1, drawerGroup.end);
-    var drawerActive = drawerGroupIndex === selectedGroup;
     var steps = makeEl("div", "stage-group-steps");
+    steps.setAttribute("data-stage-mode", drawerGroup.mode);
     steps.id = "stageGroupSteps" + drawerGroupIndex;
     steps.setAttribute("aria-label", drawerGroup.label + " events");
-    var drawerHead = makeEl("div", "stage-drawer-head");
-    drawerHead.appendChild(makeEl("strong", "stage-drawer-title", drawerGroup.label));
-    drawerHead.appendChild(makeEl("span", "stage-drawer-meta", drawerActive ? stageGroupProgressLabel(drawerGroup, true) : stageGroupRangeLabel(drawerGroup)));
-    steps.appendChild(drawerHead);
     var stepList = makeEl("div", "stage-step-list");
     for (var i = drawerStart; i <= drawerEnd; i += 1) {
       var item = STAGES[i];
@@ -6038,6 +6894,7 @@
   function render() {
     var item = STAGES[stage];
     var focus = FOCUS_STEPS[stage] || {};
+    syncProductMode();
     renderRail();
     renderFocus(item);
     setTags("featureGrid", "data-feature", item.features);
@@ -6062,6 +6919,7 @@
       var nextStage = readAuditValue("layoutStage");
       var nextStep = readAuditValue("layoutStep");
       if (nextStage == null) return;
+      productModeSelected = true;
       stage = Math.max(0, Math.min(STAGES.length - 1, nextStage));
       activeEventStep = Math.max(0, Math.min(auditStepCount(stage), nextStep || 0));
       activeAction = activeEventStep > 0 ? activeEventStep - 1 : -1;
@@ -6087,6 +6945,24 @@
       allowNextGuidedReveal();
       render();
     }
+  });
+  productTabs.forEach(function (tab, tabIndex) {
+    tab.addEventListener("click", function () {
+      selectProductMode(tab.getAttribute("data-product-mode"));
+    });
+    tab.addEventListener("keydown", function (event) {
+      if (event.altKey || event.ctrlKey || event.metaKey) return;
+      if (event.key !== "ArrowLeft" && event.key !== "ArrowRight" && event.key !== "Home" && event.key !== "End") return;
+      event.preventDefault();
+      var nextIndex = tabIndex;
+      if (event.key === "ArrowLeft") nextIndex = (tabIndex - 1 + productTabs.length) % productTabs.length;
+      if (event.key === "ArrowRight") nextIndex = (tabIndex + 1) % productTabs.length;
+      if (event.key === "Home") nextIndex = 0;
+      if (event.key === "End") nextIndex = productTabs.length - 1;
+      var nextTab = productTabs[nextIndex];
+      nextTab.focus();
+      selectProductMode(nextTab.getAttribute("data-product-mode"));
+    });
   });
   if (eventNavigatorToggle) {
     eventNavigatorToggle.addEventListener("click", function (event) {
