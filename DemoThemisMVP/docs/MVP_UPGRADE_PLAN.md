@@ -260,7 +260,7 @@ The previous comparison against the simulator-led MVP is now historical: commit 
 | Main views | Live case and Submit a case | Unchanged |
 | Question flow | One official question at a time from the 21-question queue | Unchanged |
 | Hero depth | At 1365 × 768, the hero is about 821 px tall and the live panel begins around y=1010—below the first screen | The compact hero is about 480 px in local inspection and places the live panel within the first screen |
-| Headline scale | About 89 px at the audited desktop width; it dominates the page | Capped at 4.7 rem, about 62 px in local inspection, while preserving the same message |
+| Headline scale | About 89 px at the audited desktop width; it dominates the page and can wrap into six lines | Capped at 4 rem and held to three deliberate desktop lines while preserving the same message |
 | Hero action | Selects Live case but does not reliably reveal the panel | Selects, focuses, and scrolls to the live panel |
 | Top navigation | Submit a case changes the URL while the form remains below the fold | Both links target the matching panel and place it below the sticky header |
 | Mobile navigation | A fixed Live/Submit dock repeats the product tabs | The duplicate dock is removed; one sticky tab switcher remains |

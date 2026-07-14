@@ -640,7 +640,11 @@ function OracleHome() {
       <section className="oracle-hero" aria-labelledby="oracle-title">
         <div className="oracle-hero-copy">
           <span className="oracle-kicker"><i /> Live Demo MVP · World Chain</span>
-          <h1 id="oracle-title">One public question.<br /><em>Three verified humans.</em><br />One on-chain answer.</h1>
+          <h1 id="oracle-title">
+            <span>One public question.</span>
+            <span><em>Three verified humans.</em></span>
+            <span>One on-chain answer.</span>
+          </h1>
           <p>Follow one real question through independent research, sealed ballots, an on-chain majority ruling, and visible rewards.</p>
           <div className="oracle-hero-actions">
             <button type="button" onClick={openLivePanel}>See the live case <ArrowRight /></button>
