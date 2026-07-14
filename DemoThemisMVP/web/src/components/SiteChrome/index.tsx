@@ -2,7 +2,7 @@
 
 import { useEffect, useRef, useState } from 'react';
 import Link from 'next/link';
-import { usePathname } from 'next/navigation';
+import { usePathname, useSearchParams } from 'next/navigation';
 
 const CHAPTERS = [
   { label: 'Proposal home', href: '/' },
@@ -20,30 +20,29 @@ const CHAPTERS = [
 
 const MVP_ROUTES = [
   {
-    label: 'Play',
-    shortLabel: 'Play',
+    label: 'Live case',
+    shortLabel: 'Live case',
     href: '/app',
-    match: (path: string) => path === '/' || path.startsWith('/app'),
+    match: (path: string, tab: string | null) =>
+      tab !== 'submit' && (path === '/' || path.startsWith('/app') || path.startsWith('/home') || path.startsWith('/case')),
   },
   {
-    label: 'Guided demo',
-    shortLabel: 'Demo',
-    href: '/sandbox',
-    match: (path: string) => path.startsWith('/sandbox') || path.startsWith('/juror-preview'),
+    label: 'Submit a case',
+    shortLabel: 'Submit',
+    href: '/app?tab=submit',
+    match: (path: string, tab: string | null) => path.startsWith('/app') && tab === 'submit',
   },
   {
-    label: 'Court',
-    shortLabel: 'Court',
-    href: '/home',
-    match: (path: string) =>
-      ['/home', '/case', '/onboard', '/register-onchain', '/verify-onchain'].some((route) =>
-        path.startsWith(route),
-      ),
+    label: 'Join as juror',
+    shortLabel: 'Join jury',
+    href: '/onboard',
+    match: (path: string) => path.startsWith('/onboard'),
   },
 ] as const;
 
 export function SiteChrome() {
   const pathname = usePathname() || '/app';
+  const productTab = useSearchParams().get('tab');
   const [open, setOpen] = useState(false);
   const primaryRef = useRef<HTMLDivElement>(null);
   const menuButtonRef = useRef<HTMLButtonElement>(null);
@@ -126,7 +125,7 @@ export function SiteChrome() {
         <span className="mvp-context-label">MVP</span>
         <div className="mvp-context-links">
           {MVP_ROUTES.map((item) => {
-            const active = item.match(pathname);
+            const active = item.match(pathname, productTab);
             return (
               <Link
                 key={item.href}

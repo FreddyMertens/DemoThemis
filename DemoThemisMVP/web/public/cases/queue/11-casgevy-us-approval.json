@@ -1,0 +1,10 @@
+{
+  "sequence": 11,
+  "title": "Casgevy US approval",
+  "type": "question",
+  "standard": "public-research",
+  "question": "By 30 November 2023, had Casgevy received approval for medical use in the United States?",
+  "yesRule": "Vote YES only if the United States regulator had granted marketing approval for Casgevy by the judged time; review, recommendation, or approval elsewhere does not qualify.",
+  "judgedAsOf": "2023-11-30T23:59:59Z",
+  "simulated": false
+}

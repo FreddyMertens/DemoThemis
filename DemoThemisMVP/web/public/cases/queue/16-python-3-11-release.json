@@ -1,0 +1,10 @@
+{
+  "sequence": 16,
+  "title": "Python 3.11 stable release",
+  "type": "question",
+  "standard": "public-research",
+  "question": "By 23 October 2022, had Python 3.11.0 been released as a stable final version?",
+  "yesRule": "Vote YES only if a release explicitly designated Python 3.11.0 final and stable was publicly available by the judged time; beta or release-candidate builds do not qualify.",
+  "judgedAsOf": "2022-10-23T23:59:59Z",
+  "simulated": false
+}

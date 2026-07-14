@@ -1,0 +1,10 @@
+{
+  "sequence": 5,
+  "title": "Ingenuity flight total",
+  "type": "question",
+  "standard": "public-research",
+  "question": "By 25 January 2024, had the Ingenuity Mars helicopter completed at least 75 flights on Mars?",
+  "yesRule": "Vote YES only if at least 75 flights were recorded as completed, rather than merely planned or attempted, by the judged time.",
+  "judgedAsOf": "2024-01-25T23:59:59Z",
+  "simulated": false
+}

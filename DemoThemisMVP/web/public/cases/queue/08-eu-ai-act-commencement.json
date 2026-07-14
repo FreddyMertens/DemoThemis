@@ -1,0 +1,10 @@
+{
+  "sequence": 8,
+  "title": "EU AI Act commencement",
+  "type": "question",
+  "standard": "public-research",
+  "question": "By 31 July 2024, had the European Union's Artificial Intelligence Act entered into force?",
+  "yesRule": "Vote YES only if the regulation's legal entry-into-force date had occurred by the judged time; publication or political approval alone does not qualify.",
+  "judgedAsOf": "2024-07-31T23:59:59Z",
+  "simulated": false
+}

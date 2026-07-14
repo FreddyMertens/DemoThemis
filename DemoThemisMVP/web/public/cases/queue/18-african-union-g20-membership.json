@@ -1,0 +1,10 @@
+{
+  "sequence": 18,
+  "title": "African Union G20 membership",
+  "type": "question",
+  "standard": "public-research",
+  "question": "By the end of 9 September 2023, had the African Union been admitted as a permanent member of the G20?",
+  "yesRule": "Vote YES only if permanent membership, rather than guest participation or a future invitation, had been formally granted by the judged time.",
+  "judgedAsOf": "2023-09-09T23:59:59Z",
+  "simulated": false
+}

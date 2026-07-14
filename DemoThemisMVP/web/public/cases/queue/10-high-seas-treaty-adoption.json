@@ -1,0 +1,10 @@
+{
+  "sequence": 10,
+  "title": "High Seas Treaty adoption",
+  "type": "question",
+  "standard": "public-research",
+  "question": "By 20 June 2023, had United Nations member states formally adopted the agreement on marine biodiversity beyond national jurisdiction?",
+  "yesRule": "Vote YES only if the agreement itself had been formally adopted by the judged time; finishing negotiations or publishing a draft does not qualify.",
+  "judgedAsOf": "2023-06-20T23:59:59Z",
+  "simulated": false
+}

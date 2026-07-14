@@ -1,0 +1,52 @@
+name: Mainnet question keeper
+
+on:
+  schedule:
+    - cron: "*/5 * * * *"
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: mainnet-question-keeper
+  cancel-in-progress: false
+
+jobs:
+  advance:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    env:
+      PRIVATE_KEY: ${{ secrets.MAINNET_QUESTION_KEEPER_PRIVATE_KEY }}
+    steps:
+      - name: Skip when the keeper key is not configured
+        if: ${{ env.PRIVATE_KEY == '' }}
+        run: echo "MAINNET_QUESTION_KEEPER_PRIVATE_KEY is not configured; skipping safely."
+
+      - name: Check out repository
+        if: ${{ env.PRIVATE_KEY != '' }}
+        uses: actions/checkout@v4
+
+      - name: Set up pnpm
+        if: ${{ env.PRIVATE_KEY != '' }}
+        uses: pnpm/action-setup@v4
+        with:
+          version: 11.7.0
+
+      - name: Set up Node
+        if: ${{ env.PRIVATE_KEY != '' }}
+        uses: actions/setup-node@v4
+        with:
+          node-version: "24"
+          cache: pnpm
+          cache-dependency-path: DemoThemisMVP/web/pnpm-lock.yaml
+
+      - name: Install keeper dependencies
+        if: ${{ env.PRIVATE_KEY != '' }}
+        working-directory: DemoThemisMVP/web
+        run: pnpm install --frozen-lockfile
+
+      - name: Advance at most one mainnet keeper step
+        if: ${{ env.PRIVATE_KEY != '' }}
+        working-directory: DemoThemisMVP
+        run: node scripts/mainnet-question-keeper.mjs --execute

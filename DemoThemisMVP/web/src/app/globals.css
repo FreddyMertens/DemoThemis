@@ -2595,3 +2595,1835 @@ a.text-slate-950 {
     transition-duration: 0.01ms !important;
   }
 }
+
+/* --------------------------------------------------------------------------
+   Focused three-juror resolution oracle
+   -------------------------------------------------------------------------- */
+
+.oracle-app {
+  width: min(100%, 76rem);
+  margin: 0 auto;
+  padding: clamp(1rem, 3vw, 2.25rem) clamp(0.85rem, 3vw, 2rem) 5rem;
+}
+
+.oracle-hero {
+  position: relative;
+  display: grid;
+  overflow: hidden;
+  min-height: 34rem;
+  padding: clamp(2rem, 5vw, 4.8rem);
+  grid-template-columns: minmax(0, 1.25fr) minmax(18rem, 0.75fr);
+  align-items: center;
+  gap: clamp(2rem, 5vw, 5rem);
+  border: 1px solid rgba(255, 255, 255, 0.12);
+  border-radius: 30px;
+  background:
+    radial-gradient(circle at 82% 20%, rgba(139, 124, 255, 0.38), transparent 28rem),
+    radial-gradient(circle at 5% 95%, rgba(20, 176, 133, 0.2), transparent 24rem),
+    linear-gradient(145deg, #171522 0%, #25203f 54%, #3b307c 100%);
+  box-shadow: 0 32px 80px -36px rgba(35, 27, 77, 0.7);
+  color: #fff;
+}
+
+.oracle-hero::before {
+  position: absolute;
+  top: -7rem;
+  right: -5rem;
+  width: 23rem;
+  height: 23rem;
+  border: 1px solid rgba(255, 255, 255, 0.09);
+  border-radius: 50%;
+  box-shadow: 0 0 0 3.5rem rgba(255, 255, 255, 0.025), 0 0 0 7rem rgba(255, 255, 255, 0.018);
+  content: '';
+}
+
+.oracle-hero-copy,
+.oracle-proof-stack {
+  position: relative;
+  z-index: 1;
+}
+
+.oracle-kicker,
+.oracle-eyebrow {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.55rem;
+  font-size: 0.69rem;
+  font-weight: 800;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+}
+
+.oracle-kicker {
+  color: #d8d2ff;
+}
+
+.oracle-kicker i,
+.oracle-live-state i {
+  width: 0.5rem;
+  height: 0.5rem;
+  border-radius: 999px;
+  background: #42d4a2;
+  box-shadow: 0 0 0 0.25rem rgba(66, 212, 162, 0.13);
+}
+
+.oracle-hero h1 {
+  max-width: 44rem;
+  margin: 1.15rem 0 1.15rem;
+  font-family: var(--font-app-serif), Newsreader, Georgia, serif;
+  font-size: clamp(3rem, 6.5vw, 5.8rem);
+  font-weight: 520;
+  letter-spacing: -0.055em;
+  line-height: 0.91;
+}
+
+.oracle-hero h1 em {
+  color: #bcb2ff;
+  font-style: normal;
+}
+
+.oracle-hero-copy > p {
+  max-width: 39rem;
+  margin: 0;
+  color: rgba(255, 255, 255, 0.74);
+  font-size: clamp(0.98rem, 1.8vw, 1.15rem);
+  line-height: 1.65;
+}
+
+.oracle-hero-actions {
+  display: flex;
+  margin-top: 1.8rem;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 0.7rem;
+}
+
+.oracle-hero-actions button,
+.oracle-hero-actions a,
+.oracle-primary-link {
+  display: inline-flex;
+  min-height: 3rem;
+  padding: 0.78rem 1rem;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
+  border: 1px solid rgba(255, 255, 255, 0.17);
+  border-radius: 999px;
+  font-size: 0.8rem;
+  font-weight: 750;
+  text-decoration: none;
+  transition: transform 160ms ease, background 160ms ease, box-shadow 160ms ease;
+}
+
+.oracle-hero-actions button {
+  border-color: #fff;
+  background: #fff;
+  color: #24203f;
+  cursor: pointer;
+  box-shadow: 0 12px 26px -16px rgba(255, 255, 255, 0.5);
+}
+
+.oracle-hero-actions a {
+  background: rgba(255, 255, 255, 0.065);
+  color: #fff;
+}
+
+.oracle-hero-actions button:hover,
+.oracle-hero-actions a:hover,
+.oracle-primary-link:hover {
+  transform: translateY(-2px);
+}
+
+.oracle-hero-actions svg,
+.oracle-primary-link svg,
+.oracle-worldscan-link svg,
+.oracle-final-receipt a svg,
+.oracle-receipt-list > a > svg {
+  width: 1rem;
+  height: 1rem;
+}
+
+.oracle-proof-stack {
+  display: grid;
+  gap: 0.75rem;
+}
+
+.oracle-proof-card {
+  position: relative;
+  display: grid;
+  min-height: 6.1rem;
+  padding: 1rem 3.2rem 1rem 1rem;
+  grid-template-columns: 2.65rem 1fr;
+  align-items: center;
+  gap: 0.8rem;
+  border: 1px solid rgba(255, 255, 255, 0.15);
+  border-radius: 18px;
+  background: rgba(255, 255, 255, 0.08);
+  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.08);
+  backdrop-filter: blur(14px);
+}
+
+.oracle-proof-card.is-1 { background: rgba(66, 212, 162, 0.11); }
+.oracle-proof-card.is-2 { background: rgba(164, 148, 255, 0.13); }
+.oracle-proof-card.is-3 { background: rgba(241, 174, 74, 0.1); }
+
+.oracle-proof-card > span {
+  display: grid;
+  width: 2.65rem;
+  height: 2.65rem;
+  border-radius: 12px;
+  place-items: center;
+  background: rgba(255, 255, 255, 0.11);
+}
+
+.oracle-proof-card svg {
+  width: 1.35rem;
+  height: 1.35rem;
+}
+
+.oracle-proof-card strong,
+.oracle-proof-card small {
+  display: block;
+}
+
+.oracle-proof-card strong {
+  font-size: 0.89rem;
+}
+
+.oracle-proof-card small {
+  margin-top: 0.2rem;
+  color: rgba(255, 255, 255, 0.64);
+  font-size: 0.7rem;
+  line-height: 1.4;
+}
+
+.oracle-proof-card b {
+  position: absolute;
+  top: 0.75rem;
+  right: 0.85rem;
+  color: rgba(255, 255, 255, 0.25);
+  font-family: var(--font-app-mono), monospace;
+  font-size: 0.67rem;
+}
+
+.oracle-tabs {
+  position: relative;
+  z-index: 3;
+  display: grid;
+  width: min(43rem, calc(100% - 2rem));
+  margin: -1.5rem auto 1.6rem;
+  padding: 0.38rem;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 0.35rem;
+  border: 1px solid var(--line-strong);
+  border-radius: 18px;
+  background: color-mix(in srgb, var(--surface) 96%, transparent);
+  box-shadow: 0 18px 45px -28px rgba(27, 22, 50, 0.55);
+  backdrop-filter: blur(16px);
+}
+
+.oracle-tabs button {
+  display: grid;
+  min-height: 4.2rem;
+  padding: 0.65rem 0.8rem;
+  grid-template-columns: 2.3rem 1fr;
+  align-items: center;
+  gap: 0.7rem;
+  border: 0;
+  border-radius: 13px;
+  background: transparent;
+  color: var(--muted);
+  text-align: left;
+  cursor: pointer;
+}
+
+.oracle-tabs button.is-active {
+  background: #25213d;
+  color: #fff;
+  box-shadow: 0 8px 22px -15px rgba(35, 29, 76, 0.7);
+}
+
+.oracle-tab-icon {
+  display: grid;
+  width: 2.3rem;
+  height: 2.3rem;
+  border-radius: 10px;
+  place-items: center;
+  background: var(--surface-soft);
+  color: var(--accent);
+}
+
+.oracle-tabs .is-active .oracle-tab-icon {
+  background: rgba(255, 255, 255, 0.1);
+  color: #c5bbff;
+}
+
+.oracle-tab-icon svg {
+  width: 1.15rem;
+  height: 1.15rem;
+}
+
+.oracle-tabs strong,
+.oracle-tabs small {
+  display: block;
+}
+
+.oracle-tabs strong {
+  font-size: 0.78rem;
+}
+
+.oracle-tabs small {
+  margin-top: 0.15rem;
+  color: inherit;
+  font-size: 0.64rem;
+  opacity: 0.67;
+}
+
+.oracle-panel {
+  animation: oracle-panel-in 240ms ease both;
+}
+
+@keyframes oracle-panel-in {
+  from { opacity: 0; transform: translateY(8px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+.oracle-live-layout,
+.oracle-submit-layout {
+  display: grid;
+  grid-template-columns: minmax(0, 1.55fr) minmax(19rem, 0.75fr);
+  align-items: start;
+  gap: 1rem;
+}
+
+.oracle-case-card,
+.oracle-jury-card,
+.oracle-ballot,
+.oracle-submit-form,
+.oracle-fee-card,
+.oracle-one-at-time,
+.oracle-receipt-history {
+  border: 1px solid var(--line-strong);
+  background: var(--surface);
+  box-shadow: var(--shadow);
+}
+
+.oracle-case-card,
+.oracle-jury-card,
+.oracle-submit-form,
+.oracle-fee-card,
+.oracle-receipt-history {
+  border-radius: 22px;
+}
+
+.oracle-case-card {
+  overflow: hidden;
+  padding: clamp(1.25rem, 3vw, 2.1rem);
+}
+
+.oracle-case-head,
+.oracle-ballot-head,
+.oracle-section-title,
+.oracle-review-head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1rem;
+}
+
+.oracle-eyebrow {
+  color: var(--accent);
+}
+
+.oracle-live-state {
+  display: flex;
+  margin-top: 0.35rem;
+  align-items: center;
+  gap: 0.5rem;
+  color: var(--muted);
+  font-size: 0.72rem;
+  font-weight: 650;
+}
+
+.oracle-chain-mark {
+  display: inline-flex;
+  padding: 0.48rem 0.65rem;
+  align-items: center;
+  gap: 0.4rem;
+  border: 1px solid var(--line);
+  border-radius: 999px;
+  background: var(--surface-soft);
+  color: var(--muted);
+  font-size: 0.64rem;
+  font-weight: 750;
+}
+
+.oracle-chain-mark svg {
+  width: 1rem;
+  height: 1rem;
+  color: var(--accent);
+}
+
+.oracle-case-card > h2 {
+  max-width: 49rem;
+  margin: clamp(1.5rem, 4vw, 2.6rem) 0 1.3rem;
+  color: #24212d;
+  font-family: var(--font-app-serif), Newsreader, Georgia, serif;
+  font-size: clamp(2rem, 4vw, 3.35rem);
+  font-weight: 530;
+  letter-spacing: -0.035em;
+  line-height: 1.05;
+}
+
+.oracle-question-facts {
+  display: grid;
+  grid-template-columns: minmax(0, 1.4fr) minmax(12rem, 0.6fr);
+  gap: 0.7rem;
+}
+
+.oracle-fact {
+  min-height: 7rem;
+  padding: 1rem;
+  border: 1px solid var(--line);
+  border-radius: 15px;
+}
+
+.oracle-fact.is-rule {
+  border-color: var(--triad-mint-border);
+  background: var(--triad-mint);
+}
+
+.oracle-fact.is-time {
+  border-color: var(--triad-lavender-border);
+  background: var(--triad-lavender);
+}
+
+.oracle-fact > span,
+.oracle-counts span,
+.oracle-fee-card > span,
+.oracle-ruling-copy > span,
+.oracle-section-title span,
+.oracle-review-head > span {
+  color: var(--faint);
+  font-size: 0.62rem;
+  font-weight: 800;
+  letter-spacing: 0.09em;
+  text-transform: uppercase;
+}
+
+.oracle-fact p {
+  margin: 0.5rem 0 0;
+  color: var(--ink-soft);
+  font-size: 0.82rem;
+  font-weight: 600;
+  line-height: 1.5;
+}
+
+.oracle-integrity {
+  display: inline-flex;
+  margin-top: 0.8rem;
+  padding: 0.45rem 0.65rem;
+  align-items: center;
+  gap: 0.4rem;
+  border-radius: 9px;
+  font-size: 0.66rem;
+  font-weight: 700;
+}
+
+.oracle-integrity.is-verified {
+  background: var(--good-soft);
+  color: #087553;
+}
+
+.oracle-integrity.is-mismatch {
+  background: var(--bad-soft);
+  color: #a63726;
+}
+
+.oracle-integrity.is-unavailable {
+  background: var(--triad-amber);
+  color: #795928;
+}
+
+.oracle-integrity svg {
+  width: 1rem;
+  height: 1rem;
+}
+
+.oracle-question-unavailable {
+  display: grid;
+  margin: 1.2rem 0 0;
+  padding: 1rem;
+  grid-template-columns: 2.4rem minmax(0, 1fr);
+  align-items: center;
+  gap: 0.8rem;
+  border: 1px solid #efb7ad;
+  border-radius: 14px;
+  background: var(--bad-soft);
+  color: #8f3024;
+}
+
+.oracle-question-unavailable > svg {
+  width: 1.5rem;
+  height: 1.5rem;
+  justify-self: center;
+}
+
+.oracle-question-unavailable strong,
+.oracle-question-unavailable p {
+  display: block;
+  margin: 0;
+}
+
+.oracle-question-unavailable strong { font-size: 0.78rem; }
+.oracle-question-unavailable p { margin-top: 0.2rem; font-size: 0.67rem; line-height: 1.45; }
+
+.oracle-research-note {
+  display: grid;
+  margin-top: 0.8rem;
+  padding: 0.85rem;
+  grid-template-columns: 2.35rem 1fr;
+  align-items: center;
+  gap: 0.75rem;
+  border: 1px solid #ead9b8;
+  border-radius: 14px;
+  background: var(--triad-amber);
+}
+
+.oracle-research-note > span {
+  display: grid;
+  width: 2.35rem;
+  height: 2.35rem;
+  border-radius: 11px;
+  place-items: center;
+  background: rgba(181, 108, 18, 0.11);
+  color: #996015;
+}
+
+.oracle-research-note svg {
+  width: 1.15rem;
+  height: 1.15rem;
+}
+
+.oracle-research-note strong,
+.oracle-research-note p {
+  display: block;
+  margin: 0;
+}
+
+.oracle-research-note strong {
+  color: #6e4817;
+  font-size: 0.76rem;
+}
+
+.oracle-research-note p {
+  margin-top: 0.16rem;
+  color: #795928;
+  font-size: 0.67rem;
+  line-height: 1.45;
+}
+
+.oracle-progress {
+  position: relative;
+  display: grid;
+  margin: 1.5rem 0 0;
+  padding: 0;
+  grid-template-columns: repeat(5, minmax(0, 1fr));
+  list-style: none;
+}
+
+.oracle-progress::before {
+  position: absolute;
+  top: 1rem;
+  right: 8%;
+  left: 8%;
+  height: 2px;
+  background: var(--line-strong);
+  content: '';
+}
+
+.oracle-progress li {
+  position: relative;
+  z-index: 1;
+  display: flex;
+  align-items: center;
+  flex-direction: column;
+  gap: 0.45rem;
+  text-align: center;
+}
+
+.oracle-progress li > span {
+  display: grid;
+  width: 2rem;
+  height: 2rem;
+  border: 3px solid var(--surface);
+  border-radius: 50%;
+  place-items: center;
+  background: #e7e2d9;
+  color: #78716a;
+  box-shadow: 0 0 0 1px var(--line-strong);
+  font-family: var(--font-app-mono), monospace;
+  font-size: 0.58rem;
+  font-weight: 800;
+}
+
+.oracle-progress li.is-complete > span {
+  background: var(--good);
+  color: #fff;
+  box-shadow: 0 0 0 1px var(--good);
+}
+
+.oracle-progress li.is-current > span {
+  background: var(--accent);
+  color: #fff;
+  box-shadow: 0 0 0 1px var(--accent), 0 0 0 5px var(--accent-soft);
+}
+
+.oracle-progress small {
+  max-width: 7rem;
+  color: var(--faint);
+  font-size: 0.6rem;
+  font-weight: 650;
+  line-height: 1.25;
+}
+
+.oracle-counts {
+  display: grid;
+  margin-top: 1.2rem;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 0.6rem;
+}
+
+.oracle-counts > div {
+  padding: 0.8rem;
+  border: 1px solid var(--line);
+  border-radius: 13px;
+  background: var(--surface-soft);
+}
+
+.oracle-counts strong,
+.oracle-counts small {
+  display: block;
+}
+
+.oracle-chain-proof {
+  margin-top: 0.75rem;
+  border: 1px solid var(--line);
+  border-radius: 13px;
+  background: var(--surface-soft);
+}
+
+.oracle-chain-proof summary {
+  display: grid;
+  padding: 0.75rem 0.85rem;
+  grid-template-columns: 1.1rem 1fr auto;
+  align-items: center;
+  gap: 0.45rem;
+  cursor: pointer;
+  font-size: 0.68rem;
+  list-style: none;
+}
+
+.oracle-chain-proof summary::-webkit-details-marker { display: none; }
+.oracle-chain-proof summary > svg { width: 1rem; height: 1rem; color: var(--accent); }
+.oracle-chain-proof summary > span { color: var(--faint); font-size: 0.6rem; }
+
+.oracle-chain-proof > div {
+  display: grid;
+  padding: 0 0.85rem 0.85rem;
+  gap: 0.4rem;
+}
+
+.oracle-chain-proof p {
+  display: grid;
+  margin: 0;
+  grid-template-columns: 5rem minmax(0, 1fr);
+  align-items: center;
+  gap: 0.5rem;
+  font-size: 0.62rem;
+}
+
+.oracle-chain-proof p > span { display: flex; flex-wrap: wrap; gap: 0.35rem; }
+.oracle-chain-proof p a,
+.oracle-chain-proof > div > a {
+  color: var(--accent);
+  font-size: 0.61rem;
+  font-weight: 750;
+  text-decoration: none;
+}
+
+.oracle-chain-proof > div > a {
+  display: inline-flex;
+  margin-top: 0.25rem;
+  align-items: center;
+  gap: 0.3rem;
+}
+
+.oracle-chain-proof > div > a svg { width: 0.8rem; height: 0.8rem; }
+
+.oracle-chain-read-state {
+  display: flex;
+  margin-top: 0.75rem;
+  padding: 0.75rem 0.85rem;
+  align-items: center;
+  gap: 0.5rem;
+  border: 1px solid var(--line);
+  border-radius: 13px;
+  background: var(--surface-soft);
+  color: var(--faint);
+  font-size: 0.65rem;
+}
+
+.oracle-chain-read-state svg { width: 1rem; height: 1rem; color: var(--accent); }
+
+.oracle-counts strong {
+  margin-top: 0.2rem;
+  color: var(--ink);
+  font-family: var(--font-app-serif), Newsreader, serif;
+  font-size: 1.7rem;
+  line-height: 1;
+}
+
+.oracle-counts small {
+  margin-top: 0.2rem;
+  color: var(--faint);
+  font-size: 0.6rem;
+}
+
+.oracle-ready-block {
+  display: flex;
+  margin-top: 1.25rem;
+  padding: 1rem;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1rem;
+  border: 1px solid var(--line);
+  border-radius: 15px;
+  background: var(--surface-soft);
+}
+
+.oracle-ready-block span,
+.oracle-ready-block strong,
+.oracle-ready-block p {
+  display: block;
+}
+
+.oracle-ready-block span {
+  color: var(--faint);
+  font-size: 0.65rem;
+  font-weight: 750;
+  text-transform: uppercase;
+}
+
+.oracle-ready-block strong {
+  margin-top: 0.15rem;
+  font-size: 1rem;
+}
+
+.oracle-ready-block p {
+  margin: 0.2rem 0 0;
+  color: var(--faint);
+  font-size: 0.68rem;
+}
+
+.oracle-primary-link {
+  flex: none;
+  border-color: var(--accent);
+  background: var(--accent);
+  color: #fff;
+}
+
+.oracle-jury-card {
+  padding: 1.2rem;
+}
+
+.oracle-jury-head {
+  display: flex;
+  align-items: center;
+  gap: 0.7rem;
+}
+
+.oracle-jury-head > span {
+  display: grid;
+  width: 2.7rem;
+  height: 2.7rem;
+  border-radius: 12px;
+  place-items: center;
+  background: var(--accent-soft);
+  color: var(--accent);
+}
+
+.oracle-jury-head svg {
+  width: 1.35rem;
+  height: 1.35rem;
+}
+
+.oracle-jury-head small,
+.oracle-jury-head h3 {
+  display: block;
+  margin: 0;
+}
+
+.oracle-jury-head small {
+  color: var(--faint);
+  font-size: 0.62rem;
+  font-weight: 750;
+  text-transform: uppercase;
+}
+
+.oracle-jury-head h3 {
+  margin-top: 0.08rem;
+  font-family: var(--font-app-serif), Newsreader, serif;
+  font-size: 1.25rem;
+  font-weight: 600;
+}
+
+.oracle-seats {
+  display: grid;
+  margin-top: 1rem;
+  gap: 0.55rem;
+}
+
+.oracle-seat {
+  display: grid;
+  min-height: 4rem;
+  padding: 0.65rem;
+  grid-template-columns: 2rem 1fr 1.5rem;
+  align-items: center;
+  gap: 0.55rem;
+  border: 1px dashed var(--line-strong);
+  border-radius: 13px;
+  background: var(--surface-soft);
+}
+
+.oracle-seat.is-ready {
+  border-style: solid;
+  border-color: var(--triad-mint-border);
+  background: var(--triad-mint);
+}
+
+.oracle-seat.is-sealed {
+  border-color: var(--triad-lavender-border);
+  background: var(--triad-lavender);
+}
+
+.oracle-seat.is-revealed {
+  border-color: var(--triad-amber-border);
+  background: var(--triad-amber);
+}
+
+.oracle-seat-number {
+  color: var(--accent);
+  font-family: var(--font-app-mono), monospace;
+  font-size: 0.62rem;
+  font-weight: 800;
+}
+
+.oracle-seat strong,
+.oracle-seat small {
+  display: block;
+}
+
+.oracle-seat strong {
+  overflow: hidden;
+  font-size: 0.73rem;
+  text-overflow: ellipsis;
+}
+
+.oracle-seat small {
+  margin-top: 0.12rem;
+  color: var(--faint);
+  font-size: 0.62rem;
+}
+
+.oracle-seat > i {
+  display: grid;
+  width: 1.4rem;
+  height: 1.4rem;
+  border-radius: 50%;
+  place-items: center;
+  background: rgba(15, 155, 112, 0.12);
+  color: var(--good);
+  font-size: 0.65rem;
+  font-style: normal;
+  font-weight: 900;
+}
+
+.oracle-jury-rule {
+  display: grid;
+  margin-top: 0.8rem;
+  padding: 0.8rem;
+  grid-template-columns: 1.25rem 1fr;
+  gap: 0.55rem;
+  border-radius: 12px;
+  background: #25213d;
+  color: #fff;
+}
+
+.oracle-jury-rule svg {
+  width: 1.1rem;
+  height: 1.1rem;
+  color: #bbb0ff;
+}
+
+.oracle-jury-rule p {
+  margin: 0;
+  color: rgba(255, 255, 255, 0.72);
+  font-size: 0.64rem;
+  line-height: 1.5;
+}
+
+.oracle-worldscan-link {
+  display: flex;
+  margin-top: 0.8rem;
+  padding: 0.65rem;
+  align-items: center;
+  justify-content: space-between;
+  color: var(--accent-ink);
+  font-size: 0.67rem;
+  font-weight: 750;
+  text-decoration: none;
+}
+
+.oracle-ballot {
+  margin-top: 1rem;
+  padding: clamp(1rem, 3vw, 1.5rem);
+  border-radius: 20px;
+}
+
+.oracle-ballot-head span {
+  color: var(--accent);
+  font-size: 0.63rem;
+  font-weight: 800;
+  text-transform: uppercase;
+}
+
+.oracle-ballot-head h3 {
+  margin: 0.15rem 0 0;
+  font-family: var(--font-app-serif), Newsreader, serif;
+  font-size: 1.35rem;
+}
+
+.oracle-vote-options {
+  display: grid;
+  margin-top: 1rem;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 0.65rem;
+}
+
+.oracle-vote-options button {
+  min-height: 6rem;
+  padding: 1rem;
+  border: 1px solid var(--line-strong);
+  border-radius: 15px;
+  background: var(--surface-soft);
+  color: var(--muted);
+  text-align: left;
+  cursor: pointer;
+}
+
+.oracle-vote-options button.is-selected.is-yes {
+  border-color: var(--good);
+  background: var(--good-soft);
+  color: #087553;
+  box-shadow: 0 0 0 3px rgba(15, 155, 112, 0.09);
+}
+
+.oracle-vote-options button.is-selected.is-no {
+  border-color: var(--accent);
+  background: var(--accent-soft);
+  color: var(--accent-ink);
+  box-shadow: 0 0 0 3px rgba(90, 75, 214, 0.09);
+}
+
+.oracle-vote-options span,
+.oracle-vote-options small {
+  display: block;
+}
+
+.oracle-vote-options span {
+  font-size: 1.1rem;
+  font-weight: 850;
+}
+
+.oracle-vote-options small {
+  margin-top: 0.3rem;
+  font-size: 0.68rem;
+}
+
+.oracle-primary-action,
+.oracle-secondary-action {
+  display: inline-flex;
+  min-height: 3.1rem;
+  padding: 0.8rem 1rem;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
+  border-radius: 12px;
+  font-size: 0.76rem;
+  font-weight: 800;
+  cursor: pointer;
+}
+
+.oracle-primary-action {
+  width: 100%;
+  margin-top: 0.7rem;
+  border: 1px solid var(--accent);
+  background: var(--accent);
+  color: #fff;
+  box-shadow: 0 12px 28px -20px rgba(90, 75, 214, 0.8);
+}
+
+.oracle-primary-action:disabled {
+  border-color: #cbc5bb;
+  background: #d8d3ca;
+  color: #817a70;
+  box-shadow: none;
+  cursor: not-allowed;
+}
+
+.oracle-primary-action svg {
+  width: 1rem;
+  height: 1rem;
+}
+
+.oracle-secondary-action {
+  border: 1px solid var(--line-strong);
+  background: var(--surface);
+  color: var(--ink);
+}
+
+.oracle-ballot-message,
+.oracle-ballot-success,
+.oracle-reveal-summary {
+  margin-top: 0.9rem;
+  padding: 0.9rem;
+  border: 1px solid var(--line);
+  border-radius: 14px;
+  background: var(--surface-soft);
+}
+
+.oracle-ballot-message.is-neutral {
+  border-color: var(--triad-lavender-border);
+  background: var(--triad-lavender);
+}
+
+.oracle-ballot-message p,
+.oracle-ballot-success p {
+  margin: 0.2rem 0 0;
+  color: var(--muted);
+  font-size: 0.7rem;
+}
+
+.oracle-ballot-success {
+  display: grid;
+  grid-template-columns: 2.2rem 1fr;
+  align-items: center;
+  gap: 0.7rem;
+  border-color: var(--triad-mint-border);
+  background: var(--triad-mint);
+}
+
+.oracle-ballot-success > span {
+  display: grid;
+  width: 2.2rem;
+  height: 2.2rem;
+  border-radius: 50%;
+  place-items: center;
+  background: var(--good);
+  color: #fff;
+  font-weight: 900;
+}
+
+.oracle-reveal-summary {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.oracle-reveal-summary span {
+  color: var(--faint);
+  font-size: 0.72rem;
+}
+
+.oracle-reveal-summary strong {
+  color: var(--accent);
+  font-size: 1rem;
+}
+
+.oracle-tx-link {
+  display: block;
+  margin-top: 0.75rem;
+  color: var(--good);
+  font-size: 0.68rem;
+  font-weight: 750;
+  text-align: center;
+}
+
+.oracle-inline-error,
+.oracle-page-error {
+  border: 1px solid #efb7ad;
+  border-radius: 12px;
+  background: var(--bad-soft);
+  color: #a63726;
+}
+
+.oracle-inline-error {
+  margin: 0.7rem 0 0;
+  padding: 0.7rem;
+  font-size: 0.68rem;
+}
+
+.oracle-final-receipt {
+  display: grid;
+  margin-top: 1rem;
+  padding: clamp(1.2rem, 3vw, 1.8rem);
+  grid-template-columns: 3.5rem 1fr auto;
+  align-items: center;
+  gap: 1rem;
+  border: 1px solid #b7decf;
+  border-radius: 22px;
+  background: linear-gradient(135deg, #e3f5ed, #f8fcfa);
+  box-shadow: var(--shadow);
+}
+
+.oracle-ruling-mark {
+  display: grid;
+  width: 3.5rem;
+  height: 3.5rem;
+  border-radius: 16px;
+  place-items: center;
+  background: var(--good);
+  color: #fff;
+}
+
+.oracle-ruling-mark svg {
+  width: 1.8rem;
+  height: 1.8rem;
+}
+
+.oracle-ruling-copy h2,
+.oracle-ruling-copy p {
+  margin: 0;
+}
+
+.oracle-ruling-copy h2 {
+  margin-top: 0.15rem;
+  font-family: var(--font-app-serif), Newsreader, serif;
+  font-size: 1.45rem;
+}
+
+.oracle-ruling-copy p {
+  margin-top: 0.2rem;
+  color: #497361;
+  font-size: 0.7rem;
+}
+
+.oracle-final-receipt a {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.4rem;
+  color: #087553;
+  font-size: 0.72rem;
+  font-weight: 800;
+  text-decoration: none;
+}
+
+.oracle-receipt-history {
+  margin-top: 1rem;
+  padding: 1.2rem;
+}
+
+.oracle-section-title h2 {
+  margin: 0.12rem 0 0;
+  font-family: var(--font-app-serif), Newsreader, serif;
+  font-size: 1.5rem;
+}
+
+.oracle-section-title > small {
+  color: var(--faint);
+  font-size: 0.66rem;
+}
+
+.oracle-receipt-list {
+  display: grid;
+  margin-top: 0.8rem;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 0.55rem;
+}
+
+.oracle-receipt-list > a {
+  display: grid;
+  padding: 0.75rem;
+  grid-template-columns: 2.8rem 1fr 1rem;
+  align-items: center;
+  gap: 0.65rem;
+  border: 1px solid var(--line);
+  border-radius: 13px;
+  color: var(--ink);
+  text-decoration: none;
+}
+
+.oracle-receipt-list > a > span {
+  display: grid;
+  width: 2.8rem;
+  height: 2rem;
+  border-radius: 9px;
+  place-items: center;
+  font-size: 0.65rem;
+  font-weight: 850;
+}
+
+.oracle-receipt-list .is-yes {
+  background: var(--good-soft);
+  color: var(--good);
+}
+
+.oracle-receipt-list .is-no {
+  background: var(--accent-soft);
+  color: var(--accent);
+}
+
+.oracle-receipt-list strong,
+.oracle-receipt-list small {
+  display: block;
+}
+
+.oracle-receipt-list strong { font-size: 0.75rem; }
+.oracle-receipt-list small { margin-top: 0.1rem; color: var(--faint); font-size: 0.62rem; }
+
+.oracle-submit-intro {
+  display: grid;
+  margin: 1rem 0 1.2rem;
+  grid-template-columns: minmax(0, 0.85fr) minmax(20rem, 1.15fr);
+  align-items: end;
+  gap: 2rem;
+}
+
+.oracle-submit-intro h2 {
+  margin: 0.35rem 0 0;
+  font-family: var(--font-app-serif), Newsreader, serif;
+  font-size: clamp(2rem, 4vw, 3.2rem);
+  font-weight: 530;
+  letter-spacing: -0.035em;
+  line-height: 1;
+}
+
+.oracle-submit-intro > p {
+  margin: 0;
+  color: var(--muted);
+  font-size: 0.85rem;
+  line-height: 1.65;
+}
+
+.oracle-submit-form {
+  padding: clamp(1.2rem, 3vw, 2rem);
+}
+
+.oracle-form-progress {
+  display: grid;
+  margin-bottom: 1.3rem;
+  grid-template-columns: auto 1fr auto;
+  align-items: center;
+  gap: 0.65rem;
+  color: var(--faint);
+  font-size: 0.65rem;
+  font-weight: 750;
+}
+
+.oracle-form-progress i {
+  height: 1px;
+  background: var(--line-strong);
+}
+
+.oracle-form-progress .is-active { color: var(--accent); }
+.oracle-form-progress .is-done { color: var(--good); }
+
+.oracle-field {
+  display: block;
+  margin-top: 0.9rem;
+}
+
+.oracle-field > span {
+  display: grid;
+  margin-bottom: 0.45rem;
+  grid-template-columns: 1.65rem 1fr;
+  align-items: center;
+  column-gap: 0.55rem;
+}
+
+.oracle-field > span b {
+  display: grid;
+  width: 1.65rem;
+  height: 1.65rem;
+  grid-row: 1 / span 2;
+  border-radius: 8px;
+  place-items: center;
+  background: var(--accent-soft);
+  color: var(--accent);
+  font-family: var(--font-app-mono), monospace;
+  font-size: 0.62rem;
+}
+
+.oracle-field > span strong { font-size: 0.76rem; }
+.oracle-field > span small { color: var(--faint); font-size: 0.62rem; }
+
+.oracle-field textarea,
+.oracle-date-input {
+  width: 100%;
+  border: 1px solid var(--line-strong);
+  border-radius: 13px;
+  background: var(--surface-soft);
+  color: var(--ink);
+  transition: border 150ms ease, box-shadow 150ms ease, background 150ms ease;
+}
+
+.oracle-field textarea {
+  min-height: 6.7rem;
+  padding: 0.85rem;
+  resize: vertical;
+  font-size: 0.78rem;
+  line-height: 1.5;
+}
+
+.oracle-date-input {
+  display: grid;
+  padding: 0 0.8rem;
+  grid-template-columns: 1.2rem 1fr;
+  align-items: center;
+  gap: 0.45rem;
+}
+
+.oracle-date-input svg {
+  width: 1rem;
+  height: 1rem;
+  color: var(--accent);
+}
+
+.oracle-date-input input {
+  min-height: 3.15rem;
+  border: 0;
+  outline: 0;
+  background: transparent;
+  color: var(--ink);
+  font-size: 0.78rem;
+}
+
+.oracle-field textarea:focus,
+.oracle-date-input:focus-within {
+  border-color: var(--accent);
+  background: #fff;
+  box-shadow: 0 0 0 3px rgba(90, 75, 214, 0.09);
+  outline: none;
+}
+
+.oracle-submit-side {
+  display: grid;
+  gap: 0.75rem;
+}
+
+.oracle-fee-card {
+  overflow: hidden;
+  padding: 1.2rem;
+  background: linear-gradient(145deg, #25213d, #3c3277);
+  color: #fff;
+}
+
+.oracle-fee-card > span { color: #c9c1fa; }
+
+.oracle-fee-card > strong {
+  display: block;
+  margin-top: 0.45rem;
+  font-family: var(--font-app-serif), Newsreader, serif;
+  font-size: 3.3rem;
+  font-weight: 550;
+  letter-spacing: -0.05em;
+  line-height: 1;
+}
+
+.oracle-fee-card > strong small {
+  font-family: var(--font-app-sans), sans-serif;
+  font-size: 0.7rem;
+  letter-spacing: 0.08em;
+}
+
+.oracle-fee-card > p {
+  color: rgba(255, 255, 255, 0.65);
+  font-size: 0.68rem;
+  line-height: 1.5;
+}
+
+.oracle-fee-card dl {
+  display: grid;
+  margin: 1rem 0 0;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 0.35rem;
+}
+
+.oracle-fee-card dl > div {
+  padding: 0.55rem;
+  border: 1px solid rgba(255, 255, 255, 0.11);
+  border-radius: 10px;
+  background: rgba(255, 255, 255, 0.06);
+}
+
+.oracle-fee-card dt { color: rgba(255, 255, 255, 0.55); font-size: 0.53rem; }
+.oracle-fee-card dd { margin: 0.2rem 0 0; font-size: 0.75rem; font-weight: 800; }
+
+.oracle-one-at-time {
+  display: grid;
+  padding: 0.9rem;
+  grid-template-columns: 2.4rem 1fr;
+  align-items: center;
+  gap: 0.7rem;
+  border-radius: 15px;
+  border-color: var(--triad-mint-border);
+  background: var(--triad-mint);
+}
+
+.oracle-one-at-time > span {
+  display: grid;
+  width: 2.4rem;
+  height: 2.4rem;
+  border-radius: 11px;
+  place-items: center;
+  background: rgba(15, 155, 112, 0.1);
+  color: var(--good);
+}
+
+.oracle-one-at-time svg { width: 1.15rem; height: 1.15rem; }
+.oracle-one-at-time strong { font-size: 0.73rem; }
+.oracle-one-at-time p { margin: 0.18rem 0 0; color: #476b5c; font-size: 0.62rem; line-height: 1.4; }
+
+.oracle-submit-steps {
+  display: grid;
+  padding: 0.35rem;
+  gap: 0.25rem;
+  border: 1px solid var(--line-strong);
+  border-radius: 16px;
+  background: var(--surface);
+  box-shadow: var(--shadow);
+}
+
+.oracle-submit-steps > div {
+  display: grid;
+  padding: 0.65rem;
+  grid-template-columns: 1.7rem 1fr;
+  align-items: start;
+  gap: 0.55rem;
+  border-radius: 11px;
+}
+
+.oracle-submit-steps > div:nth-child(2) { background: var(--triad-lavender); }
+
+.oracle-submit-steps > div > span {
+  color: var(--accent);
+  font-family: var(--font-app-mono), monospace;
+  font-size: 0.6rem;
+  font-weight: 800;
+}
+
+.oracle-submit-steps p { margin: 0; }
+.oracle-submit-steps strong,
+.oracle-submit-steps small { display: block; }
+.oracle-submit-steps strong { font-size: 0.7rem; }
+.oracle-submit-steps small { margin-top: 0.12rem; color: var(--faint); font-size: 0.6rem; line-height: 1.35; }
+
+.oracle-review-card h3 {
+  margin: 1.25rem 0;
+  font-family: var(--font-app-serif), Newsreader, serif;
+  font-size: clamp(1.7rem, 4vw, 2.5rem);
+  font-weight: 550;
+  letter-spacing: -0.03em;
+  line-height: 1.08;
+}
+
+.oracle-review-head i {
+  padding: 0.35rem 0.5rem;
+  border-radius: 999px;
+  background: var(--accent-soft);
+  color: var(--accent);
+  font-size: 0.64rem;
+  font-style: normal;
+  font-weight: 800;
+}
+
+.oracle-review-lock {
+  display: flex;
+  margin: 0.8rem 0;
+  padding: 0.75rem;
+  align-items: center;
+  gap: 0.55rem;
+  border-radius: 11px;
+  background: var(--surface-soft);
+  color: var(--muted);
+  font-size: 0.65rem;
+}
+
+.oracle-review-lock svg { width: 1.1rem; height: 1.1rem; color: var(--accent); }
+
+.oracle-page-loading,
+.oracle-page-error {
+  display: grid;
+  min-height: 18rem;
+  margin-top: 1rem;
+  place-items: center;
+  align-content: center;
+}
+
+.oracle-page-loading span {
+  width: 2rem;
+  height: 2rem;
+  border: 3px solid var(--accent-soft);
+  border-top-color: var(--accent);
+  border-radius: 50%;
+  animation: oracle-spin 700ms linear infinite;
+}
+
+@keyframes oracle-spin { to { transform: rotate(360deg); } }
+
+.oracle-page-loading p,
+.oracle-page-error p {
+  margin: 0.75rem 0 0;
+  color: var(--faint);
+  font-size: 0.75rem;
+}
+
+.oracle-page-error {
+  padding: 2rem;
+  text-align: center;
+}
+
+.oracle-queue-alert {
+  display: flex;
+  margin: 1rem 0 0;
+  padding: 0.9rem 1rem;
+  align-items: flex-start;
+  gap: 0.75rem;
+  border: 1px solid var(--triad-amber-border);
+  border-radius: 14px;
+  background: var(--triad-amber);
+  color: var(--ink);
+}
+
+.oracle-queue-alert > svg {
+  width: 1.25rem;
+  height: 1.25rem;
+  flex: 0 0 auto;
+  color: var(--warning);
+}
+
+.oracle-queue-alert strong,
+.oracle-queue-alert p {
+  display: block;
+}
+
+.oracle-queue-alert p {
+  margin: 0.2rem 0 0;
+  color: var(--muted);
+  font-size: 0.72rem;
+  line-height: 1.5;
+}
+
+.oracle-queue-alert span {
+  display: flex;
+  margin-top: 0.45rem;
+  flex-wrap: wrap;
+  gap: 0.4rem;
+}
+
+.oracle-queue-alert a {
+  color: var(--accent-ink);
+  font-size: 0.68rem;
+  font-weight: 750;
+  text-decoration: underline;
+  text-underline-offset: 2px;
+}
+
+.oracle-footer-note {
+  display: grid;
+  margin-top: 2rem;
+  padding: 1rem 0;
+  grid-template-columns: auto minmax(0, 1fr);
+  align-items: start;
+  gap: 1rem;
+  border-top: 1px solid var(--line-strong);
+}
+
+.oracle-footer-note > span {
+  color: var(--accent);
+  font-size: 0.64rem;
+  font-weight: 800;
+  letter-spacing: 0.09em;
+  text-transform: uppercase;
+}
+
+.oracle-footer-note p {
+  max-width: 52rem;
+  margin: 0;
+  color: var(--faint);
+  font-size: 0.65rem;
+  line-height: 1.5;
+}
+
+.oracle-question-loading {
+  display: grid;
+  margin: 2rem 0;
+  gap: 0.6rem;
+}
+
+.oracle-question-loading span {
+  height: 1rem;
+  border-radius: 999px;
+  background: linear-gradient(90deg, #eee9e0, #f8f5ef, #eee9e0);
+  background-size: 200% 100%;
+  animation: oracle-shimmer 1.2s linear infinite;
+}
+
+.oracle-question-loading span:nth-child(1) { width: 80%; }
+.oracle-question-loading span:nth-child(2) { width: 62%; }
+.oracle-question-loading span:nth-child(3) { width: 42%; }
+
+@keyframes oracle-shimmer { to { background-position: -200% 0; } }
+
+@media (max-width: 900px) {
+  .oracle-hero {
+    min-height: 0;
+    grid-template-columns: 1fr;
+  }
+
+  .oracle-hero h1 {
+    max-width: 48rem;
+  }
+
+  .oracle-proof-stack {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+  }
+
+  .oracle-proof-card {
+    min-height: 8rem;
+    padding: 0.8rem;
+    grid-template-columns: 1fr;
+    align-content: start;
+  }
+
+  .oracle-live-layout,
+  .oracle-submit-layout {
+    grid-template-columns: 1fr;
+  }
+
+  .oracle-jury-card {
+    order: -1;
+  }
+
+  .oracle-seats {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+  }
+
+  .oracle-seat {
+    min-width: 0;
+    grid-template-columns: 1.5rem 1fr;
+  }
+
+  .oracle-seat > i { display: none; }
+
+  .oracle-submit-side {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+
+  .oracle-submit-steps {
+    grid-column: 1 / -1;
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+  }
+}
+
+@media (max-width: 620px) {
+  .oracle-app {
+    padding-right: 0.7rem;
+    padding-left: 0.7rem;
+  }
+
+  .oracle-hero {
+    padding: 1.4rem;
+    border-radius: 22px;
+  }
+
+  .oracle-hero h1 {
+    margin-top: 0.9rem;
+    font-size: clamp(2.65rem, 14vw, 4.25rem);
+  }
+
+  .oracle-hero-copy > p {
+    font-size: 0.84rem;
+  }
+
+  .oracle-hero-actions {
+    display: grid;
+  }
+
+  .oracle-hero-actions button,
+  .oracle-hero-actions a {
+    width: 100%;
+  }
+
+  .oracle-proof-stack {
+    grid-template-columns: 1fr;
+  }
+
+  .oracle-proof-card {
+    min-height: 0;
+    padding: 0.75rem 2.6rem 0.75rem 0.75rem;
+    grid-template-columns: 2.25rem 1fr;
+  }
+
+  .oracle-proof-card > span {
+    width: 2.25rem;
+    height: 2.25rem;
+  }
+
+  .oracle-tabs {
+    width: calc(100% - 1rem);
+    margin-bottom: 1rem;
+  }
+
+  .oracle-tabs button {
+    min-height: 3.55rem;
+    padding: 0.45rem;
+    grid-template-columns: 2rem 1fr;
+    gap: 0.45rem;
+  }
+
+  .oracle-tab-icon {
+    width: 2rem;
+    height: 2rem;
+  }
+
+  .oracle-tabs small {
+    display: none;
+  }
+
+  .oracle-case-head {
+    align-items: flex-start;
+  }
+
+  .oracle-chain-mark span {
+    position: absolute;
+    overflow: hidden;
+    width: 1px;
+    height: 1px;
+    clip: rect(0 0 0 0);
+  }
+
+  .oracle-question-facts,
+  .oracle-counts,
+  .oracle-receipt-list,
+  .oracle-submit-intro,
+  .oracle-submit-side {
+    grid-template-columns: 1fr;
+  }
+
+  .oracle-fact {
+    min-height: 0;
+  }
+
+  .oracle-seats {
+    grid-template-columns: 1fr;
+  }
+
+  .oracle-seat {
+    grid-template-columns: 2rem 1fr 1.5rem;
+  }
+
+  .oracle-seat > i { display: grid; }
+
+  .oracle-jury-card {
+    order: 0;
+  }
+
+  .oracle-progress {
+    grid-template-columns: 1fr;
+    gap: 0.4rem;
+  }
+
+  .oracle-progress::before {
+    top: 1rem;
+    bottom: 1rem;
+    left: 1rem;
+    width: 2px;
+    height: auto;
+  }
+
+  .oracle-progress li {
+    min-height: 2.4rem;
+    flex-direction: row;
+    gap: 0.65rem;
+    text-align: left;
+  }
+
+  .oracle-progress small {
+    max-width: none;
+    font-size: 0.66rem;
+  }
+
+  .oracle-ready-block,
+  .oracle-final-receipt,
+  .oracle-footer-note {
+    grid-template-columns: 1fr;
+  }
+
+  .oracle-ready-block {
+    display: grid;
+  }
+
+  .oracle-primary-link,
+  .oracle-final-receipt a {
+    width: 100%;
+  }
+
+  .oracle-final-receipt {
+    justify-items: start;
+  }
+
+  .oracle-vote-options {
+    grid-template-columns: 1fr;
+  }
+
+  .oracle-submit-intro {
+    align-items: start;
+    gap: 0.75rem;
+  }
+
+  .oracle-submit-steps {
+    grid-template-columns: 1fr;
+  }
+
+  .oracle-submit-steps > div:nth-child(2) { background: var(--triad-lavender); }
+}
+
+@media (max-width: 360px) {
+  .oracle-hero {
+    padding: 1.15rem;
+  }
+
+  .oracle-hero h1 {
+    font-size: 2.55rem;
+  }
+
+  .oracle-tabs button {
+    grid-template-columns: 1fr;
+    justify-items: center;
+    text-align: center;
+  }
+
+  .oracle-tab-icon {
+    display: none;
+  }
+
+  .oracle-case-card,
+  .oracle-jury-card,
+  .oracle-submit-form,
+  .oracle-receipt-history {
+    padding: 1rem;
+    border-radius: 17px;
+  }
+}

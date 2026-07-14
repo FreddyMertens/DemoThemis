@@ -1,0 +1,10 @@
+{
+  "sequence": 20,
+  "title": "IPCC AR6 synthesis approval",
+  "type": "question",
+  "standard": "public-research",
+  "question": "By 19 March 2023, had the IPCC approved the Summary for Policymakers and adopted the longer report of its Sixth Assessment Report Synthesis Report?",
+  "yesRule": "Vote YES only if both the Summary for Policymakers approval and the longer report's adoption had occurred by the judged time.",
+  "judgedAsOf": "2023-03-19T23:59:59Z",
+  "simulated": false
+}

@@ -1,0 +1,154 @@
+{
+  "version": 1,
+  "policy": "one-active-at-a-time",
+  "officialOpener": "0xe8E539aa5c3E74453892DAd479Bf9feB51CF516c",
+  "questions": [
+    {
+      "sequence": 1,
+      "slug": "01-dimorphos-orbit-change",
+      "uri": "/cases/queue/01-dimorphos-orbit-change.json",
+      "criteriaHash": "0x60f23f692f9f0321f8088aaef33e9945439fd562b88919598aabe5393d990205",
+      "title": "Dimorphos orbital change"
+    },
+    {
+      "sequence": 2,
+      "slug": "02-webb-initial-observations",
+      "uri": "/cases/queue/02-webb-initial-observations.json",
+      "criteriaHash": "0xb2fc7fe60011cbb05036a6fd1a47176a0e56b380f1352345dbe47b98af626fa3",
+      "title": "Webb initial observations"
+    },
+    {
+      "sequence": 3,
+      "slug": "03-chandrayaan-3-landing",
+      "uri": "/cases/queue/03-chandrayaan-3-landing.json",
+      "criteriaHash": "0x8d111fa1bc99bc8d4f36f9b9c37c89f96c9a2281c8587d9ea88fc535af4ed40b",
+      "title": "Chandrayaan-3 landing"
+    },
+    {
+      "sequence": 4,
+      "slug": "04-bennu-sample-mass",
+      "uri": "/cases/queue/04-bennu-sample-mass.json",
+      "criteriaHash": "0xfb07682bd9ac9a9cc210a9fa4f34e1775e52db357ff261e7900ef7cd47f852f1",
+      "title": "Bennu sample mass"
+    },
+    {
+      "sequence": 5,
+      "slug": "05-ingenuity-flight-total",
+      "uri": "/cases/queue/05-ingenuity-flight-total.json",
+      "criteriaHash": "0xba208a21186c13d36a7fbacecebcd40e822c70cc906fcc67ed705647f69dc21c",
+      "title": "Ingenuity flight total"
+    },
+    {
+      "sequence": 6,
+      "slug": "06-artemis-i-completion",
+      "uri": "/cases/queue/06-artemis-i-completion.json",
+      "criteriaHash": "0x711529fdaaa6e24c3dceec7e42a8e70aa164d748d91b57ac3e4897687828ade7",
+      "title": "Artemis I completion"
+    },
+    {
+      "sequence": 7,
+      "slug": "07-euclid-launch",
+      "uri": "/cases/queue/07-euclid-launch.json",
+      "criteriaHash": "0x37e7618a2e9167d3f93be2ca7e60e8e12cb82bdff2e1cd5e76c90076a8b6aff3",
+      "title": "Euclid launch"
+    },
+    {
+      "sequence": 8,
+      "slug": "08-eu-ai-act-commencement",
+      "uri": "/cases/queue/08-eu-ai-act-commencement.json",
+      "criteriaHash": "0xbfa9655341685329b18e07be42a10498673ec3ca3a41869f3b98431890824072",
+      "title": "EU AI Act commencement"
+    },
+    {
+      "sequence": 9,
+      "slug": "09-online-safety-act-assent",
+      "uri": "/cases/queue/09-online-safety-act-assent.json",
+      "criteriaHash": "0x0454c7784018786a5efffdfbfdc1eec85df109bc1cd2fafc253f8d19449ab0f9",
+      "title": "Online Safety Act assent"
+    },
+    {
+      "sequence": 10,
+      "slug": "10-high-seas-treaty-adoption",
+      "uri": "/cases/queue/10-high-seas-treaty-adoption.json",
+      "criteriaHash": "0x50200598efb7c6263bca0a0fcbf8307e7f57c792a99118a5136fe9ba0edbee3f",
+      "title": "High Seas Treaty adoption"
+    },
+    {
+      "sequence": 11,
+      "slug": "11-casgevy-us-approval",
+      "uri": "/cases/queue/11-casgevy-us-approval.json",
+      "criteriaHash": "0x5d72feb8b4c958d5c9574f3a122f3f17b9505211bb5cb7d97066df9044f4134b",
+      "title": "Casgevy US approval"
+    },
+    {
+      "sequence": 12,
+      "slug": "12-african-wild-polio-certification",
+      "uri": "/cases/queue/12-african-wild-polio-certification.json",
+      "criteriaHash": "0x908ae6dfaf42c28812f119ec29939f7af04fa75b6f1fc05921857c05680efce3",
+      "title": "African wild-polio certification"
+    },
+    {
+      "sequence": 13,
+      "slug": "13-covid-19-emergency-status",
+      "uri": "/cases/queue/13-covid-19-emergency-status.json",
+      "criteriaHash": "0xa3205c1309a845f1f7092acde55e3a6550e005de50a7a49efb8cbca669ba8516",
+      "title": "COVID-19 emergency status"
+    },
+    {
+      "sequence": 14,
+      "slug": "14-ethereum-consensus-transition",
+      "uri": "/cases/queue/14-ethereum-consensus-transition.json",
+      "criteriaHash": "0x253da3e789de70900e48ecbd76c81519e9f90a0aca0a76f854ae721ac9df63e1",
+      "title": "Ethereum consensus transition"
+    },
+    {
+      "sequence": 15,
+      "slug": "15-lhc-run-3-collisions",
+      "uri": "/cases/queue/15-lhc-run-3-collisions.json",
+      "criteriaHash": "0xf32612bba40007a521285608a7da28b9ffa56535035ee84302495a69084a3f05",
+      "title": "LHC Run 3 collisions"
+    },
+    {
+      "sequence": 16,
+      "slug": "16-python-3-11-release",
+      "uri": "/cases/queue/16-python-3-11-release.json",
+      "criteriaHash": "0xc92537353c22b252b6be49a87f4d051a3f522e514533746403280bd1e84d66be",
+      "title": "Python 3.11 stable release"
+    },
+    {
+      "sequence": 17,
+      "slug": "17-us-spot-bitcoin-etp-approval",
+      "uri": "/cases/queue/17-us-spot-bitcoin-etp-approval.json",
+      "criteriaHash": "0xfc498e5f938f76ad48c5d92d73e8c84c92b3b7849aa91378c318bba18bd94d67",
+      "title": "US spot bitcoin ETP approval"
+    },
+    {
+      "sequence": 18,
+      "slug": "18-african-union-g20-membership",
+      "uri": "/cases/queue/18-african-union-g20-membership.json",
+      "criteriaHash": "0xc11991f1b487a6c3f518b4bc5dff233633e3b7b13e71d1beb03140e804e1ebd1",
+      "title": "African Union G20 membership"
+    },
+    {
+      "sequence": 19,
+      "slug": "19-cop28-loss-and-damage-fund",
+      "uri": "/cases/queue/19-cop28-loss-and-damage-fund.json",
+      "criteriaHash": "0x54330fd517cce04bdf0b5cd3a196bbae1fe9797509e7be069485e07503a82660",
+      "title": "COP28 loss-and-damage fund"
+    },
+    {
+      "sequence": 20,
+      "slug": "20-ipcc-ar6-synthesis-approval",
+      "uri": "/cases/queue/20-ipcc-ar6-synthesis-approval.json",
+      "criteriaHash": "0x2542131edeefeec3c01f89385bc0624b228d0d9c6acc62498fbb194a8f800c10",
+      "title": "IPCC AR6 synthesis approval"
+    },
+    {
+      "sequence": 21,
+      "slug": "21-unicode-15-release",
+      "uri": "/cases/queue/21-unicode-15-release.json",
+      "criteriaHash": "0x18c06087e787643c896ede1bdb89ff6a6c7a9270b6da5ba7748e47a84e9d9e3d",
+      "title": "Unicode 15.0 release"
+    }
+  ]
+}

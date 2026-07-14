@@ -1,0 +1,10 @@
+{
+  "sequence": 2,
+  "title": "Webb initial observations",
+  "type": "question",
+  "standard": "public-research",
+  "question": "By 12 July 2022, had the full initial set of five James Webb Space Telescope science observations been publicly released?",
+  "yesRule": "Vote YES only if all five observations in Webb's announced initial science set, including images or spectral data as applicable, had been released by the judged time.",
+  "judgedAsOf": "2022-07-12T23:59:59Z",
+  "simulated": false
+}

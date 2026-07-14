@@ -183,24 +183,38 @@ function checkMvpPage(html, failures) {
   const description = descriptionTag ? tagAttributeValue(descriptionTag, "content") || "" : "";
 
   assert(/\bMVP\b/i.test(title) && /DemoThemis/i.test(title), "mvp.html title should identify the DemoThemis MVP", failures);
-  assert(/\b(?:MVP|prototype)\b/i.test(description) && /\b(?:live|sandbox|on[- ]?chain)\b/i.test(description), "mvp.html description should explain the live MVP experience", failures);
+  assert(/\bMVP\b/i.test(description) && /\bon[- ]?chain\b/i.test(description), "mvp.html description should explain the on-chain MVP", failures);
 
   const linkTargets = openingTagAttributeValues(html, "a", "href");
-  for (const route of ["/app", "/sandbox", "/home", "/about"]) {
-    const expected = siteUrl + route;
-    const hasRoute = linkTargets.some((target) => {
-      try {
-        const targetUrl = new URL(target, `${siteUrl}/mvp.html`);
-        return targetUrl.origin === new URL(siteUrl).origin && targetUrl.pathname.replace(/\/+$/, "") === route;
-      } catch (error) {
-        return false;
-      }
-    });
-    assert(hasRoute, `mvp.html missing same-site MVP link: ${expected}`, failures);
+  const sameSiteProductLinks = linkTargets.flatMap((target) => {
+    try {
+      const targetUrl = new URL(target, `${siteUrl}/mvp.html`);
+      return targetUrl.origin === new URL(siteUrl).origin ? [targetUrl] : [];
+    } catch (error) {
+      return [];
+    }
+  });
+  assert(
+    sameSiteProductLinks.some((target) => target.pathname.replace(/\/+$/, "") === "/app"),
+    `mvp.html missing same-site live product link: ${siteUrl}/app`,
+    failures
+  );
+  for (const route of ["/sandbox", "/home", "/about"]) {
+    assert(
+      !sameSiteProductLinks.some((target) => target.pathname.replace(/\/+$/, "") === route),
+      `mvp.html should not expose the retired ${route} route`,
+      failures
+    );
   }
 
-  assert(/\bsimulat(?:e|ed|es|ion|or)\b/i.test(html), "mvp.html should label the simulated experience", failures);
-  assert(/\bon[- ]?chain\b/i.test(html), "mvp.html should distinguish the on-chain experience", failures);
+  assert(/role=["']tablist["']/i.test(html), "mvp.html product preview is missing its tab list", failures);
+  assert(/id=["']mvp-tab-live["'][^>]*>Live case</i.test(html), "mvp.html is missing the Live case tab", failures);
+  assert(/id=["']mvp-tab-submit["'][^>]*>Submit a case</i.test(html), "mvp.html is missing the Submit a case tab", failures);
+  assert(/\bone (?:official )?question (?:is active|at a time)\b/i.test(html), "mvp.html should explain the one-at-a-time rule", failures);
+  assert(/\bthree (?:World ID-)?verified humans\b/i.test(html), "mvp.html should identify the three verified jurors", failures);
+  assert(/\bon[- ]?chain\b/i.test(html), "mvp.html should explain the on-chain result", failures);
+  assert(/\bNo evidence or source field\b/i.test(html), "mvp.html should explain that jurors research independently", failures);
+  assert(!/\bsandbox\b|\bsimulat(?:e|ed|es|ion|or)\b/i.test(html), "mvp.html should stay focused on the real product process", failures);
 }
 
 function checkStateMachineData(html, failures) {

@@ -8,7 +8,7 @@ import { useCallback, useEffect, useRef, useState } from 'react';
 
 export const AuthButton = () => {
   const { isInstalled } = useMiniKit();
-  const pathname = usePathname() || '/home';
+  const pathname = usePathname() || '/app';
   const [feedback, setFeedback] = useState<
     'pending' | 'success' | 'failed' | undefined
   >();
@@ -54,7 +54,7 @@ export const AuthButton = () => {
     return (
       <div className="space-y-3 text-center">
         <p className="text-sm leading-relaxed text-slate-600">
-          Sign-in works only in World App. You can use the complete sandbox here.
+          Voting needs World App. You can still follow the live case and inspect its on-chain progress here.
         </p>
         <Button asChild fullWidth size="lg" variant="primary">
           <a href={worldAppLink} target="_blank" rel="noreferrer">
@@ -62,10 +62,10 @@ export const AuthButton = () => {
           </a>
         </Button>
         <Link
-          href="/sandbox"
+          href="/app"
           className="inline-block text-sm font-semibold text-slate-600 underline underline-offset-4"
         >
-          Try the browser sandbox
+          View the live case
         </Link>
       </div>
     );

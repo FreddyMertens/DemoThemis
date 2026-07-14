@@ -1,17 +1,17 @@
 import Link from 'next/link';
 
 const MISSIONS = [
-  { number: 1, label: 'Test fresh panels', href: '/sandbox' },
-  { number: 2, label: 'Cast a sealed vote', href: '/juror-preview' },
-  { number: 3, label: 'Audit a ruling', href: '/home' },
+  { number: 1, label: 'Follow the live case', href: '/app' },
+  { number: 2, label: 'Join as a juror', href: '/onboard' },
+  { number: 3, label: 'Submit a question', href: '/app?tab=submit' },
 ] as const;
 
 export function MissionProgress({ current }: { current: 1 | 2 | 3 }) {
   return (
-    <nav className="mission-progress" aria-label="Guided demo progress">
+    <nav className="mission-progress" aria-label="Live MVP steps">
       <div className="mission-progress-head">
-        <span>Guided demo</span>
-        <strong>Mission {current} of 3</strong>
+        <span>Live MVP</span>
+        <strong>Step {current} of 3</strong>
       </div>
       <ol>
         {MISSIONS.map((mission) => {

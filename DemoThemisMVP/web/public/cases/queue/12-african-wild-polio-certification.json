@@ -1,0 +1,10 @@
+{
+  "sequence": 12,
+  "title": "African wild-polio certification",
+  "type": "question",
+  "standard": "public-research",
+  "question": "By 31 August 2020, had the WHO African Region been formally certified free of wild poliovirus?",
+  "yesRule": "Vote YES only if the regional certification had been formally issued by the judged time; progress toward certification or the status of individual countries is insufficient.",
+  "judgedAsOf": "2020-08-31T23:59:59Z",
+  "simulated": false
+}

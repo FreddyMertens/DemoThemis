@@ -12,7 +12,7 @@
 #
 # Steps (run in this order, interleaving the humans' World App actions):
 #   status              jurorCount, caseCount, and each case's phase + panel
-#   durations [C] [R]   setDurations (deployer-only); default 600 600 (10 min each)
+#   durations [C] [R]   setDurations (deployer-only); default 300 300 (5 min each)
 #                       -- do this BEFORE opening cases so humans have time to vote
 #   open-question       faucet + approve + openQuestion(q-capstone); prints the caseId
 #   open-escrow         faucet + approve + createDeal + dispute(escrow-capstone)
@@ -59,7 +59,7 @@ case "$step" in
     done
     ;;
   durations)
-    C="${2:-600}"; R="${3:-600}"
+    C="${2:-300}"; R="${3:-300}"
     echo "setDurations($C, $R) on $COURT ..."
     send 80000 "$COURT" "setDurations(uint64,uint64)" "$C" "$R"
     ;;

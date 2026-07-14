@@ -1,0 +1,10 @@
+{
+  "sequence": 7,
+  "title": "Euclid launch",
+  "type": "question",
+  "standard": "public-research",
+  "question": "By 2 July 2023, had the Euclid space telescope both launched and established communications with ground controllers?",
+  "yesRule": "Vote YES only if Euclid had lifted off and post-separation signal acquisition had been confirmed by the judged time.",
+  "judgedAsOf": "2023-07-02T23:59:59Z",
+  "simulated": false
+}

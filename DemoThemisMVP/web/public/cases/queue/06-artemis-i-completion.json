@@ -1,0 +1,10 @@
+{
+  "sequence": 6,
+  "title": "Artemis I completion",
+  "type": "question",
+  "standard": "public-research",
+  "question": "By 10 December 2022, had the uncrewed Artemis I Orion spacecraft completed its mission by splashing down on Earth?",
+  "yesRule": "Vote YES only if Orion's mission-ending Earth splashdown had occurred by the judged time; a planned or in-progress return does not qualify.",
+  "judgedAsOf": "2022-12-10T23:59:59Z",
+  "simulated": false
+}

@@ -1,5 +1,5 @@
 'use client';
-import { useCallback, useEffect, useState } from 'react';
+import { useCallback, useEffect, useRef, useState } from 'react';
 
 /// Poll a stable async reader on an interval. Pass a module-level function or a
 /// useCallback'd one so the identity is stable. Gives every screen explicit
@@ -12,25 +12,40 @@ export function usePolledData<T>(
   const [data, setData] = useState<T | null>(null);
   const [error, setError] = useState<string | null>(null);
   const [loading, setLoading] = useState(true);
+  const mountedRef = useRef(false);
+  const generationRef = useRef(0);
+  const requestRef = useRef(0);
 
   const run = useCallback(async (): Promise<string | null> => {
+    const generation = generationRef.current;
+    const request = ++requestRef.current;
+    const isCurrent = () =>
+      mountedRef.current && generation === generationRef.current && request === requestRef.current;
     try {
       const d = await fetcher();
+      if (!isCurrent()) return null;
       setData(d);
       setError(null);
       return null;
     } catch (e) {
       const message = e instanceof Error ? e.message : String(e);
+      if (!isCurrent()) return null;
       setError(message);
       return message;
     } finally {
-      setLoading(false);
+      if (isCurrent()) setLoading(false);
     }
   }, [fetcher]);
 
   useEffect(() => {
+    mountedRef.current = true;
+    generationRef.current += 1;
+    requestRef.current = 0;
     let alive = true;
     let timer: ReturnType<typeof setInterval> | undefined;
+    setData(null);
+    setError(null);
+    setLoading(true);
     const tick = async () => {
       if (!alive) return;
       const tickError = await run();
@@ -43,6 +58,9 @@ export function usePolledData<T>(
     timer = setInterval(() => void tick(), intervalMs);
     return () => {
       alive = false;
+      mountedRef.current = false;
+      generationRef.current += 1;
+      requestRef.current += 1;
       if (timer) clearInterval(timer);
     };
   }, [run, intervalMs, stopOnError]);

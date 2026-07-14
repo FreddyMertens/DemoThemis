@@ -1,0 +1,10 @@
+{
+  "sequence": 15,
+  "title": "LHC Run 3 collisions",
+  "type": "question",
+  "standard": "public-research",
+  "question": "By 6 July 2022, had Large Hadron Collider detectors begun recording Run 3 proton collisions at 13.6 TeV?",
+  "yesRule": "Vote YES only if Run 3 collision recording at a centre-of-mass energy of 13.6 TeV had begun by the judged time; circulating beams alone do not qualify.",
+  "judgedAsOf": "2022-07-06T23:59:59Z",
+  "simulated": false
+}

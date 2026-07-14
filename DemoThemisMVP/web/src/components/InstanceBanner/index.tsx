@@ -5,8 +5,8 @@ import { IS_COHORT } from '@/lib/chain';
 /// flow is on mainnet with valueless MockUSD.
 export function InstanceBanner() {
   const label = IS_COHORT
-    ? 'Simulation · Sepolia · read-only · ~20 scripted jurors'
-    : 'Mainnet demo · valueless MUSD · no real money';
+    ? 'Engineering instance · Sepolia · read-only'
+    : 'World Chain mainnet · valueless MUSD';
 
   return (
     <details className={`court-instance${IS_COHORT ? ' is-simulated' : ' is-live'}`}>
@@ -17,8 +17,8 @@ export function InstanceBanner() {
       </summary>
       <p>
         {IS_COHORT
-          ? 'This case history is a read-only simulation. It does not represent activity by real jurors.'
-          : 'World ID 4.0 gates juror seats. This screen reads the court contracts on World Chain.'}
+          ? 'This internal instance is not part of the public MVP.'
+          : 'World ID 4.0 gates juror seats. Every case state shown here is read from the deployed court contracts.'}
       </p>
     </details>
   );

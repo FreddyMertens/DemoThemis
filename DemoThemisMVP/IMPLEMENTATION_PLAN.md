@@ -1,5 +1,7 @@
 # DemoThemis MVP — implementation plan
 
+> This is the historical build plan for the deployed MVP. The current post-deployment simplification is defined in [`docs/MVP_UPGRADE_PLAN.md`](docs/MVP_UPGRADE_PLAN.md).
+
 Goal: a working demo of the **arbitration court** strong enough to anchor a World Foundation **Spark Track Mini App grant** application, built in about one month. The grant funds the court, so the MVP is the court. The prediction market is out of scope as a product; it appears only as one of two demo case types so the application can tell the "first customer" story.
 
 Decisions already made (2026-06-12):

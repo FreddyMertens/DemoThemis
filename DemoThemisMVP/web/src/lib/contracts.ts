@@ -12,7 +12,7 @@ export const WORLDCHAIN_SEPOLIA = {
 export const WORLDCHAIN_MAINNET = {
   chainId: 480,
   name: 'World Chain',
-  rpcUrl: 'https://worldchain-mainnet.g.alchemy.com/public',
+  rpcUrl: process.env.NEXT_PUBLIC_WORLDCHAIN_RPC_URL ?? 'https://worldchain-mainnet.gateway.tenderly.co',
   explorer: 'https://worldscan.org',
 } as const;
 

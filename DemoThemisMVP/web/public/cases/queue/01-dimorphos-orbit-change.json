@@ -1,0 +1,10 @@
+{
+  "sequence": 1,
+  "title": "Dimorphos orbital change",
+  "type": "question",
+  "standard": "public-research",
+  "question": "By 11 October 2022, had the DART impact shortened Dimorphos's orbital period around Didymos by at least 30 minutes?",
+  "yesRule": "Vote YES only if the measured post-impact orbital period was at least 30 minutes shorter than the measured pre-impact period by the judged time.",
+  "judgedAsOf": "2022-10-11T23:59:59Z",
+  "simulated": false
+}

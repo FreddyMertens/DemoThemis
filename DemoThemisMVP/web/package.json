@@ -15,6 +15,7 @@
     "build": "next build",
     "start": "next start",
     "gen:contracts": "node scripts/gen-abis.mjs",
+    "validate:question-queue": "node scripts/validate-question-queue.mjs",
     "lint": "prettier --check . --ignore-path ../../.prettierignore"
   },
   "dependencies": {

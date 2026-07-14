@@ -1,0 +1,10 @@
+{
+  "sequence": 19,
+  "title": "COP28 loss-and-damage fund",
+  "type": "question",
+  "standard": "public-research",
+  "question": "By the end of 30 November 2023, had COP28 parties approved arrangements to operationalize the climate loss-and-damage fund?",
+  "yesRule": "Vote YES only if the parties had formally adopted the arrangements needed to operationalize the fund by the judged time; a proposal or pledge alone does not qualify.",
+  "judgedAsOf": "2023-11-30T23:59:59Z",
+  "simulated": false
+}

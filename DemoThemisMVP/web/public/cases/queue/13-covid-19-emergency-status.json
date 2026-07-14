@@ -1,0 +1,10 @@
+{
+  "sequence": 13,
+  "title": "COVID-19 emergency status",
+  "type": "question",
+  "standard": "public-research",
+  "question": "By 1 May 2023, had the World Health Organization determined that COVID-19 no longer constituted a Public Health Emergency of International Concern?",
+  "yesRule": "Vote YES only if the WHO Director-General's determination ending the COVID-19 emergency classification had been made by the judged time.",
+  "judgedAsOf": "2023-05-01T23:59:59Z",
+  "simulated": false
+}

@@ -1,15 +1,13 @@
-// Active on-chain instance selection. NEXT_PUBLIC_CHAIN_ID picks which deployment
-// the Mini App reads: the Sepolia cohort (4801, the labeled simulated scale demo,
-// read-only) or the capstone-ready mainnet instance (480, real World ID verifier
-// path — Step 5). Defaults to the cohort so a reviewer with no World App still
-// sees the seeded history.
+// The public MVP defaults to the real World Chain mainnet deployment. Sepolia
+// remains available only when NEXT_PUBLIC_CHAIN_ID=4801 is explicitly supplied
+// for internal development.
 import { createPublicClient, http, type Address } from 'viem';
 import { worldchain, worldchainSepolia } from 'viem/chains';
 import { COHORT, LIVE } from './contracts';
 
-const chainId = Number(process.env.NEXT_PUBLIC_CHAIN_ID ?? '4801');
+const chainId = Number(process.env.NEXT_PUBLIC_CHAIN_ID ?? '480');
 
-/** True when reading the Sepolia cohort (simulated, read-only); false for mainnet. */
+/** True only when an internal build explicitly selects the Sepolia cohort. */
 export const IS_COHORT = chainId !== 480;
 
 export const INSTANCE = IS_COHORT ? COHORT : LIVE;

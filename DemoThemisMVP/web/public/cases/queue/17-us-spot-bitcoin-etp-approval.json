@@ -1,0 +1,10 @@
+{
+  "sequence": 17,
+  "title": "US spot bitcoin ETP approval",
+  "type": "question",
+  "standard": "public-research",
+  "question": "By 11 January 2024, had the United States securities regulator approved exchange rule changes permitting spot bitcoin exchange-traded products to list and trade?",
+  "yesRule": "Vote YES only if the necessary exchange rule changes for spot bitcoin exchange-traded products had received formal regulatory approval by the judged time.",
+  "judgedAsOf": "2024-01-11T23:59:59Z",
+  "simulated": false
+}

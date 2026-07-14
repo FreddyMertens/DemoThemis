@@ -45,6 +45,12 @@ export const courtTx = {
     data: encodeFunctionData({ abi: jurorRegistryAbi, functionName: 'registerWithPermit2', args: [signal, proof] }),
   }),
 
+  /** JurorRegistry.withdraw() — leave the active pool and recover the demo bond. */
+  withdrawJuror: () => ({
+    to: addr.registry,
+    data: encodeFunctionData({ abi: jurorRegistryAbi, functionName: 'withdraw', args: [] }),
+  }),
+
   /** DisputeCourt.commit(caseId, h) — no token transfer, plain sendTransaction. */
   commit: (caseId: bigint, commitment: Hex) => ({
     to: addr.court,

@@ -1,0 +1,10 @@
+{
+  "sequence": 4,
+  "title": "Bennu sample mass",
+  "type": "question",
+  "standard": "public-research",
+  "question": "By 16 February 2024, had the recovered OSIRIS-REx material from asteroid Bennu been measured at 100 grams or more?",
+  "yesRule": "Vote YES only if the reported mass of recovered Bennu material, excluding the return container itself, was at least 100 grams by the judged time.",
+  "judgedAsOf": "2024-02-16T23:59:59Z",
+  "simulated": false
+}

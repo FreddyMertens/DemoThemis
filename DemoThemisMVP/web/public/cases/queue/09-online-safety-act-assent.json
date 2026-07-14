@@ -1,0 +1,10 @@
+{
+  "sequence": 9,
+  "title": "Online Safety Act assent",
+  "type": "question",
+  "standard": "public-research",
+  "question": "By 25 October 2023, had the United Kingdom's Online Safety Bill received Royal Assent?",
+  "yesRule": "Vote YES only if Royal Assent had been formally granted by the judged time; completing parliamentary votes without assent does not qualify.",
+  "judgedAsOf": "2023-10-25T23:59:59Z",
+  "simulated": false
+}

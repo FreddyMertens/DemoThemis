@@ -1,7 +1,7 @@
 'use client';
 
 import Link from 'next/link';
-import { useState } from 'react';
+import { useCallback, useState } from 'react';
 import { useSession } from 'next-auth/react';
 import { useMiniKit } from '@worldcoin/minikit-js/minikit-provider';
 import { type Address } from 'viem';
@@ -12,7 +12,7 @@ import { AuthButton } from '@/components/AuthButton';
 import { InstanceBanner } from '@/components/InstanceBanner';
 import { SybilDemo } from '@/components/SybilDemo';
 import { usePolledData } from '@/lib/hooks';
-import { registryStats, musdBalanceOf } from '@/lib/court';
+import { getJurorMembership, registryStats, musdBalanceOf } from '@/lib/court';
 import { IS_COHORT, explorerTx, BOND } from '@/lib/chain';
 import { generateRegistrationProof } from '@/lib/worldid';
 import { courtTx } from '@/lib/calldata';
@@ -36,7 +36,7 @@ const STEPS = [
   },
 ];
 
-type Phase = 'idle' | 'verifying' | 'submitting' | 'done' | 'error';
+type Phase = 'idle' | 'verifying' | 'submitting' | 'leaving' | 'done' | 'left' | 'error';
 
 export default function Onboard() {
   const stats = usePolledData(registryStats);
@@ -44,6 +44,11 @@ export default function Onboard() {
   const { isInstalled } = useMiniKit();
   const tx = useCourtTx();
   const wallet = session.data?.user?.walletAddress as Address | undefined;
+  const membershipFetcher = useCallback(
+    async () => (wallet ? getJurorMembership(wallet) : null),
+    [wallet],
+  );
+  const membership = usePolledData(membershipFetcher, 6000);
 
   const [phase, setPhase] = useState<Phase>('idle');
   const [note, setNote] = useState('');
@@ -82,7 +87,7 @@ export default function Onboard() {
         setVerifiedIndex(stats.data?.jurorCount == null ? null : stats.data.jurorCount + 1);
         setPhase('done');
         setNote('');
-        stats.refresh();
+        await Promise.all([stats.refresh(), membership.refresh()]);
       } else {
         setPhase('error');
         setNote(tx.error ?? 'The transaction did not go through.');
@@ -93,8 +98,32 @@ export default function Onboard() {
     }
   }
 
-  const busy = phase === 'verifying' || phase === 'submitting';
+  async function leaveJury() {
+    try {
+      setPhase('leaving');
+      setNote('Leaving the jury and returning your demo bond…');
+      const hash = await tx.submit([courtTx.withdrawJuror()]);
+      if (!hash) {
+        setPhase('error');
+        setNote(tx.error ?? 'The transaction did not go through.');
+        return;
+      }
+      await Promise.all([stats.refresh(), membership.refresh()]);
+      setPhase('left');
+      setNote('You left the active jury and your demo bond was returned.');
+    } catch (e) {
+      setPhase('error');
+      setNote(e instanceof Error ? e.message : String(e));
+    }
+  }
+
+  const busy = phase === 'verifying' || phase === 'submitting' || phase === 'leaving';
   const verifiedHumanLabel = verifiedIndex == null ? 'Verified human' : `Verified human #${verifiedIndex}`;
+  const seatsFilled = !IS_COHORT && (stats.data?.jurorCount ?? 0) >= 3;
+  const tooManyJurors = !IS_COHORT && (stats.data?.jurorCount ?? 0) > 3;
+  const isActiveJuror = membership.data?.active === true;
+  const isInactiveJuror = membership.data?.registered === true && !isActiveJuror;
+  const isServing = (membership.data?.activePanels ?? 0) > 0;
 
   const actionPanel = IS_COHORT ? (
     <div className="rounded-xl border border-amber-300 bg-amber-50 p-4 text-center text-amber-900">
@@ -105,6 +134,55 @@ export default function Onboard() {
         className="mt-3 block rounded-lg bg-amber-900 px-3 py-2.5 text-center text-sm font-semibold text-white"
       >
         Try a sample juror case →
+      </Link>
+    </div>
+  ) : isActiveJuror ? (
+    <div className="rounded-xl border border-emerald-300 bg-emerald-50 p-4 text-center">
+      <p className="text-base font-bold text-emerald-950">You are an active juror.</p>
+      <p className="mt-1 text-sm text-emerald-800">
+        {isServing
+          ? 'Finish your current panel before leaving the jury.'
+          : 'Leaving returns your valueless 5 MUSD demo bond and removes you from future draws.'}
+      </p>
+      {isInstalled ? (
+        <button
+          type="button"
+          onClick={leaveJury}
+          disabled={busy || isServing}
+          className="mt-3 w-full rounded-xl bg-emerald-800 px-4 py-3 text-sm font-semibold text-white disabled:opacity-60"
+        >
+          {phase === 'leaving' ? 'Leaving jury…' : 'Leave jury'}
+        </button>
+      ) : (
+        <div className="mt-3"><AuthButton /></div>
+      )}
+      {note && phase === 'error' && (
+        <p className="mt-2 rounded-lg bg-rose-50 px-3 py-2 text-xs text-rose-700" role="alert">
+          {note}
+        </p>
+      )}
+    </div>
+  ) : isInactiveJuror ? (
+    <div className="rounded-xl border border-emerald-300 bg-emerald-50 p-4 text-center">
+      <p className="text-base font-bold text-emerald-950">You are no longer in the active jury.</p>
+      <p className="mt-1 text-sm text-emerald-800">
+        {phase === 'left' ? note : 'Your World ID registration remains unique, but this wallet is not available for panel draws.'}
+      </p>
+      {tx.txHash && phase === 'left' && (
+        <a href={explorerTx(tx.txHash)} target="_blank" rel="noreferrer" className="mt-2 inline-block text-xs font-medium text-emerald-700 underline">
+          View withdrawal on Worldscan ↗
+        </a>
+      )}
+      <Link href="/app" className="mt-3 block rounded-xl bg-emerald-800 px-4 py-3 text-sm font-semibold text-white">
+        View the live case
+      </Link>
+    </div>
+  ) : tooManyJurors ? (
+    <div className="rounded-xl border border-amber-300 bg-amber-50 p-4 text-center">
+      <p className="text-base font-bold text-amber-950">The official pool must contain exactly three jurors.</p>
+      <p className="mt-1 text-sm text-amber-800">Registration is paused until the extra juror leaves the pool.</p>
+      <Link href="/app" className="mt-3 block rounded-xl bg-amber-800 px-4 py-3 text-sm font-semibold text-white">
+        View the live case
       </Link>
     </div>
   ) : phase === 'done' ? (
@@ -124,10 +202,18 @@ export default function Onboard() {
         </a>
       )}
       <Link
-        href="/home"
+        href="/app"
         className="mt-3 block w-full rounded-xl bg-slate-900 px-4 py-3 text-sm font-semibold text-white"
       >
-        Go to the court
+        View the live case
+      </Link>
+    </div>
+  ) : seatsFilled ? (
+    <div className="rounded-xl border border-violet-200 bg-violet-50 p-4 text-center">
+      <p className="text-base font-bold text-violet-950">The three jury seats are filled.</p>
+      <p className="mt-1 text-sm text-violet-800">The official demo now uses these three verified humans for each question.</p>
+      <Link href="/app" className="mt-3 block rounded-xl bg-violet-700 px-4 py-3 text-sm font-semibold text-white">
+        View the live case
       </Link>
     </div>
   ) : !wallet ? (
@@ -180,10 +266,10 @@ export default function Onboard() {
     <>
       <Page.Header className="p-0">
         <CourtTopBar
-          title="Become a juror"
+          title="Join the three-person jury"
           startAdornment={
-            <Link href="/home" className="text-sm text-slate-500">
-              ← Court
+            <Link href="/app" className="text-sm text-slate-500">
+              ← Live case
             </Link>
           }
         />

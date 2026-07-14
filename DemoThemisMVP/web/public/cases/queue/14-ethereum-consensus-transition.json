@@ -1,0 +1,10 @@
+{
+  "sequence": 14,
+  "title": "Ethereum consensus transition",
+  "type": "question",
+  "standard": "public-research",
+  "question": "By 16 September 2022, had Ethereum Mainnet completed its transition from proof-of-work to proof-of-stake consensus?",
+  "yesRule": "Vote YES only if the Mainnet transition known as The Merge had executed by the judged time; a test-network transition or scheduled target date does not qualify.",
+  "judgedAsOf": "2022-09-16T23:59:59Z",
+  "simulated": false
+}

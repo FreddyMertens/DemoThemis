@@ -3,8 +3,8 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>DemoThemis MVP: try the working court</title>
-<meta name="description" content="Try the DemoThemis MVP in a guided sandbox: stress-test fresh panels, cast a sealed vote, audit a ruling, or continue into World App.">
+<title>DemoThemis MVP: three humans, one on-chain answer</title>
+<meta name="description" content="Preview the focused DemoThemis MVP: one public question, three World ID-verified jurors, sealed ballots, and one on-chain answer.">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@500;700&family=Newsreader:opsz,wght@6..72,200..700&display=swap" rel="stylesheet">
@@ -32,143 +32,224 @@
 
 <header class="hero mvp-hero reveal">
   <p class="kicker">Live Demo MVP</p>
-  <h1>See the court&rsquo;s defenses work.</h1>
-  <p class="dek">Stress-test a fresh panel, cast a sealed vote, and follow the ruling to payout&mdash;all before entering World App.</p>
+  <h1>One public question.<br>Three verified humans.<br>One on-chain answer.</h1>
+  <p class="dek">DemoThemis is a verified-human resolution oracle. Three jurors research a precise yes-or-no question, seal their votes, and let the contract record the majority answer.</p>
   <div class="mvp-hero-actions" aria-label="MVP quick actions">
-    <a class="mvp-button primary" href="#try-mvp">Preview the MVP</a>
-    <a class="mvp-button secondary" href="/app">Open the full MVP</a>
+    <a class="mvp-button primary" href="#product-preview">See how it works</a>
+    <a class="mvp-button secondary" href="/app">Open the Demo MVP <span aria-hidden="true">&#8594;</span></a>
   </div>
-  <div class="meta">
-    <span class="pill">Working software</span>
-    <span>World Chain</span>
-    <span class="dot">&bull;</span>
-    <span>Valueless test tokens</span>
+  <div class="mvp-hero-facts" aria-label="MVP essentials">
+    <span><strong>1</strong> question at a time</span>
+    <span><strong>3</strong> jurors</span>
+    <span><strong>1</strong> majority answer</span>
   </div>
 </header>
 
 <main class="content mvp-content">
-  <section class="mvp-demo-section reveal" id="try-mvp" aria-labelledby="try-title">
+  <section class="mvp-demo-section reveal" id="product-preview" aria-labelledby="preview-title">
     <div class="mvp-section-head">
       <div>
-        <p class="sec-label">Start here &middot; no wallet needed</p>
-        <h2 id="try-title">Stress-test the court&rsquo;s defenses</h2>
-        <p>The browser sandbox uses seeded pretend people and valueless balances. Give an attacker a budget, redraw the panel, and see why bought influence does not automatically carry into the next case.</p>
+        <p class="sec-label">Product preview</p>
+        <h2 id="preview-title">The whole journey in one screen</h2>
+        <p>Switch between the juror-facing case and the submitter-facing form. The examples explain the interface without claiming live users or transactions.</p>
       </div>
-      <a class="mvp-text-link" href="/sandbox">Open full screen</a>
+      <a class="mvp-text-link" href="/app">Open the product <span aria-hidden="true">&#8594;</span></a>
     </div>
 
     <div class="mvp-browser-shell">
       <div class="mvp-browser-bar" aria-hidden="true">
         <span class="mvp-window-dots"><i></i><i></i><i></i></span>
-        <span class="mvp-browser-address">demothemis.netlify.app / sandbox</span>
-        <span class="mvp-browser-badge">Simulated</span>
+        <span class="mvp-browser-address" data-mvp-address>app.demothemis / case</span>
+        <span class="mvp-browser-badge">Product preview</span>
       </div>
-      <a class="mvp-sandbox-preview" href="/sandbox" aria-label="Launch the interactive DemoThemis sandbox">
-        <span class="mvp-preview-banner"><strong>Simulation.</strong> Illustrative model on the design&rsquo;s published parameters. The on-chain demo lives separately.</span>
-        <span class="mvp-preview-main">
-          <span class="mvp-preview-copy">
-            <span class="mvp-preview-kicker">Courtroom simulator</span>
-            <strong class="mvp-preview-title">Fresh panels reset control</strong>
-            <span class="mvp-preview-description">Give the attacker a budget, then redraw: bought stake persists, but a fresh human panel must be won again for every case.</span>
-            <span class="mvp-preview-launch">Launch interactive sandbox <span aria-hidden="true">&#8599;</span></span>
-          </span>
-          <span class="mvp-preview-model">
-            <span class="mvp-preview-model-head"><strong>The fresh-panel defense</strong><em>Simulated</em></span>
-            <span class="mvp-preview-question">Does bought control carry into the next case?</span>
-            <span class="mvp-preview-budget"><span>Attacker budget</span><strong>$250k</strong></span>
-            <span class="mvp-preview-slider" aria-hidden="true"><i></i></span>
-            <span class="mvp-preview-results">
-              <span><small>Bought stake</small><strong class="is-bad">Persists</strong></span>
-              <span><small>Human panel</small><strong class="is-good">Must redraw</strong></span>
-            </span>
-          </span>
-        </span>
-      </a>
+
+      <div class="mvp-product-preview">
+        <header class="mvp-product-header">
+          <a class="mvp-product-brand" href="/app" aria-label="Open DemoThemis MVP">
+            <span class="mvp-product-mark" aria-hidden="true">D</span>
+            <span><strong>DemoThemis</strong><small>Resolution oracle</small></span>
+          </a>
+          <span class="mvp-chain-chip"><i aria-hidden="true"></i> World Chain &middot; 3 jurors</span>
+        </header>
+
+        <div class="mvp-product-tabs">
+          <div class="mvp-tab-list" role="tablist" aria-label="MVP product views">
+            <button id="mvp-tab-live" type="button" role="tab" aria-selected="true" aria-controls="mvp-panel-live" tabindex="0" data-address="app.demothemis / case">Live case</button>
+            <button id="mvp-tab-submit" type="button" role="tab" aria-selected="false" aria-controls="mvp-panel-submit" tabindex="-1" data-address="app.demothemis / submit">Submit a case</button>
+          </div>
+
+          <section id="mvp-panel-live" class="mvp-tab-panel" role="tabpanel" aria-labelledby="mvp-tab-live">
+            <p class="mvp-preview-label"><span aria-hidden="true">&#9671;</span> Example product view &middot; no live case activity is shown</p>
+
+            <div class="mvp-case-layout">
+              <article class="mvp-case-card">
+                <div class="mvp-case-eyebrow">
+                  <span>Example question</span>
+                  <span class="mvp-case-state">One active case</span>
+                </div>
+                <h3>Was the DemoThemis court contract source-verified on World Chain by the stated time?</h3>
+
+                <dl class="mvp-case-criteria">
+                  <div class="is-yes">
+                    <dt>Answer YES if</dt>
+                    <dd>The named contract had publicly verifiable source code on World Chain at the judged-as-of time.</dd>
+                  </div>
+                  <div>
+                    <dt>Judged as of</dt>
+                    <dd><time datetime="2026-07-14T18:00:00Z">14 July 2026 &middot; 18:00 UTC</time></dd>
+                  </div>
+                </dl>
+
+                <p class="mvp-research-rule"><strong>Independent research.</strong> Jurors find and assess public information themselves; the submitter does not select sources for them.</p>
+              </article>
+
+              <aside class="mvp-resolution-card" aria-labelledby="resolution-title">
+                <div class="mvp-resolution-head">
+                  <div>
+                    <span class="mvp-mini-label">Three-step resolution</span>
+                    <h3 id="resolution-title">How this case moves</h3>
+                  </div>
+                  <span class="mvp-seat-count"><strong>3</strong> seats</span>
+                </div>
+
+                <ol class="mvp-resolution-steps">
+                  <li>
+                    <span class="mvp-step-icon is-seal" aria-hidden="true">
+                      <svg viewBox="0 0 24 24"><rect x="5" y="10" width="14" height="10" rx="2"></rect><path d="M8 10V7a4 4 0 0 1 8 0v3"></path></svg>
+                    </span>
+                    <span><strong>Seal</strong><small>Three verified jurors submit hidden vote commitments.</small></span>
+                  </li>
+                  <li>
+                    <span class="mvp-step-icon is-reveal" aria-hidden="true">
+                      <svg viewBox="0 0 24 24"><path d="M2.5 12s3.5-6 9.5-6 9.5 6 9.5 6-3.5 6-9.5 6-9.5-6-9.5-6Z"></path><circle cx="12" cy="12" r="2.5"></circle></svg>
+                    </span>
+                    <span><strong>Reveal</strong><small>The contract checks each vote against its commitment.</small></span>
+                  </li>
+                  <li>
+                    <span class="mvp-step-icon is-ruling" aria-hidden="true">
+                      <svg viewBox="0 0 24 24"><path d="m5 12 4 4L19 6"></path></svg>
+                    </span>
+                    <span><strong>Ruling</strong><small>The majority answer and juror rewards are recorded on-chain.</small></span>
+                  </li>
+                </ol>
+              </aside>
+            </div>
+
+            <div class="mvp-product-footer">
+              <span><i aria-hidden="true"></i> One official question is active at a time</span>
+              <a href="/app">Open the real MVP <span aria-hidden="true">&#8594;</span></a>
+            </div>
+          </section>
+
+          <section id="mvp-panel-submit" class="mvp-tab-panel" role="tabpanel" aria-labelledby="mvp-tab-submit" hidden>
+            <p class="mvp-preview-label"><span aria-hidden="true">&#9671;</span> Example submission view &middot; nothing is sent from this preview</p>
+
+            <div class="mvp-submit-layout">
+              <form class="mvp-submit-card" aria-label="Example case submission form">
+                <div class="mvp-form-heading">
+                  <div>
+                    <span class="mvp-mini-label">New public question</span>
+                    <h3>Ask one thing precisely</h3>
+                  </div>
+                  <span class="mvp-form-step">1 of 1</span>
+                </div>
+
+                <label class="mvp-field">
+                  <span>Question <small>Yes or no</small></span>
+                  <textarea rows="3" readonly>Was the DemoThemis court contract source-verified on World Chain by the stated time?</textarea>
+                </label>
+
+                <label class="mvp-field">
+                  <span>YES if <small>Exact decision rule</small></span>
+                  <textarea rows="3" readonly>The named contract had publicly verifiable source code on World Chain at the judged-as-of time.</textarea>
+                </label>
+
+                <div class="mvp-form-row">
+                  <label class="mvp-field">
+                    <span>Judged as of <small>UTC</small></span>
+                    <input type="text" value="14 Jul 2026, 18:00" readonly>
+                  </label>
+                  <div class="mvp-fee-field">
+                    <span>Case fee</span>
+                    <output>2 MUSD</output>
+                  </div>
+                </div>
+
+                <a class="mvp-submit-action" href="/app?tab=submit">Continue in the Demo MVP <span aria-hidden="true">&#8594;</span></a>
+              </form>
+
+              <aside class="mvp-submit-note" aria-labelledby="after-submit-title">
+                <span class="mvp-submit-note-icon" aria-hidden="true">
+                  <svg viewBox="0 0 24 24"><path d="M12 3v18M3 12h18"></path></svg>
+                </span>
+                <p class="mvp-mini-label">What happens next</p>
+                <h3 id="after-submit-title">Clear in. Clear out.</h3>
+                <ol>
+                  <li><span>1</span>The question, YES rule, and time receive an on-chain fingerprint.</li>
+                  <li><span>2</span>It becomes active after the current question is resolved.</li>
+                  <li><span>3</span>Three jurors research independently and decide.</li>
+                </ol>
+                <p class="mvp-submit-source-note">No evidence or source field: finding reliable public information is the jurors&rsquo; job.</p>
+              </aside>
+            </div>
+          </section>
+        </div>
+      </div>
     </div>
-    <p class="mvp-frame-note"><strong>Simulation label:</strong> this preview represents product behavior; it does not claim that its seeded jurors or balances are live users or money.</p>
   </section>
 
-  <section class="reveal" aria-labelledby="route-title">
-    <p class="sec-label">Choose the right surface</p>
-    <h2 id="route-title">Three ways to review the MVP</h2>
-    <p class="mvp-section-dek">Each route has a different purpose. The label tells you what is real before you open it.</p>
-    <div class="mvp-route-grid">
-      <article class="mvp-route-card is-sandbox">
-        <div class="mvp-route-top"><span class="mvp-route-number">01</span><span class="mvp-status-tag is-simulated">Simulation</span></div>
-        <h3>Stress-test the defenses</h3>
-        <p>Compare reusable stake control with fresh human panels, then inspect the wider court simulator.</p>
-        <ul class="mvp-route-facts"><li>No wallet</li><li>No real funds</li><li>Safe to reset</li></ul>
-        <a href="/sandbox">Launch sandbox</a>
-      </article>
-
-      <article class="mvp-route-card is-court">
-        <div class="mvp-route-top"><span class="mvp-route-number">02</span><span class="mvp-status-tag is-live">On-chain</span></div>
-        <h3>Inspect the live court</h3>
-        <p>Read contract-backed court statistics and case data on World Chain. Writes remain inside the supported World App flow.</p>
-        <ul class="mvp-route-facts"><li>Desktop friendly</li><li>Read-only</li><li>Public chain data</li></ul>
-        <a href="/home">Open court</a>
-      </article>
-
-      <article class="mvp-route-card is-world">
-        <div class="mvp-route-top"><span class="mvp-route-number">03</span><span class="mvp-status-tag is-world">World App</span></div>
-        <h3>Continue as a verified human</h3>
-        <p>Open the Mini App onboarding route for wallet authentication, World ID proof, and the supported mainnet interaction path.</p>
-        <ul class="mvp-route-facts"><li>World App</li><li>World ID</li><li>Valueless MockUSD</li></ul>
-        <a href="https://worldcoin.org/mini-app?app_id=app_7bdfda4db4e2f59dd4a2427cd2bd860d&amp;path=/onboard" target="_blank" rel="noreferrer">Open in World App <span aria-hidden="true">&#8599;</span><span class="sr-only"> in a new tab</span></a>
-      </article>
+  <section class="mvp-queue-section reveal" aria-labelledby="queue-title">
+    <div class="mvp-queue-copy">
+      <p class="sec-label">Simple by design</p>
+      <h2 id="queue-title">One case in.<br>One answer out.<br>Then the next begins.</h2>
+      <p>A prepared set of questions can cycle through the MVP, but jurors only ever see one official unresolved question. Resolution unlocks the next.</p>
     </div>
+    <ol class="mvp-queue-flow" aria-label="Sequential case flow">
+      <li><span class="mvp-queue-number">01</span><div><strong>Question opens</strong><small>A precise question and YES rule become fixed.</small></div></li>
+      <li><span class="mvp-queue-number">02</span><div><strong>Three jurors decide</strong><small>Each researches, seals, and reveals independently.</small></div></li>
+      <li><span class="mvp-queue-number">03</span><div><strong>Answer records</strong><small>The contract finalizes the majority and rewards.</small></div></li>
+      <li><span class="mvp-queue-number">04</span><div><strong>Next question opens</strong><small>No competing assignments or case management.</small></div></li>
+    </ol>
   </section>
 
   <section class="mvp-proof-section reveal" aria-labelledby="proof-title">
     <div class="mvp-section-head">
       <div>
-        <p class="sec-label">Evidence, not theatre</p>
-        <h2 id="proof-title">Three defenses you can trace today</h2>
-        <p>Each claim is tied to a working mechanism, from identity check to final settlement.</p>
+        <p class="sec-label">Real on-chain functionality</p>
+        <h2 id="proof-title">The smallest complete proof of the court</h2>
+        <p>The MVP removes extra product surfaces while preserving the mechanism that matters.</p>
       </div>
-      <a class="mvp-text-link" href="/about">Read scope notes</a>
     </div>
 
     <div class="mvp-proof-grid">
-      <article class="mvp-proof-card is-live">
-        <span class="mvp-proof-kicker">Identity defense</span>
-        <h3>One human, one seat</h3>
-        <ul>
-          <li>Source-verified World Chain contracts</li>
-          <li>World ID 4.0 verifier inside registration</li>
-          <li>Duplicate-human nullifier rejection</li>
-        </ul>
+      <article class="mvp-proof-card is-question">
+        <span class="mvp-proof-number">01</span>
+        <span class="mvp-proof-kicker">The question</span>
+        <h3>Terms stay fixed</h3>
+        <p>The question, YES rule, and judged-as-of time are fingerprinted when the case opens.</p>
       </article>
-      <article class="mvp-proof-card is-simulated">
-        <span class="mvp-proof-kicker">Panel defense</span>
-        <h3>A new draw for every case</h3>
-        <ul>
-          <li>Cases draw jurors after they open</li>
-          <li>One seat per registered human</li>
-          <li>Commit/reveal binds each ballot</li>
-          <li>No-shows trigger redraw or safe fallback</li>
-        </ul>
+      <article class="mvp-proof-card is-ballot">
+        <span class="mvp-proof-number">02</span>
+        <span class="mvp-proof-kicker">The ballots</span>
+        <h3>Votes stay sealed</h3>
+        <p>Commitments land first. Votes appear only in the reveal phase, after jurors are already bound.</p>
       </article>
-      <article class="mvp-proof-card is-settlement">
-        <span class="mvp-proof-kicker">Settlement defense</span>
-        <h3>The ruling moves the money</h3>
-        <ul>
-          <li>Resolve counts revealed votes by rule</li>
-          <li>Escrow releases or refunds by verdict</li>
-          <li>Fees route 70 / 20 / 10 atomically</li>
-          <li>Public events leave an audit trail</li>
-        </ul>
+      <article class="mvp-proof-card is-answer">
+        <span class="mvp-proof-number">03</span>
+        <span class="mvp-proof-kicker">The result</span>
+        <h3>The chain closes the case</h3>
+        <p>The contract records the majority answer and distributes the case fee by rule.</p>
       </article>
     </div>
   </section>
 
   <aside class="mvp-scope-note reveal" aria-labelledby="scope-title">
     <div>
-      <p class="sec-label">Use the product</p>
-      <h2 id="scope-title">Practice first, then enter the court.</h2>
+      <p class="sec-label">The complete demo</p>
+      <h2 id="scope-title">Three humans are enough to show the real process.</h2>
     </div>
-    <p>The guided demo needs no wallet and uses valueless sample balances. The court lets you browse cases, while World App handles supported identity and transaction flows.</p>
-    <a class="mvp-button secondary" href="/app">Open the full MVP</a>
+    <p>One question, three sealed ballots, three reveals, and one majority answer: every essential court action is visible without making the MVP feel like an operations dashboard.</p>
+    <a class="mvp-button primary" href="/app">Open the Demo MVP <span aria-hidden="true">&#8594;</span></a>
   </aside>
 
   <footer class="endnote reveal">
@@ -183,10 +264,43 @@
       <a href="mvp.html" aria-current="page">Live Demo MVP</a>
       <a href="/">Home &middot; the map</a>
     </div>
-    <p class="signoff">Read the idea. Try the mechanism. Enter the court.</p>
+    <p class="signoff">Ask clearly. Decide privately. Record the answer.</p>
   </footer>
 </main>
 
+<script>
+(function () {
+  "use strict";
+  var tabs = Array.prototype.slice.call(document.querySelectorAll('.mvp-tab-list [role="tab"]'));
+  var address = document.querySelector('[data-mvp-address]');
+
+  function activate(tab, moveFocus) {
+    tabs.forEach(function (item) {
+      var selected = item === tab;
+      var panel = document.getElementById(item.getAttribute('aria-controls'));
+      item.setAttribute('aria-selected', selected ? 'true' : 'false');
+      item.setAttribute('tabindex', selected ? '0' : '-1');
+      if (panel) panel.hidden = !selected;
+    });
+    if (address) address.textContent = tab.getAttribute('data-address');
+    if (moveFocus) tab.focus();
+  }
+
+  tabs.forEach(function (tab, index) {
+    tab.addEventListener('click', function () { activate(tab, false); });
+    tab.addEventListener('keydown', function (event) {
+      var next = index;
+      if (event.key === 'ArrowRight') next = (index + 1) % tabs.length;
+      else if (event.key === 'ArrowLeft') next = (index - 1 + tabs.length) % tabs.length;
+      else if (event.key === 'Home') next = 0;
+      else if (event.key === 'End') next = tabs.length - 1;
+      else return;
+      event.preventDefault();
+      activate(tabs[next], true);
+    });
+  });
+}());
+</script>
 <script src="assets/common.js"></script>
 </body>
 </html>

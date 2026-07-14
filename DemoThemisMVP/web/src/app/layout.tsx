@@ -4,6 +4,7 @@ import { SiteChrome } from '@/components/SiteChrome';
 import '@worldcoin/mini-apps-ui-kit-react/styles.css';
 import type { Metadata } from 'next';
 import { Inter, JetBrains_Mono, Newsreader } from 'next/font/google';
+import { Suspense } from 'react';
 import './globals.css';
 
 const sans = Inter({
@@ -25,9 +26,9 @@ const mono = JetBrains_Mono({
 });
 
 export const metadata: Metadata = {
-  title: 'DemoThemis — a court of verified humans',
+  title: 'DemoThemis — a resolution oracle of verified humans',
   description:
-    'A decentralized arbitration court whose jury is gated by on-chain World ID — one verified human, one vote, not one token one vote. Live on World Chain.',
+    'One public question, three World ID-verified humans, and one transparent on-chain answer. Live on World Chain.',
 };
 
 export default async function RootLayout({
@@ -43,7 +44,9 @@ export default async function RootLayout({
           <a className="site-skip-link" href="#main-content">
             Skip to content
           </a>
-          <SiteChrome />
+          <Suspense fallback={null}>
+            <SiteChrome />
+          </Suspense>
           <div className="site-app-content">{children}</div>
         </ClientProviders>
       </body>

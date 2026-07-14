@@ -1,0 +1,10 @@
+{
+  "sequence": 21,
+  "title": "Unicode 15.0 release",
+  "type": "question",
+  "standard": "public-research",
+  "question": "By 12 September 2022, had version 15.0 of the Unicode Standard been formally released?",
+  "yesRule": "Vote YES only if the final Unicode Standard version 15.0 had been published by the judged time; a planned date, draft, or beta does not qualify.",
+  "judgedAsOf": "2022-09-12T23:59:59Z",
+  "simulated": false
+}
