@@ -1,7 +1,7 @@
 # Live Demo MVP upgrade plan
 
 Updated: 2026-07-14  
-Status: the core three-juror oracle was deployed at commit `c4fce46`; this release adds the UX refinement below; production activation still awaits the keeper secret, exactly three World ID jurors, human-safe voting windows, and the first complete mainnet case
+Status: the core three-juror oracle and UX refinement are deployed; the five-minute voting windows are configured; production activation still awaits the keeper secret, exactly three World ID jurors, and the first complete mainnet case
 
 ## Outcome
 
@@ -24,6 +24,7 @@ Already deployed at [demothemis.netlify.app/app](https://demothemis.netlify.app/
 - Real World App sealing/reveal flow with the ballot secret saved before transaction submission
 - Redirected legacy product routes and removed sandbox/testing status from primary navigation
 - A five-minute keeper workflow that advances at most one operator step per run after its mainnet opener secret is configured
+- Five-minute seal and reveal windows, configured on-chain in [transaction `0x429d…66ca`](https://worldscan.org/tx/0x429dfd1ad1aa5e0f628ea02c47950e440ad658b38540401d8ae045f3316866ca)
 
 Included in this UX refinement release:
 
@@ -34,7 +35,7 @@ Included in this UX refinement release:
 - Clearer form labels, separate helper text, a visible UTC conversion, and 16 px mobile inputs that avoid phone browser zoom
 - Larger supporting text and stronger touch targets without adding new content or steps
 
-Production activation still requires configuring the keeper secret, three real Production World ID registrations, setting both voting windows to at least five minutes, and completing question one. The keeper deliberately blocks before those conditions are met. On 2026-07-14 the live court still had **0 jurors**, **60-second seal and reveal windows**, **0 official questions filed**, and **no configured mainnet keeper secret**.
+Production activation still requires configuring the keeper secret, three real Production World ID registrations, and completing question one. The keeper deliberately blocks before those conditions are met. On 2026-07-14 the live court had **0 jurors**, **300-second seal and reveal windows**, **0 official questions filed**, and **no configured mainnet keeper secret**.
 
 The deployed registry has no hard maximum. The app stops offering new seats when it reads three active jurors, but a concurrent or direct registration can still take the pool above three. In that state the official queue pauses; an active juror can use **Leave jury** on the onboarding screen to return the pool to exactly three and recover the valueless demo bond.
 
@@ -52,7 +53,7 @@ The deployed court also accepts cases from other callers. The app quarantines an
 - Keep attack, failure, testing-progress, simulation, and roadmap content out of the public MVP journey.
 - Keep MUSD clearly described as a valueless demonstration token.
 - Do not redeploy the contracts merely to add a queue. The official app/operator flow controls the sequence.
-- Before question one opens, change the current 60-second commit and reveal windows to human-safe demo windows (recommended: five minutes each). This is operator configuration, not another public product step.
+- Keep the configured five-minute commit and reveal windows for the official demo. This is operator configuration, not another public product step.
 
 ## The two-tab MVP
 
@@ -277,7 +278,7 @@ The previous comparison against the simulator-led MVP is now historical: commit 
 - **Concept:** already upgraded and correctly focused on a simple three-juror oracle.
 - **Usability:** the next release is a clear improvement because users reach the working product sooner and navigation visibly completes the action they requested.
 - **Complexity:** unchanged; the release removes a duplicate mobile control and keeps the same two views and three submission fields.
-- **On-chain proof:** unchanged until activation. The site cannot honestly demonstrate a completed live ruling until three jurors register, the windows are lengthened, the keeper is enabled, and question one resolves.
+- **On-chain proof:** unchanged until activation. The site cannot honestly demonstrate a completed live ruling until three jurors register, the keeper is enabled, and question one resolves.
 
 ## What this upgrade does not require
 

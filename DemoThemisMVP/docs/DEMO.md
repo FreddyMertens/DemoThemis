@@ -137,7 +137,7 @@ Audited on 2026-07-14:
 | Public app | [Netlify `/app`](https://demothemis.netlify.app/app) is deployed. |
 | Official queue | **0 / 21 filed**; all deployed question files match the manifest. |
 | Juror pool | **0 / exactly 3 required**. |
-| Voting windows | **60s seal / 60s reveal**; both must be raised to at least 300s. |
+| Voting windows | **300s seal / 300s reveal — ready.** [Configuration transaction](https://worldscan.org/tx/0x429dfd1ad1aa5e0f628ea02c47950e440ad658b38540401d8ae045f3316866ca). |
 | Unexpected cases | No unresolved nonofficial case. |
 | Scheduled keeper | `MAINNET_QUESTION_KEEPER_PRIVATE_KEY` is absent; the workflow has no runs. |
 | World App cutover | Portal App URL, name, countries, preview QR, and permissions must be verified. |

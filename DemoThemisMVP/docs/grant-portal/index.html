@@ -1367,7 +1367,7 @@ never run) · repo `isPrivate=true` · live site 200 · cohort ≈ 20 jurors.*
 **Owner key:** 🧑 you / demo-day · 🛠 buildable now · 🔀 either
 
 1. **🧑 Run the 3-human mainnet capstone** *(the gating deliverable — everything keys off it)*
-   Verify the Portal opens the Netlify app → set both voting windows to at least five minutes → register exactly 3 Production World ID humans → enable the fixed-opener queue keeper → complete official question one and confirm question two opens only afterward. Follow only [`CAPSTONE_RUNBOOK.md`](CAPSTONE_RUNBOOK.md); the former manually opened question and escrow sequence is retired. Blocker: 3 verified humans + phones — not headless-runnable.
+   Verify the Portal opens the Netlify app → register exactly 3 Production World ID humans → enable the fixed-opener queue keeper → complete official question one and confirm question two opens only afterward. The five-minute voting windows are already [configured on-chain](https://worldscan.org/tx/0x429dfd1ad1aa5e0f628ea02c47950e440ad658b38540401d8ae045f3316866ca). Follow only [`CAPSTONE_RUNBOOK.md`](CAPSTONE_RUNBOOK.md); the former manually opened question and escrow sequence is retired. Blocker: 3 verified humans + phones — not headless-runnable.
 2. **🧑 Record + upload the demo video** (live question → real mainnet phone flow → permanent receipt → Step-3.5 reverts). Best filmed *during* the first official question so the Production-verifier flow is real on camera. Highest persuasion-per-minute for a reviewer who won't install World App.
 3. **🛠 Fill the DEMO.md Step-5 trace table** — paste the 3 registrations, official question transactions, juror actions, resolution, receipt, and question-two opening. (5-min edit; blocked only on #1.)
 4. **✅ Public repository — DONE.** [`FreddyMertens/DemoThemis`](https://github.com/FreddyMertens/DemoThemis) is public; keep the final trace and video links current before submission.
@@ -1715,7 +1715,7 @@ Audited on 2026-07-14:
 | Public app | [Netlify `/app`](https://demothemis.netlify.app/app) is deployed. |
 | Official queue | **0 / 21 filed**; all deployed question files match the manifest. |
 | Juror pool | **0 / exactly 3 required**. |
-| Voting windows | **60s seal / 60s reveal**; both must be raised to at least 300s. |
+| Voting windows | **300s seal / 300s reveal — ready.** [Configuration transaction](https://worldscan.org/tx/0x429dfd1ad1aa5e0f628ea02c47950e440ad658b38540401d8ae045f3316866ca). |
 | Unexpected cases | No unresolved nonofficial case. |
 | Scheduled keeper | `MAINNET_QUESTION_KEEPER_PRIVATE_KEY` is absent; the workflow has no runs. |
 | World App cutover | Portal App URL, name, countries, preview QR, and permissions must be verified. |
@@ -1810,8 +1810,8 @@ the scheduled keeper advances the non-juror steps.
 As read from World Chain mainnet and GitHub on 2026-07-14:
 
 - Active jurors: **0 / exactly 3 required**
-- Seal window: **60 seconds / at least 300 required**
-- Reveal window: **60 seconds / at least 300 required**
+- Seal window: **300 seconds / ready**
+- Reveal window: **300 seconds / ready**
 - Official questions filed: **0 / 21**
 - Unresolved nonofficial cases: **none**
 - `MAINNET_QUESTION_KEEPER_PRIVATE_KEY`: **not configured**
@@ -1879,17 +1879,22 @@ The first official URI is
 when all four identity fields match: question type, URI, exact hash, and fixed
 opener.
 
-## 3. Set human-safe voting windows
+## 3. Human-safe voting windows — complete
 
-This is the only still-valid transaction step in the former capstone helper:
+The deployer set both windows to five minutes on 2026-07-14. The successful
+[World Chain transaction](https://worldscan.org/tx/0x429dfd1ad1aa5e0f628ea02c47950e440ad658b38540401d8ae045f3316866ca)
+is the permanent configuration receipt.
+
+The following remains the only supported update command if the windows ever need
+to be deliberately changed again:
 
 ```bash
 bash scripts/capstone-mainnet.sh durations 300 300
 ```
 
 Run it from `DemoThemisMVP` with the ignored local `.env` configured for the
-deployer. Five minutes is the minimum enforced by the queue keeper. Set the
-windows before question one opens, then verify them with:
+deployer. Five minutes is the minimum enforced by the queue keeper. Verify the
+current values with:
 
 ```bash
 node scripts/mainnet-question-keeper.mjs

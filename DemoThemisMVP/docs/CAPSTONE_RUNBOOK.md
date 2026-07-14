@@ -19,8 +19,8 @@ the scheduled keeper advances the non-juror steps.
 As read from World Chain mainnet and GitHub on 2026-07-14:
 
 - Active jurors: **0 / exactly 3 required**
-- Seal window: **60 seconds / at least 300 required**
-- Reveal window: **60 seconds / at least 300 required**
+- Seal window: **300 seconds / ready**
+- Reveal window: **300 seconds / ready**
 - Official questions filed: **0 / 21**
 - Unresolved nonofficial cases: **none**
 - `MAINNET_QUESTION_KEEPER_PRIVATE_KEY`: **not configured**
@@ -88,17 +88,22 @@ The first official URI is
 when all four identity fields match: question type, URI, exact hash, and fixed
 opener.
 
-## 3. Set human-safe voting windows
+## 3. Human-safe voting windows — complete
 
-This is the only still-valid transaction step in the former capstone helper:
+The deployer set both windows to five minutes on 2026-07-14. The successful
+[World Chain transaction](https://worldscan.org/tx/0x429dfd1ad1aa5e0f628ea02c47950e440ad658b38540401d8ae045f3316866ca)
+is the permanent configuration receipt.
+
+The following remains the only supported update command if the windows ever need
+to be deliberately changed again:
 
 ```bash
 bash scripts/capstone-mainnet.sh durations 300 300
 ```
 
 Run it from `DemoThemisMVP` with the ignored local `.env` configured for the
-deployer. Five minutes is the minimum enforced by the queue keeper. Set the
-windows before question one opens, then verify them with:
+deployer. Five minutes is the minimum enforced by the queue keeper. Verify the
+current values with:
 
 ```bash
 node scripts/mainnet-question-keeper.mjs
