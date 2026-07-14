@@ -2,7 +2,7 @@
 
 import Link from 'next/link';
 import { useRouter, useSearchParams } from 'next/navigation';
-import { Suspense, useCallback, useEffect, useMemo, useRef, useState } from 'react';
+import { Suspense, type KeyboardEvent, useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import {
   ArrowRight,
   CheckCircle,
@@ -58,6 +58,17 @@ function formatMoment(value?: string) {
   }).format(date) + ' UTC';
 }
 
+function formatExactMoment(value?: string) {
+  if (!value) return '';
+  const date = new Date(value);
+  if (Number.isNaN(date.getTime())) return value;
+  return new Intl.DateTimeFormat('en-GB', {
+    dateStyle: 'long',
+    timeStyle: 'medium',
+    timeZone: 'UTC',
+  }).format(date) + ' UTC';
+}
+
 function toLocalInputValue(value?: string) {
   if (!value) return '';
   const date = new Date(value);
@@ -75,6 +86,17 @@ function phaseIndex(phase: Phase) {
 }
 
 function ProductTabs({ tab, onChange }: { tab: ProductTab; onChange: (tab: ProductTab) => void }) {
+  const moveWithKeyboard = (event: KeyboardEvent<HTMLButtonElement>, current: ProductTab) => {
+    let next: ProductTab | null = null;
+    if (event.key === 'ArrowLeft' || event.key === 'ArrowRight') next = current === 'live' ? 'submit' : 'live';
+    if (event.key === 'Home') next = 'live';
+    if (event.key === 'End') next = 'submit';
+    if (!next) return;
+    event.preventDefault();
+    onChange(next);
+    window.requestAnimationFrame(() => document.getElementById(`oracle-${next}-tab`)?.focus());
+  };
+
   return (
     <div className="oracle-tabs" role="tablist" aria-label="Demo views">
       <button
@@ -83,8 +105,10 @@ function ProductTabs({ tab, onChange }: { tab: ProductTab; onChange: (tab: Produ
         aria-selected={tab === 'live'}
         aria-controls="oracle-live-panel"
         id="oracle-live-tab"
+        tabIndex={tab === 'live' ? 0 : -1}
         className={tab === 'live' ? 'is-active' : undefined}
         onClick={() => onChange('live')}
+        onKeyDown={(event) => moveWithKeyboard(event, 'live')}
       >
         <span className="oracle-tab-icon"><ShieldCheck /></span>
         <span><strong>Live case</strong><small>Follow the real ruling</small></span>
@@ -95,8 +119,10 @@ function ProductTabs({ tab, onChange }: { tab: ProductTab; onChange: (tab: Produ
         aria-selected={tab === 'submit'}
         aria-controls="oracle-submit-panel"
         id="oracle-submit-tab"
+        tabIndex={tab === 'submit' ? 0 : -1}
         className={tab === 'submit' ? 'is-active' : undefined}
         onClick={() => onChange('submit')}
+        onKeyDown={(event) => moveWithKeyboard(event, 'submit')}
       >
         <span className="oracle-tab-icon"><Send /></span>
         <span><strong>Submit a case</strong><small>See the filing screen</small></span>
@@ -428,6 +454,9 @@ function SubmitCasePanel({
   }, [entry, seededQuestion]);
 
   const valid = question.trim().length > 12 && yesRule.trim().length > 12 && judgedAsOf.length > 0;
+  const judgedAsUtc = judgedAsOf && !Number.isNaN(new Date(judgedAsOf).getTime())
+    ? formatExactMoment(new Date(judgedAsOf).toISOString())
+    : '';
 
   return (
     <section id="oracle-submit-panel" role="tabpanel" aria-labelledby="oracle-submit-tab" className="oracle-panel" tabIndex={-1}>
@@ -442,18 +471,36 @@ function SubmitCasePanel({
 
           {!reviewing ? (
             <>
-              <label className="oracle-field">
-                <span><b>1</b><strong>Yes/no question</strong><small>Ask about a real, publicly researchable fact.</small></span>
-                <textarea value={question} onChange={(event) => setQuestion(event.target.value)} rows={3} placeholder="Did the stated event occur by the specified time?" />
-              </label>
-              <label className="oracle-field">
-                <span><b>2</b><strong>YES if</strong><small>Define one exact condition. NO means it was not met.</small></span>
-                <textarea value={yesRule} onChange={(event) => setYesRule(event.target.value)} rows={3} placeholder="Vote YES only if…" />
-              </label>
-              <label className="oracle-field">
-                <span><b>3</b><strong>Judged as of</strong><small>The moment against which the question is decided.</small></span>
-                <div className="oracle-date-input"><Clock /><input type="datetime-local" step="1" value={judgedAsOf} onChange={(event) => setJudgedAsOf(event.target.value)} /></div>
-              </label>
+              <div className="oracle-field">
+                <span>
+                  <b aria-hidden="true">1</b>
+                  <label htmlFor="oracle-question-input">Yes/no question</label>
+                  <small id="oracle-question-help">Ask about a real, publicly researchable fact.</small>
+                </span>
+                <textarea id="oracle-question-input" aria-describedby="oracle-question-help" value={question} onChange={(event) => setQuestion(event.target.value)} rows={3} placeholder="Did the stated event occur by the specified time?" />
+              </div>
+              <div className="oracle-field">
+                <span>
+                  <b aria-hidden="true">2</b>
+                  <label htmlFor="oracle-yes-rule-input">YES if</label>
+                  <small id="oracle-yes-rule-help">Define one exact condition. NO means it was not met.</small>
+                </span>
+                <textarea id="oracle-yes-rule-input" aria-describedby="oracle-yes-rule-help" value={yesRule} onChange={(event) => setYesRule(event.target.value)} rows={3} placeholder="Vote YES only if…" />
+              </div>
+              <div className="oracle-field">
+                <span>
+                  <b aria-hidden="true">3</b>
+                  <label htmlFor="oracle-judged-time-input">Judged as of</label>
+                  <small id="oracle-judged-time-help">Enter your local date and time. It is stored in UTC.</small>
+                </span>
+                <div className="oracle-date-input">
+                  <Clock />
+                  <input id="oracle-judged-time-input" aria-describedby="oracle-judged-time-help oracle-judged-time-utc" type="datetime-local" step="1" value={judgedAsOf} onChange={(event) => setJudgedAsOf(event.target.value)} />
+                </div>
+                <small className="oracle-utc-preview" id="oracle-judged-time-utc">
+                  {judgedAsUtc ? `Saved as ${judgedAsUtc}` : 'Choose a time to see its UTC value.'}
+                </small>
+              </div>
 
               <button type="submit" className="oracle-primary-action" disabled={!valid}>Preview submission <ArrowRight /></button>
             </>
@@ -513,8 +560,19 @@ function OracleHome() {
   const changeTab = useCallback((next: ProductTab) => {
     const url = next === 'submit' ? '/app?tab=submit' : '/app';
     router.replace(url, { scroll: false });
-    window.requestAnimationFrame(() => document.getElementById(`oracle-${next}-panel`)?.focus({ preventScroll: true }));
   }, [router]);
+
+  const openLivePanel = useCallback(() => {
+    changeTab('live');
+    window.requestAnimationFrame(() => window.requestAnimationFrame(() => {
+      const panel = document.getElementById('oracle-live-panel');
+      panel?.focus({ preventScroll: true });
+      panel?.scrollIntoView({
+        behavior: window.matchMedia('(prefers-reduced-motion: reduce)').matches ? 'auto' : 'smooth',
+        block: 'start',
+      });
+    }));
+  }, [changeTab]);
 
   const activityFetcher = useCallback(async () => {
     if (!activeCase) return null;
@@ -572,7 +630,7 @@ function OracleHome() {
   }, [nextEntryHash, nextEntryUri]);
 
   const proofItems = useMemo(() => [
-    { icon: Fingerprint, label: 'World ID seats', body: 'One verified human per juror seat' },
+    { icon: Fingerprint, label: 'Verified jurors', body: 'One World ID-verified person per seat' },
     { icon: Lock, label: 'Sealed answers', body: 'Choices lock before anyone reveals' },
     { icon: CheckCircle, label: 'Contract ruling', body: 'The majority and rewards execute by rule' },
   ], []);
@@ -583,10 +641,10 @@ function OracleHome() {
         <div className="oracle-hero-copy">
           <span className="oracle-kicker"><i /> Live Demo MVP · World Chain</span>
           <h1 id="oracle-title">One public question.<br /><em>Three verified humans.</em><br />One on-chain answer.</h1>
-          <p>Follow a real question from independent research to sealed ballots, a majority ruling, and an auditable reward—all on one clear screen.</p>
+          <p>Follow one real question through independent research, sealed ballots, an on-chain majority ruling, and visible rewards.</p>
           <div className="oracle-hero-actions">
-            <button type="button" onClick={() => changeTab('live')}>View the live case <ArrowRight /></button>
-            <Link href="/onboard">Join the three-person jury</Link>
+            <button type="button" onClick={openLivePanel}>See the live case <ArrowRight /></button>
+            <Link href="/onboard">Join the jury</Link>
           </div>
         </div>
         <div className="oracle-proof-stack" aria-label="What this demo proves">
@@ -617,12 +675,23 @@ function OracleHome() {
         </div>
       )}
 
+      <section
+        id={tab === 'live' ? 'oracle-submit-panel' : 'oracle-live-panel'}
+        role="tabpanel"
+        aria-labelledby={tab === 'live' ? 'oracle-submit-tab' : 'oracle-live-tab'}
+        hidden
+      />
+
       {dashboard.loading && !dashboard.data ? (
-        <div className="oracle-page-loading" role="status"><span /><p>Reading the court from World Chain…</p></div>
+        <section id={tab === 'live' ? 'oracle-live-panel' : 'oracle-submit-panel'} className="oracle-panel" role="tabpanel" aria-labelledby={tab === 'live' ? 'oracle-live-tab' : 'oracle-submit-tab'} tabIndex={-1}>
+          <div className="oracle-page-loading" role="status"><span /><p>Reading the court from World Chain…</p></div>
+        </section>
       ) : dashboard.error && !dashboard.data ? (
-        <div className="oracle-page-error" role="alert"><strong>The court could not be read.</strong><p>Please refresh to reconnect to World Chain.</p></div>
+        <section id={tab === 'live' ? 'oracle-live-panel' : 'oracle-submit-panel'} className="oracle-panel" role="tabpanel" aria-labelledby={tab === 'live' ? 'oracle-live-tab' : 'oracle-submit-tab'} tabIndex={-1}>
+          <div className="oracle-page-error" role="alert"><strong>The court could not be read.</strong><p>Please refresh to reconnect to World Chain.</p></div>
+        </section>
       ) : dashboard.data && dashboard.data.overlappingActiveCases > 0 ? (
-        <section className="oracle-panel" role="tabpanel" aria-labelledby={tab === 'live' ? 'oracle-live-tab' : 'oracle-submit-tab'}>
+        <section id={tab === 'live' ? 'oracle-live-panel' : 'oracle-submit-panel'} className="oracle-panel" role="tabpanel" aria-labelledby={tab === 'live' ? 'oracle-live-tab' : 'oracle-submit-tab'} tabIndex={-1}>
           <div className="oracle-page-error" role="alert">
             <strong>The official queue is paused.</strong>
             <p>More than one validated official question is unresolved. Voting and filing stay locked until the one-at-a-time sequence is restored.</p>

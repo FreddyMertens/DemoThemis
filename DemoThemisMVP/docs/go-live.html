@@ -1,671 +1,106 @@
 <!doctype html>
 <html lang="en">
 <head>
-<meta charset="utf-8" />
-<meta name="viewport" content="width=device-width, initial-scale=1" />
-<title>DemoThemis — Go-Live Guide (start here)</title>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>DemoThemis — Go-live guide moved</title>
 <style>
-  :root{
-    --bg:#f6f7fb; --ink:#0f172a; --muted:#64748b; --line:#e2e8f0; --card:#ffffff;
-    --emerald:#059669; --emerald-50:#ecfdf5; --emerald-200:#a7f3d0;
-    --blue:#3b5bdb; --blue-50:#eef2ff; --blue-200:#c7d2fe;
-    --amber:#b45309; --amber-50:#fffbeb; --amber-200:#fde68a;
-    --rose:#be123c; --rose-50:#fff1f2; --rose-200:#fecdd3;
-    --hero1:#0b1020; --hero2:#13203b;
+  :root {
+    color-scheme: light;
+    --bg: #f5f4ef;
+    --surface: #fffefa;
+    --ink: #171522;
+    --muted: #64616d;
+    --line: #ddd8ce;
+    --accent: #5a4bd6;
+    --accent-soft: #efecff;
   }
-  *{box-sizing:border-box}
-  html{scroll-behavior:smooth}
-  body{margin:0;background:var(--bg);color:var(--ink);
-    font-family:system-ui,-apple-system,Segoe UI,Roboto,Helvetica,Arial,sans-serif;line-height:1.6;
-    -webkit-font-smoothing:antialiased;font-size:15.5px}
-  a{color:var(--blue);text-decoration:none}
-  a:hover{text-decoration:underline}
-  code{font-family:ui-monospace,SFMono-Regular,Menlo,Consolas,monospace;font-size:.92em;background:#eef1f6;border-radius:5px;padding:1px 5px}
-
-  .topbar{position:sticky;top:0;z-index:50;background:rgba(255,255,255,.93);
-    backdrop-filter:blur(8px);border-bottom:1px solid var(--line)}
-  .topbar .inner{max-width:880px;margin:0 auto;padding:10px 20px;display:flex;align-items:center;gap:14px}
-  .topbar b{font-size:14px;white-space:nowrap}
-  .bar{flex:1;height:9px;border-radius:99px;background:#e6e9f2;overflow:hidden}
-  .bar > i{display:block;height:100%;width:0;border-radius:99px;
-    background:linear-gradient(90deg,var(--emerald),#34d399);transition:width .45s ease}
-  .pct{font-variant-numeric:tabular-nums;font-weight:700;color:var(--emerald);min-width:42px;text-align:right}
-
-  .wrap{max-width:880px;margin:0 auto;padding:0 20px 90px}
-
-  .hero{margin:22px 0;border-radius:22px;padding:30px 28px;color:#e7ecf6;
-    background:radial-gradient(1200px 400px at 10% -20%,#1b2c54 0,transparent 60%),linear-gradient(135deg,var(--hero1),var(--hero2))}
-  .hero .kick{color:#34d399;font-weight:700;letter-spacing:.16em;text-transform:uppercase;font-size:12px}
-  .hero h1{margin:.35em 0 .25em;font-size:29px;line-height:1.18}
-  .hero p{margin:.5em 0;color:#b8c2d8;font-size:15.5px;max-width:64ch}
-
-  .card{background:var(--card);border:1px solid var(--line);border-radius:18px;padding:20px 22px;margin:14px 0;
-    box-shadow:0 1px 2px rgba(15,23,42,.04)}
-  .card h2{margin:0 0 6px;font-size:19px}
-  .card h2 .em{font-size:22px;margin-right:6px}
-  .card p{margin:.5em 0}
-
-  .need{display:flex;gap:12px;align-items:flex-start;padding:11px 0;border-bottom:1px solid var(--line)}
-  .need:last-child{border-bottom:none}
-  .need .ic{flex:none;font-size:20px;width:26px;text-align:center}
-  .need .tx{font-size:14.5px}
-  .need .tx b{display:block}
-
-  /* live status */
-  .status{margin:16px 0;display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:12px}
-  .stat{background:var(--card);border:1px solid var(--line);border-radius:16px;padding:14px 16px}
-  .stat .k{font-size:12px;color:var(--muted);font-weight:600}
-  .stat .v{font-size:26px;font-weight:800;font-variant-numeric:tabular-nums;margin-top:2px}
-  .stat .s{font-size:11px;color:var(--muted)}
-  .live-dot{display:inline-block;width:8px;height:8px;border-radius:99px;background:#22c55e;margin-right:6px;
-    box-shadow:0 0 0 0 rgba(34,197,94,.6);animation:pulse 1.8s infinite}
-  @keyframes pulse{0%{box-shadow:0 0 0 0 rgba(34,197,94,.55)}70%{box-shadow:0 0 0 8px rgba(34,197,94,0)}100%{box-shadow:0 0 0 0 rgba(34,197,94,0)}}
-  .stat.warn .v{color:var(--amber)}
-
-  /* phase */
-  .phase{background:var(--card);border:1px solid var(--line);border-radius:18px;margin:14px 0;overflow:hidden;
-    box-shadow:0 1px 2px rgba(15,23,42,.04)}
-  .phase > summary{list-style:none;cursor:pointer;padding:18px 20px;display:flex;align-items:center;gap:14px;user-select:none}
-  .phase > summary::-webkit-details-marker{display:none}
-  .pnum{flex:none;width:36px;height:36px;border-radius:11px;display:grid;place-items:center;font-weight:800;font-size:17px;
-    background:var(--blue-50);color:var(--blue);border:1px solid var(--blue-200)}
-  .phase[data-done="1"] .pnum{background:var(--emerald-50);color:var(--emerald);border-color:var(--emerald-200)}
-  .phead{flex:1;min-width:0}
-  .phead h2{margin:0;font-size:18px}
-  .phead .sub{color:var(--muted);font-size:13px;margin-top:1px}
-  .pbadge{flex:none;font-size:12px;font-weight:700;color:var(--muted);font-variant-numeric:tabular-nums;
-    background:#f1f5f9;border-radius:99px;padding:4px 10px}
-  .phase[data-done="1"] .pbadge{background:var(--emerald-50);color:var(--emerald)}
-  .chev{flex:none;color:#94a3b8;transition:transform .2s}
-  .phase[open] .chev{transform:rotate(90deg)}
-  .pbody{padding:6px 20px 22px;border-top:1px solid var(--line)}
-  .pbody h3{font-size:15px;margin:20px 0 8px}
-
-  .plain{font-size:15px;background:#f8fafc;border-left:3px solid var(--blue);padding:10px 14px;border-radius:0 10px 10px 0;margin:10px 0 14px}
-  .plain b{color:var(--blue)}
-  .gate{margin:8px 0 0;font-size:13px;color:var(--rose);font-weight:600}
-  .owner{display:inline-block;font-size:11px;font-weight:700;color:var(--amber);background:var(--amber-50);border:1px solid var(--amber-200);border-radius:99px;padding:2px 8px;margin-left:4px;vertical-align:middle}
-
-  ol.steps{padding-left:0;counter-reset:s;list-style:none;margin:8px 0}
-  ol.steps > li{position:relative;padding:1px 0 16px 36px;counter-increment:s}
-  ol.steps > li::before{content:counter(s);position:absolute;left:0;top:0;width:26px;height:26px;border-radius:99px;
-    background:#0f172a;color:#fff;font-size:13px;font-weight:700;display:grid;place-items:center}
-  ol.steps > li::after{content:"";position:absolute;left:12px;top:28px;bottom:0;width:2px;background:var(--line)}
-  ol.steps > li:last-child::after{display:none}
-  ol.steps .who{font-size:12px;font-weight:700;border-radius:6px;padding:1px 6px;margin-right:6px;white-space:nowrap}
-  .who.you{background:#e0e7ff;color:#3730a3}
-  .who.ppl{background:#dcfce7;color:#166534}
-
-  .see{margin:8px 0;padding:9px 12px;border-radius:10px;background:#f0fdf4;border:1px solid var(--emerald-200);font-size:13.5px;color:#166534}
-  .see b{color:var(--emerald)}
-
-  .check{display:flex;gap:11px;align-items:flex-start;padding:10px 13px;border:1px solid var(--line);
-    border-radius:12px;margin:7px 0;background:#fcfdff;cursor:pointer;transition:background .15s,border-color .15s}
-  .check:hover{border-color:#cbd5e1}
-  .check input{margin-top:2px;width:19px;height:19px;flex:none;accent-color:var(--emerald);cursor:pointer}
-  .check .lbl{font-size:14.5px}
-  .check.done{background:var(--emerald-50);border-color:var(--emerald-200)}
-  .check.done .lbl{color:var(--muted);text-decoration:line-through}
-
-  .call{border-radius:12px;padding:12px 15px;margin:13px 0;font-size:14px;border:1px solid}
-  .call .t{font-weight:800;font-size:12px;letter-spacing:.04em;text-transform:uppercase;margin-bottom:4px;display:flex;gap:6px;align-items:center}
-  .call.best{background:var(--emerald-50);border-color:var(--emerald-200)} .call.best .t{color:var(--emerald)}
-  .call.why{background:var(--blue-50);border-color:var(--blue-200)} .call.why .t{color:var(--blue)}
-  .call.warn{background:var(--amber-50);border-color:var(--amber-200)} .call.warn .t{color:var(--amber)}
-  .call.stop{background:var(--rose-50);border-color:var(--rose-200)} .call.stop .t{color:var(--rose)}
-  .call ul{margin:6px 0 0;padding-left:18px} .call li{margin:4px 0}
-
-  .cmd{position:relative;background:#0d1326;border-radius:12px;margin:10px 0;border:1px solid #1e2a45}
-  .cmd pre{margin:0;padding:26px 52px 14px 14px;overflow-x:auto;color:#dbe4ff;font-size:12.5px;line-height:1.5}
-  .cmd .lbl{position:absolute;top:8px;left:14px;font-size:10px;color:#6b7da6;letter-spacing:.06em;text-transform:uppercase}
-  .copy{position:absolute;top:8px;right:8px;background:#1c2742;color:#cdd7ee;border:1px solid #2c3a5c;border-radius:8px;
-    font-size:11px;font-weight:700;padding:5px 9px;cursor:pointer}
-  .copy:hover{background:#26345a}
-  .copy.done{background:#0c3a2a;color:#6ee7b7;border-color:#14532d}
-
-  table.addrs{width:100%;border-collapse:collapse;font-size:13px;margin:8px 0}
-  table.addrs td{padding:6px 8px;border-bottom:1px solid var(--line)}
-  table.addrs td:first-child{font-weight:600;white-space:nowrap}
-  table.addrs td:last-child{font-family:ui-monospace,monospace;font-size:11.5px;color:#334155}
-
-  dl.gloss{margin:4px 0 0}
-  dl.gloss dt{font-weight:700;margin-top:12px;color:#0f172a}
-  dl.gloss dd{margin:2px 0 0;color:#334155;font-size:14px}
-
-  .done-banner{display:none;margin:18px 0;border-radius:18px;padding:26px;text-align:center;
-    background:linear-gradient(135deg,#064e3b,#065f46);color:#d1fae5}
-  .done-banner h2{margin:.2em 0;font-size:24px;color:#fff}
-  .foot{margin-top:30px;color:var(--muted);font-size:12.5px;text-align:center}
-  .reset{background:none;border:1px solid var(--line);border-radius:8px;color:var(--muted);font-size:12px;padding:5px 10px;cursor:pointer}
+  * { box-sizing: border-box; }
+  body {
+    min-height: 100vh;
+    margin: 0;
+    display: grid;
+    padding: 1.25rem;
+    place-items: center;
+    background:
+      radial-gradient(circle at 82% 18%, rgba(90, 75, 214, .12), transparent 24rem),
+      var(--bg);
+    color: var(--ink);
+    font: 16px/1.55 system-ui, -apple-system, "Segoe UI", sans-serif;
+  }
+  main {
+    width: min(100%, 42rem);
+    padding: clamp(1.5rem, 5vw, 3rem);
+    border: 1px solid var(--line);
+    border-radius: 24px;
+    background: var(--surface);
+    box-shadow: 0 24px 60px -42px rgba(23, 21, 34, .55);
+  }
+  .label {
+    margin: 0 0 .8rem;
+    color: var(--accent);
+    font-size: .74rem;
+    font-weight: 800;
+    letter-spacing: .1em;
+    text-transform: uppercase;
+  }
+  h1 {
+    margin: 0;
+    font-family: Georgia, "Times New Roman", serif;
+    font-size: clamp(2rem, 7vw, 3.4rem);
+    font-weight: 500;
+    letter-spacing: -.035em;
+    line-height: 1;
+  }
+  p { margin: 1rem 0 0; color: var(--muted); }
+  strong { color: var(--ink); }
+  .actions {
+    display: flex;
+    margin-top: 1.5rem;
+    flex-wrap: wrap;
+    gap: .7rem;
+  }
+  a {
+    display: inline-flex;
+    min-height: 2.75rem;
+    padding: .7rem 1rem;
+    align-items: center;
+    justify-content: center;
+    border: 1px solid var(--line);
+    border-radius: 999px;
+    color: var(--ink);
+    font-weight: 750;
+    text-decoration: none;
+  }
+  a.primary { border-color: var(--accent); background: var(--accent); color: #fff; }
+  a:hover { transform: translateY(-1px); }
+  aside {
+    margin-top: 1.5rem;
+    padding: 1rem;
+    border-radius: 14px;
+    background: var(--accent-soft);
+    color: #4237a8;
+    font-size: .9rem;
+  }
 </style>
 </head>
 <body>
-
-<div class="topbar">
-  <div class="inner">
-    <b>🏛️ Go-Live</b>
-    <div class="bar"><i id="barfill"></i></div>
-    <span class="pct" id="pct">0%</span>
-  </div>
-</div>
-
-<div class="wrap">
-
-  <div class="hero">
-    <div class="kick">Start here · no prior knowledge needed</div>
-    <h1>Let's finish setting up DemoThemis</h1>
-    <p>Welcome! You're going to complete the last few setup steps and run one live test, so the project is
-       ready to show. You do <b>not</b> need to understand blockchains or write any code — just follow the
-       steps and tick the boxes. New words are explained in the glossary below, and every step tells you
-       what you should see when it works.</p>
-    <p style="color:#8fa0c4;font-size:13.5px">⏱️ Plan for a few short sessions, not one marathon. Some steps
-       need the project owner with you; those are flagged.</p>
-  </div>
-
-  <!-- WHAT IS THIS -->
-  <div class="card">
-    <h2><span class="em">🤔</span>What is this project?</h2>
-    <p><b>DemoThemis</b> is a demo of an online <b>court</b>: a way to settle disagreements by having a small
-       group of <b>verified real people</b> vote — not bots, and not whoever has the most money. It was built
-       to support a <b>grant application</b> (a request for funding).</p>
-    <p>The court is already built and running on a live network. The money in it is <b>fake on purpose</b>
-       (nothing of value is at risk). Your job is to finish the setup and do one real test run with three
-       real people, so reviewers can see it actually works.</p>
-    <p style="font-size:13.5px;color:var(--muted)">Think of it like getting a new shop ready for opening day:
-       the building is built — now you flip the switches, unlock the doors, and do a dry run with a few
-       friends before the public arrives.</p>
-  </div>
-
-  <!-- HOW TO USE -->
-  <div class="card">
-    <h2><span class="em">🧭</span>How to use this page</h2>
-    <ol class="steps" style="margin-bottom:0">
-      <li><b>Read the three cards above and below</b> this one first (what the project is, what you'll need, the glossary).</li>
-      <li><b>Then work top to bottom</b> through Steps 1–8. Open a step by clicking it.</li>
-      <li><b>Tick each box</b> as you finish. Your progress is saved on this computer automatically (the bar at the top fills up).</li>
-      <li>Grey command boxes have a <b>Copy</b> button — click it, then paste into a terminal (more on that below).</li>
-      <li>The <b>live counters</b> further down update by themselves, so you can watch the test run happen in real time.</li>
-    </ol>
-  </div>
-
-  <!-- WHAT YOU NEED -->
-  <div class="card">
-    <h2><span class="em">🎒</span>What you'll need before you start</h2>
-    <p style="margin-top:0;font-size:13.5px;color:var(--muted)">Gather these with the project owner. Items
-       marked <span class="owner">owner</span> need their account or password — do those steps together.</p>
-    <div class="need"><div class="ic">💻</div><div class="tx"><b>The project computer</b> The specific computer that has the project code and the project's wallet on it. All the command steps must run there.</div></div>
-    <div class="need"><div class="ic">📱</div><div class="tx"><b>Three people with the World App + a verified World ID</b> Phone app, free, verifies you're a unique human. You can be one of the three. Each person needs to be reachable twice (to vote, then to confirm their vote).</div></div>
-    <div class="need"><div class="ic">🌐</div><div class="tx"><b>The World Developer Portal login</b> <span class="owner">owner</span> World's website where the app is configured (Step 2).</div></div>
-    <div class="need"><div class="ic">▲</div><div class="tx"><b>The Vercel login</b> <span class="owner">owner</span> The service that hosts the website (Step 3).</div></div>
-    <div class="need"><div class="ic">🐙</div><div class="tx"><b>GitHub access to the project</b> <span class="owner">owner</span> Needed only at the end, to make the code public (Step 7).</div></div>
-    <div class="need"><div class="ic">⌨️</div><div class="tx"><b>A terminal</b> A text window where you paste commands. On the project computer: open the Start menu, type <code>Terminal</code> (or <code>PowerShell</code>), and press Enter. To paste, right-click. Then press Enter to run. That's all you need to know.</div></div>
-  </div>
-
-  <!-- GLOSSARY -->
-  <details class="phase" id="gloss">
-    <summary>
-      <span class="pnum" style="background:#f1f5f9;color:#475569;border-color:#e2e8f0">📖</span>
-      <span class="phead"><h2>New word? Look here (glossary)</h2><span class="sub">Plain-English meanings — open any time</span></span>
-      <span class="chev">▶</span>
-    </summary>
-    <div class="pbody">
-      <dl class="gloss">
-        <dt>World ID</dt><dd>A way to prove you're a unique real person, using the World App on your phone. It doesn't reveal who you are — just that you're human and only counted once.</dd>
-        <dt>World App</dt><dd>The phone app where people verify with World ID and tap to approve actions. It quietly pays the tiny network fees for verified people.</dd>
-        <dt>The court / a "case"</dt><dd>A disagreement that people vote on. Two kinds here: a yes/no <b>question</b>, and an <b>escrow deal</b> dispute (two parties disagree about whether a payment should be released).</dd>
-        <dt>Juror</dt><dd>A verified person who has joined the court and can be randomly picked to vote on a case.</dd>
-        <dt>Commit &amp; reveal</dt><dd>Voting in two steps so nobody can copy or buy your vote: first you submit a <i>hidden</i> vote (commit), later you unlock it (reveal). Each person does both.</dd>
-        <dt>Mainnet</dt><dd>The live, real network (as opposed to a practice network). Here it runs with fake money, but the network itself is the real one reviewers can inspect.</dd>
-        <dt>MockUSD</dt><dd>The pretend dollar used in the demo. Worthless on purpose — so no real money is ever at risk.</dd>
-        <dt>The deployer (wallet)</dt><dd>The project's own account that pays the tiny network fees for the <i>setup</i> actions you trigger. It holds a small amount of real network currency just for those fees.</dd>
-        <dt>Gas</dt><dd>The tiny fee to do anything on the network (a fraction of a cent here). World App covers it for the verified people; the deployer covers it for your setup steps.</dd>
-        <dt>Whitelisting</dt><dd>Telling World App "these are our official contracts — allow them." Without it, taps in the app are blocked.</dd>
-        <dt>Contract</dt><dd>A small program living on the network (the court, the token, etc.). There are six of them here.</dd>
-        <dt>Worldscan</dt><dd>A website where anyone can look up what happened on the live network (each action gets a link).</dd>
-        <dt>The Portal</dt><dd>Short for the World Developer Portal — World's website where the app is configured.</dd>
-        <dt>Terminal / command</dt><dd>A text window where you paste the grey command boxes and press Enter. See "What you'll need" above.</dd>
-        <dt>The sandbox</dt><dd>A play-area page on the website that simulates the whole idea with pretend players. Clearly labelled as a simulation.</dd>
-      </dl>
-    </div>
-  </details>
-
-  <!-- LIVE STATUS -->
-  <h3 style="margin:26px 4px 4px">📡 Live court status <span style="font-weight:400;color:var(--muted);font-size:13px">— updates by itself every 20 seconds</span></h3>
-  <div class="status">
-    <div class="stat" id="stat-jurors">
-      <div class="k"><span class="live-dot"></span>People joined as jurors</div>
-      <div class="v" id="v-jurors">…</div>
-      <div class="s">you need 3 before a case can start</div>
-    </div>
-    <div class="stat" id="stat-cases">
-      <div class="k">Cases on the court</div>
-      <div class="v" id="v-cases">…</div>
-      <div class="s">the goal is 2 (a question + an escrow)</div>
-    </div>
-    <div class="stat">
-      <div class="k">Where this is</div>
-      <div class="v" style="font-size:15px;line-height:1.3;margin-top:6px">Live network<br>(World Chain)</div>
-      <div class="s"><a href="https://worldscan.org/address/0x226974149087b36769a54B998acfe4087eEb7F84#code" target="_blank">look it up ↗</a></div>
-    </div>
-  </div>
-
-  <p style="font-size:13px;color:var(--muted);margin:14px 4px 6px">
-    Ready? Work through the steps below. <button class="reset" onclick="resetAll()">reset my progress</button>
+<main>
+  <p class="label">Retired guide</p>
+  <h1>The go-live procedure has moved.</h1>
+  <p>
+    This interactive checklist described the former two-case capstone and is no
+    longer safe to follow. The current Demo MVP runs the validated 21-question
+    queue, one public-research question at a time.
   </p>
-
-  <!-- ============ STEP 1 ============ -->
-  <details class="phase" id="p1" open>
-    <summary>
-      <span class="pnum">1</span>
-      <span class="phead"><h2>Get your bearings</h2><span class="sub">A 2-minute orientation before you change anything</span></span>
-      <span class="pbadge" data-badge>0/3</span>
-      <span class="chev">▶</span>
-    </summary>
-    <div class="pbody">
-      <div class="plain"><b>In plain English:</b> just confirm you understand three simple facts, so nothing later surprises you.</div>
-
-      <div class="call why"><div class="t">① Nothing here uses real money</div>
-        The dollars in the demo are fake (called MockUSD). Nobody can lose anything of value. Relax — you can't break anything expensive.</div>
-
-      <div class="call why"><div class="t">② Two kinds of fees, and who pays them</div>
-        Doing things on a live network costs a tiny fee ("gas"). The <b>verified people</b> pay nothing — World App covers them.
-        <b>You</b> (using the project wallet) cover the fee for setup actions. It's already funded; the whole test run costs a few cents.</div>
-
-      <div class="call warn"><div class="t">③ One rule about order</div>
-        Two things must happen in order: <b>Step 2 (whitelisting) before anyone taps in the app</b>, and <b>3 people must join before a case can start</b>. Everything else is flexible.</div>
-
-      <div class="see">✓ <b>You'll know you're ready when</b> the three facts above make sense. That's it — no action needed yet.</div>
-
-      <label class="check"><input type="checkbox" data-task><span class="lbl">I understand the money is fake, so nothing of value is at risk.</span></label>
-      <label class="check"><input type="checkbox" data-task><span class="lbl">I understand World App pays the people's fees; the project wallet pays mine.</span></label>
-      <label class="check"><input type="checkbox" data-task><span class="lbl">I know whitelisting comes first, and 3 people must join before a case.</span></label>
-    </div>
-  </details>
-
-  <!-- ============ STEP 2 — WHITELISTING ============ -->
-  <details class="phase" id="p2">
-    <summary>
-      <span class="pnum">2</span>
-      <span class="phead"><h2>Unlock the app's permissions (whitelisting)</h2><span class="sub">Do this first — taps fail without it</span></span>
-      <span class="pbadge" data-badge>0/3</span>
-      <span class="chev">▶</span>
-    </summary>
-    <div class="pbody">
-      <p class="gate">⚑ Must happen before anyone uses the phone app.</p>
-      <div class="see">✓ <b>Already done for you (19 Jun 2026).</b> The 7 contracts and the MockUSD token are saved in the Portal and were verified to stick after a reload. You only need to <b>double-check</b> they're there: open <i>Mini App → Permissions</i>, scroll to <i>Contract Entrypoints</i> + <i>Permit2 Tokens</i>, confirm the addresses are present, then tick the boxes. The full steps are kept below in case it ever needs redoing.</div>
-      <div class="plain"><b>In plain English:</b> tell World App "these six contracts and this token are ours — allow them." It's a copy-paste job on a website. <span class="owner">needs the owner's Portal login</span></div>
-      <div class="call why"><div class="t">⌖ Why</div>
-        For safety, World App blocks any app from touching contracts it hasn't pre-approved. If you skip this, people tapping "join" will just see an error (<code>invalid_contract</code>). So we approve ours in advance.</div>
-
-      <ol class="steps">
-        <li>Go to <a href="https://developer.worldcoin.org" target="_blank">developer.worldcoin.org</a> and sign in. Check the box at the very top-left says <b>DemoThemis Staging</b> (that's the right app — "Staging" in the name is fine, it covers the live network too).</li>
-        <li>In the row of menu tabs near the top — <i>Dashboard · World ID · Configuration · Mini App</i> — click <b>Mini App</b>. Then click the <b>Permissions</b> tab that appears just below it.</li>
-        <li>Scroll down that page. You'll pass <i>Additional Domains</i> and <i>Whitelisted Payment Addresses</i> — ignore those. You want the next two boxes: <b>Permit2 Tokens</b> and <b>Contract Entrypoints</b>.</li>
-        <li>Click into the <b>Contract Entrypoints</b> box and paste the seven addresses below (they go in as one line, separated by commas — that's what the faint example in the box shows).</li>
-        <li>Click into the <b>Permit2 Tokens</b> box and paste the one MockUSD address.</li>
-        <li>Click <b>Save changes</b> (the dark button, bottom-right). Wait a minute before testing.</li>
-      </ol>
-      <div class="call warn"><div class="t">▲ It's under "Mini App", not "Configuration"</div>
-        If you went to <i>Configuration</i> and only saw app name / icon / description, you're in the wrong place — the whitelist lives under <b>Mini App → Permissions</b>.</div>
-
-      <h3>Contract Entrypoints — add all 7</h3>
-      <table class="addrs">
-        <tr><td>MockUSD (the token)</td><td>0x70ECE5DcAA68741BF41F6A4Aa0af3a8D44e4497a</td></tr>
-        <tr><td>JurorRegistry (joining)</td><td>0x226974149087b36769a54B998acfe4087eEb7F84</td></tr>
-        <tr><td>DisputeCourt (voting)</td><td>0xCDF427D18da8C2e8CCf9a95310bC38857EEf795A</td></tr>
-        <tr><td>DealEscrow (deals)</td><td>0xefc898F9C4FC805111041676b720CB478BE67c47</td></tr>
-        <tr><td>WorldIDGate (the human check)</td><td>0x0540f47842a31C681dce76E856b4b76fcCc53Fbe</td></tr>
-        <tr><td>RewardPool</td><td>0xAF96A65A6b9643451E33cAf96717d071eDae04A0</td></tr>
-        <tr><td><b>Permit2 ⚑ (easy to forget!)</b></td><td>0x000000000022D473030F116dDEE9F6B43aC78BA3</td></tr>
-      </table>
-      <div class="cmd"><span class="lbl">Contract Entrypoints — paste this whole line (comma-separated)</span><button class="copy">Copy</button>
-<pre>0x70ECE5DcAA68741BF41F6A4Aa0af3a8D44e4497a, 0x226974149087b36769a54B998acfe4087eEb7F84, 0xCDF427D18da8C2e8CCf9a95310bC38857EEf795A, 0xefc898F9C4FC805111041676b720CB478BE67c47, 0x0540f47842a31C681dce76E856b4b76fcCc53Fbe, 0xAF96A65A6b9643451E33cAf96717d071eDae04A0, 0x000000000022D473030F116dDEE9F6B43aC78BA3</pre></div>
-
-      <h3>Permit2 Tokens — add 1</h3>
-      <table class="addrs"><tr><td>MockUSD</td><td>0x70ECE5DcAA68741BF41F6A4Aa0af3a8D44e4497a</td></tr></table>
-
-      <div class="call warn"><div class="t">▲ The #1 mistake</div>
-        Don't forget <b>Permit2</b> (the last address) in the Contract Entrypoints list. Leaving it out is the most common reason "join" fails on the day.</div>
-
-      <div class="see">✓ <b>You'll know it worked when</b> you test it in Step 4 and a tap in the app does <i>not</i> show an <code>invalid_contract</code> error.</div>
-
-      <label class="check"><input type="checkbox" data-task><span class="lbl">All 6 contracts + Permit2 added to Contract Entrypoints.</span></label>
-      <label class="check"><input type="checkbox" data-task><span class="lbl">MockUSD added to Permit2 Tokens.</span></label>
-      <label class="check"><input type="checkbox" data-task><span class="lbl">Clicked Save.</span></label>
-    </div>
-  </details>
-
-  <!-- ============ STEP 3 — VERCEL ============ -->
-  <details class="phase" id="p3">
-    <summary>
-      <span class="pnum">3</span>
-      <span class="phead"><h2>Point the website at the live network</h2><span class="sub">So the app people open is the real one</span></span>
-      <span class="pbadge" data-badge>0/3</span>
-      <span class="chev">▶</span>
-    </summary>
-    <div class="pbody">
-      <div class="plain"><b>In plain English:</b> flip one setting so the public website talks to the <i>live</i> court (not the practice one), then re-publish it. <span class="owner">needs the owner's Vercel login</span></div>
-      <div class="see">✓ <b>Already done for you (19 Jun 2026).</b> The new code is merged and deployed, and Production is set to the live network (<code>NEXT_PUBLIC_CHAIN_ID=480</code>). The site now opens to the funnel and the court reads mainnet. Just confirm the published site shows <b>"A court of verified humans"</b> (not a plain "Login with Wallet"), then tick the boxes.</div>
-      <div class="call why"><div class="t">⌖ Why</div>
-        The website can show one of two networks. By default it shows a practice one. For real people to join the real court, the published site must point at the live network (its ID number is <b>480</b>).</div>
-
-      <ol class="steps">
-        <li>Sign in to <a href="https://vercel.com" target="_blank">Vercel</a> and open the project (<b>demo-themis-mvp</b>).</li>
-        <li>Go to <b>Settings → Environment Variables</b>. For <b>Production</b>, set these two (add them if missing):
-          <div class="cmd"><button class="copy">Copy</button><pre>NEXT_PUBLIC_CHAIN_ID = 480
-NEXT_PUBLIC_SHOW_DEV = false</pre></div>
-          Leave all the other variables as they are. (Never add a "DEV_PRIVATE_KEY" here.)</li>
-        <li>Re-publish: open the <b>Deployments</b> tab and click <b>Redeploy</b> on the latest one.</li>
-        <li>Open the published web address on a normal computer. You should land on a welcome page with three sections: <b>Watch it · See it's real · Try it</b> (not a plain sign-in button).</li>
-        <li>Write the web address down — you'll need it later for the application.</li>
-      </ol>
-
-      <div class="see">✓ <b>You'll know it worked when</b> the public site opens to the "Watch / See / Try" page on a desktop browser.</div>
-
-      <label class="check"><input type="checkbox" data-task><span class="lbl">Set CHAIN_ID = 480 and SHOW_DEV = false on Production, then redeployed.</span></label>
-      <label class="check"><input type="checkbox" data-task><span class="lbl">The published site opens to the welcome page.</span></label>
-      <label class="check"><input type="checkbox" data-task><span class="lbl">Wrote the web address down.</span></label>
-    </div>
-  </details>
-
-  <!-- ============ STEP 4 — TEST ============ -->
-  <details class="phase" id="p4">
-    <summary>
-      <span class="pnum">4</span>
-      <span class="phead"><h2>Test it yourself first</h2><span class="sub">Find every problem before you involve other people</span></span>
-      <span class="pbadge" data-badge>0/4</span>
-      <span class="chev">▶</span>
-    </summary>
-    <div class="pbody">
-      <div class="plain"><b>In plain English:</b> before you gather three busy people, prove the whole thing works by joining the court yourself, on your own phone. This catches problems while it's still easy to fix them.</div>
-      <div class="call stop"><div class="t">✋ Most important advice on this page</div>
-        Three people, each needed twice, is your scarcest resource. Don't let them be the ones who discover a missing setting. Test everything solo first.</div>
-
-      <h3>4a · Join the court yourself (the best possible test)</h3>
-      <p>If you have the World App with a verified World ID, <b>be one of your three people</b> and join first. This one action tests almost everything at once: the permissions (Step 2), the human check, and the fee sponsorship.</p>
-      <ol class="steps">
-        <li><span class="who you">you 📱</span>Open the Mini App on your phone (World App must be installed). While the app is in preview, the reliable way in is the Portal's own test QR: go to <b>Mini App → Permissions</b>, and on the right you'll see a <b>"See your mini app"</b> card with a QR code — scan it with your phone's camera. (It's labelled "Developer Preview / for testing" — that's exactly what you want.)</li>
-        <li><span class="who you">you 📱</span>In the app, tap <b>Become a juror → Verify with World ID &amp; join</b>. You'll see the World ID prompt, then "posting bond", then "You are a juror".</li>
-        <li><span class="who you">you 💻</span>Look at the <b>"People joined as jurors"</b> counter near the top of this page — it should tick up to <b>1</b>.</li>
-      </ol>
-      <div class="see">✓ <b>It worked if</b> the counter shows 1 and the app says you're a juror.</div>
-
-      <div class="call warn"><div class="t">▲ If joining fails — quick fixes</div>
-        <ul>
-          <li>Error mentions <code>invalid_contract</code> → a permission is missing in Step 2 (most likely Permit2). Re-check and save again.</li>
-          <li>Nothing happens, or it looks like the wrong network → Step 3 isn't done (site not pointed at 480 yet).</li>
-          <li>A World ID error → just try the flow again; it sometimes needs a second attempt.</li>
-        </ul></div>
-
-      <h3>4b · Check the behind-the-scenes commands work</h3>
-      <p>These are run by <b>you, on the project computer</b> — they don't need any other people. They confirm the wallet and scripts are ready. Paste each into a terminal and press Enter.</p>
-      <div class="cmd"><span class="lbl">check the live court (safe — just reads, changes nothing)</span><button class="copy">Copy</button>
-<pre>wsl -e bash -lc 'cd /mnt/c/dev/DemoThemisMVP && bash scripts/capstone-mainnet.sh status'</pre></div>
-      <div class="cmd"><span class="lbl">give people more time to vote (10 minutes per phase)</span><button class="copy">Copy</button>
-<pre>wsl -e bash -lc 'cd /mnt/c/dev/DemoThemisMVP && bash scripts/capstone-mainnet.sh durations 600 600'</pre></div>
-      <div class="see">✓ <b>It worked if</b> the first command prints the court's status without errors, and the second says it succeeded.</div>
-
-      <div class="call best"><div class="t">★ Best way to be sure</div>
-        Once you've joined and the commands run, you've proven the hard parts. If you can rope in even one other person for a 10-minute trial case before the real run, do — but it's optional. The real confidence comes from <i>you</i> having joined successfully.</div>
-
-      <label class="check"><input type="checkbox" data-task><span class="lbl">I joined the court myself in World App and the counter hit 1.</span></label>
-      <label class="check"><input type="checkbox" data-task><span class="lbl">The "status" command read the court with no errors.</span></label>
-      <label class="check"><input type="checkbox" data-task><span class="lbl">The "give people more time" command succeeded.</span></label>
-      <label class="check"><input type="checkbox" data-task><span class="lbl">No "invalid_contract" errors anywhere — permissions are good.</span></label>
-    </div>
-  </details>
-
-  <!-- ============ STEP 5 — CAPSTONE ============ -->
-  <details class="phase" id="p5">
-    <summary>
-      <span class="pnum">5</span>
-      <span class="phead"><h2>The real test run with 3 people</h2><span class="sub">The main event — settle two cases for real</span></span>
-      <span class="pbadge" data-badge>0/6</span>
-      <span class="chev">▶</span>
-    </summary>
-    <div class="pbody">
-      <p class="gate">⚑ Needs: Steps 2–4 done, and 3 verified people together (a call or a room).</p>
-      <div class="plain"><b>In plain English:</b> three real people join the court, get randomly picked for a case, and vote to settle it — twice (once for a yes/no question, once for a deal dispute). You guide them and run a few commands.</div>
-
-      <div class="call stop"><div class="t">✋ Tell each person this out loud</div>
-        When you vote, your secret is saved <b>in your own phone's browser</b>. You must do the second step (revealing your vote) <b>on the same phone, same app</b> — don't switch devices, don't use a private/incognito window, don't clear your history in between. Otherwise your vote can't be counted.</div>
-
-      <div class="call why"><div class="t">⌖ Reading the steps below</div>
-        <span class="who you">you 💻</span> = you paste a command on the computer. &nbsp; <span class="who ppl">people 📱</span> = the three people tap in World App. Do <b>one case completely</b> before starting the next.</div>
-
-      <h3>Case A — a yes/no question</h3>
-      <ol class="steps">
-        <li><span class="who you">you 💻</span>Give everyone plenty of time to vote:
-          <div class="cmd"><button class="copy">Copy</button><pre>wsl -e bash -lc 'cd /mnt/c/dev/DemoThemisMVP && bash scripts/capstone-mainnet.sh durations 600 600'</pre></div></li>
-        <li><span class="who ppl">people 📱</span>Each person opens the app on their phone — the easiest way is to share the <b>"See your mini app"</b> QR from the Portal (<i>Mini App → Permissions</i>) for them to scan. Then each taps <b>Become a juror → Verify &amp; join</b>. Watch the live "People joined" counter above reach <b>3</b>.</li>
-        <li><span class="who you">you 💻</span>Open the question and pick the panel (it prints a case number — for the first case it's <code>0</code>):
-          <div class="cmd"><button class="copy">Copy</button><pre>wsl -e bash -lc 'cd /mnt/c/dev/DemoThemisMVP && bash scripts/capstone-mainnet.sh open-question'
-wsl -e bash -lc 'cd /mnt/c/dev/DemoThemisMVP && bash scripts/capstone-mainnet.sh draw 0'</pre></div></li>
-        <li><span class="who ppl">people 📱</span>Each person opens the case and taps <b>YES or NO → Commit your vote</b>. (This hides their vote.)</li>
-        <li><span class="who ppl">people 📱</span>After a short wait, each person taps <b>Reveal your vote</b> (same phone!). Then you finish it:
-          <div class="cmd"><button class="copy">Copy</button><pre>wsl -e bash -lc 'cd /mnt/c/dev/DemoThemisMVP && bash scripts/capstone-mainnet.sh resolve 0'</pre></div></li>
-      </ol>
-      <div class="see">✓ <b>Case A is done when</b> the app shows a result ("3 verified humans decided this") and the "Cases" counter above shows 1.</div>
-
-      <h3>Case B — an escrow deal dispute</h3>
-      <p>Same rhythm, but it starts as a payment deal that gets disputed. The case number this time is <code>1</code>.</p>
-      <ol class="steps">
-        <li><span class="who you">you 💻</span>Create the deal, dispute it, and pick the panel:
-          <div class="cmd"><button class="copy">Copy</button><pre>wsl -e bash -lc 'cd /mnt/c/dev/DemoThemisMVP && bash scripts/capstone-mainnet.sh open-escrow'
-wsl -e bash -lc 'cd /mnt/c/dev/DemoThemisMVP && bash scripts/capstone-mainnet.sh draw 1'</pre></div></li>
-        <li><span class="who ppl">people 📱</span>Same as before: each person <b>commits</b>, waits, then <b>reveals</b> (same phone).</li>
-        <li><span class="who you">you 💻</span>Finish it:
-          <div class="cmd"><button class="copy">Copy</button><pre>wsl -e bash -lc 'cd /mnt/c/dev/DemoThemisMVP && bash scripts/capstone-mainnet.sh resolve 1'</pre></div></li>
-      </ol>
-      <div class="see">✓ <b>Case B is done when</b> the "Cases" counter shows 2 and both cases read "resolved".</div>
-
-      <div class="call best"><div class="t">★ How to run it smoothly</div>
-        <ul>
-          <li>Get all three people on the same call. Say each phase out loud: "everyone commit now"… then a minute later "everyone reveal now".</li>
-          <li>Do Case A start-to-finish before touching Case B. Don't run both at once.</li>
-          <li>Keep a 4th person on standby in case someone drops off. A clean 3-out-of-3 makes the nicest demo.</li>
-          <li>If you can, screen-record this — you might capture footage you can reuse for the video (Step 6).</li>
-        </ul></div>
-
-      <h3>Last thing: save the proof links</h3>
-      <p>After both cases, the project owner (or you) pastes the resulting web links into the file <code>docs/DEMO.md</code>, in the "Step 5 capstone" table. Those links are what the application points reviewers to. If you're unsure how, hand this off to the owner — it's a 5-minute copy-paste.</p>
-
-      <label class="check"><input type="checkbox" data-task><span class="lbl">Three people joined (counter = 3).</span></label>
-      <label class="check"><input type="checkbox" data-task><span class="lbl">Case A (question): opened, voted, revealed, resolved.</span></label>
-      <label class="check"><input type="checkbox" data-task><span class="lbl">Case B (escrow): created, disputed, voted, resolved.</span></label>
-      <label class="check"><input type="checkbox" data-task><span class="lbl">Both cases show "resolved" (Cases counter = 2).</span></label>
-      <label class="check"><input type="checkbox" data-task><span class="lbl">Saved the registration + case links.</span></label>
-      <label class="check"><input type="checkbox" data-task><span class="lbl">Pasted them into docs/DEMO.md (or handed that to the owner).</span></label>
-    </div>
-  </details>
-
-  <!-- ============ STEP 6 — VIDEO ============ -->
-  <details class="phase" id="p6">
-    <summary>
-      <span class="pnum">6</span>
-      <span class="phead"><h2>Record a short demo video</h2><span class="sub">3–4 minutes — the thing reviewers actually watch</span></span>
-      <span class="pbadge" data-badge>0/5</span>
-      <span class="chev">▶</span>
-    </summary>
-    <div class="pbody">
-      <div class="plain"><b>In plain English:</b> a short screen-recording that tells the story: first the "you can't buy this court" idea, then a real person joining and voting on a phone. Most reviewers won't install anything, so this video does the convincing.</div>
-
-      <h3>What to show, in order</h3>
-      <ol class="steps">
-        <li><b>The hook (~20 sec).</b> On the website's <b>sandbox</b> page, show the side-by-side demo: a money-based court gets "bought" and flips to the wrong answer; the human court doesn't budge. This is the most persuasive 20 seconds — lead with it.</li>
-        <li><b>Joining for real (~80 sec).</b> On a phone in World App: verify with World ID → join → get picked → vote (commit) → confirm (reveal) → see the result. After each on-screen action, briefly show its entry on the worldscan website so it's clearly real.</li>
-        <li><b>Proof it's real (~50 sec).</b> Show the contracts on worldscan, and the court refusing a fake or duplicate person (that's the "one person, one vote" promise in action).</li>
-        <li><b>The history (~30 sec).</b> The practice network's resolved cases on the explorer (say on screen that this part is a simulation).</li>
-        <li><b>Close (~10 sec).</b> Show the public web address and "open the sandbox, scan the QR, join the court."</li>
-      </ol>
-
-      <div class="call best"><div class="t">★ Best way to record it (no fancy gear)</div>
-        <ul>
-          <li><b>Computer screen:</b> use a free recorder — OBS Studio, or QuickTime on a Mac, or the Loom browser app.</li>
-          <li><b>Phone screen:</b> iPhone → plug into a Mac and use QuickTime "New Movie Recording" (pick the phone); or use the iPhone's built-in Screen Recording. Android → use the built-in screen recorder.</li>
-          <li><b>Record in short clips</b> and stitch them together afterwards — much easier than one perfect take.</li>
-          <li>Use the <b>10-minute voting windows</b> from Step 5 so you're never rushing on camera.</li>
-          <li>Captions are great (and you don't even need to speak). If you do narrate, keep it short and calm.</li>
-        </ul></div>
-
-      <div class="call warn"><div class="t">▲ Keep it honest (important for the grant)</div>
-        <ul>
-          <li>Say or caption <b>"test tokens — no real money"</b>.</li>
-          <li>When timers show, caption <b>"demo mode: minutes instead of days"</b> so the short windows aren't mistaken for the real design.</li>
-          <li>Label the practice-network part as a <b>simulation</b>.</li>
-        </ul></div>
-
-      <p><b>Then:</b> upload it (Loom gives an instant link, or YouTube as "unlisted") and give the link to the project owner to put in the docs and the application.</p>
-
-      <label class="check"><input type="checkbox" data-task><span class="lbl">Recording tools ready (computer + phone).</span></label>
-      <label class="check"><input type="checkbox" data-task><span class="lbl">The hook (sandbox) clip recorded.</span></label>
-      <label class="check"><input type="checkbox" data-task><span class="lbl">The phone join-and-vote clip recorded.</span></label>
-      <label class="check"><input type="checkbox" data-task><span class="lbl">Edited to 3–4 min, captions + honesty notes added.</span></label>
-      <label class="check"><input type="checkbox" data-task><span class="lbl">Uploaded; link shared with the owner.</span></label>
-    </div>
-  </details>
-
-  <!-- ============ STEP 7 — GO PUBLIC ============ -->
-  <details class="phase" id="p7">
-    <summary>
-      <span class="pnum">7</span>
-      <span class="phead"><h2>Make the project public</h2><span class="sub">Open the code so reviewers can see it</span></span>
-      <span class="pbadge" data-badge>0/3</span>
-      <span class="chev">▶</span>
-    </summary>
-    <div class="pbody">
-      <div class="plain"><b>In plain English:</b> the grant requires the code to be open for anyone to read. Right now it's private. This step flips it to public — best done after the test run and video, so it looks complete. <span class="owner">do this with the owner</span></div>
-
-      <ol class="steps">
-        <li>Make sure the latest changes are merged and the automatic checks passed (the owner will know — it's the green tick on the project's pull request).</li>
-        <li>Make the code public. The owner runs this once in a terminal:
-          <div class="cmd"><button class="copy">Copy</button><pre>gh repo edit FreddyMertens/DemoThemisMVP --visibility public</pre></div></li>
-        <li>Double-check: open the project's GitHub page in a <b>private/incognito window</b> (signed out). It should load without asking you to log in.</li>
-      </ol>
-
-      <div class="call best"><div class="t">★ Best timing</div>
-        Do this <b>after</b> Steps 5 and 6, so the first thing a reviewer sees already includes the real test-run links and the video — a complete story, not a half-finished one.</div>
-
-      <div class="see">✓ <b>It worked when</b> the GitHub page opens for a signed-out stranger.</div>
-
-      <label class="check"><input type="checkbox" data-task><span class="lbl">Latest changes merged, checks green.</span></label>
-      <label class="check"><input type="checkbox" data-task><span class="lbl">Repo made public.</span></label>
-      <label class="check"><input type="checkbox" data-task><span class="lbl">Confirmed it loads when signed out.</span></label>
-    </div>
-  </details>
-
-  <!-- ============ STEP 8 — FINAL ============ -->
-  <details class="phase" id="p8">
-    <summary>
-      <span class="pnum">8</span>
-      <span class="phead"><h2>Final once-over</h2><span class="sub">Click every link, then hand back to the owner</span></span>
-      <span class="pbadge" data-badge>0/4</span>
-      <span class="chev">▶</span>
-    </summary>
-    <div class="pbody">
-      <div class="plain"><b>In plain English:</b> make sure nothing is broken before the application is sent. You're checking that every link a reviewer might click actually opens.</div>
-
-      <label class="check"><input type="checkbox" data-task><span class="lbl">The public website address opens to the welcome page.</span></label>
-      <label class="check"><input type="checkbox" data-task><span class="lbl">Every link in the project's DEMO page and README opens (contracts, cases, video, sandbox).</span></label>
-      <label class="check"><input type="checkbox" data-task><span class="lbl">The demo video plays for someone who isn't signed in.</span></label>
-      <label class="check"><input type="checkbox" data-task><span class="lbl">Handed back to the project owner — the rest is writing the application, not setup.</span></label>
-
-      <div class="call best"><div class="t">★ You're done when this is ticked</div>
-        Everything that needed setting up is live. What's left is the owner writing the application text — no more buttons to press. Nice work. 🎉</div>
-    </div>
-  </details>
-
-  <div class="done-banner" id="done">
-    <div style="font-size:34px">🎉</div>
-    <h2>All done — it's ready to show.</h2>
-    <p>The court is live, three real people have used it, the video is up, and the code is public. Hand back to the project owner for the application copy.</p>
+  <aside>
+    <strong>Do not use saved steps or copied commands from the old guide.</strong>
+    The mainnet question-queue runbook is the only current activation procedure.
+  </aside>
+  <div class="actions">
+    <a class="primary" href="CAPSTONE_RUNBOOK.md">Open the current runbook</a>
+    <a href="https://demothemis.netlify.app/app">Open the Live Demo MVP</a>
   </div>
-
-  <div class="foot">
-    Your progress is saved only on this computer/browser. This is the friendly companion to the project's
-    <code>docs/CAPSTONE_RUNBOOK.md</code>. The live counters read the public network — no passwords involved.
-  </div>
-</div>
-
-<script>
-const KEY = 'demothemis-golive-v2';
-const boxes = Array.from(document.querySelectorAll('input[data-task]'));
-boxes.forEach((b,i)=>{ b.dataset.id = 'task-'+i; });
-
-function load(){
-  let saved={};
-  try{ saved = JSON.parse(localStorage.getItem(KEY)||'{}'); }catch(e){}
-  boxes.forEach(b=>{ b.checked = !!saved[b.dataset.id]; });
-}
-function save(){
-  const o={}; boxes.forEach(b=>{ if(b.checked) o[b.dataset.id]=1; });
-  localStorage.setItem(KEY, JSON.stringify(o));
-}
-function refresh(){
-  const total=boxes.length, done=boxes.filter(b=>b.checked).length;
-  const pct = total? Math.round(done/total*100):0;
-  document.getElementById('barfill').style.width = pct+'%';
-  document.getElementById('pct').textContent = pct+'%';
-  document.querySelectorAll('.phase').forEach(ph=>{
-    const items = Array.from(ph.querySelectorAll('input[data-task]'));
-    const d = items.filter(b=>b.checked).length;
-    const badge = ph.querySelector('[data-badge]');
-    if(badge) badge.textContent = d+'/'+items.length;
-    ph.dataset.done = (items.length && d===items.length)?'1':'0';
-  });
-  boxes.forEach(b=>{ b.closest('.check').classList.toggle('done', b.checked); });
-  document.getElementById('done').style.display = (done===total && total>0)?'block':'none';
-}
-boxes.forEach(b=> b.addEventListener('change', ()=>{ save(); refresh(); }));
-function resetAll(){ if(confirm('Clear all progress on this device?')){ localStorage.removeItem(KEY); load(); refresh(); } }
-load(); refresh();
-
-document.querySelectorAll('.copy').forEach(btn=>{
-  btn.addEventListener('click', async ()=>{
-    const pre = btn.closest('.cmd') && btn.closest('.cmd').querySelector('pre');
-    if(!pre) return;
-    const text = pre.textContent.trim();
-    try{ await navigator.clipboard.writeText(text); }
-    catch(e){
-      const r=document.createRange(); r.selectNode(pre); const s=getSelection();
-      s.removeAllRanges(); s.addRange(r); try{document.execCommand('copy');}catch(_){} s.removeAllRanges();
-    }
-    const orig=btn.textContent; btn.textContent='Copied ✓'; btn.classList.add('done');
-    setTimeout(()=>{ btn.textContent=orig; btn.classList.remove('done'); }, 1400);
-  });
-});
-
-/* live court status — read-only, public network */
-const RPCS = ['https://worldchain-mainnet.g.alchemy.com/public','https://worldchain-mainnet.gateway.tenderly.co'];
-const REGISTRY='0x226974149087b36769a54B998acfe4087eEb7F84';
-const COURT='0xCDF427D18da8C2e8CCf9a95310bC38857EEf795A';
-const SEL={jurorCount:'0x4206ea4c', caseCount:'0xda2d7e95'};
-async function ethCall(to,data){
-  for(const rpc of RPCS){
-    try{
-      const r = await fetch(rpc,{method:'POST',headers:{'content-type':'application/json'},
-        body:JSON.stringify({jsonrpc:'2.0',id:1,method:'eth_call',params:[{to,data},'latest']})});
-      const j = await r.json();
-      if(j && j.result && j.result!=='0x') return BigInt(j.result);
-    }catch(e){}
-  }
-  return null;
-}
-async function poll(){
-  const jc = await ethCall(REGISTRY, SEL.jurorCount);
-  const cc = await ethCall(COURT, SEL.caseCount);
-  const jEl=document.getElementById('v-jurors'), cEl=document.getElementById('v-cases');
-  if(jc===null){ jEl.textContent='—'; jEl.parentElement.querySelector('.s').textContent='(can\'t reach the network right now)'; }
-  else{
-    const n=Number(jc);
-    jEl.textContent = n+' / 3';
-    document.getElementById('stat-jurors').classList.toggle('warn', n<3);
-    if(n>=3) jEl.parentElement.querySelector('.s').textContent='ready to start a case ✓';
-  }
-  if(cc!==null) cEl.textContent = Number(cc);
-}
-poll();
-setInterval(poll, 20000);
-</script>
+</main>
 </body>
 </html>

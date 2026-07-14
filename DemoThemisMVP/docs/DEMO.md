@@ -3,9 +3,8 @@
 The self-evidencing artifacts behind the grant's claims: clickable explorer
 traces, not markdown assertions. It holds the **Step 3.5** evidence (real on-chain
 World ID 4.0 verification on World Chain mainnet, Staging verifier), the **Step 4**
-Sepolia cohort history, and the **Step 5** capstone-ready Production-verifier
-instance. The Step-5 human-capstone trace links and the demo video land in the
-Step 5 section as the capstone run happens.
+Sepolia cohort history, and the **Step 5** Production-verifier question queue.
+The Step-5 table is filled as the first official three-human question runs.
 
 ## Step 3.5 — World ID 4.0 verified on-chain (World Chain mainnet, chain 480)
 
@@ -97,18 +96,22 @@ The Mini App surfaces this on the Become-a-juror screen alongside the two mainne
 World ID reverts (forged proof → verifier revert; same human second wallet →
 NullifierAlreadyUsed).
 
-## Step 5 — capstone-ready mainnet instance + the 3-human capstone (chain 480)
+## Step 5 — official three-juror question queue (chain 480)
 
-The non-simulated chain slice: real World ID 4.0 over the **Production** verifier
-(`0x00000000009E00F9FE82CfeeBB4556686da094d7`, Orb/Device), deployed and wired for
-the 3-human capstone in World App on World Chain mainnet. MockUSD is valueless;
-the 3/3 panel is a labeled demo parameter. The same `WorldIDGate` proven against
-the Staging verifier in Step 3.5 — only the verifier address changed. No real
-human has registered yet.
+This is the live demo slice: one public-research question at a time, decided by
+exactly three Production World ID humans on World Chain mainnet. Jurors receive
+the question and objective YES rule but no supplied evidence links; each juror
+finds and evaluates public sources independently. MockUSD is valueless, and the
+three-seat panel is an explicit demo parameter.
 
-### Capstone-ready instance (deployed + source-verified on worldscan, block 31256151)
+The same `WorldIDGate` proven against the Staging verifier in Step 3.5 now points
+to the Production verifier
+[`0x00000000009E00F9FE82CfeeBB4556686da094d7`](https://worldscan.org/address/0x00000000009E00F9FE82CfeeBB4556686da094d7).
 
-Source: `contracts/deployments/worldchain-mainnet.json`.
+### Deployed and source-verified instance
+
+Source: `contracts/deployments/worldchain-mainnet.json`; deployment block
+31,256,151.
 
 | Contract | Address |
 |---|---|
@@ -116,52 +119,92 @@ Source: `contracts/deployments/worldchain-mainnet.json`.
 | WorldIDGate (→ Production verifier) | [`0x0540f4…3Fbe`](https://worldscan.org/address/0x0540f47842a31C681dce76E856b4b76fcCc53Fbe#code) |
 | JurorRegistry (`registerWithPermit2`) | [`0x226974…7F84`](https://worldscan.org/address/0x226974149087b36769a54B998acfe4087eEb7F84#code) |
 | RewardPool | [`0xAF96A6…04A0`](https://worldscan.org/address/0xAF96A65A6b9643451E33cAf96717d071eDae04A0#code) |
-| DisputeCourt (3/3) | [`0xCDF427…795A`](https://worldscan.org/address/0xCDF427D18da8C2e8CCf9a95310bC38857EEf795A#code) |
-| DealEscrow | [`0xefc898…7c47`](https://worldscan.org/address/0xefc898F9C4FC805111041676b720CB478BE67c47#code) |
+| DisputeCourt (3 seats / minimum pool 3) | [`0xCDF427…795A`](https://worldscan.org/address/0xCDF427D18da8C2e8CCf9a95310bC38857EEf795A#code) |
+| Permit2 | [`0x000000…BA3`](https://worldscan.org/address/0x000000000022D473030F116dDEE9F6B43aC78BA3) |
 
-On-chain reads confirm the wiring: `WorldIDGate.verifier()` = the Production
-verifier, `action` = `keccak256("juror-registration") >> 8`, `rpId` =
-`0x1ddcf8ba2efe3f36`; `JurorRegistry.PERMIT2()` = canonical Permit2 (the World App
-bond path). The juror onboard batches `Permit2.approve` → `registerWithPermit2`
-(World App auto-revokes plain ERC-20 allowances); the sponsored-gas proof is the
-pending capstone trace row below.
+On-chain reads confirm that `WorldIDGate.verifier()` is the Production verifier,
+`action` is `keccak256("juror-registration") >> 8`, `rpId` is
+`0x1ddcf8ba2efe3f36`, and `JurorRegistry.PERMIT2()` is canonical Permit2. Juror
+onboarding batches `Permit2.approve` and `registerWithPermit2` for the valueless
+bond; the first real World App run must supply the pending sponsored-gas trace.
 
-### Capstone traces (filled at the demo-day capstone run)
+### Current readiness
 
-> Pending the capstone run — not yet executed (registry juror count is 0 at deploy).
-> The runbook is `docs/CAPSTONE_RUNBOOK.md`; the helper is
-> `scripts/capstone-mainnet.sh`.
+Audited on 2026-07-14:
 
-| # | What | Tx / link |
+| Check | State |
+|---|---|
+| Public app | [Netlify `/app`](https://demothemis.netlify.app/app) is deployed. |
+| Official queue | **0 / 21 filed**; all deployed question files match the manifest. |
+| Juror pool | **0 / exactly 3 required**. |
+| Voting windows | **60s seal / 60s reveal**; both must be raised to at least 300s. |
+| Unexpected cases | No unresolved nonofficial case. |
+| Scheduled keeper | `MAINNET_QUESTION_KEEPER_PRIVATE_KEY` is absent; the workflow has no runs. |
+| World App cutover | Portal App URL, name, countries, preview QR, and permissions must be verified. |
+
+Question one is fixed by all four fields below:
+
+| Field | Value |
+|---|---|
+| Type | `question` |
+| URI | `/cases/queue/01-dimorphos-orbit-change.json` |
+| Criteria hash | `0x60f23f692f9f0321f8088aaef33e9945439fd562b88919598aabe5393d990205` |
+| Opener | `0xe8E539aa5c3E74453892DAd479Bf9feB51CF516c` (fixed, never a juror) |
+
+Use only the [mainnet question-queue runbook](CAPSTONE_RUNBOOK.md). The manifest
+validator is `pnpm validate:question-queue`; the dry operator report is
+`node scripts/mainnet-question-keeper.mjs`. The scheduled keeper advances at
+most one non-juror transition per run and refuses to proceed with the wrong jury
+size, short windows, an altered question, or an unresolved nonofficial case.
+
+### First official run — evidence table
+
+> Pending: no Production juror has registered and question one has not opened.
+> Replace each `_pending_` cell with a direct Worldscan or permanent app link.
+
+| # | Evidence | Tx / link |
 |---|---|---|
-| 1 | Human #1 registers (WorldIDVerifier.verify Production in-tx) | _pending_ |
+| 1 | Human #1 registers; Production `WorldIDVerifier.verify` succeeds in-tx | _pending_ |
 | 2 | Human #2 registers | _pending_ |
 | 3 | Human #3 registers | _pending_ |
-| 4 | Sponsored-tx proof (World App gas paid by sponsor; user's balance unchanged) | _pending_ |
-| 5 | Question case opened → drawn → committed → revealed → resolved | _pending_ |
-| 6 | Escrow deal created → disputed → drawn → resolved → settled | _pending_ |
+| 4 | Sponsored World App transaction; sponsor pays gas | _pending_ |
+| 5 | Question one `CaseOpened` | _pending_ |
+| 6 | Question one `PanelDrawn` with three jurors | _pending_ |
+| 7 | Human #1 `Committed` | _pending_ |
+| 8 | Human #2 `Committed` | _pending_ |
+| 9 | Human #3 `Committed` | _pending_ |
+| 10 | Human #1 `Revealed` | _pending_ |
+| 11 | Human #2 `Revealed` | _pending_ |
+| 12 | Human #3 `Revealed` | _pending_ |
+| 13 | Question one `Resolved` | _pending_ |
+| 14 | `FeePaid` | _pending_ |
+| 15 | `FeeDistributed` | _pending_ |
+| 16 | Permanent Netlify receipt: 3/3 seals, 3/3 reveals, tally, ruling, and payments | _pending_ |
+| 17 | Question two `CaseOpened`, proving one-at-a-time advancement | _pending_ |
 | — | Demo video (3–4 min) | _pending_ |
 
 ## Demo video script (3–4 min, captioned; Loom or YouTube-unlisted)
 
-Lead with the hook, then the real mainnet flow, then the scale history.
+Show the small, real product from input to permanent result.
 
-1. **The hook (~0:20) — the attack demo.** Open `/sandbox` → the "buy this verdict"
-   widget. Same question, same attacker budget, side by side: the **token-weighted
-   court** bar fills past 50% and the verdict flips to the lie — then flips a second
-   case for free ("reusable forever"). The **human court** holds; the P(flip)-vs-budget
-   curve collapses as pool size grows. One line: *"On a token court, truth is for sale.
-   On DemoThemis, it isn't."*
-2. **Join the court on mainnet (~1:20) — the phone.** In World App, open the Mini App
-   (QR / deep link) → **Become a juror** → **Verify with World ID & join** (Orb) →
-   "You are a juror" (one person, one vote; sponsored-gas trace captured at the
-   capstone). A case is drawn → **Commit your vote** → later **Reveal** → the
-   result panel after the capstone ("3 verified humans decided this;
-   none could vote twice"). Show the worldscan tx.
-3. **See it's real (~0:50).** The source-verified contracts on worldscan; the Step-3.5
-   forged-proof revert (fails inside `WorldIDVerifier.verify`) and the duplicate-human
-   `NullifierAlreadyUsed` revert — the one-human-one-seat guarantee shown by what the
-   court refuses.
-4. **The scale history (~0:30) — Sepolia cohort.** ~20 jurors and resolved cases across
-   both types on the explorer, kept mid-motion by the keeper (labeled simulated).
-5. **Close (~0:10).** "Open the sandbox, scan the QR, join the court." Show the live URL.
+1. **The job (~0:20).** Open the live Netlify app and show question one: one
+   objective public fact, an exact YES rule, and no supplied evidence links.
+2. **How a question enters (~0:25).** Open the **Submit** tab to show the app-side
+   submission view. Explain that the 21 demo questions and hashes are fixed in
+   advance and the non-juror keeper files only the next official question.
+3. **Three real jurors (~0:55).** In World App, show exactly three people joining
+   through Production World ID. Point to the 3/3 panel and one sponsored
+   registration transaction.
+4. **Independent judgment (~0:55).** Each juror finds public evidence, then seals
+   a YES or NO answer without exposing it during the commit window. Show all
+   three seals and later all three reveals on-chain.
+5. **A complete result (~0:45).** Show the ruling, 3/3 participation, valueless
+   payments, distribution, Worldscan links, and the permanent receipt. Then show
+   question two opening only after question one resolved.
+6. **Why the chain claims are credible (~0:30).** Briefly show the source-verified
+   contracts plus the historical forged-proof and duplicate-human reverts from
+   Step 3.5. Close on [the live app](https://demothemis.netlify.app/app).
+
+The attack simulator and Sepolia cohort can be optional supporting material, but
+they should not interrupt the main MVP story: three verified humans complete one
+real question entirely on-chain.

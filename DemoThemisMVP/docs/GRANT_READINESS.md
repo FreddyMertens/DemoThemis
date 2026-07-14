@@ -35,10 +35,10 @@ never run) · repo `isPrivate=true` · live site 200 · cohort ≈ 20 jurors.*
 **Owner key:** 🧑 you / demo-day · 🛠 buildable now · 🔀 either
 
 1. **🧑 Run the 3-human mainnet capstone** *(the gating deliverable — everything keys off it)*
-   Smoke-test by self-registering as juror #1 (Portal preview QR) → `capstone-mainnet.sh durations 600 600` → 3 humans register (Production verifier, in-tx) → run the question case → run the escrow case. Tooling is fully built (`scripts/capstone-mainnet.sh`, `docs/CAPSTONE_RUNBOOK.md`). Blocker: 3 verified humans + phones — not headless-runnable.
-2. **🧑 Record + upload the demo video** (attack-demo hook → real mainnet phone flow → Step-3.5 reverts). Best filmed *during* the capstone so the Production-verifier flow is real on camera. Highest persuasion-per-minute for a reviewer who won't install World App.
-3. **🛠 Fill the DEMO.md Step-5 trace table** — paste the 3 registration + 2 case tx links. (5-min edit; blocked only on #1.)
-4. **🔀 Flip the repo public** — `gh repo edit FreddyMertens/DemoThemisMVP --visibility public`. Sequenced after #1–#2 so a cold reviewer sees real traces, not a "pending" table — but **must** flip before submission.
+   Verify the Portal opens the Netlify app → set both voting windows to at least five minutes → register exactly 3 Production World ID humans → enable the fixed-opener queue keeper → complete official question one and confirm question two opens only afterward. Follow only [`CAPSTONE_RUNBOOK.md`](CAPSTONE_RUNBOOK.md); the former manually opened question and escrow sequence is retired. Blocker: 3 verified humans + phones — not headless-runnable.
+2. **🧑 Record + upload the demo video** (live question → real mainnet phone flow → permanent receipt → Step-3.5 reverts). Best filmed *during* the first official question so the Production-verifier flow is real on camera. Highest persuasion-per-minute for a reviewer who won't install World App.
+3. **🛠 Fill the DEMO.md Step-5 trace table** — paste the 3 registrations, official question transactions, juror actions, resolution, receipt, and question-two opening. (5-min edit; blocked only on #1.)
+4. **✅ Public repository — DONE.** [`FreddyMertens/DemoThemis`](https://github.com/FreddyMertens/DemoThemis) is public; keep the final trace and video links current before submission.
 5. **🛠 Price the 5 milestones in USD** *(independent of the capstone — start now)*. Method: effort-weeks × blended rate + pass-throughs; milestone 5 (security review) priced as a third-party audit quote, not labor; milestone 3 carries the largest band; map onto the no-upfront-tranche / installment reality.
 6. **✅ Differentiation scan + paragraph — DONE** ([`DIFFERENTIATION.md`](DIFFERENTIATION.md)). The 2026-06-20 scan of the World App catalog + every Wave 0/1 grant recipient confirmed **no World dispute-resolution/arbitration/escrow project exists** (closest = governance/voting), and that off-World courts (Kleros, UMA) are stake-weighted. The application-ready paragraph is written; drop it into the differentiation section.
 7. **🛠 Write the application copy** (~12 sections; lead with the World ID axis; source the honesty/scope section verbatim from `MECHANISM_DELTA.md` so demo + application tell one story; link an artifact per claim using the §10 table).
@@ -61,5 +61,5 @@ never run) · repo `isPrivate=true` · live site 200 · cohort ≈ 20 jurors.*
 ## Do next, in order
 
 1. **Run the capstone** (then immediately fill the trace table). It's the master key — it makes `jurorCount` non-zero and flips *Deep World ID usage* and *Working demo* from partial to proven.
-2. **Record + link the video; flip the repo public** — clears the open-source row and gives the browser-only reviewer the most persuasive artifact.
+2. **Record + link the video; update the public repo's evidence links** — gives the browser-only reviewer the most persuasive artifact and keeps the open-source proof current.
 3. **In parallel (capstone-independent):** price the 5 milestones, run the catalog/RFP scan + write the differentiation paragraph, then draft the application copy. Also confirm citizenship/tax residency, sanctions/export-control status, KYC, and payout-recipient details — these remain final eligibility gates regardless of merit.

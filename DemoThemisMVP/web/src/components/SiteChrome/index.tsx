@@ -22,14 +22,14 @@ const MVP_ROUTES = [
   {
     label: 'Live case',
     shortLabel: 'Live case',
-    href: '/app',
+    href: '/app#oracle-live-panel',
     match: (path: string, tab: string | null) =>
       tab !== 'submit' && (path === '/' || path.startsWith('/app') || path.startsWith('/home') || path.startsWith('/case')),
   },
   {
     label: 'Submit a case',
     shortLabel: 'Submit',
-    href: '/app?tab=submit',
+    href: '/app?tab=submit#oracle-submit-panel',
     match: (path: string, tab: string | null) => path.startsWith('/app') && tab === 'submit',
   },
   {
@@ -62,7 +62,7 @@ export function SiteChrome() {
       });
     });
     return () => window.cancelAnimationFrame(frame);
-  }, [pathname]);
+  }, [pathname, productTab]);
 
   useEffect(() => {
     const onKey = (event: KeyboardEvent) => {

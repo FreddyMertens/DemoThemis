@@ -1,7 +1,7 @@
 # Live Demo MVP upgrade plan
 
 Updated: 2026-07-14  
-Status: implemented in code; production activation awaits the keeper secret, exactly three World ID jurors, human-safe voting windows, and the first complete mainnet case
+Status: the core three-juror oracle was deployed at commit `c4fce46`; this release adds the UX refinement below; production activation still awaits the keeper secret, exactly three World ID jurors, human-safe voting windows, and the first complete mainnet case
 
 ## Outcome
 
@@ -15,7 +15,7 @@ This is a demonstration of the real court process. It is not an attack simulator
 
 ## Implementation status
 
-Implemented in this repository:
+Already deployed at [demothemis.netlify.app/app](https://demothemis.netlify.app/app):
 
 - The 21-question bank, exact-byte hashes, fixed official opener, and validator
 - A dry-run-by-default keeper that enforces the queue, exact three-juror pool, five-minute minimum voting windows, and non-juror opener
@@ -25,7 +25,16 @@ Implemented in this repository:
 - Redirected legacy product routes and removed sandbox/testing status from primary navigation
 - A five-minute keeper workflow that advances at most one operator step per run after its mainnet opener secret is configured
 
-Production activation still requires configuring the keeper secret, three real Production World ID registrations, setting both voting windows to at least five minutes, and completing question one. The keeper deliberately blocks before those conditions are met.
+Included in this UX refinement release:
+
+- A shorter hero that brings the live product into the first screen instead of placing it more than one screen below the page opening
+- Reliable reveal behavior: hero actions and top navigation select, focus, and scroll to the requested Live case or Submit a case panel
+- One mobile product switcher instead of two competing Live/Submit controls
+- Complete keyboard behavior for the two tabs, including arrow, Home, and End keys
+- Clearer form labels, separate helper text, a visible UTC conversion, and 16 px mobile inputs that avoid phone browser zoom
+- Larger supporting text and stronger touch targets without adding new content or steps
+
+Production activation still requires configuring the keeper secret, three real Production World ID registrations, setting both voting windows to at least five minutes, and completing question one. The keeper deliberately blocks before those conditions are met. On 2026-07-14 the live court still had **0 jurors**, **60-second seal and reveal windows**, **0 official questions filed**, and **no configured mainnet keeper secret**.
 
 The deployed registry has no hard maximum. The app stops offering new seats when it reads three active jurors, but a concurrent or direct registration can still take the pool above three. In that state the official queue pauses; an active juror can use **Leave jury** on the onboarding screen to return the pool to exactly three and recover the valueless demo bond.
 
@@ -239,31 +248,36 @@ Do not use:
 - The scheduled keeper is enabled with the fixed opener secret, or an operator is assigned to run the same one-step command throughout the review.
 - The default app experience works at 320 px width and with keyboard navigation.
 
-## Current deployment versus this upgrade
+## Previous production baseline versus this release
 
-Audited on 2026-07-14 at `https://demothemis.netlify.app`.
+Audited on 2026-07-14 by comparing production commit `c4fce46` at [demothemis.netlify.app/app](https://demothemis.netlify.app/app) with this release.
 
-| Area | Current deployed MVP | Implemented upgrade |
+The previous comparison against the simulator-led MVP is now historical: commit `c4fce46` already deployed the new oracle concept. This release does not change the product model or add complexity. It makes that product quicker to find, easier to operate, and easier to read.
+
+| Area | Previous production commit `c4fce46` | This UX refinement release |
 |---|---|---|
-| Main purpose | Stress-test court defenses | Demonstrate one real verified-human resolution |
-| Landing message | “See why this verdict is hard to buy” | “One public question. Three verified humans. One on-chain answer” |
-| Entry journey | Local sandbox and three guided missions | One live chain-backed question |
-| Public surfaces | Play, Guided demo, and Court | Live case and Submit a case |
-| Court view | Generic all/active/resolved case board | One official active case plus compact receipts |
-| Live state | 3-seat/3-minimum contracts, 0 jurors, 0 cases | Three real jurors and a sequential case series |
-| Voting windows | 60-second commit and reveal windows | Human-safe windows configured before question one |
-| Case types | Escrow and yes/no question previews | Yes/no public questions only |
-| Submission | Separate disabled preview, escrow selected by default | Minimal app-view tab with question, YES rule, time, and fee |
-| Submitter material | Case JSON may contain selected evidence links | No evidence or source submission |
-| Juror research | Guided by linked case evidence | Independent public research under one global rule |
-| Juror experience | Local practice journey is promoted | Real World App commit/reveal is the only juror journey |
-| Questions | Mixed sample and simulated cases | 21 pre-screened real questions in a fixed order |
-| Concurrency | Contract and board support many cases | Official demo exposes one unresolved queue case |
-| Resolution display | Short result card | Permanent event-backed receipt with Worldscan links |
-| Advancement | Manual capstone script; no queue | Keeper advances only after a successful resolution |
-| Automation | Two-hour cohort test keeper only | Five-minute mainnet queue workflow, activated only by the fixed opener secret |
-| Admission boundary | Local sandbox is isolated from mainnet case admission | UI and keeper quarantine outside cases; the unchanged court remains permissionless, so this is a controlled demo |
-| Tone | Robustness, attacks, simulation, and scope caveats | Successful process, independent judgment, and verifiable result |
+| Product model | One public question, three verified humans, one on-chain answer | Unchanged |
+| Main views | Live case and Submit a case | Unchanged |
+| Question flow | One official question at a time from the 21-question queue | Unchanged |
+| Hero depth | At 1365 × 768, the hero is about 821 px tall and the live panel begins around y=1010—below the first screen | The compact hero is about 480 px in local inspection and places the live panel within the first screen |
+| Headline scale | About 89 px at the audited desktop width; it dominates the page | Capped at 4.7 rem, about 62 px in local inspection, while preserving the same message |
+| Hero action | Selects Live case but does not reliably reveal the panel | Selects, focuses, and scrolls to the live panel |
+| Top navigation | Submit a case changes the URL while the form remains below the fold | Both links target the matching panel and place it below the sticky header |
+| Mobile navigation | A fixed Live/Submit dock repeats the product tabs | The duplicate dock is removed; one sticky tab switcher remains |
+| Tab accessibility | Mouse/touch selection works, but keyboard tab behavior is incomplete | Roving focus plus Left, Right, Home, and End keys |
+| Form clarity | Labels include helper copy in their accessible names; local time has no visible UTC check | Concise labels, connected helper text, and a visible stored-as-UTC value |
+| Mobile inputs | Roughly 12.5 px and liable to trigger phone browser zoom | 16 px inputs with the same three-field form |
+| Supporting text | Several status and juror details are around 10–11 px | Important supporting details are enlarged without lengthening the page |
+| Touch targets | Some logo, receipt, and transaction links are smaller than a comfortable phone target | Key targets are at least 44 px tall |
+| Horizontal overflow | None found | None found |
+| Added product steps | None | None |
+
+### Comparison verdict
+
+- **Concept:** already upgraded and correctly focused on a simple three-juror oracle.
+- **Usability:** the next release is a clear improvement because users reach the working product sooner and navigation visibly completes the action they requested.
+- **Complexity:** unchanged; the release removes a duplicate mobile control and keeps the same two views and three submission fields.
+- **On-chain proof:** unchanged until activation. The site cannot honestly demonstrate a completed live ruling until three jurors register, the windows are lengthened, the keeper is enabled, and question one resolves.
 
 ## What this upgrade does not require
 

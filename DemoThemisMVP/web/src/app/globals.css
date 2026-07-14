@@ -137,6 +137,9 @@ a {
 }
 
 .site-brand {
+  display: inline-flex;
+  min-height: 2.75rem;
+  align-items: center;
   flex: none;
   color: var(--ink);
   font-family: var(--font-app-serif), Newsreader, Georgia, serif;
@@ -176,7 +179,7 @@ a {
 
 .site-chapters a {
   display: inline-flex;
-  min-height: 2.65rem;
+  min-height: 2.75rem;
   padding: 0.7rem 0.8rem;
   align-items: center;
   border-radius: 8px;
@@ -2296,7 +2299,7 @@ a.text-slate-950 {
   }
 
   .site-chapters a {
-    min-height: 2.65rem;
+    min-height: 2.75rem;
     padding: 0.7rem 0.8rem;
     font-size: 0.79rem;
   }
@@ -2365,21 +2368,14 @@ a.text-slate-950 {
     padding-left: 1rem;
   }
 
+  .site-chapters {
+    right: 1rem;
+    left: 1rem;
+    width: auto;
+  }
+
   .mvp-context-nav {
-    position: fixed;
-    z-index: 95;
-    bottom: max(0.65rem, env(safe-area-inset-bottom));
-    left: 50%;
-    overflow: visible;
-    width: min(28rem, calc(100% - 1rem));
-    min-height: 3.55rem;
-    padding: 0.35rem;
-    transform: translateX(-50%);
-    border: 1px solid var(--line-strong);
-    border-radius: 17px;
-    background: color-mix(in srgb, var(--surface) 94%, transparent);
-    box-shadow: 0 16px 42px -16px rgba(35, 38, 46, 0.38);
-    backdrop-filter: blur(18px);
+    display: none;
   }
 
   .mvp-context-label {
@@ -2411,7 +2407,7 @@ a.text-slate-950 {
   }
 
   .site-app-content {
-    padding-bottom: 4.7rem;
+    padding-bottom: 0;
   }
 
   .app-overview {
@@ -2603,18 +2599,18 @@ a.text-slate-950 {
 .oracle-app {
   width: min(100%, 76rem);
   margin: 0 auto;
-  padding: clamp(1rem, 3vw, 2.25rem) clamp(0.85rem, 3vw, 2rem) 5rem;
+  padding: clamp(1rem, 2vw, 1.75rem) clamp(0.85rem, 3vw, 2rem) 5rem;
 }
 
 .oracle-hero {
   position: relative;
   display: grid;
   overflow: hidden;
-  min-height: 34rem;
-  padding: clamp(2rem, 5vw, 4.8rem);
-  grid-template-columns: minmax(0, 1.25fr) minmax(18rem, 0.75fr);
+  min-height: 30rem;
+  padding: clamp(2rem, 4vw, 3.6rem);
+  grid-template-columns: minmax(0, 1.18fr) minmax(17rem, 0.82fr);
   align-items: center;
-  gap: clamp(2rem, 5vw, 5rem);
+  gap: clamp(1.75rem, 4vw, 4rem);
   border: 1px solid rgba(255, 255, 255, 0.12);
   border-radius: 30px;
   background:
@@ -2668,13 +2664,13 @@ a.text-slate-950 {
 }
 
 .oracle-hero h1 {
-  max-width: 44rem;
-  margin: 1.15rem 0 1.15rem;
+  max-width: 42rem;
+  margin: 0.9rem 0;
   font-family: var(--font-app-serif), Newsreader, Georgia, serif;
-  font-size: clamp(3rem, 6.5vw, 5.8rem);
+  font-size: clamp(3rem, 5vw, 4.7rem);
   font-weight: 520;
   letter-spacing: -0.055em;
-  line-height: 0.91;
+  line-height: 0.94;
 }
 
 .oracle-hero h1 em {
@@ -2686,13 +2682,13 @@ a.text-slate-950 {
   max-width: 39rem;
   margin: 0;
   color: rgba(255, 255, 255, 0.74);
-  font-size: clamp(0.98rem, 1.8vw, 1.15rem);
-  line-height: 1.65;
+  font-size: clamp(0.95rem, 1.2vw, 1.05rem);
+  line-height: 1.5;
 }
 
 .oracle-hero-actions {
   display: flex;
-  margin-top: 1.8rem;
+  margin-top: 1.35rem;
   flex-wrap: wrap;
   align-items: center;
   gap: 0.7rem;
@@ -2751,9 +2747,9 @@ a.text-slate-950 {
 .oracle-proof-card {
   position: relative;
   display: grid;
-  min-height: 6.1rem;
-  padding: 1rem 3.2rem 1rem 1rem;
-  grid-template-columns: 2.65rem 1fr;
+  min-height: 5.3rem;
+  padding: 0.85rem 2.8rem 0.85rem 0.85rem;
+  grid-template-columns: 2.35rem 1fr;
   align-items: center;
   gap: 0.8rem;
   border: 1px solid rgba(255, 255, 255, 0.15);
@@ -2769,8 +2765,8 @@ a.text-slate-950 {
 
 .oracle-proof-card > span {
   display: grid;
-  width: 2.65rem;
-  height: 2.65rem;
+  width: 2.35rem;
+  height: 2.35rem;
   border-radius: 12px;
   place-items: center;
   background: rgba(255, 255, 255, 0.11);
@@ -2811,7 +2807,7 @@ a.text-slate-950 {
   z-index: 3;
   display: grid;
   width: min(43rem, calc(100% - 2rem));
-  margin: -1.5rem auto 1.6rem;
+  margin: -1.3rem auto 1.4rem;
   padding: 0.38rem;
   grid-template-columns: repeat(2, minmax(0, 1fr));
   gap: 0.35rem;
@@ -2824,7 +2820,7 @@ a.text-slate-950 {
 
 .oracle-tabs button {
   display: grid;
-  min-height: 4.2rem;
+  min-height: 3.85rem;
   padding: 0.65rem 0.8rem;
   grid-template-columns: 2.3rem 1fr;
   align-items: center;
@@ -2869,17 +2865,18 @@ a.text-slate-950 {
 }
 
 .oracle-tabs strong {
-  font-size: 0.78rem;
+  font-size: 0.82rem;
 }
 
 .oracle-tabs small {
   margin-top: 0.15rem;
   color: inherit;
-  font-size: 0.64rem;
+  font-size: 0.7rem;
   opacity: 0.67;
 }
 
 .oracle-panel {
+  scroll-margin-top: 5.5rem;
   animation: oracle-panel-in 240ms ease both;
 }
 
@@ -2941,7 +2938,7 @@ a.text-slate-950 {
   align-items: center;
   gap: 0.5rem;
   color: var(--muted);
-  font-size: 0.72rem;
+  font-size: 0.76rem;
   font-weight: 650;
 }
 
@@ -2954,7 +2951,7 @@ a.text-slate-950 {
   border-radius: 999px;
   background: var(--surface-soft);
   color: var(--muted);
-  font-size: 0.64rem;
+  font-size: 0.7rem;
   font-weight: 750;
 }
 
@@ -2969,7 +2966,7 @@ a.text-slate-950 {
   margin: clamp(1.5rem, 4vw, 2.6rem) 0 1.3rem;
   color: #24212d;
   font-family: var(--font-app-serif), Newsreader, Georgia, serif;
-  font-size: clamp(2rem, 4vw, 3.35rem);
+  font-size: clamp(2rem, 3.2vw, 2.75rem);
   font-weight: 530;
   letter-spacing: -0.035em;
   line-height: 1.05;
@@ -3005,7 +3002,7 @@ a.text-slate-950 {
 .oracle-section-title span,
 .oracle-review-head > span {
   color: var(--faint);
-  font-size: 0.62rem;
+  font-size: 0.68rem;
   font-weight: 800;
   letter-spacing: 0.09em;
   text-transform: uppercase;
@@ -3014,7 +3011,7 @@ a.text-slate-950 {
 .oracle-fact p {
   margin: 0.5rem 0 0;
   color: var(--ink-soft);
-  font-size: 0.82rem;
+  font-size: 0.88rem;
   font-weight: 600;
   line-height: 1.5;
 }
@@ -3113,13 +3110,13 @@ a.text-slate-950 {
 
 .oracle-research-note strong {
   color: #6e4817;
-  font-size: 0.76rem;
+  font-size: 0.8rem;
 }
 
 .oracle-research-note p {
   margin-top: 0.16rem;
   color: #795928;
-  font-size: 0.67rem;
+  font-size: 0.74rem;
   line-height: 1.45;
 }
 
@@ -3415,7 +3412,7 @@ a.text-slate-950 {
 .oracle-seat-number {
   color: var(--accent);
   font-family: var(--font-app-mono), monospace;
-  font-size: 0.62rem;
+  font-size: 0.68rem;
   font-weight: 800;
 }
 
@@ -3426,14 +3423,14 @@ a.text-slate-950 {
 
 .oracle-seat strong {
   overflow: hidden;
-  font-size: 0.73rem;
+  font-size: 0.8rem;
   text-overflow: ellipsis;
 }
 
 .oracle-seat small {
   margin-top: 0.12rem;
   color: var(--faint);
-  font-size: 0.62rem;
+  font-size: 0.7rem;
 }
 
 .oracle-seat > i {
@@ -3469,12 +3466,13 @@ a.text-slate-950 {
 .oracle-jury-rule p {
   margin: 0;
   color: rgba(255, 255, 255, 0.72);
-  font-size: 0.64rem;
+  font-size: 0.72rem;
   line-height: 1.5;
 }
 
 .oracle-worldscan-link {
   display: flex;
+  min-height: 2.75rem;
   margin-top: 0.8rem;
   padding: 0.65rem;
   align-items: center;
@@ -3652,8 +3650,11 @@ a.text-slate-950 {
 }
 
 .oracle-tx-link {
-  display: block;
+  display: flex;
+  min-height: 2rem;
   margin-top: 0.75rem;
+  align-items: center;
+  justify-content: center;
   color: var(--good);
   font-size: 0.68rem;
   font-weight: 750;
@@ -3721,6 +3722,8 @@ a.text-slate-950 {
 
 .oracle-final-receipt a {
   display: inline-flex;
+  min-height: 2.75rem;
+  padding: 0.5rem 0.65rem;
   align-items: center;
   gap: 0.4rem;
   color: #087553;
@@ -3865,8 +3868,8 @@ a.text-slate-950 {
   font-size: 0.62rem;
 }
 
-.oracle-field > span strong { font-size: 0.76rem; }
-.oracle-field > span small { color: var(--faint); font-size: 0.62rem; }
+.oracle-field > span label { font-size: 0.82rem; font-weight: 750; }
+.oracle-field > span small { color: var(--faint); font-size: 0.68rem; }
 
 .oracle-field textarea,
 .oracle-date-input {
@@ -3882,7 +3885,7 @@ a.text-slate-950 {
   min-height: 6.7rem;
   padding: 0.85rem;
   resize: vertical;
-  font-size: 0.78rem;
+  font-size: 0.9rem;
   line-height: 1.5;
 }
 
@@ -3906,7 +3909,15 @@ a.text-slate-950 {
   outline: 0;
   background: transparent;
   color: var(--ink);
-  font-size: 0.78rem;
+  font-size: 0.9rem;
+}
+
+.oracle-utc-preview {
+  display: block;
+  margin: 0.4rem 0.15rem 0;
+  color: var(--accent-ink);
+  font-size: 0.7rem;
+  font-weight: 650;
 }
 
 .oracle-field textarea:focus,
@@ -4212,9 +4223,7 @@ a.text-slate-950 {
     grid-template-columns: 1fr;
   }
 
-  .oracle-jury-card {
-    order: -1;
-  }
+  .oracle-jury-card { order: 0; }
 
   .oracle-seats {
     grid-template-columns: repeat(3, minmax(0, 1fr));
@@ -4244,46 +4253,79 @@ a.text-slate-950 {
   }
 
   .oracle-hero {
-    padding: 1.4rem;
+    padding: 1.25rem;
     border-radius: 22px;
   }
 
   .oracle-hero h1 {
-    margin-top: 0.9rem;
-    font-size: clamp(2.65rem, 14vw, 4.25rem);
+    margin-top: 0.75rem;
+    font-size: clamp(2.05rem, 10.5vw, 3.1rem);
+  }
+
+  .oracle-kicker {
+    font-size: 0.61rem;
+    letter-spacing: 0.08em;
   }
 
   .oracle-hero-copy > p {
-    font-size: 0.84rem;
+    font-size: 0.82rem;
+    line-height: 1.5;
   }
 
   .oracle-hero-actions {
     display: grid;
+    margin-top: 1rem;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 0.5rem;
   }
 
   .oracle-hero-actions button,
   .oracle-hero-actions a {
     width: 100%;
+    min-height: 2.75rem;
+    padding: 0.65rem;
+    font-size: 0.74rem;
   }
 
   .oracle-proof-stack {
-    grid-template-columns: 1fr;
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    gap: 0.4rem;
   }
 
   .oracle-proof-card {
-    min-height: 0;
-    padding: 0.75rem 2.6rem 0.75rem 0.75rem;
-    grid-template-columns: 2.25rem 1fr;
+    min-height: 5.1rem;
+    padding: 0.6rem 0.3rem;
+    grid-template-columns: 1fr;
+    align-content: center;
+    justify-items: center;
+    gap: 0.35rem;
+    text-align: center;
   }
 
   .oracle-proof-card > span {
-    width: 2.25rem;
-    height: 2.25rem;
+    width: 2.1rem;
+    height: 2.1rem;
+  }
+
+  .oracle-proof-card strong {
+    font-size: 0.68rem;
+    line-height: 1.15;
+  }
+
+  .oracle-proof-card small,
+  .oracle-proof-card b {
+    display: none;
   }
 
   .oracle-tabs {
+    position: sticky;
+    top: calc(var(--site-chrome-height) + 0.4rem);
     width: calc(100% - 1rem);
     margin-bottom: 1rem;
+  }
+
+  .oracle-panel {
+    scroll-margin-top: calc(var(--site-chrome-height) + 5.5rem);
   }
 
   .oracle-tabs button {
@@ -4300,6 +4342,34 @@ a.text-slate-950 {
 
   .oracle-tabs small {
     display: none;
+  }
+
+  .oracle-form-progress {
+    font-size: 0.75rem;
+  }
+
+  .oracle-field > span label,
+  .oracle-field > span small,
+  .oracle-utc-preview {
+    font-size: 0.75rem;
+    line-height: 1.35;
+  }
+
+  .oracle-field textarea,
+  .oracle-date-input input {
+    font-size: 1rem;
+  }
+
+  .oracle-fee-card > p,
+  .oracle-fee-card dt,
+  .oracle-one-at-time p,
+  .oracle-submit-steps small {
+    font-size: 0.75rem;
+  }
+
+  .oracle-one-at-time strong,
+  .oracle-submit-steps strong {
+    font-size: 0.82rem;
   }
 
   .oracle-case-head {

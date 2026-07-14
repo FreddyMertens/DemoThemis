@@ -1,92 +1,65 @@
-# Go-Live progress log
+# Go-live progress
 
-Running record of the Step-5 → submission checklist. Companion to `go-live.html`
-(the interactive guide) and `CAPSTONE_RUNBOOK.md` (the reference). Newest entries
-on top of each section.
+Updated: 2026-07-14
 
----
+This page records the real state of the three-juror question demo. For the
+activation procedure, use the [mainnet question-queue runbook](CAPSTONE_RUNBOOK.md).
 
-## ✅ Done
+## Current audited state
 
-### 2026-06-19 — Production deployed to mainnet + PR #3 merged (by Claude)
-The live app now runs the Step-5 code on World Chain mainnet.
-- Added **`NEXT_PUBLIC_CHAIN_ID=480`** in Vercel (non-sensitive, Production +
-  Preview).
-- Merged **PR #3** into `main` (merge commit `67c7274`); Vercel built and promoted
-  it to Production.
-- **Verified live:** `https://demo-themis-mvp.vercel.app` now shows the reviewer
-  funnel ("A court of verified humans"), and `/home` reads **chain 480** ("Live on
-  World Chain mainnet … 0 Verified jurors") — so the QR / onboard now registers real
-  humans on the live instance.
+| Area | State |
+|---|---|
+| Public website | [Netlify `/app`](https://demothemis.netlify.app/app) is deployed and reads World Chain mainnet (chain 480). |
+| Repository | [`FreddyMertens/DemoThemis`](https://github.com/FreddyMertens/DemoThemis) is public. |
+| Contracts | The Production-verifier instance is deployed; the six project contracts are source-verified on Worldscan. |
+| Official queue | All 21 local and deployed question files match the manifest's exact hashes and fixed opener. No official question has been filed yet. |
+| Court state | **0 active jurors**; exactly 3 are required. No unresolved nonofficial case exists. |
+| Voting windows | **60-second seal / 60-second reveal**; both must be raised to at least 300 seconds before question one opens. |
+| Scheduled keeper | `MAINNET_QUESTION_KEEPER_PRIVATE_KEY` is absent and the mainnet question-keeper workflow has no runs. |
+| World Developer Portal | The App URL, reviewer-facing name, country availability, preview QR, and permissions still need a signed-in verification. The public deep link currently says **DemoThemis Staging** and showed a UK availability restriction. |
 
-### 2026-06-19 — Developer Portal whitelisting (by Claude, via browser)
-The blocker is cleared. Whitelist lives at **Mini App → Permissions** (not
-"Configuration → Advanced" as the first draft of the guide said). Entered as
-comma-separated lists and **verified to persist after a full page reload**.
+The existing contract whitelist was confirmed in the Portal on 2026-06-19, but
+that historical check does not prove the current URL, name, countries, or preview
+journey. Recheck all of them before inviting jurors.
 
-- **Contract Entrypoints** (7): MockUSD `0x70ECE5DcAA68741BF41F6A4Aa0af3a8D44e4497a`,
-  JurorRegistry `0x226974149087b36769a54B998acfe4087eEb7F84`,
-  DisputeCourt `0xCDF427D18da8C2e8CCf9a95310bC38857EEf795A`,
-  DealEscrow `0xefc898F9C4FC805111041676b720CB478BE67c47`,
-  WorldIDGate `0x0540f47842a31C681dce76E856b4b76fcCc53Fbe`,
-  RewardPool `0xAF96A65A6b9643451E33cAf96717d071eDae04A0`,
-  Permit2 `0x000000000022D473030F116dDEE9F6B43aC78BA3`.
-- **Permit2 Tokens** (1): MockUSD `0x70ECE5DcAA68741BF41F6A4Aa0af3a8D44e4497a`.
-- App confirmed: **DemoThemis Staging**, `app_7bdfda4db4e2f59dd4a2427cd2bd860d`
-  (the "legacy" tag is just the app-id format; it's the World ID 4.0 app, RP
-  `rp_1ddcf8ba2efe3f36`). One app covers staging + production.
+## Remaining work, in order
 
-### 2026-06-19 — Guide corrected against the live Portal UI
-`go-live.html` Step 2 now uses the real path (**Mini App → Permissions**),
-comma-separated format, and the "See your mini app" **preview QR** as the way to
-open the app on a phone (the app is in Developer Preview — not submitted for
-review, which is fine for the demo).
+1. In the World Developer Portal, make the App URL point to Netlify, remove the
+   misleading **Staging** name, include the intended countries, confirm the
+   contract and Permit2 permissions, and open `/onboard` through the preview QR.
+2. Raise the seal and reveal windows to at least five minutes, then confirm the
+   keeper's dry report shows the new values.
+3. Register exactly three Production World ID humans through the verified World
+   App journey. Keep all three available for both voting stages.
+4. With explicit authorization, store the fixed opener's key as the GitHub
+   Actions secret `MAINNET_QUESTION_KEEPER_PRIVATE_KEY` and verify the workflow
+   starts running.
+5. Let the keeper open question one and draw its three-person panel. All three
+   jurors research, seal, and reveal their answers.
+6. Let a later keeper run resolve question one. Confirm the permanent receipt
+   shows 3/3 seals, 3/3 reveals, the ruling, and individual valueless MUSD
+   payments.
+7. Confirm the keeper opens question two only after question one resolves.
+8. Add the registration, case, vote, resolution, payment, receipt, and question-two
+   links to [DEMO.md](DEMO.md), then record the short demo video.
 
-### Earlier (committed on PR #3)
-- Mainnet **Production-verifier instance** deployed + all 6 contracts
-  **source-verified** on worldscan (3/3, Production verifier `0x0000…94d7`).
-- `registerWithPermit2`, the single-tap onboard, commit/reveal, the B5 dev page,
-  and the reviewer funnel landing — all built. **77 tests pass.**
-- **PR #3 CI is green** (contracts, web, Vercel) and the PR is **mergeable/clean**.
+> **Safety rule:** do not use the former q-capstone or escrow activation path.
+> Those operations create cases outside the exact 21-question queue, and any
+> unresolved nonofficial case deliberately pauses the current keeper.
 
----
+## Archived history — non-executable
 
-## ✅ Current state — ready for the capstone
+The following facts explain how the present deployment was reached; they are not
+instructions for operating it:
 
-Everything technical is in place: the contracts are deployed + whitelisted, and the
-live site (`https://demo-themis-mvp.vercel.app`) runs the Step-5 code on **chain
-480** (verified). The next real action is the **3-human capstone** — no more setup.
-
-To open the Mini App on a phone, use the Portal's **"See your mini app" preview QR**
-(Mini App → Permissions), since the app is in Developer Preview.
-
----
-
-## ⛳ Remaining (in order)
-
-1. **[test] Register yourself as juror #1.** Open the app via the preview QR →
-   Become a juror → Verify & join. The live juror counter should tick to **1** — the
-   real end-to-end proof (whitelisting + onboard + sponsored gas all work).
-2. **[capstone] The 3-human run.** 3 people register; run the question case and the
-   escrow case (open/draw via `scripts/capstone-mainnet.sh`; humans commit + reveal
-   in World App; resolve). Leave both resolved on worldscan.
-3. **[log] Fill the Step-5 capstone trace table** in `docs/DEMO.md` (3 registrations
-   + 2 resolved cases).
-4. **[video] Record + upload** the 3–4 min demo (script in `DEMO.md`); add the link
-   to `DEMO.md` + `README`.
-5. **[public] Make the repo public** (`gh repo edit FreddyMertens/DemoThemisMVP
-   --visibility public`) + add the pitch-site "Live demo" link. Do this AFTER 2–4
-   so a cold reviewer sees the real traces + video.
-6. **[qa] Final link check** — every URL the application cites resolves.
-
----
-
-## 🚫 Not done yet (and why)
-
-- **Repo still private** — flip it to public AFTER the capstone + video (step 5),
-  so a cold reviewer sees the real trace links and the video, not a "pending" table.
-- **`NEXT_PUBLIC_SHOW_DEV`** — intentionally left unset on Vercel (absent ⇒ the
-  `/app/dev` page is hidden, which is the correct production behaviour; the dev key
-  is server-only and not set in prod either, so the page is doubly inert).
-- **Capstone / video / self-registration** — need 3 verified humans and a phone;
-  can't be done from here.
+- On 2026-06-19, the Production-verifier contracts were deployed to World Chain
+  mainnet and their source was verified. The app used an earlier Vercel host at
+  that time; Netlify is now canonical.
+- On 2026-06-19, the World Developer Portal retained the contract entrypoints and
+  MockUSD Permit2 permission after a reload. The app was identified as
+  `app_7bdfda4db4e2f59dd4a2427cd2bd860d`, with World ID 4.0 RP
+  `rp_1ddcf8ba2efe3f36`.
+- The earlier capstone called for both a manually opened question and an escrow
+  dispute. That plan predates the official manifest and is retired. The current
+  reviewer journey is one public-research question at a time, with a fixed
+  non-juror opener and a scheduled keeper.
