@@ -207,6 +207,9 @@
     border: 1px solid var(--browser-chrome-line-strong);
     border-radius: 14px;
     background: var(--browser-chrome-bg);
+    color: var(--browser-chrome-ink);
+    font-family: var(--browser-chrome-font);
+    color-scheme: light;
     box-shadow: 0 18px 34px rgba(29, 40, 49, .14);
     overflow: hidden;
   }
@@ -1521,6 +1524,7 @@
     --continue-ink: #ffffff;
     --shadow: 0 4px 12px rgba(91, 57, 24, .08);
   }
+  .product-mode-panel[data-product-mode="momo"] .sim-app-viewport { color: var(--ink); color-scheme: light; }
   .product-mode-panel[data-product-mode="momo"] .run-control-panel,
   .product-mode-panel[data-product-mode="momo"] .sim-step-guide {
     border-radius: 8px;
@@ -1555,6 +1559,7 @@
     --continue-ink: #172017;
     --shadow: 0 4px 14px rgba(0, 0, 0, .22);
   }
+  .product-mode-panel[data-product-mode="themis"] .sim-app-viewport { color: var(--ink); color-scheme: dark; }
   .product-mode-panel[data-product-mode="themis"] .run-control-panel,
   .product-mode-panel[data-product-mode="themis"] .sim-step-guide {
     border-radius: 8px;
