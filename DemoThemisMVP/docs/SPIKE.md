@@ -4,7 +4,7 @@ Status: spike (a) **answered** — and it reshapes the instance architecture. (b
 
 ## Headline finding: World ID moved to 4.0, relocating on-chain verification to World Chain mainnet
 
-The Developer Portal now onboards new apps onto **World ID 4.0** (preview). Our app `app_7bdfda4db4e2f59dd4a2427cd2bd860d` ("DemoThemis Staging") is 4.0, Managed mode, RP id `rp_1ddcf8ba2efe3f36`. World ID 4.0 changes both the on-chain interface and *where it lives*:
+The Developer Portal now onboards new apps onto **World ID 4.0** (preview). Our app `app_7bdfda4db4e2f59dd4a2427cd2bd860d` (**DemoThemis**, originally created as "DemoThemis Staging") is 4.0, Managed mode, RP id `rp_1ddcf8ba2efe3f36`. World ID 4.0 changes both the on-chain interface and *where it lives*:
 
 | | Legacy v3 (what the plan + contracts assumed) | World ID 4.0 (current) |
 |---|---|---|

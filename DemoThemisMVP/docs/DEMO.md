@@ -139,8 +139,8 @@ Audited on 2026-07-14:
 | Juror pool | **0 / exactly 3 required**. |
 | Voting windows | **300s seal / 300s reveal — ready.** [Configuration transaction](https://worldscan.org/tx/0x429dfd1ad1aa5e0f628ea02c47950e440ad658b38540401d8ae045f3316866ca). |
 | Unexpected cases | No unresolved nonofficial case. |
-| Scheduled keeper | `MAINNET_QUESTION_KEEPER_PRIVATE_KEY` is absent; the workflow has no runs. |
-| World App cutover | Portal App URL, name, countries, preview QR, and permissions must be verified. |
+| Scheduled keeper | Secret configured; the five-minute workflow waits safely for exactly three active jurors. |
+| World App cutover | Portal name, Netlify `/onboard` entry, worldwide availability, World ID action, and contract/Permit2 permissions are verified. The preview QR still needs its phone smoke test. |
 
 Question one is fixed by all four fields below:
 

@@ -7,10 +7,11 @@ on-chain World ID 4.0 sybil gate with self-evidencing enforcement traces, the
 comparative attack demo, 77 Foundry tests (>90% coverage), and a ~20-juror Sepolia
 cohort. **One action — the 3-human capstone — is the master key:** it moves
 `jurorCount` off 0, flips the two most-scored axes from *partial* to *proven*, and
-unblocks the video, the trace tables, and going public.
+unblocks the video and the trace tables; the repository is already public.
 
-*Live-verified 2026-06-20: mainnet `jurorCount()=0` and `caseCount()=0` (capstone has
-never run) · repo `isPrivate=true` · live site 200 · cohort ≈ 20 jurors.*
+*Live-verified 2026-07-14: mainnet `jurorCount()=0` and `caseCount()=0` (capstone has
+never run) · repository public · live site 200 · Portal configured · keeper
+enabled · cohort ≈ 20 jurors.*
 
 ---
 
@@ -22,7 +23,7 @@ never run) · repo `isPrivate=true` · live site 200 · cohort ≈ 20 jurors.*
 | Working demo / prototype | ✅ real, **two holes** | Live + source-verified + sandbox + 3 real enforcement traces. Holes: the 3-human mainnet run hasn't executed (`jurorCount=0`); no demo video. |
 | **Deep World ID usage** *(highest-scored)* | ⚠️ **partial** | Architecturally deep + self-evidencing on the *negative* paths. But the affirmative proof — a **real human** verifying through the **Production** verifier — doesn't exist yet; every trace to date is Simulator/**Staging**. The capstone makes it *proven*. |
 | Realistic milestones + timeline | ⚠️ partial | A coherent 5-item roadmap exists, but it's **unpriced** (no USD) and **untimed** (ordering only). Not yet a fundable plan. |
-| Open source | ⚠️ **fails today** | MIT LICENSE present + contracts source-verified, but the repo is **PRIVATE** — a reviewer hits a 404. Must flip public before submission. |
+| Open source | ✅ **passed** | MIT LICENSE present, contracts source-verified, and [`FreddyMertens/DemoThemis`](https://github.com/FreddyMertens/DemoThemis) is public. |
 | Sustainability | ✅ addressed | 70/20/10 fee economics on-chain (zero real revenue until the capstone). GTM resolved: a **first-party prediction market resolved by the personhood court** is the cold-start demand seed; the grant funds the **neutral resolver**, the market is a separate product (stakes/licensing out of scope). Circularity defused — demand is external/proven (Polymarket ~$26B in Q1 2026), the SDK is open to all consumers. See GRANT_APPLICATION §10. |
 | Eligibility — applicant location | ✅ recorded / ⚠️ final KYC pending | Known facts: one co-founder is a UK resident; one is based in Baltimore, Maryland, United States on a work visa. Current public World Mini App Grants materials say the program is open to United States builders, so U.S. location is not treated as an automatic application blocker. |
 | Eligibility — KYC / sanctions / payout | ⚠️ pending | Final status is not knowable from public docs alone. Each applicant must answer citizenship, tax residency, sanctions/export-control, KYC/AML, and grant-agreement questions directly; WLD/token payout remains geography- and compliance-dependent. |
@@ -35,7 +36,7 @@ never run) · repo `isPrivate=true` · live site 200 · cohort ≈ 20 jurors.*
 **Owner key:** 🧑 you / demo-day · 🛠 buildable now · 🔀 either
 
 1. **🧑 Run the 3-human mainnet capstone** *(the gating deliverable — everything keys off it)*
-   Verify the Portal opens the Netlify app → register exactly 3 Production World ID humans → enable the fixed-opener queue keeper → complete official question one and confirm question two opens only afterward. The five-minute voting windows are already [configured on-chain](https://worldscan.org/tx/0x429dfd1ad1aa5e0f628ea02c47950e440ad658b38540401d8ae045f3316866ca). Follow only [`CAPSTONE_RUNBOOK.md`](CAPSTONE_RUNBOOK.md); the former manually opened question and escrow sequence is retired. Blocker: 3 verified humans + phones — not headless-runnable.
+   Scan the configured Portal preview QR → register exactly 3 Production World ID humans → let the enabled fixed-opener keeper complete official question one and confirm question two opens only afterward. The five-minute voting windows are already [configured on-chain](https://worldscan.org/tx/0x429dfd1ad1aa5e0f628ea02c47950e440ad658b38540401d8ae045f3316866ca). Follow only [`CAPSTONE_RUNBOOK.md`](CAPSTONE_RUNBOOK.md); the former manually opened question and escrow sequence is retired. Blocker: 3 verified humans + phones — not headless-runnable.
 2. **🧑 Record + upload the demo video** (live question → real mainnet phone flow → permanent receipt → Step-3.5 reverts). Best filmed *during* the first official question so the Production-verifier flow is real on camera. Highest persuasion-per-minute for a reviewer who won't install World App.
 3. **🛠 Fill the DEMO.md Step-5 trace table** — paste the 3 registrations, official question transactions, juror actions, resolution, receipt, and question-two opening. (5-min edit; blocked only on #1.)
 4. **✅ Public repository — DONE.** [`FreddyMertens/DemoThemis`](https://github.com/FreddyMertens/DemoThemis) is public; keep the final trace and video links current before submission.

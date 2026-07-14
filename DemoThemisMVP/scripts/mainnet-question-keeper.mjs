@@ -354,6 +354,21 @@ function refuseExpectedAction(message) {
   process.exit(0);
 }
 
+function waitForJurors(message) {
+  console.log(`WAITING: ${message}`);
+  process.exit(0);
+}
+
+function requireExactJurorCount(nextAction, jurorCount) {
+  if (jurorCount === REQUIRED_JURORS) return;
+  if (jurorCount < REQUIRED_JURORS) {
+    waitForJurors(`${nextAction} will begin after exactly ${REQUIRED_JURORS} active jurors register; found ${jurorCount}.`);
+  }
+  refuseExpectedAction(
+    `Refusing to ${nextAction}: the official demo requires exactly ${REQUIRED_JURORS} active jurors; found ${jurorCount}. An extra juror must leave the active pool.`,
+  );
+}
+
 async function reportJurorProgress(active) {
   const states = await Promise.all(
     active.data.panel.map(async (juror) => {
@@ -456,9 +471,7 @@ if (activeCases.length === 1) {
         `Refusing to draw official case ${active.id}: unresolved nonofficial court case IDs ${unresolvedNonOfficialCases.map(({ id }) => id).join(', ')} must be resolved first.`,
       );
     }
-    if (jurorCount !== REQUIRED_JURORS) {
-      refuseExpectedAction(`Refusing to draw: the official demo requires exactly ${REQUIRED_JURORS} active jurors; found ${jurorCount}.`);
-    }
+    requireExactJurorCount(`draw official case ${active.id}`, jurorCount);
     if (commitDuration < MIN_HUMAN_DURATION || revealDuration < MIN_HUMAN_DURATION) {
       refuseExpectedAction(`Refusing to draw: set both voting windows to at least ${MIN_HUMAN_DURATION} seconds first.`);
     }
@@ -515,11 +528,7 @@ if (unresolvedNonOfficialCases.length !== 0) {
     `Refusing to open question ${next.sequence}: unresolved nonofficial court case IDs ${unresolvedNonOfficialCases.map(({ id }) => id).join(', ')} must be resolved first.`,
   );
 }
-if (jurorCount !== REQUIRED_JURORS) {
-  refuseExpectedAction(
-    `Refusing to open question ${next.sequence}: the official demo requires exactly ${REQUIRED_JURORS} active jurors; found ${jurorCount}.`,
-  );
-}
+requireExactJurorCount(`open question ${next.sequence}`, jurorCount);
 if (commitDuration < MIN_HUMAN_DURATION || revealDuration < MIN_HUMAN_DURATION) {
   refuseExpectedAction(
     `Refusing to open question ${next.sequence}: set both voting windows to at least ${MIN_HUMAN_DURATION} seconds first.`,

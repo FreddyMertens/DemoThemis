@@ -15,30 +15,26 @@ activation procedure, use the [mainnet question-queue runbook](CAPSTONE_RUNBOOK.
 | Official queue | All 21 local and deployed question files match the manifest's exact hashes and fixed opener. No official question has been filed yet. |
 | Court state | **0 active jurors**; exactly 3 are required. No unresolved nonofficial case exists. |
 | Voting windows | **300-second seal / 300-second reveal — ready.** Configured on-chain in [transaction `0x429d…66ca`](https://worldscan.org/tx/0x429dfd1ad1aa5e0f628ea02c47950e440ad658b38540401d8ae045f3316866ca). |
-| Scheduled keeper | `MAINNET_QUESTION_KEEPER_PRIVATE_KEY` is absent and the mainnet question-keeper workflow has no runs. |
-| World Developer Portal | The App URL, reviewer-facing name, country availability, preview QR, and permissions still need a signed-in verification. The public deep link currently says **DemoThemis Staging** and showed a UK availability restriction. |
+| Scheduled keeper | `MAINNET_QUESTION_KEEPER_PRIVATE_KEY` is configured; the five-minute workflow waits safely and sends nothing until exactly three jurors are active. |
+| World Developer Portal | Signed-in verification passed: **DemoThemis**, Mini App URL `https://demothemis.netlify.app/onboard`, public website on Netlify, worldwide availability, active Production World ID action, and complete contract/Permit2 allowlists. The phone QR smoke test remains. |
 
-The existing contract whitelist was confirmed in the Portal on 2026-06-19, but
-that historical check does not prove the current URL, name, countries, or preview
-journey. Recheck all of them before inviting jurors.
+The updated Portal values and permissions were saved, reloaded, and verified on
+2026-07-14. The generated draft QR resolves to the correct app and draft IDs;
+scan it in World App before inviting jurors to prove the final phone handoff.
 
 ## Remaining work, in order
 
-1. In the World Developer Portal, make the App URL point to Netlify, remove the
-   misleading **Staging** name, include the intended countries, confirm the
-   contract and Permit2 permissions, and open `/onboard` through the preview QR.
-2. Register exactly three Production World ID humans through the verified World
+1. Scan the Developer Portal preview QR in World App and confirm it opens the
+   Netlify `/onboard` screen.
+2. Register exactly three Production World ID humans through that verified World
    App journey. Keep all three available for both voting stages.
-3. With explicit authorization, store the fixed opener's key as the GitHub
-   Actions secret `MAINNET_QUESTION_KEEPER_PRIVATE_KEY` and verify the workflow
-   starts running.
-4. Let the keeper open question one and draw its three-person panel. All three
+3. Let the enabled keeper open question one and draw its three-person panel. All three
    jurors research, seal, and reveal their answers.
-5. Let a later keeper run resolve question one. Confirm the permanent receipt
+4. Let a later keeper run resolve question one. Confirm the permanent receipt
    shows 3/3 seals, 3/3 reveals, the ruling, and individual valueless MUSD
    payments.
-6. Confirm the keeper opens question two only after question one resolves.
-7. Add the registration, case, vote, resolution, payment, receipt, and question-two
+5. Confirm the keeper opens question two only after question one resolves.
+6. Add the registration, case, vote, resolution, payment, receipt, and question-two
    links to [DEMO.md](DEMO.md), then record the short demo video.
 
 > **Safety rule:** do not use the former q-capstone or escrow activation path.

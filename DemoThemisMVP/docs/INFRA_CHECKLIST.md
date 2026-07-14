@@ -13,13 +13,13 @@ Mirror of IMPLEMENTATION_PLAN.md §3. Step 1 is done when every row is checked a
 ## Repo
 
 - [x] Monorepo scaffold: `contracts/` (Foundry) + `web/` (create-mini-app) + `docs/`
-- [x] GitHub repo: github.com/FreddyMertens/DemoThemisMVP, private, CI green (forge test + next build, run 1m36s)
-- [x] Hello-world deployed to Vercel: https://demo-themis-mvp.vercel.app (project `demo-themis-mvp`, root dir `web`, auto-deploys on push; env vars AUTH_SECRET, AUTH_TRUST_HOST, HMAC_SECRET_KEY, NEXT_PUBLIC_APP_ID, RP_SIGNING_KEY, RP_ID on Production+Preview, AUTH_URL on Production)
+- [x] Public GitHub repository: [FreddyMertens/DemoThemis](https://github.com/FreddyMertens/DemoThemis), with CI and the mainnet question keeper enabled
+- [x] Canonical production deployment: [demothemis.netlify.app](https://demothemis.netlify.app) with the Mini App at `/onboard`; the former Vercel hello-world is only an archived rollback artifact
 
 ## World Developer Portal
 
 - [x] Portal account at developer.worldcoin.org (login: freddymertens@proton.me)
-- [x] App created: "DemoThemis Staging", `app_7bdfda4db4e2f59dd4a2427cd2bd860d`, Mini App enabled, category Business, World ID 4.0 **Managed** (RP `rp_1ddcf8ba2efe3f36`), App URL set to the Vercel deployment
+- [x] App configured as **DemoThemis**, `app_7bdfda4db4e2f59dd4a2427cd2bd860d`: Mini App enabled, category Business, World ID 4.0 **Managed** (RP `rp_1ddcf8ba2efe3f36`), App URL `https://demothemis.netlify.app/onboard`, official website on Netlify, and worldwide draft availability
 - [x] Actions created in it: `juror-registration` + `juror-registration-backup`
 - [ ] ~~Second unlisted production app~~ — ON HOLD: World ID 4.0 shows BOTH "Staging Status: Active" and "Production Status: Active" on this single app (see SPIKE.md portal findings). Create a second app only if the spike proves tree pairing still demands it
 - [ ] World App installed on a phone (needed for spike (b) + step 3) — NEEDS HUMAN

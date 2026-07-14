@@ -23,15 +23,15 @@ As read from World Chain mainnet and GitHub on 2026-07-14:
 - Reveal window: **300 seconds / ready**
 - Official questions filed: **0 / 21**
 - Unresolved nonofficial cases: **none**
-- `MAINNET_QUESTION_KEEPER_PRIVATE_KEY`: **not configured**
-- Mainnet question-keeper workflow runs: **none yet**
-- Developer Portal App URL, display name, and country availability: **must be
-  verified before inviting jurors**
+- `MAINNET_QUESTION_KEEPER_PRIVATE_KEY`: **configured**
+- Mainnet question-keeper workflow: **enabled; waits safely for three jurors**
+- Developer Portal configuration: **verified in the signed-in Portal**
 
-The public deep link currently identifies the app as **DemoThemis Staging** and
-showed a country-availability restriction from a UK connection. The Developer
-Portal is the authority for both facts; verify them there rather than assuming
-the Netlify page alone proves the World App journey.
+The Portal now identifies the app as **DemoThemis**, opens the Mini App at the
+Netlify `/onboard` route, keeps the public website at the Netlify root, and makes
+the draft available in every supported country. A real phone still has to scan
+the preview QR before jurors are invited; Portal settings alone cannot prove the
+World App handoff.
 
 ## Fixed mainnet instance
 
@@ -53,13 +53,18 @@ pool because the court excludes a question's opener from its panel.
 In the World Developer Portal, open app
 `app_7bdfda4db4e2f59dd4a2427cd2bd860d` and verify all of the following:
 
-- App URL is `https://demothemis.netlify.app`.
-- The reviewer-facing name does not misleadingly say **Staging**.
-- The intended jurors and reviewers are included in its country availability.
-- The preview QR opens the Netlify `/onboard` screen in World App.
+- App URL is `https://demothemis.netlify.app/onboard`.
+- Official website is `https://demothemis.netlify.app`.
+- The reviewer-facing name is **DemoThemis**.
+- Country availability includes all countries offered by the Portal.
+- The preview QR is generated from this draft and must open the Netlify
+  `/onboard` screen in World App during the phone smoke test.
 - Contract permissions still include MockUSD, JurorRegistry, DisputeCourt,
-  WorldIDGate, RewardPool, and Permit2.
+  DealEscrow, WorldIDGate, RewardPool, and Permit2.
 - Permit2 token permissions include MockUSD.
+
+These settings and permissions were reloaded and verified in the signed-in
+Portal on 2026-07-14.
 
 Netlify must retain the server and public variables listed in the
 [unified deployment plan](../../docs/UNIFIED_DEPLOYMENT_PLAN.md). A quick
@@ -131,17 +136,14 @@ After each registration, run the dry report again. Stop at exactly three. The
 deployed registry has no hard maximum; if the pool exceeds three, the keeper
 pauses until an extra active juror uses **Leave jury**.
 
-## 5. Enable the scheduled keeper
+## 5. Verify the scheduled keeper
 
 The workflow is `.github/workflows/mainnet-question-keeper.yml`. It runs every
 five minutes, serially, and broadcasts at most one operator transaction per run.
-Its secret must be the private key whose public address is the fixed opener above.
-The opener must never register as a juror.
-
-With explicit authorization to store the operator key in GitHub, add repository
-secret `MAINNET_QUESTION_KEEPER_PRIVATE_KEY` under **Settings → Secrets and
-variables → Actions**. Never paste the key into shell history, a command,
-commit, issue, log, or document.
+Repository secret `MAINNET_QUESTION_KEEPER_PRIVATE_KEY` was configured on
+2026-07-14 from the authorized ignored local credential. Its derived public
+address matches the fixed opener above. The secret value was not printed or
+committed, and the opener must never register as a juror.
 
 Confirm only the secret name and workflow history:
 
@@ -150,7 +152,9 @@ gh secret list --repo FreddyMertens/DemoThemis
 gh run list --repo FreddyMertens/DemoThemis --workflow mainnet-question-keeper.yml --limit 10
 ```
 
-The keeper's first necessary runs may separately claim valueless MUSD, approve
+Before three jurors exist, a healthy run reports `WAITING` and exits successfully
+without broadcasting. The keeper's first necessary runs after registration may
+separately claim valueless MUSD, approve
 the court, open question one, and draw its panel. This deliberate one-step limit
 makes every transition easy to inspect and prevents a single run from racing the
 human actions.
