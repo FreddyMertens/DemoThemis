@@ -190,23 +190,42 @@
   .sim-step-copy .sim-step-path { color: var(--faint); font-size: .68rem; font-weight: 800; }
   .sim-step-copy .sim-step-path b { color: var(--accent-ink); font-size: inherit; font-weight: 950; }
   .sim-step-controls { display: grid; gap: .42rem; align-content: stretch; min-width: 0; justify-items: stretch; }
-  .sim-live-preview { display: grid; min-width: 0; border: 1px solid color-mix(in srgb, var(--accent) 42%, var(--line)); border-radius: 16px; background: color-mix(in srgb, var(--ink) 5%, var(--surface)); box-shadow: 0 18px 32px rgba(31, 36, 48, .12); overflow: hidden; }
-  .sim-browser-bar { display: grid; grid-template-columns: auto minmax(0, 1fr); gap: .48rem; align-items: center; border-bottom: 1px solid var(--line); background: color-mix(in srgb, var(--bg) 86%, #fff); padding: .38rem .55rem; }
-  .sim-browser-back { position: relative; display: inline-flex; align-items: center; justify-content: center; gap: .36rem; min-width: 5.85rem; min-height: 2.16rem; border: 1px solid color-mix(in srgb, var(--accent) 30%, var(--line)); border-radius: 999px; background: linear-gradient(180deg, color-mix(in srgb, var(--surface) 98%, #fff), color-mix(in srgb, var(--accent-soft) 44%, var(--surface))); color: var(--accent-ink); padding: .22rem .62rem .22rem .22rem; font-family: var(--sans); font-size: .74rem; line-height: 1; font-weight: 900; box-shadow: 0 7px 16px rgba(31, 36, 48, .1), inset 0 1px 0 rgba(255, 255, 255, .78); cursor: pointer; transition: transform .14s ease, background .14s ease, border-color .14s ease, box-shadow .14s ease, color .14s ease; }
+  .sim-live-preview {
+    --browser-chrome-bg: #e8edf1;
+    --browser-chrome-surface: #f9fbfc;
+    --browser-chrome-ink: #27333d;
+    --browser-chrome-muted: #687681;
+    --browser-chrome-faint: #89959e;
+    --browser-chrome-line: #c5ced5;
+    --browser-chrome-line-strong: #aab6bf;
+    --browser-chrome-accent: #526b7a;
+    --browser-chrome-accent-soft: #dbe4e9;
+    --browser-chrome-font: "Inter", system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+    --browser-chrome-mono: "JetBrains Mono", ui-monospace, SFMono-Regular, Consolas, monospace;
+    display: grid;
+    min-width: 0;
+    border: 1px solid var(--browser-chrome-line-strong);
+    border-radius: 14px;
+    background: var(--browser-chrome-bg);
+    box-shadow: 0 18px 34px rgba(29, 40, 49, .14);
+    overflow: hidden;
+  }
+  .sim-browser-bar { display: grid; grid-template-columns: auto minmax(0, 1fr); gap: .48rem; align-items: center; border-bottom: 1px solid var(--browser-chrome-line); background: var(--browser-chrome-bg); color: var(--browser-chrome-ink); padding: .38rem .55rem; font-family: var(--browser-chrome-font); color-scheme: light; }
+  .sim-browser-back { position: relative; display: inline-flex; align-items: center; justify-content: center; gap: .36rem; min-width: 5.85rem; min-height: 2.16rem; border: 1px solid var(--browser-chrome-line); border-radius: 999px; background: linear-gradient(180deg, #fff, var(--browser-chrome-surface)); color: var(--browser-chrome-ink); padding: .22rem .62rem .22rem .22rem; font-family: var(--browser-chrome-font); font-size: .74rem; line-height: 1; font-weight: 800; box-shadow: 0 5px 12px rgba(29, 40, 49, .1), inset 0 1px 0 rgba(255, 255, 255, .9); cursor: pointer; transition: transform .14s ease, background .14s ease, border-color .14s ease, box-shadow .14s ease, color .14s ease; }
   .sim-browser-back::before { content: none; }
-  .sim-browser-back-icon { position: relative; display: grid; place-items: center; width: 1.58rem; height: 1.58rem; border-radius: 50%; background: var(--accent); color: #fff; box-shadow: 0 6px 12px color-mix(in srgb, var(--accent) 20%, transparent), inset 0 0 0 1px rgba(255, 255, 255, .24); flex: 0 0 auto; transform: translateX(0); }
+  .sim-browser-back-icon { position: relative; display: grid; place-items: center; width: 1.58rem; height: 1.58rem; border-radius: 50%; background: var(--browser-chrome-accent); color: #fff; box-shadow: 0 6px 12px rgba(50, 73, 87, .2), inset 0 0 0 1px rgba(255, 255, 255, .24); flex: 0 0 auto; transform: translateX(0); }
   .sim-browser-back-icon::before { content: ""; width: .58rem; height: .58rem; border-left: 3px solid currentColor; border-bottom: 3px solid currentColor; transform: translateX(.12rem) rotate(45deg); }
   .sim-browser-back-icon::after { content: ""; position: absolute; left: .49rem; top: 50%; width: .64rem; height: 3px; border-radius: 999px; background: currentColor; transform: translateY(-50%); }
   .sim-browser-back-label { color: currentColor; font-size: .82rem; letter-spacing: 0; text-transform: none; white-space: nowrap; }
   .sim-browser-back:hover,
-  .sim-browser-back:focus-visible { background: #fff; border-color: color-mix(in srgb, var(--accent) 58%, var(--line)); color: var(--accent); transform: translateY(-1px); box-shadow: 0 10px 20px color-mix(in srgb, var(--accent) 16%, transparent), 0 0 0 3px color-mix(in srgb, var(--accent-soft) 78%, transparent); outline: 0; }
+  .sim-browser-back:focus-visible { background: #fff; border-color: var(--browser-chrome-accent); color: var(--browser-chrome-accent); transform: translateY(-1px); box-shadow: 0 9px 18px rgba(50, 73, 87, .16), 0 0 0 3px var(--browser-chrome-accent-soft); outline: 0; }
   .sim-browser-back:not([disabled]) .sim-browser-back-icon { animation: browser-back-icon-nudge 3.2s ease-in-out infinite; }
   .sim-browser-back:hover .sim-browser-back-icon,
-  .sim-browser-back:focus-visible .sim-browser-back-icon { animation: none; background: var(--accent); box-shadow: 0 8px 16px color-mix(in srgb, var(--accent) 24%, transparent), inset 0 0 0 1px rgba(255, 255, 255, .28); transform: translateX(-1px); }
+  .sim-browser-back:focus-visible .sim-browser-back-icon { animation: none; background: var(--browser-chrome-accent); box-shadow: 0 8px 16px rgba(50, 73, 87, .24), inset 0 0 0 1px rgba(255, 255, 255, .28); transform: translateX(-1px); }
   .sim-live-preview .sim-browser-back[data-sim-tip]:not([disabled]) { cursor: pointer; }
-  .sim-browser-back[disabled] { background: color-mix(in srgb, var(--surface) 88%, #fff); border-color: color-mix(in srgb, var(--line-strong) 80%, var(--line)); color: var(--faint); box-shadow: inset 0 1px 0 rgba(255, 255, 255, .72); cursor: default; transform: none; animation: none; }
-  .sim-browser-back[disabled] .sim-browser-back-icon { background: color-mix(in srgb, var(--line) 72%, #fff); color: color-mix(in srgb, var(--faint) 88%, #fff); box-shadow: none; animation: none; }
-  .sim-url { min-width: 0; border: 1px solid var(--line); border-radius: 999px; background: var(--surface); color: var(--muted); padding: .25rem .52rem; font-family: var(--mono); font-size: .66rem; line-height: 1.05; font-weight: 800; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+  .sim-browser-back[disabled] { background: var(--browser-chrome-surface); border-color: var(--browser-chrome-line); color: var(--browser-chrome-faint); box-shadow: inset 0 1px 0 rgba(255, 255, 255, .8); cursor: default; transform: none; animation: none; }
+  .sim-browser-back[disabled] .sim-browser-back-icon { background: var(--browser-chrome-line); color: var(--browser-chrome-faint); box-shadow: none; animation: none; }
+  .sim-url { min-width: 0; border: 1px solid var(--browser-chrome-line); border-radius: 999px; background: var(--browser-chrome-surface); color: var(--browser-chrome-muted); padding: .25rem .52rem; font-family: var(--browser-chrome-mono); font-size: .66rem; line-height: 1.05; font-weight: 700; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; box-shadow: inset 0 1px 2px rgba(29, 40, 49, .05); }
   .sim-app-viewport { min-width: 0; min-height: 0; background: color-mix(in srgb, var(--surface) 92%, #fff); }
   .fake-topbar { display: flex; align-items: center; justify-content: space-between; gap: .8rem; min-width: 0; border-bottom: 1px solid var(--line); padding: .68rem .82rem; background: color-mix(in srgb, var(--bg) 82%, #fff); }
   .fake-brand { display: flex; align-items: center; gap: .55rem; min-width: 0; font-weight: 850; }
@@ -283,8 +302,8 @@
   .sim-live-preview button[data-sim-tip]:not([disabled]),
   .sim-live-preview a[data-sim-tip],
   .sim-live-preview [role="button"][data-sim-tip]:not([aria-disabled="true"]) { cursor: pointer; }
-  .sim-live-preview [data-sim-tip]:hover,
-  .sim-live-preview [data-sim-tip]:focus-visible { outline: 2px solid color-mix(in srgb, var(--accent) 34%, transparent); border-color: color-mix(in srgb, var(--accent) 54%, var(--line)); box-shadow: 0 0 0 4px color-mix(in srgb, var(--accent-soft) 72%, transparent), 0 10px 22px rgba(69, 48, 154, .12); }
+  .sim-app-viewport [data-sim-tip]:hover,
+  .sim-app-viewport [data-sim-tip]:focus-visible { outline: 2px solid color-mix(in srgb, var(--accent) 34%, transparent); border-color: color-mix(in srgb, var(--accent) 54%, var(--line)); box-shadow: 0 0 0 4px color-mix(in srgb, var(--accent-soft) 72%, transparent), 0 10px 22px rgba(69, 48, 154, .12); }
   .sim-app-viewport .app-seat[data-sim-tip]:hover,
   .sim-app-viewport .app-seat[data-sim-tip]:focus-visible { transform: scale(1.12); }
   .guided-target { position: relative; z-index: 2; isolation: isolate; overflow: hidden; cursor: pointer; outline: 0; border-color: color-mix(in srgb, var(--good) 74%, var(--line)) !important; box-shadow: 0 0 0 2px color-mix(in srgb, var(--good-soft) 64%, transparent), 0 12px 24px rgba(11, 153, 107, .13) !important; }
@@ -1465,7 +1484,7 @@
   .product-mode-panel[data-product-mode] .sim-step-guide,
   .product-mode-panel[data-product-mode] .stage-rail,
   .product-mode-panel[data-product-mode] .event-navigator-toggle,
-  .product-mode-panel[data-product-mode] .sim-live-preview {
+  .product-mode-panel[data-product-mode] .sim-app-viewport {
     --sans: var(--product-ui-font);
     font-family: var(--product-ui-font);
     font-kerning: normal;
@@ -1476,11 +1495,11 @@
   .product-mode-panel[data-product-mode="themis"] .sim-step-guide,
   .product-mode-panel[data-product-mode="themis"] .stage-rail,
   .product-mode-panel[data-product-mode="themis"] .event-navigator-toggle,
-  .product-mode-panel[data-product-mode="themis"] .sim-live-preview { font-optical-sizing: auto; }
+  .product-mode-panel[data-product-mode="themis"] .sim-app-viewport { font-optical-sizing: auto; }
 
   .product-mode-panel[data-product-mode="momo"] .run-control-panel,
   .product-mode-panel[data-product-mode="momo"] .sim-step-guide,
-  .product-mode-panel[data-product-mode="momo"] .sim-live-preview {
+  .product-mode-panel[data-product-mode="momo"] .sim-app-viewport {
     --bg: #f2e3cd;
     --surface: #fff7e8;
     --ink: #251f1a;
@@ -1503,8 +1522,7 @@
     --shadow: 0 4px 12px rgba(91, 57, 24, .08);
   }
   .product-mode-panel[data-product-mode="momo"] .run-control-panel,
-  .product-mode-panel[data-product-mode="momo"] .sim-step-guide,
-  .product-mode-panel[data-product-mode="momo"] .sim-live-preview {
+  .product-mode-panel[data-product-mode="momo"] .sim-step-guide {
     border-radius: 8px;
     border-color: color-mix(in srgb, var(--accent) 38%, var(--line));
   }
@@ -1514,7 +1532,7 @@
   }
   .product-mode-panel[data-product-mode="themis"] .run-control-panel,
   .product-mode-panel[data-product-mode="themis"] .sim-step-guide,
-  .product-mode-panel[data-product-mode="themis"] .sim-live-preview,
+  .product-mode-panel[data-product-mode="themis"] .sim-app-viewport,
   .product-mode-panel[data-product-mode="themis"] .simulator-island {
     --bg: #151a1d;
     --surface: #232a2e;
@@ -1538,8 +1556,7 @@
     --shadow: 0 4px 14px rgba(0, 0, 0, .22);
   }
   .product-mode-panel[data-product-mode="themis"] .run-control-panel,
-  .product-mode-panel[data-product-mode="themis"] .sim-step-guide,
-  .product-mode-panel[data-product-mode="themis"] .sim-live-preview {
+  .product-mode-panel[data-product-mode="themis"] .sim-step-guide {
     border-radius: 8px;
     border-color: color-mix(in srgb, var(--accent) 38%, var(--line));
   }
@@ -1553,11 +1570,6 @@
   ) { color: var(--accent-ink); }
   .product-mode-panel[data-product-mode="themis"] .action-target::before,
   .product-mode-panel[data-product-mode="themis"] .run-details summary::marker { color: var(--accent-ink); }
-  .product-mode-panel[data-product-mode="themis"] .sim-browser-back:focus-visible {
-    background: var(--surface);
-    color: var(--accent-ink);
-  }
-
   .product-mode-panel[data-product-mode] .sim-live-preview .app-tabs { gap: .58rem; }
   .product-mode-panel[data-product-mode] .sim-live-preview .app-tabs span { border: 0; border-bottom: 2px solid transparent; border-radius: 0; background: transparent; padding: .28rem .08rem; }
   .product-mode-panel[data-product-mode] .sim-live-preview .app-tabs span.on { border-bottom-color: var(--accent); background: transparent; color: var(--accent-ink); }
@@ -1583,12 +1595,12 @@
   .product-mode-panel[data-product-mode] .run-control-panel :where(*),
   .product-mode-panel[data-product-mode] .stage-rail :where(*),
   .product-mode-panel[data-product-mode] .product-demo .sim-step-guide :where(*),
-  .product-mode-panel[data-product-mode] .product-demo .sim-live-preview :where(*) {
+  .product-mode-panel[data-product-mode] .product-demo .sim-app-viewport :where(*) {
     letter-spacing: 0;
   }
   .product-mode-panel[data-product-mode] .run-control-panel :where(button),
   .product-mode-panel[data-product-mode] .product-demo .sim-step-guide :where(button),
-  .product-mode-panel[data-product-mode] .product-demo .sim-live-preview :where(button, input) {
+  .product-mode-panel[data-product-mode] .product-demo .sim-app-viewport :where(button, input) {
     font-family: inherit;
     font-synthesis: none;
   }
@@ -1693,7 +1705,6 @@
     font-weight: var(--product-weight-meta);
   }
   .product-mode-panel[data-product-mode] .product-demo .sim-live-preview :where(
-    .sim-browser-back, .sim-browser-back-label, .sim-url,
     .fake-status, .fake-flow-step span, .fake-field .h, .fake-actions button,
     .fake-explain-row, .fake-ticket span, .app-tabs span, .app-nav-chip,
     .app-status, .live-status, .app-choice, .app-token,
@@ -1798,7 +1809,7 @@
 
   /* Scan-first app hierarchy: neutral structure, semantic color, readable type. */
   .product-mode-panel[data-product-mode] .product-demo .sim-live-preview {
-    background: var(--bg);
+    background: var(--browser-chrome-bg);
   }
   .product-mode-panel[data-product-mode] .product-demo .sim-app-viewport,
   .product-mode-panel[data-product-mode] .product-demo .app-window,

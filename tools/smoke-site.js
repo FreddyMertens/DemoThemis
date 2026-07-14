@@ -525,7 +525,7 @@ function checkProductFontAssets(html, failures) {
   assert(/--product-text-caption:\s*\.75rem/i.test(html) && /--product-text-body:\s*\.875rem/i.test(html) && /--product-text-display:\s*1\.3rem/i.test(html) && /--product-text-figure:\s*1\.62rem/i.test(html), "product typography must use a readable shared semantic type scale", failures);
   assert(/--product-weight-control:\s*800/i.test(html) && /--product-weight-control:\s*650/i.test(html), "product typography must compensate weights per font family", failures);
   assert(/--product-leading-copy:\s*1\.4/i.test(html) && /--product-leading-copy:\s*1\.46/i.test(html), "product typography must compensate line spacing per font family", failures);
-  assert(/\.sim-live-preview\s+:where\(\*\)\s*\{\s*letter-spacing:\s*0/i.test(html), "product typography must remove font-dependent tracking", failures);
+  assert(/\.sim-app-viewport\s+:where\(\*\)\s*\{\s*letter-spacing:\s*0/i.test(html), "product typography must remove font-dependent tracking inside the app viewport", failures);
   const normalizationMarker = html.indexOf("/* Optical type normalization");
   assert(normalizationMarker >= 0, "product typography normalization block is missing", failures);
   if (normalizationMarker >= 0) {
@@ -535,6 +535,7 @@ function checkProductFontAssets(html, failures) {
     for (const match of sourceCss.matchAll(/([^{}@]+)\{([^{}]*)\}/g)) {
       const selector = match[1].trim().replace(/\s+/g, " ");
       if (/\.machine-/.test(selector)) continue;
+      if (/\.sim-(?:browser|url)/.test(selector)) continue;
       if (!/(?:product-demo|app-|live-|sim-|tutorial|stage-|run-progress|event-|fake-|intent-|odds-|wallet-|participant|message|leg-|team-|countdown|beacon-|face-|evidence-|proof-|checkout)/.test(selector)) continue;
       const sizeMatch = match[2].match(/font-size:\s*([0-9.]+)rem/);
       if (!sizeMatch || Number(sizeMatch[1]) >= 0.7 || /::(?:before|after)/.test(selector)) continue;
@@ -612,8 +613,16 @@ function checkBuiltHtml(failures) {
   assert(/\.product-mode-nav\.is-awaiting-selection\s+\.product-tab\s*\{[^}]*background:\s*var\(--choice-accent\)/i.test(runThrough), "initial product choices must use solid button backgrounds", failures);
   assert(/\.product-mode-nav\.is-awaiting-selection\s+\.product-tab:active/i.test(runThrough) && /\.product-mode-nav\.is-awaiting-selection\s+\.product-tab-event\s*\{\s*display:\s*inline-flex/i.test(runThrough), "initial product choices must keep pressed and start affordances at small widths", failures);
   assert(/function\s+selectProductMode\s*\(/.test(runThrough), "run-through product tabs are not wired to simulation state", failures);
-  assert(/\.product-mode-panel\[data-product-mode=["']momo["']\]\s+\.sim-live-preview/i.test(runThrough), "PredictionMoMo theme must be scoped to the app preview", failures);
-  assert(/\.product-mode-panel\[data-product-mode=["']themis["']\]\s+\.sim-live-preview/i.test(runThrough), "DemoThemis theme must be scoped to the app preview", failures);
+  assert(/\.product-mode-panel\[data-product-mode=["']momo["']\]\s+\.sim-app-viewport/i.test(runThrough), "PredictionMoMo typography must be scoped inside the app viewport", failures);
+  assert(/\.product-mode-panel\[data-product-mode=["']themis["']\]\s+\.sim-app-viewport/i.test(runThrough), "DemoThemis typography must be scoped inside the app viewport", failures);
+  assert(/\.sim-live-preview\s*\{[^}]*--browser-chrome-bg:\s*#e8edf1[^}]*--browser-chrome-surface:\s*#f9fbfc[^}]*--browser-chrome-accent:\s*#526b7a/is.test(runThrough), "run-through mock browsers must share one neutral chrome palette", failures);
+  assert(/\.sim-browser-bar\s*\{[^}]*background:\s*var\(--browser-chrome-bg\)[^}]*font-family:\s*var\(--browser-chrome-font\)/is.test(runThrough), "browser bar must use the shared chrome surface and typography", failures);
+  assert(/\.sim-url\s*\{[^}]*border:\s*1px solid var\(--browser-chrome-line\)[^}]*background:\s*var\(--browser-chrome-surface\)[^}]*color:\s*var\(--browser-chrome-muted\)/is.test(runThrough), "browser address field must stay product-neutral", failures);
+  assert(!/\.product-mode-panel\[data-product-mode=["'](?:momo|themis)["']\]\s+\.sim-browser-(?:bar|back)/i.test(runThrough), "product themes must not restyle the outer browser chrome", failures);
+  assert(!/\.product-mode-panel\[data-product-mode=["'](?:momo|themis)["']\]\s+\.sim-live-preview\s*(?:,|\{)/i.test(runThrough), "product palettes must stop at the app viewport instead of recoloring the browser frame", failures);
+  const browserChromeRules = Array.from(runThrough.matchAll(/([^{}]+)\{([^{}]*)\}/g)).filter((match) => /\.sim-(?:browser|url)/.test(match[1]));
+  const leakingBrowserRule = browserChromeRules.find((match) => /var\(--(?:bg|surface|ink|ink-soft|muted|faint|line|line-strong|accent|accent-soft|accent-ink)\)/.test(match[2]));
+  assert(!leakingBrowserRule, "browser chrome must not consume product palette variables", failures);
   assert(/data-product-mode=["']themis["'][^}]*color-scheme:\s*dark/i.test(runThrough), "DemoThemis event workflow must use dark native controls", failures);
   assert(/--bg:\s*#151a1d/i.test(runThrough) && /--surface:\s*#232a2e/i.test(runThrough) && /--ink:\s*#f6f2e8/i.test(runThrough), "DemoThemis dark surface palette is missing", failures);
   assert(/--accent:\s*#3e7fa8/i.test(runThrough) && /--accent-ink:\s*#c3e7ff/i.test(runThrough), "DemoThemis must separate filled and text accent contrast", failures);
