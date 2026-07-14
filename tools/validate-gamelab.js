@@ -42,6 +42,12 @@ function extractPresetObject(source) {
   return Function(`"use strict"; return (${match[1]});`)();
 }
 
+function extractVisiblePresetNames(source) {
+  return [...source.matchAll(/<button\b[^>]*\bdata-preset="([^"]+)"[^>]*>/g)]
+    .filter((match) => /\bclass="[^"]*\bpreset\b[^"]*"/.test(match[0]))
+    .map((match) => match[1]);
+}
+
 function extractAssumptionList(source) {
   const match = source.match(/var ASSUMPTIONS = (\[[\s\S]*?\n\]);/);
   if (!match) {
@@ -59,9 +65,27 @@ function loadLabModel(htmlSource, assumptionsSource) {
     return null;
   }
 
+  const startupAnchor = "\n  renderAssumptions();\n  initTabs();";
   const patched = labScript.replace(
-    /renderAssumptions\(\);[\s\S]*?setPreset\("base"\);\s*syncAttackSelection\(\);[\s\S]*?\}\)\(\);\s*$/,
-    "globalThis.__lab = { PRESET_CASES, stateFromPreset, clampModelState, compute, modelState, runStress, attackNarrative, riskText, attackLabel };\n})();"
+    startupAnchor,
+    `
+  globalThis.__lab = {
+    PRESET_CASES,
+    STRESS_CASES,
+    PROTECTION_BENCHMARKS,
+    STRONG_BENCHMARK_RATIO,
+    stateFromPreset,
+    clampModelState,
+    compute,
+    modelState,
+    runStress,
+    stressState,
+    attackNarrative,
+    attackLabel,
+    benchmarkPressure,
+    panelFor
+  };
+  return;${startupAnchor}`
   );
 
   if (patched === labScript) {
@@ -106,22 +130,31 @@ function outputVector(model) {
   Object.entries(model.clears || {}).forEach(([key, value]) => {
     out[`clear.${key}`] = value ? 1 : 0;
   });
+  Object.entries(model.benchmarks || {}).forEach(([key, check]) => {
+    ["ratio", "actual", "margin", "cost", "benefit"].forEach((field) => {
+      const value = check[field];
+      if (typeof value === "number" && Number.isFinite(value)) {
+        out[`benchmark.${key}.${field}`] = value;
+      }
+    });
+    out[`benchmark.${key}.applicable`] = check.applicable ? 1 : 0;
+  });
   return out;
 }
 
 const assumptionAffectFields = {
-  reserve: ["reserve", "reserveVotes", "reserveBurden", "lazyLoss", "bribeCost", "retentionIncome"],
-  lazy: ["lazyIncome", "lazyLoss", "lazyMargin", "risk.lazy", "clear.lazy", "safety"],
+  reserve: ["reserve", "reserveUnit", "reservePerPricedVote", "reserveVotes", "reserveBurden", "lazyLoss", "bribeCost", "retentionIncome"],
+  lazy: ["lazyIncome", "lazyLoss", "lazyMargin", "lazyRatio", "benchmark.lazy.ratio", "risk.lazy", "clear.lazy"],
   supply: ["effectiveJurors", "drawJurors", "supplyLoss", "retention", "reserveRetention"],
-  bribe: ["bribeCost", "bribeClears", "risk.bribe", "clear.bribe", "clearSeverity", "clearCap", "safety"],
-  rental: ["rentedPass", "risk.rental", "clear.rental", "safety"],
-  capture: ["capture", "baseCapture", "attemptedCapture", "risk.capture", "clear.capture", "drawJurors", "effectiveBloc", "intendedBloc", "coordinatedReady", "rentedPass", "share", "appealFloor"],
-  panel: ["panel", "parallelPanels", "honestPanel", "effectiveSkill", "drawJurors", "risk.capture", "capture"],
-  drift: ["keys", "keyScale", "keySignal", "effectiveSkill", "risk.drift", "clear.drift", "safety"],
-  keys: ["keys", "consentedTests", "keySignal", "risk.drift"],
-  appeal: ["appealFloor", "clear.grief", "risk.grief", "safety"],
-  grief: ["griefBenefit", "appealFloor", "clear.grief", "risk.grief", "safety"],
-  safety: ["safety", "clearCap", "clearSeverity"]
+  bribe: ["bribeCost", "bribeBenefit", "bribeMargin", "bribeRatio", "bribeClears", "benchmark.bribe.ratio", "risk.bribe", "clear.bribe"],
+  rental: ["rentedPass", "rentalSeats", "baseRentalCapture", "attemptedRentalCapture", "rentalCapture", "benchmark.rental.ratio", "risk.rental", "clear.rental"],
+  capture: ["capture", "baseCapture", "attemptedCapture", "benchmark.capture.ratio", "risk.capture", "clear.capture", "drawJurors", "effectiveBloc", "intendedBloc", "coordinatedReady", "rentedPass", "share", "appealFloor"],
+  panel: ["panel", "parallelPanels", "correctPanel", "honestPanel", "effectiveSkill", "drawJurors", "risk.capture", "capture"],
+  drift: ["keys", "testSeats", "keyScale", "keySignal", "driftRatio", "benchmark.drift.ratio", "effectiveSkill", "risk.drift", "clear.drift"],
+  keys: ["keys", "testSeats", "consentedTestCases", "consentedTestSeats", "keySignal", "risk.drift"],
+  appeal: ["appealFloor", "panelFloor", "captureFloor", "delayFloor", "griefRatio", "benchmark.grief.ratio", "clear.grief", "risk.grief"],
+  grief: ["griefBenefit", "griefMargin", "griefRatio", "appealFloor", "benchmark.grief.ratio", "clear.grief", "risk.grief"],
+  safety: ["safety"]
 };
 
 function fieldChanged(before, after, field) {
@@ -209,6 +242,13 @@ function buildSensitivityContexts(labModel) {
     noKeys: fromPreset("drift", (state) => {
       state.syntheticTests = 0;
       state.flow = 10000;
+    }),
+    keyScaleFloor: fromPreset("base", (state) => {
+      state.flow = 10000;
+      state.stake = 100;
+      state.jurors = 100;
+      state.syntheticTests = 0;
+      state.assumptions.keyJurorShare = 0.1;
     })
   };
 }
@@ -228,8 +268,163 @@ function validateAssumptionEffects(labModel) {
   });
 }
 
+function stateFor(labModel, name, mutate) {
+  const state = cloneState(labModel.stateFromPreset(name));
+  if (mutate) mutate(state);
+  return labModel.clampModelState(state);
+}
+
+function finiteOrInfinity(value) {
+  return Number.isFinite(value) || value === Infinity;
+}
+
+function assertStrongBenchmark(model, key, label, strongRatio) {
+  const check = model.benchmarks && model.benchmarks[key];
+  if (!check) {
+    fail(`${label} is missing benchmark "${key}"`);
+    return;
+  }
+  if (!check.applicable) {
+    fail(`${label} unexpectedly marks benchmark "${key}" as not applicable`);
+    return;
+  }
+  if (!finiteOrInfinity(check.ratio) || check.ratio < strongRatio) {
+    fail(`${label} does not hold "${key}" with a strong margin (ratio ${check.ratio})`);
+  }
+}
+
+function validateProtectionCrossings(labModel) {
+  const strongRatio = labModel.STRONG_BENCHMARK_RATIO;
+  const controls = [
+    {
+      label: "one public draw",
+      key: "capture",
+      preset: "base",
+      prepare(state) { state.bloc = 1000; },
+      remove(state) { state.lockDraw = false; state.rerolls = 100; }
+    },
+    {
+      label: "ballot privacy",
+      key: "bribe",
+      preset: "base",
+      remove(state) { state.lockBallot = false; }
+    },
+    {
+      label: "live face checks",
+      key: "rental",
+      preset: "base",
+      prepare(state) { state.rented = 1000; },
+      remove(state) { state.lockFace = false; }
+    },
+    {
+      label: "pending-pay risk",
+      key: "lazy",
+      preset: "base",
+      remove(state) { state.lockReserve = false; }
+    },
+    {
+      label: "aptitude tests",
+      key: "drift",
+      preset: "base",
+      remove(state) { state.lockKeys = false; state.syntheticTests = 0; }
+    },
+    {
+      label: "appeal pricing",
+      key: "grief",
+      preset: "base",
+      remove(state) { state.lockAppeal = false; }
+    }
+  ];
+
+  controls.forEach((control) => {
+    const protectedState = stateFor(labModel, control.preset, control.prepare);
+    const protectedModel = labModel.compute(protectedState);
+    assertStrongBenchmark(protectedModel, control.key, `Protected control for ${control.label}`, strongRatio);
+
+    const removedState = cloneState(protectedState);
+    control.remove(removedState);
+    const removedModel = labModel.compute(labModel.clampModelState(removedState));
+    const removedCheck = removedModel.benchmarks && removedModel.benchmarks[control.key];
+    if (!removedCheck || !removedCheck.applicable || !finiteOrInfinity(removedCheck.ratio) || removedCheck.ratio >= 1) {
+      fail(`Removing ${control.label} does not cross the ${control.key} danger line (ratio ${removedCheck && removedCheck.ratio})`);
+    }
+  });
+}
+
+function validatePanelShortage(labModel) {
+  const state = stateFor(labModel, "whale", (candidate) => {
+    candidate.jurors = 100;
+    candidate.assumptions.drawPoolShare = 0.2;
+    candidate.assumptions.seniorPoolShare = 0.15;
+  });
+  const model = labModel.compute(state);
+  if (!model.panelShortage) fail("Panel-shortage test did not create a panel shortage");
+  ["baseCapture", "attemptedCapture", "capture", "baseRentalCapture", "attemptedRentalCapture", "rentalCapture", "correctPanel"].forEach((field) => {
+    if (model[field] !== null) fail(`Panel shortage must return null for ${field}, received ${model[field]}`);
+  });
+  if (labModel.modelState(state, model).state !== "bad") {
+    fail("Panel shortage must put the model outside its operating range");
+  }
+}
+
+function validateMonotonicity(labModel) {
+  const tolerance = 1e-12;
+  function noDecrease(label, low, high) {
+    if (low === null || high === null || !finiteOrInfinity(low) || !finiteOrInfinity(high) || high + tolerance < low) {
+      fail(`${label} must not decrease (${low} -> ${high})`);
+    }
+  }
+  function noIncrease(label, low, high) {
+    if (low === null || high === null || !finiteOrInfinity(low) || !finiteOrInfinity(high) || high > low + tolerance) {
+      fail(`${label} must not increase (${low} -> ${high})`);
+    }
+  }
+
+  const coalitionLow = labModel.compute(stateFor(labModel, "base", (state) => { state.bloc = 300; }));
+  const coalitionHigh = labModel.compute(stateFor(labModel, "base", (state) => { state.bloc = 1000; }));
+  noDecrease("Coalition-majority chance as recruited attackers rise", coalitionLow.capture, coalitionHigh.capture);
+
+  const retryLow = labModel.compute(stateFor(labModel, "base", (state) => { state.lockDraw = false; state.rerolls = 2; state.bloc = 1000; }));
+  const retryHigh = labModel.compute(stateFor(labModel, "base", (state) => { state.lockDraw = false; state.rerolls = 100; state.bloc = 1000; }));
+  noDecrease("Coalition-majority chance as draw retries rise", retryLow.capture, retryHigh.capture);
+
+  const rentalLow = labModel.compute(stateFor(labModel, "base", (state) => { state.lockFace = false; state.rented = 100; }));
+  const rentalHigh = labModel.compute(stateFor(labModel, "base", (state) => { state.lockFace = false; state.rented = 1000; }));
+  noDecrease("Rental-majority chance as unchecked rentals rise", rentalLow.rentalCapture, rentalHigh.rentalCapture);
+
+  const testsLow = labModel.compute(stateFor(labModel, "base", (state) => { state.syntheticTests = 0; }));
+  const testsHigh = labModel.compute(stateFor(labModel, "base", (state) => { state.syntheticTests = 10000; }));
+  noDecrease("Independent-test signal as graded seats rise", testsLow.keySignal, testsHigh.keySignal);
+
+  const skillLow = labModel.compute(stateFor(labModel, "base", (state) => { state.skill = 0.52; }));
+  const skillHigh = labModel.compute(stateFor(labModel, "base", (state) => { state.skill = 0.88; }));
+  noDecrease("Correct-majority chance as individual accuracy rises", skillLow.correctPanel, skillHigh.correctPanel);
+  const lowQualityState = stateFor(labModel, "base", (state) => { state.skill = 0.52; });
+  if (labModel.modelState(lowQualityState, skillLow).state !== "bad") {
+    fail("A correct-majority estimate below the operating floor must prevent an overall robust verdict");
+  }
+  const highQualityState = stateFor(labModel, "base", (state) => { state.skill = 0.88; });
+  if (labModel.modelState(highQualityState, skillHigh).state !== "good") {
+    fail("A high-quality panel with strong attack benchmarks should receive a strong verdict");
+  }
+
+  const reserveLow = labModel.compute(stateFor(labModel, "base", (state) => { state.assumptions.reservePayMultiple = 3; }));
+  const reserveHigh = labModel.compute(stateFor(labModel, "base", (state) => { state.assumptions.reservePayMultiple = 9; }));
+  noDecrease("Lazy-vote coverage as pending-pay exposure rises", reserveLow.lazyRatio, reserveHigh.lazyRatio);
+  noDecrease("Bribe coverage as pending-pay exposure rises", reserveLow.bribeRatio, reserveHigh.bribeRatio);
+
+  const appealLow = labModel.compute(stateFor(labModel, "base", (state) => { state.assumptions.appealDelayRate = 0.004; }));
+  const appealHigh = labModel.compute(stateFor(labModel, "base", (state) => { state.assumptions.appealDelayRate = 0.016; }));
+  noDecrease("Appeal-delay coverage as appeal pricing rises", appealLow.griefRatio, appealHigh.griefRatio);
+
+  const privateModel = labModel.compute(stateFor(labModel, "base", (state) => { state.lockBallot = true; }));
+  const publicModel = labModel.compute(stateFor(labModel, "base", (state) => { state.lockBallot = false; }));
+  noIncrease("Receipt-enforceable bribe benefit with ballot privacy enabled", publicModel.bribeBenefit, privateModel.bribeBenefit);
+}
+
 const ranges = extractRangeInputs(html);
 const presets = extractPresetObject(html);
+const visiblePresetNames = extractVisiblePresetNames(html);
 const assumptionList = extractAssumptionList(assumptions);
 const defaultAssumptions = Object.fromEntries(assumptionList.map((item) => [item.id, item.default]));
 const requiredIds = [
@@ -255,25 +450,13 @@ requiredIds.forEach((id) => {
 });
 
 attackIds.forEach((id) => {
-  ["Chip", "Why", "Break", "Margin", "Explain"].forEach((suffix) => {
+  ["Chip", "Why", "Break", "Margin"].forEach((suffix) => {
     if (!html.includes(`id="${id}${suffix}"`)) fail(`Missing attack card field: #${id}${suffix}`);
   });
   if (html.includes(`id="${id}Txt"`)) fail(`Stale attack paragraph remains: #${id}Txt`);
 });
 
-[
-  "STRESS_CASES",
-  "Move sliders or turn off locks to make a scenario fail",
-  "Current setup",
-  "Cold start",
-  "Case surge",
-  "Huge case",
-  "Coordinated attack",
-  "Crowd-following",
-  "Delay attack"
-].forEach((term) => {
-  if (!html.includes(term)) fail(`Missing stress-check term: ${term}`);
-});
+if (!html.includes("var STRESS_CASES")) fail("Missing fixed STRESS_CASES definitions");
 
 if (html.includes('data-preset="broken"')) {
   fail('Broken-locks failure demo must not appear as a normal Try preset');
@@ -335,25 +518,64 @@ Object.entries(presets).forEach(([name, preset]) => {
 const labModel = loadLabModel(html, assumptions);
 if (labModel) {
   validateAssumptionEffects(labModel);
-  Object.keys(presets).forEach((name) => {
+
+  const presetNames = Object.keys(presets);
+  const expectedPresets = ["base", "cold", "surge", "whale", "bloc", "drift"];
+  if (presetNames.length !== expectedPresets.length || expectedPresets.some((name) => !presetNames.includes(name))) {
+    fail(`PRESET_CASES must be exactly: ${expectedPresets.join(", ")}`);
+  }
+  if (visiblePresetNames.length !== expectedPresets.length || expectedPresets.some((name) => !visiblePresetNames.includes(name))) {
+    fail(`Visible preset buttons must be exactly: ${expectedPresets.join(", ")}`);
+  }
+  presetNames.forEach((name) => {
     const state = labModel.clampModelState(labModel.stateFromPreset(name));
     const model = labModel.compute(state);
-    const verdict = labModel.modelState(model);
-    if (verdict.cleared.length) {
-      fail(`Preset "${name}" allows attacks to clear: ${verdict.cleared.map(labModel.attackLabel).join(", ")}`);
+    const verdict = labModel.modelState(state, model);
+    if (verdict.state !== "good") {
+      fail(`Visible preset "${name}" must be strong, received ${verdict.state} at ${verdict.top.ratio}x on ${verdict.top.key}`);
     }
-    attackIds.forEach((id) => {
-      const narrative = labModel.attackNarrative(state, model, id);
-      if (narrative.clears || narrative.risk > 0.35) {
-        fail(`Preset "${name}" does not beat ${id}: ${narrative.clears ? "clears" : "watch"} at ${labModel.riskText(narrative.risk)}`);
+    if (verdict.teaching) fail(`Visible preset "${name}" unexpectedly disables a required protection`);
+    if (model.panelShortage || model.appealPanelShortage) {
+      fail(`Visible preset "${name}" cannot form ${model.panelShortage ? "its current" : "its appeal"} panel`);
+    }
+    Object.entries(model.benchmarks).forEach(([key, check]) => {
+      if (check.applicable && (!finiteOrInfinity(check.ratio) || check.ratio < labModel.STRONG_BENCHMARK_RATIO)) {
+        fail(`Visible preset "${name}" lacks a strong ${key} margin (ratio ${check.ratio})`);
       }
     });
-    const stress = labModel.runStress(state);
-    if (stress.broken) {
-      fail(`Preset "${name}" fails ${stress.broken} scenario check${stress.broken === 1 ? "" : "s"}`);
+    attackIds.forEach((id) => {
+      const narrative = labModel.attackNarrative(state, model, id);
+      if (!narrative || !narrative.check) fail(`Visible preset "${name}" has no benchmark narrative for ${id}`);
+    });
+  });
+
+  const stress = labModel.runStress();
+  const expectedStressIds = ["cold", "surge", "whale", "bloc", "drift", "appeal"];
+  const stressIds = stress.rows.map((row) => row.config.id);
+  if (stress.rows.length !== expectedStressIds.length || expectedStressIds.some((id) => !stressIds.includes(id))) {
+    fail(`Fixed stress cases must be exactly: ${expectedStressIds.join(", ")}`);
+  }
+  stress.rows.forEach((row) => {
+    if (row.state.state !== "good") {
+      fail(`Fixed stress case "${row.config.id}" must be strong, received ${row.state.state} at ${row.state.top.ratio}x on ${row.state.top.key}`);
     }
-    if (stress.watch) {
-      fail(`Preset "${name}" puts ${stress.watch} scenario check${stress.watch === 1 ? "" : "s"} on watch`);
+    Object.entries(row.model.benchmarks).forEach(([key, check]) => {
+      if (check.applicable && (!finiteOrInfinity(check.ratio) || check.ratio < labModel.STRONG_BENCHMARK_RATIO)) {
+        fail(`Fixed stress case "${row.config.id}" lacks a strong ${key} margin (ratio ${check.ratio})`);
+      }
+    });
+  });
+  if (stress.broken || stress.watch || stress.held !== 6) {
+    fail(`Fixed stress summary must report 6/6 strong; received held=${stress.held}, watch=${stress.watch}, broken=${stress.broken}`);
+  }
+
+  validateProtectionCrossings(labModel);
+  validatePanelShortage(labModel);
+  validateMonotonicity(labModel);
+
+  Object.entries(labModel.PROTECTION_BENCHMARKS).forEach(([key, definition]) => {
+    if (!definition.label || !["max", "cover", "min"].includes(definition.kind)) {
+      fail(`Protection benchmark "${key}" needs a supported kind and readable label`);
     }
   });
 }

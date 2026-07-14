@@ -3,14 +3,14 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Break the court: playable attack model for DemoThemis</title>
-<meta name="description" content="Break the court is an interactive DemoThemis lab showing how case volume, juror supply, juror pay, money at risk, jury size, appeal costs, aptitude tests, and attacks shape court safety.">
+<title>Break the court — robustness game for DemoThemis</title>
+<meta name="description" content="Test practical attacks against a scaled DemoThemis court and see the defence, danger line, and safety margin that keep each shortcut uneconomic.">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@500;700&family=Newsreader:opsz,wght@6..72,200..700&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=JetBrains+Mono:wght@500;700&family=Newsreader:opsz,wght@6..72,200..700&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="assets/styles.css">
 <style>
-  body { --maxw: 54rem; --half-maxw: 27rem; }
+  body { --maxw: 54rem; --half-maxw: 27rem; --good: #087354; --bad: #a33b2b; --faint: #6b7280; }
   .lab-hero { max-width: 60rem; }
   .lab-hero .dek { max-width: 44rem; }
   .lab-grid { display: grid; grid-template-columns: minmax(15rem, .9fr) minmax(0, 1.35fr); gap: 1rem; align-items: start; }
@@ -27,16 +27,13 @@
     .lab-hero .dek { max-width: 52rem; }
     .lab-grid { grid-template-columns: minmax(18rem, .65fr) minmax(0, 1.4fr) minmax(29rem, 1.15fr); gap: 1.25rem; }
     .attack-rail { grid-column: auto; }
-    .lab-grid > .panel-card { position: sticky; top: 5.5rem; max-height: calc(100vh - 7rem); overflow-y: auto; }
+    .lab-grid > .panel-card { position: sticky; top: 5.5rem; }
     .map { grid-template-columns: repeat(2, minmax(0, 1fr)); }
     .attack-grid { grid-template-columns: 1fr; }
     .matrix { grid-template-columns: repeat(5, minmax(0, 1fr)); }
     .story { grid-template-columns: repeat(4, 1fr); }
     .insight-grid { grid-template-columns: 1fr 1fr; }
     .dependency-grid { grid-template-columns: repeat(3, minmax(0, 1fr)); }
-  }
-  @media (min-width: 1500px) {
-    .attack-grid { grid-template-columns: repeat(2, minmax(14rem, 1fr)); }
   }
   .panel-card { background: var(--surface); border: 1px solid var(--line-strong); border-radius: var(--radius); box-shadow: var(--shadow); padding: 1rem; }
   .dial-group { margin-bottom: 1rem; border-bottom: 1px solid var(--line); padding-bottom: .8rem; }
@@ -45,39 +42,38 @@
   .dial { margin: .55rem 0; }
   .dial label { display: flex; justify-content: space-between; gap: .8rem; align-items: baseline; font-family: var(--sans); font-size: .82rem; color: var(--muted); }
   .dial .label-text { min-width: 0; display: inline-flex; align-items: center; gap: .2rem; overflow-wrap: anywhere; }
-  .dial label b { color: var(--ink); font-variant-numeric: tabular-nums; white-space: nowrap; }
+  .dial label b, .dial label output { color: var(--ink); font-weight: 800; font-variant-numeric: tabular-nums; white-space: nowrap; }
+  .dial.disabled { opacity: .48; }
+  .dial.disabled input { cursor: not-allowed; }
   .locks { display: grid; grid-template-columns: 1fr; gap: .45rem; }
   .lock { display: flex; gap: .55rem; align-items: flex-start; font-family: var(--sans); font-size: .82rem; color: var(--muted); line-height: 1.35; background: var(--bg); border: 1px solid var(--line); border-radius: 10px; padding: .55rem .65rem; }
   .lock input { margin-top: .18rem; }
   .lock b { display: block; color: var(--ink); }
-  .preset-row { display: flex; flex-wrap: wrap; gap: .45rem; margin-top: .75rem; }
-  .preset { border: 1px solid var(--line-strong); background: var(--surface); border-radius: 999px; padding: .35rem .65rem; font-family: var(--sans); font-weight: 700; font-size: .72rem; color: var(--muted); cursor: pointer; }
+  .preset { min-height: 2.5rem; border: 1px solid var(--line-strong); background: var(--surface); border-radius: 999px; padding: .45rem .75rem; font-family: var(--sans); font-weight: 700; font-size: .8rem; color: var(--muted); cursor: pointer; }
   .preset:hover { background: var(--accent-soft); color: var(--accent-ink); }
   .preset.active { background: var(--accent-soft); color: var(--accent-ink); border-color: color-mix(in srgb, var(--accent) 35%, var(--line-strong)); }
-  .preset-note { font-family: var(--sans); font-size: .72rem; color: var(--faint); }
+  .preset-note { flex-basis: 100%; font-family: var(--sans); font-size: .78rem; color: var(--muted); }
   .scoreboard { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: .65rem; margin-bottom: 1rem; }
   @media (max-width: 760px) { .scoreboard { grid-template-columns: repeat(2, minmax(0, 1fr)); } }
-  @media (max-width: 480px) { .scoreboard { grid-template-columns: 1fr; } }
   .score { background: var(--surface); border: 1px solid var(--line-strong); border-radius: 14px; padding: .85rem .9rem; box-shadow: var(--shadow); }
-  .score .k { font-family: var(--sans); font-size: .68rem; letter-spacing: .08em; text-transform: uppercase; color: var(--faint); }
+  .score .k { font-family: var(--sans); font-size: .76rem; letter-spacing: .06em; text-transform: uppercase; color: var(--muted); }
   .score .v { font-family: var(--sans); font-weight: 800; font-size: clamp(1.25rem, 3vw, 1.8rem); line-height: 1.05; font-variant-numeric: tabular-nums; margin-top: .2rem; }
-  .score small { display: block; font-family: var(--sans); color: var(--muted); font-size: .74rem; line-height: 1.35; margin-top: .3rem; }
+  .score small { display: block; font-family: var(--sans); color: var(--muted); font-size: .8rem; line-height: 1.35; margin-top: .3rem; }
   .score.good .v { color: var(--good); }
   .score.mid .v { color: #9b650f; }
   .score.bad .v { color: var(--bad); }
   .board { background: var(--surface); border: 1px solid var(--line-strong); border-radius: var(--radius); box-shadow: var(--shadow-lg); padding: 1rem; }
   .board-head { display: flex; justify-content: space-between; gap: 1rem; flex-wrap: wrap; align-items: center; margin-bottom: .8rem; }
   .board-head h3 { font-family: var(--sans); font-size: .86rem; letter-spacing: .09em; text-transform: uppercase; color: var(--accent); margin: 0; }
-  .chip { font-family: var(--sans); font-size: .68rem; font-weight: 800; letter-spacing: .06em; text-transform: uppercase; border-radius: 999px; padding: .18rem .5rem; white-space: nowrap; }
+  .chip { font-family: var(--sans); font-size: .74rem; font-weight: 800; letter-spacing: .05em; text-transform: uppercase; border-radius: 999px; padding: .25rem .55rem; white-space: nowrap; }
   .chip.good { color: var(--good); background: var(--good-soft); }
   .chip.mid { color: #8a5600; background: #f9ead3; }
   .chip.bad { color: var(--bad); background: var(--bad-soft); }
   .map { display: grid; grid-template-columns: repeat(auto-fit, minmax(min(100%, 12rem), 1fr)); gap: .65rem; }
   @media (max-width: 720px) { .map { grid-template-columns: 1fr; } }
-  .node { position: relative; min-height: 8.2rem; background: var(--bg); border: 1px solid var(--line); border-radius: 14px; padding: .85rem; overflow: hidden; }
+  .node { position: relative; min-height: 6.4rem; background: var(--bg); border: 1px solid var(--line); border-radius: 14px; padding: .85rem; overflow: hidden; }
   .node::before { content: attr(data-n); position: absolute; right: .7rem; top: .45rem; font-family: var(--mono); font-size: .68rem; font-weight: 800; color: color-mix(in srgb, var(--accent) 40%, transparent); }
   .node h4 { margin: 0 3.2rem .35rem 0; display: block; white-space: normal; font-family: var(--sans); font-size: .88rem; line-height: 1.25; }
-  .node .info-icon { position: absolute; right: 1.7rem; top: .25rem; margin: 0; padding: .25rem; }
   .node p { margin: 0; font-family: var(--sans); font-size: .78rem; line-height: 1.4; color: var(--muted); }
   .node-val { margin-top: .8rem; font-family: var(--mono); font-size: 1.25rem; font-weight: 800; color: var(--accent-ink); letter-spacing: -.03em; line-height: 1; display: flex; align-items: baseline; flex-wrap: wrap; gap: .25rem; }
   .node-val small { font-family: var(--sans); font-size: .75rem; font-weight: 700; color: var(--ink); letter-spacing: 0; text-transform: uppercase; }
@@ -88,27 +84,25 @@
   .node.mid { border-color: #e4bd7c; }
   .attack-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(min(100%, 16.5rem), 1fr)); gap: .75rem; margin-top: 1rem; align-items: start; }
   @media (max-width: 720px) { .attack-grid { grid-template-columns: 1fr; } }
-  .attack { align-self: start; border: 1px solid var(--line); border-radius: 14px; padding: .9rem; background: var(--surface); box-shadow: var(--shadow); font-family: var(--sans); cursor: pointer; transition: transform .14s ease, box-shadow .14s ease, border-color .14s ease; }
+  .attack { align-self: start; border: 1px solid var(--line); border-radius: 14px; background: var(--surface); box-shadow: var(--shadow); font-family: var(--sans); transition: transform .14s ease, box-shadow .14s ease, border-color .14s ease; overflow: clip; }
   .attack:hover { transform: translateY(-2px); box-shadow: var(--shadow-lg); }
-  .attack.active { border-color: var(--accent); background: color-mix(in srgb, var(--accent-soft) 55%, var(--surface)); }
-  .attack:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
-  .attack-top { display: flex; justify-content: space-between; gap: .6rem; align-items: start; margin-bottom: .35rem; flex-wrap: wrap; }
+  .attack[open] { border-color: var(--accent); background: color-mix(in srgb, var(--accent-soft) 45%, var(--surface)); }
+  .attack.good { box-shadow: inset 3px 0 0 color-mix(in srgb, var(--good) 70%, transparent), var(--shadow); }
+  .attack.mid { box-shadow: inset 3px 0 0 #d6a14a, var(--shadow); }
+  .attack.bad { box-shadow: inset 3px 0 0 color-mix(in srgb, var(--bad) 75%, transparent), var(--shadow); }
+  .attack > summary:focus-visible { outline: 2px solid var(--accent); outline-offset: -2px; }
+  .attack > summary { min-height: 3.25rem; cursor: pointer; list-style: none; display: grid; grid-template-columns: minmax(0, 1fr) auto auto; gap: .55rem; align-items: center; padding: .8rem .9rem; }
+  .attack > summary::-webkit-details-marker { display: none; }
+  .attack > summary::after { content: "+"; grid-column: 3; grid-row: 1; justify-self: end; color: var(--accent-ink); font-size: 1.15rem; font-weight: 800; line-height: 1; }
+  .attack[open] > summary::after { content: "\2212"; }
+  .attack-summary-copy { min-width: 0; }
+  .attack-summary-copy h4 { margin: 0; font-size: .98rem; line-height: 1.25; }
+  .attack-summary-copy small { display: block; margin-top: .2rem; color: var(--accent-ink); font-size: .78rem; font-weight: 700; line-height: 1.35; }
+  .attack > summary .chip { grid-column: 2; grid-row: 1; }
   .attack h4 { margin: 0; font-size: .98rem; line-height: 1.2; display: flex; align-items: center; gap: .35rem; }
   .attack p { margin: 0; font-size: .82rem; line-height: 1.45; color: var(--muted); }
-  .attack-explain { display: none; margin-top: .8rem; padding-top: .8rem; border-top: 1px solid var(--line); font-size: .85rem; color: var(--ink-soft); line-height: 1.5; }
-  .attack.active .attack-explain { display: block; }
-  .matrix { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: .65rem; margin: 1rem 0; }
-  @media (max-width: 820px) { .matrix { grid-template-columns: repeat(2, minmax(0, 1fr)); } }
-  @media (max-width: 520px) { .matrix { grid-template-columns: 1fr; } }
-  .var-card { background: var(--surface); border: 1px solid var(--line); border-radius: 13px; padding: .85rem; box-shadow: var(--shadow); font-family: var(--sans); }
-  .var-card h3 { margin: 0 0 .3rem; font-size: .92rem; }
-  .var-card p { margin: 0; color: var(--muted); font-size: .8rem; line-height: 1.45; }
+  .attack-body { border-top: 1px solid var(--line); padding: .8rem .9rem .9rem; }
   .formula { font-family: var(--mono); font-size: .82rem; background: var(--bg); border: 1px solid var(--line); border-radius: 10px; padding: .65rem .75rem; color: var(--ink-soft); overflow-x: auto; }
-  .rank-list { display: grid; gap: .55rem; margin-top: .7rem; }
-  .rank { display: grid; grid-template-columns: 8rem 1fr 4.5rem; gap: .6rem; align-items: center; font-family: var(--sans); font-size: .82rem; }
-  .rank .track { height: 9px; border-radius: 999px; background: var(--line); overflow: hidden; }
-  .rank .track span { display: block; height: 100%; width: 0; background: linear-gradient(90deg, var(--accent), var(--accent-ink)); }
-  .rank b { text-align: right; font-variant-numeric: tabular-nums; }
   .story { display: grid; grid-template-columns: 1fr 1fr; gap: 1rem; }
   @media (max-width: 720px) { .story { grid-template-columns: 1fr; } }
   .story-card { border: 1px solid var(--line); border-radius: 14px; background: var(--surface); box-shadow: var(--shadow); padding: 1rem; }
@@ -117,7 +111,13 @@
   .assumption-drawer { margin-top: 1rem; border: 1px solid var(--line-strong); border-radius: 14px; background: var(--bg); box-shadow: var(--shadow); font-family: var(--sans); }
   .assumption-drawer summary { cursor: pointer; list-style: none; display: flex; justify-content: space-between; gap: .8rem; align-items: center; padding: .85rem .9rem; font-size: .82rem; font-weight: 800; letter-spacing: .06em; text-transform: uppercase; color: var(--accent-ink); }
   .assumption-drawer summary::-webkit-details-marker { display: none; }
+  .assumption-drawer > summary:focus-visible, .fine-controls > summary:focus-visible, .stress-row > summary:focus-visible { outline: 2px solid var(--accent); outline-offset: -2px; border-radius: 10px; }
+  .assumption-drawer > summary::after { content: "+"; color: var(--accent-ink); font-size: 1rem; line-height: 1; }
+  .assumption-drawer[open] > summary::after { content: "\2212"; }
+  .assumption-drawer > summary b { margin-left: auto; }
   .assumption-drawer summary b { color: var(--muted); font-size: .72rem; font-weight: 700; letter-spacing: 0; text-transform: none; }
+  .assumption-heading { display: flex; justify-content: space-between; gap: .8rem; align-items: center; padding: .85rem .9rem; font-size: .82rem; font-weight: 800; letter-spacing: .06em; text-transform: uppercase; color: var(--accent-ink); }
+  .assumption-heading b { color: var(--muted); font-size: .72rem; font-weight: 700; letter-spacing: 0; text-transform: none; }
   .assumption-copy { margin: 0; padding: 0 .9rem .8rem; color: var(--muted); font-size: .8rem; line-height: 1.45; }
   .assumption-copy b { color: var(--ink); }
   .assumption-actions { display: flex; flex-wrap: wrap; gap: .45rem; padding: 0 .9rem .85rem; }
@@ -156,59 +156,27 @@
   .lab-status .lab-status-icon { width: 1.4rem; height: 1.4rem; flex-shrink: 0; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: .85rem; font-weight: 800; }
   .lab-status .lab-status-label { flex-shrink: 0; letter-spacing: .03em; }
   .lab-status .lab-status-detail { font-weight: 500; font-size: .8rem; color: var(--muted); }
+  .lab-status.loading { background: var(--surface); border-color: var(--line-strong); }
   .lab-status.resistant { background: var(--good-soft); border-color: color-mix(in srgb, var(--good) 40%, transparent); }
   .lab-status.resistant .lab-status-icon { background: var(--good); color: #fff; }
   .lab-status.resistant .lab-status-label { color: var(--good); }
   .lab-status.vulnerable { background: var(--bad-soft); border-color: color-mix(in srgb, var(--bad) 45%, transparent); box-shadow: 0 0 0 3px color-mix(in srgb, var(--bad) 12%, transparent); }
   .lab-status.vulnerable .lab-status-icon { background: var(--bad); color: #fff; }
   .lab-status.vulnerable .lab-status-label { color: var(--bad); }
+  .lab-status.watch { background: #fff7e8; border-color: #d8a450; }
+  .lab-status.watch .lab-status-icon { background: #9b650f; color: #fff; }
+  .lab-status.watch .lab-status-label { color: #78500f; }
+  .lab-status.teaching { background: var(--accent-soft); border-color: color-mix(in srgb, var(--accent) 45%, var(--line-strong)); }
+  .lab-status.teaching .lab-status-icon { background: var(--accent); color: #fff; }
+  .lab-status.teaching .lab-status-label { color: var(--accent-ink); }
   .lab-status .lab-status-clears { display: flex; flex-wrap: wrap; gap: .35rem; margin-left: auto; }
   .lab-status .lab-status-clear { font-size: .68rem; font-weight: 800; letter-spacing: .04em; text-transform: uppercase; border-radius: 999px; padding: .15rem .5rem; background: color-mix(in srgb, var(--bad) 15%, transparent); color: var(--bad); border: 1px solid color-mix(in srgb, var(--bad) 25%, transparent); }
+  .lab-status.teaching .lab-status-clear { color: var(--accent-ink); background: color-mix(in srgb, var(--accent) 10%, var(--surface)); border-color: color-mix(in srgb, var(--accent) 30%, var(--line)); }
   .lab-grid { transition: box-shadow .3s ease; }
-  .lab-grid.vulnerable, .lab-grid.resistant { border-radius: var(--radius); }
-  @media (max-width: 720px) { .assumption-groups { grid-template-columns: 1fr; padding: 0 .9rem .9rem; gap: 1rem; } }
-  .assumption-group { border-top: 1px solid var(--line); padding-top: .7rem; }
-  .assumption-group h4 { margin: 0 0 .5rem; font-size: .78rem; letter-spacing: .08em; text-transform: uppercase; color: var(--accent); }
-  .assumption-row { display: grid; grid-template-columns: minmax(0, 1fr); gap: .35rem; padding: .65rem 0; border-bottom: 1px solid var(--line); }
-  .assumption-row:last-child { border-bottom: 0; }
-  .assumption-head { display: flex; justify-content: space-between; gap: .75rem; align-items: baseline; }
-  .assumption-head label { font-size: .82rem; font-weight: 800; color: var(--ink); }
-  .assumption-head output { font-family: var(--mono); color: var(--accent-ink); font-size: .78rem; white-space: nowrap; }
-  .assumption-row input[type="range"] { width: 100%; }
-  .assumption-meta { display: flex; flex-wrap: wrap; gap: .35rem; align-items: center; color: var(--muted); font-size: .72rem; line-height: 1.35; }
-  .assumption-meta span { border: 1px solid var(--line); border-radius: 999px; padding: .12rem .4rem; background: var(--surface); }
-  .assumption-help { margin: .18rem 0 0; color: var(--muted); font-size: .74rem; line-height: 1.35; }
-  .assumption-controls { display: flex; flex-wrap: wrap; gap: .4rem; align-items: center; color: var(--muted); font-size: .72rem; }
-  .dependency-grid { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: .45rem; padding: 0 .9rem .9rem; }
-  @media (max-width: 620px) { .dependency-grid { grid-template-columns: 1fr; } }
-  .dependency-card { border: 1px solid var(--line); border-radius: 10px; background: var(--surface); padding: .55rem; font-family: var(--sans); }
-  .dependency-card b { display: block; font-size: .78rem; color: var(--ink); margin-bottom: .25rem; }
-  .dependency-card span { color: var(--muted); font-size: .7rem; line-height: 1.35; }
-  .insight-grid { display: grid; grid-template-columns: 1.1fr .9fr; gap: .75rem; margin-top: .9rem; }
-  @media (max-width: 720px) { .insight-grid { grid-template-columns: 1fr; } }
-  .insight-panel { border: 1px solid var(--line); border-radius: 14px; background: var(--surface); box-shadow: var(--shadow); padding: .85rem; font-family: var(--sans); }
-  .insight-panel h3 { margin: 0 0 .45rem; font-size: .86rem; letter-spacing: .08em; text-transform: uppercase; color: var(--accent); }
-  .driver-list, .warning-list { display: grid; gap: .45rem; }
-  .driver-row, .warning-row { border: 1px solid var(--line); border-radius: 10px; background: var(--bg); padding: .55rem .6rem; font-size: .76rem; line-height: 1.35; color: var(--muted); }
-  .driver-row b, .warning-row b { display: flex; justify-content: space-between; gap: .6rem; color: var(--ink); font-size: .8rem; margin-bottom: .2rem; }
-  .driver-row small { display: block; color: var(--muted); font-size: .72rem; }
-  .lab-status { display: flex; align-items: center; gap: .8rem; padding: .7rem 1rem; border-radius: 14px; font-family: var(--sans); font-weight: 700; font-size: .9rem; margin-bottom: 1rem; transition: background .25s ease, border-color .25s ease, box-shadow .25s ease; border: 1.5px solid var(--line-strong); }
-  .lab-status .lab-status-icon { width: 1.4rem; height: 1.4rem; flex-shrink: 0; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: .85rem; font-weight: 800; }
-  .lab-status .lab-status-label { flex-shrink: 0; letter-spacing: .03em; }
-  .lab-status .lab-status-detail { font-weight: 500; font-size: .8rem; color: var(--muted); }
-  .lab-status.resistant { background: var(--good-soft); border-color: color-mix(in srgb, var(--good) 40%, transparent); }
-  .lab-status.resistant .lab-status-icon { background: var(--good); color: #fff; }
-  .lab-status.resistant .lab-status-label { color: var(--good); }
-  .lab-status.vulnerable { background: var(--bad-soft); border-color: color-mix(in srgb, var(--bad) 45%, transparent); box-shadow: 0 0 0 3px color-mix(in srgb, var(--bad) 12%, transparent); }
-  .lab-status.vulnerable .lab-status-icon { background: var(--bad); color: #fff; }
-  .lab-status.vulnerable .lab-status-label { color: var(--bad); }
-  .lab-status .lab-status-clears { display: flex; flex-wrap: wrap; gap: .35rem; margin-left: auto; }
-  .lab-status .lab-status-clear { font-size: .68rem; font-weight: 800; letter-spacing: .04em; text-transform: uppercase; border-radius: 999px; padding: .15rem .5rem; background: color-mix(in srgb, var(--bad) 15%, transparent); color: var(--bad); border: 1px solid color-mix(in srgb, var(--bad) 25%, transparent); }
-  .lab-grid { transition: box-shadow .3s ease; }
-  .lab-grid.vulnerable, .lab-grid.resistant { border-radius: var(--radius); }
+  .lab-grid.vulnerable, .lab-grid.resistant, .lab-grid.watch, .lab-grid.teaching { border-radius: var(--radius); }
   .lab-shell { margin-top: 1.1rem; }
   .lab-tabs { display: inline-flex; gap: .35rem; border: 1px solid var(--line-strong); border-radius: 999px; background: var(--surface); box-shadow: var(--shadow); padding: .25rem; font-family: var(--sans); margin-bottom: 1rem; }
-  .lab-tab { border: 0; border-radius: 999px; background: transparent; color: var(--muted); font-family: var(--sans); font-weight: 800; font-size: .78rem; padding: .45rem .75rem; cursor: pointer; }
+  .lab-tab { min-height: 2.5rem; border: 0; border-radius: 999px; background: transparent; color: var(--muted); font-family: var(--sans); font-weight: 800; font-size: .82rem; padding: .5rem .8rem; cursor: pointer; }
   .lab-tab[aria-selected="true"] { background: var(--accent-soft); color: var(--accent-ink); }
   .lab-tab:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
   .tab-panel[hidden] { display: none; }
@@ -229,18 +197,21 @@
   .control-card .fine-controls { border-top: 1px solid var(--line); padding-top: .75rem; margin-top: .85rem; }
   .fine-controls summary { cursor: pointer; list-style: none; display: flex; justify-content: space-between; gap: .7rem; align-items: center; font-family: var(--sans); font-size: .78rem; font-weight: 800; color: var(--accent-ink); }
   .fine-controls summary::-webkit-details-marker { display: none; }
+  .fine-controls summary::after { content: "+"; font-size: 1rem; line-height: 1; }
+  .fine-controls[open] summary::after { content: "\2212"; }
+  .fine-controls summary b { margin-left: auto; }
   .fine-controls summary b { color: var(--muted); font-size: .72rem; font-weight: 700; text-transform: none; }
   .fine-controls .dial-group { margin-top: .75rem; }
-  .lock { align-items: center; }
+  fieldset.dial-group { min-width: 0; border: 0; border-bottom: 1px solid var(--line); margin: 0 0 1rem; padding: 0 0 .8rem; }
+  fieldset.dial-group legend { width: 100%; font-family: var(--sans); font-size: .82rem; letter-spacing: .08em; text-transform: uppercase; color: var(--accent-ink); font-weight: 700; margin: 0 0 .55rem; padding: 0; }
+  .lock { min-height: 2.75rem; align-items: center; }
   .lock span { min-width: 0; }
-  .attack { display: grid; gap: .55rem; }
-  .attack-top { margin-bottom: 0; }
-  .attack-body { display: grid; gap: .55rem; }
+  .lock > span > span { display: block; }
+  .attack-body { display: grid; gap: .65rem; }
   .attack-line { display: grid; grid-template-columns: minmax(0, 1fr); gap: .12rem; margin: 0; font-size: .8rem; line-height: 1.42; color: var(--muted); }
   .attack-line b { color: var(--ink); font-size: .68rem; letter-spacing: .07em; text-transform: uppercase; line-height: 1.2; }
   .attack-line b::after { content: ":"; }
   .attack-line span { min-width: 0; overflow-wrap: anywhere; }
-  .attack-margin span { color: var(--accent-ink); font-weight: 750; }
   .stress-hero { display: grid; grid-template-columns: minmax(0, 1fr) minmax(11rem, .32fr); gap: 1rem; align-items: stretch; border: 1px solid var(--line-strong); border-radius: var(--radius); background: var(--surface); box-shadow: var(--shadow); padding: 1rem; margin-bottom: 1rem; }
   .stress-hero h3 { margin: 0 0 .25rem; }
   .stress-hero p { margin: 0; color: var(--muted); font-family: var(--sans); font-size: .9rem; line-height: 1.45; }
@@ -249,20 +220,22 @@
   .stress-meter span { display: block; margin-top: .35rem; color: var(--muted); font-size: .78rem; line-height: 1.35; }
   .stress-list { display: grid; gap: .55rem; }
   .stress-row { border: 1px solid var(--line); border-radius: 12px; background: var(--surface); box-shadow: var(--shadow); font-family: var(--sans); }
-  .stress-row summary { cursor: pointer; list-style: none; display: grid; grid-template-columns: minmax(9rem, 1fr) auto minmax(9rem, .8fr); gap: .75rem; align-items: center; padding: .68rem .78rem; }
+  .stress-row.good { border-color: color-mix(in srgb, var(--good) 32%, var(--line)); }
+  .stress-row.mid { border-color: #d6a14a; }
+  .stress-row.bad { border-color: color-mix(in srgb, var(--bad) 42%, var(--line)); }
+  .stress-row summary { cursor: pointer; list-style: none; display: grid; grid-template-columns: minmax(9rem, 1fr) auto minmax(9rem, .8fr) auto; gap: .75rem; align-items: center; padding: .68rem .78rem; }
   .stress-row summary::-webkit-details-marker { display: none; }
+  .stress-row summary::after { content: "+"; color: var(--accent-ink); font-weight: 800; }
+  .stress-row[open] summary::after { content: "\2212"; }
   .stress-row strong { font-size: .86rem; color: var(--ink); }
   .stress-row .chip { justify-self: start; }
   .stress-row em { font-style: normal; color: var(--muted); font-size: .76rem; line-height: 1.35; }
   .stress-row p { margin: 0; padding: 0 .78rem .75rem; color: var(--muted); font-size: .82rem; line-height: 1.45; }
-  .under-intro { border: 1px solid var(--line); border-radius: 14px; background: var(--surface); box-shadow: var(--shadow); padding: .9rem 1rem; font-family: var(--sans); margin-bottom: 1rem; }
-  .under-intro h3 { margin: 0 0 .25rem; font-size: .95rem; }
-  .under-intro p { margin: 0; color: var(--muted); font-size: .86rem; line-height: 1.45; }
   @media (max-width: 900px) {
     .lab-status { grid-template-columns: 1fr 1fr; }
     .verdict-main { grid-column: 1 / -1; }
     .stress-hero { grid-template-columns: 1fr; }
-    .stress-row summary { grid-template-columns: 1fr auto; }
+    .stress-row summary { grid-template-columns: 1fr auto auto; }
     .stress-row em { grid-column: 1 / -1; }
   }
   @media (max-width: 560px) {
@@ -270,32 +243,9 @@
     .lab-tab { border-radius: 10px; padding: .5rem .35rem; }
     .lab-status { grid-template-columns: 1fr; }
   }
-  @media (min-width: 1360px) {
-    .lab-grid { grid-template-columns: minmax(18rem, .65fr) minmax(0, 1.4fr) minmax(29rem, 1.15fr); gap: 1.25rem; }
-    .attack-rail { grid-column: auto; }
-    .lab-grid > .panel-card { position: sticky; top: 5.5rem; max-height: calc(100vh - 7rem); overflow-y: auto; }
-    .map { grid-template-columns: repeat(2, minmax(0, 1fr)); }
-    .matrix { grid-template-columns: repeat(5, minmax(0, 1fr)); }
-    .story { grid-template-columns: repeat(4, 1fr); }
-    .insight-grid { grid-template-columns: 1fr 1fr; }
-    .dependency-grid { grid-template-columns: repeat(3, minmax(0, 1fr)); }
-  }
-  @media (min-width: 1500px) {
-    .attack-grid { grid-template-columns: repeat(2, minmax(14rem, 1fr)); }
-  }
-
   .info-icon { display: inline-flex; align-items: center; justify-content: center; cursor: pointer; padding: 10px; margin: -10px -10px -10px -2px; color: var(--muted); opacity: 0.6; transition: opacity 0.2s ease, color 0.2s ease; vertical-align: -0.125em; position: relative; z-index: 10; }
   .info-icon:hover, .info-icon:focus-visible { opacity: 1; color: var(--ink); }
   .info-icon svg { width: 15px; height: 15px; }
-  .node p { display: none; } /* Hide old paragraph explanations since we moved them to tooltips */
-
-  .tt-divider { border: 0; border-top: 1px solid rgba(255, 255, 255, 0.15); margin: 0.5rem 0; }
-  .tooltip-container { font-family: var(--sans); text-align: left; padding: 0.25rem; }
-  .tooltip-title { font-weight: 800; font-size: 0.85rem; margin-bottom: 0.25rem; color: #fff; text-transform: uppercase; letter-spacing: 0.05em; }
-  .tooltip-concept { font-size: 0.8rem; line-height: 1.4; color: rgba(255, 255, 255, 0.9); margin-bottom: 0.4rem; }
-  .tooltip-label { display: block; margin-top: 0.35rem; font-family: var(--sans); font-size: 0.68rem; font-weight: 800; letter-spacing: 0.06em; text-transform: uppercase; color: #38bdf8; }
-  .tooltip-math { font-family: var(--mono); font-size: 0.7rem; background: rgba(0, 0, 0, 0.25); padding: 0.25rem 0.45rem; border-radius: 4px; margin: 0.25rem 0; color: #f43f5e; word-break: break-all; white-space: pre-wrap; border: 1px solid rgba(255,255,255,0.05); }
-  .tooltip-live { font-family: var(--mono); font-size: 0.7rem; color: rgba(255, 255, 255, 0.7); margin-top: 0.2rem; }
 </style>
 <link rel="stylesheet" href="assets/vendor/tippy-shift-away-6.3.7.css">
 <link rel="stylesheet" href="assets/vendor/tippy-6.3.7.css">
@@ -321,135 +271,129 @@
 </nav>
 
 <header class="hero lab-hero reveal">
-  <p class="kicker">Attack sandbox</p>
-  <h1>Break the court.</h1>
-  <p class="dek">Move case volume, juror supply, attacker size, and safety locks. The model shows what happens to juror pay, money at risk, available jurors, and the chance an attack can make money.</p>
+  <p class="kicker">Robustness game</p>
+  <h1>Try every practical attack. See why it loses.</h1>
+  <p class="dek">Pressure the scaled protocol—not the three-juror demo—and watch DemoThemis price each shortcut out. Every result names the defence, danger line, and remaining margin.</p>
   <div class="meta">
-    <span class="pill">Playable model</span>
-    <span>Chapter 2 of 6</span>
+    <span class="pill">Scaled protocol model</span>
+    <span>6 attack paths</span>
     <span class="dot">&bull;</span>
-    <span>Built from the current design</span>
+    <span>Illustrative, not a forecast</span>
+    <span class="dot">&bull;</span>
+    <span>Chapter 2 of 6</span>
   </div>
 </header>
 
 <main class="content wrap">
   <section class="reveal">
-    <p class="sec-label">Break the court</p>
-    <h2>Try to break the court.</h2>
-    <p class="lead">You are the attacker for five minutes. Pick a scenario, drag the knobs, and see whether a coordinated group, provable bribe, rented account, lazy vote, delay attack, or crowd-following can make money.</p>
-    <p>The loop is simple: cases create fees, fees pay jurors, paid jurors widen the available jury pool, and a wider pool makes bad strategies harder. This is a sandbox, not a launch forecast or measured failure rate. When something breaks, the cards tell you why; when it holds, Scenario checks and Assumptions show the settings doing the work.</p>
-  </section>
-
-  <section class="reveal">
-    <p class="sec-label">Court model</p>
-    <h2>Turn the knobs.</h2>
+    <p class="sec-label">Attack economics</p>
+    <h2>Can you push an attack past its danger line?</h2>
+    <p class="lead">Choose a benchmark, change the conditions, or remove one required defence. The court holds while every practical shortcut stays below its modeled threshold.</p>
     <div class="lab-shell">
       <div class="lab-tabs" role="tablist" aria-label="Break the court views">
-        <button class="lab-tab" id="tabBtnPlay" type="button" role="tab" aria-selected="true" aria-controls="tabPlay" data-tab="play">Play</button>
-        <button class="lab-tab" id="tabBtnStress" type="button" role="tab" aria-selected="false" aria-controls="tabStress" data-tab="stress">Scenario checks</button>
-        <button class="lab-tab" id="tabBtnUnder" type="button" role="tab" aria-selected="false" aria-controls="tabUnder" data-tab="under">Assumptions</button>
+        <button class="lab-tab" id="tabBtnPlay" type="button" role="tab" aria-selected="true" aria-controls="tabPlay" data-tab="play">Attack game</button>
+        <button class="lab-tab" id="tabBtnStress" type="button" role="tab" aria-selected="false" aria-controls="tabStress" data-tab="stress">Benchmarks</button>
+        <button class="lab-tab" id="tabBtnUnder" type="button" role="tab" aria-selected="false" aria-controls="tabUnder" data-tab="under">Editable assumptions</button>
       </div>
 
       <div class="tab-panel" id="tabPlay" role="tabpanel" aria-labelledby="tabBtnPlay">
-        <div class="preset-strip">
-          <b>Try</b>
-          <button class="preset" type="button" data-preset="base">Balanced court</button>
-          <button class="preset" type="button" data-preset="cold">Cold start</button>
-          <button class="preset" type="button" data-preset="surge">Case surge</button>
-          <button class="preset" type="button" data-preset="whale">Huge case</button>
-          <button class="preset" type="button" data-preset="bloc">Coordinated attack</button>
-          <button class="preset" type="button" data-preset="drift">Crowd-following</button>
-          <span class="preset-note">Move sliders or turn off locks to make a scenario fail</span>
+        <div class="preset-strip" role="group" aria-label="Achievable benchmark configurations">
+          <b>Choose pressure</b>
+          <button class="preset" type="button" data-preset="base" aria-pressed="false">Scaled baseline</button>
+          <button class="preset" type="button" data-preset="cold" aria-pressed="false">Thin juror pool</button>
+          <button class="preset" type="button" data-preset="surge" aria-pressed="false">Case surge</button>
+          <button class="preset" type="button" data-preset="whale" aria-pressed="false">High-value case</button>
+          <button class="preset" type="button" data-preset="bloc" aria-pressed="false">1,000-person coalition</button>
+          <button class="preset" type="button" data-preset="drift" aria-pressed="false">Thin aptitude supply</button>
+          <span class="preset-note" id="presetState" aria-live="polite">Benchmarks use fixed model assumptions; manual changes become a custom experiment.</span>
         </div>
 
-        <div class="lab-status resistant" id="labStatus">
+        <div class="lab-status loading" id="labStatus">
           <div class="verdict-main">
-            <span class="lab-status-icon" id="labStatusIcon">&#10003;</span>
+            <span class="lab-status-icon" id="labStatusIcon">&hellip;</span>
             <div class="verdict-copy">
-              <span class="lab-status-label" id="labStatusLabel">Resistant to exploit</span>
-              <span class="lab-status-detail" id="labStatusDetail">No attack makes money under current settings.</span>
+              <span class="lab-status-label" id="labStatusLabel">Calculating robustness&hellip;</span>
+              <span class="lab-status-detail" id="labStatusDetail">Checking each modeled attack and safety margin.</span>
               <div class="lab-status-clears" id="labStatusClears"></div>
             </div>
           </div>
-          <div class="verdict-metric"><span>Weakest link</span><b id="weakestOut">&hellip;</b><small id="weakestSub">&hellip;</small></div>
-          <div class="verdict-metric"><span>Scenario checks</span><b id="stressOut">&hellip;</b><small id="stressSub">&hellip;</small></div>
-          <div class="verdict-metric"><span>Model confidence</span><b id="confidenceOut">&hellip;</b><small id="confidenceSub">&hellip;</small></div>
+          <div class="verdict-metric"><span>Closest challenge</span><b id="weakestOut">&hellip;</b><small id="weakestSub">&hellip;</small></div>
+          <div class="verdict-metric"><span>Pressure tests</span><b id="stressOut">&hellip;</b><small id="stressSub">&hellip;</small></div>
+          <div class="verdict-metric"><span>Assumption sensitivity</span><b id="confidenceOut">&hellip;</b><small id="confidenceSub">&hellip;</small></div>
         </div>
+        <p class="sr-only" id="labAnnouncement" aria-live="polite"></p>
 
         <div class="scoreboard">
-          <div class="score" id="scoreSafety"><div class="k">Safety score<span class="info-icon" data-tooltip="A quick health score for this launch-stage setup. It is not a measured probability. It falls when attacks get cheaper or easier."><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"></circle><path d="M12 16v-4"></path><path d="M12 8h.01"></path></svg></span></div><div class="v" id="safetyOut">&hellip;</div><small id="safetySub">&hellip;</small></div>
-          <div class="score" id="scorePay"><div class="k">Juror pay<span class="info-icon" data-tooltip="Fees and rewards available per active juror. Higher pay helps attract and keep honest jurors, but it is not a guaranteed wage."><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"></circle><path d="M12 16v-4"></path><path d="M12 8h.01"></path></svg></span></div><div class="v" id="payOut">&hellip;</div><small id="paySub">&hellip;</small></div>
-          <div class="score" id="scoreReserve"><div class="k">Money at risk<span class="info-icon" data-tooltip="Pending juror income that can be lost for careless or wrong voting. Enough risk deters laziness; too much can push honest jurors out."><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"></circle><path d="M12 16v-4"></path><path d="M12 8h.01"></path></svg></span></div><div class="v" id="reserveOut">&hellip;</div><small id="reserveSub">&hellip;</small></div>
-          <div class="score" id="scoreCapture"><div class="k">Chance attackers control a jury<span class="info-icon" data-tooltip="Estimated chance that coordinated attackers gain majority control of the drawn jury under the current available juror pool."><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"></circle><path d="M12 16v-4"></path><path d="M12 8h.01"></path></svg></span></div><div class="v" id="captureOut">&hellip;</div><small id="captureSub">&hellip;</small></div>
+          <div class="score" id="scoreSafety"><div class="k">Correct-majority chance<span class="info-icon" data-tooltip="Modeled chance that one random jury reaches the correct answer after baseline accuracy, aptitude-test signal, and reward effects. It is not a measured failure rate."><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"></circle><path d="M12 16v-4"></path><path d="M12 8h.01"></path></svg></span></div><div class="v" id="safetyOut">&hellip;</div><small id="safetySub">&hellip;</small></div>
+          <div class="score" id="scorePay"><div class="k">Average juror funding<span class="info-icon" data-tooltip="Immediate-pay and long-term reward pools divided across retained jurors. This is a funding average, not guaranteed take-home pay."><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"></circle><path d="M12 16v-4"></path><path d="M12 8h.01"></path></svg></span></div><div class="v" id="payOut">&hellip;</div><small id="paySub">&hellip;</small></div>
+          <div class="score" id="scoreReserve"><div class="k">Lazy-vote margin<span class="info-icon" data-tooltip="Expected loss from a careless shortcut minus the pay it might keep. A positive margin prices lazy voting out."><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"></circle><path d="M12 16v-4"></path><path d="M12 8h.01"></path></svg></span></div><div class="v" id="reserveOut">&hellip;</div><small id="reserveSub">&hellip;</small></div>
+          <div class="score" id="scoreCapture"><div class="k">Jury-control chance<span class="info-icon" data-tooltip="Modeled chance that qualified attackers gain a majority of the case-bound random jury."><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"></circle><path d="M12 16v-4"></path><path d="M12 8h.01"></path></svg></span></div><div class="v" id="captureOut">&hellip;</div><small id="captureSub">&hellip;</small></div>
         </div>
 
         <div class="lab-grid" id="labGrid">
           <div class="panel-card control-card">
             <div class="dial-group">
-              <h3>Main knobs</h3>
-              <div class="dial"><label for="flow">Money disputed each month <b id="flowOut">&hellip;</b></label><input id="flow" type="range" min="10000" max="35000000" step="10000" value="100000"></div>
-              <div class="dial"><label for="jurors">Active jurors <b id="jurorsOut">&hellip;</b></label><input id="jurors" type="range" min="0" max="100" step="1" value="0"></div>
-              <div class="dial"><label for="stake">Typical case size <b id="stakeOut">&hellip;</b></label><input id="stake" type="range" min="0" max="100" step="1" value="21"></div>
-              <div class="dial"><label for="bloc">Coordinated attackers <b id="blocOut">&hellip;</b></label><input id="bloc" type="range" min="0" max="1000" step="5" value="10"></div>
+              <h3>Change the conditions</h3>
+              <div class="dial"><label for="flow">Monthly disputed value <output id="flowOut" for="flow">&hellip;</output></label><input id="flow" type="range" min="10000" max="35000000" step="10000" value="100000"></div>
+              <div class="dial"><label for="jurors">Opted-in jurors <output id="jurorsOut" for="jurors">&hellip;</output></label><input id="jurors" type="range" min="0" max="100" step="1" value="0"></div>
+              <div class="dial"><label for="stake">Typical case value <output id="stakeOut" for="stake">&hellip;</output></label><input id="stake" type="range" min="0" max="100" step="1" value="21"></div>
+              <div class="dial"><label for="bloc">Recruited attackers <output id="blocOut" for="bloc">&hellip;</output></label><input id="bloc" type="range" min="0" max="1000" step="5" value="10"></div>
             </div>
-            <div class="dial-group">
-              <h3>Safety locks</h3>
+            <fieldset class="dial-group">
+              <legend>Required defence rails</legend>
               <div class="locks">
-                <label class="lock"><input id="lockDraw" type="checkbox" checked><span><b>Random jury draw</b>one public random draw per case</span></label>
-                <label class="lock"><input id="lockBallot" type="checkbox" checked><span><b>Private vote</b>a briber cannot prove delivery</span></label>
-                <label class="lock"><input id="lockFace" type="checkbox" checked><span><b>Live face check</b>rented accounts need a live person</span></label>
-                <label class="lock"><input id="lockReserve" type="checkbox" checked><span><b>Money at risk</b>lazy voting can lose pending pay</span></label>
-                <label class="lock"><input id="lockKeys" type="checkbox" checked><span><b>Aptitude tests</b> resolved cases catch crowd-following</span></label>
-                <label class="lock"><input id="lockAppeal" type="checkbox" checked><span><b>Costly appeals</b>appeals must pay for delay and extra juries</span></label>
+                <label class="lock"><input id="lockDraw" type="checkbox" checked><span><b>One public draw</b><span>Prevents retry grinding.</span></span></label>
+                <label class="lock"><input id="lockBallot" type="checkbox" checked><span><b>Private ballot</b><span>Bribes cannot prove delivery.</span></span></label>
+                <label class="lock"><input id="lockFace" type="checkbox" checked><span><b>Live face check</b><span>Rentals need a present person.</span></span></label>
+                <label class="lock"><input id="lockReserve" type="checkbox" checked><span><b>Pending pay at risk</b><span>Careless voting can lose income.</span></span></label>
+                <label class="lock"><input id="lockKeys" type="checkbox" checked><span><b>Aptitude tests</b><span>Known answers expose crowd-copying.</span></span></label>
+                <label class="lock"><input id="lockAppeal" type="checkbox" checked><span><b>Costed appeals</b><span>Delay must fund the next jury.</span></span></label>
               </div>
-            </div>
+            </fieldset>
             <details class="fine-controls">
-              <summary><span>Advanced knobs</span><b>fees, delay, accuracy, rentals</b></summary>
+              <summary><span>All court settings</span><b>fees, timing, accuracy, rentals</b></summary>
               <div class="dial-group">
                 <h3>Case timing and fees</h3>
-                <div class="dial"><label for="lag">How long penalties stay pending <b id="lagOut">&hellip;</b></label><input id="lag" type="range" min="1" max="8" step="1" value="2"></div>
-                <div class="dial"><label for="fee">Fee on each case <b id="feeOut">&hellip;</b></label><input id="fee" type="range" min="5" max="30" step="1" value="20"></div>
-                <div class="dial"><label for="payShare">Fees sent to juror pay <b id="payShareOut">&hellip;</b></label><input id="payShare" type="range" min="55" max="75" step="1" value="70"></div>
-                <div class="dial"><label for="rewardShare">Fees saved for rewards <b id="rewardShareOut">&hellip;</b></label><input id="rewardShare" type="range" min="10" max="25" step="1" value="20"></div>
+                <div class="dial"><label for="lag">Pending-pay weeks <output id="lagOut" for="lag">&hellip;</output></label><input id="lag" type="range" min="1" max="8" step="1" value="2"></div>
+                <div class="dial"><label for="fee">Case fee <output id="feeOut" for="fee">&hellip;</output></label><input id="fee" type="range" min="5" max="30" step="1" value="20"></div>
+                <div class="dial"><label for="payShare">Immediate-pay share <output id="payShareOut" for="payShare">&hellip;</output></label><input id="payShare" type="range" min="55" max="75" step="1" value="70"></div>
+                <div class="dial"><label for="rewardShare">Long-term reward share <output id="rewardShareOut" for="rewardShare">&hellip;</output></label><input id="rewardShare" type="range" min="10" max="25" step="1" value="20"></div>
               </div>
               <div class="dial-group">
                 <h3>Juror accuracy</h3>
-                <div class="dial"><label for="skill">Careful juror accuracy <b id="skillOut">&hellip;</b></label><input id="skill" type="range" min="52" max="88" step="1" value="68"></div>
-                <div class="dial"><label for="careless">Mistakes from lazy voting <b id="carelessOut">&hellip;</b></label><input id="careless" type="range" min="10" max="50" step="1" value="20"></div>
-                <div class="dial"><label for="slash">Penalty for a bad vote <b id="slashOut">&hellip;</b></label><input id="slash" type="range" min="25" max="100" step="1" value="100"></div>
-                <div class="dial"><label for="syntheticTests">Aptitude tests <b id="syntheticTestsOut">&hellip;</b></label><input id="syntheticTests" type="range" min="0" max="10000" step="50" value="100"></div>
+                <div class="dial"><label for="skill">Individual answer accuracy <output id="skillOut" for="skill">&hellip;</output></label><input id="skill" type="range" min="52" max="88" step="1" value="68"></div>
+                <div class="dial"><label for="careless">Careless-vote error rate <output id="carelessOut" for="careless">&hellip;</output></label><input id="careless" type="range" min="10" max="50" step="1" value="20"></div>
+                <div class="dial"><label for="slash">Collectible penalty share <output id="slashOut" for="slash">&hellip;</output></label><input id="slash" type="range" min="25" max="100" step="1" value="100"></div>
+                <div class="dial"><label for="syntheticTests">Monthly aptitude-test seats <output id="syntheticTestsOut" for="syntheticTests">&hellip;</output></label><input id="syntheticTests" type="range" min="0" max="10000" step="50" value="100"></div>
               </div>
               <div class="dial-group">
                 <h3>Attack size</h3>
-                <div class="dial"><label for="rented">Rented accounts <b id="rentedOut">&hellip;</b></label><input id="rented" type="range" min="0" max="6000" step="5" value="0"></div>
-                <div class="dial"><label for="rerolls">Extra jury draw attempts <b id="rerollsOut">&hellip;</b></label><input id="rerolls" type="range" min="1" max="100" step="1" value="1"></div>
+                <div class="dial"><label for="rented">Rented accounts <output id="rentedOut" for="rented">&hellip;</output></label><input id="rented" type="range" min="0" max="6000" step="5" value="0"></div>
+                <div class="dial"><label for="rerolls">Retryable draw attempts <output id="rerollsOut" for="rerolls">&hellip;</output></label><input id="rerolls" type="range" min="1" max="100" step="1" value="1"></div>
               </div>
             </details>
           </div>
 
           <div>
             <div class="board">
-              <div class="board-head"><h3>Variables that raise attack costs</h3><span class="chip" id="bottleneckChip">&hellip;</span></div>
+              <div class="board-head"><h3>How the defences respond</h3><span class="chip" id="bottleneckChip">&hellip;</span></div>
               <div class="map">
-                <div class="node" id="nodeDemand" data-n="01"><h4>Case volume<span class="info-icon" data-tooltip="Money disputed through escrow creates court cases and the fees that fund jurors."><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"></circle><path d="M12 16v-4"></path><path d="M12 8h.01"></path></svg></span></h4><p>Money disputed through escrow creates court cases and the fees that fund jurors.</p><div class="node-stats" id="nodeDemandV">&hellip;</div></div>
-                <div class="node" id="nodeFees" data-n="02"><h4>Fees funding jurors<span class="info-icon" data-tooltip="Case fees are split between immediate juror pay, long-term rewards, and operating costs."><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"></circle><path d="M12 16v-4"></path><path d="M12 8h.01"></path></svg></span></h4><p>Case fees are split between immediate juror pay, long-term rewards, and operating costs.</p><div class="node-stats" id="nodeFeesV">&hellip;</div></div>
-                <div class="node" id="nodePay" data-n="03"><h4>Juror pay<span class="info-icon" data-tooltip="Fees and rewards available per active juror. Higher pay helps attract and keep honest jurors."><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"></circle><path d="M12 16v-4"></path><path d="M12 8h.01"></path></svg></span></h4><p>Fees and rewards available per active juror. Higher pay helps attract and keep honest jurors.</p><div class="node-stats" id="nodePayV">&hellip;</div></div>
-                <div class="node" id="nodeReserve" data-n="04"><h4>Money at risk<span class="info-icon" data-tooltip="Pending juror income that can be lost for careless voting. Too little invites laziness; too much can push honest jurors out."><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"></circle><path d="M12 16v-4"></path><path d="M12 8h.01"></path></svg></span></h4><p>Pending juror income that can be lost for careless voting. Too little invites laziness; too much can push honest jurors out.</p><div class="node-stats" id="nodeReserveV">&hellip;</div></div>
-                <div class="node" id="nodePool" data-n="05"><h4>Available jurors<span class="info-icon" data-tooltip="The retained jurors who are active, reachable, and eligible to be randomly drawn. More available jurors make capture harder."><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"></circle><path d="M12 16v-4"></path><path d="M12 8h.01"></path></svg></span></h4><p>The retained jurors who are active, reachable, and eligible to be randomly drawn. More available jurors make capture harder.</p><div class="node-stats" id="nodePoolV">&hellip;</div></div>
-                <div class="node" id="nodePanel" data-n="06"><h4>Jury size<span class="info-icon" data-tooltip="Bigger cases draw more jurors, use stricter eligibility, and can require multiple juries to agree."><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"></circle><path d="M12 16v-4"></path><path d="M12 8h.01"></path></svg></span></h4><p>Bigger cases draw more jurors, use stricter eligibility, and can require multiple juries to agree.</p><div class="node-stats" id="nodePanelV">&hellip;</div></div>
-                <div class="node" id="nodeKeys" data-n="07"><h4>Aptitude tests<span class="info-icon" data-tooltip="Resolved cases for aptitude tests help grade jurors and catch crowd-following before agreement gets mistaken for accuracy."><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"></circle><path d="M12 16v-4"></path><path d="M12 8h.01"></path></svg></span></h4><p>Resolved cases for aptitude tests help grade jurors and catch crowd-following before agreement gets mistaken for accuracy.</p><div class="node-stats" id="nodeKeysV">&hellip;</div></div>
+                <div class="node" id="nodeDemand" data-n="01"><h4>Demand funds the court</h4><p>Disputed value creates fee revenue for juror pay and long-term rewards.</p><div class="node-stats" id="nodeDemandV">&hellip;</div></div>
+                <div class="node" id="nodePay" data-n="02"><h4>Funding keeps jurors available</h4><p>Viable compensation supports a wider retained and drawable juror pool.</p><div class="node-stats" id="nodePayV">&hellip;</div></div>
+                <div class="node" id="nodePanel" data-n="03"><h4>Random panels resist control</h4><p>Case-bound draws and scaled jury rules push attacker-majority odds down.</p><div class="node-stats" id="nodePanelV">&hellip;</div></div>
+                <div class="node" id="nodeKeys" data-n="04"><h4>Aptitude tests protect quality</h4><p>Known-answer tests distinguish careful judgment from crowd-copying.</p><div class="node-stats" id="nodeKeysV">&hellip;</div></div>
               </div>
             </div>
           </div>
 
           <div class="attack-rail">
             <div class="attack-grid" id="attackGrid">
-              <div class="attack" data-attack="bloc" role="button" tabindex="0" aria-pressed="false"><div class="attack-top"><h4>Coordinated group attack<span class="info-icon" data-tooltip="This attack is about the available jury pool, not the headline signup count. Attackers still need enough qualified people to be active, available, and randomly drawn together."><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"></circle><path d="M12 16v-4"></path><path d="M12 8h.01"></path></svg></span></h4><span class="chip" id="blocChip">&hellip;</span></div><div class="attack-body"><p class="attack-line"><b>Why</b><span id="blocWhy">&hellip;</span></p><p class="attack-line"><b>Works if</b><span id="blocBreak">&hellip;</span></p><p class="attack-line attack-margin"><b>Distance</b><span id="blocMargin">&hellip;</span></p></div><div class="attack-explain" id="blocExplain"></div></div>
-              <div class="attack" data-attack="bribe" role="button" tabindex="0" aria-pressed="false"><div class="attack-top"><h4>Provable bribe<span class="info-icon" data-tooltip="A bribe needs proof. If the vote stays private, a juror can take the money and still vote honestly, so the bribe contract is hard to enforce."><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"></circle><path d="M12 16v-4"></path><path d="M12 8h.01"></path></svg></span></h4><span class="chip" id="bribeChip">&hellip;</span></div><div class="attack-body"><p class="attack-line"><b>Why</b><span id="bribeWhy">&hellip;</span></p><p class="attack-line"><b>Works if</b><span id="bribeBreak">&hellip;</span></p><p class="attack-line attack-margin"><b>Distance</b><span id="bribeMargin">&hellip;</span></p></div><div class="attack-explain" id="bribeExplain"></div></div>
-              <div class="attack" data-attack="rental" role="button" tabindex="0" aria-pressed="false"><div class="attack-top"><h4>Rented accounts<span class="info-icon" data-tooltip="Personhood checks stop fake identities, not willing humans. Live face checks make rented accounts much harder to use at vote time."><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"></circle><path d="M12 16v-4"></path><path d="M12 8h.01"></path></svg></span></h4><span class="chip" id="rentalChip">&hellip;</span></div><div class="attack-body"><p class="attack-line"><b>Why</b><span id="rentalWhy">&hellip;</span></p><p class="attack-line"><b>Works if</b><span id="rentalBreak">&hellip;</span></p><p class="attack-line attack-margin"><b>Distance</b><span id="rentalMargin">&hellip;</span></p></div><div class="attack-explain" id="rentalExplain"></div></div>
-              <div class="attack" data-attack="lazy" role="button" tabindex="0" aria-pressed="false"><div class="attack-top"><h4>Lazy voting<span class="info-icon" data-tooltip="A juror might try to skip the work and vote randomly. Money at risk should make that shortcut lose more than it saves."><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"></circle><path d="M12 16v-4"></path><path d="M12 8h.01"></path></svg></span></h4><span class="chip" id="lazyChip">&hellip;</span></div><div class="attack-body"><p class="attack-line"><b>Why</b><span id="lazyWhy">&hellip;</span></p><p class="attack-line"><b>Works if</b><span id="lazyBreak">&hellip;</span></p><p class="attack-line attack-margin"><b>Distance</b><span id="lazyMargin">&hellip;</span></p></div><div class="attack-explain" id="lazyExplain"></div></div>
-              <div class="attack" data-attack="grief" role="button" tabindex="0" aria-pressed="false"><div class="attack-top"><h4>Delay attack<span class="info-icon" data-tooltip="Appeals must stay possible for sincere losers, but they should not be cheap enough for someone to profit by delaying payout."><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"></circle><path d="M12 16v-4"></path><path d="M12 8h.01"></path></svg></span></h4><span class="chip" id="griefChip">&hellip;</span></div><div class="attack-body"><p class="attack-line"><b>Why</b><span id="griefWhy">&hellip;</span></p><p class="attack-line"><b>Works if</b><span id="griefBreak">&hellip;</span></p><p class="attack-line attack-margin"><b>Distance</b><span id="griefMargin">&hellip;</span></p></div><div class="attack-explain" id="griefExplain"></div></div>
-              <div class="attack" data-attack="drift" role="button" tabindex="0" aria-pressed="false"><div class="attack-top"><h4>Jurors follow the crowd<span class="info-icon" data-tooltip="Jurors can learn to copy the majority instead of reading evidence. Aptitude tests give the court an outside signal of what is actually correct."><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"></circle><path d="M12 16v-4"></path><path d="M12 8h.01"></path></svg></span></h4><span class="chip" id="driftChip">&hellip;</span></div><div class="attack-body"><p class="attack-line"><b>Why</b><span id="driftWhy">&hellip;</span></p><p class="attack-line"><b>Works if</b><span id="driftBreak">&hellip;</span></p><p class="attack-line attack-margin"><b>Distance</b><span id="driftMargin">&hellip;</span></p></div><div class="attack-explain" id="driftExplain"></div></div>
+              <details class="attack" data-attack="bloc" open><summary><span class="attack-summary-copy"><h4>Coordinated coalition</h4><small id="blocMargin">&hellip;</small></span><span class="chip" id="blocChip">&hellip;</span></summary><div class="attack-body"><p class="attack-line"><b>Current defence</b><span id="blocWhy">&hellip;</span></p><p class="attack-line"><b>Danger line</b><span id="blocBreak">&hellip;</span></p></div></details>
+              <details class="attack" data-attack="bribe"><summary><span class="attack-summary-copy"><h4>Provable bribe</h4><small id="bribeMargin">&hellip;</small></span><span class="chip" id="bribeChip">&hellip;</span></summary><div class="attack-body"><p class="attack-line"><b>Current defence</b><span id="bribeWhy">&hellip;</span></p><p class="attack-line"><b>Danger line</b><span id="bribeBreak">&hellip;</span></p></div></details>
+              <details class="attack" data-attack="rental"><summary><span class="attack-summary-copy"><h4>Rented accounts</h4><small id="rentalMargin">&hellip;</small></span><span class="chip" id="rentalChip">&hellip;</span></summary><div class="attack-body"><p class="attack-line"><b>Current defence</b><span id="rentalWhy">&hellip;</span></p><p class="attack-line"><b>Danger line</b><span id="rentalBreak">&hellip;</span></p></div></details>
+              <details class="attack" data-attack="lazy"><summary><span class="attack-summary-copy"><h4>Lazy voting</h4><small id="lazyMargin">&hellip;</small></span><span class="chip" id="lazyChip">&hellip;</span></summary><div class="attack-body"><p class="attack-line"><b>Current defence</b><span id="lazyWhy">&hellip;</span></p><p class="attack-line"><b>Danger line</b><span id="lazyBreak">&hellip;</span></p></div></details>
+              <details class="attack" data-attack="grief"><summary><span class="attack-summary-copy"><h4>Appeal delay</h4><small id="griefMargin">&hellip;</small></span><span class="chip" id="griefChip">&hellip;</span></summary><div class="attack-body"><p class="attack-line"><b>Current defence</b><span id="griefWhy">&hellip;</span></p><p class="attack-line"><b>Danger line</b><span id="griefBreak">&hellip;</span></p></div></details>
+              <details class="attack" data-attack="drift"><summary><span class="attack-summary-copy"><h4>Crowd-following</h4><small id="driftMargin">&hellip;</small></span><span class="chip" id="driftChip">&hellip;</span></summary><div class="attack-body"><p class="attack-line"><b>Current defence</b><span id="driftWhy">&hellip;</span></p><p class="attack-line"><b>Danger line</b><span id="driftBreak">&hellip;</span></p></div></details>
             </div>
           </div>
         </div>
@@ -458,110 +402,54 @@
       <div class="tab-panel" id="tabStress" role="tabpanel" aria-labelledby="tabBtnStress" hidden>
         <div class="stress-hero">
           <div>
-            <p class="sec-label">Scenario checks</p>
-            <h3 id="stressHeadline">Testing pressure scenarios</h3>
-            <p id="stressCopy">The lab keeps your current setup and compares it with cold starts, case surges, huge cases, coordinated attacks, crowd-following, and appeal delays.</p>
+            <p class="sec-label">Standardized benchmarks</p>
+            <h3 id="stressHeadline">Checking achievable pressure</h3>
+            <p id="stressCopy">These six fixed reference cases test the scaled court. They stay constant while your custom experiment changes.</p>
           </div>
           <div class="stress-meter"><b id="stressScore">&hellip;</b><span id="stressWeakest">&hellip;</span></div>
         </div>
-        <div class="stress-list" id="stressList" aria-live="polite"></div>
+        <div class="stress-list" id="stressList"></div>
       </div>
 
       <div class="tab-panel" id="tabUnder" role="tabpanel" aria-labelledby="tabBtnUnder" hidden>
-        <div class="under-intro">
-          <h3>Assumptions behind the verdict</h3>
-          <p>The main board stays quick. This tab shows the hidden sliders, confidence tags, dependency map, formulas, and assumptions that most change the result.</p>
+        <div class="insight-grid">
+          <div class="insight-panel">
+            <h3>Most sensitive assumptions</h3>
+            <div class="driver-list" id="driverList"></div>
+          </div>
+          <div class="insight-panel">
+            <h3>Active model cautions</h3>
+            <div class="warning-list" id="warningList"></div>
+          </div>
         </div>
-        <details class="assumption-drawer" id="assumptionDrawer" open>
-          <summary><span>Advanced assumptions</span><b id="assumptionCount">defaults</b></summary>
-          <p class="assumption-copy">These sliders show the hidden modeling factors behind the safety score. They are tunable launch assumptions, not measured failure rates. Governance is intentionally excluded from this MVP simulation; protocol-critical rules are treated as fixed launch rails here.</p>
+        <section class="assumption-drawer" aria-labelledby="assumptionHeading">
+          <div class="assumption-heading" id="assumptionHeading"><span>Edit full model</span><b id="assumptionCount">defaults</b></div>
+          <p class="assumption-copy">These are tunable design assumptions, not measured failure rates. Presets restore the documented baseline so their comparisons remain fair.</p>
           <div class="assumption-actions">
             <button type="button" id="resetAssumptions">Reset assumptions</button>
           </div>
-          <div class="assumption-pins" id="assumptionPins" aria-live="polite"></div>
+          <div class="assumption-pins" id="assumptionPins"></div>
           <div class="assumption-groups" id="assumptionGroups"></div>
           <p class="assumption-copy"><b>What moves what.</b> Each output below lists the knobs and assumptions that can change it.</p>
           <div class="dependency-grid" id="dependencyGrid"></div>
+        </section>
+        <details class="assumption-drawer">
+          <summary><span>Model relationships</span><b>four short equations</b></summary>
+          <div class="story">
+            <div class="story-card"><h3>Funding</h3><p class="formula">disputed value &times; fee = court revenue<br>revenue funds immediate pay, rewards, and operations</p></div>
+            <div class="story-card"><h3>Juror exposure</h3><p class="formula">pay per vote &times; exposure rule = pending pay at risk<br>collectible loss must exceed the shortcut benefit</p></div>
+            <div class="story-card"><h3>Jury control</h3><p class="formula">qualified coalition seats + usable rentals<br>finite random draw &rarr; attacker-majority chance</p></div>
+            <div class="story-card"><h3>Decision quality</h3><p class="formula">individual answer accuracy + aptitude-test signal<br>&rarr; correct-majority estimate</p></div>
+          </div>
         </details>
       </div>
     </div>
   </section>
 
   <section class="reveal">
-    <p class="sec-label">Knob guide</p>
-    <h2>What each knob changes</h2>
-    <div class="matrix">
-      <div class="var-card"><h3>Money disputed each month</h3><p>More disputed money creates more cases and more fees to pay jurors.</p></div>
-      <div class="var-card"><h3>Active jurors</h3><p>More jurors widen the available jury pool. Heavy money-at-risk requirements can push some out.</p></div>
-      <div class="var-card"><h3>Typical case size</h3><p>Bigger cases use larger juries, stricter eligibility, and sometimes multiple juries.</p></div>
-      <div class="var-card"><h3>Where fees go</h3><p>Fees can fund immediate juror pay, long-term rewards, and operations.</p></div>
-      <div class="var-card"><h3>Juror pay</h3><p>Higher pay makes juror work more attractive, helping recruit and retain honest jurors. It is not a guaranteed wage.</p></div>
-      <div class="var-card"><h3>Money at risk</h3><p>Pending juror income can be lost for careless voting. Too little invites laziness; too much shrinks supply.</p></div>
-      <div class="var-card"><h3>Long-term rewards</h3><p>Rewards pay quality over time instead of paying any one verdict to punish dissent.</p></div>
-      <div class="var-card"><h3>Random jury draw</h3><p>Turns jury selection from retryable grinding into one public random draw bound to the case.</p></div>
-      <div class="var-card"><h3>Private vote</h3><p>Weakens bribes. If a briber cannot prove how someone voted, the bribe contract is hard to enforce.</p></div>
-      <div class="var-card"><h3>Live face check</h3><p>Turns a rented account into a live-person check at the moment the vote unlocks.</p></div>
-      <div class="var-card"><h3>Aptitude tests</h3><p>Resolved cases for aptitude tests give the court an outside signal against jurors simply following the crowd.</p></div>
-      <div class="var-card"><h3>Appeal cost floor</h3><p>Each appeal must pay for the next jury, capture risk, and the delay it creates.</p></div>
-      <div class="var-card"><h3>Appeal sincerity gate</h3><p>Loser-side signatures make appeals costly enough to deter spam without letting winners block appeals.</p></div>
-    </div>
-  </section>
-
-  <section class="reveal">
-    <p class="sec-label">Quick math</p>
-    <h2>The math, briefly</h2>
-    <div class="story">
-      <div class="story-card">
-        <h3>Money flow</h3>
-        <p class="formula">fee revenue = disputed money &times; case fee<br>juror pay pool = fee revenue &times; juror-pay share<br>reward pool = fee revenue &times; reward share<br>retained jurors respond to pay, rewards, and money at risk</p>
-      </div>
-      <div class="story-card">
-        <h3>Money at risk</h3>
-        <p class="formula">risk per vote = pay per vote / (lazy-vote mistakes &times; penalty size)<br>live money at risk = risk per vote &times; pending votes per juror<br>if the burden gets too heavy, the available juror pool thins</p>
-      </div>
-      <div class="story-card">
-        <h3>Jury-control odds</h3>
-        <p class="formula">usable attackers = coordinated attackers who qualify + rented accounts that pass checks<br>control chance = finite draw chance of an attacker majority<br>large cases automatically require multiple juries</p>
-      </div>
-      <div class="story-card">
-        <h3>Safety score</h3>
-        <p class="formula">score rises with juror accuracy, aptitude tests, and reward-funded retention<br>score falls with active risks, and any attack that works caps the score</p>
-      </div>
-    </div>
-  </section>
-
-  <section class="reveal">
-    <p class="sec-label">Risk ranking</p>
-    <h2>What is closest to breaking</h2>
-    <p>The highest bar is the first place to inspect. If attackers can control a jury, widen the available juror pool or use harder jury rules. If jurors follow the crowd, add aptitude tests. If lazy voting gets paid, increase the money at risk.</p>
-    <div class="widget reveal">
-      <div class="widget-head"><span class="live"></span> Live attack ranking</div>
-      <div class="rank-list">
-        <div class="rank"><span>Coordinated group</span><div class="track"><span id="rankCapture"></span></div><b id="rankCaptureV">&hellip;</b></div>
-        <div class="rank"><span>Bribes</span><div class="track"><span id="rankBribe"></span></div><b id="rankBribeV">&hellip;</b></div>
-        <div class="rank"><span>Rented accounts</span><div class="track"><span id="rankRental"></span></div><b id="rankRentalV">&hellip;</b></div>
-        <div class="rank"><span>Lazy voting</span><div class="track"><span id="rankLazy"></span></div><b id="rankLazyV">&hellip;</b></div>
-        <div class="rank"><span>Delay attacks</span><div class="track"><span id="rankGrief"></span></div><b id="rankGriefV">&hellip;</b></div>
-        <div class="rank"><span>Crowd-following</span><div class="track"><span id="rankDrift"></span></div><b id="rankDriftV">&hellip;</b></div>
-      </div>
-      <div class="insight-grid">
-        <div class="insight-panel">
-          <h3>Assumptions that matter most</h3>
-          <div class="driver-list" id="driverList" aria-live="polite"></div>
-        </div>
-        <div class="insight-panel">
-          <h3>Warnings</h3>
-          <div class="warning-list" id="warningList" aria-live="polite"></div>
-        </div>
-      </div>
-    </div>
-  </section>
-
-  <section class="reveal">
-    <p class="sec-label">The takeaway</p>
-    <h2>The goal: bad attacks should lose money</h2>
-    <p>More money at risk is not automatically safer. A higher fee is not automatically better. A bigger jury is not free. A stricter gate can make jurors copy the crowd. Every knob has a job and a cost.</p>
-    <p>The model looks healthiest when cases pay enough honest jurors, aptitude tests keep jurors honest, and every attack costs more than it can win.</p>
+    <p class="sec-label">What the game shows</p>
+    <h2>DemoThemis layers independent defences.</h2>
+    <p>Demand funds participation, random panels resist control, private ballots block proof, live checks weaken rentals, pending pay prices careless work, and aptitude tests protect decision quality. Robustness comes from the stack—not from any single switch.</p>
   </section>
 
   <footer class="endnote reveal">
@@ -576,7 +464,7 @@
       <a href="mvp.html">Live Demo MVP</a>
       <a href="/">Home &middot; the map</a>
     </div>
-    <p class="signoff">Every knob has a job. Every attack tests whether that job is priced correctly.</p>
+    <p class="signoff">A practical attack must beat every defence that stands between recruitment and finality.</p>
   </footer>
 </main>
 
@@ -588,56 +476,75 @@
 (function () {
   "use strict";
   function byId(id) { return document.getElementById(id); }
+  function showModelError(error) {
+    var status = byId("labStatus");
+    if (status) status.className = "lab-status vulnerable";
+    if (byId("labStatusIcon")) byId("labStatusIcon").textContent = "!";
+    if (byId("labStatusLabel")) byId("labStatusLabel").textContent = "Model unavailable";
+    if (byId("labStatusDetail")) byId("labStatusDetail").textContent = "Reload the page to try again.";
+    if (byId("labAnnouncement")) byId("labAnnouncement").textContent = "The robustness model could not load.";
+    Array.prototype.forEach.call(document.querySelectorAll(".lab-shell input, .lab-shell button"), function (control) { control.disabled = true; });
+    if (window.console && console.error) console.error(error);
+  }
   var ids = ["flow", "stake", "lag", "fee", "payShare", "rewardShare", "jurors", "skill", "careless", "slash", "syntheticTests", "bloc", "rented", "rerolls"];
   var lockIds = ["lockDraw", "lockBallot", "lockFace", "lockReserve", "lockKeys", "lockAppeal"];
-  var selectedAttack = "bloc";
-  var ATTACK_DETAILS = {
-    bloc: "A coordinated group only matters if enough attackers stay qualified, active, available, and randomly drawn together. The important number is the available jury pool, not headline signups.",
-    bribe: "A bribe becomes dangerous when the buyer can prove delivery. Private votes make that proof hard, so a juror can take the money and still vote honestly.",
-    rental: "Personhood checks limit fake accounts, but not willing humans. Live face checks make rented accounts harder to use at the exact moment of voting.",
-    lazy: "Lazy voting is a shortcut: skip the work and hope to get paid. Money at risk should make that shortcut lose more than it saves, without pushing honest jurors out.",
-    grief: "Delay attacks use appeals to lock funds or slow finality. Appeal costs should be high enough that delaying the result costs more than it can win.",
-    drift: "Crowd-following appears when jurors copy the majority instead of reading evidence. Aptitude tests give the court an outside signal that agreement is not the same thing as correctness."
-  };
   var ATTACK_LABELS = {
-    capture: "Coordinated group attack",
+    capture: "Coordinated coalition",
     bribe: "Provable bribe",
     rental: "Rented accounts",
     lazy: "Lazy voting",
-    grief: "Delay attack",
-    drift: "Crowd-following"
+    grief: "Appeal delay",
+    drift: "Crowd-following",
+    quality: "Decision quality"
   };
   var ATTACK_IDS = ["bloc", "bribe", "rental", "lazy", "grief", "drift"];
   var RISK_TO_ATTACK = { capture: "bloc", bribe: "bribe", rental: "rental", lazy: "lazy", grief: "grief", drift: "drift" };
+  var PROTECTION_BENCHMARKS = {
+    capture: { kind: "max", limit: .01, label: "Coalition-majority chance at or below 1%" },
+    bribe: { kind: "cover", label: "Bribe cost covers receipt-adjusted case value" },
+    rental: { kind: "max", limit: .01, label: "Rental-only majority chance at or below 1%" },
+    lazy: { kind: "cover", label: "Expected penalty covers shortcut benefit" },
+    grief: { kind: "cover", label: "Appeal floor covers modeled delay value" },
+    drift: { kind: "min", floor: .75, label: "Independent-test signal at or above 75%" }
+  };
+  var STRONG_BENCHMARK_RATIO = 1.2;
+  var QUALITY_FLOOR = .75;
+  var EPSILON = 1e-9;
+  function maxBenchmarkRatio(limit, actual) { return actual <= EPSILON ? Infinity : limit / actual; }
+  function coverBenchmarkRatio(cost, benefit) { return benefit <= EPSILON ? Infinity : cost / benefit; }
+  function minBenchmarkRatio(actual, floor) { return actual / Math.max(EPSILON, floor); }
+  function benchmarkPressure(check) { return !check || !check.applicable || check.ratio === Infinity ? 0 : clamp(1 / Math.max(EPSILON, check.ratio), 0, 1); }
   var PRESET_CASES = {
     base: { flow: 5000000, stake: 45, lag: 4, fee: 20, payShare: 70, rewardShare: 20, jurors: 52, skill: 68, careless: 25, slash: 100, bloc: 300, rented: 0, rerolls: 1, locks: true, syntheticTests: 1000 },
-    cold: { flow: 500000, stake: 35, lag: 4, fee: 20, payShare: 70, rewardShare: 20, jurors: 25, skill: 60, careless: 30, slash: 100, bloc: 120, rented: 0, rerolls: 1, locks: true, syntheticTests: 500 },
+    cold: { flow: 500000, stake: 35, lag: 4, fee: 20, payShare: 70, rewardShare: 20, jurors: 25, skill: 72, careless: 25, slash: 100, bloc: 120, rented: 300, rerolls: 1, locks: true, syntheticTests: 500 },
     surge: { flow: 35000000, stake: 58, lag: 5, fee: 20, payShare: 70, rewardShare: 20, jurors: 48, skill: 68, careless: 25, slash: 100, bloc: 500, rented: 0, rerolls: 1, locks: true, syntheticTests: 2000 },
-    whale: { flow: 25000000, stake: 90, lag: 5, fee: 20, payShare: 70, rewardShare: 20, jurors: 100, skill: 72, careless: 20, slash: 100, bloc: 650, rented: 0, rerolls: 1, locks: true, syntheticTests: 1000 },
-    bloc: { flow: 8000000, stake: 65, lag: 4, fee: 20, payShare: 70, rewardShare: 20, jurors: 100, skill: 68, careless: 25, slash: 100, bloc: 1000, rented: 0, rerolls: 1, locks: true, syntheticTests: 1000 },
-    drift: { flow: 1200000, stake: 38, lag: 6, fee: 20, payShare: 70, rewardShare: 20, jurors: 45, skill: 68, careless: 35, slash: 100, bloc: 100, rented: 0, rerolls: 1, locks: true, syntheticTests: 50 }
+    whale: { flow: 25000000, stake: 90, lag: 5, fee: 20, payShare: 70, rewardShare: 20, jurors: 100, skill: 72, careless: 20, slash: 100, bloc: 650, rented: 0, rerolls: 1, locks: true, syntheticTests: 5000 },
+    bloc: { flow: 8000000, stake: 65, lag: 4, fee: 20, payShare: 70, rewardShare: 20, jurors: 100, skill: 68, careless: 25, slash: 100, bloc: 1000, rented: 0, rerolls: 1, locks: true, syntheticTests: 6000 },
+    drift: { flow: 1200000, stake: 38, lag: 6, fee: 20, payShare: 70, rewardShare: 20, jurors: 45, skill: 72, careless: 25, slash: 100, bloc: 100, rented: 0, rerolls: 1, locks: true, syntheticTests: 700 }
   };
   var STRESS_CASES = [
-    { id: "current", label: "Current setup", note: "The model exactly as set.", apply: function (s) { return s; } },
-    { id: "cold", label: "Cold start", note: "Fewer jurors and fewer aptitude tests.", preset: "cold" },
-    { id: "surge", label: "Case surge", note: "More work arrives before enough jurors join.", preset: "surge" },
-    { id: "whale", label: "Huge case", note: "A large case triggers the hardest jury rules.", preset: "whale" },
-    { id: "bloc", label: "Coordinated attack", note: "A larger attacker group tests the available jury pool.", preset: "bloc" },
-    { id: "drift", label: "Crowd-following", note: "Aptitude tests thin while shortcuts get more tempting.", preset: "drift" },
-    { id: "appeal", label: "Delay attack", note: "Delay value rises, so appeal costs and sincerity pricing must rise with it.", preset: "base", apply: function (s) { s.lag += 2; s.assumptions.griefDelayRate = Math.max(s.assumptions.griefDelayRate, .016); s.assumptions.appealDelayRate = Math.max(s.assumptions.appealDelayRate, .018); s.assumptions.petitionMultiplier = Math.max(s.assumptions.petitionMultiplier, 1.15); return s; } }
+    { id: "cold", label: "Thin juror pool", note: "266 opted-in jurors · 300 rental attempts", preset: "cold" },
+    { id: "surge", label: "Case surge", note: "$35m monthly disputed value · 500 recruited attackers", preset: "surge" },
+    { id: "whale", label: "High-value case", note: "31-seat scaled jury rules · wide juror pool", preset: "whale" },
+    { id: "bloc", label: "1,000-person coalition", note: "Maximum visible coalition · qualification still required", preset: "bloc" },
+    { id: "drift", label: "Thin aptitude supply", note: "Reduced independent tests · careful-vote baseline retained", preset: "drift" },
+    { id: "appeal", label: "Appeal-delay pressure", note: "A six-week finality window tests the same cost rule", preset: "base", apply: function (s) { s.lag += 2; return s; } }
   ];
   var pinnedAssumptions = {};
   var lastRender = { drivers: "", warnings: "", pins: "" };
+  var lastAnnouncement = "";
+  var lastConfidence = { level: "Calculating", detail: "testing published ranges" };
   if (!Array.isArray(window.ASSUMPTIONS) || !window.ASSUMPTIONS.length) {
-    throw new Error("Missing assumptions.js for Break the court");
+    showModelError(new Error("Missing assumptions.js for Break the court"));
+    return;
   }
   var ASSUMPTIONS = window.ASSUMPTIONS;
   var OUTPUT_DEPENDENCIES = [
-    { label: "Safety score", deps: "juror accuracy, active risks, attack-work cap, aptitude tests, rewards, appeal costs" },
-    { label: "Juror pay", deps: "monthly disputed money, fee split, case workload, retained jurors, reward flow" },
-    { label: "Money at risk", deps: "pay per vote, lazy-vote mistakes, penalty size, minimum risk floor, workload curve, retained jurors" },
-    { label: "Available jurors", deps: "active jurors, money-at-risk burden, reward pool, reward retention assumptions" },
-    { label: "Chance attackers control a jury", deps: "available jury pool, large-jury eligibility, coordinated attackers who qualify, rented accounts, face checks, random draw, multiple juries" },
+    { label: "Correct-majority estimate", deps: "individual answer accuracy, jury size, aptitude tests, reward incentive" },
+    { label: "Average juror funding", deps: "monthly disputed value, fee split, case workload, retained jurors" },
+    { label: "Lazy-vote margin", deps: "pay per vote, shortcut benefit, collectible penalty, pending-pay exposure" },
+    { label: "Drawable jurors", deps: "opted-in jurors, pending-pay burden, reward pool, eligibility assumptions" },
+    { label: "Jury-control chance", deps: "drawable pool, coalition qualification, rentals, face checks, public draw, scaled jury rules" },
     { label: "Crowd-following", deps: "resolved cases, synthetic tests, minimum tests before trusting grades, reputation lift" },
     { label: "Delay attack", deps: "next-jury cost, control-risk floor, delay cost, petition multiplier, later-audit drag" }
   ];
@@ -659,8 +566,6 @@
     if (x > 0 && x < 0.0001) return "<0.01%";
     return (x * 100).toFixed(x < .1 ? 2 : 1) + "%";
   }
-  function riskText(x) { return Math.round(clamp(x, 0, 1) * 100) + "/100"; }
-  function clsRisk(x) { return x < .18 ? "good" : x < .45 ? "mid" : "bad"; }
   function attackLabel(key) { return ATTACK_LABELS[key] || ATTACK_LABELS[key === "bloc" ? "capture" : key] || key; }
   function attackForRisk(key) { return RISK_TO_ATTACK[key] || key; }
   var AFFECT_LABELS = {
@@ -675,20 +580,29 @@
     keys: "aptitude tests",
     appeal: "appeal costs",
     grief: "delay attacks",
-    safety: "safety score"
+    safety: "robustness index"
   };
   function affectLabel(key) { return AFFECT_LABELS[key] || key; }
-  function modelState(m) {
-    var cleared = Object.keys(m.clears).filter(function (k) { return m.clears[k]; });
-    var top = weakestRisk(m);
-    if (cleared.length) return { state: "bad", label: "Works", cleared: cleared, top: top };
-    if (m.safety < .68 || top.value > .35 || m.keys < m.keyScale || m.reserveBurden > m.reserveBurdenLimit) return { state: "mid", label: "Watch", cleared: cleared, top: top };
-    return { state: "good", label: "Passes", cleared: cleared, top: top };
-  }
-  function weakestRisk(m) {
-    var entries = Object.keys(m.risks).map(function (key) { return { key: key, attack: attackForRisk(key), value: m.risks[key] }; });
-    entries.sort(function (a, b) { return b.value - a.value; });
-    return entries[0] || { key: "capture", attack: "bloc", value: 0 };
+  function modelState(v, m) {
+    var checks = Object.keys(m.benchmarks || {}).map(function (key) { return Object.assign({ key: key }, m.benchmarks[key]); }).filter(function (check) { return check.applicable; });
+    checks.sort(function (a, b) { return a.ratio - b.ratio; });
+    var weakestAttack = checks[0] || null;
+    var quality = { key: "quality", applicable: m.correctPanel !== null, ratio: m.correctPanel === null ? 0 : m.correctPanel / QUALITY_FLOOR, actual: m.correctPanel, floor: QUALITY_FLOOR };
+    var weakest = !weakestAttack || quality.ratio < weakestAttack.ratio ? quality : weakestAttack;
+    var state = m.panelShortage || m.appealPanelShortage || !weakest || weakest.ratio < 1 ? "bad" : weakest.ratio < STRONG_BENCHMARK_RATIO ? "mid" : "good";
+    var disabledLocks = lockIds.filter(function (id) { return !v[id]; });
+    return {
+      state: state,
+      label: state === "good" ? "Strong" : state === "mid" ? "Thin margin" : "Outside range",
+      teaching: disabledLocks.length > 0,
+      disabledLocks: disabledLocks,
+      cleared: checks.filter(function (check) { return check.ratio < 1; }).map(function (check) { return check.key; }),
+      top: weakest ? { key: weakest.key, attack: attackForRisk(weakest.key), value: weakest.key === "quality" ? clamp(1 - m.correctPanel, 0, 1) : benchmarkPressure(weakest), ratio: weakest.ratio } : { key: "capture", attack: "bloc", value: 1, ratio: 0 },
+      weakest: weakest,
+      quality: quality,
+      passed: checks.filter(function (check) { return check.ratio >= 1; }).length,
+      total: checks.length
+    };
   }
   function clampModelState(s) {
     s.flow = clamp(s.flow, 10000, 35000000);
@@ -923,10 +837,10 @@
         reset.setAttribute("aria-label", "Reset " + a.label + " assumption");
         controls.appendChild(pinLabel);
         controls.appendChild(reset);
-        range.addEventListener("input", update);
-        range.addEventListener("change", update);
-        pin.addEventListener("change", function () { pinnedAssumptions[a.id] = pin.checked; update(); });
-        reset.addEventListener("click", function () { range.value = a.default; update(); });
+        range.addEventListener("input", function () { markCustom(); update(false); });
+        range.addEventListener("change", function () { markCustom(); update(true); });
+        pin.addEventListener("change", function () { pinnedAssumptions[a.id] = pin.checked; syncAssumptionOutputs(); });
+        reset.addEventListener("click", function () { range.value = a.default; markCustom(); update(true); });
         row.appendChild(head);
         row.appendChild(range);
         row.appendChild(meta);
@@ -973,93 +887,151 @@
 
   function compute(v) {
     var a = v.assumptions || defaultAssumptions();
-    var totalCases = Math.max(1, v.flow / Math.max(1, v.stake));
-    var courtCases = totalCases; // Pure court
-    var quietCases = 0; // Pure court
+    var totalCases = v.flow / Math.max(1, v.stake);
+    var courtCases = totalCases;
+    var quietCases = 0;
     var panel = panelFor(v.stake);
     var majority = Math.floor(panel / 2) + 1;
     var seatVotes = courtCases * panel;
     var feeRevenue = v.flow * v.fee;
     var jurorPayPool = feeRevenue * v.payShare;
     var rewardPool = feeRevenue * v.rewardShare;
-    var payPerVote = jurorPayPool / Math.max(1, seatVotes);
-    var reserveUnit = payPerVote / Math.max(0.001, v.careless * v.slash);
+    var payPerVote = jurorPayPool / Math.max(EPSILON, seatVotes);
+    var reserveUnit = payPerVote * a.reservePayMultiple;
     var activeJurors = Math.max(1, v.jurors);
     var supply = null;
+
     for (var si = 0; si < 4; si++) {
       var votesPerJurorMonth = seatVotes / Math.max(1, activeJurors);
       var pendingVotes = votesPerJurorMonth * (v.lag / 4);
       var payPressure = jurorPayPool / Math.max(1, activeJurors);
-      var rewardPerJuror = rewardPool * a.rewardEligibleShare / Math.max(1, activeJurors);
+      var rewardPerJuror = rewardPool / Math.max(1, activeJurors);
+      var eligibleJurors = Math.max(1, activeJurors * a.rewardEligibleShare);
+      var rewardPerEligibleJuror = rewardPool / eligibleJurors;
       var reserveVotes = Math.pow(Math.max(a.reserveFloorVotes, pendingVotes), a.reserveElasticity);
       var reserve = v.lockReserve ? reserveUnit * reserveVotes : 0;
       var retentionIncome = payPressure + rewardPerJuror * a.rewardRetentionCredit;
       var reserveBurden = reserve / Math.max(1, retentionIncome);
       var exitPressure = v.lockReserve ? Math.pow(Math.max(0, reserveBurden) / Math.max(0.1, a.reserveExitBurden), a.reserveExitSharpness) : 0;
       var reserveRetention = v.lockReserve ? 1 - (exitPressure / (1 + exitPressure)) * a.reserveExitMax : 1;
-      var rewardSignal = 1 - Math.exp(-rewardPerJuror / Math.max(1, payPressure * a.rewardSignalScale));
+      var rewardSignal = a.rewardEligibleShare * (1 - Math.exp(-rewardPerEligibleJuror / Math.max(1, payPressure * a.rewardSignalScale)));
       var retention = clamp(reserveRetention + rewardSignal * a.rewardRetentionLift, .08, 1);
       var nextActiveJurors = Math.max(1, Math.round(v.jurors * retention));
-      supply = { votesPerJurorMonth: votesPerJurorMonth, pendingVotes: pendingVotes, payPressure: payPressure, rewardPerJuror: rewardPerJuror, reserveVotes: reserveVotes, reserveFloorApplied: Math.max(a.reserveFloorVotes, pendingVotes) > pendingVotes || Math.abs(a.reserveElasticity - 1) > .0001, reserve: reserve, retentionIncome: retentionIncome, reserveBurden: reserveBurden, reserveRetention: reserveRetention, rewardSignal: rewardSignal, retention: retention, effectiveJurors: nextActiveJurors, supplyLoss: Math.max(0, v.jurors - nextActiveJurors) };
+      supply = {
+        votesPerJurorMonth: votesPerJurorMonth,
+        pendingVotes: pendingVotes,
+        payPressure: payPressure,
+        rewardPerJuror: rewardPerJuror,
+        rewardPerEligibleJuror: rewardPerEligibleJuror,
+        reserveVotes: reserveVotes,
+        reserveFloorApplied: Math.max(a.reserveFloorVotes, pendingVotes) > pendingVotes || Math.abs(a.reserveElasticity - 1) > .0001,
+        reserve: reserve,
+        retentionIncome: retentionIncome,
+        reserveBurden: reserveBurden,
+        reserveRetention: reserveRetention,
+        rewardSignal: rewardSignal,
+        retention: retention,
+        effectiveJurors: nextActiveJurors,
+        supplyLoss: Math.max(0, v.jurors - nextActiveJurors)
+      };
       activeJurors = nextActiveJurors;
     }
+
     var effectiveJurors = Math.max(1, supply.effectiveJurors);
     var seniorGate = panel === 31 ? a.seniorPoolShare : 1;
     var drawPoolShare = clamp(a.drawPoolShare * seniorGate, .01, 1);
-    var drawJurors = Math.max(1, Math.round(effectiveJurors * drawPoolShare));
+    var drawJurors = Math.max(0, Math.round(effectiveJurors * drawPoolShare));
     var panelShortage = drawJurors < panel;
-    var rentedPass = v.lockFace ? Math.round(v.rented * a.faceSurvival) : v.rented;
+    var rentedPass = v.lockFace ? Math.round(v.rented * a.faceSurvival) : Math.round(v.rented);
     var coordinatedReady = Math.round(v.bloc * a.coordinationReadyShare);
+    var coordinatedSeats = Math.min(drawJurors, coordinatedReady);
+    var rentalSeats = Math.min(drawJurors, rentedPass);
     var intendedBloc = Math.max(0, coordinatedReady + rentedPass);
     var effectiveBloc = Math.min(drawJurors, intendedBloc);
     var share = effectiveBloc / Math.max(1, drawJurors);
-    var baseCapture = panelShortage ? 1 : hypergeomTail(drawJurors, effectiveBloc, panel, majority);
     var attempts = v.lockDraw ? 1 : Math.max(1, v.rerolls);
-    var attemptedCapture = 1 - Math.pow(1 - baseCapture, attempts);
     var autoPanels = autoParallelPanels(v.stake);
     var parallelPanels = Math.max(autoPanels, Math.max(1, Math.round(a.parallelPanels)));
-    var capture = panelShortage ? 1 : Math.pow(attemptedCapture, parallelPanels);
 
-    // Aptitude tests in this MVP are based strictly on consented tests plus synthetic tests.
-    var consentedTests = courtCases * a.consentedTestShare;
-    var keys = v.lockKeys ? consentedTests + v.syntheticTests : 0;
+    function majorityChance(seats, jurySize) {
+      if (drawJurors < jurySize) return null;
+      return hypergeomTail(drawJurors, Math.min(drawJurors, seats), jurySize, Math.floor(jurySize / 2) + 1);
+    }
+    function afterAttempts(probability) {
+      if (probability === null) return null;
+      return 1 - Math.pow(1 - probability, attempts);
+    }
+    function acrossPanels(probability) {
+      return probability === null ? null : Math.pow(probability, parallelPanels);
+    }
+
+    var baseCapture = majorityChance(effectiveBloc, panel);
+    var attemptedCapture = afterAttempts(baseCapture);
+    var capture = acrossPanels(attemptedCapture);
+    var baseRentalCapture = majorityChance(rentalSeats, panel);
+    var attemptedRentalCapture = afterAttempts(baseRentalCapture);
+    var rentalCapture = acrossPanels(attemptedRentalCapture);
+
+    var consentedTestCases = courtCases * a.consentedTestShare;
+    var consentedTestSeats = consentedTestCases * panel;
+    var testSeats = v.lockKeys ? consentedTestSeats + v.syntheticTests : 0;
     var keyScale = Math.max(a.keyScaleFloor, effectiveJurors * a.keyJurorShare);
-    var keySignal = v.lockKeys ? 1 - Math.exp(-keys / Math.max(0.1, keyScale)) : 0;
+    var keySignal = v.lockKeys ? 1 - Math.exp(-testSeats / Math.max(0.1, keyScale)) : 0;
     var effectiveSkill = clamp(v.skill + (keySignal * a.reputationSkillLift) + (supply.rewardSignal * a.rewardSkillLift), 0, 1);
-    var honestPanel = panelShortage ? 0 : hypergeomTail(drawJurors, Math.round(drawJurors * effectiveSkill), panel, majority);
-    var lazyLoss = supply.reserve * v.careless * v.slash;
-    var lazyIncome = payPerVote * Math.max(1, supply.pendingVotes) * a.lazyShortcutShare;
+    var correctPanel = panelShortage ? null : binomTail(panel, majority, effectiveSkill);
+
+    var reservePerPricedVote = v.lockReserve ? supply.reserve / Math.max(EPSILON, supply.reserveVotes) : 0;
+    var lazyIncome = payPerVote * a.lazyShortcutShare;
+    var lazyLoss = reservePerPricedVote * v.careless * v.slash;
     var lazyMargin = lazyLoss - lazyIncome;
-    var lazyAtFloor = Math.abs(lazyMargin) < Math.max(1, lazyIncome * 0.01);
-    var lazyClears = !lazyAtFloor && lazyMargin < 0;
-    var bribeCost = majority * (supply.reserve + payPerVote);
-    var bribeClears = !v.lockBallot && v.stake > bribeCost;
-    var nextSeats = nextPanel(panel);
-    var panelFloor = nextSeats * payPerVote;
-    var captureFloor = capture * v.stake * a.appealCaptureMultiplier;
-    var delayFloor = v.stake * a.appealDelayRate * v.lag;
-    var appealFloor = v.lockAppeal ? Math.max(panelFloor, captureFloor, delayFloor) * a.petitionMultiplier : panelFloor * 0.1;
-    var griefBenefit = v.stake * a.griefDelayRate * v.lag * (1 - a.finalityAuditDrag);
-    var griefClears = griefBenefit > appealFloor;
-    var driftRisk = 1 - keySignal;
-    var rentalRisk = clamp(rentedPass / Math.max(1, drawJurors), 0, 1);
-    var bribeRisk = bribeClears ? a.bribeClearRisk : (v.lockBallot ? a.ballotResidualRisk : clamp(v.stake / Math.max(1, bribeCost) * a.unsealedBribeScale, .08, .6));
-    var lazyRisk = lazyMargin >= 0 ? .04 : clamp(Math.abs(lazyMargin) / Math.max(1, lazyIncome), .15, .9);
-    var griefRisk = griefClears ? .75 : .06;
-    var captureRisk = clamp(capture, 0, 1);
-    var clears = { capture: panelShortage || capture > .20, bribe: bribeClears, rental: rentalRisk > .25, lazy: lazyClears, grief: griefClears, drift: keySignal < .25 };
-    var risks = { capture: captureRisk, bribe: bribeRisk, rental: rentalRisk, lazy: lazyRisk, grief: griefRisk, drift: driftRisk };
-    var clearSeverity = 0;
-    Object.keys(clears).forEach(function (k) { if (clears[k]) clearSeverity = Math.max(clearSeverity, risks[k]); });
-    var safety = honestPanel;
-    safety -= captureRisk * a.captureWeight;
-    safety -= bribeRisk * a.bribeWeight;
-    safety -= rentalRisk * a.rentalWeight;
-    safety -= lazyRisk * a.lazyWeight;
-    safety -= griefRisk * a.griefWeight;
-    safety -= driftRisk * a.driftWeight;
-    var clearCap = clearSeverity > 0 ? Math.max(.03, .62 - clearSeverity * a.clearPenalty) : 1;
-    safety = clamp(Math.min(safety, clearCap), 0, 1);
+    var lazyRatio = coverBenchmarkRatio(lazyLoss, lazyIncome);
+    var lazyAtFloor = Math.abs(lazyMargin) < Math.max(.01, lazyIncome * .01);
+    var lazyClears = lazyRatio < 1;
+
+    var wrongVoteLoss = reservePerPricedVote * v.slash;
+    var receiptEnforceability = v.lockBallot ? a.ballotResidualRisk : 1;
+    var bribeBenefit = v.stake * receiptEnforceability;
+    var bribeCost = majority * (payPerVote + wrongVoteLoss);
+    var bribeMargin = bribeCost - bribeBenefit;
+    var bribeRatio = coverBenchmarkRatio(bribeCost, bribeBenefit);
+    var bribeClears = bribeRatio < 1;
+
+    var nextSeats = panel >= 31 ? null : nextPanel(panel);
+    var appealApplicable = nextSeats !== null;
+    var appealPanelShortage = appealApplicable && drawJurors < nextSeats;
+    var nextBaseCapture = appealApplicable ? majorityChance(effectiveBloc, nextSeats) : null;
+    var nextCapture = nextBaseCapture === null ? null : acrossPanels(afterAttempts(nextBaseCapture));
+    var panelFloor = appealApplicable && !appealPanelShortage ? nextSeats * payPerVote : 0;
+    var captureFloor = appealApplicable && nextCapture !== null ? nextCapture * v.stake * a.appealCaptureMultiplier : 0;
+    var delayFloor = appealApplicable ? v.stake * a.appealDelayRate * v.lag : 0;
+    var appealFloor = appealApplicable && v.lockAppeal && !appealPanelShortage ? Math.max(panelFloor, captureFloor, delayFloor) * a.petitionMultiplier : 0;
+    var griefBenefit = appealApplicable ? v.stake * a.griefDelayRate * v.lag * (1 - a.finalityAuditDrag) : 0;
+    var griefMargin = appealFloor - griefBenefit;
+    var griefRatio = appealApplicable ? (appealPanelShortage ? 0 : coverBenchmarkRatio(appealFloor, griefBenefit)) : Infinity;
+    var griefClears = appealApplicable && griefRatio < 1;
+    var driftMargin = keySignal - PROTECTION_BENCHMARKS.drift.floor;
+    var driftRatio = minBenchmarkRatio(keySignal, PROTECTION_BENCHMARKS.drift.floor);
+
+    var benchmarks = {
+      capture: Object.assign({}, PROTECTION_BENCHMARKS.capture, { applicable: !panelShortage, ratio: capture === null ? 0 : maxBenchmarkRatio(PROTECTION_BENCHMARKS.capture.limit, capture), actual: capture, margin: capture === null ? null : PROTECTION_BENCHMARKS.capture.limit - capture, unit: "probability" }),
+      bribe: Object.assign({}, PROTECTION_BENCHMARKS.bribe, { applicable: true, ratio: bribeRatio, cost: bribeCost, benefit: bribeBenefit, margin: bribeMargin, unit: "money" }),
+      rental: Object.assign({}, PROTECTION_BENCHMARKS.rental, { applicable: !panelShortage, ratio: rentalCapture === null ? 0 : maxBenchmarkRatio(PROTECTION_BENCHMARKS.rental.limit, rentalCapture), actual: rentalCapture, margin: rentalCapture === null ? null : PROTECTION_BENCHMARKS.rental.limit - rentalCapture, unit: "probability" }),
+      lazy: Object.assign({}, PROTECTION_BENCHMARKS.lazy, { applicable: true, ratio: lazyRatio, cost: lazyLoss, benefit: lazyIncome, margin: lazyMargin, unit: "money-per-vote" }),
+      grief: Object.assign({}, PROTECTION_BENCHMARKS.grief, { applicable: appealApplicable, ratio: griefRatio, cost: appealFloor, benefit: griefBenefit, margin: griefMargin, unit: "money" }),
+      drift: Object.assign({}, PROTECTION_BENCHMARKS.drift, { applicable: true, ratio: driftRatio, actual: keySignal, margin: driftMargin, unit: "probability" })
+    };
+    var risks = {};
+    var clears = {};
+    Object.keys(benchmarks).forEach(function (key) {
+      risks[key] = benchmarkPressure(benchmarks[key]);
+      clears[key] = benchmarks[key].applicable && benchmarks[key].ratio < 1;
+    });
+    if (panelShortage) clears.capture = true;
+    var applicableRatios = Object.keys(benchmarks).filter(function (key) { return benchmarks[key].applicable; }).map(function (key) { return benchmarks[key].ratio; });
+    var minimumRatio = applicableRatios.length ? Math.min.apply(Math, applicableRatios) : 0;
+    var benchmarkIndex = clamp(minimumRatio / STRONG_BENCHMARK_RATIO, 0, 1);
+    var safety = panelShortage || appealPanelShortage || correctPanel === null ? 0 : Math.min(benchmarkIndex, correctPanel);
+
     return {
       totalCases: totalCases,
       courtCases: courtCases,
@@ -1075,6 +1047,7 @@
       jurorPayPool: jurorPayPool,
       rewardPool: rewardPool,
       rewardPerJuror: supply.rewardPerJuror,
+      rewardPerEligibleJuror: supply.rewardPerEligibleJuror,
       rewardSignal: supply.rewardSignal,
       retentionIncome: supply.retentionIncome,
       retention: supply.retention,
@@ -1084,296 +1057,282 @@
       drawJurors: drawJurors,
       drawPoolShare: drawPoolShare,
       panelShortage: panelShortage,
+      appealPanelShortage: appealPanelShortage,
       payPerVote: payPerVote,
       payPressure: supply.payPressure,
       reserveUnit: reserveUnit,
+      reservePerPricedVote: reservePerPricedVote,
       reserve: supply.reserve,
       reserveBurden: supply.reserveBurden,
       reserveBurdenLimit: a.reserveExitBurden,
       rentedPass: rentedPass,
+      rentalSeats: rentalSeats,
       coordinatedReady: coordinatedReady,
+      coordinatedSeats: coordinatedSeats,
       intendedBloc: intendedBloc,
       blocCapped: intendedBloc > drawJurors,
       effectiveBloc: effectiveBloc,
       share: share,
       baseCapture: baseCapture,
       attemptedCapture: attemptedCapture,
+      capture: capture,
+      baseRentalCapture: baseRentalCapture,
+      attemptedRentalCapture: attemptedRentalCapture,
+      rentalCapture: rentalCapture,
       autoPanels: autoPanels,
       parallelPanels: parallelPanels,
-      capture: capture,
       effectiveSkill: effectiveSkill,
-      honestPanel: honestPanel,
+      correctPanel: correctPanel,
+      honestPanel: correctPanel,
       lazyLoss: lazyLoss,
       lazyIncome: lazyIncome,
       lazyMargin: lazyMargin,
+      lazyRatio: lazyRatio,
       lazyAtFloor: lazyAtFloor,
       lazyClears: lazyClears,
+      wrongVoteLoss: wrongVoteLoss,
+      receiptEnforceability: receiptEnforceability,
+      bribeBenefit: bribeBenefit,
       bribeCost: bribeCost,
+      bribeMargin: bribeMargin,
+      bribeRatio: bribeRatio,
       bribeClears: bribeClears,
-      consentedTests: consentedTests,
+      consentedTestCases: consentedTestCases,
+      consentedTestSeats: consentedTestSeats,
+      consentedTests: consentedTestSeats,
       syntheticTests: v.syntheticTests,
-      keys: keys,
+      testSeats: testSeats,
+      keys: testSeats,
       keyScale: keyScale,
       keySignal: keySignal,
+      driftMargin: driftMargin,
+      driftRatio: driftRatio,
+      nextSeats: nextSeats,
+      appealApplicable: appealApplicable,
+      nextCapture: nextCapture,
+      panelFloor: panelFloor,
+      captureFloor: captureFloor,
+      delayFloor: delayFloor,
       appealFloor: appealFloor,
       griefBenefit: griefBenefit,
+      griefMargin: griefMargin,
+      griefRatio: griefRatio,
       griefClears: griefClears,
+      benchmarks: benchmarks,
       clears: clears,
-      clearSeverity: clearSeverity,
-      clearCap: clearCap,
       risks: risks,
       safety: safety,
+      benchmarkIndex: benchmarkIndex,
+      minimumRatio: minimumRatio,
       casesPerJuror: seatVotes / Math.max(1, effectiveJurors)
     };
   }
 
+  function setRangeValue(id, text) {
+    var output = byId(id + "Out");
+    var range = byId(id);
+    if (output) output.textContent = text;
+    if (range) range.setAttribute("aria-valuetext", text);
+  }
+  function casesText(value) {
+    if (value < .1) return "<0.1";
+    if (value < 10) return value.toFixed(1).replace(/\.0$/, "");
+    return num(value);
+  }
+  function ratioText(value) {
+    if (value === Infinity) return "no active pressure";
+    if (!isFinite(value)) return "unavailable";
+    if (value >= 100) return ">99× benchmark";
+    return value.toFixed(value < 10 ? 1 : 0) + "× benchmark";
+  }
+  function benchmarkClass(check) {
+    if (!check || !check.applicable || check.ratio < 1) return "bad";
+    return check.ratio < STRONG_BENCHMARK_RATIO ? "mid" : "good";
+  }
   function setOutputs(v, m) {
-    byId("flowOut").textContent = money(v.flow);
-    byId("stakeOut").textContent = money(v.stake);
-    byId("lagOut").textContent = v.lag + " weeks";
-    byId("feeOut").textContent = pct(v.fee);
-    byId("payShareOut").textContent = pct(v.payShare);
-    byId("rewardShareOut").textContent = pct(v.rewardShare);
-    byId("jurorsOut").textContent = num(v.jurors);
-    byId("skillOut").textContent = pct(v.skill);
-    byId("carelessOut").textContent = pct(v.careless);
-    byId("slashOut").textContent = pct(v.slash);
-    byId("syntheticTestsOut").textContent = num(v.syntheticTests);
-    byId("blocOut").textContent = num(v.bloc);
-    byId("rentedOut").textContent = num(v.rented);
-    byId("rerollsOut").textContent = v.rerolls;
+    setRangeValue("flow", money(v.flow));
+    setRangeValue("stake", money(v.stake));
+    setRangeValue("lag", v.lag + (v.lag === 1 ? " week" : " weeks"));
+    setRangeValue("fee", pct(v.fee));
+    setRangeValue("payShare", pct(v.payShare));
+    setRangeValue("rewardShare", pct(v.rewardShare));
+    setRangeValue("jurors", num(v.jurors));
+    setRangeValue("skill", pct(v.skill));
+    setRangeValue("careless", pct(v.careless));
+    setRangeValue("slash", pct(v.slash));
+    setRangeValue("syntheticTests", num(v.syntheticTests));
+    setRangeValue("bloc", num(v.bloc));
+    setRangeValue("rented", num(v.rented));
+    setRangeValue("rerolls", num(v.rerolls));
 
-    var safetyState = m.safety > .78 ? "good" : m.safety > .55 ? "mid" : "bad";
-    scoreClass(byId("scoreSafety"), safetyState);
-    byId("safetyOut").textContent = Math.round(m.safety * 100);
-    byId("safetySub").textContent = "not a failure probability; " + (m.clearSeverity > 0 ? "working-attack cap " + Math.round(m.clearCap * 100) : "honest jury " + pct(m.honestPanel)) + " before final risk checks";
-    scoreClass(byId("scorePay"), m.payPressure > 10 ? "good" : m.payPressure > 2 ? "mid" : "bad");
-    byId("payOut").textContent = money(m.payPressure);
-    byId("paySub").textContent = "available per retained juror; " + num(m.effectiveJurors) + " retained of " + num(v.jurors);
-    scoreClass(byId("scoreReserve"), m.lazyMargin >= 0 && m.reserveBurden < 20 ? "good" : m.lazyMargin >= 0 ? "mid" : "bad");
-    byId("reserveOut").textContent = v.lockReserve ? money(m.reserve) : "off";
-    byId("reserveSub").textContent = v.lockReserve ? money(m.reserveUnit) + " risk per vote; " + m.reserveBurden.toFixed(1) + "x monthly pay plus rewards" + (m.reserveFloorApplied ? "; floor or workload curve applied" : "") : "lazy voting has no live price";
-    scoreClass(byId("scoreCapture"), clsRisk(m.capture));
-    byId("captureOut").textContent = pct(m.capture);
-    var captureBasis = m.panelShortage ? "available jury pool is smaller than the needed jury" : (m.blocCapped ? "usable attackers exceed the " + num(m.drawJurors) + " available jurors" : num(m.effectiveBloc) + " usable attackers from " + num(v.bloc) + " coordinated attackers in " + num(m.drawJurors) + " available jurors");
-    byId("captureSub").textContent = captureBasis + (m.parallelPanels > 1 ? "; " + m.parallelPanels + " parallel juries" : "") + "; finite draw estimate";
+    var correctState = m.correctPanel === null ? "bad" : m.correctPanel >= QUALITY_FLOOR * STRONG_BENCHMARK_RATIO ? "good" : m.correctPanel >= QUALITY_FLOOR ? "mid" : "bad";
+    scoreClass(byId("scoreSafety"), correctState);
+    byId("safetyOut").textContent = m.correctPanel === null ? "No panel" : pct(m.correctPanel);
+    byId("safetySub").textContent = m.correctPanel === null ? "need " + m.panel + " drawable jurors; only " + num(m.drawJurors) + " available" : "one " + m.panel + "-seat jury · illustrative estimate";
 
-    byId("nodeDemandV").innerHTML = `<div class="node-val">${num(m.courtCases)} <small>cases</small></div><div class="node-sub">settled per month</div>`;
-    byId("nodeFeesV").innerHTML = `<div class="node-val">${money(m.feeRevenue)} <small>total fees</small></div><div class="node-sub"><b>${money(m.rewardPool)}</b> goes to rewards</div>`;
-    byId("nodePayV").innerHTML = `<div class="node-val">${money(m.payPressure)} <small>per juror/mo</small></div><div class="node-sub"><b>${money(m.payPerVote)}</b> base per vote, <b>+${money(m.rewardPerJuror)}</b> potential reward</div>`;
-    byId("nodeReserveV").innerHTML = v.lockReserve ? `<div class="node-val">${m.reserveBurden.toFixed(1)}&times; <small>burden</small></div><div class="node-sub">puts <b>${money(m.reserve)}</b> at risk</div>` : `<div class="node-val">Disabled</div><div class="node-sub">no live penalty</div>`;
-    byId("nodePoolV").innerHTML = `<div class="node-val">${num(m.drawJurors)} <small>available</small></div><div class="node-sub">out of <b>${num(m.effectiveJurors)}</b> retained</div>`;
-    byId("nodePanelV").innerHTML = `<div class="node-val">${pct(m.honestPanel)} <small>honest majority</small></div><div class="node-sub">across <b>${m.panel}</b> jurors${m.parallelPanels > 1 ? " &times; " + m.parallelPanels + " juries" : ""}</div>`;
-    byId("nodeKeysV").innerHTML = `<div class="node-val">${num(m.keys)} <small>aptitude tests</small></div><div class="node-sub"><b>${num(m.consentedTests)}</b> resolved cases, <b>${num(m.syntheticTests)}</b> synthetic tests</div>`;
+    var payState = m.retention >= .85 ? "good" : m.retention >= .65 ? "mid" : "bad";
+    scoreClass(byId("scorePay"), payState);
+    byId("payOut").textContent = money(m.payPressure + m.rewardPerJuror);
+    byId("paySub").textContent = money(m.payPerVote) + " immediate per vote · " + money(m.rewardPerJuror) + " monthly reward pool average";
 
-    nodeClass(byId("nodeDemand"), m.courtCases > 1 ? "good" : "mid");
-    nodeClass(byId("nodeFees"), m.rewardSignal > .35 ? "good" : "mid");
-    nodeClass(byId("nodePay"), m.payPressure > 2 ? "good" : "mid");
-    nodeClass(byId("nodeReserve"), m.lazyClears ? "bad" : m.reserveBurden > m.reserveBurdenLimit ? "mid" : "good");
-    nodeClass(byId("nodePool"), m.capture < .01 && m.retention > .85 ? "good" : m.capture < .1 && m.retention > .6 ? "mid" : "bad");
-    nodeClass(byId("nodePanel"), m.honestPanel > .85 ? "good" : m.honestPanel > .65 ? "mid" : "bad");
-    nodeClass(byId("nodeKeys"), m.keySignal > .75 ? "good" : m.keySignal > .35 ? "mid" : "bad");
+    scoreClass(byId("scoreReserve"), benchmarkClass(m.benchmarks.lazy));
+    byId("reserveOut").textContent = v.lockReserve ? signedMoney(m.lazyMargin) : "Defence off";
+    byId("reserveSub").textContent = v.lockReserve ? "expected loss minus shortcut benefit, per careless vote" : "careless shortcuts keep their full benefit";
 
-    function tooltipLine(cls, label, text) {
-      var labelEl = document.createElement("span");
-      var valueEl = document.createElement("div");
-      labelEl.className = "tooltip-label";
-      labelEl.textContent = label;
-      valueEl.className = cls;
-      valueEl.textContent = text;
-      return [labelEl, valueEl];
-    }
-    function buildTooltipContent(title, concept, formula, live) {
-      var container = document.createElement("div");
-      var titleEl = document.createElement("div");
-      var conceptEl = document.createElement("div");
-      var formulaParts = tooltipLine("tooltip-math", "Formula", formula);
-      var liveParts = tooltipLine("tooltip-live", "Current values", live);
-      container.className = "tooltip-container";
-      titleEl.className = "tooltip-title";
-      titleEl.textContent = title;
-      conceptEl.className = "tooltip-concept";
-      conceptEl.textContent = concept;
-      container.appendChild(titleEl);
-      container.appendChild(conceptEl);
-      container.appendChild(formulaParts[0]);
-      container.appendChild(formulaParts[1]);
-      container.appendChild(liveParts[0]);
-      container.appendChild(liveParts[1]);
-      return container;
-    }
-    function setTippyMath(id, title, concept, formula, live) {
-      var el = byId(id);
-      if (!el) return;
-      var icon = el.querySelector('.info-icon');
-      if (icon && icon._tippy) {
-        icon._tippy.setContent(buildTooltipContent(title, concept, formula, live));
-      }
-    }
+    scoreClass(byId("scoreCapture"), m.panelShortage ? "bad" : benchmarkClass(m.benchmarks.capture));
+    byId("captureOut").textContent = m.capture === null ? "No panel" : pct(m.capture);
+    byId("captureSub").textContent = m.panelShortage ? "need " + m.panel + " drawable jurors; only " + num(m.drawJurors) + " available" : num(m.coordinatedSeats) + " coalition + " + num(m.rentalSeats) + " rental seats in " + num(m.drawJurors) + " drawable jurors" + (m.parallelPanels > 1 ? " · " + m.parallelPanels + " juries must agree" : "");
 
-    var as = v.assumptions || defaultAssumptions();
-    var totalCases = Math.max(1, v.flow / Math.max(1, v.stake));
-    var feeRev = v.flow * v.fee;
+    byId("nodeDemandV").innerHTML = `<div class="node-val">${casesText(m.courtCases)} <small>cases / month</small></div><div class="node-sub"><b>${money(m.feeRevenue)}</b> funds court work</div>`;
+    byId("nodePayV").innerHTML = `<div class="node-val">${money(m.payPressure + m.rewardPerJuror)} <small>funded / juror</small></div><div class="node-sub"><b>${num(m.effectiveJurors)}</b> retained · <b>${num(m.drawJurors)}</b> drawable</div>`;
+    byId("nodePanelV").innerHTML = m.correctPanel === null ? `<div class="node-val">No panel</div><div class="node-sub">need <b>${m.panel}</b> drawable jurors</div>` : `<div class="node-val">${pct(m.correctPanel)} <small>correct majority</small></div><div class="node-sub"><b>${pct(m.capture)}</b> coalition-control chance</div>`;
+    byId("nodeKeysV").innerHTML = `<div class="node-val">${pct(m.keySignal)} <small>independent signal</small></div><div class="node-sub"><b>${num(m.testSeats)}</b> graded seats · <b>${num(m.keyScale)}</b> target</div>`;
 
-    setTippyMath("nodeDemand",
-      "Case Volume",
-      "Disputed money in escrow creates court cases. More case volume creates the fee revenue that pays jurors and funds rewards.",
-      "Disputed money / case size = case volume",
-      money(v.flow) + " / " + money(Math.max(1, v.stake)) + " = " + num(totalCases) + " cases/mo"
-    );
-    setTippyMath("nodeFees",
-      "Fees Funding Jurors",
-      "The system takes a small cut from every case to recruit and pay honest jurors. Some goes directly to juror pay, some to long-term rewards, and some to operations.",
-      "Disputed money * fee % = fee revenue | fee revenue * reward share %",
-      money(v.flow) + " * " + pct(v.fee) + " = " + money(feeRev) + " total | " + money(feeRev) + " * " + pct(v.rewardShare) + " = " + money(m.rewardPool) + " rewards"
-    );
-    setTippyMath("nodePay",
-      "Juror Pay",
-      "The monthly income available per active juror. Higher pay makes the work more attractive to honest jurors and helps the available pool grow.",
-      "(Fee revenue * pay share) / retained jurors = juror pay / month",
-      "(" + money(feeRev) + " * " + pct(v.payShare) + ") / " + num(m.effectiveJurors) + " = " + money(m.payPressure) + " juror pay | " + money(m.payPerVote) + " base per vote, +" + money(m.rewardPerJuror) + " potential reward"
-    );
-    setTippyMath("nodeReserve",
-      "Money at Risk",
-      "Pending income jurors can lose if they vote carelessly. It deters lazy voting, but if the burden is too heavy, honest jurors leave and the pool shrinks.",
-      "Risk per vote * pending priced votes = live money at risk",
-      money(m.reserveUnit) + " * " + formatAssumption({ format: "number" }, m.reserveVotes) + " pending votes = " + money(m.reserve) + " at risk | " + money(m.reserve) + " / " + money(m.retentionIncome) + " = " + m.reserveBurden.toFixed(1) + "x burden"
-    );
-    setTippyMath("nodePool",
-      "Available Jurors",
-      "The retained jurors who are active, reachable, and eligible to be randomly drawn. A wider pool makes it much harder for attackers to control a jury.",
-      "Retained jurors * available share = available jurors",
-      num(Math.max(1, v.jurors)) + " - " + num(m.supplyLoss) + " = " + num(m.effectiveJurors) + " retained | " + num(m.effectiveJurors) + " * " + pct(m.drawPoolShare) + " = " + num(m.drawJurors) + " available"
-    );
-    setTippyMath("nodePanel",
-      "Jury Size",
-      "The randomized group of jurors drawn to vote on a case. Larger juries cost more, but they make attacker control much harder when honest-majority odds stay high.",
-      "Jury size strategy | hg_tail(majority, available pool, honest seats, jury) = honest majority",
-      m.panel + " base drawn seats | hg_tail(" + m.majority + ", " + num(m.drawJurors) + ", " + num(Math.round(m.drawJurors * m.effectiveSkill)) + ", " + m.panel + ") = " + pct(m.honestPanel) + " majority"
-    );
-    setTippyMath("nodeKeys",
-      "Aptitude Tests",
-      "Resolved cases for aptitude tests help grade jurors. Without them, jurors can drift toward copying the crowd because agreement starts to look like accuracy.",
-      "(Court cases * consent share) + synthetic tests = aptitude tests",
-      "(" + num(m.courtCases) + " * " + pct(as.consentedTestShare) + ") + " + num(v.syntheticTests) + " = " + num(m.keys)
-    );
+    nodeClass(byId("nodeDemand"), m.feeRevenue > 0 ? "good" : "bad");
+    nodeClass(byId("nodePay"), payState);
+    nodeClass(byId("nodePanel"), m.panelShortage ? "bad" : (benchmarkClass(m.benchmarks.capture) === "good" && correctState === "good" ? "good" : (benchmarkClass(m.benchmarks.capture) === "bad" || correctState === "bad" ? "bad" : "mid")));
+    nodeClass(byId("nodeKeys"), benchmarkClass(m.benchmarks.drift));
 
+    var weakest = modelState(v, m).top;
+    if (m.panelShortage) chip(byId("bottleneckChip"), "panel unavailable", "bad");
+    else chip(byId("bottleneckChip"), "closest: " + attackLabel(weakest.key), weakest.ratio < 1 ? "bad" : weakest.ratio < STRONG_BENCHMARK_RATIO ? "mid" : "good");
     syncAssumptionOutputs();
   }
-  function pctMargin(delta) {
-    return pct(Math.abs(delta)) + (delta >= 0 ? " below danger line" : " above danger line");
+  function probabilityMargin(delta, safeDirection, unsafeDirection) {
+    var points = Math.abs(delta) * 100;
+    var amount = points > 0 && points < .01 ? "<0.01" : points.toFixed(points < 10 ? 2 : 1).replace(/\.00$/, "").replace(/\.0$/, "");
+    return amount + " percentage points " + (delta >= 0 ? (safeDirection || "below danger") : (unsafeDirection || "past danger"));
   }
-  function moneyMargin(delta, goodText, badText) {
-    return delta >= 0 ? goodText + " by " + money(delta) : badText + " by " + money(Math.abs(delta));
+  function moneyMargin(delta, safeText, unsafeText) {
+    return (delta >= 0 ? safeText : unsafeText) + " by " + money(Math.abs(delta));
   }
   function attackNarrative(v, m, id) {
     if (id === "bloc") {
       return {
-        risk: m.risks.capture,
-        clears: m.clears.capture,
-        why: m.panelShortage ? "The available jury pool is smaller than the jury this case needs." : num(m.coordinatedReady) + " usable attackers from " + num(v.bloc) + " recruits. Jury-control chance is " + pct(m.capture) + " against " + num(m.drawJurors) + " available jurors.",
-        breaks: "the available pool thins, large-jury eligibility narrows, more attackers qualify, or majority odds rise.",
-        margin: m.panelShortage ? "short by " + num(m.panel - m.drawJurors) + " available jurors" : pctMargin(.20 - m.capture)
+        check: m.benchmarks.capture,
+        invalid: m.panelShortage,
+        why: m.panelShortage ? "The current drawable pool cannot form this jury." : num(m.coordinatedSeats) + " qualified coalition seats and " + num(m.rentalSeats) + " usable rentals enter a pool of " + num(m.drawJurors) + "; majority chance is " + pct(m.capture) + ".",
+        breaks: m.panelShortage ? "The court needs at least " + m.panel + " drawable jurors before this case can run." : "Coalition-majority chance rises above 1%.",
+        margin: m.panelShortage ? "short by " + num(m.panel - m.drawJurors) + " drawable jurors" : probabilityMargin(m.benchmarks.capture.margin)
       };
     }
     if (id === "bribe") {
       return {
-        risk: m.risks.bribe,
-        clears: m.clears.bribe,
-        why: v.lockBallot ? "Private votes make paid delivery hard to prove." : "Votes are provable, so a briber can verify delivery.",
-        breaks: "votes become provable or the case value exceeds the cost to buy a majority.",
-        margin: moneyMargin(m.bribeCost - v.stake, "bribe cost exceeds stake", "stake exceeds bribe cost")
+        check: m.benchmarks.bribe,
+        why: (v.lockBallot ? "Private ballots leave " + pct(m.receiptEnforceability) + " of case value enforceable" : "Provable votes expose the full case value") + ": " + money(m.bribeBenefit) + " of modeled benefit versus " + money(m.bribeCost) + " to buy a majority.",
+        breaks: "Receipt-adjusted case value exceeds the modeled cost of buying a majority.",
+        margin: moneyMargin(m.bribeMargin, "majority cost exceeds benefit", "benefit exceeds majority cost")
       };
     }
     if (id === "rental") {
       return {
-        risk: m.risks.rental,
-        clears: m.clears.rental,
-        why: v.lockFace ? "Live face checks shrink " + num(v.rented) + " rented accounts to about " + num(m.rentedPass) + " usable seats." : "Rented accounts enter the draw directly.",
-        breaks: "rented accounts pass checks above one quarter of the available jury pool.",
-        margin: pctMargin(.25 - m.risks.rental)
+        check: m.benchmarks.rental,
+        invalid: m.panelShortage,
+        why: m.panelShortage ? "The current drawable pool cannot form this jury." : (v.lockFace ? "Live checks leave " + num(m.rentalSeats) + " usable seats from " + num(v.rented) + " rented accounts" : num(m.rentalSeats) + " rented accounts enter the draw unchecked") + "; rental-only majority chance is " + pct(m.rentalCapture) + ".",
+        breaks: m.panelShortage ? "The court needs at least " + m.panel + " drawable jurors before this case can run." : "Rental-only majority chance rises above 1%.",
+        margin: m.panelShortage ? "panel unavailable" : probabilityMargin(m.benchmarks.rental.margin)
       };
     }
     if (id === "lazy") {
       return {
-        risk: m.risks.lazy,
-        clears: m.clears.lazy,
-        why: m.lazyAtFloor ? "Lazy voting is right at the minimum money-at-risk floor." : (m.lazyMargin >= 0 ? "Lazy voting loses more than it keeps." : "Lazy voting keeps unpriced shortcut profit."),
-        breaks: "money at risk is disabled or priced below lazy-voting income.",
-        margin: moneyMargin(m.lazyMargin, "shortcut loses", "shortcut keeps")
+        check: m.benchmarks.lazy,
+        why: (v.lockReserve ? "Expected collectible loss is " + money(m.lazyLoss) : "Expected collectible loss is $0") + " versus " + money(m.lazyIncome) + " of modeled shortcut benefit per careless vote.",
+        breaks: "The shortcut benefit exceeds expected collectible loss.",
+        margin: moneyMargin(m.lazyMargin, "expected loss exceeds benefit", "shortcut benefit exceeds loss")
       };
     }
     if (id === "grief") {
+      if (!m.appealApplicable) {
+        return {
+          check: m.benchmarks.grief,
+          why: "This case is already at the 31-seat final rung.",
+          breaks: "No ordinary next-jury appeal exists in this model.",
+          margin: "not applicable at the final rung"
+        };
+      }
       return {
-        risk: m.risks.grief,
-        clears: m.clears.grief,
-        why: v.lockAppeal ? "Appealing costs at least " + money(m.appealFloor) + " versus delay value around " + money(m.griefBenefit) + "." : "Appeals are priced below the delay they can buy.",
-        breaks: "delay value rises above the cost of the next jury, control risk, and delay rent.",
-        margin: moneyMargin(m.appealFloor - m.griefBenefit, "appeal cost exceeds delay value", "delay value exceeds appeal cost")
+        check: m.benchmarks.grief,
+        invalid: m.appealPanelShortage,
+        why: m.appealPanelShortage ? "The drawable pool cannot form the next " + m.nextSeats + "-seat jury." : "The next appeal costs at least " + money(m.appealFloor) + " versus " + money(m.griefBenefit) + " of modeled delay value.",
+        breaks: m.appealPanelShortage ? "The court needs enough drawable jurors for the next appeal rung." : "Modeled delay value exceeds the cost of the next jury.",
+        margin: m.appealPanelShortage ? "next jury unavailable" : moneyMargin(m.griefMargin, "appeal cost exceeds delay value", "delay value exceeds appeal cost")
       };
     }
     return {
-      risk: m.risks.drift,
-      clears: m.clears.drift,
-      why: v.lockKeys ? num(m.keys) + " aptitude tests produce a " + pct(m.keySignal) + " anti-crowd-following signal." : "No aptitude tests means agreement can look like accuracy.",
-      breaks: "aptitude tests fall below the crowd-following danger line.",
-      margin: pctMargin(m.keySignal - .25)
+      check: m.benchmarks.drift,
+      why: (v.lockKeys ? num(m.testSeats) + " independently graded test seats produce a " + pct(m.keySignal) + " signal." : "With aptitude tests off, agreement can look like accuracy."),
+      breaks: "The independent-test signal falls below 75%.",
+      margin: probabilityMargin(m.driftMargin, "above the floor", "below the floor")
     };
   }
   function setAttack(id, item) {
-    var state = item.clears ? "bad" : item.risk > .35 ? "mid" : "good";
-    var label = item.clears ? "works" : item.risk > .35 ? "watch" : "fails";
+    var state;
+    var label;
+    if (item.invalid) {
+      state = "bad";
+      label = "outside range";
+    } else if (!item.check.applicable) {
+      state = "mid";
+      label = "not applicable";
+    } else if (item.check.ratio < 1) {
+      state = "bad";
+      label = "outside range";
+    } else if (item.check.ratio < STRONG_BENCHMARK_RATIO) {
+      state = "mid";
+      label = "thin margin";
+    } else {
+      state = "good";
+      label = "strong margin";
+    }
     chip(byId(id + "Chip"), label, state);
+    var card = byId(id + "Chip").closest(".attack");
+    if (card) {
+      card.classList.remove("good", "mid", "bad");
+      card.classList.add(state);
+    }
     byId(id + "Why").textContent = item.why;
     byId(id + "Break").textContent = item.breaks;
     byId(id + "Margin").textContent = item.margin;
-    var explain = byId(id + "Explain");
-    if (explain) explain.textContent = ATTACK_DETAILS[id] || "";
   }
 
   function setAttacks(v, m) {
     ATTACK_IDS.forEach(function (id) { setAttack(id, attackNarrative(v, m, id)); });
   }
 
-  function setRanks(m) {
-    var map = { Capture: "capture", Bribe: "bribe", Rental: "rental", Lazy: "lazy", Grief: "grief", Drift: "drift" };
-    Object.keys(map).forEach(function (name) {
-      var r = m.risks[map[name]];
-      byId("rank" + name).style.width = Math.max(1, r * 100) + "%";
-      byId("rank" + name + "V").textContent = riskText(r);
-    });
-    var entries = Object.keys(m.risks).map(function (k) { return { k: k, v: m.risks[k] }; }).sort(function (a, b) { return b.v - a.v; });
-    var top = entries[0];
-    var labels = { capture: "coordinated group", bribe: "bribes", rental: "rented accounts", lazy: "lazy voting", grief: "delay", drift: "crowd-following" };
-    chip(byId("bottleneckChip"), "closest risk: " + labels[top.k], clsRisk(top.v));
-  }
-
   function confidenceSummary(v, m) {
     var drivers = sensitivityDrivers(v, m);
-    var low = drivers.filter(function (driver) { return driver.assumption.confidence === "low"; });
     var top = drivers[0];
-    var topScore = top ? top.score : 0;
-    var level = topScore > .55 && low.length >= 3 ? "Low" : (topScore > .12 || low.length ? "Medium" : "High");
+    var shortLabels = {
+      griefDelayRate: "Delay value",
+      appealDelayRate: "Appeal pricing",
+      coordinationReadyShare: "Coalition readiness",
+      ballotResidualRisk: "Ballot leakage",
+      reservePayMultiple: "Pay-at-risk rule",
+      keyJurorShare: "Test-seat target"
+    };
     return {
-      level: level,
-      detail: low.length ? low.length + " uncertain assumption" + (low.length === 1 ? "" : "s") : "top assumptions are not low confidence"
+      level: top ? (shortLabels[top.assumption.id] || top.assumption.label) : "Low movement",
+      detail: top ? "largest movement across its published range" : "little movement across tested ranges"
     };
   }
-  function stressState(v, stressCase) {
-    var s = stressCase.preset ? stateFromPreset(stressCase.preset) : copyState(v);
+  function stressState(stressCase) {
+    var s = stateFromPreset(stressCase.preset || "base");
     if (stressCase.apply) s = stressCase.apply(s);
     s = clampModelState(s);
     var m = compute(s);
-    var state = modelState(m);
-    var cleared = state.cleared.map(function (key) { return attackLabel(key); });
+    var state = modelState(s, m);
+    var below = state.cleared.map(function (key) { return attackLabel(key); });
     var top = state.top;
-    var detail = state.state === "bad"
-      ? "Works: " + cleared.join(", ") + ". Closest risk: " + attackLabel(top.key) + " at " + riskText(top.value) + "."
-      : (state.state === "mid" ? "Holds, but " : "Holds. ") + "Closest risk: " + attackLabel(top.key) + " at " + riskText(top.value) + ".";
+    var detail;
+    if (m.panelShortage) detail = "The current " + m.panel + "-seat jury cannot form from " + num(m.drawJurors) + " drawable jurors.";
+    else if (m.appealPanelShortage) detail = "The next " + m.nextSeats + "-seat appeal jury cannot form from " + num(m.drawJurors) + " drawable jurors.";
+    else if (state.state === "bad" && top.key === "quality") detail = "Decision quality does not meet its 75% operating floor.";
+    else if (state.state === "bad") detail = "Failed protection benchmark: " + below.join(", ") + ". Closest check is " + attackLabel(top.key) + ".";
+    else detail = "All applicable checks hold. Closest is " + attackLabel(top.key) + " at " + ratioText(top.ratio) + ".";
     return { config: stressCase, model: m, state: state, detail: detail };
   }
-  function runStress(v) {
-    var rows = STRESS_CASES.map(function (item) { return stressState(v, item); });
+  function runStress() {
+    var rows = STRESS_CASES.map(function (item) { return stressState(item); });
     var core = rows;
     var held = core.filter(function (row) { return row.state.state !== "bad"; }).length;
     var watch = core.filter(function (row) { return row.state.state === "mid"; }).length;
@@ -1381,7 +1340,7 @@
     var weakest = core.slice().sort(function (a, b) {
       if (a.state.state === "bad" && b.state.state !== "bad") return -1;
       if (b.state.state === "bad" && a.state.state !== "bad") return 1;
-      return b.state.top.value - a.state.top.value;
+      return a.state.top.ratio - b.state.top.ratio;
     })[0] || core[0];
     return { rows: rows, core: core, held: held, watch: watch, broken: broken, weakest: weakest };
   }
@@ -1409,57 +1368,105 @@
       root.appendChild(details);
     });
   }
-  function setStress(v) {
-    var summary = runStress(v);
+  function setStress() {
+    var summary = runStress();
     var total = summary.core.length;
-    var score = summary.held + "/" + total + " held";
-    var sub = summary.broken ? summary.broken + " break" + (summary.broken === 1 ? "" : "s") + ", " + summary.watch + " watch" : (summary.watch ? summary.watch + " watch" : "all scenario checks pass");
+    var score = summary.held + "/" + total + " hold";
+    var sub = summary.broken ? summary.broken + " outside range" : summary.watch ? summary.watch + " with thin margins" : "all strong margins";
     byId("stressOut").textContent = score;
     byId("stressSub").textContent = sub;
     byId("stressScore").textContent = score;
-    byId("stressWeakest").textContent = "Closest: " + summary.weakest.config.label + " -> " + attackLabel(summary.weakest.state.top.key);
-    byId("stressHeadline").textContent = summary.broken ? "A scenario breaks it" : (summary.watch ? "Scenario checks hold, with watch points" : "Scenario checks all pass");
-    byId("stressCopy").textContent = summary.broken ? "At least one scenario makes an attack work. Open the row to see what needs more margin." : "The current setup survives the default pressure scenarios. Watch rows show where the margin is closest.";
+    byId("stressWeakest").textContent = "Closest: " + summary.weakest.config.label + " · " + attackLabel(summary.weakest.state.top.key);
+    byId("stressHeadline").textContent = summary.broken ? "A reference case leaves the modeled range" : summary.watch ? "All six hold; some margins are thin" : "Six achievable pressure tests hold";
+    byId("stressCopy").textContent = summary.broken ? "Open the flagged row to see which published protection benchmark is not met." : "Each fixed case meets every applicable attack benchmark and the decision-quality floor.";
     renderStress(summary);
     return summary;
   }
-  function setLabStatus(v, m) {
-    var clearLabels = { capture: "coordinated group", bribe: "bribes", rental: "rented accounts", lazy: "lazy voting", grief: "delay", drift: "crowd-following" };
-    var cleared = Object.keys(m.clears).filter(function (k) { return m.clears[k]; });
+  function setLabStatus(v, m, confidence) {
+    var railLabels = { lockDraw: "one public draw", lockBallot: "private ballot", lockFace: "live face check", lockReserve: "pending pay at risk", lockKeys: "aptitude tests", lockAppeal: "costed appeals" };
+    var state = modelState(v, m);
     var status = byId("labStatus");
     var grid = byId("labGrid");
     var icon = byId("labStatusIcon");
     var label = byId("labStatusLabel");
     var detail = byId("labStatusDetail");
     var clearsEl = byId("labStatusClears");
-    var weakest = weakestRisk(m);
-    var confidence = confidenceSummary(v, m);
-    setStress(v);
-    if (cleared.length > 0) {
+    var weakest = state.top;
+    confidence = confidence || lastConfidence;
+    clearsEl.replaceChildren();
+    if (state.teaching && state.state === "bad") {
       status.className = "lab-status vulnerable";
       grid.className = "lab-grid vulnerable";
       icon.textContent = "!";
-      label.textContent = "An attack works";
-      detail.textContent = cleared.length + (cleared.length === 1 ? " attack can" : " attacks can") + " make money under current settings.";
-      clearsEl.replaceChildren();
-      cleared.forEach(function (k) {
+      label.textContent = "Teaching mode: break point found";
+      if (m.panelShortage) detail.textContent = "With a required defence removed, this jury can no longer form.";
+      else if (m.appealPanelShortage) detail.textContent = "With a required defence removed, the next appeal jury can no longer form.";
+      else if (state.top.key === "quality") detail.textContent = "This counterfactual falls below the 75% decision-quality floor.";
+      else detail.textContent = "The counterfactual no longer meets the " + attackLabel(state.top.key).toLowerCase() + " protection benchmark.";
+      state.disabledLocks.forEach(function (id) {
         var pill = document.createElement("span");
         pill.className = "lab-status-clear";
-        pill.textContent = clearLabels[k];
+        pill.textContent = railLabels[id];
         clearsEl.appendChild(pill);
       });
+    } else if (state.teaching) {
+      status.className = "lab-status teaching";
+      grid.className = "lab-grid teaching";
+      icon.textContent = "i";
+      label.textContent = "Teaching mode: required defence removed";
+      detail.textContent = "This is a counterfactual, not the complete protocol. The cards show the consequence.";
+      state.disabledLocks.forEach(function (id) {
+        var pill = document.createElement("span");
+        pill.className = "lab-status-clear";
+        pill.textContent = railLabels[id];
+        clearsEl.appendChild(pill);
+      });
+    } else if (state.state === "bad") {
+      status.className = "lab-status vulnerable";
+      grid.className = "lab-grid vulnerable";
+      icon.textContent = "!";
+      label.textContent = "Outside the modeled operating range";
+      if (m.panelShortage) detail.textContent = "Only " + num(m.drawJurors) + " jurors are drawable; this case needs " + m.panel + ".";
+      else if (m.appealPanelShortage) detail.textContent = "The next " + m.nextSeats + "-seat appeal jury cannot form from " + num(m.drawJurors) + " drawable jurors.";
+      else if (state.top.key === "quality") detail.textContent = "Correct-majority chance is below the 75% decision-quality floor.";
+      else detail.textContent = state.cleared.length + (state.cleared.length === 1 ? " published protection benchmark is" : " published protection benchmarks are") + " not met.";
+      state.cleared.forEach(function (key) {
+        var pill = document.createElement("span");
+        pill.className = "lab-status-clear";
+        pill.textContent = attackLabel(key);
+        clearsEl.appendChild(pill);
+      });
+    } else if (state.state === "mid") {
+      status.className = "lab-status watch";
+      grid.className = "lab-grid watch";
+      icon.textContent = "!";
+      label.textContent = "Protected, with a narrow margin";
+      detail.textContent = attackLabel(weakest.key) + " meets its floor, but by less than 20%.";
     } else {
       status.className = "lab-status resistant";
       grid.className = "lab-grid resistant";
       icon.textContent = "\u2713";
-      label.textContent = "Attacks fail";
-      detail.textContent = "No attack makes money under current settings.";
-      clearsEl.replaceChildren();
+      label.textContent = "Robust under modeled conditions";
+      detail.textContent = "All " + state.total + " applicable attack checks hold, and decision quality clears its 75% floor.";
     }
-    byId("weakestOut").textContent = m.panel === 31 && weakest.key === "capture" ? "Large-jury eligibility" : attackLabel(weakest.key);
-    byId("weakestSub").textContent = riskText(weakest.value) + " risk";
+    if (m.panelShortage) {
+      byId("weakestOut").textContent = "Panel unavailable";
+      byId("weakestSub").textContent = num(m.drawJurors) + " of " + m.panel + " jurors ready";
+    } else if (m.appealPanelShortage) {
+      byId("weakestOut").textContent = "Appeal panel unavailable";
+      byId("weakestSub").textContent = num(m.drawJurors) + " of " + m.nextSeats + " jurors ready";
+    } else {
+      byId("weakestOut").textContent = attackLabel(weakest.key);
+      byId("weakestSub").textContent = ratioText(weakest.ratio);
+    }
     byId("confidenceOut").textContent = confidence.level;
     byId("confidenceSub").textContent = confidence.detail;
+    var announcement = label.textContent + ". " + detail.textContent;
+    var announcementKey = (state.teaching ? "teaching:" + state.disabledLocks.join(",") : "protocol") + ":" + state.state + ":" + state.top.key + ":" + state.cleared.join(",") + ":" + (m.panelShortage ? "panel" : m.appealPanelShortage ? "appeal" : "ready");
+    if (announcementKey !== lastAnnouncement) {
+      lastAnnouncement = announcementKey;
+      byId("labAnnouncement").textContent = announcement;
+    }
   }
 
 
@@ -1478,7 +1485,7 @@
     return top;
   }
   function sensitivityDrivers(v, m) {
-    return ASSUMPTIONS.filter(function (a) { return a.category !== "Safety weights"; }).map(function (a) {
+    return ASSUMPTIONS.map(function (a) {
       var lowState = copyState(v);
       var highState = copyState(v);
       lowState.assumptions[a.id] = a.low;
@@ -1507,8 +1514,8 @@
       var detail = document.createElement("small");
       row.className = "driver-row";
       name.textContent = driver.assumption.label;
-      delta.textContent = "+/-" + Math.round(driver.indexDelta * 100) + " score";
-      detail.textContent = "low/current/high score: " + Math.round(driver.low.safety * 100) + " / " + Math.round(m.safety * 100) + " / " + Math.round(driver.high.safety * 100) + "; biggest risk swing: " + driver.swing.key + " " + riskText(driver.swing.value);
+      delta.textContent = "up to " + Math.round(driver.score * 100) + " points";
+      detail.textContent = "Low / current / high robustness index: " + Math.round(driver.low.safety * 100) + " / " + Math.round(m.safety * 100) + " / " + Math.round(driver.high.safety * 100) + ". Largest benchmark movement: " + driver.swing.key + ".";
       head.appendChild(name);
       head.appendChild(delta);
       row.appendChild(head);
@@ -1519,20 +1526,21 @@
   function addWarning(list, title, text) { list.push({ title: title, text: text }); }
   function setWarnings(v, m) {
     var warnings = [];
-    if (m.clearSeverity > 0) addWarning(warnings, "Working attack caps score", "At least one attack card works, so the safety score is capped before other strengths can hide it.");
-    if (m.blocCapped) addWarning(warnings, "Attackers exceed available jurors", "Usable coordinated attackers plus rented accounts exceed the available jury pool, so control chance saturates at pool size.");
-    if (m.panelShortage) addWarning(warnings, "Not enough available jurors", "The available jury pool is smaller than the jury this case needs.");
-    if (m.reserveFloorApplied && v.lockReserve) addWarning(warnings, "Money-at-risk floor active", "Money at risk is using the minimum floor or workload curve rather than raw pending votes alone.");
-    if (m.supplyLoss > 0) addWarning(warnings, "Money at risk pushed jurors out", num(m.supplyLoss) + " jurors leave in this setup because money-at-risk burden beats pay plus reward support.");
-    if (m.drawJurors < m.effectiveJurors * .65) addWarning(warnings, "Few jurors available for draw", "Only " + pct(m.drawPoolShare) + " of retained jurors are eligible and reachable for the current draw.");
-    if (m.parallelPanels > 1) addWarning(warnings, "Multiple juries required", "Case size or assumptions require several juries to agree before the outcome passes.");
-    if (m.panel === 31 && m.capture > .2) addWarning(warnings, "Largest jury still pressured", "The largest built-in jury size still shows material attacker-control risk.");
-    if (v.lockKeys && m.keys < m.keyScale) addWarning(warnings, "Too few aptitude tests", "Resolved cases plus synthetic tests are below the current minimum before trusting juror grades.");
-    if (!v.lockDraw && v.rerolls > 1) addWarning(warnings, "Extra jury draws active", "Jury selection is using multiple attempts because random jury draw is off.");
-    if (!v.lockReserve) addWarning(warnings, "No money at risk", "Lazy voting has no live financial price in this state.");
-    [m.safety, m.capture, m.payPressure, m.reserve, m.keySignal, m.effectiveJurors, m.drawJurors].forEach(function (x) { if (!isFinite(x)) addWarning(warnings, "Invalid output", "A model output became non-finite; reset presets or assumptions before trusting this state."); });
-    if (!warnings.length) addWarning(warnings, "No active warning", "Current caps, floors, and advanced rails are within ordinary display bounds.");
-    var shown = warnings.slice(0, 5);
+    var state = modelState(v, m);
+    if (state.state === "bad") addWarning(warnings, "Outside modeled range", state.top.key === "quality" ? "Correct-majority chance is below the 75% operating floor." : "At least one published protection benchmark is not met.");
+    if (m.blocCapped) addWarning(warnings, "Attack seats capped by pool", "Usable coalition and rental seats cannot exceed the drawable juror pool.");
+    if (m.panelShortage) addWarning(warnings, "Current panel cannot form", "This case needs " + m.panel + " drawable jurors; only " + num(m.drawJurors) + " are available.");
+    if (m.appealPanelShortage) addWarning(warnings, "Appeal panel cannot form", "The next appeal needs " + m.nextSeats + " drawable jurors; only " + num(m.drawJurors) + " are available.");
+    if (m.reserveFloorApplied && v.lockReserve) addWarning(warnings, "Minimum exposure rule active", "Pending pay at risk uses the model's minimum priced-vote exposure.");
+    if (m.supplyLoss > v.jurors * .05) addWarning(warnings, "Exposure narrows juror supply", num(m.supplyLoss) + " opted-in jurors leave under the modeled pay-at-risk burden.");
+    if (m.drawJurors < m.effectiveJurors * .65) addWarning(warnings, "Eligibility narrows the draw", "Only " + pct(m.drawPoolShare) + " of retained jurors are eligible and reachable for this jury size.");
+    if (m.parallelPanels > 1) addWarning(warnings, "Several juries must agree", "The scaled rule requires " + m.parallelPanels + " independent juries for this case value.");
+    if (m.benchmarks.drift.ratio < STRONG_BENCHMARK_RATIO) addWarning(warnings, "Aptitude-test margin is thin", "The independent signal is " + pct(m.keySignal) + " against a 75% floor.");
+    if (!v.lockDraw && v.rerolls > 1) addWarning(warnings, "Retry grinding enabled", "The one-public-draw rail is off, so the attacker receives " + v.rerolls + " attempts.");
+    if (!v.lockReserve) addWarning(warnings, "Pending pay is not at risk", "Careless voting has no modeled collectible loss in this teaching state.");
+    [m.safety, m.payPressure, m.reserve, m.keySignal, m.effectiveJurors, m.drawJurors].forEach(function (x) { if (!isFinite(x)) addWarning(warnings, "Invalid output", "A model output became non-finite; restore a benchmark before using this state."); });
+    if (!warnings.length) addWarning(warnings, "Within ordinary bounds", "No active cap, shortage, or thin benchmark needs attention.");
+    var shown = warnings.slice(0, 4);
     var sig = shown.map(function (item) { return item.title + ":" + item.text; }).join("|");
     var root = byId("warningList");
     if (sig === lastRender.warnings) return;
@@ -1551,21 +1559,46 @@
     });
   }
 
-  function update() {
+  function update(deep) {
+    if (deep !== false) deep = true;
     var v = readState();
     var m = compute(v);
     setOutputs(v, m);
     setAttacks(v, m);
-    setLabStatus(v, m);
-    setRanks(m);
-    setDrivers(v, m);
-    setWarnings(v, m);
+    if (deep) {
+      lastConfidence = confidenceSummary(v, m);
+      setDrivers(v, m);
+      setWarnings(v, m);
+    }
+    setLabStatus(v, m, lastConfidence);
+    syncDependentControls();
+  }
+
+  function markCustom() {
+    Array.prototype.forEach.call(document.querySelectorAll(".preset"), function (btn) { btn.classList.remove("active"); btn.setAttribute("aria-pressed", "false"); });
+    byId("presetState").textContent = "Custom experiment · choose a benchmark to restore documented assumptions.";
+  }
+
+  function syncDependentControls() {
+    var pairs = [
+      { control: byId("rerolls"), disabled: byId("lockDraw").checked },
+      { control: byId("syntheticTests"), disabled: !byId("lockKeys").checked }
+    ];
+    pairs.forEach(function (pair) {
+      pair.control.disabled = pair.disabled;
+      var row = pair.control.closest(".dial");
+      if (row) row.classList.toggle("disabled", pair.disabled);
+    });
   }
 
   function setPreset(name) {
     var s = PRESET_CASES[name];
+    var activeButton = null;
     Array.prototype.forEach.call(document.querySelectorAll(".preset"), function (btn) {
-      btn.classList.toggle("active", btn.getAttribute("data-preset") === name);
+      var active = btn.getAttribute("data-preset") === name;
+      btn.classList.toggle("active", active);
+      btn.setAttribute("aria-pressed", active ? "true" : "false");
+      if (active) activeButton = btn;
     });
     Object.keys(s).forEach(function (k) {
       if (k === "locks") return;
@@ -1576,7 +1609,9 @@
     });
     lockIds.forEach(function (id) { byId(id).checked = s.locks; });
     resetAssumptions(false);
-    update();
+    byId("presetState").textContent = (activeButton ? activeButton.textContent : "Benchmark") + " · documented assumptions restored.";
+    syncDependentControls();
+    update(true);
   }
 
   function setTab(name) {
@@ -1599,10 +1634,15 @@
     tabs.forEach(function (btn, index) {
       btn.addEventListener("click", function () { setTab(btn.getAttribute("data-tab")); });
       btn.addEventListener("keydown", function (e) {
-        if (e.key !== "ArrowRight" && e.key !== "ArrowLeft") return;
+        if (e.key !== "ArrowRight" && e.key !== "ArrowLeft" && e.key !== "Home" && e.key !== "End") return;
         e.preventDefault();
-        var delta = e.key === "ArrowRight" ? 1 : -1;
-        var next = tabs[(index + delta + tabs.length) % tabs.length];
+        var next;
+        if (e.key === "Home") next = tabs[0];
+        else if (e.key === "End") next = tabs[tabs.length - 1];
+        else {
+          var delta = e.key === "ArrowRight" ? 1 : -1;
+          next = tabs[(index + delta + tabs.length) % tabs.length];
+        }
         next.focus();
         setTab(next.getAttribute("data-tab"));
       });
@@ -1610,8 +1650,6 @@
     setTab("play");
   }
 
-  renderAssumptions();
-  initTabs();
   function updateRangeTrack(el) {
     if (el && el.type === "range") {
       var min = parseFloat(el.min) || 0;
@@ -1620,40 +1658,43 @@
       el.style.setProperty("--val", val + "%");
     }
   }
-  byId("resetAssumptions").addEventListener("click", function () { resetAssumptions(true); Array.prototype.forEach.call(document.querySelectorAll('input[type="range"]'), updateRangeTrack); });
+  try {
+  renderAssumptions();
+  initTabs();
+  byId("resetAssumptions").addEventListener("click", function () {
+    markCustom();
+    resetAssumptions(false);
+    Array.prototype.forEach.call(document.querySelectorAll('input[type="range"]'), updateRangeTrack);
+    update(true);
+  });
   ids.concat(lockIds).forEach(function (id) {
     var el = byId(id);
-    el.addEventListener("input", function() { updateRangeTrack(el); update(); });
-    el.addEventListener("change", update);
+    if (el.type === "range") {
+      el.addEventListener("input", function () { updateRangeTrack(el); markCustom(); update(false); });
+      el.addEventListener("change", function () { markCustom(); update(true); });
+    } else {
+      el.addEventListener("change", function () { markCustom(); update(true); });
+    }
   });
   Array.prototype.forEach.call(document.querySelectorAll('input[type="range"]'), updateRangeTrack);
   Array.prototype.forEach.call(document.querySelectorAll(".preset"), function (btn) { btn.addEventListener("click", function () { setPreset(btn.getAttribute("data-preset")); }); });
-  function syncAttackSelection() {
-    Array.prototype.forEach.call(document.querySelectorAll(".attack"), function (x) {
-      var on = x.getAttribute("data-attack") === selectedAttack;
-      x.classList.toggle("active", on);
-      x.setAttribute("aria-pressed", on ? "true" : "false");
-    });
-  }
-  function selectAttack(card) {
-    selectedAttack = card.getAttribute("data-attack");
-    syncAttackSelection();
-  }
   Array.prototype.forEach.call(document.querySelectorAll(".attack"), function (card) {
-    card.addEventListener("click", function () { selectAttack(card); });
-    card.addEventListener("keydown", function (e) {
-      if (e.key === "Enter" || e.key === " ") {
-        e.preventDefault();
-        selectAttack(card);
-      }
+    card.addEventListener("toggle", function () {
+      if (!card.open) return;
+      Array.prototype.forEach.call(document.querySelectorAll(".attack[open]"), function (other) {
+        if (other !== card) other.open = false;
+      });
     });
   });
 
-  setPreset("base");
-  syncAttackSelection();
-  if (typeof window.initTooltips === 'function') {
-    window.initTooltips();
-    update();
+    setStress();
+    setPreset("base");
+    if (typeof window.initTooltips === "function") {
+      try { window.initTooltips(); }
+      catch (tooltipError) { if (window.console && console.warn) console.warn(tooltipError); }
+    }
+  } catch (error) {
+    showModelError(error);
   }
 })();
 </script>
