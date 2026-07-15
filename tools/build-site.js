@@ -7,10 +7,10 @@ const siteUrl = (process.env.URL || process.env.DEPLOY_PRIME_URL || "https://dem
 
 const publicFiles = [
   "index.html",
+  "the-design.html",
   "demothemis.html",
   "game-theory.html",
   "prediction-market.html",
-  "the-design.html",
   "hybrid-juror-prediction-market-integration.html",
   "governance.html",
   "mvp.html",

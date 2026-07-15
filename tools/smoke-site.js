@@ -9,13 +9,22 @@ const siteUrl = (process.env.URL || process.env.DEPLOY_PRIME_URL || "https://dem
 
 const publicHtml = [
   "index.html",
+  "the-design.html",
   "demothemis.html",
   "game-theory.html",
   "prediction-market.html",
-  "the-design.html",
   "hybrid-juror-prediction-market-integration.html",
   "governance.html",
   "mvp.html"
+];
+
+const chapterSequence = [
+  { file: "the-design.html", title: "Run-through", navTitle: "Run-through", chapter: 1 },
+  { file: "demothemis.html", title: "DemoThemis", navTitle: "DemoThemis", chapter: 2 },
+  { file: "game-theory.html", title: "Break the court", navTitle: "Break the court", chapter: 3 },
+  { file: "prediction-market.html", title: "PredictionMoMo", navTitle: "PredictionMoMo", chapter: 4 },
+  { file: "hybrid-juror-prediction-market-integration.html", title: "The bootstrap loop", navTitle: "Bootstrap loop", chapter: 5 },
+  { file: "governance.html", title: "Governance", navTitle: "Governance", chapter: 6 }
 ];
 
 const forbiddenPublicPaths = [
@@ -156,6 +165,119 @@ function checkMvpNavigation(file, html, failures) {
   const navTargets = openingTagAttributeValues(siteNav[0], "a", "href");
   assert(navTargets.includes("/"), `${file} primary navigation missing root-relative Home link`, failures);
   assert(navTargets.includes("mvp.html"), `${file} primary navigation missing mvp.html`, failures);
+}
+
+function normalizedHtmlText(value) {
+  return String(value || "")
+    .replace(/<[^>]+>/g, " ")
+    .replace(/&nbsp;/gi, " ")
+    .replace(/&middot;/gi, "·")
+    .replace(/&amp;/gi, "&")
+    .replace(/\s+/g, " ")
+    .trim();
+}
+
+function anchorSequence(block) {
+  return Array.from(String(block || "").matchAll(/<a\b([^>]*)>([\s\S]*?)<\/a>/gi), (match) => ({
+    href: tagAttributeValue(`<a ${match[1]}>`, "href") || "",
+    text: normalizedHtmlText(match[2]),
+    body: match[2]
+  }));
+}
+
+function classBlock(html, className) {
+  const escaped = className.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
+  const match = html.match(new RegExp(`<div\\b[^>]*class=["'][^"']*\\b${escaped}\\b[^"']*["'][^>]*>([\\s\\S]*?)<\\/div>`, "i"));
+  return match ? match[1] : "";
+}
+
+function checkChapterSequence(failures) {
+  const expectedNav = chapterSequence.map((chapter) => ({
+    href: chapter.file,
+    text: `${String(chapter.chapter).padStart(2, "0")} ${chapter.navTitle}`
+  }));
+  const expectedFooter = chapterSequence.map((chapter) => ({
+    href: chapter.file,
+    text: `${chapter.chapter}. ${chapter.navTitle}`
+  }));
+
+  for (const file of publicHtml) {
+    const html = readDist(file);
+    const nav = anchorSequence(classBlock(html, "nav-links"))
+      .filter((entry) => chapterSequence.some((chapter) => chapter.file === entry.href))
+      .map(({ href, text }) => ({ href, text }));
+    const footer = anchorSequence(classBlock(html, "sitemap-flat"))
+      .filter((entry) => chapterSequence.some((chapter) => chapter.file === entry.href))
+      .map(({ href, text }) => ({ href, text }));
+    assert(JSON.stringify(nav) === JSON.stringify(expectedNav), `${file} primary chapter navigation is out of order`, failures);
+    assert(JSON.stringify(footer) === JSON.stringify(expectedFooter), `${file} footer chapter navigation is out of order`, failures);
+  }
+
+  for (const chapter of chapterSequence) {
+    const html = readDist(chapter.file);
+    const counters = Array.from(html.matchAll(/Chapter\s+(\d+)\s+of\s+6/gi), (match) => Number(match[1]));
+    assert(counters.length === 1 && counters[0] === chapter.chapter, `${chapter.file} must identify itself as Chapter ${chapter.chapter} of 6`, failures);
+  }
+
+  const home = readDist("index.html");
+  const mapCards = anchorSequence(classBlock(home, "map-grid")).map((entry) => {
+    const stage = entry.body.match(/class=["']stage["'][^>]*>\s*Chapter\s+(\d+)/i);
+    const title = entry.body.match(/<h3\b[^>]*>([\s\S]*?)<\/h3>/i);
+    return {
+      href: entry.href,
+      chapter: stage ? Number(stage[1]) : null,
+      title: title ? normalizedHtmlText(title[1]) : ""
+    };
+  });
+  const expectedCards = chapterSequence.map(({ file, chapter, title }) => ({ href: file, chapter, title }));
+  assert(JSON.stringify(mapCards) === JSON.stringify(expectedCards), "Home chapter map is out of order", failures);
+  assert(/Start the tour with Run-through\./i.test(home), "Home signoff must start the tour with Run-through", failures);
+
+  const commonSource = readDist("assets/common.js");
+  const commonLiteral = commonSource.match(/var\s+CHAPTERS\s*=\s*(\[[\s\S]*?\]);/);
+  assert(Boolean(commonLiteral), "assets/common.js is missing its canonical CHAPTERS list", failures);
+  if (commonLiteral) {
+    try {
+      const chapters = vm.runInNewContext(commonLiteral[1], Object.create(null));
+      const actual = chapters.map(({ f, t, ch }) => ({ file: f, title: t, chapter: ch }));
+      const expected = chapterSequence.map(({ file, title, chapter }) => ({ file, title, chapter }));
+      assert(JSON.stringify(actual) === JSON.stringify(expected), "assets/common.js canonical CHAPTERS list is out of order", failures);
+    } catch (error) {
+      assert(false, `assets/common.js CHAPTERS list could not be parsed: ${error.message}`, failures);
+    }
+  }
+
+  const siteChromePath = path.join(root, "DemoThemisMVP", "web", "src", "components", "SiteChrome", "index.tsx");
+  const siteChrome = fs.readFileSync(siteChromePath, "utf8");
+  const siteChromeBlock = siteChrome.match(/const\s+CHAPTERS\s*=\s*\[([\s\S]*?)\]\s+as const;/);
+  assert(Boolean(siteChromeBlock), "MVP SiteChrome is missing its CHAPTERS list", failures);
+  if (siteChromeBlock) {
+    const actual = Array.from(siteChromeBlock[1].matchAll(/\{\s*number:\s*'(\d+)'[\s\S]*?label:\s*'([^']+)'[\s\S]*?href:\s*'([^']+)'[\s\S]*?\}/g), (match) => ({
+      chapter: Number(match[1]),
+      title: match[2],
+      href: match[3].replace(/^\//, "")
+    }));
+    const expected = chapterSequence.map(({ file, navTitle, chapter }) => ({ file, navTitle, chapter })).map(({ file, navTitle, chapter }) => ({
+      chapter,
+      title: navTitle,
+      href: file
+    }));
+    assert(JSON.stringify(actual) === JSON.stringify(expected), "MVP SiteChrome chapter navigation is out of order", failures);
+  }
+
+  const sitemap = readDist("sitemap.xml");
+  let lastPosition = -1;
+  for (const chapter of chapterSequence) {
+    const publicPath = `/${chapter.file.replace(/\.html$/i, "")}`;
+    const position = sitemap.indexOf(`<loc>${siteUrl}${publicPath}</loc>`);
+    assert(position > lastPosition, `sitemap.xml must list Chapter ${chapter.chapter} after the preceding chapter`, failures);
+    lastPosition = position;
+  }
+
+  const runThrough = readDist("the-design.html");
+  const demoThemis = readDist("demothemis.html");
+  assert(/<span\s+class=["']pill["']>Start here<\/span>/i.test(runThrough), "Run-through must carry the Start here marker", failures);
+  assert(!/<span\s+class=["']pill["']>Start here<\/span>/i.test(demoThemis), "DemoThemis must no longer carry the Start here marker", failures);
 }
 
 function checkProposalHomeLinks(file, html, failures) {
@@ -315,37 +437,232 @@ function checkProductModeData(html, failures) {
     assert(boundaries.handoff.appTheme === "momo" && boundaries.handoff.appBrand === "PredictionMoMo" && boundaries.handoff.appOrigin === "app.predictionmomo.com", "Events 07-08 must remain inside the PredictionMoMo app", failures);
     assert(boundaries.handoff.frameTitle === "Seeding DemoThemis with demand from the Application Layer", "Events 07-08 must label the application-layer demand frame", failures);
     assert(boundaries.themis.appTheme === "themis" && boundaries.themis.appBrand === "DemoThemis" && boundaries.themis.appOrigin === "court.demothemis.com" && !boundaries.themis.frameTitle, "DemoThemis app-boundary config is incorrect", failures);
-    assert(eventBoundaries.slice(0, 6).every((boundary) => boundary === boundaries.momo), "Events 01-06 must use the PredictionMoMo app", failures);
-    assert(eventBoundaries.slice(6, 8).every((boundary) => boundary === boundaries.handoff), "Events 07-08 must show PredictionMoMo handing cases to DemoThemis", failures);
-    assert(eventBoundaries.slice(8).every((boundary) => boundary === boundaries.themis), "Run draw and Events 09-13 must use the DemoThemis app", failures);
+    assert(!boundaries.protocol, "protocol explainers must not be registered as application boundaries", failures);
+    assert(eventBoundaries.slice(0, 8).every((boundary) => boundary === boundaries.momo), "Events 01-08 must use the PredictionMoMo app", failures);
+    assert(eventBoundaries[8] === null && eventBoundaries[10] === null && eventBoundaries[12] === null, "draw, tally, and proof relay must have no application boundary", failures);
+    assert(eventBoundaries[9] === boundaries.themis && eventBoundaries[11] === boundaries.themis, "juror and appellant actions must use the DemoThemis app", failures);
   } catch (error) {
     failures.push("run-through product-mode data cannot be evaluated: " + error.message);
   }
 }
 
 function checkAppOwnershipData(html, failures) {
-  const definitions = [
-    ["PRODUCT_SCREENS", "var PRODUCT_SCREENS =", "var APP_SCREENS ="],
-    ["APP_SCREENS", "var APP_SCREENS =", "var APP_PAGES ="],
-    ["APP_PAGES", "var APP_PAGES =", "var APP_FLOWS ="]
-  ];
+  const pages = readRunThroughLiteral(html, "APP_PAGES", failures);
+  if (!Array.isArray(pages)) return;
+  assert(pages.length === 13, "APP_PAGES must define all 13 events", failures);
+  assert(pages.slice(0, 8).every((page) => /^PredictionMoMo\b/.test(page.product || "")), "APP_PAGES Events 01-08 must belong to PredictionMoMo", failures);
+  assert([8, 10, 12].every((index) => /on-chain sequence$/i.test(pages[index].product || "")), "automated event data must belong to the DemoThemis on-chain sequence", failures);
+  assert([9, 11].every((index) => pages[index].product === "DemoThemis"), "APP_PAGES participant events must belong to DemoThemis", failures);
+  assert(!/var\s+(?:PRODUCT_SCREENS|APP_SCREENS)\s*=/.test(html), "run-through must keep one canonical app-page data source", failures);
+}
 
-  definitions.forEach(([name, startMarker, endMarker]) => {
-    const start = html.indexOf(startMarker);
-    const end = html.indexOf(endMarker, start);
-    assert(start >= 0 && end > start, `${name} ownership data is missing`, failures);
-    if (start < 0 || end <= start) return;
-    try {
-      const context = {};
-      vm.runInNewContext(html.slice(start, end) + `\nthis.__screens = ${name};`, context, { filename: `the-design.${name.toLowerCase()}.js` });
-      const screens = context.__screens || [];
-      assert(screens.length === 13, `${name} must define all 13 events`, failures);
-      assert(screens.slice(0, 8).every((screen) => /^PredictionMoMo\b/.test(screen.product || "")), `${name} Events 01-08 must belong to PredictionMoMo`, failures);
-      assert(screens.slice(8).every((screen) => screen.product === "DemoThemis"), `${name} Events 09-13 must belong to DemoThemis`, failures);
-    } catch (error) {
-      failures.push(`${name} ownership data cannot be evaluated: ${error.message}`);
+function balancedSourceFrom(html, openIndex) {
+  const pairs = { "[": "]", "{": "}", "(": ")" };
+  const first = html[openIndex];
+  if (!pairs[first]) return "";
+  const stack = [pairs[first]];
+  let quote = "";
+  let escaped = false;
+  let lineComment = false;
+  let blockComment = false;
+
+  for (let index = openIndex + 1; index < html.length; index += 1) {
+    const char = html[index];
+    const next = html[index + 1];
+    if (lineComment) {
+      if (char === "\n") lineComment = false;
+      continue;
     }
-  });
+    if (blockComment) {
+      if (char === "*" && next === "/") {
+        blockComment = false;
+        index += 1;
+      }
+      continue;
+    }
+    if (quote) {
+      if (escaped) {
+        escaped = false;
+      } else if (char === "\\") {
+        escaped = true;
+      } else if (char === quote) {
+        quote = "";
+      }
+      continue;
+    }
+    if (char === "/" && next === "/") {
+      lineComment = true;
+      index += 1;
+      continue;
+    }
+    if (char === "/" && next === "*") {
+      blockComment = true;
+      index += 1;
+      continue;
+    }
+    if (char === '"' || char === "'" || char === "`") {
+      quote = char;
+      continue;
+    }
+    if (pairs[char]) {
+      stack.push(pairs[char]);
+      continue;
+    }
+    if (char === stack[stack.length - 1]) {
+      stack.pop();
+      if (!stack.length) return html.slice(openIndex, index + 1);
+    }
+  }
+  return "";
+}
+
+function readRunThroughLiteral(html, name, failures) {
+  const assignment = new RegExp(`\\bvar\\s+${name}\\s*=\\s*`).exec(html);
+  assert(Boolean(assignment), `run-through ${name} data is missing`, failures);
+  if (!assignment) return null;
+  const openIndex = assignment.index + assignment[0].length;
+  const literal = balancedSourceFrom(html, openIndex);
+  assert(Boolean(literal), `run-through ${name} data is malformed`, failures);
+  if (!literal) return null;
+  try {
+    return vm.runInNewContext(`(${literal})`, {}, { filename: `the-design.${name.toLowerCase()}.js` });
+  } catch (error) {
+    failures.push(`run-through ${name} data cannot be evaluated: ${error.message}`);
+    return null;
+  }
+}
+
+function runThroughFunctionSource(html, name) {
+  const signature = new RegExp(`function\\s+${name}\\s*\\(`).exec(html);
+  if (!signature) return "";
+  const bodyStart = html.indexOf("{", signature.index + signature[0].length);
+  if (bodyStart < 0) return "";
+  const body = balancedSourceFrom(html, bodyStart);
+  return body ? html.slice(signature.index, bodyStart) + body : "";
+}
+
+function nestedStrings(value, pathPrefix = "") {
+  const strings = [];
+  if (typeof value === "string") {
+    strings.push({ path: pathPrefix, value });
+  } else if (Array.isArray(value)) {
+    value.forEach((entry, index) => strings.push(...nestedStrings(entry, `${pathPrefix}[${index}]`)));
+  } else if (value && typeof value === "object") {
+    Object.entries(value).forEach(([key, entry]) => {
+      strings.push(...nestedStrings(entry, pathPrefix ? `${pathPrefix}.${key}` : key));
+    });
+  }
+  return strings;
+}
+
+function checkRunThroughSurfaceSeparation(html, failures) {
+  const surfaces = readRunThroughLiteral(html, "EVENT_SURFACES", failures);
+  const pages = readRunThroughLiteral(html, "APP_PAGES", failures);
+  const flows = readRunThroughLiteral(html, "APP_FLOWS", failures);
+
+  if (Array.isArray(surfaces)) {
+    const allowedSurfaces = new Set(["momo", "themis", "protocol"]);
+    const allowedOwners = new Set(["user", "protocol", "simulator"]);
+    assert(surfaces.length === 13, "EVENT_SURFACES must define ownership for all 13 events", failures);
+    assert(
+      surfaces.every((entry) => entry && allowedSurfaces.has(entry.surface) && typeof entry.actor === "string" && entry.actor.trim() && allowedOwners.has(entry.actionOwner)),
+      "every event must declare a valid surface, actor, and actionOwner",
+      failures
+    );
+    assert(surfaces.some((entry) => entry && entry.surface === "momo"), "surface metadata is missing PredictionMoMo events", failures);
+    assert(surfaces.some((entry) => entry && entry.surface === "themis"), "surface metadata is missing DemoThemis participant events", failures);
+    assert(surfaces.some((entry) => entry && entry.surface === "protocol"), "surface metadata is missing automated protocol activity", failures);
+    assert(
+      surfaces.filter((entry) => entry && entry.surface === "protocol").every((entry) => entry.actionOwner === "protocol"),
+      "protocol activity events must be owned by the protocol",
+      failures
+    );
+  }
+
+  if (Array.isArray(pages) && Array.isArray(flows)) {
+    assert(pages.length === 13 && flows.length === 13, "production app pages and flows must cover all 13 events", failures);
+    const productionStrings = nestedStrings({ pages, flows }).filter((entry) => !/\.(?:surface|actor|actionOwner)$/.test(entry.path));
+    const simulatorNarration = productionStrings.filter((entry) => /\b(?:demo|simulation|simulator|adversarial|testing)\b|\btest\b|deliberate\s+false/i.test(entry.value));
+    assert(
+      simulatorNarration.length === 0,
+      `production app data contains simulator/test narration: ${simulatorNarration.slice(0, 3).map((entry) => `${entry.path}=${JSON.stringify(entry.value)}`).join(", ")}`,
+      failures
+    );
+
+    const protocolUsers = nestedStrings({ pages, flows }).filter((entry) => /\.user$/.test(entry.path) && /^Protocol$/i.test(entry.value.trim()));
+    assert(
+      protocolUsers.length === 0,
+      `production pages must not present Protocol as a logged-in user: ${protocolUsers.map((entry) => entry.path).join(", ")}`,
+      failures
+    );
+
+    const forbiddenInAppActions = /^(?:Run draw|Post tally|Resolve appeal|Send final proof|Start a new walkthrough)$/i;
+    const inAppActions = [];
+    flows.forEach((flow, eventIndex) => {
+      (flow && flow.steps || []).forEach((step, stepIndex) => {
+        const label = String(step.actionLabel || step.cue || "").replace(/^Tap\s+/i, "").trim();
+        if (forbiddenInAppActions.test(label)) inAppActions.push(`Event ${eventIndex + 1}, step ${stepIndex + 1}: ${label}`);
+      });
+    });
+    assert(inAppActions.length === 0, `protocol/simulator actions leaked into the production app: ${inAppActions.join(", ")}`, failures);
+
+    flows.forEach((flow, eventIndex) => {
+      if (!flow) return;
+      let actor = flow.start && flow.start.user;
+      (flow.steps || []).forEach((step, stepIndex) => {
+        const nextActor = step.after && step.after.user;
+        if (actor && nextActor && actor !== nextActor) {
+          assert(
+            Boolean(step.roleHandoff || step.handoff),
+            `Event ${eventIndex + 1}, step ${stepIndex + 1} changes ${actor} to ${nextActor} without outer role-handoff metadata`,
+            failures
+          );
+        }
+        if (nextActor) actor = nextActor;
+      });
+    });
+
+    const finalFlow = flows[12];
+    const finalStep = finalFlow && finalFlow.steps && finalFlow.steps[finalFlow.steps.length - 1];
+    const finalState = finalStep && finalStep.after;
+    const finalCopy = nestedStrings(finalState || {}).map((entry) => entry.value).join(" ");
+    const finalBlocks = finalState && Array.isArray(finalState.blocks) ? finalState.blocks : [];
+    assert(Boolean(finalState), "the final event must define a completed settlement state", failures);
+    assert(
+      Boolean(finalState && (finalState.surface === "momo" || finalState.product === "PredictionMoMo")),
+      "the run-through must return to PredictionMoMo for its final state",
+      failures
+    );
+    assert(
+      finalBlocks.some((block) => block && block.type === "receipt") && /(?:market resolved|settlement|payout|redeemable)/i.test(finalCopy),
+      "the run-through must finish on a PredictionMoMo settlement receipt",
+      failures
+    );
+  }
+
+  const protocolRenderer = runThroughFunctionSource(html, "renderProtocolSequence");
+  const protocolRecordRenderer = runThroughFunctionSource(html, "renderProtocolRecord");
+  const sequencePredicate = runThroughFunctionSource(html, "isSequencePage");
+  const sequenceProfile = runThroughFunctionSource(html, "sequenceProfileForPage");
+  assert(Boolean(protocolRenderer), "run-through is missing the read-only protocol sequence renderer", failures);
+  assert(/page\.view\s*===\s*["']sequence["']/.test(sequencePredicate), "sequence rendering must be independent from product ownership", failures);
+  assert(/PredictionMoMo automatic execution/.test(sequenceProfile) && /DemoThemis on-chain sequence/.test(sequenceProfile), "one sequence renderer must carry distinct PredictionMoMo and DemoThemis profiles", failures);
+  if (protocolRenderer) {
+    assert(!/makeEl\(\s*["']button["']|\.addEventListener\s*\(|makeLiveActionControl|renderLivePage/.test(protocolRenderer), "the protocol sequence canvas must remain read-only and independent of app-page rendering", failures);
+    assert(!/sim-live-preview|sim-browser-bar|sim-url|sim-app-viewport|app-window|app-nav/.test(protocolRenderer), "the protocol sequence renderer must not contain browser or app structure", failures);
+    assert(/data-sequence-profile/.test(protocolRenderer) && /page\.sequenceSteps\s*\|\|/.test(protocolRenderer), "the sequence canvas must expose its product profile and support focused execution steps", failures);
+  }
+  assert(Boolean(protocolRecordRenderer) && !/makeEl\(\s*["']button["']|\.addEventListener\s*\(|makeLiveActionControl/.test(protocolRecordRenderer), "protocol record nodes must not contain app controls", failures);
+  assert(/setAttribute\(\s*["']data-surface["']|\.dataset\.surface\s*=/.test(html), "run-through renderer must expose the active surface with data-surface", failures);
+
+  const roleHandoffRenderer = runThroughFunctionSource(html, "renderRoleHandoff");
+  const productRenderer = runThroughFunctionSource(html, "renderProductDemo");
+  const liveBlockRenderer = runThroughFunctionSource(html, "renderLiveBlock");
+  assert(Boolean(roleHandoffRenderer), "run-through is missing the outer role-handoff renderer", failures);
+  assert(/root\.appendChild\(\s*renderRoleHandoff/.test(productRenderer), "role handoffs must render outside the browser frame", failures);
+  assert(!/appViewport\.appendChild\(\s*renderRoleHandoff/.test(productRenderer), "role handoffs must never render inside the production app viewport", failures);
+  assert(!/makeLiveContinuationControl\s*\(/.test(liveBlockRenderer), "app cards must reuse the single next-event control instead of creating duplicate continuation buttons", failures);
+  assert(/if\s*\(isSequencePage\(page\)\)[\s\S]*renderProtocolSequence\(page,\s*item\)[\s\S]*root\.appendChild\(sequence\)/.test(productRenderer), "automatic system states must append the sequence canvas directly to the simulator root", failures);
 }
 
 function checkProductStageGroups(html, failures) {
@@ -436,7 +753,7 @@ function checkCompactAppViews(html, failures) {
   });
 
   const resolvedSnapshots = snapshots.filter((snapshot) => snapshot.state !== "base");
-  assert(resolvedSnapshots.length === 36, `app simulator must expose exactly 36 resolved states (found ${resolvedSnapshots.length})`, failures);
+  assert(resolvedSnapshots.length === 37, `app simulator must expose exactly 37 resolved states (found ${resolvedSnapshots.length})`, failures);
   const deadPageKeys = ["intent", "summary", "sideTitle", "sideRows"];
   assert(
     pages.every((page) => deadPageKeys.every((key) => !Object.prototype.hasOwnProperty.call(page, key))) &&
@@ -454,45 +771,80 @@ function checkCompactAppViews(html, failures) {
   }
 
   function rowValue(block, label) {
-    const row = block && (block.rows || []).find((item) => String(item[0]).toLowerCase() === label.toLowerCase());
+    const row = block && (block.rows || block.details || []).find((item) => String(item[0]).toLowerCase() === label.toLowerCase());
     return row && row[1];
   }
 
-  const eventSevenSnapshots = snapshots.filter((snapshot) => snapshot.event === 7);
-  const officialScores = eventSevenSnapshots
-    .flatMap((snapshot) => snapshot.page.blocks || [])
-    .filter((block) => block.type === "scoreboard" && /official source/i.test(block.title || ""));
+  const parlayStart = demoSnapshot(6, "start");
+  const parlayExecution = demoSnapshot(6, "after-1");
+  const parlayPosition = demoSnapshot(6, "after-2");
+  const cashoutExecution = demoSnapshot(6, "after-3");
+  const cashoutReceipt = demoSnapshot(6, "after-4");
   assert(
-    officialScores.length > 0 && officialScores.every((score) =>
-      score.left && score.right && score.left[0] === "England" &&
-      Number(score.left[1]) < Number(score.right[1])
-    ),
-    "Event 07 official source must show England losing so the posted YES is actually false",
+    parlayStart && parlayStart.page.view === "application" && parlayStart.page.route === "/parlays/new" && !(parlayStart.page.blocks || []).some((block) => block.type === "route"),
+    "Event 06 must begin as a production parlay builder without backend route controls",
+    failures
+  );
+  assert(
+    parlayExecution && parlayExecution.page.surface === "momo" && parlayExecution.page.view === "sequence" && parlayExecution.page.sequenceProfile === "momo" && parlayExecution.page.actionOwner === "protocol",
+    "Event 06 placement must leave the app for a read-only PredictionMoMo execution sequence",
+    failures
+  );
+  assert(
+    parlayPosition && parlayPosition.page.view === "application" && parlayPosition.page.route === "/parlays/PM-4821" &&
+      (parlayPosition.page.blocks || []).some((block) => block.type === "receipt" && block.title === "Parlay confirmed" && Array.isArray(block.details) && block.details.length >= 4) &&
+      !(parlayPosition.page.blocks || []).some((block) => block.type === "route"),
+    "Event 06 must return to a real parlay position and structured confirmation receipt",
+    failures
+  );
+  assert(
+    cashoutExecution && cashoutExecution.page.surface === "momo" && cashoutExecution.page.view === "sequence" && cashoutExecution.page.sequenceProfile === "momo" && cashoutExecution.page.actionOwner === "protocol",
+    "Event 06 cashout must leave the app for a read-only PredictionMoMo execution sequence",
+    failures
+  );
+  assert(
+    cashoutReceipt && cashoutReceipt.page.view === "application" && cashoutReceipt.page.route === "/parlays/PM-4821/cashout" &&
+      (cashoutReceipt.page.blocks || []).some((block) => block.type === "receipt" && block.title === "Payment confirmed" && Array.isArray(block.details) && block.details.length >= 4) &&
+      !(cashoutReceipt.page.blocks || []).some((block) => block.type === "route" || /fill check|revert/i.test(JSON.stringify(block))),
+    "Event 06 must finish in the app with a structured cashout receipt and no backend diagnostics",
     failures
   );
 
   const resultStart = demoSnapshot(7, "start");
-  const postTicket = demoBlock(resultStart, (block) => block.type === "ticket" && rowValue(block, "Proposed result"));
+  const postTicket = demoBlock(resultStart, (block) => block.type === "ticket" && rowValue(block, "Result"));
   assert(
-    rowValue(postTicket, "Proposed result") === "YES" && /deliberate false/i.test(rowValue(postTicket, "Scenario") || ""),
-    "Event 07 must clearly identify its intentionally false YES result",
+    rowValue(postTicket, "Result") === "YES" && rowValue(postTicket, "Challenge period") === "24 hours" && postTicket.summaryValue === "$250" && !demoBlock(resultStart, (block) => block.type === "scoreboard"),
+    "Event 07 must present a production confirmation with the result, challenge period, and exact bond",
+    failures
+  );
+  const proposalReceipt = demoBlock(demoSnapshot(7, "after-1"), (block) => block.type === "receipt" && block.title === "Proposal confirmed");
+  assert(
+    proposalReceipt && Array.isArray(proposalReceipt.details) && /\$250 locked/i.test(rowValue(proposalReceipt, "Bond") || "") && /UTC/i.test(rowValue(proposalReceipt, "Challenge ends") || "") && /^0x/i.test(rowValue(proposalReceipt, "Transaction") || ""),
+    "Event 07 must finish with a structured bond, deadline, and transaction receipt",
     failures
   );
 
   const challengeStart = demoSnapshot(8, "start");
-  const challengeTicket = demoBlock(challengeStart, (block) => block.type === "ticket" && rowValue(block, "Flagged result"));
+  const challengeTicket = demoBlock(challengeStart, (block) => block.type === "ticket" && rowValue(block, "Proposed result"));
+  const challengeStartOdds = demoBlock(challengeStart, (block) => block.type === "odds" && block.title === "Current market odds");
   assert(
-    rowValue(challengeTicket, "Flagged result") === "YES" && rowValue(challengeTicket, "Your answer") === "NO",
-    "Event 08 must challenge the false YES with the correct NO",
+    rowValue(challengeTicket, "Proposed result") === "YES" && rowValue(challengeTicket, "Your challenge") === "NO" &&
+      rowValue(challengeTicket, "If final result is YES") === "Bond forfeited" && rowValue(challengeTicket, "If final result is NO") === "Bond returned + reward",
+    "Event 08 must state the proposed result, opposing challenge, and unambiguous bond outcomes",
     failures
   );
   assert(!rowValue(challengeTicket, "Evidence"), "Event 08 must not submit evidence for jurors to inherit", failures);
-  const courtHandoff = demoBlock(demoSnapshot(8, "after-1"), (block) => block.type === "handoff");
+  assert(challengeStartOdds && challengeStartOdds.yes === 91 && challengeStartOdds.no === 9, "Event 08 must show the unchanged 91/9 market before the challenge is submitted", failures);
+  const challengeEnd = demoSnapshot(8, "after-1");
+  const challengeReceipt = demoBlock(challengeEnd, (block) => block.type === "receipt" && block.title === "Challenge receipt");
+  const challengeEndOdds = demoBlock(challengeEnd, (block) => block.type === "odds" && block.title === "Live market odds");
   assert(
-    courtHandoff && courtHandoff.title === "Court handoff" && courtHandoff.right && courtHandoff.right[0] === "DemoThemis" && /received/i.test(courtHandoff.right[1] || ""),
-    "Event 08 must show DemoThemis receiving the case without an internal backend label",
+    challengeReceipt && challengeReceipt.value === "Case #1182" && rowValue(challengeReceipt, "Challenge") === "NO" && rowValue(challengeReceipt, "Status") === "Awaiting panel selection" &&
+      !(challengeEnd.page.blocks || []).some((block) => block.type === "handoff"),
+    "Event 08 must show a production case receipt instead of backend handoff plumbing",
     failures
   );
+  assert(challengeEndOdds && challengeEndOdds.yes === 44 && challengeEndOdds.no === 56, "Event 08 must reprice to 44/56 only after the challenge is submitted", failures);
 
   const ballotStart = demoSnapshot(10, "start");
   const ballotBlock = demoBlock(ballotStart, (block) => block.type === "ballot");
@@ -510,8 +862,25 @@ function checkCompactAppViews(html, failures) {
     "Event 10 must expose exactly the YES and NO ballot choices",
     failures
   );
+  const ballotReceipt = demoBlock(demoSnapshot(10, "after-1"), (block) => block.type === "receipt" && block.title === "Submission receipt");
+  const ballotReceiptCopy = JSON.stringify(ballotReceipt || {});
+  assert(
+    ballotReceipt && rowValue(ballotReceipt, "Ballot contents") === "Hidden" && /^0x/i.test(rowValue(ballotReceipt, "Submission ID") || "") && /pending finality/i.test(rowValue(ballotReceipt, "Juror fee") || "") && !/\b(?:YES|NO)\b/.test(ballotReceiptCopy),
+    "Event 10 receipt must confirm submission without revealing the juror's selected outcome",
+    failures
+  );
 
-  const proofStart = demoBlock(demoSnapshot(11, "start"), (block) => block.type === "proof" && block.title === "Aggregate tally");
+  const appealStart = demoSnapshot(12, "start");
+  const appealCheckout = demoBlock(appealStart, (block) => block.type === "checkout" && block.title === "Required bond");
+  const appealCaseStatus = demoBlock(appealStart, (block) => block.type === "receipt" && block.title === "Case status");
+  assert(
+    rowValue(appealCheckout, "31-juror minimum") === "$12,400" && rowValue(appealCheckout, "Security minimum") === "$31,000" && rowValue(appealCheckout, "Delay minimum") === "$8,200" && rowValue(appealCheckout, "Required bond") === "$31,000" && appealCheckout.winner === "Highest minimum applied",
+    "Event 12 must show each minimum and the highest applied appeal bond",
+    failures
+  );
+  assert(appealCaseStatus && /Provisional/i.test(appealCaseStatus.value || "") && /UTC/i.test(rowValue(appealCaseStatus, "Deadline") || ""), "Event 12 must show the provisional verdict and an exact appeal deadline", failures);
+
+  const proofStart = demoBlock(demoSnapshot(11, "start"), (block) => block.type === "proof");
   const proofPosted = demoBlock(demoSnapshot(11, "after-1"), (block) => block.type === "proof" && block.title === "Aggregate tally");
   const proofVerified = demoBlock(demoSnapshot(11, "after-2"), (block) => block.type === "receipt" && block.title === "Tally proof");
   assert(proofStart && proofStart.verified === false, "Event 11 must mark the unposted aggregate proof as unverified", failures);
@@ -538,7 +907,7 @@ function checkCompactAppViews(html, failures) {
     "DemoThemis Events 07-13 must retain the shorter 1/1/2/1/2/2/1 action path",
     failures
   );
-  const exactSimulatorStepCounts = [2, 3, 2, 2, 2, 2, 1, 1, 2, 1, 2, 2, 1];
+  const exactSimulatorStepCounts = [2, 3, 1, 2, 2, 4, 1, 1, 2, 1, 2, 2, 1];
   assert(
     JSON.stringify(flows.map((flow) => (flow.steps || []).length)) === JSON.stringify(exactSimulatorStepCounts),
     "the PredictionMoMo-to-DemoThemis simulator must retain its exact 13-event action path",
@@ -550,10 +919,15 @@ function checkCompactAppViews(html, failures) {
   const finalityStartCopy = JSON.stringify(demoSnapshot(13, "start").page);
   const finalityEndCopy = JSON.stringify(demoSnapshot(13, "after-1").page);
   assert(/\bNO\b/i.test(finalityStartCopy) && /final/i.test(finalityStartCopy), "Event 13 must carry the final NO verdict into court finality", failures);
-  assert(/Send (?:the )?final(?: NO)? proof/i.test(finalityStartCopy) && /Sent to PredictionMoMo/i.test(finalityEndCopy), "Event 13 must send one final proof back to PredictionMoMo", failures);
-  assert(!/Redeem tokens|NO claims paid|Market receipt/i.test(finalityStartCopy + finalityEndCopy), "DemoThemis finality must not perform PredictionMoMo redemption", failures);
+  assert(/relay/i.test(finalityStartCopy) && /PredictionMoMo/i.test(finalityEndCopy), "Event 13 must relay one final proof back to PredictionMoMo", failures);
+  assert(/Payout received|\$210\.50 received|"Status","Paid"/i.test(finalityEndCopy) && !/Redeemable|redeem/i.test(finalityEndCopy), "Event 13 must finish on a paid PredictionMoMo receipt with no contradictory redemption state", failures);
+  assert(demoSnapshot(9, "start").page.surface === "protocol" && demoSnapshot(9, "after-2").page.surface === "protocol", "Event 09 must remain on the protocol sequence canvas from start through completion", failures);
+  assert(demoSnapshot(11, "start").page.surface === "protocol" && demoSnapshot(11, "after-2").page.surface === "protocol", "Event 11 must remain on the protocol sequence canvas from start through completion", failures);
+  assert(demoSnapshot(12, "start").page.surface === "themis" && demoSnapshot(12, "after-1").page.surface === "protocol" && demoSnapshot(12, "after-2").page.surface === "protocol", "Event 12 must replace the appeal app with the sequence canvas after payment", failures);
+  assert(demoSnapshot(13, "start").page.surface === "protocol" && demoSnapshot(13, "after-1").page.surface === "momo", "Event 13 must replace the sequence canvas with the PredictionMoMo payout app after relay", failures);
   assert(pages.slice(0, 8).every((page) => /^PredictionMoMo\b/.test(page.product || "")), "Events 01-08 must remain owned by PredictionMoMo", failures);
-  assert(pages.slice(8).every((page) => page.product === "DemoThemis"), "Run draw and Events 09-13 must be owned by DemoThemis", failures);
+  assert([8, 10, 12].every((index) => /on-chain sequence$/i.test(pages[index].product || "")), "automated court events must be presented as the DemoThemis on-chain sequence", failures);
+  assert([9, 11].every((index) => pages[index].product === "DemoThemis"), "juror and appellant events must be owned by DemoThemis", failures);
   assert(pages.slice(6).every((page) => !/full design/i.test(page.context || "")), "Court-path screens must use product context instead of an internal full-design label", failures);
 
   function evaluateDataArray(startMarker, endMarker, expression, filename) {
@@ -617,6 +991,7 @@ function checkCompactAppViews(html, failures) {
   for (const snapshot of resolvedSnapshots) {
     const stateLabel = `Event ${snapshot.event} ${snapshot.state}`;
     const page = snapshot.page || {};
+    const isSystemView = page.view === "sequence" || page.surface === "protocol";
     assertText(page.title, `${stateLabel} page title`);
     assertText(page.status, `${stateLabel} page status`);
     assert(!hasOwn(page, "primary"), `${stateLabel} must not duplicate canonical action copy in page.primary`, failures);
@@ -630,6 +1005,13 @@ function checkCompactAppViews(html, failures) {
     const blocks = page.blocks;
     assert(Array.isArray(blocks) && blocks.length > 0, `${stateLabel} must render at least one block`, failures);
     if (!Array.isArray(blocks)) continue;
+    if (!isSystemView) {
+      assert(!blocks.some((block) => block && (block.type === "route" || block.type === "handoff")), `${stateLabel} leaks backend routing into a production app view`, failures);
+      blocks.filter((block) => block && block.type === "receipt").forEach((block) => {
+        assert(Array.isArray(block.details) && block.details.length >= 2, `${stateLabel} production receipt ${block.title || "untitled"} must show structured account details`, failures);
+        assert(!/previous action|protocol steps|backend|the website is no longer|what remains true/i.test(JSON.stringify(block)), `${stateLabel} production receipt ${block.title || "untitled"} contains simulator or architecture narration`, failures);
+      });
+    }
     const titles = blocks.map((block) => block && block.title);
     assert(new Set(titles).size === titles.length, `${stateLabel} contains duplicate block titles, which makes action targeting ambiguous`, failures);
 
@@ -660,7 +1042,16 @@ function checkCompactAppViews(html, failures) {
           break;
         case "receipt":
           assertText(block.value, `${blockLabel} value`);
-          assertText(block.note, `${blockLabel} note`);
+          assert(
+            isVisibleScalar(block.note) || (Array.isArray(block.details) && block.details.length > 0),
+            `${blockLabel} must provide either concise note text or structured receipt details`,
+            failures
+          );
+          if (Array.isArray(block.details)) {
+            assertTupleList(block.details, 2, `${blockLabel} details`);
+            const detailLabels = block.details.map((detail) => String(detail && detail[0] || "").trim().toLowerCase());
+            assert(new Set(detailLabels).size === detailLabels.length, `${blockLabel} contains duplicate receipt-detail labels`, failures);
+          }
           break;
         case "odds":
           assert(Number.isFinite(block.yes) && block.yes >= 0 && block.yes <= 100, `${blockLabel} YES odds must be between 0 and 100`, failures);
@@ -733,7 +1124,7 @@ function checkCompactAppViews(html, failures) {
           break;
         case "ballot":
           assertTupleList(block.options, 2, `${blockLabel} options`);
-          assertText(block.note, `${blockLabel} note`);
+          if (hasOwn(block, "note")) assertText(block.note, `${blockLabel} note`);
           break;
         case "bars":
           assertTupleList(block.bars, 2, `${blockLabel} bars`);
@@ -771,6 +1162,25 @@ function checkCompactAppViews(html, failures) {
     assertText(continuation && continuation.targetTitle, `Event ${event} continuation targetTitle`);
     assert(finalBlocks.some((block) => block.title === continuation.targetTitle), `Event ${event} final continuation target is missing: ${continuation.targetTitle || "unnamed"}`, failures);
   });
+  const expectedInAppContinuationLabels = [
+    "Open live market",
+    "View fixed-price offers",
+    "View claim eligibility",
+    "Create private room",
+    "Build a parlay",
+    "Go to result posting",
+    "Open challenge ticket"
+  ];
+  assert(
+    expectedInAppContinuationLabels.every((label, index) => continuations[index] && continuations[index].action === label),
+    "Events 01-07 must use concise production-style in-app continuation labels",
+    failures
+  );
+  assert([3, 4, 5].every((index) => continuations[index] && continuations[index].dock === "page"), "unrelated feature changes in Events 04-06 must use the app page action area instead of a receipt", failures);
+  assert([0, 1, 2, 6].every((index) => continuations[index] && continuations[index].dock !== "page"), "contextual continuations in Events 01-03 and 07 must remain attached to their relevant card", failures);
+  assert(continuations[6] && continuations[6].targetTitle === "Challenge period", "Event 07 challenge navigation must attach to the open challenge period", failures);
+  assert(continuations[9] && continuations[9].action === "View aggregate tally" && continuations[10] && continuations[10].action === "Review appeal bond" && continuations[11] && continuations[11].action === "View final proof relay", "court-path continuation labels must describe the next visible state", failures);
+  assert(flows[6] && flows[7] && flows[6].start.account !== flows[7].start.account, "the result submitter and challenger must use different production accounts", failures);
 
   const oddTicketCssRule = Array.from(html.matchAll(/([^{}]+)\{([^{}]*)\}/g)).some((match) =>
     /trade-ticket[\s>+~]+[^,{]*:nth-child/i.test(match[1]) &&
@@ -798,34 +1208,42 @@ function checkCompactAppViews(html, failures) {
     let copy = ["title", "value", "result", "note", "summaryLabel", "summaryValue", "winner", "payout", "question", "code", "yes", "no"]
       .map((key) => visibleScalar(block && block[key]))
       .join("");
-    for (const key of ["rows", "left", "right", "tabs", "steps", "people", "legs", "tokens"]) copy += visibleArray(block && block[key]);
+    for (const key of ["rows", "details", "left", "right", "tabs", "steps", "people", "legs", "tokens"]) copy += visibleArray(block && block[key]);
     if (block && Array.isArray(block.options)) copy += block.options.map((option) => visibleScalar(Array.isArray(option) ? option[0] : option)).join("");
     if (block && Array.isArray(block.bars)) copy += block.bars.map((bar) => visibleScalar(bar[0]) + visibleScalar(bar[1])).join("");
     return copy;
   }
 
   const originalDemoChrome = {
-    7: ["Settlement", "Review window"],
-    8: ["Challenge", "Bond ready"],
-    9: ["Case #1182", "Draw bound"],
-    10: ["Private ballot", "Face check passed"],
-    11: ["Case #1182", "Proof public"],
-    12: ["Appeal checkout", "31-seat rung"],
-    13: ["Case #1182", "Final proof"]
+    7: ["Settlement", "0x7c...42"],
+    8: ["Challenge", "0x7c...42"],
+    9: ["Case #1182", "0x7c...42"],
+    10: ["Private ballot", "Juror 04"],
+    11: ["Case #1182", "0x7c...42"],
+    12: ["Appeal checkout", "0x7c...42"],
+    13: ["EURO-FINAL", "0x7c...42"]
   };
 
   function visiblePageCopy(page, event) {
     const chrome = originalDemoChrome[event] || ["", ""];
-    const appBoundary = event >= 9 ? appBoundaries.themis : event >= 7 ? appBoundaries.handoff : appBoundaries.momo;
+    if (page && (page.view === "sequence" || page.surface === "protocol")) {
+      return "System explainer DemoThemis on-chain sequence Automatic Public receipts" +
+        ["section", "title", "subtitle", "status"]
+          .map((key) => visibleScalar(page[key]))
+          .join("") +
+        visibleArray(page.kpis) +
+        (page.blocks || []).map(visibleBlockCopy).join("");
+    }
+    const appBoundary = page && page.surface === "themis" ? appBoundaries.themis : appBoundaries.momo;
     const appBrand = visibleScalar(appBoundary && appBoundary.appBrand || page && page.product);
     const sourceContext = visibleScalar(page && page.context || chrome[0]);
-    const frameTitle = visibleScalar(appBoundary && appBoundary.frameTitle);
+    const frameTitle = event === 8 && page && page.route === "/cases/1182" ? visibleScalar(appBoundaries.handoff && appBoundaries.handoff.frameTitle) : "";
     return frameTitle + appBrand +
       ["section", "title", "subtitle", "status", "primary"]
       .map((key) => visibleScalar(page && page[key]))
       .join("") +
       sourceContext +
-      visibleScalar(page && page.user || chrome[1]) +
+      visibleScalar(page && page.account || chrome[1]) +
       visibleArray(page && page.tabs) +
       visibleArray(page && page.kpis) +
       ((page && page.blocks) || []).map(visibleBlockCopy).join("");
@@ -926,6 +1344,30 @@ function checkCompactAppViews(html, failures) {
     failures
   );
 
+  const event1Published = snapshots.find((snapshot) => snapshot.event === 1 && snapshot.state === "after-1");
+  const event1Opened = snapshots.find((snapshot) => snapshot.event === 1 && snapshot.state === "after-2");
+  const event2AfterYes = snapshots.find((snapshot) => snapshot.event === 2 && snapshot.state === "after-1");
+  const event2AfterNo = snapshots.find((snapshot) => snapshot.event === 2 && snapshot.state === "after-2");
+  const event2Position = snapshots.find((snapshot) => snapshot.event === 2 && snapshot.state === "after-3");
+  const event3Estimate = snapshots.find((snapshot) => snapshot.event === 3 && snapshot.state === "start");
+  const event3Fill = snapshots.find((snapshot) => snapshot.event === 3 && snapshot.state === "after-1");
+  const event4ClaimReady = snapshots.find((snapshot) => snapshot.event === 4 && snapshot.state === "start");
+  const event4Claimed = snapshots.find((snapshot) => snapshot.event === 4 && snapshot.state === "after-1");
+  const event4Book = snapshots.find((snapshot) => snapshot.event === 4 && snapshot.state === "after-2");
+  const event5Funded = snapshots.find((snapshot) => snapshot.event === 5 && snapshot.state === "after-2");
+  const snapshotCopy = (snapshot) => JSON.stringify(snapshot && snapshot.page || {});
+  assert(event1Published && event1Published.page.route === "/markets/PM-EURO-24/receipt" && event1Opened && event1Opened.page.route === "/m/england-euro-final", "Event 01 must move from its publish confirmation to the actual public market route", failures);
+  assert(/\$690/.test(snapshotCopy(event2AfterYes)) && /80\.6 YES/.test(snapshotCopy(event2AfterYes)), "Event 02 YES fill must spend $50 from $740 and hold 80.6 YES", failures);
+  assert(/\$610/.test(snapshotCopy(event2AfterNo)) && /210\.5 NO/.test(snapshotCopy(event2AfterNo)), "Event 02 NO fill must leave $610 and hold 210.5 NO", failures);
+  assert(/80\.6 YES/.test(snapshotCopy(event2Position)) && /210\.5 NO/.test(snapshotCopy(event2Position)), "Event 02 position summary must reconcile both filled holdings", failures);
+  assert(/Estimated fill/.test(snapshotCopy(event3Estimate)) && /Estimated average/.test(snapshotCopy(event3Estimate)) && /Estimated cost/.test(snapshotCopy(event3Estimate)) && !/Fill status/.test(snapshotCopy(event3Estimate)), "Event 03 must present a customer-facing estimated fill instead of matching-engine steps", failures);
+  assert(/740 YES/.test(snapshotCopy(event3Fill)) && /\$525\.20/.test(snapshotCopy(event3Fill)) && /\$84\.80/.test(snapshotCopy(event3Fill)) && /Order receipt/.test(snapshotCopy(event3Fill)) && /\$0\.00/.test(snapshotCopy(event3Fill)), "Event 03 fill must reconcile the order in a production receipt with an exact fee", failures);
+  assert(/Eligible to claim/.test(snapshotCopy(event4ClaimReady)) && /Your position/.test(snapshotCopy(event4ClaimReady)) && /Why eligible/.test(snapshotCopy(event4ClaimReady)) && /820\.6 YES/.test(snapshotCopy(event4ClaimReady)) && /210\.5 NO/.test(snapshotCopy(event4ClaimReady)), "Event 04 must attach claiming to the position and demote graduation checks to read-only eligibility details", failures);
+  assert(/Claim confirmed/.test(snapshotCopy(event4Claimed)) && /World Chain/.test(snapshotCopy(event4Claimed)) && /Transaction/.test(snapshotCopy(event4Claimed)), "Event 04 claim confirmation must look like a production wallet receipt", failures);
+  assert(!/\"title\":\"Order book\"/.test(snapshotCopy(event4Claimed)) && /Wallet assets/.test(snapshotCopy(event4Claimed)) && /\"title\":\"Order book\"/.test(snapshotCopy(event4Book)), "Event 04 must not reveal the order book before the user opens it", failures);
+  assert(/\$20,000 locked/.test(snapshotCopy(event5Funded)) && /PM-ROOM-204/.test(snapshotCopy(event5Funded)) && !/60c|40c/.test(snapshotCopy(event5Funded)), "Event 05 funded room must show coherent equal-stake terms and a room reference", failures);
+  assert(!/Final payout unlocked|redeem YES\/NO/.test(html), "Event 13 supporting copy must remain consistent with its automatic payout receipt", failures);
+
   assert(!/function\s+renderIntentStrip\s*\(/.test(html), "app views must not render the removed Why/Money/Next strip", failures);
   assert(!/title\.appendChild\(makeEl\("span",\s*"",\s*blockTypeLabel\(type\)\)\)/.test(html), "app cards must not repeat internal block-type labels", failures);
   const toastAnimationStart = html.indexOf("@keyframes toast-rise");
@@ -950,23 +1392,30 @@ function checkCompactAppViews(html, failures) {
   );
   assert(
     /liveFieldValue\(4,\s*"Outcome"/.test(liveFieldDraftSource) &&
-      /liveFieldValue\(4,\s*"Odds"/.test(liveFieldDraftSource) &&
-      /liveFieldValue\(4,\s*"Stake"/.test(liveFieldDraftSource) &&
-      /liveFieldValue\(4,\s*"Resolve condition"/.test(liveFieldDraftSource) &&
-      /block\.title\s*===\s*"Locked terms"/.test(liveFieldDraftSource),
-    "all edited private-room terms must persist when the counterparties lock them",
+      /liveFieldValue\(4,\s*"Your side"/.test(liveFieldDraftSource) &&
+      /liveFieldValue\(4,\s*"Stake per side"/.test(liveFieldDraftSource) &&
+      /liveFieldValue\(4,\s*"Winner receives"/.test(liveFieldDraftSource) &&
+      /block\.type\s*===\s*"fields"[\s\S]{0,260}liveFieldValue\(4,\s*row\[0\],\s*row\[1\]\)/.test(liveFieldDraftSource) &&
+      /activeEventStep\s*===\s*1/.test(liveFieldDraftSource) &&
+      /block\.title\s*===\s*"Room funded"/.test(liveFieldDraftSource) &&
+      !/block\.title\s*===\s*"Room funded"[\s\S]{0,360}setReceiptDetail\(block,\s*"Resolve rule"/.test(liveFieldDraftSource),
+    "edited private-room terms must persist in the terms view without bloating the funding receipt",
     failures
   );
   assert(/document\.createElement\(controlType\s*===\s*"textarea"\s*\?\s*"textarea"\s*:\s*"input"\)/.test(html), "editable market forms must use native inputs and textareas", failures);
   assert(/amountInput\.type\s*=\s*"number"/.test(html) && /amountInput\.addEventListener\("input",\s*syncLiquidityOffer\)/.test(html), "opening-liquidity amounts must be editable native numeric controls", failures);
   assert(/liquidityPreview\.setAttribute\("aria-live",\s*"polite"\)/.test(html) && /Opening odds/.test(html) && /Opening escrow/.test(html), "opening-liquidity controls must expose live odds and escrow feedback", failures);
   assert(/function\s+currentStepValidation\s*\(/.test(html) && /marketFieldsReady/.test(html) && /roomFieldsReady/.test(html), "editable market and room actions must validate required fields", failures);
+  assert(html.includes('if (!/^(?:YES|NO)$/i.test(cleanTip(roomSide)))') && html.includes('Choose YES or NO for your side.'), "private-room side entry must accept only a coherent YES or NO position", failures);
+  assert(liveFieldDraftSource.includes('if (block.type === "participants")') && liveFieldDraftSource.includes('["Bob", "Signed " + opposingSide]'), "private-room participants must reflect the edited opposing sides after funding", failures);
   assert(/safeLiquidityAmount\(marketLiquidityDraft\.yes\)[\s\S]{0,120}safeLiquidityAmount\(marketLiquidityDraft\.no\)\s*<=\s*0/.test(html), "market publishing must require funded opening liquidity", failures);
   assert(/function\s+advanceEventStep\s*\(\)\s*\{[\s\S]{0,180}currentStepValidation\(\)/.test(html), "invalid form state must be unable to advance the simulator", failures);
   assert(/function\s+makeHelpTip\s*\(/.test(html) && /className\s*=\s*"sim-help"|makeEl\("button",\s*"sim-help",\s*"\?"\)/.test(html), "event explainers must use a visible question-mark control", failures);
-  assert(/titleMain\.appendChild\(makeHelpTip\(block\.title\s*\|\|\s*blockTypeLabel\(type\),\s*blockHelpText\(block\)\)\)/.test(html), "every event app card must expose a hoverable explainer", failures);
+  assert(/if\s*\(block\.help\)\s*titleMain\.appendChild\(makeHelpTip\(block\.title\s*\|\|\s*blockTypeLabel\(type\),\s*blockHelpText\(block\)\)\)/.test(html), "app cards must show help only when production-specific help is explicitly supplied", failures);
+  assert(!/BLOCK_HELP_BY_TYPE/.test(html), "generic simulator narration must not be injected into production app cards", failures);
   assert(/labelRow\.appendChild\(makeHelpTip\(row\[0\],\s*fieldHelpText\(row\[0\],\s*context\)\)\)/.test(html), "event form and ticket fields must expose field-level explainers", failures);
   assert(/makeHelpTip\(side\s*\+\s*" opening liquidity",\s*liquidityTip\)/.test(html) && /makeHelpTip\("opening odds"/.test(html) && /makeHelpTip\("opening escrow"/.test(html), "opening-liquidity inputs and previews must each expose an explainer", failures);
+  assert(/function\s+appendReceiptDetails\s*\(/.test(html) && /makeEl\("dl",\s*"receipt-details"\)/.test(html) && /appendReceiptDetails\(card,\s*block\.details\)/.test(html), "production receipts must render structured account details semantically", failures);
   assert(/aria-controls",\s*"simTooltip"/.test(html) && /aria-expanded",\s*"false"/.test(html) && /event\.key\s*!==\s*"Escape"/.test(html), "event explainers must support focus, touch pinning, and Escape dismissal", failures);
   assert(!/\.live-card-title\s*>\s*span:last-child\s*\{\s*display:\s*none/.test(html) && /\.live-card-title\s*>\s*\.step-link-badge\s*\{\s*display:\s*none/.test(html), "compact views must keep card titles and their explainer controls visible", failures);
   assert(/grid-column:\s*span\s+var\(--live-span,\s*4\)/.test(html), "app cards must consume their content-aware grid spans", failures);
@@ -1024,13 +1473,14 @@ function checkCompactAppViews(html, failures) {
   const controlsEnd = html.indexOf("function render()", controlsStart);
   const controlsSource = html.slice(controlsStart, controlsEnd);
   assert(/next\.disabled\s*=\s*[^;]*!isEventComplete\(\)[^;]*;/.test(controlsSource), "Next event must be visibly disabled until the current event is complete", failures);
-  assert(/next\.hidden\s*=\s*(?:Boolean\s*\(\s*)?isEventComplete\(\)\s*\)?\s*;/.test(controlsSource), "the global Next event control must hide when the in-app continuation appears", failures);
-  assert(/back\.disabled\s*=\s*stage\s*<=\s*runStartStage/.test(controlsSource), "Previous event must stop at the selected product boundary", failures);
+  assert(/next\.hidden\s*=\s*false\s*;/.test(controlsSource) && /continuation\.action/.test(controlsSource), "completed events must expose one clearly labelled continuation control", failures);
+  assert(/back\.disabled\s*=\s*!canRewindRunState\(\)/.test(controlsSource), "Back must be disabled only when the run has no previous state", failures);
 
   const railStart = html.indexOf("function renderRail");
   const railEnd = html.indexOf("function renderFocus", railStart);
   const railSource = html.slice(railStart, railEnd);
-  assert(/btn\.disabled\s*=\s*!canVisit/.test(railSource) && /nextStage\s*>\s*maxReachedByMode\[nextMode\]/.test(railSource), "future event navigator entries must not bypass the run", failures);
+  const visitEventSource = runThroughFunctionSource(html, "visitEventFromNavigator");
+  assert(/btn\.disabled\s*=\s*!canVisit/.test(railSource) && /nextStage\s*>\s*maxReachedByMode\[nextMode\]/.test(visitEventSource), "future event navigator entries must not bypass the run", failures);
 
   const proofBranchStart = html.indexOf('} else if (type === "proof") {', liveRendererStart);
   const proofBranchEnd = html.indexOf('} else if (type === "checkout") {', proofBranchStart);
@@ -1040,16 +1490,20 @@ function checkCompactAppViews(html, failures) {
   const productRendererStart = html.indexOf("function renderProductDemo");
   const productRendererEnd = html.indexOf("function renderStageArt", productRendererStart);
   const productRenderer = html.slice(productRendererStart, productRendererEnd);
-  assert(/var\s+appBoundary\s*=\s*appBoundaryForStage\(stage\)/.test(productRenderer), "the embedded app must switch ownership at the explicit Event 09 boundary", failures);
+  assert(/var\s+appBoundary\s*=\s*appBoundaryForPage\(page\)/.test(productRenderer), "the embedded surface must follow the resolved page ownership", failures);
   assert(/appViewport\.setAttribute\("data-app-theme",\s*appTheme\)/.test(productRenderer), "the embedded app viewport must declare its own theme independently of the run path", failures);
   assert(/brand\.appendChild\(makeEl\("span",\s*"",\s*appBrand\)\)/.test(productRenderer), "the embedded app brand must follow the current app boundary", failures);
-  assert(/var\s+frameTitle\s*=\s*appBoundary\.frameTitle/.test(productRenderer), "the integration frame must follow the app boundary", failures);
+  assert(/APP_BOUNDARIES\.handoff\.frameTitle/.test(productRenderer), "the PredictionMoMo court handoff must retain its outer integration frame", failures);
   assert(/makeEl\("span",\s*"app-nav-chip",\s*chrome\.context\)/.test(productRenderer), "the PredictionMoMo web app must keep its normal context chip", failures);
   assert(!/app-backend-chip|backendLabel|sends court cases to the/.test(productRenderer), "DemoThemis integration copy must stay outside the web app", failures);
   assert(/makeEl\("div",\s*"sim-demand-frame"\)/.test(productRenderer) && /makeEl\("div",\s*"sim-demand-frame-tab",\s*frameTitle\)/.test(productRenderer), "Events 07-08 must wrap the browser in the labelled demand frame", failures);
   assert(/demandFrame\.appendChild\(demandFrameTab\)[\s\S]*demandFrame\.appendChild\(preview\)[\s\S]*root\.appendChild\(demandFrame\)/.test(productRenderer), "the demand label must frame the whole browser instead of entering the web app", failures);
-  assert((productRenderer.match(/\bnav\.appendChild/g) || []).length === 3 && (productRenderer.match(/\bnavTools\.appendChild/g) || []).length === 2, "the web app navigation structure must remain unchanged", failures);
-  assert((productRenderer.match(/\bappWindow\.appendChild/g) || []).length === 3 && !/app-backend-/i.test(html), "the removed backend badge must not leave an app region behind", failures);
+  assert(/nav\.appendChild\(brand\)[\s\S]*nav\.appendChild\(tabs\)[\s\S]*nav\.appendChild\(navTools\)/.test(productRenderer), "the app header must retain its brand, section, and navigation-tools structure", failures);
+  assert(/navTools\.appendChild\(contextChip\)[\s\S]*navTools\.appendChild\(makeEl\("span",\s*"app-nav-chip",\s*chrome\.user\)\)/.test(productRenderer), "the app header must preserve its context and user identity", failures);
+  const protocolBranchIndex = productRenderer.indexOf("if (isSequencePage(page))");
+  const appBoundaryIndex = productRenderer.indexOf("var appBoundary = appBoundaryForPage(page)");
+  assert(protocolBranchIndex >= 0 && appBoundaryIndex > protocolBranchIndex, "automatic system states must branch to the explainer before any application boundary or browser is constructed", failures);
+  assert(/root\.appendChild\(sequence\)/.test(productRenderer) && !/renderProtocolActivity/.test(productRenderer) && !/app-backend-/i.test(html), "the protocol sequence must be a direct standalone surface with no legacy app region", failures);
 
   const urlStart = html.indexOf("function simulatedAppUrl(");
   const urlEnd = html.indexOf("var LIVE_BLOCK_LAYOUT_WEIGHTS", urlStart);
@@ -1063,16 +1517,17 @@ function checkCompactAppViews(html, failures) {
       const modeContext = {};
       vm.runInNewContext(html.slice(modeStart, modeEnd) + "\nthis.__appBoundaries = APP_BOUNDARIES;", modeContext, { filename: "the-design.url-boundaries.js" });
       const boundaries = modeContext.__appBoundaries;
-      const simulatedUrls = pages.map((page, stageIndex) => {
-        const boundary = stageIndex >= 8 ? boundaries.themis : stageIndex >= 6 ? boundaries.handoff : boundaries.momo;
-        return urlContext.__simulatedAppUrl(page, boundary);
-      });
-      assert(simulatedUrls.slice(0, 8).every((url) => /^app\.predictionmomo\.com\//.test(url)), "Events 01-08 must remain on the PredictionMoMo app origin", failures);
-      assert(simulatedUrls.slice(8).every((url) => /^court\.demothemis\.com\//.test(url)), "Run draw and Events 09-13 must use the DemoThemis court origin", failures);
-      assert(simulatedUrls[7] === "app.predictionmomo.com/dispute/handoff", "Event 08 handoff must remain inside PredictionMoMo", failures);
-      assert(simulatedUrls[8] === "court.demothemis.com/jury/draw", "Event 09 Run draw must open the DemoThemis web app", failures);
-      assert(simulatedUrls[12] === "court.demothemis.com/final/receipt", "finality must stay inside the DemoThemis web app", failures);
-      assert(simulatedUrls[6] === "app.predictionmomo.com/resolution/dashboard", "Event 07 settlement must remain inside PredictionMoMo", failures);
+      const simulatedUrls = {};
+      for (const stageIndex of [0, 1, 2, 3, 4, 5, 6, 7, 9, 11]) {
+        const surface = stageIndex < 8 ? "momo" : "themis";
+        simulatedUrls[stageIndex] = urlContext.__simulatedAppUrl(pages[stageIndex], boundaries[surface]);
+      }
+      assert([0, 1, 2, 3, 4, 5, 6, 7].every((index) => /^app\.predictionmomo\.com\//.test(simulatedUrls[index])), "Events 01-08 must remain on the PredictionMoMo app origin", failures);
+      assert([9, 11].every((index) => /^court\.demothemis\.com\//.test(simulatedUrls[index])), "participant court events must use the DemoThemis app origin", failures);
+      assert(simulatedUrls[7] === "app.predictionmomo.com/markets/england-euro-final/challenge", `Event 08 challenge must use its production PredictionMoMo route (found ${simulatedUrls[7]})`, failures);
+      assert(simulatedUrls[6] === "app.predictionmomo.com/markets/england-euro-final/result", `Event 07 result proposal must use its production PredictionMoMo route (found ${simulatedUrls[6]})`, failures);
+      assert(simulatedUrls[5] === "app.predictionmomo.com/parlays/new", "Event 06 must open on the production parlay-builder route", failures);
+      assert(!/explorer\.demothemis\.com/i.test(html), "protocol explainers must not expose a fake explorer URL", failures);
     } catch (error) {
       failures.push("simulated app URL helper cannot be evaluated: " + error.message);
     }
@@ -1080,7 +1535,7 @@ function checkCompactAppViews(html, failures) {
 
   assert(/var\s+activeTab\s*=\s*page\.activeTab/.test(html) && /makeEl\("span",\s*"on",\s*activeTab\)/.test(html), "the visible app section must follow the current simulator state", failures);
   assert(/data-sim-steps/.test(html) && /steps\.indexOf\(activeEventStep\)/.test(html), "state-machine highlighting must follow the current action step", failures);
-  assert(/stage\s*>\s*runStartStage/.test(html) && /selectedBallotChoice\s*=\s*""/.test(html), "run boundaries and ballot state must reset cleanly", failures);
+  assert(/function\s+previousRunState\s*\(/.test(html) && /selectedBallotChoice\s*=\s*""/.test(html), "linear run history and ballot state must reset cleanly", failures);
 }
 
 function checkProductFontAssets(html, failures) {
@@ -1193,10 +1648,77 @@ function checkRunThroughPriorityUxFixes(html, failures) {
   }
   const responsiveKpiColumns = finalCssValue(".product-mode-panel[data-product-mode] .product-demo .sim-live-preview .live-kpis", "grid-template-columns");
   assert(/repeat\(\s*auto-fit\s*,\s*minmax/i.test(responsiveKpiColumns || ""), "app metrics must use content-sized responsive columns across both product themes", failures);
+  assert(/minmax\(\s*0\s*,\s*1fr\s*\)/i.test(finalCssValue(".sim-live-preview", "grid-template-rows") || ""), "the app frame must allow its app viewport to shrink on short screens", failures);
+  assert(/--sim-preview-max-height/i.test(finalCssValue(".sim-live-preview", "max-height") || ""), "the app frame must expose a viewport-height cap", failures);
+  assert(/auto/i.test(finalCssValue(".sim-app-viewport", "overflow-y") || ""), "a height-capped app frame must keep its app content scrollable", failures);
+  assert(/--sim-preview-max-height/i.test(finalCssValue(".protocol-sequence", "max-height") || ""), "the protocol sequence canvas must share the active-surface viewport cap", failures);
+  assert(/auto/i.test(finalCssValue(".protocol-sequence-scroll", "overflow-y") || ""), "a height-capped sequence canvas must keep its records scrollable", failures);
+  assert(finalCssValue(".product-demo.sim-compact .protocol-trace", "grid-template-columns") === "1fr", "compact protocol sequences must become a vertical process lane", failures);
+  assert(/\.product-mode-panel\[data-product-mode\]\s+\.product-demo\s+\.protocol-sequence\s+\.protocol-record\.live-card\s*\{[^}]*border-radius:\s*6px[^}]*box-shadow:\s*none/is.test(css), "protocol records must override the later app-card normalization with their flat sequence-node design", failures);
+  assert(/\.protocol-sequence\[data-sequence-profile=["']momo["']\]\s*\{[^}]*--protocol-accent:\s*#f0a064/is.test(css), "PredictionMoMo execution sequences must carry a distinct product-linked system palette", failures);
+  assert(!/Each mock screen|Product mockup for the current simulation step|The app gets one panel|opens its court app/i.test(html), "standalone explainers must not be described as app or mock screens", failures);
 
-  const continuationCalls = html.match(/makeLiveContinuationControl\s*\(/g) || [];
-  assert(/function\s+makeLiveContinuationControl\s*\(/.test(html) && continuationCalls.length === 2, "completed events must render exactly one in-app continuation surface", failures);
-  assert(!/function\s+renderEventContinuation\s*\(|makeEl\(["']button["'],\s*["']event-continue-button["']/.test(html), "the step guide must not duplicate the in-app continuation action", failures);
+  assert(!/function\s+makeLiveContinuationControl\s*\(/.test(html), "same-app continuation controls must reuse the existing next-event button", failures);
+  assert(/function\s+renderRoleHandoff\s*\(/.test(html), "completed events must render their role handoff outside the browser", failures);
+
+  const nextControlTags = openingTags(html, "button").filter((tagHtml) => tagAttributeValue(tagHtml, "id") === "runNext");
+  assert(nextControlTags.length === 1, "the run-through must reuse one next-event control instead of rendering duplicate buttons", failures);
+  const placementSource = runThroughFunctionSource(html, "nextControlPlacement");
+  const dockingSource = runThroughFunctionSource(html, "placeNextEventControl");
+  const tutorialDockSource = runThroughFunctionSource(html, "renderTutorialDock");
+  assert(Boolean(placementSource) && Boolean(dockingSource), "the next-event control needs explicit adaptive placement logic", failures);
+  assert(/!isEventComplete\(\)[\s\S]*return\s+["']outer["']/.test(placementSource), "the next-event control must remain in the simulator controls until the current event is complete", failures);
+  assert(/currentSurface\s*===\s*["']protocol["'][^;]*return\s+["']explainer["']/.test(placementSource), "a completed protocol sequence must continue from the outer explainer guide", failures);
+  assert(/upcomingSurface\s*===\s*["']protocol["']/.test(placementSource), "an application-to-protocol transition must leave through neutral browser navigation", failures);
+  assert(/upcomingSurface\s*!==\s*currentSurface/.test(placementSource) && /continuation\.restart/.test(placementSource), "cross-app transitions and restart must stay outside production app navigation", failures);
+  assert(/placement\s*===\s*["']app["'][\s\S]*continuationRow\.appendChild\(next\)[\s\S]*continuationHost\.appendChild\(continuationRow\)/.test(dockingSource), "same-app continuations must dock the existing next control inside the relevant app content", failures);
+  assert(!/navTools\.appendChild\(next\)/.test(dockingSource), "same-app continuations must not crowd the app header", failures);
+  assert(/nextControlPlacement\(page\)\s*!==\s*["']app["']/.test(tutorialDockSource), "the walkthrough guide must not duplicate a same-app continuation above its in-app button", failures);
+  assert(/placement\s*===\s*["']browser["'][\s\S]*browserBar\.appendChild\(next\)/.test(dockingSource), "non-app and cross-app continuations must dock the existing next control in the browser frame", failures);
+  assert(/placement\s*===\s*["']explainer["'][\s\S]*guideDock\.appendChild\(next\)/.test(dockingSource), "protocol continuations must dock in the walkthrough guide outside the sequence canvas", failures);
+  assert(/runControls\.appendChild\(next\)/.test(dockingSource), "incomplete events must retain the next control in the simulator toolbar", failures);
+  assert(/next\.classList\.add\("sim-app-action",\s*"sim-app-continuation"\)/.test(dockingSource) && /\.sim-app-action\s*\{[^}]*background:\s*var\(--accent\)/is.test(css), "in-app continuation navigation must use the active app's primary-action styling", failures);
+  assert(/\.sim-browser-next\s*\{[^}]*font-family:\s*var\(--browser-chrome-font\)/is.test(css), "cross-surface continuation navigation must visually belong to the neutral browser frame", failures);
+  assert(/\.sim-explainer-next\s*\{[^}]*background:\s*var\(--continue-fill\)/is.test(css), "explainer continuations must use the walkthrough guide's continuation styling", failures);
+  assert(/auto\s+minmax\(0,\s*1fr\)\s+auto/i.test(finalCssValue(".sim-browser-bar", "grid-template-columns") || ""), "the browser frame must reserve a distinct navigation position after its URL", failures);
+
+  const navSurfaces = readRunThroughLiteral(html, "EVENT_SURFACES", failures);
+  const navFlows = readRunThroughLiteral(html, "APP_FLOWS", failures);
+  const navContinuations = readRunThroughLiteral(html, "EVENT_CONTINUATIONS", failures);
+  const eventStartSurfaceSource = runThroughFunctionSource(html, "eventStartSurface");
+  const nextEventSurfaceSource = runThroughFunctionSource(html, "nextEventSurface");
+  if (Array.isArray(navSurfaces) && Array.isArray(navFlows) && Array.isArray(navContinuations) && eventStartSurfaceSource && nextEventSurfaceSource && placementSource) {
+    try {
+      const navigationContext = {
+        APP_FLOWS: navFlows,
+        EVENT_SURFACES: navSurfaces,
+        stage: 0,
+        eventComplete: false
+      };
+      navigationContext.eventSurfaceDefaults = (stageIndex) => navSurfaces[stageIndex] || { surface: "momo" };
+      navigationContext.currentContinuation = () => navContinuations[navigationContext.stage] || null;
+      navigationContext.isEventComplete = () => navigationContext.eventComplete;
+      vm.runInNewContext(
+        [eventStartSurfaceSource, nextEventSurfaceSource, placementSource, "this.__nextControlPlacement = nextControlPlacement;"].join("\n"),
+        navigationContext,
+        { filename: "the-design.next-control-placement.js" }
+      );
+      const resolvedCompletionSurfaces = navSurfaces.map((entry) => entry.surface);
+      resolvedCompletionSurfaces[11] = "protocol";
+      resolvedCompletionSurfaces[resolvedCompletionSurfaces.length - 1] = "momo";
+      const expectedPlacements = ["app", "app", "app", "app", "app", "app", "app", "browser", "explainer", "browser", "explainer", "explainer", "browser"];
+      for (let stageIndex = 0; stageIndex < navSurfaces.length; stageIndex += 1) {
+        navigationContext.stage = stageIndex;
+        navigationContext.eventComplete = false;
+        assert(navigationContext.__nextControlPlacement({ surface: resolvedCompletionSurfaces[stageIndex] }) === "outer", `Event ${stageIndex + 1} must keep navigation outer while incomplete`, failures);
+        navigationContext.eventComplete = true;
+        const expectedPlacement = expectedPlacements[stageIndex];
+        assert(navigationContext.__nextControlPlacement({ surface: resolvedCompletionSurfaces[stageIndex] }) === expectedPlacement, `Event ${stageIndex + 1} completed navigation must dock in the ${expectedPlacement}`, failures);
+      }
+    } catch (error) {
+      failures.push("adaptive next-event placement cannot be evaluated: " + error.message);
+    }
+  }
 
   const startingButtons = openingTags(html, "button").filter((tagHtml) => /\bproduct-tab\b/.test(tagAttributeValue(tagHtml, "class") || ""));
   assert(startingButtons.length === 2, "run-through must retain both starting-point choices", failures);
@@ -1218,10 +1740,90 @@ function checkRunThroughPriorityUxFixes(html, failures) {
   const railEnd = html.indexOf("function renderFocus", railStart);
   const railSource = railStart >= 0 && railEnd > railStart ? html.slice(railStart, railEnd) : "";
   assert(!/runStartStage\s*=/.test(railSource), "event navigator visits must not rewrite the selected run boundary", failures);
+  const eventNumberClickStart = railSource.indexOf('btn.addEventListener("click"');
+  const eventNumberClickEnd = railSource.indexOf("stepList.appendChild(btn)", eventNumberClickStart);
+  const eventNumberClickSource = eventNumberClickStart >= 0 && eventNumberClickEnd > eventNumberClickStart
+    ? railSource.slice(eventNumberClickStart, eventNumberClickEnd)
+    : "";
+  const eventVisitSource = runThroughFunctionSource(html, "visitEventFromNavigator");
+  assert(
+    /visitEventFromNavigator\(nextStage\)/.test(eventNumberClickSource) &&
+      /stage\s*=\s*nextStage[\s\S]*resetEventFlow\(false\)/.test(eventVisitSource) &&
+      !/nextStage\s*===\s*stage/.test(eventVisitSource) &&
+      !/resetEventFlow\([^)]*completedStages/.test(eventVisitSource),
+    "every event-number click, including current and completed events, must open Action 1",
+    failures
+  );
+  if (eventVisitSource) {
+    try {
+      const visitContext = {
+        stage: 0,
+        activeEventStep: 0,
+        activeAction: -1,
+        runStartStage: 0,
+        openStageGroup: -1,
+        selectedRunMode: "momo",
+        completedStages: {},
+        maxReachedByMode: { momo: 5, themis: 12 },
+        productModeForStage(stageIndex) { return stageIndex < 6 ? "momo" : "themis"; },
+        saveProductProgress() {},
+        setEventNavigatorOpen() {},
+        allowNextGuidedReveal() {},
+        prepareSimulatorTransition() {},
+        render() {}
+      };
+      visitContext.resetEventFlow = function (toEnd) {
+        visitContext.__resetArguments.push(toEnd);
+        visitContext.activeEventStep = toEnd ? 99 : 0;
+        visitContext.activeAction = visitContext.activeEventStep > 0 ? visitContext.activeEventStep - 1 : -1;
+      };
+      vm.runInNewContext(eventVisitSource + "\nthis.__visitEventFromNavigator = visitEventFromNavigator;", visitContext, { filename: "the-design.event-navigation.js" });
+      for (let targetStage = 0; targetStage < 13; targetStage += 1) {
+        for (const startingStage of [targetStage, (targetStage + 1) % 13]) {
+          visitContext.stage = startingStage;
+          visitContext.activeEventStep = 99;
+          visitContext.activeAction = 98;
+          visitContext.runStartStage = 0;
+          visitContext.selectedRunMode = "momo";
+          visitContext.completedStages = Object.fromEntries(Array.from({ length: 13 }, (_, index) => [index, true]));
+          visitContext.maxReachedByMode = { momo: 5, themis: 12 };
+          visitContext.__resetArguments = [];
+          const opened = visitContext.__visitEventFromNavigator(targetStage);
+          assert(opened === true, `Event ${targetStage + 1} must remain visitable from the full event navigator`, failures);
+          assert(visitContext.stage === targetStage, `Event ${targetStage + 1} navigation must select the clicked event`, failures);
+          assert(visitContext.activeEventStep === 0 && visitContext.activeAction === -1, `Event ${targetStage + 1} navigation must land on Action 1`, failures);
+          assert(visitContext.__resetArguments.length === 1 && visitContext.__resetArguments[0] === false, `Event ${targetStage + 1} navigation must use the first-action reset`, failures);
+          assert(visitContext.completedStages[targetStage] === true, `Event ${targetStage + 1} replay must preserve completion history`, failures);
+          assert(visitContext.selectedRunMode === "momo" && visitContext.runStartStage === 0, `Event ${targetStage + 1} replay must preserve the selected starting path`, failures);
+        }
+      }
+      visitContext.runStartStage = 6;
+      visitContext.selectedRunMode = "themis";
+      for (let targetStage = 6; targetStage < 13; targetStage += 1) {
+        visitContext.stage = 12;
+        visitContext.activeEventStep = 99;
+        visitContext.activeAction = 98;
+        visitContext.__resetArguments = [];
+        const opened = visitContext.__visitEventFromNavigator(targetStage);
+        assert(opened === true && visitContext.activeEventStep === 0 && visitContext.activeAction === -1, `Court-backed Event ${targetStage + 1} navigation must land on Action 1`, failures);
+        assert(visitContext.selectedRunMode === "themis" && visitContext.runStartStage === 6, `Court-backed Event ${targetStage + 1} navigation must preserve its starting path`, failures);
+      }
+    } catch (error) {
+      failures.push("event-number Action 1 navigation cannot be evaluated: " + error.message);
+    }
+  }
+  const runScrollStart = html.lastIndexOf('window.addEventListener("scroll"');
+  const runScrollEnd = html.indexOf('document.addEventListener("scroll"', runScrollStart);
+  const runScrollSource = runScrollStart >= 0 && runScrollEnd > runScrollStart ? html.slice(runScrollStart, runScrollEnd) : "";
+  assert(
+    Boolean(runScrollSource) && !/closeEventNavigator|collapseLooseStageGroups/.test(runScrollSource),
+    "ordinary page scrolling must not close the event navigator before an event-number click completes",
+    failures
+  );
 
   const productDemoTag = openingTags(html, "div").find((tagHtml) => tagAttributeValue(tagHtml, "id") === "productDemo");
   const announcementTag = openingTags(html, "div").find((tagHtml) => tagAttributeValue(tagHtml, "id") === "runAnnouncement");
-  assert(Boolean(productDemoTag) && !tagAttributeValue(productDemoTag, "aria-live"), "the replaceable product mockup must not announce its entire DOM after every action", failures);
+  assert(Boolean(productDemoTag) && !tagAttributeValue(productDemoTag, "aria-live"), "the replaceable walkthrough view must not announce its entire DOM after every action", failures);
   assert(
     Boolean(announcementTag) && /\bsr-only\b/.test(tagAttributeValue(announcementTag, "class") || "") &&
       tagAttributeValue(announcementTag, "role") === "status" && tagAttributeValue(announcementTag, "aria-live") === "polite" &&
@@ -1236,6 +1838,103 @@ function checkRunThroughPriorityUxFixes(html, failures) {
   const restoreSource = restoreStart >= 0 ? html.slice(restoreStart, restoreEnd > restoreStart ? restoreEnd : undefined) : "";
   assert(/\.focus\(\s*\{\s*preventScroll\s*:\s*true\s*\}\s*\)/.test(restoreSource), "restored simulator focus must not fight the guided scrolling behavior", failures);
 
+  const scrollMathStart = html.indexOf("function computeFrameScrollTop");
+  const scrollMathEnd = html.indexOf("function simulatorFrameForPreview", scrollMathStart);
+  assert(scrollMathStart >= 0 && scrollMathEnd > scrollMathStart, "run-through must expose deterministic frame-first scroll geometry", failures);
+  if (scrollMathStart >= 0 && scrollMathEnd > scrollMathStart) {
+    try {
+      const scrollContext = {};
+      vm.runInNewContext(html.slice(scrollMathStart, scrollMathEnd) + "\nthis.__computeFrameScrollTop = computeFrameScrollTop;", scrollContext, { filename: "the-design.frame-scroll.js" });
+      const cases = [
+        { label: "short desktop from above", current: 1200, top: -270, bottom: 280, safeTop: 70, safeBottom: 630, max: 5000 },
+        { label: "short desktop from below", current: 800, top: 500, bottom: 1052, safeTop: 60, safeBottom: 650, max: 5000 },
+        { label: "mobile visual viewport", current: 1400, top: -131, bottom: 449, safeTop: 64, safeBottom: 656, max: 5000 },
+        { label: "offset visual viewport", current: 900, top: 420, bottom: 840, safeTop: 118, safeBottom: 590, max: 5000 },
+        { label: "already visible", current: 1000, top: 100, bottom: 560, safeTop: 64, safeBottom: 656, max: 5000 }
+      ];
+      for (const sample of cases) {
+        const desired = scrollContext.__computeFrameScrollTop(sample.current, sample.top, sample.bottom, sample.safeTop, sample.safeBottom, sample.max);
+        const shift = desired - sample.current;
+        const resultingTop = sample.top - shift;
+        const resultingBottom = sample.bottom - shift;
+        assert(desired >= 0 && desired <= sample.max, `${sample.label} scroll must stay within the document`, failures);
+        assert(resultingTop >= sample.safeTop - 1 && resultingBottom <= sample.safeBottom + 1, `${sample.label} must leave the complete active surface inside the visible viewport`, failures);
+        if (sample.label === "already visible") assert(desired === sample.current, "an already visible surface must not move", failures);
+      }
+      for (const viewportHeight of [320, 480, 568, 640, 667, 720, 768, 900, 1080, 1200]) {
+        const safeTop = Math.min(84, Math.max(48, Math.round(viewportHeight * 0.1)));
+        const safeBottom = viewportHeight - 10;
+        const frameHeight = safeBottom - safeTop;
+        for (const frameTop of [-frameHeight * 0.72, safeTop + 4, safeBottom - frameHeight * 0.18]) {
+          const current = 2400;
+          const desired = scrollContext.__computeFrameScrollTop(current, frameTop, frameTop + frameHeight, safeTop, safeBottom, 12000);
+          const shift = desired - current;
+          const resultingTop = frameTop - shift;
+          const resultingBottom = frameTop + frameHeight - shift;
+          assert(resultingTop >= safeTop - 1 && resultingBottom <= safeBottom + 1, `${viewportHeight}px viewport must retain the complete height-capped surface`, failures);
+        }
+      }
+    } catch (error) {
+      failures.push("run-through frame scroll geometry cannot be evaluated: " + error.message);
+    }
+  }
+
+  const completedFocusStart = html.indexOf("function focusCompletedEventState");
+  const completedFocusEnd = html.indexOf("function scrollToChangedAppArea", completedFocusStart);
+  const completedFocusSource = completedFocusStart >= 0 && completedFocusEnd > completedFocusStart ? html.slice(completedFocusStart, completedFocusEnd) : "";
+  assert(/querySelector\(["']#runNext["']\)/.test(completedFocusSource) && /focusSimulatorTarget\(button\)/.test(completedFocusSource) && !/scrollToY\(/.test(completedFocusSource), "completed events must focus the newly available contextual continuation without moving the frame", failures);
+  const revealStart = html.indexOf("function revealGuidedTargetIfNeeded");
+  const revealEnd = html.indexOf("function allowNextGuidedReveal", revealStart);
+  const revealSource = revealStart >= 0 && revealEnd > revealStart ? html.slice(revealStart, revealEnd) : "";
+  assert(/focusSimulatorTarget\(target\)/.test(revealSource) && !/targetVisible/.test(revealSource), "new events must validate the whole active surface rather than only the highlighted control", failures);
+  const surfaceFocusStart = html.indexOf("function focusSimulatorTarget");
+  const surfaceFocusEnd = html.indexOf("function focusCompletedEventState", surfaceFocusStart);
+  const surfaceFocusSource = surfaceFocusStart >= 0 && surfaceFocusEnd > surfaceFocusStart ? html.slice(surfaceFocusStart, surfaceFocusEnd) : "";
+  assert(/querySelector\(["']\.sim-surface-frame["']\)/.test(surfaceFocusSource), "guided focus must resolve the common app-or-explainer surface frame", failures);
+  assert(surfaceFocusSource.indexOf("fitSimulatorFrameToViewport(surfaceFrame, bounds)") >= 0 && surfaceFocusSource.indexOf("fitSimulatorFrameToViewport(surfaceFrame, bounds)") < surfaceFocusSource.indexOf("surfaceFrame.contains(target)"), "the active surface must be height-capped even when its walkthrough control sits outside it", failures);
+  const revealSurfaceSource = runThroughFunctionSource(html, "revealTargetWithinSurface");
+  assert(/\.sim-surface-scroll,\s*\.protocol-sequence-scroll/.test(revealSurfaceSource), "guided reveal must scroll either an app viewport or a protocol sequence canvas", failures);
+  const frameRefitSource = runThroughFunctionSource(html, "refitSimulatorFrame");
+  const resizeQueueSource = runThroughFunctionSource(html, "queueStageArtResize");
+  assert(
+    /fitSimulatorFrameToViewport\(surfaceFrame,\s*visibleViewportBounds\(\)\)/.test(frameRefitSource) &&
+      !/focusSimulatorTarget|revealTargetWithinSurface|scrollToY|window\.scrollTo|\.scrollTop\s*[+\-]?=/.test(frameRefitSource),
+    "responsive simulator fitting must resize the frame without moving either scroll position",
+    failures
+  );
+  assert(/refitSimulatorFrame\(\)/.test(resizeQueueSource), "layout changes must still refit the active simulator frame", failures);
+  const ambientResizeStart = html.lastIndexOf('window.addEventListener("resize"');
+  const ambientResizeEnd = html.indexOf("initSystemStateMachine();", ambientResizeStart);
+  const ambientResizeSource = ambientResizeStart >= 0 && ambientResizeEnd > ambientResizeStart ? html.slice(ambientResizeStart, ambientResizeEnd) : "";
+  assert(
+    Boolean(ambientResizeSource) &&
+      !/scrollToChangedAppArea|focusSimulatorTarget|scrollToY|window\.scrollTo|\.scrollTop\s*[+\-]?=/.test(ambientResizeSource),
+    "passive resize observers must not undo manual page or simulator scrolling",
+    failures
+  );
+  const appViewportRule = (css.match(/^\s*\.sim-app-viewport\s*\{([^}]*)\}/im) || [])[1] || "";
+  const protocolScrollRule = (css.match(/^\s*\.protocol-sequence-scroll\s*\{([^}]*)\}/im) || [])[1] || "";
+  assert(
+    /overflow-y\s*:\s*auto/i.test(appViewportRule) && /overscroll-behavior-y\s*:\s*auto/i.test(appViewportRule) &&
+      /overflow-y\s*:\s*auto/i.test(protocolScrollRule) && /overscroll-behavior-y\s*:\s*auto/i.test(protocolScrollRule) &&
+      !/overscroll-behavior\s*:\s*(?:contain|none)/i.test(appViewportRule + protocolScrollRule),
+    "nested app and protocol scrollers must hand boundary scrolling back to the page",
+    failures
+  );
+  const inlineCoachSource = runThroughFunctionSource(html, "renderCoachmarkInline");
+  assert(
+    !/scrollIntoView|scrollToY|window\.scrollTo|\.scrollTop\s*[+\-]?=/.test(inlineCoachSource),
+    "inline action labels must reflow without moving the user's simulator scroll position",
+    failures
+  );
+  assert(
+    (html.match(/scrollToChangedAppArea\(\)/g) || []).length === 2 &&
+      /function\s+advanceEventStep[\s\S]*?scrollToChangedAppArea\(\)/.test(html) &&
+      /function\s+rewindCurrentEventStep[\s\S]*?scrollToChangedAppArea\(\)/.test(html),
+    "automatic re-centering must be limited to explicit forward and Back transitions",
+    failures
+  );
+
   const productRendererStart = html.indexOf("function renderProductDemo");
   const productRendererEnd = html.indexOf("function renderStageArt", productRendererStart);
   const productRenderer = productRendererStart >= 0 && productRendererEnd > productRendererStart ? html.slice(productRendererStart, productRendererEnd) : "";
@@ -1243,6 +1942,423 @@ function checkRunThroughPriorityUxFixes(html, failures) {
   assert(!/appTheme\s*=\s*productModeForStage|data-app-theme["'],\s*productModeForStage/.test(productRenderer), "the selected run path must not theme the embedded application", failures);
   const leakingRouteViewportRule = Array.from(css.matchAll(/([^{}]+)\{([^{}]*)\}/g)).find((match) => /data-product-mode=["'](?:momo|themis)["']/.test(match[1]) && /sim-app-viewport/.test(match[1]));
   assert(!leakingRouteViewportRule, "route-specific palettes must not leak through the embedded app viewport boundary", failures);
+}
+
+function checkBackNavigationCoverage(html, failures) {
+  const flows = readRunThroughLiteral(html, "APP_FLOWS", failures);
+  const previousSource = runThroughFunctionSource(html, "previousRunState");
+  const canRewindSource = runThroughFunctionSource(html, "canRewindRunState");
+  const rewindSource = runThroughFunctionSource(html, "rewindCurrentEventStep");
+  const tutorialDockSource = runThroughFunctionSource(html, "renderTutorialDock");
+  const productRendererSource = runThroughFunctionSource(html, "renderProductDemo");
+  const controlsSource = runThroughFunctionSource(html, "renderControls");
+  const captureFocusSource = runThroughFunctionSource(html, "captureSimulatorFocus");
+  const restoreFocusSource = runThroughFunctionSource(html, "restoreSimulatorFocus");
+
+  assert(Boolean(previousSource), "the run-through needs one deterministic previous-state resolver", failures);
+  assert(/previousRunState\(stage,\s*activeEventStep\)/.test(canRewindSource), "Back availability must derive from the shared previous-state resolver", failures);
+  assert(
+    /var\s+previous\s*=\s*previousRunState\(stage,\s*activeEventStep\)/.test(rewindSource) &&
+      /if\s*\(\s*!previous\s*\)\s*return false/.test(rewindSource) &&
+      /stage\s*=\s*previous\.stage/.test(rewindSource) &&
+      /activeEventStep\s*=\s*previous\.step/.test(rewindSource),
+    "every Back control must use the same previous-state transition",
+    failures
+  );
+  assert(!/stage\s*(?:<=|>)\s*runStartStage/.test(rewindSource), "Back must not stop at the Court-backed shortcut boundary", failures);
+  assert(
+    /surfaceMeta\.view\s*===\s*["']sequence["']\s*&&\s*canRewindRunState\(\)/.test(tutorialDockSource) &&
+      /addEventListener\(["']click["'],\s*rewindCurrentEventStep\)/.test(tutorialDockSource),
+    "protocol and automatic-sequence screens must expose the shared Back action",
+    failures
+  );
+  assert(
+    /var\s+canGoBack\s*=\s*canRewindRunState\(\)/.test(productRendererSource) &&
+      /browserBack\.disabled\s*=\s*!canGoBack/.test(productRendererSource) &&
+      /browserBack\.addEventListener\(["']click["'],\s*rewindCurrentEventStep\)/.test(productRendererSource),
+    "every application screen must expose the shared Back action",
+    failures
+  );
+  assert(
+    /back\.disabled\s*=\s*!canRewindRunState\(\)/.test(controlsSource) &&
+      /back\.addEventListener\(["']click["'][\s\S]{0,180}rewindCurrentEventStep\(\)/.test(html),
+    "the outer Back control must follow the same action-by-action history",
+    failures
+  );
+  assert(
+    /sim-browser-back["']\)\s*\|\|\s*active\.classList\.contains\(["']tutorial-rewind/.test(captureFocusSource) &&
+      /\.sim-browser-back:not\(\[disabled\]\),\s*\.tutorial-rewind/.test(restoreFocusSource),
+    "Back focus must survive application-to-sequence transitions",
+    failures
+  );
+
+  if (!Array.isArray(flows) || !previousSource) return;
+  try {
+    const context = { APP_FLOWS: flows };
+    vm.runInNewContext(previousSource + "\nthis.__previousRunState = previousRunState;", context, { filename: "the-design.back-history.js" });
+    let stateCount = 0;
+    let predecessorCount = 0;
+    for (let stageIndex = 0; stageIndex < flows.length; stageIndex += 1) {
+      const stepCount = Array.isArray(flows[stageIndex] && flows[stageIndex].steps) ? flows[stageIndex].steps.length : 0;
+      for (let stepIndex = 0; stepIndex <= stepCount; stepIndex += 1) {
+        stateCount += 1;
+        const previous = context.__previousRunState(stageIndex, stepIndex);
+        if (stageIndex === 0 && stepIndex === 0) {
+          assert(previous === null, "Event 1, Action 1 must be the only state without Back", failures);
+          continue;
+        }
+        predecessorCount += 1;
+        const expectedStage = stepIndex > 0 ? stageIndex : stageIndex - 1;
+        const expectedStep = stepIndex > 0 ? stepIndex - 1 : flows[stageIndex - 1].steps.length;
+        assert(
+          previous && previous.stage === expectedStage && previous.step === expectedStep,
+          `Event ${stageIndex + 1}, state ${stepIndex} must return to Event ${expectedStage + 1}, state ${expectedStep}`,
+          failures
+        );
+      }
+    }
+    assert(stateCount === 37, "the Back regression matrix must cover all 37 event/action states", failures);
+    assert(predecessorCount === 36, "exactly 36 event/action states must have a valid predecessor", failures);
+  } catch (error) {
+    failures.push("Back navigation history cannot be evaluated: " + error.message);
+  }
+}
+
+function checkCoachmarkTextAvoidance(html, failures) {
+  const helperNames = [
+    "coachmarkRect",
+    "coachmarkRectIntersection",
+    "coachmarkOverlapArea",
+    "coachmarkRectContains",
+    "coachmarkRectDistance",
+    "coachmarkPlacementForRect",
+    "coachmarkZoneRank",
+    "coachmarkConnectorGeometry",
+    "coachmarkConnectorLength",
+    "coachmarkConnectorIsUsable",
+    "coachmarkConnectorPolyline",
+    "routeCoachmarkConnector",
+    "coachmarkSegmentHitsRect",
+    "scoreCoachmarkCandidate",
+    "buildCoachmarkCandidates",
+    "coachmarkForbiddenTopLeft",
+    "coachmarkUniquePositions",
+    "buildCoachmarkVacancyCandidates",
+    "compareCoachmarkScores",
+    "chooseCoachmarkCandidate"
+  ];
+  const helperSources = helperNames.map((name) => runThroughFunctionSource(html, name));
+  helperNames.forEach((name, index) => {
+    assert(Boolean(helperSources[index]), `coachmark text-avoidance helper is missing: ${name}`, failures);
+  });
+  const chooserSource = runThroughFunctionSource(html, "chooseCoachmarkCandidate");
+  assert(/connectorTextHits\s*===\s*0/.test(chooserSource), "floating coachmarks must reject every connector route that crosses visible text", failures);
+
+  const textCollector = runThroughFunctionSource(html, "collectCoachmarkTextRects");
+  const positioner = runThroughFunctionSource(html, "positionCoachmarkNow");
+  const inlineRenderer = runThroughFunctionSource(html, "renderCoachmarkInline");
+  const connectorHider = runThroughFunctionSource(html, "hideCoachmarkConnector");
+  const connectorRemover = runThroughFunctionSource(html, "removeCoachmarkConnector");
+  const connectorRenderer = runThroughFunctionSource(html, "renderCoachmarkConnector");
+  const inlineHost = runThroughFunctionSource(html, "coachmarkInlineHost");
+  const railRenderer = runThroughFunctionSource(html, "renderRail");
+  const railCoachmarkRefresh = runThroughFunctionSource(html, "refreshCoachmarkAfterRailChange");
+  assert(
+    /createTreeWalker\([\s\S]*NodeFilter\.SHOW_TEXT/.test(textCollector) &&
+      /createRange\(\)/.test(textCollector) &&
+      /getClientRects\(\)/.test(textCollector) &&
+      /coachmarkClipForElement/.test(textCollector) &&
+      /querySelectorAll\(["']input, textarea, select["']\)/.test(textCollector) &&
+      /control\.value[\s\S]*placeholder[\s\S]*visibleContent/.test(textCollector),
+    "coachmark placement must measure visible, clipping-aware text lines rather than whole UI panels",
+    failures
+  );
+  assert(
+    /buildCoachmarkCandidates\([\s\S]*buildCoachmarkVacancyCandidates\([\s\S]*chooseCoachmarkCandidate/.test(positioner) &&
+      /if\s*\(\s*!chosen\s*\)[\s\S]*renderCoachmarkInline/.test(positioner),
+    "coachmark placement must search adjacent and open text-free space before falling back to an in-flow explanation",
+    failures
+  );
+  assert(
+    /actionHost\s*=\s*target\.closest\(["'][^"']*live-action-row/.test(inlineHost) && inlineHost.indexOf("actionHost") < inlineHost.indexOf("sim-surface-frame"),
+    "the final in-flow fallback must stay beside the action instead of jumping above the whole app",
+    failures
+  );
+  assert(
+    /classList\.add\(["']is-inline["']\)/.test(inlineRenderer) &&
+      /insertBefore\(|appendChild\(/.test(inlineRenderer) &&
+      /\.target-callout\.is-inline\s*\{[^}]*position:\s*static/is.test(html),
+    "the no-clear-space fallback must render in normal flow so it cannot cover visible text",
+    failures
+  );
+  assert(
+    /removeCoachmarkConnector\(\)/.test(inlineRenderer) &&
+      /removeAttribute\(["']cx["']\)/.test(connectorHider) &&
+      /removeAttribute\(["']cy["']\)/.test(connectorHider) &&
+      /setAttribute\(["']hidden["']/.test(connectorHider) &&
+      /parentNode\.removeChild/.test(connectorRemover),
+    "inline and hidden coachmarks must remove every stale connector endpoint",
+    failures
+  );
+  assert(
+    /if\s*\(\s*!coachmarkConnectorIsUsable\(candidate\)\s*\)[\s\S]*hideCoachmarkConnector\(\)[\s\S]*return false/.test(connectorRenderer) &&
+      connectorRenderer.indexOf("coachmarkConnectorIsUsable(candidate)") < connectorRenderer.indexOf("svg.hidden = false"),
+    "a connector endpoint may render only after its visible path passes geometry validation",
+    failures
+  );
+  assert(
+    /\.sim-live-preview\.has-inline-coachmark\s*,\s*\.protocol-sequence\.has-inline-coachmark\s*\{[^}]*grid-template-rows:\s*auto auto minmax\(0,\s*1fr\)/is.test(html) &&
+      /\.sim-live-preview\.has-inline-coachmark\s*>\s*\.coachmark-inline-slot\s*,[\s\S]*?\.protocol-sequence\.has-inline-coachmark\s*>\s*\.coachmark-inline-slot\s*\{[^}]*grid-row:\s*2[^}]*order:\s*0/is.test(html) &&
+      /\.sim-live-preview\.has-inline-coachmark\s*>\s*\.sim-app-viewport\s*,[\s\S]*?\.protocol-sequence\.has-inline-coachmark\s*>\s*\.protocol-sequence-scroll\s*\{[^}]*grid-row:\s*3/is.test(html) &&
+      /classList\.add\(["']has-inline-coachmark["']\)/.test(inlineRenderer),
+    "the in-flow fallback must reserve its own row without collapsing the application viewport",
+    failures
+  );
+  assert(
+    /dataset\.coachmarkMode\s*=/.test(html) && /dataset\.textOverlaps\s*=/.test(html) && /dataset\.connectorTextOverlaps\s*=/.test(html) && /dataset\.connectorRouted\s*=/.test(html) && /dataset\.connectorVisible\s*=/.test(html) && /dataset\.candidateCount\s*=/.test(html) && /dataset\.vacancyCandidateCount\s*=/.test(html) && /dataset\.clearConnectorCandidateCount\s*=/.test(html),
+    "coachmark output must expose text-overlap and candidate audit metadata",
+    failures
+  );
+  assert(
+    !/\bis-(?:scrolling|touching|mouse-moving)\b/.test(html) &&
+      !/\bis-coachmark-buffering\b/.test(html) &&
+      !/\bbufferCoachmark\s*\(/.test(html) &&
+      !/\b(?:scrollClassTimeout|touchEndHandler|isMouseMoving|mouseMoveTimeout|mouseStopTimeout)\b/.test(html),
+    "pointer movement, touch, scrolling, and target changes must reposition the coachmark without hiding it",
+    failures
+  );
+  assert(
+    /refreshCoachmarkAfterRailChange\(\)/.test(railRenderer) &&
+      /invalidateCoachmarkGeometry\(["']event-navigator["'],\s*true\)/.test(railCoachmarkRefresh) &&
+      /queueCoachmarkPosition\(\)/.test(railCoachmarkRefresh),
+    "opening or expanding the event navigator must invalidate and reposition the coachmark",
+    failures
+  );
+
+  if (helperSources.some((source) => !source)) return;
+  try {
+    const context = { coachmarkLastPlacement: null };
+    vm.runInNewContext(
+      [
+        "function clampNumber(value, min, max) { return Math.min(max, Math.max(min, value)); }",
+        ...helperSources,
+        "this.__coachmark = { rect: coachmarkRect, overlap: coachmarkOverlapArea, score: scoreCoachmarkCandidate, build: buildCoachmarkCandidates, vacancy: buildCoachmarkVacancyCandidates, choose: chooseCoachmarkCandidate, route: routeCoachmarkConnector, segmentHits: coachmarkSegmentHitsRect, connectorLength: coachmarkConnectorLength, connectorUsable: coachmarkConnectorIsUsable };"
+      ].join("\n"),
+      context,
+      { filename: "the-design.coachmark-solver.js" }
+    );
+    const solver = context.__coachmark;
+    const boundary = solver.rect(0, 0, 600, 400);
+    const target = solver.rect(270, 180, 60, 40);
+    const connectorFixture = (length) => ({
+      path: length ? `M 0 0 L ${length} 0` : "",
+      connectorStart: { x: 0, y: 0 },
+      connectorEnd: { x: length, y: 0 },
+      connectorSegments: [[{ x: 0, y: 0 }, { x: length, y: 0 }]]
+    });
+    assert(!solver.connectorUsable(connectorFixture(0)), "a zero-length connector must not expose an endpoint", failures);
+    assert(!solver.connectorUsable(connectorFixture(4)) && !solver.connectorUsable(connectorFixture(8)), "a connector shorter than its endpoint must stay hidden", failures);
+    assert(solver.connectorUsable(connectorFixture(12)), "a meaningful 12px connector must remain visible", failures);
+    const mismatchedEndpoint = connectorFixture(24);
+    mismatchedEndpoint.connectorEnd = { x: 30, y: 0 };
+    assert(!solver.connectorUsable(mismatchedEndpoint), "a connector endpoint detached from its path must be rejected", failures);
+    const invalidConnector = connectorFixture(24);
+    invalidConnector.connectorSegments[0][1].x = Infinity;
+    assert(!solver.connectorUsable(invalidConnector), "non-finite connector geometry must be rejected", failures);
+    const routedConnector = {
+      path: "M 0 0 L 0 12 L 20 12 L 20 24",
+      connectorStart: { x: 0, y: 0 },
+      connectorEnd: { x: 20, y: 24 },
+      connectorSegments: [
+        [{ x: 0, y: 0 }, { x: 0, y: 12 }],
+        [{ x: 0, y: 12 }, { x: 20, y: 12 }],
+        [{ x: 20, y: 12 }, { x: 20, y: 24 }]
+      ]
+    };
+    assert(solver.connectorUsable(routedConnector) && solver.connectorLength(routedConnector) === 44, "a valid routed connector must retain its line and endpoint", failures);
+
+    const nearButCoveringText = solver.score(
+      { placement: "top", align: "center", width: 120, height: 40, rect: solver.rect(240, 128, 120, 40), distance: 12 },
+      target,
+      boundary,
+      [solver.rect(250, 130, 60, 15)]
+    );
+    const fartherButClear = solver.score(
+      { placement: "left", align: "center", width: 120, height: 40, rect: solver.rect(90, 180, 120, 40), distance: 60 },
+      target,
+      boundary,
+      [solver.rect(250, 130, 60, 15)]
+    );
+    assert(nearButCoveringText.textHits > 0 && !nearButCoveringText.zeroTextOverlap, "a bubble that covers a visible text line must be rejected as zero-overlap", failures);
+    assert(fartherButClear.zeroTextOverlap, "a clear bubble must remain eligible even when farther from the target", failures);
+    assert(solver.choose([nearButCoveringText, fartherButClear], "text-priority") === fartherButClear, "zero visible-text overlap must outrank proximity", failures);
+
+    const connectorCrossingText = solver.score(
+      { placement: "top", align: "center", width: 120, height: 40, rect: solver.rect(240, 80, 120, 40), distance: 60 },
+      target,
+      boundary,
+      [solver.rect(295, 145, 10, 10)]
+    );
+    assert(
+      connectorCrossingText.textHits === 0 && connectorCrossingText.connectorTextHits > 0 && connectorCrossingText.zeroTextOverlap,
+      "the connector fixture must isolate a line-only text crossing",
+      failures
+    );
+    context.coachmarkLastPlacement = null;
+    assert(solver.choose([connectorCrossingText], "connector-hard-stop") === null, "a text-crossing connector must force the safe inline fallback", failures);
+    assert(solver.choose([connectorCrossingText, fartherButClear], "connector-clear-route") === fartherButClear, "a clear connector route must beat every route that crosses text", failures);
+    const crossingObstacle = solver.rect(295, 145, 10, 10);
+    assert(solver.route(connectorCrossingText, target, boundary, [crossingObstacle]), "the detour router must find an orthogonal path around a blocking text line", failures);
+    assert(
+      connectorCrossingText.connectorTextHits === 0 && connectorCrossingText.connectorRouted && connectorCrossingText.connectorSegments.every((segment) => !solver.segmentHits(segment, crossingObstacle)),
+      "a routed connector must be recorded only after every segment clears visible text",
+      failures
+    );
+
+    context.coachmarkLastPlacement = null;
+    const candidates = solver.build([{ width: 120, height: 40 }], target, boundary, []);
+    assert(candidates.length === 12, "one coachmark size must test four directions and three alignments", failures);
+    assert(new Set(candidates.map((candidate) => candidate.placement)).size === 4, "coachmark candidates must include top, bottom, left, and right", failures);
+    assert(candidates.every((candidate) => candidate.zeroTextOverlap), "an empty scene must keep every valid directional candidate text-clear", failures);
+
+    context.coachmarkLastPlacement = null;
+    const blockedCandidates = solver.build([{ width: 120, height: 40 }], target, boundary, [boundary]);
+    assert(solver.choose(blockedCandidates, "inline-fallback") === null, "when every floating placement covers text, the solver must request the in-flow fallback", failures);
+
+    const narrowBoundary = solver.rect(0, 0, 320, 568);
+    const wideTarget = solver.rect(16, 300, 288, 40);
+    const textBands = [solver.rect(0, 210, 320, 78), solver.rect(0, 352, 320, 80)];
+    const narrowZones = [{ name: "viewport", rank: 2, rect: narrowBoundary }];
+    const anchoredOnly = solver.build([{ width: 176, height: 72 }], wideTarget, narrowBoundary, textBands, narrowZones);
+    assert(solver.choose(anchoredOnly, "remote-pocket") === null, "the focused fixture must block every target-anchored position", failures);
+    context.coachmarkLastPlacement = null;
+    const remotePocket = solver.vacancy([{ width: 176, height: 72 }], wideTarget, narrowBoundary, textBands, narrowZones);
+    const remoteChoice = solver.choose(remotePocket, "remote-pocket");
+    assert(
+      !remoteChoice || (remoteChoice.align === "free" && remoteChoice.zeroTextOverlap && remoteChoice.connectorTextHits === 0),
+      "a remote pocket may be used only when both its label and connector remain text-clear",
+      failures
+    );
+    if (!remoteChoice) {
+      assert(
+        remotePocket.filter((candidate) => candidate.valid && candidate.zeroTextOverlap).every((candidate) => candidate.connectorTextHits > 0),
+        "inline fallback is allowed only when every remote text-clear pocket still has a crossing connector",
+        failures
+      );
+    }
+  } catch (error) {
+    failures.push("coachmark text-avoidance geometry cannot be evaluated: " + error.message);
+  }
+}
+
+function checkActionButtonInfoLabels(html, failures) {
+  const tagActionSource = runThroughFunctionSource(html, "tagWorkflowAction");
+  const clearActionSource = runThroughFunctionSource(html, "clearWorkflowAction");
+  const ensureLabelsSource = runThroughFunctionSource(html, "ensureSimulatorButtonInfoLabels");
+  const buttonInfoSource = runThroughFunctionSource(html, "simulatorButtonInfo");
+  const tooltipSource = runThroughFunctionSource(html, "installSimTooltips");
+  const guidedSource = runThroughFunctionSource(html, "applyGuidedTarget");
+  const activeTargetSource = runThroughFunctionSource(html, "activeCoachmarkTarget");
+  const positionerSource = runThroughFunctionSource(html, "positionCoachmarkNow");
+  const queuePositionSource = runThroughFunctionSource(html, "queueCoachmarkPosition");
+  const inlineHostSource = runThroughFunctionSource(html, "coachmarkInlineHost");
+  const tutorialDockSource = runThroughFunctionSource(html, "renderTutorialDock");
+  const validationSource = runThroughFunctionSource(html, "setActionValidation");
+  const controlsSource = runThroughFunctionSource(html, "renderControls");
+  const renderSource = runThroughFunctionSource(html, "render");
+
+  assert(
+    /data-control-role["'],\s*["']workflow-action/.test(tagActionSource) &&
+      /data-action-label/.test(tagActionSource) &&
+      /data-action-info/.test(tagActionSource),
+    "every primary workflow action must carry one explicit label and explainer",
+    failures
+  );
+  assert(
+    /querySelectorAll\(["']button["']\)/.test(ensureLabelsSource) &&
+      /classList\.contains\(["']guided-target["']\)/.test(ensureLabelsSource) &&
+      /button\.disabled/.test(ensureLabelsSource) &&
+      /tagInfo\(button,\s*info\)/.test(ensureLabelsSource),
+    "the simulator must run one complete post-render label pass over every button",
+    failures
+  );
+  assert(
+    /classList\.remove\(["']guided-target["']\)/.test(clearActionSource) &&
+      /data-action-label/.test(clearActionSource) &&
+      /data-action-info/.test(clearActionSource) &&
+      /setAttributeToken\([\s\S]*guidedCoachmark[\s\S]*false/.test(clearActionSource),
+    "the reused continuation button must clear stale workflow and coachmark state before every render",
+    failures
+  );
+  assert(
+    /#system-run \[data-sim-tip\]/.test(tooltipSource) &&
+      /guided-target/.test(tooltipSource) &&
+      /match\.disabled/.test(tooltipSource),
+    "secondary action labels must work across the full run-through without duplicating guided or disabled controls",
+    failures
+  );
+  assert(
+    /button\.id\s*===\s*["']runNext["'][\s\S]*continuation\.action[\s\S]*continuation\.note/.test(buttonInfoSource) &&
+      /tutorial-rewind/.test(buttonInfoSource) &&
+      /runBack/.test(buttonInfoSource),
+    "continuation and previous-state controls must receive contextual action labels",
+    failures
+  );
+  assert(/tagWorkflowAction\(/.test(guidedSource), "application actions must use the shared workflow-label helper", failures);
+  assert(/tagWorkflowAction\(advance/.test(tutorialDockSource), "protocol actions must use the shared workflow-label helper", failures);
+  assert(
+    /clearWorkflowAction\(next\)/.test(controlsSource) &&
+      /classList\.add\(["']is-action-cue["'],\s*["']guided-target["']\)/.test(controlsSource) &&
+      /tagWorkflowAction\(next,\s*continuation\.action,\s*continuation\.note,\s*["']user["']\)/.test(controlsSource) &&
+      /setAttributeToken\(next,\s*["']aria-describedby["'],\s*["']guidedCoachmark["'],\s*true\)/.test(controlsSource) &&
+      /ensureSimulatorButtonInfoLabels\(\)[\s\S]*positionCoachmarkNow\(\)/.test(controlsSource),
+    "every completed event must promote its enabled continuation into the persistent guided-label lifecycle",
+    failures
+  );
+  assert(
+    /root[\s\S]*querySelector\(["']\.guided-target["']\)/.test(activeTargetSource) &&
+      /getElementById\(["']runNext["']\)/.test(activeTargetSource) &&
+      /classList\.contains\(["']guided-target["']\)/.test(activeTargetSource) &&
+      /activeCoachmarkTarget\(\)/.test(positionerSource),
+    "coachmark discovery must include both in-app actions and the shared next-event continuation",
+    failures
+  );
+  assert(
+    /requestAnimationFrame\(/.test(queuePositionSource) &&
+      /setTimeout\([\s\S]*positionCoachmarkNow\(\)[\s\S]*120/.test(queuePositionSource) &&
+      /clearTimeout\(coachmarkFallbackTimeout\)/.test(queuePositionSource),
+    "coachmark positioning must retain one trailing settle pass when an animation frame is delayed",
+    failures
+  );
+  assert(
+    /live-page-continuation/.test(inlineHostSource) &&
+      /\.live-page-continuation\s*\{[^}]*flex-wrap:\s*wrap/is.test(html),
+    "page-docked continuation labels must have a wrapped inline fallback beside the action",
+    failures
+  );
+  assert(/setAttributeToken\([\s\S]*aria-describedby/.test(validationSource), "validation must preserve the action coachmark description", failures);
+  assert(/renderControls\(\);[\s\S]*ensureSimulatorButtonInfoLabels\(\);/.test(renderSource), "action-label coverage must run after every simulator render", failures);
+
+  const flows = readRunThroughLiteral(html, "APP_FLOWS", failures);
+  const continuations = readRunThroughLiteral(html, "EVENT_CONTINUATIONS", failures);
+  const copy = readRunThroughLiteral(html, "CONTROL_COACH_COPY", failures);
+  if (!Array.isArray(flows) || !Array.isArray(continuations) || !copy || typeof copy !== "object") return;
+  assert(continuations.length === flows.length, "every simulator event must end with one guided continuation", failures);
+  assert(
+    continuations.every((continuation) => continuation && String(continuation.action || "").trim() && String(continuation.note || "").trim().split(/\s+/).length >= 6),
+    "every completed-event continuation needs a substantive persistent explainer",
+    failures
+  );
+  const guidedStateCount = flows.reduce((total, flow) => total + (flow.steps || []).length, 0) + continuations.length;
+  assert(guidedStateCount === 37, `the simulator must expose a guided label in all 37 action states (found ${guidedStateCount})`, failures);
+  flows.forEach((flow, eventIndex) => {
+    (flow.steps || []).forEach((step, stepIndex) => {
+      const label = String(step.actionLabel || String(step.cue || "").replace(/^Tap\s+/i, "") || step.title || "").replace(/\s+/g, " ").trim();
+      const explanation = String(copy[label] || step.coach || "").replace(/\s+/g, " ").trim();
+      assert(Boolean(label), `Event ${eventIndex + 1} step ${stepIndex + 1} needs an action label`, failures);
+      assert(explanation.split(/\s+/).filter(Boolean).length >= 6, `Action \"${label}\" needs substantive explainer copy`, failures);
+    });
+  });
 }
 
 function checkBuiltHtml(failures) {
@@ -1254,6 +2370,8 @@ function checkBuiltHtml(failures) {
     assert(!/unpkg\.com/i.test(html), `${file} should not load unpkg.com`, failures);
     assert(/assets\/styles\.css/i.test(html), `${file} missing shared stylesheet`, failures);
   }
+
+  checkChapterSequence(failures);
 
   checkProposalHomeLinks("404.html", readDist("404.html"), failures);
 
@@ -1283,10 +2401,14 @@ function checkBuiltHtml(failures) {
   checkStateMachineData(runThrough, failures);
   checkProductModeData(runThrough, failures);
   checkAppOwnershipData(runThrough, failures);
+  checkRunThroughSurfaceSeparation(runThrough, failures);
   checkProductStageGroups(runThrough, failures);
   checkCompactAppViews(runThrough, failures);
   checkProductFontAssets(runThrough, failures);
   checkRunThroughPriorityUxFixes(runThrough, failures);
+  checkBackNavigationCoverage(runThrough, failures);
+  checkCoachmarkTextAvoidance(runThrough, failures);
+  checkActionButtonInfoLabels(runThrough, failures);
   assert(/End-to-end resolution run-through/i.test(runThrough), "run-through chapter missing neutral title", failures);
   assert(/id=["']productTabMomo["']/i.test(runThrough), "run-through missing PredictionMoMo parent tab", failures);
   assert(/id=["']productTabThemis["']/i.test(runThrough), "run-through missing DemoThemis parent tab", failures);
@@ -1346,10 +2468,10 @@ function checkBuiltHtml(failures) {
   assert(/DemoThemis Intake/i.test(runThrough), "DemoThemis entry event is not branded as court intake", failures);
   assert(/id=["']stageRail["']/i.test(runThrough), "run-through chapter missing stage rail", failures);
   assert(/id=["']focusScene["']/i.test(runThrough), "run-through missing focused one-step scene", failures);
-  assert(/id=["']productDemo["']/i.test(runThrough), "run-through missing product mock screen", failures);
-  assert(/missionActions/i.test(runThrough), "run-through missing mock-app action buttons", failures);
-  assert(/PRODUCT_SCREENS/i.test(runThrough), "run-through missing staged product screens", failures);
-  assert(/action-effect/i.test(runThrough), "run-through missing inline interactive step feedback", failures);
+  assert(/id=["']productDemo["']/i.test(runThrough), "run-through missing current walkthrough view", failures);
+  assert(/tutorial-advance/i.test(runThrough), "run-through missing outer automatic-event controls", failures);
+  assert(/APP_PAGES/i.test(runThrough), "run-through missing canonical staged app pages", failures);
+  assert(/sim-role-handoff/i.test(runThrough), "run-through missing outer role handoffs", failures);
   assert(/LUCIDE_ICONS/i.test(runThrough), "run-through missing vendored Lucide icon subset", failures);
   assert(!/id=["']runLanes["']/i.test(runThrough), "run-through should not expose the old multi-lane board", failures);
   assert(/data-feature=["']instant["']/i.test(runThrough), "run-through missing instant-market feature unlock", failures);
