@@ -6,14 +6,14 @@ import { usePathname, useSearchParams } from 'next/navigation';
 
 const CHAPTERS = [
   { label: 'Proposal home', href: '/' },
-  { number: '01', label: 'Run-through', href: '/the-design.html' },
+  { number: '01', label: 'Run-through', href: '/run-through.html' },
   { number: '02', label: 'DemoThemis', href: '/demothemis.html' },
-  { number: '03', label: 'Break the court', href: '/game-theory.html' },
-  { number: '04', label: 'PredictionMoMo', href: '/prediction-market.html' },
+  { number: '03', label: 'Break the court', href: '/break-the-court.html' },
+  { number: '04', label: 'PredictionMoMo', href: '/predictionmomo.html' },
   {
     number: '05',
     label: 'Bootstrap loop',
-    href: '/hybrid-juror-prediction-market-integration.html',
+    href: '/bootstrap-loop.html',
   },
   { number: '06', label: 'Governance', href: '/governance.html' },
 ] as const;

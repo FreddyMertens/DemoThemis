@@ -1,6 +1,6 @@
 const fs = require('fs');
 
-let content = fs.readFileSync('game-theory.html', 'utf8');
+let content = fs.readFileSync('break-the-court.html', 'utf8');
 
 const rewrites = {
   // Traffic and volume
@@ -84,5 +84,5 @@ Object.keys(rewrites).forEach(id => {
   content = content.replace(regex, `$1${rewrites[id]}$2`);
 });
 
-fs.writeFileSync('game-theory.html', content);
-console.log('Rewrote tooltips in game-theory.html for extreme accuracy and clarity.');
+fs.writeFileSync('break-the-court.html', content);
+console.log('Rewrote tooltips in break-the-court.html for extreme accuracy and clarity.');

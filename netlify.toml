@@ -1,6 +1,8 @@
 [build]
   base = "DemoThemisMVP/web"
   command = "node ../../tools/prepare-unified-site.js && pnpm build"
+  # The build consumes proposal sources outside the detected web package, so every push must rebuild.
+  ignore = "exit 1"
   publish = ".next"
 
 [build.environment]
@@ -10,6 +12,56 @@
   from = "/"
   to = "/proposal-home.html"
   status = 200
+
+[[redirects]]
+  from = "/the-design"
+  to = "/run-through.html"
+  status = 301
+
+[[redirects]]
+  from = "/the-design.html"
+  to = "/run-through.html"
+  status = 301
+
+[[redirects]]
+  from = "/game-theory"
+  to = "/break-the-court.html"
+  status = 301
+
+[[redirects]]
+  from = "/game-theory.html"
+  to = "/break-the-court.html"
+  status = 301
+
+[[redirects]]
+  from = "/prediction-market"
+  to = "/predictionmomo.html"
+  status = 301
+
+[[redirects]]
+  from = "/prediction-market.html"
+  to = "/predictionmomo.html"
+  status = 301
+
+[[redirects]]
+  from = "/hybrid-juror-prediction-market-integration"
+  to = "/bootstrap-loop.html"
+  status = 301
+
+[[redirects]]
+  from = "/hybrid-juror-prediction-market-integration.html"
+  to = "/bootstrap-loop.html"
+  status = 301
+
+[[redirects]]
+  from = "/mvp"
+  to = "/demothemis-mvp.html"
+  status = 301
+
+[[redirects]]
+  from = "/mvp.html"
+  to = "/demothemis-mvp.html"
+  status = 301
 
 [[redirects]]
   from = "/vision"

@@ -5,11 +5,11 @@
 
   // Canonical reading path: 6 chapters. Deep-dive pages are off-path.
   var CHAPTERS = [
-    { f: "the-design.html", t: "Run-through", ch: 1 },
+    { f: "run-through.html", t: "Run-through", ch: 1 },
     { f: "demothemis.html", t: "DemoThemis", ch: 2 },
-    { f: "game-theory.html", t: "Break the court", ch: 3 },
-    { f: "prediction-market.html", t: "PredictionMoMo", ch: 4 },
-    { f: "hybrid-juror-prediction-market-integration.html", t: "The bootstrap loop", ch: 5 },
+    { f: "break-the-court.html", t: "Break the court", ch: 3 },
+    { f: "predictionmomo.html", t: "PredictionMoMo", ch: 4 },
+    { f: "bootstrap-loop.html", t: "The bootstrap loop", ch: 5 },
     { f: "governance.html", t: "Governance", ch: 6 }
   ];
   var TOTAL = CHAPTERS.length;

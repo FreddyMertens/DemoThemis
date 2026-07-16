@@ -9,21 +9,21 @@ const siteUrl = (process.env.URL || process.env.DEPLOY_PRIME_URL || "https://dem
 
 const publicHtml = [
   "index.html",
-  "the-design.html",
+  "run-through.html",
   "demothemis.html",
-  "game-theory.html",
-  "prediction-market.html",
-  "hybrid-juror-prediction-market-integration.html",
+  "break-the-court.html",
+  "predictionmomo.html",
+  "bootstrap-loop.html",
   "governance.html",
-  "mvp.html"
+  "demothemis-mvp.html"
 ];
 
 const chapterSequence = [
-  { file: "the-design.html", title: "Run-through", navTitle: "Run-through", chapter: 1 },
+  { file: "run-through.html", title: "Run-through", navTitle: "Run-through", chapter: 1 },
   { file: "demothemis.html", title: "DemoThemis", navTitle: "DemoThemis", chapter: 2 },
-  { file: "game-theory.html", title: "Break the court", navTitle: "Break the court", chapter: 3 },
-  { file: "prediction-market.html", title: "PredictionMoMo", navTitle: "PredictionMoMo", chapter: 4 },
-  { file: "hybrid-juror-prediction-market-integration.html", title: "The bootstrap loop", navTitle: "Bootstrap loop", chapter: 5 },
+  { file: "break-the-court.html", title: "Break the court", navTitle: "Break the court", chapter: 3 },
+  { file: "predictionmomo.html", title: "PredictionMoMo", navTitle: "PredictionMoMo", chapter: 4 },
+  { file: "bootstrap-loop.html", title: "The bootstrap loop", navTitle: "Bootstrap loop", chapter: 5 },
   { file: "governance.html", title: "Governance", navTitle: "Governance", chapter: 6 }
 ];
 
@@ -164,7 +164,7 @@ function checkMvpNavigation(file, html, failures) {
 
   const navTargets = openingTagAttributeValues(siteNav[0], "a", "href");
   assert(navTargets.includes("/"), `${file} primary navigation missing root-relative Home link`, failures);
-  assert(navTargets.includes("mvp.html"), `${file} primary navigation missing mvp.html`, failures);
+  assert(navTargets.includes("demothemis-mvp.html"), `${file} primary navigation missing demothemis-mvp.html`, failures);
 }
 
 function normalizedHtmlText(value) {
@@ -274,7 +274,7 @@ function checkChapterSequence(failures) {
     lastPosition = position;
   }
 
-  const runThrough = readDist("the-design.html");
+  const runThrough = readDist("run-through.html");
   const demoThemis = readDist("demothemis.html");
   assert(/<span\s+class=["']pill["']>Start here<\/span>/i.test(runThrough), "Run-through must carry the Start here marker", failures);
   assert(!/<span\s+class=["']pill["']>Start here<\/span>/i.test(demoThemis), "DemoThemis must no longer carry the Start here marker", failures);
@@ -304,13 +304,13 @@ function checkMvpPage(html, failures) {
   const title = titleMatch ? titleMatch[1] : "";
   const description = descriptionTag ? tagAttributeValue(descriptionTag, "content") || "" : "";
 
-  assert(/\bMVP\b/i.test(title) && /DemoThemis/i.test(title), "mvp.html title should identify the DemoThemis MVP", failures);
-  assert(/\bMVP\b/i.test(description) && /\bon[- ]?chain\b/i.test(description), "mvp.html description should explain the on-chain MVP", failures);
+  assert(/\bMVP\b/i.test(title) && /DemoThemis/i.test(title), "demothemis-mvp.html title should identify the DemoThemis MVP", failures);
+  assert(/\bMVP\b/i.test(description) && /\bon[- ]?chain\b/i.test(description), "demothemis-mvp.html description should explain the on-chain MVP", failures);
 
   const linkTargets = openingTagAttributeValues(html, "a", "href");
   const sameSiteProductLinks = linkTargets.flatMap((target) => {
     try {
-      const targetUrl = new URL(target, `${siteUrl}/mvp.html`);
+      const targetUrl = new URL(target, `${siteUrl}/demothemis-mvp.html`);
       return targetUrl.origin === new URL(siteUrl).origin ? [targetUrl] : [];
     } catch (error) {
       return [];
@@ -318,25 +318,25 @@ function checkMvpPage(html, failures) {
   });
   assert(
     sameSiteProductLinks.some((target) => target.pathname.replace(/\/+$/, "") === "/app"),
-    `mvp.html missing same-site live product link: ${siteUrl}/app`,
+    `demothemis-mvp.html missing same-site live product link: ${siteUrl}/app`,
     failures
   );
   for (const route of ["/sandbox", "/home", "/about"]) {
     assert(
       !sameSiteProductLinks.some((target) => target.pathname.replace(/\/+$/, "") === route),
-      `mvp.html should not expose the retired ${route} route`,
+      `demothemis-mvp.html should not expose the retired ${route} route`,
       failures
     );
   }
 
-  assert(/role=["']tablist["']/i.test(html), "mvp.html product preview is missing its tab list", failures);
-  assert(/id=["']mvp-tab-live["'][^>]*>Live case</i.test(html), "mvp.html is missing the Live case tab", failures);
-  assert(/id=["']mvp-tab-submit["'][^>]*>Submit a case</i.test(html), "mvp.html is missing the Submit a case tab", failures);
-  assert(/\bone (?:official )?question (?:is active|at a time)\b/i.test(html), "mvp.html should explain the one-at-a-time rule", failures);
-  assert(/\bthree (?:World ID-)?verified humans\b/i.test(html), "mvp.html should identify the three verified jurors", failures);
-  assert(/\bon[- ]?chain\b/i.test(html), "mvp.html should explain the on-chain result", failures);
-  assert(/\bNo evidence or source field\b/i.test(html), "mvp.html should explain that jurors research independently", failures);
-  assert(!/\bsandbox\b|\bsimulat(?:e|ed|es|ion|or)\b/i.test(html), "mvp.html should stay focused on the real product process", failures);
+  assert(/role=["']tablist["']/i.test(html), "demothemis-mvp.html product preview is missing its tab list", failures);
+  assert(/id=["']mvp-tab-live["'][^>]*>Live case</i.test(html), "demothemis-mvp.html is missing the Live case tab", failures);
+  assert(/id=["']mvp-tab-submit["'][^>]*>Submit a case</i.test(html), "demothemis-mvp.html is missing the Submit a case tab", failures);
+  assert(/\bone (?:official )?question (?:is active|at a time)\b/i.test(html), "demothemis-mvp.html should explain the one-at-a-time rule", failures);
+  assert(/\bthree (?:World ID-)?verified humans\b/i.test(html), "demothemis-mvp.html should identify the three verified jurors", failures);
+  assert(/\bon[- ]?chain\b/i.test(html), "demothemis-mvp.html should explain the on-chain result", failures);
+  assert(/\bNo evidence or source field\b/i.test(html), "demothemis-mvp.html should explain that jurors research independently", failures);
+  assert(!/\bsandbox\b|\bsimulat(?:e|ed|es|ion|or)\b/i.test(html), "demothemis-mvp.html should stay focused on the real product process", failures);
 }
 
 function checkStateMachineData(html, failures) {
@@ -2375,9 +2375,9 @@ function checkBuiltHtml(failures) {
 
   checkProposalHomeLinks("404.html", readDist("404.html"), failures);
 
-  checkMvpPage(readDist("mvp.html"), failures);
+  checkMvpPage(readDist("demothemis-mvp.html"), failures);
 
-  const gameLab = readDist("game-theory.html");
+  const gameLab = readDist("break-the-court.html");
   assert(/Break the court/i.test(gameLab), "game-theory chapter missing Break the court title", failures);
   assert(/assets\/vendor\/popper-2\.11\.8\.min\.js/i.test(gameLab), "gamelab missing vendored Popper", failures);
   assert(/assets\/vendor\/tippy-6\.3\.7\.umd\.min\.js/i.test(gameLab), "gamelab missing vendored Tippy", failures);
@@ -2397,7 +2397,7 @@ function checkBuiltHtml(failures) {
   assert(/id=["']abStake["']/i.test(demoThemis), "DemoThemis chapter missing appeal-bond widget", failures);
   assert(/class=["'][^"']*vhub/i.test(demoThemis), "DemoThemis chapter missing shared-arbiter diagram", failures);
 
-  const runThrough = readDist("the-design.html");
+  const runThrough = readDist("run-through.html");
   checkStateMachineData(runThrough, failures);
   checkProductModeData(runThrough, failures);
   checkAppOwnershipData(runThrough, failures);

@@ -1,6 +1,6 @@
 const fs = require('fs');
 
-let content = fs.readFileSync('game-theory.html', 'utf8');
+let content = fs.readFileSync('break-the-court.html', 'utf8');
 
 const rewrites = {
   // Traffic and volume
@@ -95,5 +95,5 @@ Object.keys(rewrites).forEach(id => {
   }
 });
 
-fs.writeFileSync('game-theory.html', content);
+fs.writeFileSync('break-the-court.html', content);
 console.log('Changes made:', changesMade);

@@ -25,15 +25,15 @@ web/public/proposal-home.html
 web/public/404.html
 web/public/assumptions.js
 web/public/demothemis.html
-web/public/game-theory.html
+web/public/break-the-court.html
 web/public/glossary.html
 web/public/governance.html
-web/public/hybrid-juror-prediction-market-integration.html
-web/public/mvp.html
-web/public/prediction-market.html
+web/public/bootstrap-loop.html
+web/public/demothemis-mvp.html
+web/public/predictionmomo.html
 web/public/robots.txt
 web/public/sitemap.xml
-web/public/the-design.html
+web/public/run-through.html
 web/public/assets/
 
 # pitch-site clone lives in its own repo

@@ -14,7 +14,7 @@ deployment instead of sending reviewers to Vercel.
 | --- | --- |
 | `/` | Proposal homepage |
 | `/demothemis.html` and the other existing `.html` routes | Proposal chapters |
-| `/mvp.html` | Plain-language MVP gateway |
+| `/demothemis-mvp.html` | Plain-language MVP gateway |
 | `/app` | Full MVP landing and evidence dashboard |
 | `/sandbox` | Interactive browser simulation |
 | `/home`, `/case/:id`, `/onboard`, `/about` | Live court application |

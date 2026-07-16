@@ -9,6 +9,13 @@ const publicDir = path.join(root, "DemoThemisMVP", "web", "public");
 require(path.join(root, "tools", "build-site.js"));
 
 const excluded = new Set(["_headers", "_redirects"]);
+const legacyProposalFiles = [
+  "the-design.html",
+  "game-theory.html",
+  "prediction-market.html",
+  "hybrid-juror-prediction-market-integration.html",
+  "mvp.html"
+];
 
 function destinationName(name) {
   return name === "index.html" ? "proposal-home.html" : name;
@@ -29,6 +36,10 @@ function copyEntry(from, to) {
 }
 
 fs.mkdirSync(publicDir, { recursive: true });
+
+for (const name of legacyProposalFiles) {
+  fs.rmSync(path.join(publicDir, name), { force: true });
+}
 
 for (const name of fs.readdirSync(dist)) {
   if (excluded.has(name)) continue;

@@ -47,7 +47,7 @@ Local checks performed:
 - Checked working tree state and untracked files.
 - Scanned HTML pages for local broken links, duplicate IDs, missing image alt text, inline script parse failures, and console/runtime failures.
 - Ran the existing gamelab validator: `node tools/validate-gamelab.js`.
-- Reviewed key source files manually, especially `game-theory.html`, `assets/common.js`, `netlify.toml`, `juror-court.html`, `governance.html`, `hybrid-juror-system.html`, `hybrid-juror-prediction-market-integration.html`, `rebuilding-the-court.html`, `breaking-the-court.html`, and public QA/audit pages.
+- Reviewed key source files manually, especially `break-the-court.html`, `assets/common.js`, `netlify.toml`, `juror-court.html`, `governance.html`, `hybrid-juror-system.html`, `bootstrap-loop.html`, `rebuilding-the-court.html`, `breaking-the-court.html`, and public QA/audit pages.
 - Scanned for obvious secret patterns. No real credentials were found.
 
 Deployment/browser checks performed:
@@ -352,11 +352,11 @@ Remaining hardening: the CSP still allows inline scripts/styles because the curr
 
 ### 8. Medium: ~~External CDN Scripts Used unpkg Without SRI or Pinning in Markup~~
 
-Status: fixed in repo. Popper and Tippy are now vendored as exact local assets under `assets/vendor/`, copied into `dist`, and referenced from `game-theory.html`. The generated CSP no longer allows `https://unpkg.com` in `script-src` or `style-src`.
+Status: fixed in repo. Popper and Tippy are now vendored as exact local assets under `assets/vendor/`, copied into `dist`, and referenced from `break-the-court.html`. The generated CSP no longer allows `https://unpkg.com` in `script-src` or `style-src`.
 
 Evidence:
 
-The previous `game-theory.html` loaded:
+The previous `break-the-court.html` loaded:
 
 - `https://unpkg.com/@popperjs/core@2`
 - `https://unpkg.com/tippy.js@6`
@@ -388,7 +388,7 @@ Evidence:
 - `assets/common.js` previously generated navigation/TOC UI with `innerHTML`.
 - `assets/common.js` previously initialized Tippy with `allowHTML: true`.
 - Tooltip content comes from `data-tooltip`.
-- `game-theory.html` still uses controlled `innerHTML` for numeric/model display cards, not for tooltip HTML.
+- `break-the-court.html` still uses controlled `innerHTML` for numeric/model display cards, not for tooltip HTML.
 
 Why this matters:
 

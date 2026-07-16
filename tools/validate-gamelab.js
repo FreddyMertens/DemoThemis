@@ -3,7 +3,7 @@ const path = require("path");
 const vm = require("vm");
 
 const root = path.resolve(__dirname, "..");
-const htmlPath = path.join(root, "game-theory.html");
+const htmlPath = path.join(root, "break-the-court.html");
 const assumptionsPath = path.join(root, "assumptions.js");
 const commonPath = path.join(root, "assets", "common.js");
 const buildPath = path.join(root, "tools", "build-site.js");
@@ -36,7 +36,7 @@ function extractRangeInputs(source) {
 function extractPresetObject(source) {
   const match = source.match(/var PRESET_CASES = (\{[\s\S]*?\n\s{2}\});/);
   if (!match) {
-    fail("Could not find PRESET_CASES object in game-theory.html");
+    fail("Could not find PRESET_CASES object in break-the-court.html");
     return {};
   }
   return Function(`"use strict"; return (${match[1]});`)();
@@ -588,11 +588,11 @@ if (
 }
 
 if (!html.includes('<script src="assumptions.js"></script>')) {
-  fail("game-theory.html must load assumptions.js before the lab script");
+  fail("break-the-court.html must load assumptions.js before the lab script");
 }
 
 if (/window\.ASSUMPTIONS\s*=\s*\[/.test(html)) {
-  fail("game-theory.html still contains an inline ASSUMPTIONS block");
+  fail("break-the-court.html still contains an inline ASSUMPTIONS block");
 }
 
 [
@@ -604,7 +604,7 @@ if (/window\.ASSUMPTIONS\s*=\s*\[/.test(html)) {
   "curated outcomes",
   "public outcomes"
 ].forEach((term) => {
-  if (html.includes(term)) fail(`Stale model term remains in game-theory.html: ${term}`);
+  if (html.includes(term)) fail(`Stale model term remains in break-the-court.html: ${term}`);
 });
 
 [

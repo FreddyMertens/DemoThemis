@@ -2,7 +2,7 @@
 //
 // The Wilson suspension gate is ported (court-math.ts: wilson, WILSON_BAR). The
 // draw-rate cap, the leave-one-out baseline credit, and the gated cyclic payout are
-// SANDBOX MODELS of the reference design (hybrid-juror-system.html / the-design.html),
+// SANDBOX MODELS of the reference design (hybrid-juror-system.html / run-through.html),
 // none of them on-chain in the MVP. Labeled as such; see docs/MECHANISM_DELTA.md.
 
 import { wilson, WILSON_BAR, WilsonResult } from './court-math';

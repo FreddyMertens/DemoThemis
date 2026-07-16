@@ -7,13 +7,13 @@ const siteUrl = (process.env.URL || process.env.DEPLOY_PRIME_URL || "https://dem
 
 const publicFiles = [
   "index.html",
-  "the-design.html",
+  "run-through.html",
   "demothemis.html",
-  "game-theory.html",
-  "prediction-market.html",
-  "hybrid-juror-prediction-market-integration.html",
+  "break-the-court.html",
+  "predictionmomo.html",
+  "bootstrap-loop.html",
   "governance.html",
-  "mvp.html",
+  "demothemis-mvp.html",
   "assumptions.js",
   "assets/common.js",
   "assets/styles.css",
@@ -262,6 +262,16 @@ function buildHeaders() {
 
 function buildRedirects() {
   return [
+    "/the-design /run-through 301",
+    "/the-design.html /run-through 301",
+    "/game-theory /break-the-court 301",
+    "/game-theory.html /break-the-court 301",
+    "/prediction-market /predictionmomo 301",
+    "/prediction-market.html /predictionmomo 301",
+    "/hybrid-juror-prediction-market-integration /bootstrap-loop 301",
+    "/hybrid-juror-prediction-market-integration.html /bootstrap-loop 301",
+    "/mvp /demothemis-mvp 301",
+    "/mvp.html /demothemis-mvp 301",
     "/vision /demothemis 301",
     "/vision.html /demothemis 301",
     "/juror-court /demothemis 301",
