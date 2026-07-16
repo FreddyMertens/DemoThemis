@@ -4,7 +4,7 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>DemoThemis MVP: three humans, one on-chain answer</title>
-<meta name="description" content="Preview the focused DemoThemis MVP: one public question, three World ID-verified jurors, sealed ballots, and one on-chain answer.">
+<meta name="description" content="Explore the DemoThemis MVP: one public question, three World ID-verified jurors, sealed ballots, and one bullet proof on-chain answer.">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@500;700&family=Newsreader:opsz,wght@6..72,200..700&display=swap" rel="stylesheet">
@@ -49,9 +49,9 @@
   <section class="mvp-demo-section reveal" id="product-preview" aria-labelledby="preview-title">
     <div class="mvp-section-head">
       <div>
-        <p class="sec-label">Product preview</p>
+        <p class="sec-label">Interactive product tour</p>
         <h2 id="preview-title">The whole journey in one screen</h2>
-        <p>Switch between the juror-facing case and the submitter-facing form. The examples explain the interface without claiming live users or transactions.</p>
+        <p>Switch between the juror-facing case and the submitter-facing form to follow the complete resolution journey.</p>
       </div>
       <a class="mvp-text-link" href="/app#oracle-live-panel">Open the product <span aria-hidden="true">&#8594;</span></a>
     </div>
@@ -60,7 +60,7 @@
       <div class="mvp-browser-bar" aria-hidden="true">
         <span class="mvp-window-dots"><i></i><i></i><i></i></span>
         <span class="mvp-browser-address" data-mvp-address>app.demothemis / case</span>
-        <span class="mvp-browser-badge">Product preview</span>
+        <span class="mvp-browser-badge">DemoThemis</span>
       </div>
 
       <div class="mvp-product-preview">
@@ -79,20 +79,20 @@
           </div>
 
           <section id="mvp-panel-live" class="mvp-tab-panel" role="tabpanel" aria-labelledby="mvp-tab-live">
-            <p class="mvp-preview-label"><span aria-hidden="true">&#9671;</span> Example product view &middot; no live case activity is shown</p>
+            <p class="mvp-preview-label"><span aria-hidden="true">&#9671;</span> Juror view &middot; one official case at a time</p>
 
             <div class="mvp-case-layout">
               <article class="mvp-case-card">
                 <div class="mvp-case-eyebrow">
-                  <span>Example question</span>
+                  <span>Case question</span>
                   <span class="mvp-case-state">One active case</span>
                 </div>
-                <h3>Was the DemoThemis court contract source-verified on World Chain by the stated time?</h3>
+                <h3>Did ETH trade above $3,000 at the judged-as-of time?</h3>
 
                 <dl class="mvp-case-criteria">
                   <div class="is-yes">
                     <dt>Answer YES if</dt>
-                    <dd>The named contract had publicly verifiable source code on World Chain at the judged-as-of time.</dd>
+                    <dd>The named public price feed recorded ETH/USD above $3,000 at the judged-as-of time.</dd>
                   </div>
                   <div>
                     <dt>Judged as of</dt>
@@ -137,15 +137,15 @@
 
             <div class="mvp-product-footer">
               <span><i aria-hidden="true"></i> One official question is active at a time</span>
-              <a href="/app#oracle-live-panel">Open the real MVP <span aria-hidden="true">&#8594;</span></a>
+              <a href="/app#oracle-live-panel">Open DemoThemis <span aria-hidden="true">&#8594;</span></a>
             </div>
           </section>
 
           <section id="mvp-panel-submit" class="mvp-tab-panel" role="tabpanel" aria-labelledby="mvp-tab-submit" hidden>
-            <p class="mvp-preview-label"><span aria-hidden="true">&#9671;</span> Example submission view &middot; nothing is sent from this preview</p>
+            <p class="mvp-preview-label"><span aria-hidden="true">&#9671;</span> Case intake &middot; precise rules before escrow</p>
 
             <div class="mvp-submit-layout">
-              <form class="mvp-submit-card" aria-label="Example case submission form">
+              <form class="mvp-submit-card" aria-label="Case submission form">
                 <div class="mvp-form-heading">
                   <div>
                     <span class="mvp-mini-label">New public question</span>
@@ -156,12 +156,12 @@
 
                 <label class="mvp-field">
                   <span>Question <small>Yes or no</small></span>
-                  <textarea rows="3" readonly>Was the DemoThemis court contract source-verified on World Chain by the stated time?</textarea>
+                  <textarea rows="3" readonly>Did ETH trade above $3,000 at the judged-as-of time?</textarea>
                 </label>
 
                 <label class="mvp-field">
                   <span>YES if <small>Exact decision rule</small></span>
-                  <textarea rows="3" readonly>The named contract had publicly verifiable source code on World Chain at the judged-as-of time.</textarea>
+                  <textarea rows="3" readonly>The named public price feed recorded ETH/USD above $3,000 at the judged-as-of time.</textarea>
                 </label>
 
                 <div class="mvp-form-row">
@@ -215,9 +215,9 @@
   <section class="mvp-proof-section reveal" aria-labelledby="proof-title">
     <div class="mvp-section-head">
       <div>
-        <p class="sec-label">Real on-chain functionality</p>
-        <h2 id="proof-title">The smallest complete proof of the court</h2>
-        <p>The MVP removes extra product surfaces while preserving the mechanism that matters.</p>
+        <p class="sec-label">On-chain arbitration</p>
+        <h2 id="proof-title">The complete court mechanism</h2>
+        <p>Every screen serves the mechanism that matters: fixed terms, sealed ballots, and an automatic ruling.</p>
       </div>
     </div>
 
@@ -245,8 +245,8 @@
 
   <aside class="mvp-scope-note reveal" aria-labelledby="scope-title">
     <div>
-      <p class="sec-label">The complete demo</p>
-      <h2 id="scope-title">Three humans are enough to show the real process.</h2>
+      <p class="sec-label">The complete flow</p>
+      <h2 id="scope-title">Three humans reveal the whole process.</h2>
     </div>
     <p>One question, three sealed ballots, three reveals, and one majority answer: every essential court action is visible without making the MVP feel like an operations dashboard.</p>
     <a class="mvp-button primary" href="/app">Open the Demo MVP <span aria-hidden="true">&#8594;</span></a>

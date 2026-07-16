@@ -358,7 +358,7 @@ function checkStateMachineData(html, failures) {
   let data;
   try {
     const context = {};
-    const source = html.slice(start, end) + "\nthis.__machineData = { phases: SYSTEM_PHASES, states: SYSTEM_STATES, exceptions: SYSTEM_EXCEPTIONS, transitions: SYSTEM_TRANSITIONS };";
+    const source = html.slice(start, end) + "\nthis.__machineData = { phases: SYSTEM_PHASES, states: SYSTEM_STATES, transitions: SYSTEM_TRANSITIONS };";
     vm.runInNewContext(source, context, { filename: "the-design.state-machine-data.js" });
     data = context.__machineData;
   } catch (error) {
@@ -367,20 +367,20 @@ function checkStateMachineData(html, failures) {
   }
 
   const phaseIds = new Set(data.phases.map((phase) => phase.id));
-  const allStates = data.states.concat(data.exceptions);
+  const allStates = data.states;
   const ids = allStates.map((state) => state.id);
   const idSet = new Set(ids);
   assert(data.phases.length === 4 && phaseIds.size === 4, "state machine should have four unique lifecycle phases", failures);
   assert(idSet.size === ids.length, "state machine contains duplicate state IDs", failures);
   assert(data.states.every((state) => phaseIds.has(state.phase)), "state machine contains a lifecycle state with an invalid phase", failures);
 
-  const allowedRoutes = new Set(["quiet", "dispute", "exceptions"]);
+  const allowedRoutes = new Set(["quiet", "dispute"]);
   assert(allStates.every((state) => (state.routes || []).every((route) => allowedRoutes.has(route))), "state machine contains an unknown route tag", failures);
   const mappedStages = Array.from(new Set(data.states.flatMap((state) => state.sim || []))).sort((a, b) => a - b);
   assert(JSON.stringify(mappedStages) === JSON.stringify(Array.from({ length: 13 }, (_, index) => index)), "state machine must map every simulator event from 0 through 12", failures);
 
-  const transitionKinds = new Set(["forward", "branch", "skip", "merge", "loop", "parallel", "exception"]);
-  assert(data.transitions.length >= 40, "state machine transition model is unexpectedly incomplete", failures);
+  const transitionKinds = new Set(["forward", "branch", "skip", "merge", "loop", "parallel"]);
+  assert(data.transitions.length >= 30, "state machine transition model is unexpectedly incomplete", failures);
   assert(data.transitions.every((edge) => idSet.has(edge.from) && idSet.has(edge.to)), "state machine has a transition with an unknown endpoint", failures);
   assert(data.transitions.every((edge) => edge.from !== edge.to && transitionKinds.has(edge.kind) && edge.when), "state machine has an invalid transition shape", failures);
 
@@ -391,8 +391,8 @@ function checkStateMachineData(html, failures) {
   assert(hasEdge("pooled-claims", "event-close", "skip"), "pooled claims must bypass the optional parlay", failures);
   assert(hasEdge("quiet-result", "release-rule", "merge"), "quiet settlement must bypass court and merge at release", failures);
   assert(hasEdge("larger-panel", "panel-drawn", "loop"), "a funded appeal must loop to a fresh panel draw", failures);
-  assert(hasEdge("juror-unavailable", "court-exception", "exception"), "an exhausted standby list must reach court recovery", failures);
-  assert(hasEdge("robustness-gate", "settlement-exception", "exception"), "tokenization accounting failure must reach accounting recovery", failures);
+  const seatCheck = data.states.find((state) => state.id === "seat-checked");
+  assert(seatCheck && /deterministic standby/i.test(seatCheck.detail || ""), "seat checks must explain deterministic standby continuity", failures);
   assert(hasEdge("curation-gate", "record-only", "branch") && hasEdge("curation-gate", "quality-update", "branch"), "curation must branch between record-only and juror learning", failures);
   assert(hasEdge("closed-record", "collusion-clock", "parallel") && hasEdge("closed-record", "bootstrap-loop", "parallel"), "post-finality accountability and growth must run in parallel", failures);
 
@@ -413,7 +413,7 @@ function checkStateMachineData(html, failures) {
   }
   assert(routeReaches("quiet", "rules-fixed", "closed-record"), "quiet route is not continuous from question to closed record", failures);
   assert(routeReaches("dispute", "rules-fixed", "closed-record"), "disputed route is not continuous from question through court to closed record", failures);
-  assert(data.exceptions.every((state) => data.transitions.some((edge) => edge.to === state.id)), "every exception state should have an incoming transition", failures);
+  assert(!/SYSTEM_EXCEPTIONS|kind:\s*["']exception["']/i.test(html), "run-through must stay focused on successful product routes", failures);
   assert(/function\s+initSystemStateMachine\s*\(/.test(html) && /initSystemStateMachine\s*\(\s*\)\s*;/.test(html), "state machine initialization is missing", failures);
 }
 
@@ -2385,7 +2385,7 @@ function checkBuiltHtml(failures) {
   assert(/data-attack=["']bloc["']/i.test(gameLab), "gamelab missing coordinated attack card", failures);
 
   const demoThemis = readDist("demothemis.html");
-  assert(/DemoThemis: the simple version and the full mechanics/i.test(demoThemis), "DemoThemis chapter missing combined title", failures);
+  assert(/DemoThemis: bullet proof, unbuyable arbitration/i.test(demoThemis), "DemoThemis chapter missing public title", failures);
   assert(/id=["']simple-version["']/i.test(demoThemis), "DemoThemis chapter missing simple version", failures);
   assert(/id=["']deep-dive["']/i.test(demoThemis), "DemoThemis chapter missing deep dive section", failures);
   assert(/id=["']F1f["']/i.test(demoThemis), "DemoThemis chapter missing live reserve widget", failures);
@@ -2409,7 +2409,7 @@ function checkBuiltHtml(failures) {
   checkBackNavigationCoverage(runThrough, failures);
   checkCoachmarkTextAvoidance(runThrough, failures);
   checkActionButtonInfoLabels(runThrough, failures);
-  assert(/End-to-end resolution run-through/i.test(runThrough), "run-through chapter missing neutral title", failures);
+  assert(/Run-through: from first stake to an unbuyable verdict/i.test(runThrough), "run-through chapter missing public title", failures);
   assert(/id=["']productTabMomo["']/i.test(runThrough), "run-through missing PredictionMoMo parent tab", failures);
   assert(/id=["']productTabThemis["']/i.test(runThrough), "run-through missing DemoThemis parent tab", failures);
   assert(!/id=["']productModePanel["'][^>]*role=["']tabpanel["']/i.test(runThrough), "starting-point buttons must not control a misleading tabpanel", failures);
@@ -2485,14 +2485,12 @@ function checkBuiltHtml(failures) {
   assert(/data-component=["']appeal["']/i.test(runThrough), "run-through missing appeal-ladder component unlock", failures);
   assert(/id=["']system-state-machine["']/i.test(runThrough), "run-through missing complete state-machine section", failures);
   assert(/id=["']machinePhaseGrid["']/i.test(runThrough), "run-through state machine missing lifecycle phase map", failures);
-  assert(/id=["']machineExceptionGrid["']/i.test(runThrough), "run-through state machine missing exception rail", failures);
   assert(/id=["']machineTextFlow["']/i.test(runThrough), "run-through state machine missing text alternative", failures);
   assert(/data-machine-route=["']quiet["']/i.test(runThrough), "run-through state machine missing quiet-settlement route", failures);
   assert(/data-machine-route=["']dispute["']/i.test(runThrough), "run-through state machine missing disputed-case route", failures);
-  assert(/data-machine-route=["']exceptions["']/i.test(runThrough), "run-through state machine missing exception route", failures);
   assert(/SYSTEM_STATES/i.test(runThrough), "run-through state machine missing canonical lifecycle data", failures);
-  assert(/SYSTEM_EXCEPTIONS/i.test(runThrough), "run-through state machine missing canonical exception data", failures);
-  assert(/Pre-written rule still needed/i.test(runThrough), "run-through state machine must distinguish open protocol rules", failures);
+  assert(!/machineExceptionGrid|data-machine-route=["']exceptions["']|SYSTEM_EXCEPTIONS|Pre-written rule still needed|What can go wrong\?/i.test(runThrough), "run-through must not restore the removed failure rail", failures);
+  assert(/Fast settlement/i.test(runThrough) && /Disputed market/i.test(runThrough), "run-through state map must foreground both successful settlement routes", failures);
   assert(runThrough.indexOf('id="system-state-machine"') > runThrough.indexOf('id="productDemo"'), "state machine should appear below the simulator", failures);
 }
 

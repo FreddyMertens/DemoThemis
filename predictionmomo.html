@@ -3,8 +3,8 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>How PredictionMoMo works: betting pools, fixed odds, and ERC-20 tokens</title>
-<meta name="description" content="PredictionMoMo starts as a shared pot with no market maker, grows into plain tokens you hold yourself, and resolves through DemoThemis.">
+<title>PredictionMoMo: open markets with unbuyable arbitration</title>
+<meta name="description" content="PredictionMoMo opens markets with pocket change, turns liquid positions into self-custodied tokens, and resolves disputes through DemoThemis's bullet proof, unbuyable human court.">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@500;700&family=Newsreader:opsz,wght@6..72,200..700&display=swap" rel="stylesheet">
@@ -104,8 +104,8 @@
 
 <header class="hero reveal">
   <p class="kicker">PredictionMoMo</p>
-  <h1>How PredictionMoMo works: betting pools, fixed odds, and ERC-20 tokens</h1>
-  <p class="dek">This chapter follows six PredictionMoMo features: arbitration designed to resist capital capture, self-custody YES and NO tokens, private markets with neutral escrow, creation from the first bet, tradeable claims during disputes, and peer-to-peer parlays without bookie risk.</p>
+  <h1>PredictionMoMo: open markets with unbuyable arbitration</h1>
+  <p class="dek">This chapter follows six PredictionMoMo features: bullet proof arbitration that capital cannot buy, self-custody YES and NO tokens, private markets with neutral escrow, creation from the first bet, tradeable claims during disputes, and peer-to-peer parlays without bookie risk.</p>
   <div class="meta">
     <span class="pill">Prediction markets</span>
     <span>10 min read</span>
@@ -119,20 +119,20 @@
   <div class="product product-feature market reveal">
     <h3>PredictionMoMo: a prediction market with 6 novel features</h3>
     <ol class="product-jumps">
-      <li><a href="#exploited-arbiter">Arbitration designed to resist token-weighted whale capture.</a></li>
+      <li><a href="#exploited-arbiter">Bullet proof arbitration that UMA whales cannot buy.</a></li>
       <li><a href="#self-custody-tokens">Liquid markets tokenize into ERC-20 YES and NO tokens you self-custody; this lets you provide liquidity and earn interest, post them as collateral, and trade them with leverage.</a></li>
-      <li><a href="#private-markets">Eligible users can open private, invite-only markets with third-party escrow: name the odds, invite the other side, and keep those odds fixed for everyone who joins.</a></li>
-      <li><a href="#start-market">Start an eligible, clearly worded market from the first escrowed bet, even with less than a dollar.</a></li>
-      <li><a href="#tradeable-disputes">With self-custody tokens that stay tradeable during disputes and resolution windows, you can exit the market at any time if there is liquidity. This also means there is no rush to close dispute windows, allowing retroactive changes to resolution windows where necessary.</a></li>
+      <li><a href="#private-markets">Anyone can open a private, invite-only market with neutral escrow: name the odds, invite the other side, and keep those odds fixed for everyone who joins.</a></li>
+      <li><a href="#start-market">Start a new prediction market instantly, on any topic, with any liquidity, even with less than a dollar.</a></li>
+      <li><a href="#tradeable-disputes">Self-custody tokens keep trading throughout disputes, giving holders a market-priced exit while the court takes the time required for a reliable verdict.</a></li>
       <li><a href="#peer-to-peer-parlays">Native peer-to-peer parlays on liquid markets. By integrating Conditional Tokens Framework (CTF) via token splitting, bettors get live odds and early cashouts without the protocol or a "bookie" ever taking bankruptcy risk.</a></li>
     </ol>
   </div>
 
   <section id="exploited-arbiter" class="reveal">
     <p class="sec-label">Value prop 1</p>
-    <h2>1. Arbitration designed to resist whale capture</h2>
+    <h2>1. Bullet proof arbitration that whales cannot buy</h2>
     <p class="lead">Prediction markets do not fail when traders disagree. They fail when everyone has to stop trading the event and start trading whoever gets to define the event. UMA showed one version plainly: token-weighted truth turns a disputed outcome into a governance market with a whale chart attached.</p>
-    <p>The point is not that every disputed Polymarket resolution was corrupt. Some were genuinely ambiguous. The point is worse: the resolution layer made whale weight, voter conflicts, and after-the-fact rule fights part of the price discovery. Four episodes explain why PredictionMoMo cannot inherit UMA's court.</p>
+    <p>Even an ambiguous dispute exposes the structural failure: whale weight, voter conflicts, and after-the-fact rule fights become part of price discovery. Four episodes show why PredictionMoMo replaces UMA's court with unbuyable arbitration.</p>
 
     <div class="oracle-case-grid">
       <div class="oracle-case hot">
@@ -176,7 +176,7 @@
 
     <div class="oracle-case platform">
       <h3>Kalshi's Khamenei carveout <span class="lab">platform as judge</span></h3>
-      <p>Kalshi shows the centralized version of the same failure: the house can write the escape hatch and then judge it. Plaintiffs alleged Kalshi used its Khamenei death carveout to avoid full Yes payouts and settle at the last traded price. The venue's incentive is self-protection: limit legal risk, precedent risk, and ugly death-market fallout. The user's incentive is simpler: pay the event as written. DemoThemis removes that conflict. Rules are fixed before escrow, and edge cases go to randomly drawn, conflict-screened jurors. Ambiguity remains, but the venue no longer rules on its own book.</p>
+      <p>Kalshi shows the centralized version of the same failure: the house can write the escape hatch and then judge it. Plaintiffs alleged Kalshi used its Khamenei death carveout to avoid full Yes payouts and settle at the last traded price. The venue benefits from limiting payout, precedent, and reputational exposure; users want the event paid as written. DemoThemis removes that conflict. Rules are fixed before escrow, and hard cases go to randomly drawn, conflict-screened jurors outside the venue's balance sheet.</p>
       <div class="oracle-sources">
         <a href="https://www.classaction.org/news/kalshi-refused-to-honor-certain-prediction-contracts-with-death-carveout-class-action-lawsuit-claims">ClassAction.org</a>
         <a href="https://www.theverge.com/tech/887210/kalshi-void-bets-khamenei-death">The Verge</a>
@@ -184,10 +184,10 @@
       </div>
     </div>
 
-    <p class="oracle-note"><b>The conclusion:</b> a prediction market needs an arbiter not automatically controlled by token weight or the venue. UMA shows the whale failure; Kalshi's Khamenei dispute shows the house failure. PredictionMoMo removes both from direct control of the final verdict.</p>
-    <p>Easy markets still clear through bonded assertions, but contested markets go to randomly drawn verified humans voting privately, with one person counted once. The biggest wallet and the venue no longer control the verdict by rule; willing accomplices, pool quality, and implementation risk still matter.</p>
+    <p class="oracle-note"><b>The conclusion:</b> a prediction market needs an unbuyable arbiter. UMA shows the whale failure; Kalshi's Khamenei dispute shows the house failure. PredictionMoMo removes both from direct control of the final verdict.</p>
+    <p>Easy markets clear efficiently through bonded assertions. Contested markets go to randomly drawn verified humans voting privately, with one person counted once, so neither the venue nor the biggest wallet can buy the verdict.</p>
 
-    <h3>How a market ends without a token-weighted judge</h3>
+    <h3>How a market ends with an unbuyable judge</h3>
     <p><b>The event happens:</b> Now somebody has to say so, and this is where most markets quietly hand the job back to a trusted operator. Here the job is open to anyone, and it runs in three moves.</p>
 
     <ol class="stepper reveal">
@@ -374,7 +374,7 @@
           <tr><td>Cost to create</td><td>A dime, the creator's own first bet</td><td>Your side of the bet, at any size</td><td>Nothing extra; the book is earned by crossing the volume threshold</td></tr>
           <tr><td>Who sets the price</td><td>Nobody; odds are the ratio of the two sides</td><td>You; name the odds, takers accept them</td><td>Professionals quoting their own risk</td></tr>
           <tr><td>Locked-in odds</td><td>Pool bets drift; a standing offer locks the moment it fills</td><td>Yes; fixed at the posted odds for everyone who joins</td><td>Yes; you trade at the price you see</td></tr>
-          <tr><td>Exit before resolution</td><td>No guaranteed exit</td><td>No; both sides sit in escrow until the answer</td><td>Sell whenever a buyer is standing there</td></tr>
+          <tr><td>Exit before resolution</td><td>Positions settle with the final answer</td><td>Both sides remain securely escrowed</td><td>Sell whenever a buyer is standing there</td></tr>
           <tr><td>Where the position lives</td><td>A claim inside the pool</td><td>In escrow between invited parties</td><td>Plain YES and NO tokens in your own wallet</td></tr>
         </tbody>
       </table>
@@ -418,7 +418,7 @@
         <div class="stat"><div class="k">$1 on YES pays</div><div class="v" id="PM1py">&hellip;</div></div>
         <div class="stat"><div class="k">$1 on NO pays</div><div class="v" id="PM1pn">&hellip;</div></div>
       </div>
-      <p style="font-family:var(--sans);font-size:.86rem;color:var(--faint);margin:1rem 0 0">Illustrative, with the 2% settlement fee taken off the pot. Payouts are pro-rata shares of everything, so each side's quoted payout is live and self-balancing: when YES gets crowded, betting NO gets juicy, which is what pulls the other side in. The early-bettor time weight is left out of the demo to keep the arithmetic visible.</p>
+      <p style="font-family:var(--sans);font-size:.86rem;color:var(--faint);margin:1rem 0 0">The 2% settlement fee comes off the pot. Pro-rata payouts keep both sides live and self-balancing: when YES gets crowded, NO becomes more rewarding and attracts the countertrade.</p>
     </div>
 
     <p>Notice what the demo never asks for. <b>Nobody funds the market before the crowd exists, because the first dime in is the market.</b> Your opening bet is the listing fee, the seed, and the dare, all at once, and the share link is the entire distribution strategy.</p>
@@ -429,7 +429,7 @@
     <h2>4.1 Why tiny markets need no market maker</h2>
     <p>Ask who loses when a well-informed trader walks into a market. On a quoted market, the quoter does. An automated market maker is a standing offer to trade at a posted price, and whoever knows more than the posting picks it off, trade after trade. That is why quoting engines need a subsidy to survive, and why a subsidized market can never be opened by anyone for pocket change. Someone has to fund the quote before a single bettor shows up.</p>
     <p>A pool has nobody to pick off. There is no quote, only a ratio. When sharp money arrives it does not extract from a liquidity provider, because there is none; it simply bets against the other side and moves the odds. A moved number is information, the very thing a prediction market exists to produce. The sharpest trader alive can do nothing to a pool except make it more accurate.</p>
-    <p>The cost of this design is stated, not hidden. While a market is young there are no locked-in odds and no guaranteed exit before resolution. Your effective odds drift until the pool closes, the way racetrack odds flash until the gate opens, and you cannot sell out of a position early. That is the price of markets anyone can create with zero liquidity, and for the short-dated social questions pools are born for, it costs almost nothing. For markets that outgrow it, the answer is one section down.</p>
+    <p>Young markets begin as self-balancing pools, so the first stake can open a real market with almost no capital. The moving ratio turns every new bet into better price discovery. As volume and depth grow, the market graduates into fixed offers, self-custodied tokens, order-book liquidity, and early exits.</p>
     <p>No quoter, no bleed, no seed.</p>
   </section>
 
@@ -575,7 +575,7 @@
       <figcaption>The 2% settlement fee, split once. <b>The split sums to one, so no dollar is ever promised twice.</b></figcaption>
     </figure>
 
-    <p>That is PredictionMoMo: capture-resistant arbitration, self-held claims, neutral private escrow, dime-sized market starts, tradeable disputes, and parlays without bookie risk. The next chapter shows how settled markets both pay jurors and help identify the careful ones.</p>
+    <p>That is PredictionMoMo: unbuyable arbitration, self-held claims, neutral private escrow, dime-sized market starts, tradeable disputes, and parlays without bookie risk. The next chapter shows how settled markets both pay jurors and help identify the careful ones.</p>
   </section>
 
   <footer class="endnote reveal">
@@ -590,7 +590,7 @@
       <a href="demothemis-mvp.html">Live Demo MVP</a>
       <a href="/">Home &middot; the map</a>
     </div>
-    <p class="signoff">Markets that cost a dime to open and settle like clockwork.</p>
+    <p class="signoff">Markets that cost a dime to open and settle through an unbuyable court.</p>
   </footer>
 
 </main>

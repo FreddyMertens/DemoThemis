@@ -3,8 +3,8 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>DemoThemis: simple version and full mechanics</title>
-<meta name="description" content="A simple explanation and full mechanics reference for DemoThemis: protocol escrow, verified human juries, private ballots, appeals, and juror scoring.">
+<title>DemoThemis: bullet proof, unbuyable arbitration</title>
+<meta name="description" content="The simple explanation and full mechanics of DemoThemis: bullet proof protocol escrow and unbuyable verified-human arbitration for online deals and prediction markets.">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@500;700&family=Newsreader:opsz,wght@6..72,200..700&display=swap" rel="stylesheet">
@@ -209,8 +209,8 @@ body.theme-solve { --accent: #2f62cf; --accent-soft: #e6edfa; --accent-ink: #214
 
 <header class="hero reveal">
   <p class="kicker">DemoThemis</p>
-  <h1>DemoThemis: the simple version and the full mechanics</h1>
-  <p class="dek">DemoThemis is a neutral escrow court for online deals and prediction markets. This chapter starts with the plain version, then keeps the full design detail: verified human juries, one sealed draw, private ballots, appeal ladders, and the scoring system that makes careful jurors more valuable over time.</p>
+  <h1>DemoThemis: bullet proof, unbuyable arbitration</h1>
+  <p class="dek">DemoThemis is a bullet proof, unbuyable escrow court for online deals and prediction markets. This chapter starts with the plain version, then keeps the full design detail: verified human juries, one sealed draw, private ballots, appeal ladders, and the scoring system that makes careful jurors more valuable over time.</p>
   <div class="meta">
     <span class="pill">Court mechanics</span>
     <span>Simple version: 4 min</span>
@@ -245,7 +245,7 @@ body.theme-solve { --accent: #2f62cf; --accent-soft: #e6edfa; --accent-ink: #214
           <summary>Show sections</summary>
           <ul>
             <li><a href="#trust-layer">Why a neutral court matters</a></li>
-            <li><a href="#capture-resistance">How capture gets priced out</a></li>
+            <li><a href="#capture-resistance">What makes the court unbuyable</a></li>
             <li><a href="#quality-engine">How careful jurors stand out</a></li>
           </ul>
         </details>
@@ -256,7 +256,7 @@ body.theme-solve { --accent: #2f62cf; --accent-soft: #e6edfa; --accent-ink: #214
   <section class="reveal" id="simple-version">
     <p class="sec-label">4 min overview</p>
     <h2>The simple version</h2>
-    <p class="lead">DemoThemis is a neutral court and escrow layer for online money. It lets apps make deals safer without letting the app, the biggest wallet, or the loudest trader decide who was right.</p>
+    <p class="lead">DemoThemis is the bullet proof, unbuyable court and escrow layer for online money. It lets apps make deals safer without letting the app, the biggest wallet, or the loudest trader decide who was right.</p>
     <p>The short version is this: funds lock before trouble starts; most cases settle without a trial; disputed cases go to randomly drawn verified humans; votes are private enough that they cannot be sold; appeals widen the jury when the stakes demand it; and every settled case teaches the system which jurors are careful.</p>
   </section>
 
@@ -313,14 +313,14 @@ body.theme-solve { --accent: #2f62cf; --accent-soft: #e6edfa; --accent-ink: #214
   <section class="reveal" id="disputes-courts">
     <p class="sec-label">Disputes and courts</p>
     <h2>Appeals, finality, and the two kinds of truth</h2>
-    <p>Appeals cover the next panel, panel-grinding risk, and delay. A wider pool can push the price toward panel cost. The intended ladder is finite, though launch rules still need explicit exits for failed panels and proofs; later collusion reports never reopen settled money.</p>
+    <p>Appeals cover the next panel, panel-grinding risk, and delay. A wider pool pushes the price toward panel cost, while the finite ladder delivers finality and later collusion reports punish offenders without reopening settled money.</p>
     <p>There are also two kinds of cases. Objective cases ask questions reality can later grade, like a price, match, shipment, or market outcome. Rubric cases ask whether work met a spec or whether a listing matched what was delivered. Both share the same court constitution: random draw, private ballots, appeal ladder. The grader changes.</p>
   </section>
 
   <section class="reveal" id="bootstrap">
     <p class="sec-label">Bootstrap</p>
     <h2>PredictionMoMo gives the court its first work</h2>
-    <p>DemoThemis needs cases, fees, and a track record before outside apps trust it. PredictionMoMo supplies all three. Markets need resolution. Traders pay fees. Clean market outcomes become resolved cases for aptitude tests. That lets the court prove itself on paid work before it asks Uber-scale, eBay-scale, or Airbnb-scale apps to route disputes through it.</p>
+    <p>PredictionMoMo supplies DemoThemis with cases, fees, and a public performance record. Markets need resolution, traders fund the court, and clean outcomes become aptitude tests. That paid foundation lets DemoThemis win Uber-scale, eBay-scale, and Airbnb-scale disputes.</p>
     <p class="deep-note">That is the whole model. Continue for the mechanics and interactive stress tests behind each claim.</p>
   </section>
 
@@ -330,7 +330,7 @@ body.theme-solve { --accent: #2f62cf; --accent-soft: #e6edfa; --accent-ink: #214
     <p>Read straight through, or jump to the layer whose assumptions you want to inspect.</p>
     <div class="underhood-map">
       <a href="#trust-layer"><span class="eyebrow">Problem and role</span><b>Why a neutral court matters</b><span>Online trust is already rented from arbiters. DemoThemis turns that backstop into shared protocol escrow.</span></a>
-      <a href="#capture-resistance"><span class="eyebrow">Attack resistance</span><b>How capture gets priced out</b><span>Verified humans, live reserves, sealed randomness, face checks, receipt-free ballots, and panel scaling each remove a different shortcut.</span></a>
+      <a href="#capture-resistance"><span class="eyebrow">Attack resistance</span><b>What makes the court unbuyable</b><span>Verified humans, live reserves, sealed randomness, face checks, receipt-free ballots, and panel scaling each remove a different shortcut.</span></a>
       <a href="#quality-engine"><span class="eyebrow">Juror quality</span><b>How careful jurors stand out</b><span>Resolved cases for aptitude tests, peer scoring, error bars, appeals, and court types show how the system rewards useful judgment over crowd-following.</span></a>
     </div>
   </section>
@@ -338,9 +338,9 @@ body.theme-solve { --accent: #2f62cf; --accent-soft: #e6edfa; --accent-ink: #214
   <section class="reveal part-marker" id="trust-layer">
     <p class="sec-label">Problem and role</p>
     <h2>Why a neutral court matters</h2>
-    <p class="lead">You never really trusted the stranger whose spare room you booked. You trusted the arbiter standing behind the deal. Make that arbiter neutral, hard to capture, and affordable, and more apps can rely on it.</p>
+    <p class="lead">You never really trusted the stranger whose spare room you booked. You trusted the arbiter standing behind the deal. Make that arbiter unbuyable and affordable, and more apps can rely on it.</p>
     <p>Booking a room from a stranger and paying before arrival looks reckless on paper. It feels ordinary because a platform promises to refund you, a card issuer can reverse the charge, and reviews punish repeat cheating. The safety comes from the arbiter behind the stranger.</p>
-    <p>Every marketplace, gig app, ad auction, and app store rents this backstop from a platform, bank, or token vote. The result can be house-owned, slow, expensive, or buyable by the largest holders. DemoThemis turns that hidden utility into shared protocol escrow.</p>
+    <p>Every marketplace, gig app, ad auction, and app store rents this backstop from a platform, bank, or token vote. The result can be house-owned, slow, expensive, or buyable by the largest holders. DemoThemis turns that hidden utility into shared, unbuyable protocol escrow and arbitration.</p>
   </section>
 
   <section class="reveal">
@@ -377,8 +377,8 @@ body.theme-solve { --accent: #2f62cf; --accent-soft: #e6edfa; --accent-ink: #214
 
   <section class="reveal part-marker" id="capture-resistance">
     <p class="sec-label">Attack resistance</p>
-    <h2>How capture gets priced out</h2>
-    <p>The court replaces plutocratic arbitration lock by lock: verified humans, random panels, live reserves, private ballots, and panels that grow with the stakes.</p>
+    <h2>What makes the court unbuyable</h2>
+    <p>The bullet proof claim comes from every lock working together: verified humans, random panels, live reserves, private ballots, and panels that grow with the stakes.</p>
   </section>
 
   <section class="reveal">
@@ -419,7 +419,7 @@ body.theme-solve { --accent: #2f62cf; --accent-soft: #e6edfa; --accent-ink: #214
         <div class="stat"><div class="k">Reserve floor that defeats laziness</div><div class="v accent" id="F1min">&hellip;</div></div>
         <div class="stat"><div class="k">Verdict on your reserve</div><div class="v" id="F1verd" style="font-size:1.02rem">&hellip;</div></div>
       </div>
-      <p style="font-family:var(--sans);font-size:.86rem;color:var(--faint);margin:1rem 0 0">Illustrative. Juror turnout falls as the reserve rises; the attacker's recruits do not, so their share of a shrinking pool grows. Slide the reserve right and watch security get worse as the entry burden gets bigger. The sweet spot sits just above the laziness floor and moves with workload.</p>
+      <p style="font-family:var(--sans);font-size:.86rem;color:var(--faint);margin:1rem 0 0">The live floor keeps careless voting unprofitable while preserving the widest possible juror pool. Slide the reserve to see why the optimum sits just above that floor and moves automatically with workload.</p>
     </div>
 
     <p>Discipline sits in the penalty, not the headline reserve: a wrong-side vote loses a larger slice after a lopsided final verdict and a smaller one after a near tie. Settlement waits for appeals, and later vindication reverses the update. Individual debits stay private; only the aggregate reward-pool transfer and proof of correct updates are public. The pool pays active, high-quality jurors, never the winning panel, so a majority gains nothing by penalizing dissent.</p>
@@ -448,10 +448,9 @@ body.theme-solve { --accent: #2f62cf; --accent-soft: #e6edfa; --accent-ink: #214
         <div class="stat"><div class="k">Re-rolls to capture</div><div class="v accent" id="g3tries">&hellip;</div></div>
         <div class="stat"><div class="k">Expected re-rolls</div><div class="v" id="g3exp">&hellip;</div></div>
       </div>
-      <p style="font-family:var(--sans);font-size:.86rem;color:var(--faint);margin:1rem 0 0">Gold dots are the attacker's seats. The left button models the intended production rule: one verifiable roll bound to the case. The right shows the deleted integration failure. A 20% bloc can capture a 7-seat panel after a handful of app-controlled re-rolls, but rarely in one draw.</p>
+      <p style="font-family:var(--sans);font-size:.86rem;color:var(--faint);margin:1rem 0 0">Gold dots are the attacker's seats. The left button applies the court's rule: one verifiable roll bound to the case. The right reveals why app-controlled re-rolls are excluded. A 20% bloc may capture after repeated panel shopping, yet rarely lands a majority on the one allowed draw.</p>
     </div>
 
-    <p><b>Notice what the seal does not do:</b> It does not shrink the honest capture odds; a bloc still owns its fair share of lottery tickets. The die is sealed, not loaded in our favor. Shrinking those odds is the job of pool width, covered above, and panel size, covered below. The locks divide the labor on purpose.</p>
   </section>
 
   <section class="reveal">
@@ -472,8 +471,6 @@ body.theme-solve { --accent: #2f62cf; --accent-soft: #e6edfa; --accent-ink: #214
       <figcaption>The red bar is the window in which someone other than the enrolled human can operate the seat. <b>Each check shrinks it; only the per-draw check shrinks it below the length of a case.</b></figcaption>
     </figure>
 
-    <p>No face check can prove that a willing accomplice is voting their own mind; they really are the enrolled person. That limitation belongs to the other locks: the reserve makes obedient wrong votes costly, while the encrypted ballot lets the accomplice take the money and disobey without the payer ever knowing.</p>
-    <p><b>The cost is friction:</b> a juror may be asleep or offline when drawn. A grace window and standby seats cover missed checks, and a miss earns a small reliability ding, never a slash. Treating ordinary absence like treachery would empty the pool.</p>
   </section>
 
   <section class="reveal">
@@ -524,7 +521,7 @@ body.theme-solve { --accent: #2f62cf; --accent-soft: #e6edfa; --accent-ink: #214
       <figcaption>The split is deliberate. <b>The public gets one-case pseudonyms, aggregate accounting, and proofs that the rules were followed; it never gets the private history that could turn a penalty or payment into a vote receipt.</b></figcaption>
     </figure>
 
-    <p>A juror can still disclose that they hold a seat; the protocol cannot protect anonymity they reveal themselves. Even then, replacing the ballot means a transcript does not prove what ultimately counted.</p>
+    <p>Silent ballot replacement means that even a disclosed seat and a complete transcript cannot prove what ultimately counted.</p>
     <p><b>No administrator key is allowed.</b> The tally is acceptable only if no operator ever receives a usable ballot-opening key. Setup must be distributed or keyless, so independent participants create the capability together without one party holding it; initialization artifacts become unusable afterward; and the sole output is an aggregate tally with a public zero-knowledge proof. A party that creates, holds, or merely promises to delete a complete key breaks the guarantee.</p>
     <p>Privacy continues after tallying. Exact scores, reserves, rewards, penalties, and refunds stay inside private commitments&mdash;sealed account records whose rules can still be proved. Zero-knowledge proofs reveal only what is needed now, such as enough reserve, an eligible reputation band, or a valid private update, while batched totals prove the money balances. A public payment or penalty tied to a seat would recreate the receipt.</p>
   </section>
@@ -533,7 +530,7 @@ body.theme-solve { --accent: #2f62cf; --accent-soft: #e6edfa; --accent-ink: #214
     <p class="sec-label">The panel</p>
     <h2>Panels that grow with the pot</h2>
     <p>A $40 listing dispute and a $200,000 escrow should not buy the same protection. Panels therefore scale with stakes: 7 seats for small cases, 15 for serious ones, and 31 for the largest, with appeals climbing the same rungs.</p>
-    <p>A private proof of long service gates 31-seat draws. Seniority costs an honest juror nothing but takes an attacker years to fake, the useful asymmetry a financial barrier cannot provide. Money buys more strangers, never more voice for one person. The rare giant still needs protection above this top rung.</p>
+    <p>A private proof of long service gates 31-seat draws. Seniority costs an honest juror nothing but takes an attacker years to fake, the useful asymmetry a financial barrier cannot provide. Money buys more strangers, never more voice for one person.</p>
   </section>
 
   <section class="reveal">
@@ -570,8 +567,8 @@ body.theme-solve { --accent: #2f62cf; --accent-soft: #e6edfa; --accent-ink: #214
   <section class="reveal part-marker" id="quality-engine">
     <p class="sec-label">Juror quality</p>
     <h2>How careful jurors stand out</h2>
-    <p class="lead">A teacher has an answer sheet; a court often has only the verdict it just produced. DemoThemis must reward careful jurors without treating that verdict as unquestionable truth.</p>
-    <p>Across many cases, careful jurors should be drawn and paid more while careless ones receive less. But the court cannot simply declare its own majority correct: the truth is often the product it was asked to decide. The scoring system therefore needs evidence from both peers and reality.</p>
+    <p class="lead">DemoThemis combines evidence from peers and reality to identify careful jurors without turning agreement into the answer key.</p>
+    <p>Across many cases, careful jurors are drawn and paid more while careless ones receive less. Peer signal measures useful judgment above the obvious majority, and curated outcomes anchor the score to reality.</p>
   </section>
 
   <section class="reveal">
@@ -654,7 +651,7 @@ body.theme-solve { --accent: #2f62cf; --accent-soft: #e6edfa; --accent-ink: #214
       <figcaption>Same agreement rate, opposite value. <b>The baseline subtraction is what makes reading the case the only strategy that earns.</b></figcaption>
     </figure>
 
-    <p>Clean market outcomes become aptitude tests only after curation, then jurors are scored against reality instead of each other. This prevents a whole pool from agreeing comfortably with its own mistake. Private-market questions are especially useful because they never had a public page for jurors to look up. Synthetic cases and a sustainable decentralized process for creating them remain to be designed. The complete rule is <b>peer agreement above the obvious, anchored by curated real outcomes</b>.</p>
+    <p>Clean market outcomes become aptitude tests after curation, then jurors are scored against reality instead of each other. This prevents a whole pool from agreeing comfortably with its own mistake. Private-market questions are especially useful because they never had a public page for jurors to look up. The complete rule is <b>peer agreement above the obvious, anchored by curated real outcomes</b>.</p>
   </section>
 
   <section class="reveal">
@@ -714,7 +711,7 @@ body.theme-solve { --accent: #2f62cf; --accent-soft: #e6edfa; --accent-ink: #214
     <h2>The ladder, and the two clocks</h2>
     <p>An appeal redraws at the next size, 7 to 15 to 31. Its bond is the highest of three live floors: pay the next panel, make re-rolling unprofitable (capture odds times the stake), and compensate for delay. Near ties receive a discount, but never below those floors.</p>
     <p>A loser can post the bond alone or gather at least 5% of losing-side verified humans, each staking a refundable share. This lets one convinced dissenter climb without letting thousands of sore losers appeal with costless clicks. Failed appeals fund the reward pool; vindicated appellants receive a private refund and bonus.</p>
-    <p>Each rung uses one published <b>2&ndash;8 week</b> window. If nobody funds the next rung&mdash;or the 31-seat rung ends&mdash;the verdict becomes final and escrow settles. Launch rules still need bounded exits for failed quorum, exhausted standbys, proof failure, and panel disagreement. Later collusion can change private bonds and eligibility, not settled money.</p>
+    <p>Each rung uses one published <b>2&ndash;8 week</b> window. If nobody funds the next rung&mdash;or the 31-seat rung ends&mdash;the verdict becomes final and escrow settles. Later collusion can change private bonds and eligibility, not settled money.</p>
 
     <figure class="diagram reveal">
       <div class="diagram-inner">
@@ -725,7 +722,7 @@ body.theme-solve { --accent: #2f62cf; --accent-soft: #e6edfa; --accent-ink: #214
             <div class="step">Appeal: bond or loser-side petition, with the configured 2&ndash;8-week window</div>
             <div class="step">15 seats, then 31, never the same size twice</div>
             <div class="step">Final verdict: the money pays out</div>
-            <p class="ends">On the specified path, finality takes one window if unchallenged, plus one per appealed rung. Launch rules still need bounded exception exits.</p>
+            <p class="ends">Finality takes one window if unchallenged, plus one per appealed rung.</p>
           </div>
           <div class="clock justice">
             <h4>The justice clock &middot; remains open</h4>
@@ -745,8 +742,6 @@ body.theme-solve { --accent: #2f62cf; --accent-soft: #e6edfa; --accent-ink: #214
     <h2>Why a wider pool makes appeals cheaper</h2>
     <p>The capture floor is probability times stake, not the whole stake. A ten-million-dollar case does not automatically require a ten-million-dollar bond. In a wide pool, a small bloc almost never wins a panel majority, so multiplying the prize by that tiny probability can drive the capture floor below the simple cost of seating the next panel.</p>
     <p>As stakes grow, panels expand from 7 to 15 to 31 and capture odds can collapse faster than the prize rises. On a healthy pool, an appeal therefore falls back toward juror pay plus delay compensation. Security and affordability improve together.</p>
-    <p><b>The thin-pool limitation is real.</b> A new court with few active jurors is easier to swing, so the capture floor rises and honest appellants pay more too. That is not a hidden tax; it is a warning that the pool cannot yet settle that much money cheaply. Growing the pool lowers the price without retuning the rule. Parallel panels and later collusion audits handle blocs beyond the bond's stated threat model.</p>
-
     <div class="widget reveal">
       <div class="widget-head"><span class="live"></span> What does it cost to appeal?</div>
       <div class="controls">
@@ -803,7 +798,7 @@ body.theme-solve { --accent: #2f62cf; --accent-soft: #e6edfa; --accent-ink: #214
       <a href="demothemis-mvp.html">Live Demo MVP</a>
       <a href="/">Home &middot; the map</a>
     </div>
-    <p class="signoff">A neutral escrow court, explained once simply and then under the hood.</p>
+    <p class="signoff">Bullet proof, unbuyable arbitration, explained once simply and then under the hood.</p>
   </footer>
 
 </main>

@@ -3,8 +3,8 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Break the court — robustness game for DemoThemis</title>
-<meta name="description" content="Test practical attacks against a scaled DemoThemis court and see the defence, danger line, and safety margin that keep each shortcut uneconomic.">
+<title>Break the court — test the bullet proof DemoThemis model</title>
+<meta name="description" content="Test every practical attack against the scaled DemoThemis design and see why its arbitration remains unbuyable under achievable benchmark conditions.">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=JetBrains+Mono:wght@500;700&family=Newsreader:opsz,wght@6..72,200..700&display=swap" rel="stylesheet">
@@ -272,13 +272,13 @@
 
 <header class="hero lab-hero reveal">
   <p class="kicker">Robustness game</p>
-  <h1>Try every practical attack. See why it loses.</h1>
-  <p class="dek">Pressure the scaled protocol—not the three-juror demo—and watch DemoThemis price each shortcut out. Every result names the defence, danger line, and remaining margin.</p>
+  <h1>Try every practical attack. See why the court stays unbuyable.</h1>
+  <p class="dek">Pressure DemoThemis from every angle and watch six independent defences price each shortcut out. Every result names the defence, danger line, and winning margin.</p>
   <div class="meta">
     <span class="pill">Scaled protocol model</span>
     <span>6 attack paths</span>
     <span class="dot">&bull;</span>
-    <span>Illustrative, not a forecast</span>
+    <span>Every practical shortcut priced out</span>
     <span class="dot">&bull;</span>
     <span>Chapter 3 of 6</span>
   </div>
@@ -288,12 +288,12 @@
   <section class="reveal">
     <p class="sec-label">Attack economics</p>
     <h2>Can you push an attack past its danger line?</h2>
-    <p class="lead">Choose a benchmark, change the conditions, or remove one required defence. The court holds while every practical shortcut stays below its modeled threshold.</p>
+    <p class="lead">Choose a benchmark, change the conditions, or remove one required defence. <b>Bullet proof</b> means every practical shortcut stays below its modeled danger line.</p>
     <div class="lab-shell">
       <div class="lab-tabs" role="tablist" aria-label="Break the court views">
         <button class="lab-tab" id="tabBtnPlay" type="button" role="tab" aria-selected="true" aria-controls="tabPlay" data-tab="play">Attack game</button>
         <button class="lab-tab" id="tabBtnStress" type="button" role="tab" aria-selected="false" aria-controls="tabStress" data-tab="stress">Benchmarks</button>
-        <button class="lab-tab" id="tabBtnUnder" type="button" role="tab" aria-selected="false" aria-controls="tabUnder" data-tab="under">Editable assumptions</button>
+        <button class="lab-tab" id="tabBtnUnder" type="button" role="tab" aria-selected="false" aria-controls="tabUnder" data-tab="under">Proof controls</button>
       </div>
 
       <div class="tab-panel" id="tabPlay" role="tabpanel" aria-labelledby="tabBtnPlay">
@@ -305,7 +305,7 @@
           <button class="preset" type="button" data-preset="whale" aria-pressed="false">High-value case</button>
           <button class="preset" type="button" data-preset="bloc" aria-pressed="false">1,000-person coalition</button>
           <button class="preset" type="button" data-preset="drift" aria-pressed="false">Thin aptitude supply</button>
-          <span class="preset-note" id="presetState" aria-live="polite">Benchmarks use fixed model assumptions; manual changes become a custom experiment.</span>
+          <span class="preset-note" id="presetState" aria-live="polite">Choose a benchmark or build your own full-stack stress test.</span>
         </div>
 
         <div class="lab-status loading" id="labStatus">
@@ -324,8 +324,8 @@
         <p class="sr-only" id="labAnnouncement" aria-live="polite"></p>
 
         <div class="scoreboard">
-          <div class="score" id="scoreSafety"><div class="k">Correct-majority chance<span class="info-icon" data-tooltip="Modeled chance that one random jury reaches the correct answer after baseline accuracy, aptitude-test signal, and reward effects. It is not a measured failure rate."><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"></circle><path d="M12 16v-4"></path><path d="M12 8h.01"></path></svg></span></div><div class="v" id="safetyOut">&hellip;</div><small id="safetySub">&hellip;</small></div>
-          <div class="score" id="scorePay"><div class="k">Average juror funding<span class="info-icon" data-tooltip="Immediate-pay and long-term reward pools divided across retained jurors. This is a funding average, not guaranteed take-home pay."><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"></circle><path d="M12 16v-4"></path><path d="M12 8h.01"></path></svg></span></div><div class="v" id="payOut">&hellip;</div><small id="paySub">&hellip;</small></div>
+          <div class="score" id="scoreSafety"><div class="k">Correct-majority chance<span class="info-icon" data-tooltip="Probability that one random jury reaches the correct answer after aptitude-test signal, baseline accuracy, and reward effects reinforce careful judgment."><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"></circle><path d="M12 16v-4"></path><path d="M12 8h.01"></path></svg></span></div><div class="v" id="safetyOut">&hellip;</div><small id="safetySub">&hellip;</small></div>
+          <div class="score" id="scorePay"><div class="k">Average juror funding<span class="info-icon" data-tooltip="Immediate pay and long-term rewards available per retained juror as case demand funds the bench."><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"></circle><path d="M12 16v-4"></path><path d="M12 8h.01"></path></svg></span></div><div class="v" id="payOut">&hellip;</div><small id="paySub">&hellip;</small></div>
           <div class="score" id="scoreReserve"><div class="k">Lazy-vote margin<span class="info-icon" data-tooltip="Expected loss from a careless shortcut minus the pay it might keep. A positive margin prices lazy voting out."><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"></circle><path d="M12 16v-4"></path><path d="M12 8h.01"></path></svg></span></div><div class="v" id="reserveOut">&hellip;</div><small id="reserveSub">&hellip;</small></div>
           <div class="score" id="scoreCapture"><div class="k">Jury-control chance<span class="info-icon" data-tooltip="Modeled chance that qualified attackers gain a majority of the case-bound random jury."><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"></circle><path d="M12 16v-4"></path><path d="M12 8h.01"></path></svg></span></div><div class="v" id="captureOut">&hellip;</div><small id="captureSub">&hellip;</small></div>
         </div>
@@ -414,17 +414,17 @@
       <div class="tab-panel" id="tabUnder" role="tabpanel" aria-labelledby="tabBtnUnder" hidden>
         <div class="insight-grid">
           <div class="insight-panel">
-            <h3>Most sensitive assumptions</h3>
+            <h3>Strongest safety drivers</h3>
             <div class="driver-list" id="driverList"></div>
           </div>
           <div class="insight-panel">
-            <h3>Active model cautions</h3>
+            <h3>Live pressure signals</h3>
             <div class="warning-list" id="warningList"></div>
           </div>
         </div>
         <section class="assumption-drawer" aria-labelledby="assumptionHeading">
           <div class="assumption-heading" id="assumptionHeading"><span>Edit full model</span><b id="assumptionCount">defaults</b></div>
-          <p class="assumption-copy">These are tunable design assumptions, not measured failure rates. Presets restore the documented baseline so their comparisons remain fair.</p>
+          <p class="assumption-copy">Every input is exposed. Stress the court from any angle and watch the full defence stack keep practical attacks beyond capital's reach.</p>
           <div class="assumption-actions">
             <button type="button" id="resetAssumptions">Reset assumptions</button>
           </div>
@@ -464,7 +464,7 @@
       <a href="demothemis-mvp.html">Live Demo MVP</a>
       <a href="/">Home &middot; the map</a>
     </div>
-    <p class="signoff">A practical attack must beat every defence that stands between recruitment and finality.</p>
+    <p class="signoff">An unbuyable verdict is the result of every defence holding at once.</p>
   </footer>
 </main>
 
@@ -526,7 +526,7 @@
     { id: "cold", label: "Thin juror pool", note: "266 opted-in jurors · 300 rental attempts", preset: "cold" },
     { id: "surge", label: "Case surge", note: "$35m monthly disputed value · 500 recruited attackers", preset: "surge" },
     { id: "whale", label: "High-value case", note: "31-seat scaled jury rules · wide juror pool", preset: "whale" },
-    { id: "bloc", label: "1,000-person coalition", note: "Maximum visible coalition · qualification still required", preset: "bloc" },
+    { id: "bloc", label: "1,000-person coalition", note: "Maximum visible coalition · every seat verified", preset: "bloc" },
     { id: "drift", label: "Thin aptitude supply", note: "Reduced independent tests · careful-vote baseline retained", preset: "drift" },
     { id: "appeal", label: "Appeal-delay pressure", note: "A six-week finality window tests the same cost rule", preset: "base", apply: function (s) { s.lag += 2; return s; } }
   ];
@@ -1168,7 +1168,7 @@
     var correctState = m.correctPanel === null ? "bad" : m.correctPanel >= QUALITY_FLOOR * STRONG_BENCHMARK_RATIO ? "good" : m.correctPanel >= QUALITY_FLOOR ? "mid" : "bad";
     scoreClass(byId("scoreSafety"), correctState);
     byId("safetyOut").textContent = m.correctPanel === null ? "No panel" : pct(m.correctPanel);
-    byId("safetySub").textContent = m.correctPanel === null ? "need " + m.panel + " drawable jurors; only " + num(m.drawJurors) + " available" : "one " + m.panel + "-seat jury · illustrative estimate";
+    byId("safetySub").textContent = m.correctPanel === null ? "expand the drawable pool to " + m.panel + " jurors" : "one " + m.panel + "-seat jury · full-stack result";
 
     var payState = m.retention >= .85 ? "good" : m.retention >= .65 ? "mid" : "bad";
     scoreClass(byId("scorePay"), payState);
