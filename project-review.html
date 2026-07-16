@@ -3,925 +3,744 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <meta name="description" content="A plain-language review of the DemoThemis and PredictionMoMo products, mechanisms, advantages, and growth loop.">
+  <meta name="description" content="A concise review of the current DemoThemis and PredictionMoMo project: what is deployed, what is designed, the strongest evidence, and the next decisive work.">
   <meta name="robots" content="noindex">
-  <title>DemoThemis &amp; PredictionMoMo: Comprehensive Project Review</title>
+  <title>DemoThemis and PredictionMoMo: current project review</title>
+  <link rel="stylesheet" href="assets/fonts/product-app-fonts.css">
   <style>
     :root {
       color-scheme: light;
-      --paper: #f7f5ef;
-      --surface: #fffdf9;
-      --surface-strong: #ffffff;
-      --ink: #20232b;
-      --muted: #5c6470;
-      --line: #ddd9cf;
-      --line-strong: #c9c3b7;
-      --court: #6044c5;
-      --court-dark: #422b9a;
-      --court-soft: #eeeafd;
-      --market: #08664f;
-      --market-soft: #e5f5ef;
-      --warning: #805300;
-      --warning-soft: #fff1cc;
-      --critical: #a62632;
-      --critical-soft: #fdebed;
-      --info: #245b8a;
-      --info-soft: #e8f2fb;
-      --shadow: 0 14px 40px rgba(39, 34, 27, .08);
-      --radius: 18px;
-      --sans: Inter, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
-      --serif: Georgia, "Times New Roman", serif;
+      --page: #f4f6f7;
+      --paper: #ffffff;
+      --ink: #18201e;
+      --soft: #46524f;
+      --muted: #6c7774;
+      --line: #dce2e0;
+      --line-strong: #c4cecb;
+      --green: #087a5d;
+      --green-soft: #e4f4ee;
+      --violet: #5747b8;
+      --violet-soft: #efecfb;
+      --amber: #9a6110;
+      --amber-soft: #fff3dc;
+      --red: #a33e32;
+      --red-soft: #fbe9e6;
+      --sans: "Alegreya Sans App", "Segoe UI", Arial, sans-serif;
+      --serif: "Literata App", Georgia, serif;
+      --content: 72rem;
+      --reading: 48rem;
     }
 
-    * { box-sizing: border-box; }
+    * { box-sizing: border-box; letter-spacing: 0; }
     html { scroll-behavior: smooth; }
-    .visually-hidden {
-      position: absolute !important;
-      width: 1px;
-      height: 1px;
-      padding: 0;
-      margin: -1px;
-      overflow: hidden;
-      clip: rect(0, 0, 0, 0);
-      white-space: nowrap;
-      border: 0;
-    }
     body {
       margin: 0;
-      background: var(--paper);
+      background: var(--page);
       color: var(--ink);
       font-family: var(--serif);
-      font-size: 18px;
-      line-height: 1.68;
+      font-size: 1rem;
+      line-height: 1.7;
+      -webkit-font-smoothing: antialiased;
+      text-rendering: optimizeLegibility;
     }
-    a { color: var(--court-dark); text-decoration-thickness: .08em; text-underline-offset: .16em; }
-    a:hover { text-decoration-thickness: .14em; }
-    a:focus-visible,
-    summary:focus-visible {
-      outline: 3px solid #f2a900;
-      outline-offset: 4px;
-      border-radius: 4px;
-    }
-    code {
-      font-family: ui-monospace, SFMono-Regular, Consolas, "Liberation Mono", monospace;
-      font-size: .83em;
-      overflow-wrap: anywhere;
-    }
-    img, svg { max-width: 100%; }
-    h1, h2, h3, h4 {
-      color: var(--ink);
-      font-family: var(--sans);
-      line-height: 1.14;
-      letter-spacing: -.025em;
-      text-wrap: balance;
-    }
-    h1 { margin: .35rem 0 1rem; font-size: clamp(2.45rem, 7vw, 5.35rem); max-width: 13ch; }
-    h2 { margin: 0 0 1rem; font-size: clamp(1.85rem, 3.6vw, 2.8rem); }
-    h3 { margin: 0 0 .6rem; font-size: 1.28rem; }
-    h4 { margin: 0 0 .35rem; font-size: 1rem; }
+    a { color: var(--violet); text-underline-offset: .2rem; }
+    a:hover { color: var(--green); }
     p { margin: 0 0 1rem; }
-    ul, ol { margin: .55rem 0 1.15rem; padding-left: 1.3rem; }
-    li + li { margin-top: .42rem; }
-    section { scroll-margin-top: 1.25rem; }
+    strong { font-weight: 720; }
+    code {
+      font-family: ui-monospace, "Cascadia Code", Consolas, monospace;
+      font-size: .85em;
+      background: #edf0f1;
+      border-radius: 4px;
+      padding: .1rem .28rem;
+    }
 
     .skip-link {
       position: fixed;
-      z-index: 100;
       top: .75rem;
       left: .75rem;
-      transform: translateY(-180%);
-      padding: .7rem 1rem;
-      border-radius: 10px;
+      z-index: 100;
+      transform: translateY(-5rem);
       background: var(--ink);
       color: #fff;
-      font: 700 .9rem/1 var(--sans);
+      padding: .55rem .8rem;
+      border-radius: 6px;
+      font-family: var(--sans);
+      font-weight: 800;
     }
     .skip-link:focus { transform: translateY(0); }
+    #progress {
+      position: fixed;
+      inset: 0 auto auto 0;
+      z-index: 90;
+      width: 0;
+      height: 3px;
+      background: var(--green);
+    }
+
+    .site-bar {
+      position: sticky;
+      top: 0;
+      z-index: 50;
+      background: rgba(255, 255, 255, .96);
+      border-bottom: 1px solid var(--line);
+      font-family: var(--sans);
+    }
+    .site-bar-inner {
+      max-width: var(--content);
+      min-height: 3.7rem;
+      margin: 0 auto;
+      padding: .65rem 1.5rem;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 1rem;
+    }
+    .brand {
+      color: var(--ink);
+      text-decoration: none;
+      font-size: 1.05rem;
+      font-weight: 900;
+    }
+    .site-links { display: flex; flex-wrap: wrap; gap: .9rem; }
+    .site-links a {
+      color: var(--soft);
+      font-size: .88rem;
+      font-weight: 750;
+      text-decoration: none;
+    }
 
     .hero {
-      position: relative;
-      overflow: hidden;
+      background: var(--paper);
       border-bottom: 1px solid var(--line);
-      background:
-        radial-gradient(circle at 84% 15%, rgba(96, 68, 197, .13), transparent 26rem),
-        radial-gradient(circle at 90% 95%, rgba(8, 102, 79, .10), transparent 24rem),
-        var(--surface);
     }
     .hero-inner {
-      width: min(1160px, calc(100% - 2rem));
+      max-width: var(--content);
       margin: 0 auto;
-      padding: clamp(3.2rem, 8vw, 7rem) 0 clamp(2.6rem, 6vw, 5rem);
+      padding: 5rem 1.5rem 3.4rem;
     }
     .eyebrow,
-    .section-label,
-    .status,
-    .mini-label {
+    .section-label {
+      margin: 0 0 .65rem;
+      color: var(--green);
       font-family: var(--sans);
-      font-weight: 800;
-      letter-spacing: .09em;
+      font-size: .78rem;
+      font-weight: 850;
       text-transform: uppercase;
     }
-    .eyebrow { margin: 0; color: var(--court-dark); font-size: .77rem; }
-    .dek { max-width: 700px; color: var(--muted); font-size: clamp(1.1rem, 2vw, 1.35rem); line-height: 1.55; }
-    .meta-row { display: flex; flex-wrap: wrap; gap: .55rem; margin-top: 1.4rem; }
-    .meta-chip {
-      padding: .35rem .65rem;
-      border: 1px solid var(--line);
-      border-radius: 999px;
-      background: rgba(255,255,255,.72);
-      color: var(--muted);
-      font: 700 .75rem/1.2 var(--sans);
+    h1,
+    h2,
+    h3 { text-wrap: balance; }
+    h1 {
+      max-width: 55rem;
+      margin: 0;
+      font-family: var(--serif);
+      font-size: 3.35rem;
+      font-weight: 650;
+      line-height: 1.08;
     }
-    .status-banner {
-      display: grid;
-      grid-template-columns: auto 1fr;
-      gap: 1rem;
-      max-width: 900px;
-      margin-top: 2rem;
-      padding: 1.15rem 1.25rem;
-      border: 2px solid var(--market);
-      border-radius: 16px;
-      background: var(--market-soft);
-      box-shadow: 0 8px 24px rgba(8, 102, 79, .08);
+    .dek {
+      max-width: 46rem;
+      margin: 1.25rem 0 0;
+      color: var(--soft);
+      font-size: 1.2rem;
+      line-height: 1.6;
     }
-    .status-icon {
-      display: grid;
-      width: 2.4rem;
-      height: 2.4rem;
-      place-items: center;
-      border-radius: 50%;
-      background: var(--market);
-      color: #fff;
-      font: 900 1.25rem/1 var(--sans);
-    }
-    .status-banner strong { display: block; font: 800 1rem/1.3 var(--sans); }
-    .status-banner p { margin: .2rem 0 0; color: #064f3d; font-family: var(--sans); font-size: .92rem; line-height: 1.5; }
-
-    .page-shell {
-      display: grid;
-      grid-template-columns: minmax(0, 1fr) 18rem;
-      gap: clamp(2rem, 5vw, 5.5rem);
-      width: min(1160px, calc(100% - 2rem));
-      margin: 0 auto;
-      padding: 3.4rem 0 6rem;
-      align-items: start;
-    }
-    main { min-width: 0; }
-    .rail { position: sticky; top: 1rem; }
-    .contents {
-      padding: 1.15rem;
-      border: 1px solid var(--line);
-      border-radius: 14px;
-      background: rgba(255, 253, 249, .92);
-      box-shadow: var(--shadow);
+    .meta {
+      display: flex;
+      flex-wrap: wrap;
+      gap: .5rem;
+      margin-top: 1.6rem;
       font-family: var(--sans);
     }
-    .contents h2 { margin: 0 0 .65rem; font-size: .78rem; letter-spacing: .09em; text-transform: uppercase; }
-    .contents ol { margin: 0; padding-left: 1.25rem; font-size: .82rem; line-height: 1.45; }
-    .contents li + li { margin-top: .35rem; }
-    .contents a { color: var(--muted); font-weight: 650; text-decoration: none; }
-    .contents a:hover { color: var(--court-dark); text-decoration: underline; }
-
-    .section-block { margin: 0 0 clamp(4rem, 8vw, 6.5rem); }
-    .section-label { margin: 0 0 .55rem; color: var(--court-dark); font-size: .72rem; }
-    .lead { max-width: 720px; font-size: 1.22rem; line-height: 1.6; }
-    .plain-answer {
-      margin: 1.6rem 0 2rem;
-      padding: 1.35rem 1.5rem;
-      border-left: 5px solid var(--court);
-      border-radius: 0 14px 14px 0;
-      background: var(--court-soft);
-      font-size: 1.14rem;
-    }
-    .plain-answer strong { font-family: var(--sans); }
-
-    .grid-2,
-    .grid-3,
-    .score-grid,
-    .status-grid,
-    .glossary-grid {
-      display: grid;
-      gap: 1rem;
-    }
-    .grid-2 { grid-template-columns: repeat(2, minmax(0, 1fr)); }
-    .grid-3 { grid-template-columns: repeat(3, minmax(0, 1fr)); }
-    .score-grid { grid-template-columns: repeat(3, minmax(0, 1fr)); }
-    .status-grid { grid-template-columns: repeat(3, minmax(0, 1fr)); }
-    .glossary-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); }
-
-    .card,
-    .score-card,
-    .strength,
-    .finding,
-    .road-step {
+    .meta span {
       border: 1px solid var(--line);
-      border-radius: var(--radius);
-      background: var(--surface);
-      box-shadow: var(--shadow);
+      border-radius: 999px;
+      color: var(--soft);
+      background: var(--page);
+      padding: .28rem .65rem;
+      font-size: .78rem;
+      font-weight: 750;
     }
-    .card { padding: 1.35rem; }
-    .card p:last-child { margin-bottom: 0; }
-    .product-card { position: relative; overflow: hidden; padding-top: 1.55rem; }
-    .product-card::before { position: absolute; inset: 0 0 auto; height: 5px; content: ""; }
-    .product-card.market::before { background: var(--market); }
-    .product-card.court::before { background: var(--court); }
-    .product-card .mini-label { margin: 0 0 .45rem; font-size: .65rem; }
-    .product-card.market .mini-label { color: var(--market); }
-    .product-card.court .mini-label { color: var(--court-dark); }
 
-    .score-card { padding: 1.05rem; box-shadow: none; }
-    .score-card b { display: block; margin-bottom: .25rem; font: 800 .9rem/1.3 var(--sans); }
-    .score-card span { display: block; color: var(--muted); font: 650 .82rem/1.42 var(--sans); }
-    .score-card.good { border-top: 4px solid var(--market); }
-    .score-card.warn { border-top: 4px solid var(--warning); }
-    .score-card.bad { border-top: 4px solid var(--critical); }
-
-    .flow {
-      display: grid;
-      gap: .72rem;
-      margin: 1.5rem 0;
-      padding: 0;
-      list-style: none;
-      counter-reset: flow;
-    }
-    .flow li {
-      position: relative;
-      min-height: 4.5rem;
-      margin: 0;
-      padding: 1rem 1.1rem 1rem 4.3rem;
-      border: 1px solid var(--line);
-      border-radius: 14px;
-      background: var(--surface);
-      box-shadow: 0 7px 20px rgba(39, 34, 27, .05);
-      counter-increment: flow;
-    }
-    .flow li::before {
-      position: absolute;
-      top: .85rem;
-      left: 1rem;
-      display: grid;
-      width: 2.35rem;
-      height: 2.35rem;
-      place-items: center;
-      border-radius: 50%;
-      background: var(--court);
+    .status-band {
+      background: #101a17;
       color: #fff;
-      content: counter(flow, decimal-leading-zero);
-      font: 800 .73rem/1 var(--sans);
     }
-    .flow li:nth-child(-n+4)::before { background: var(--market); }
-    .flow b { display: block; margin-bottom: .15rem; font: 800 .95rem/1.35 var(--sans); }
-    .flow span { display: block; color: var(--muted); font-size: .95rem; line-height: 1.5; }
-
-    .loop-box {
+    .status-grid {
+      max-width: var(--content);
+      margin: 0 auto;
+      padding: 1.4rem 1.5rem;
       display: grid;
-      grid-template-columns: repeat(5, minmax(0, 1fr));
-      gap: .6rem;
-      margin-top: 1.4rem;
-      padding: 1rem;
-      border: 1px solid #bfcfc8;
-      border-radius: var(--radius);
-      background: linear-gradient(135deg, var(--market-soft), var(--court-soft));
+      grid-template-columns: repeat(4, minmax(0, 1fr));
+      gap: 0;
     }
-    .loop-step {
-      position: relative;
-      padding: .9rem .8rem;
-      border-radius: 12px;
-      background: rgba(255,255,255,.82);
-      text-align: center;
-      font: 750 .78rem/1.4 var(--sans);
+    .status-item {
+      min-width: 0;
+      padding: .35rem 1.2rem;
+      border-left: 1px solid #31413d;
+      font-family: var(--sans);
     }
-    .loop-step:not(:last-child)::after {
-      position: absolute;
-      top: 50%;
-      right: -.48rem;
-      z-index: 1;
-      color: var(--court-dark);
-      content: "→";
+    .status-item:first-child { border-left: 0; padding-left: 0; }
+    .status-item span {
+      display: block;
+      color: #aebbb7;
+      font-size: .75rem;
+      font-weight: 750;
+      text-transform: uppercase;
+    }
+    .status-item b {
+      display: block;
+      margin-top: .15rem;
       font-size: 1.1rem;
-      transform: translateY(-50%);
+      line-height: 1.25;
     }
-    .loop-note { margin: .75rem 0 0; color: var(--muted); font: 650 .8rem/1.5 var(--sans); }
+    .status-item small { color: #c9d2cf; font-size: .75rem; }
+
+    .page-layout {
+      max-width: var(--content);
+      margin: 0 auto;
+      padding: 3.5rem 1.5rem 6rem;
+      display: grid;
+      grid-template-columns: 13rem minmax(0, var(--reading));
+      justify-content: space-between;
+      gap: 4rem;
+    }
+    .toc {
+      align-self: start;
+      position: sticky;
+      top: 5.2rem;
+      font-family: var(--sans);
+    }
+    .toc b {
+      display: block;
+      margin-bottom: .7rem;
+      color: var(--muted);
+      font-size: .72rem;
+      text-transform: uppercase;
+    }
+    .toc a {
+      display: block;
+      padding: .38rem 0 .38rem .7rem;
+      border-left: 2px solid var(--line);
+      color: var(--soft);
+      font-size: .84rem;
+      font-weight: 700;
+      line-height: 1.25;
+      text-decoration: none;
+    }
+    .toc a:hover,
+    .toc a.active { border-color: var(--green); color: var(--green); }
+
+    main { min-width: 0; }
+    .review-section {
+      margin: 0;
+      padding: 0 0 4.2rem;
+      scroll-margin-top: 5rem;
+    }
+    .review-section + .review-section {
+      border-top: 1px solid var(--line);
+      padding-top: 4.2rem;
+    }
+    h2 {
+      margin: 0 0 1.05rem;
+      font-size: 2rem;
+      font-weight: 660;
+      line-height: 1.2;
+    }
+    h3 {
+      margin: 0 0 .45rem;
+      font-family: var(--sans);
+      font-size: 1.12rem;
+      font-weight: 850;
+      line-height: 1.25;
+    }
+    .lead {
+      color: var(--soft);
+      font-size: 1.18rem;
+      line-height: 1.65;
+    }
+    .verdict {
+      margin-top: 1.6rem;
+      padding: 1rem 1.1rem;
+      border-left: 4px solid var(--green);
+      background: var(--green-soft);
+      color: #154b3d;
+      font-family: var(--sans);
+      font-weight: 750;
+    }
+
+    .product-grid {
+      display: grid;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: 1rem;
+      margin: 1.5rem 0 0;
+    }
+    .product-card {
+      border: 1px solid var(--line-strong);
+      border-radius: 8px;
+      background: var(--paper);
+      padding: 1.25rem;
+    }
+    .product-card.market { border-top: 4px solid var(--green); }
+    .product-card.court { border-top: 4px solid var(--violet); }
+    .state-tag {
+      display: inline-block;
+      margin-bottom: .75rem;
+      border-radius: 999px;
+      padding: .2rem .55rem;
+      font-family: var(--sans);
+      font-size: .72rem;
+      font-weight: 850;
+    }
+    .market .state-tag { background: var(--green-soft); color: var(--green); }
+    .court .state-tag { background: var(--violet-soft); color: var(--violet); }
+    .product-card p { color: var(--soft); font-size: .92rem; line-height: 1.55; }
+    .product-card p:last-child { margin-bottom: 0; }
 
     .table-wrap {
+      margin-top: 1.4rem;
       overflow-x: auto;
-      margin: 1.4rem 0;
-      border: 1px solid var(--line);
-      border-radius: var(--radius);
-      background: var(--surface);
-      box-shadow: var(--shadow);
+      border-top: 2px solid var(--ink);
+      border-bottom: 1px solid var(--line-strong);
     }
-    table { width: 100%; border-collapse: collapse; font-family: var(--sans); font-size: .86rem; line-height: 1.45; }
-    caption { padding: 1rem 1.1rem .3rem; color: var(--muted); text-align: left; font-size: .78rem; }
-    th, td { padding: .85rem 1rem; border-bottom: 1px solid var(--line); text-align: left; vertical-align: top; }
-    thead th { background: #eeece5; font-size: .76rem; letter-spacing: .04em; text-transform: uppercase; }
-    tbody tr:last-child th, tbody tr:last-child td { border-bottom: 0; }
-    tbody th { width: 22%; color: var(--ink); font-size: .82rem; }
-    .tag {
-      display: inline-flex;
-      align-items: center;
-      min-height: 1.6rem;
-      padding: .2rem .48rem;
-      border-radius: 999px;
-      font: 800 .65rem/1 var(--sans);
-      letter-spacing: .04em;
-      text-transform: uppercase;
-      white-space: nowrap;
+    table {
+      width: 100%;
+      min-width: 42rem;
+      border-collapse: collapse;
+      font-family: var(--sans);
+      font-size: .86rem;
+      line-height: 1.45;
     }
-    .tag.built { background: var(--market-soft); color: #04513e; }
-    .tag.simulated { background: var(--info-soft); color: #174f7c; }
-    .tag.proposed { background: var(--court-soft); color: var(--court-dark); }
-    .tag.unproven { background: var(--warning-soft); color: #664200; }
-    .tag.critical { background: var(--critical-soft); color: #8b1e28; }
+    th,
+    td {
+      padding: .78rem .7rem;
+      border-bottom: 1px solid var(--line);
+      text-align: left;
+      vertical-align: top;
+    }
+    th { color: var(--ink); font-weight: 850; }
+    thead th { background: #edf1f0; }
+    tbody th { width: 24%; }
+    td { color: var(--soft); }
+    tbody tr:last-child th,
+    tbody tr:last-child td { border-bottom: 0; }
 
-    .strength-list { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 1rem; }
-    .strength { padding: 1.2rem; box-shadow: none; }
-    .strength::before { display: block; margin-bottom: .4rem; color: var(--market); content: "✓"; font: 900 1.2rem/1 var(--sans); }
-    .strength h3 { font-size: 1rem; }
-    .strength p { margin: 0; color: var(--muted); font-size: .95rem; }
-
-    .findings { display: grid; gap: 1.15rem; }
-    .finding { overflow: hidden; }
-    .finding-head {
+    .boundary-grid {
       display: grid;
-      grid-template-columns: auto 1fr;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
       gap: 1rem;
-      padding: 1.25rem 1.3rem .85rem;
+      margin-top: 1.4rem;
     }
-    .finding-number {
-      display: grid;
-      width: 2.55rem;
-      height: 2.55rem;
-      place-items: center;
-      border-radius: 12px;
-      background: var(--critical-soft);
-      color: var(--critical);
-      font: 900 .86rem/1 var(--sans);
+    .boundary-panel {
+      border-radius: 8px;
+      padding: 1.25rem;
     }
-    .finding.medium .finding-number { background: var(--warning-soft); color: var(--warning); }
-    .finding h3 { margin: 0 0 .22rem; }
-    .finding .status { display: block; margin-bottom: .38rem; color: var(--critical); font-size: .64rem; }
-    .finding.medium .status { color: var(--warning); }
-    .finding-body { padding: 0 1.3rem 1.2rem; }
-    .finding-body p { font-size: 1rem; }
-    .why {
-      display: grid;
-      grid-template-columns: 1fr 1fr;
-      gap: .8rem;
-      margin-top: .8rem;
-    }
-    .why > div { padding: .85rem; border-radius: 12px; background: #f1efe8; }
-    .why b { display: block; margin-bottom: .18rem; font: 800 .74rem/1.3 var(--sans); letter-spacing: .04em; text-transform: uppercase; }
-    .why span { display: block; color: var(--muted); font-size: .88rem; line-height: 1.5; }
-    details {
-      border-top: 1px solid var(--line);
-      background: #faf8f3;
+    .boundary-panel.current { background: var(--green-soft); }
+    .boundary-panel.full { background: var(--violet-soft); }
+    .boundary-panel ul {
+      margin: .8rem 0 0;
+      padding-left: 1.1rem;
+      color: var(--soft);
       font-family: var(--sans);
+      font-size: .88rem;
+      line-height: 1.45;
     }
-    summary {
-      min-height: 44px;
-      padding: .8rem 1.3rem;
-      cursor: pointer;
-      color: var(--court-dark);
-      font-size: .8rem;
-      font-weight: 800;
-    }
-    .detail-body { padding: 0 1.3rem 1.1rem; color: var(--muted); font-size: .83rem; line-height: 1.55; }
-    .detail-body p:last-child { margin-bottom: 0; }
-    .evidence { margin-top: .6rem; padding-top: .6rem; border-top: 1px dashed var(--line-strong); }
+    .boundary-panel li + li { margin-top: .42rem; }
 
-    .callout {
-      margin: 1.25rem 0;
-      padding: 1.1rem 1.2rem;
-      border-radius: 14px;
-      background: var(--info-soft);
-      color: #173f61;
-      font-family: var(--sans);
-      font-size: .9rem;
-      line-height: 1.55;
-    }
-    .callout.warning { background: var(--warning-soft); color: #5c3d06; }
-    .callout strong { display: block; margin-bottom: .2rem; }
-
-    .roadmap { display: grid; gap: .85rem; counter-reset: road; }
-    .road-step {
-      position: relative;
-      min-height: 5rem;
-      padding: 1.15rem 1.2rem 1.15rem 4.6rem;
-      box-shadow: none;
-      counter-increment: road;
-    }
-    .road-step::before {
-      position: absolute;
-      top: 1rem;
-      left: 1.1rem;
-      display: grid;
-      width: 2.5rem;
-      height: 2.5rem;
-      place-items: center;
-      border-radius: 50%;
-      background: var(--ink);
-      color: #fff;
-      content: counter(road);
-      font: 850 .8rem/1 var(--sans);
-    }
-    .road-step h3 { font-size: 1rem; }
-    .road-step p { margin: 0; color: var(--muted); font-size: .92rem; }
-
-    .glossary-grid > div { padding: .95rem 1rem; border: 1px solid var(--line); border-radius: 12px; background: var(--surface); }
-    .glossary-grid dt { font: 800 .83rem/1.3 var(--sans); }
-    .glossary-grid dd { margin: .3rem 0 0; color: var(--muted); font-size: .9rem; line-height: 1.45; }
-
-    .source-list { color: var(--muted); font-family: var(--sans); font-size: .8rem; line-height: 1.55; }
-    .source-list li { padding-left: .2rem; }
-    .source-list a { overflow-wrap: anywhere; }
-    .appendix {
-      overflow: hidden;
+    .strength-list,
+    .priority-list {
+      list-style: none;
+      margin: 1.35rem 0 0;
       padding: 0;
     }
-    .appendix details:first-child { border-top: 0; }
-    .appendix summary { padding: 1rem 1.3rem; font-size: .9rem; }
-    .appendix .detail-body { color: var(--ink); font-family: var(--serif); font-size: .95rem; }
-    .final-verdict {
-      padding: 1.5rem;
-      border: 2px solid var(--court);
-      border-radius: var(--radius);
-      background: linear-gradient(135deg, var(--court-soft), var(--surface));
-      box-shadow: var(--shadow);
+    .strength-list li,
+    .priority-list li {
+      display: grid;
+      grid-template-columns: 2.2rem minmax(0, 1fr);
+      gap: .9rem;
+      padding: 1rem 0;
+      border-top: 1px solid var(--line);
     }
-    .final-verdict p:last-child { margin-bottom: 0; }
-    .one-line { color: var(--court-dark); font: 850 1.1rem/1.45 var(--sans); }
+    .strength-list li:first-child,
+    .priority-list li:first-child { border-top: 0; }
+    .list-number {
+      display: grid;
+      place-items: center;
+      width: 2rem;
+      height: 2rem;
+      border-radius: 50%;
+      background: var(--green-soft);
+      color: var(--green);
+      font-family: var(--sans);
+      font-size: .78rem;
+      font-weight: 900;
+    }
+    .priority-list .list-number { background: var(--amber-soft); color: var(--amber); }
+    .strength-list p,
+    .priority-list p { margin: 0; color: var(--soft); font-size: .92rem; line-height: 1.55; }
+
+    .gap-table tbody th { color: var(--red); }
+    .gap-table td:last-child { color: var(--ink); font-weight: 650; }
+
+    .bottom-line {
+      border: 1px solid var(--line-strong);
+      border-radius: 8px;
+      background: var(--paper);
+      padding: 1.4rem;
+      font-size: 1.08rem;
+    }
+    .bottom-line p:last-child { margin-bottom: 0; }
+
+    .evidence-links {
+      display: flex;
+      flex-wrap: wrap;
+      gap: .55rem;
+      margin-top: 1.2rem;
+      font-family: var(--sans);
+    }
+    .evidence-links a {
+      border: 1px solid var(--line-strong);
+      border-radius: 6px;
+      background: var(--paper);
+      padding: .42rem .62rem;
+      color: var(--soft);
+      font-size: .8rem;
+      font-weight: 750;
+      text-decoration: none;
+    }
 
     footer {
       border-top: 1px solid var(--line);
-      background: var(--surface);
+      background: var(--paper);
+      font-family: var(--sans);
     }
     .footer-inner {
+      max-width: var(--content);
+      margin: 0 auto;
+      padding: 1.5rem;
       display: flex;
       justify-content: space-between;
       gap: 1rem;
-      width: min(1160px, calc(100% - 2rem));
-      margin: 0 auto;
-      padding: 1.5rem 0;
       color: var(--muted);
-      font: 650 .75rem/1.4 var(--sans);
+      font-size: .8rem;
     }
 
-    @media (max-width: 960px) {
-      .page-shell { grid-template-columns: 1fr; }
-      .rail { position: static; grid-row: 1; }
-      .contents ol { columns: 2; column-gap: 2rem; }
-      .loop-box { grid-template-columns: 1fr; }
-      .loop-step:not(:last-child)::after { top: auto; right: 50%; bottom: -.78rem; transform: translateX(50%); content: "↓"; }
+    @media (max-width: 900px) {
+      .status-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); row-gap: 1rem; }
+      .status-item:nth-child(3) { border-left: 0; padding-left: 0; }
+      .page-layout { grid-template-columns: 1fr; gap: 2rem; }
+      .toc {
+        position: static;
+        display: flex;
+        flex-wrap: wrap;
+        gap: .35rem;
+      }
+      .toc b { width: 100%; }
+      .toc a {
+        border: 1px solid var(--line);
+        border-radius: 6px;
+        background: var(--paper);
+        padding: .35rem .55rem;
+      }
     }
-    @media (max-width: 720px) {
-      body { font-size: 17px; }
-      .grid-2, .grid-3, .score-grid, .status-grid, .strength-list, .glossary-grid, .why { grid-template-columns: 1fr; }
-      .status-banner { grid-template-columns: 1fr; }
-      .contents ol { columns: 1; }
-      .finding-head { gap: .75rem; }
-      .footer-inner { display: block; }
-      .footer-inner span { display: block; margin-top: .35rem; }
+    @media (max-width: 640px) {
+      body { font-size: .96rem; }
+      .site-bar-inner { align-items: flex-start; }
+      .site-links { justify-content: flex-end; gap: .55rem; }
+      .hero-inner { padding-top: 3.5rem; }
+      h1 { font-size: 2.35rem; }
+      h2 { font-size: 1.65rem; }
+      .dek { font-size: 1.08rem; }
+      .status-grid,
+      .product-grid,
+      .boundary-grid { grid-template-columns: 1fr; }
+      .status-item,
+      .status-item:nth-child(3) { border-left: 0; padding-left: 0; border-top: 1px solid #31413d; padding-top: .8rem; }
+      .status-item:first-child { border-top: 0; padding-top: .35rem; }
+      .page-layout { padding: 2.5rem 1rem 4rem; }
+      .review-section { padding-bottom: 3.2rem; }
+      .review-section + .review-section { padding-top: 3.2rem; }
+      .table-wrap { overflow: visible; border: 0; }
+      table { display: block; min-width: 0; }
+      thead { display: none; }
+      tbody { display: grid; gap: .75rem; }
+      tbody tr {
+        display: block;
+        border: 1px solid var(--line-strong);
+        border-radius: 8px;
+        background: var(--paper);
+        padding: .85rem;
+      }
+      tbody th,
+      tbody td {
+        display: block;
+        width: 100%;
+        border: 0;
+        padding: 0;
+      }
+      tbody th { margin-bottom: .7rem; font-size: .92rem; }
+      tbody td + td { margin-top: .75rem; }
+      tbody td::before {
+        display: block;
+        margin-bottom: .18rem;
+        color: var(--muted);
+        font-size: .68rem;
+        font-weight: 850;
+        text-transform: uppercase;
+      }
+      .table-wrap:not(.gap-table) td:nth-child(2)::before { content: "Current state"; }
+      .table-wrap:not(.gap-table) td:nth-child(3)::before { content: "Evidence"; }
+      .gap-table td:nth-child(2)::before { content: "Why it matters now"; }
+      .gap-table td:nth-child(3)::before { content: "Completion evidence"; }
+      .footer-inner { flex-direction: column; }
     }
-    @media (max-width: 420px) {
-      .hero-inner, .page-shell, .footer-inner { width: min(100% - 1.15rem, 1160px); }
-      h1 { font-size: 2.3rem; }
-      .card, .finding-body, .finding-head { padding-left: 1rem; padding-right: 1rem; }
-      .flow li { padding-left: 3.8rem; }
-    }
-    @media (prefers-reduced-motion: reduce) {
-      html { scroll-behavior: auto; }
-      *, *::before, *::after { animation-duration: .01ms !important; animation-iteration-count: 1 !important; transition-duration: .01ms !important; }
-    }
-
-    @page { margin: 16mm; }
     @media print {
-      body { background: #fff; color: #000; font-size: 10.5pt; }
-      .skip-link, .rail, .screen-only { display: none !important; }
-      .hero { border-bottom: 1px solid #999; background: #fff; }
-      .hero-inner, .page-shell, .footer-inner { width: 100%; }
-      .hero-inner { padding: 0 0 8mm; }
-      .page-shell { display: block; padding: 9mm 0 0; }
-      .section-block { margin-bottom: 12mm; }
-      .card, .score-card, .strength, .finding, .road-step, .table-wrap, .final-verdict { box-shadow: none; background: #fff; }
-      .loop-box, .plain-answer, .callout, .status-banner { background: #fff; }
-      details { background: #fff; }
-      details > * { display: block !important; }
-      summary { display: none !important; }
-      h1, h2, h3, h4 { break-after: avoid; }
-      .card, .score-card, .strength, .finding, .road-step, figure, table, tr { break-inside: avoid; }
-      p, li { orphans: 3; widows: 3; }
-      table { min-width: 0; font-size: 8.5pt; }
-      a { color: #000; text-decoration: underline; }
-      footer { background: #fff; }
+      .site-bar,
+      .toc,
+      #progress { display: none; }
+      body { background: #fff; }
+      .hero-inner,
+      .page-layout { max-width: none; padding-left: 0; padding-right: 0; }
+      .page-layout { display: block; }
+      .review-section { break-inside: avoid; }
+      a { color: inherit; }
     }
   </style>
 </head>
 <body>
-  <a class="skip-link" href="#main">Skip to the review</a>
+  <a class="skip-link" href="#review">Skip to review</a>
+  <div id="progress" aria-hidden="true"></div>
+
+  <nav class="site-bar" aria-label="Project links">
+    <div class="site-bar-inner">
+      <a class="brand" href="index.html">DemoThemis</a>
+      <div class="site-links">
+        <a href="index.html">Proposal</a>
+        <a href="demothemis-mvp.html">MVP</a>
+        <a href="https://demothemis.netlify.app/app">Live app</a>
+        <a href="https://github.com/FreddyMertens/DemoThemis">Repository</a>
+      </div>
+    </div>
+  </nav>
 
   <header class="hero">
     <div class="hero-inner">
-      <p class="eyebrow">Independent project review · updated 10 July 2026</p>
-      <h1>DemoThemis &amp; PredictionMoMo</h1>
-      <p class="dek">The big idea, the mechanism, its strongest advantages, and the decisions that make it work.</p>
-      <div class="meta-row" aria-label="Review details">
-        <span class="meta-chip">Plain-language review</span>
-        <span class="meta-chip">Product + security + code + UX</span>
-        <span class="meta-chip">Product architecture reviewed</span>
-      </div>
-
-      <div class="status-banner" role="note" aria-label="Core project advantage">
-        <span class="status-icon" aria-hidden="true">&#10003;</span>
-        <div>
-          <strong>Two products create one compounding advantage.</strong>
-          <p>PredictionMoMo supplies paid disputes and clean answer keys. DemoThemis turns them into a wider, better measured, and increasingly difficult-to-buy juror network.</p>
-        </div>
+      <p class="eyebrow">Current project review &middot; 16 July 2026</p>
+      <h1>DemoThemis and PredictionMoMo</h1>
+      <p class="dek">A mature protocol design, a published proposal, and a source-verified World Chain court. The project now has a clear current state and one decisive live proof left to run.</p>
+      <div class="meta" aria-label="Review scope">
+        <span>Product</span>
+        <span>Protocol</span>
+        <span>Contracts</span>
+        <span>Application</span>
+        <span>Operations</span>
       </div>
     </div>
   </header>
 
-  <div class="page-shell">
-    <main id="main">
-      <section class="section-block" id="quick-answer" aria-labelledby="quick-answer-title">
-        <p class="section-label">Thirty-second answer</p>
-        <h2 id="quick-answer-title">What is this project?</h2>
-        <p class="lead">People lock money around a question. If they disagree about the answer, randomly selected, verified people study the evidence, vote, and decide who receives the money.</p>
+  <section class="status-band" aria-label="Current project status">
+    <div class="status-grid">
+      <div class="status-item"><span>Published proposal</span><b>8 public pages</b><small>Unified with the product deployment</small></div>
+      <div class="status-item"><span>Mainnet court</span><b>6 verified contracts</b><small>World Chain, Production verifier</small></div>
+      <div class="status-item"><span>Contract evidence</span><b>77 Foundry tests</b><small>Repository records more than 90% coverage</small></div>
+      <div class="status-item"><span>Live capstone</span><b>0 of 3 jurors</b><small>First official case still pending</small></div>
+    </div>
+  </section>
 
-        <div class="grid-2">
-          <article class="card product-card market">
-            <p class="mini-label">Product one</p>
+  <div class="page-layout">
+    <nav class="toc" aria-label="Review contents">
+      <b>On this page</b>
+      <a href="#assessment">Assessment</a>
+      <a href="#products">The products</a>
+      <a href="#evidence">What exists now</a>
+      <a href="#boundary">Current boundary</a>
+      <a href="#strengths">Strongest assets</a>
+      <a href="#gaps">What remains</a>
+      <a href="#priorities">Next priorities</a>
+      <a href="#bottom-line">Bottom line</a>
+    </nav>
+
+    <main id="review">
+      <section class="review-section" id="assessment">
+        <p class="section-label">Executive assessment</p>
+        <h2>Where the project stands</h2>
+        <p class="lead">The project is beyond the idea stage. DemoThemis has a public application, source-verified contracts, on-chain World ID verification, an operational question queue, and a browser sandbox for the larger mechanism.</p>
+        <p>Its two products are at different stages. <strong>DemoThemis is a deployed arbitration MVP plus a substantially broader protocol design.</strong> <strong>PredictionMoMo is a detailed product specification and demand strategy, but its market contracts are not built yet.</strong></p>
+        <p>The strongest implemented achievement is the personhood-gated court path: a World ID proof is checked on-chain, a human-derived nullifier prevents a second seat, a panel is drawn after the question opens, jurors seal and reveal votes, and the contract resolves the result and routes funds.</p>
+        <div class="verdict">Current verdict: a technically credible arbitration MVP with an unusually complete full-system design. The first live three-human case is the immediate proof point; scaled privacy, randomness, appeals, reputation, and PredictionMoMo are the next implementation layers.</div>
+      </section>
+
+      <section class="review-section" id="products">
+        <p class="section-label">Product state</p>
+        <h2>Two products at different stages</h2>
+        <div class="product-grid">
+          <article class="product-card market">
+            <span class="state-tag">Designed product</span>
             <h3>PredictionMoMo</h3>
-            <p>An open prediction market where people put money on answers such as YES or NO. Think of it as a shared betting jar whose payout depends on what really happens.</p>
+            <p>The proposal defines open market creation from the first stake, self-custodied YES and NO claims, private fixed-odds rooms, trading during disputes, and peer-to-peer parlays.</p>
+            <p>Its strategic value is clear: it gives DemoThemis recurring cases, fees, and independently checkable outcomes. The current repository does not yet contain the market, order-book, tokenization, or governance contracts.</p>
           </article>
-          <article class="card product-card court">
-            <p class="mini-label">Product two</p>
+          <article class="product-card court">
+            <span class="state-tag">Deployed MVP + full design</span>
             <h3>DemoThemis</h3>
-            <p>A bullet proof human-juror court. When people disagree, randomly selected, verified humans review evidence privately and decide the result.</p>
+            <p>The MVP implements registration, bonding, panel selection, commit/reveal voting, fee routing, no-show penalties, and settlement through six verified contracts on World Chain mainnet.</p>
+            <p>The full design adds receipt-free ballots, private reputation and consequences, stronger randomness, expanding appeals, parallel panels, aptitude tests, and a paid watcher fast path.</p>
           </article>
-        </div>
-
-        <div class="plain-answer">
-          <strong>Why combine them?</strong> The market supplies cases and fees; the court supplies neutral resolution. Escrow keeps the money locked until the decision is final.
-        </div>
-
-        <div class="score-grid" aria-label="Overall assessment">
-          <div class="score-card good"><b>Open market creation</b><span>Any precise question can begin with the first stake, even below one dollar.</span></div>
-          <div class="score-card good"><b>Unbuyable arbitration</b><span>Verified people, private ballots, random panels, and costed appeals keep capital from purchasing the verdict.</span></div>
-          <div class="score-card good"><b>Compounding demand</b><span>Market fees fund the court while curated outcomes continuously improve juror selection.</span></div>
         </div>
       </section>
 
-      <section class="section-block" id="problem" aria-labelledby="problem-title">
-        <p class="section-label">The problem</p>
-        <h2 id="problem-title">Why build a new referee?</h2>
-        <p>Online deals and prediction markets need a trusted answer when people disagree. A company-controlled referee may favor the company. A token vote may give the richest wallets the most power.</p>
-        <p>DemoThemis uses a different base rule: one verified human can hold one juror seat. World ID closes duplicate identities; private ballots, live presence, aptitude scoring, and expanding panels remove the remaining shortcuts.</p>
-        <div class="callout">
-          <strong>The defence stack</strong>
-          One human, one seat blocks wallet multiplication. The reserve rewards care, the sealed draw blocks panel shopping, and the receipt-free ballot makes bought votes unenforceable.
-        </div>
-      </section>
-
-      <section class="section-block" id="how-it-works" aria-labelledby="how-title">
-        <p class="section-label">The product journey</p>
-        <h2 id="how-title">How one market could work</h2>
-        <ol class="flow">
-          <li><b>Create a question and lock funds</b><span>A creator writes a gradeable YES-or-NO question; participants choose sides while escrow holds the money.</span></li>
-          <li><b>Trade the possible answers</b><span>A shared pool shows changing odds, while fixed-price offers let traders name a price.</span></li>
-          <li><b>Post a bonded answer</b><span>Someone proposes the result and risks money for being wrong. If nobody challenges it, the market settles.</span></li>
-          <li><b>Challenge and draw jurors</b><span>A disputed answer triggers a random panel of verified humans, with a live presence check for each seat.</span></li>
-          <li><b>Review, vote, and appeal</b><span>Jurors study the evidence while individual votes stay private. A losing side may fund a larger panel.</span></li>
-          <li><b>Finalize and release escrow</b><span>The final answer pays the winning claims and routes the court’s fees.</span></li>
-        </ol>
-
-        <details>
-          <summary>Market details kept outside the main journey</summary>
-          <div class="detail-body"><p>Early pool positions receive extra weight. Once a market clears its liquidity tests, claims graduate into wallet-held YES and NO tokens backed by exact conservation, mint, burn, and settlement rules.</p></div>
-        </details>
-
-        <div class="grid-2">
-          <div class="card">
-            <h3>Objective case</h3>
-            <p>Reality can later grade the answer, such as a match score, a closing price, or a delivery date.</p>
-          </div>
-          <div class="card">
-            <h3>Rubric case</h3>
-            <p>Jurors compare evidence with written rules, such as whether work met a contract. There may be no perfect outside answer.</p>
-          </div>
-        </div>
-      </section>
-
-      <section class="section-block" id="bootstrap-loop" aria-labelledby="loop-title">
-        <p class="section-label">The strongest idea</p>
-        <h2 id="loop-title">How the two products could grow together</h2>
-        <p>PredictionMoMo gives the court its first paid work, evidence, and public history, creating a useful loop from the first market.</p>
-        <div class="loop-box" role="img" aria-label="Markets create cases, cases create fees, fees pay jurors, finished cases create tests and a track record, and a stronger court attracts more markets.">
-          <div class="loop-step">Markets create cases</div>
-          <div class="loop-step">Cases create fees</div>
-          <div class="loop-step">Fees pay jurors</div>
-          <div class="loop-step">Finished cases build a record</div>
-          <div class="loop-step">A stronger court attracts markets</div>
-        </div>
-        <p class="visually-hidden">Markets create cases; cases create fees; fees pay jurors; finished cases build a record; and a stronger court attracts more markets.</p>
-        <div class="plain-answer">
-          <strong>Fees:</strong> A 2% settlement fee routes 70% to jurors, 20% to the reward pool, and 10% to operations. PredictionMoMo may add a margin of up to one percentage point after the court invoice routes first.
-        </div>
-      </section>
-
-      <section class="section-block" id="strengths" aria-labelledby="strengths-title">
-        <p class="section-label">What works well</p>
-        <h2 id="strengths-title">The project has real strengths</h2>
-        <div class="grid-3">
-          <article class="strength"><h3>Strong bootstrap idea</h3><p>The market could give a new court its first cases, income, and public history.</p></article>
-          <article class="strength"><h3>Inspectability</h3><p>On-chain mechanics, interactive journeys, and teaching widgets make the complete system easy to inspect.</p></article>
-          <article class="strength"><h3>Attack transparency</h3><p>Every bribery, identity, collusion, appeal, capture, and model assumption is exposed for inspection.</p></article>
-        </div>
-      </section>
-
-      <section class="section-block" id="resolved-decisions" aria-labelledby="resolved-title">
-        <p class="section-label">Resolved design decision</p>
-        <h2 id="resolved-title">Private votes require private consequences</h2>
-        <article class="finding medium" id="finding-ballot-privacy">
-          <div class="finding-head">
-            <span class="finding-number">01</span>
-            <div><span class="status">Resolved architecture</span><h3>Can a secret vote remain secret?</h3></div>
-          </div>
-          <div class="finding-body">
-            <p>Yes—if exact reputation, reserves, payments, penalties, refunds, and case history also stay private. The public should see one-case pseudonyms, limited eligibility proofs, the aggregate tally, and aggregate accounting, never a named consequence that reveals a vote.</p>
-            <p><b>The privacy stack:</b> private commitments, batched accounting, aggregate-only tallying, and unlinkable payouts.</p>
-          </div>
-          <details><summary>How it works and evidence</summary><div class="detail-body"><p>The rule is “public proofs and aggregate accounting; private votes, histories, balances, reputation, penalties, refunds, and payments.” Each case uses a new pseudonym and receiving key. Zero-knowledge proofs reveal only eligibility, a reputation band, sufficient reserve, and correct private updates. Correlation checks run over encrypted histories and reveal only a proved rule breach. Private commitments, batched accounting, aggregate-only tallying, and unlinkable payouts preserve the same boundary from ballot through reward.</p><p class="evidence"><b>Repository evidence:</b> <code>demothemis.html:463–513, 646–725</code>.</p></div></details>
-        </article>
-      </section>
-
-      <section class="section-block" id="critical-questions" aria-labelledby="questions-title">
-        <p class="section-label">The design answers</p>
-        <h2 id="questions-title">How the system closes the hardest gaps</h2>
-        <p class="lead">The architecture answers finality, collateral, attack resistance, juror learning, conflicts, upgrades, complete product flow, and proof of human in separate layers.</p>
-
-        <div class="findings">
-          <article class="finding" id="finding-finality">
-            <div class="finding-head">
-              <span class="finding-number">02</span>
-              <div><span class="status">Finality</span><h3>Every case reaches one final answer</h3></div>
-            </div>
-            <div class="finding-body">
-              <p>Published deadlines, deterministic standbys, a finite 7-to-15-to-31 appeal ladder, and one irreversible release rule give every dispute a bounded path to payment.</p>
-              <div class="why"><div><b>Why it wins</b><span>Delay cannot become a cheaper substitute for buying the verdict.</span></div><div><b>The result</b><span>Settlement closes on schedule while later accountability remains open.</span></div></div>
-            </div>
-            <details><summary>Technical detail and evidence</summary><div class="detail-body"><p>Large cases use non-overlapping parallel panels, while the finite appeal ladder and one release rule keep settlement bounded. Capturing every independent panel on the same sealed draw multiplies the attacker&rsquo;s difficulty.</p><p class="evidence"><b>Repository evidence:</b> <code>demothemis.html:519–551</code>; <code>break-the-court.html:1020–1021</code>.</p></div></details>
-          </article>
-
-          <article class="finding" id="finding-token-accounting">
-            <div class="finding-head">
-              <span class="finding-number">03</span>
-              <div><span class="status">Full collateralization</span><h3>Every claim stays backed</h3></div>
-            </div>
-            <div class="finding-body">
-              <p>Conservation, mint, burn, redemption, fee, rounding, and atomic parlay rules keep pooled claims and wallet tokens tied to the same locked collateral.</p>
-              <div class="why"><div><b>Why it wins</b><span>No bookmaker balance sheet sits between the claim and its backing.</span></div><div><b>The result</b><span>Tokens remain composable without promising the same collateral twice.</span></div></div>
-            </div>
-            <details><summary>Technical detail and evidence</summary><div class="detail-body"><p>The shared pool begins with fully escrowed stakes. Graduation conserves that backing as YES and NO claims move into user wallets; redemption, fees, rounding, and atomic routing all resolve against the same collateral base.</p><p class="evidence"><b>Repository evidence:</b> <code>predictionmomo.html:234–355, 386–411, 493–549</code>; <code>prediction-market.md:11–15</code>.</p></div></details>
-          </article>
-
-          <article class="finding" id="finding-model-validation">
-            <div class="finding-head">
-              <span class="finding-number">04</span>
-              <div><span class="status">Attack transparency</span><h3>Every defence can be stress-tested</h3></div>
-            </div>
-            <div class="finding-body">
-              <p>Break the Court exposes the inputs behind coalition capture, bribery, rentals, careless voting, appeal delay, and crowd-following, then recalculates every margin immediately.</p>
-              <div class="why"><div><b>Why it wins</b><span>No security claim is hidden behind a single score.</span></div><div><b>The result</b><span>Readers can attack the mechanism themselves and see which independent rail defeats each shortcut.</span></div></div>
-            </div>
-            <details><summary>Technical detail and evidence</summary><div class="detail-body"><p>Private ballots remove provable vote delivery, live checks price account rental, random panels suppress coalition majorities, pending pay defeats careless shortcuts, and aptitude tests preserve decision quality. Every control remains editable in the stress model.</p><p class="evidence"><b>Repository evidence:</b> <code>break-the-court.html:974–1062</code>; <code>assumptions.js</code>; <code>tools/validate-gamelab.js:335–358</code>.</p></div></details>
-          </article>
-
-          <article class="finding medium" id="finding-learning-data">
-            <div class="finding-head">
-              <span class="finding-number">05</span>
-              <div><span class="status">Reality-anchored learning</span><h3>The court learns from checkable outcomes</h3></div>
-            </div>
-            <div class="finding-body">
-              <p>Watching, independent verification, and curation admit only precise, checkable outcomes into the aptitude library.</p>
-              <p><b>The advantage:</b> Jurors are measured against reality instead of the court merely agreeing with itself.</p>
-            </div>
-            <details><summary>Quality gates and evidence</summary><div class="detail-body"><p>Paid watching catches false assertions, independent verification checks the outside fact, and curation admits only clean outcomes. Private cases add consent and participant exclusion before becoming hidden tests.</p><p class="evidence"><b>Repository evidence:</b> <code>demothemis.html:584–641</code>; <code>bootstrap-loop.html:83–141</code>.</p></div></details>
-          </article>
-
-          <article class="finding medium" id="finding-conflicts">
-            <div class="finding-head">
-              <span class="finding-number">06</span>
-              <div><span class="status">Conflict resistance</span><h3>Case interests are screened before voting</h3></div>
-            </div>
-            <div class="finding-body">
-              <p>Pre-draw snapshots, dust-resistant exposure rules, hidden summons, deterministic replacements, and case-bound trading controls protect the panel from financial conflicts.</p>
-              <p><b>The advantage:</b> Parties cannot shop the panel or disqualify honest jurors after the draw.</p>
-            </div>
-            <details><summary>Conflict controls and evidence</summary><div class="detail-body"><p>A pre-draw exposure snapshot catches positions before the panel exists. Unsolicited dust is ignored, summons stay private, and deterministic standbys preserve the sealed draw without giving either party a replacement lever.</p><p class="evidence"><b>Repository evidence:</b> <code>demothemis.html:412–438, 488–508</code>; <code>predictionmomo.html:486–488</code>.</p></div></details>
-          </article>
-
-          <article class="finding medium" id="finding-upgrades">
-            <div class="finding-head">
-              <span class="finding-number">07</span>
-              <div><span class="status">Constitutional upgrades</span><h3>Rules can improve without an emergency ruler</h3></div>
-            </div>
-            <div class="finding-body">
-              <p>A narrow, public migration path combines transparent notice, delays, and user choice while the constitutional firewall remains outside either token vote.</p>
-              <p><b>The advantage:</b> Faulty rules can be replaced without granting a key that can rewrite an active verdict.</p>
-            </div>
-            <details><summary>Upgrade controls and evidence</summary><div class="detail-body"><p>Square-root person-weighted voting, a per-person cap, token locks, quorum, timelocks, hard parameter ranges, and a public migration path let the system improve without exposing active verdicts to governance.</p><p class="evidence"><b>Repository evidence:</b> <code>governance.html:153–181, 202–248</code>.</p></div></details>
-          </article>
-
-          <article class="finding medium" id="finding-state-machines">
-            <div class="finding-head">
-              <span class="finding-number">08</span>
-              <div><span class="status">Complete product journey</span><h3>Every successful route is easy to follow</h3></div>
-            </div>
-            <div class="finding-body">
-              <p>The run-through maps public pools, private escrow, token graduation, quiet settlement, disputed settlement, appeals, payout, juror learning, and the next market in one connected journey.</p>
-              <p><b>The advantage:</b> Readers can trace both the fast route and the full court route from first stake to final payment.</p>
-            </div>
-            <details><summary>Complete route and evidence</summary><div class="detail-body"><p>Four phases connect market creation, answer checking, unbuyable arbitration, and settlement. The fast path bypasses the court; the disputed path adds verified jurors and costed appeals; both converge on one final release rule.</p><p class="evidence"><b>Repository evidence:</b> <code>run-through.html</code>; <code>demothemis.html:698–725</code>.</p></div></details>
-          </article>
-
-          <article class="finding medium" id="finding-world-id">
-            <div class="finding-head">
-              <span class="finding-number">09</span>
-              <div><span class="status">Verified-human foundation</span><h3>One person receives one seat</h3></div>
-            </div>
-            <div class="finding-body">
-              <p>World ID supplies unique-human verification while draw-bound face checks prove live presence without exposing names, faces, or a reusable identity handle.</p>
-              <p><b>The advantage:</b> Wallet multiplication disappears, account rentals require a present human, and every case receives a fresh pseudonym.</p>
-            </div>
-            <details><summary>Identity stack and evidence</summary><div class="detail-body"><p>Orb-backed World ID establishes uniqueness. Each selected juror then proves live presence through a short-lived, draw-bound face check while case pseudonyms and private commitments keep identity, history, and payment unlinkable.</p><p class="evidence"><b>Repository evidence:</b> <code>demothemis-mvp.html:145–172</code>; <code>demothemis.html:441–460</code>. <b>External sources:</b> World ID Overview and On-chain Verification, listed in the appendix.</p></div></details>
-          </article>
-
-        </div>
-      </section>
-
-      <section class="section-block" id="recommendations" aria-labelledby="recommendations-title">
-        <p class="section-label">Product, protocol, and usability</p>
-        <h2 id="recommendations-title">The clearest path to scale</h2>
-        <div class="roadmap">
-          <article class="road-step"><h3>Keep the promise sharp</h3><p>Lead with open market creation, bullet proof arbitration, self-custodied claims, and the demand loop that connects both products.</p></article>
-          <article class="road-step"><h3>Publish one official specification</h3><p>Put every role, state, deadline, equation, privacy rule, and constitutional boundary into one inspectable source.</p></article>
-          <article class="road-step"><h3>Prove the defence stack</h3><p>Stress private tallying, World ID presence, collateral conservation, deterministic replacement, appeals, and finality together.</p></article>
-          <article class="road-step"><h3>Run the complete route</h3><p>Take one objective case through escrow, random draw, receipt-free voting, a wider-panel appeal, and final settlement.</p></article>
-          <article class="road-step"><h3>Invite specialist validation</h3><p>Cryptography, contracts, economics, identity, privacy, accessibility, and operations each receive an independent review.</p></article>
-        </div>
-        <div class="callout">
-          <strong>One foundation, many products.</strong>
-          Parlays, lending collateral, private markets, rubric courts, permanent collusion audits, and marketplace arbitration all reuse the same escrow, identity, ballot, appeal, and settlement rails.
-        </div>
-
-        <details>
-          <summary>Product, journey, and accessibility checklist</summary>
-          <div class="detail-body">
-            <div class="grid-3">
-              <div>
-                <h3>Message</h3>
-                <ul><li>Lead with bullet proof and unbuyable arbitration.</li><li>Maintain the short-tour and technical-reference split.</li><li>Keep the team, roadmap, grant request, specification, and contact route easy to find.</li></ul>
-              </div>
-              <div>
-                <h3>Journeys</h3>
-                <ul><li>Label each actor in the service blueprint.</li><li>Show quiet settlement before a full appeal.</li><li>Make exact run-through states shareable by URL.</li></ul>
-              </div>
-              <div>
-                <h3>Accessibility</h3>
-                <ul><li>Meet contrast rules and keep visible keyboard focus.</li><li>Use native controls or <code>aria-pressed</code>, plus <code>aria-current</code> in navigation.</li><li>Announce only changed results and pair color with words such as Safe, Warning, or Failed.</li></ul>
-              </div>
-            </div>
-          </div>
-        </details>
-      </section>
-
-      <section class="section-block" id="engineering" aria-labelledby="engineering-title">
-        <p class="section-label">Code and operations</p>
-        <h2 id="engineering-title">Repository review</h2>
-        <p>The repository keeps the explanation, product application, contracts, tests, and documentation in one inspectable system with clear public boundaries.</p>
-        <div class="table-wrap" role="region" aria-label="Engineering strengths" tabindex="0">
+      <section class="review-section" id="evidence">
+        <p class="section-label">Current evidence</p>
+        <h2>What exists now</h2>
+        <p>The clearest review is an inventory of working artifacts rather than a list of claims.</p>
+        <div class="table-wrap" role="region" aria-label="Current project evidence" tabindex="0">
           <table>
-            <caption>Engineering strengths</caption>
-            <thead><tr><th scope="col">System quality</th><th scope="col">What it delivers</th></tr></thead>
+            <thead><tr><th scope="col">Layer</th><th scope="col">Current state</th><th scope="col">Evidence</th></tr></thead>
             <tbody>
-              <tr><td>Explicit public-file allowlist</td><td>Keeps internal material outside the published product.</td></tr>
-              <tr><td>Automated site build</td><td>Checks local links, metadata, routes, and the public-file boundary together.</td></tr>
-              <tr><td>Locally stored interface libraries</td><td>Keeps interactive explanations fast, deterministic, and available offline.</td></tr>
-              <tr><td>Layered browser protections</td><td>Applies CSP, frame protection, referrer, MIME, and permissions headers.</td></tr>
-              <tr><td>Model and site validators</td><td>Keep the game logic, chapter structure, navigation, and product journey synchronized.</td></tr>
-              <tr><td>Inspectable contracts and tests</td><td>Make identity, voting, escrow, settlement, and fee routing easy to verify.</td></tr>
-              <tr><td>Separated explanation and application layers</td><td>Keeps the reading experience simple while the product handles wallet actions.</td></tr>
+              <tr><th scope="row">Proposal site</th><td>Eight allowlisted public pages explain the complete journey, court, attack model, market, bootstrap loop, governance, and MVP.</td><td>The static build validates links, metadata, routes, and the public-file boundary before joining the Next.js deployment.</td></tr>
+              <tr><th scope="row">Application</th><td>The Netlify deployment serves the proposal, Mini App, juror onboarding, case views, dispute flow, about page, and browser sandbox.</td><td><a href="https://demothemis.netlify.app/app">Open the live app</a></td></tr>
+              <tr><th scope="row">Mainnet contracts</th><td>MockUSD, WorldIDGate, JurorRegistry, RewardPool, DisputeCourt, and DealEscrow are deployed and source-verified on World Chain.</td><td><a href="DemoThemisMVP/contracts/deployments/worldchain-mainnet.json">Mainnet deployment record</a></td></tr>
+              <tr><th scope="row">Personhood</th><td>The mainnet gate points to the Production World ID 4.0 verifier and binds each proof to the registering wallet, app action, and RP ID.</td><td>Staging traces already cover a valid registration, a forged-proof revert, and duplicate-human rejection. The first Production-human registration is pending.</td></tr>
+              <tr><th scope="row">Court lifecycle</th><td>A question can open, draw a panel after opening, collect sealed commitments and reveals, redraw once after failed quorum, resolve, and distribute the fee permissionlessly.</td><td><code>DisputeCourt.sol</code> and its tests</td></tr>
+              <tr><th scope="row">Economics</th><td>Question cases use a 2 MUSD fee; disputed deals use a 2% fee. The court routes 70% to coherent jurors, 20% to the reward pool, and 10% to protocol operations.</td><td>All current instances use valueless MockUSD. The reward pool receives funds but does not yet distribute them.</td></tr>
+              <tr><th scope="row">Operations</th><td>A fixed 21-question manifest, non-juror opener, scheduled keeper, and five-minute seal/reveal windows are configured.</td><td>No official question has been filed because the Production pool still has zero of the required three jurors.</td></tr>
+              <tr><th scope="row">Verification</th><td>The repository records 77 Foundry tests with invariants, fuzzing, and more than 90% coverage. The proposal build, model, smoke, and 21-question manifest checks pass in this review.</td><td><a href="DemoThemisMVP/README.md">Project README</a> and the repository test suites</td></tr>
             </tbody>
           </table>
         </div>
-        <div class="callout">
-          <strong>One architecture, clear layers</strong>
-          The explanation teaches the system, the application handles participation, and the contracts enforce identity, escrow, voting, and settlement.
+      </section>
+
+      <section class="review-section" id="boundary">
+        <p class="section-label">Execution boundary</p>
+        <h2>What runs now and what the full design adds</h2>
+        <p>This is the most important current-state distinction. The MVP proves the basic on-chain court lifecycle. The scaled design supplies the protections behind the broader bullet proof and unbuyable claim.</p>
+        <div class="boundary-grid">
+          <div class="boundary-panel current">
+            <h3>Running on mainnet now</h3>
+            <ul>
+              <li>Production World ID verifier wiring and one-human-one-seat nullifiers</li>
+              <li>Wallet-bound registration, a 5 MUSD bond, and a three-seat panel</li>
+              <li>Two-step blockhash panel draw after the question opens</li>
+              <li>Public commit/reveal ballots and one automatic redraw</li>
+              <li>Question and deal escrow settlement with 70/20/10 routing</li>
+              <li>No-show slashing to the reward pool, never to winning jurors</li>
+              <li>World App interface, official question queue, and keeper</li>
+            </ul>
+          </div>
+          <div class="boundary-panel full">
+            <h3>Designed and demonstrated in the sandbox</h3>
+            <ul>
+              <li>Receipt-free ballots and private payments, penalties, and reputation</li>
+              <li>VRF or drand randomness and per-draw presence checks</li>
+              <li>Panels of 7, 15, and 31 with funded appeals</li>
+              <li>Parallel non-overlapping panels for the largest cases</li>
+              <li>Aptitude scoring, private eligibility bands, and reward-pool payouts</li>
+              <li>Bonded assertions, paid watchers, and the optimistic fast path</li>
+              <li>PredictionMoMo markets, claim tokens, trading, parlays, and governance</li>
+            </ul>
+          </div>
         </div>
       </section>
 
-      <section class="section-block" id="appendix" aria-labelledby="appendix-title">
-        <p class="section-label">Optional reference</p>
-        <h2 id="appendix-title">Evidence and reference appendix</h2>
-        <p>The review method, plain-language definitions, and source list keep every major claim easy to inspect.</p>
-        <div class="card appendix">
-          <details id="verification">
-            <summary>What was checked</summary>
-            <div class="detail-body">
-              <ul>
-                <li>Mapped the explanation, application, contract, and test layers.</li>
-                <li>Read the product, court, market, governance, bootstrap, model, build, test, and grant documentation.</li>
-                <li>Ran <code>node tools/build-site.js</code>, <code>node tools/validate-gamelab.js</code>, and <code>node tools/smoke-site.js</code>. All passed at review time.</li>
-                <li>Used the rendered site on desktop and a narrow viewport; tested navigation, a guided event, and the private-vote model control.</li>
-                <li>Checked browser behavior, security headers, the public-file boundary, the product journey, and contract traces.</li>
-              </ul>
-            </div>
-          </details>
+      <section class="review-section" id="strengths">
+        <p class="section-label">Assessment</p>
+        <h2>The project&rsquo;s strongest assets</h2>
+        <ol class="strength-list">
+          <li><span class="list-number">1</span><div><h3>A coherent two-product strategy</h3><p>PredictionMoMo is not an unrelated add-on. It supplies the court with paid demand and reality-anchored cases, while the court gives the market a differentiated resolution layer.</p></div></li>
+          <li><span class="list-number">2</span><div><h3>Personhood is enforced in the contract path</h3><p>The World ID verifier, wallet binding, and spent nullifier are part of registration itself. The identity claim is therefore inspectable on-chain rather than delegated to a private backend.</p></div></li>
+          <li><span class="list-number">3</span><div><h3>The mechanism is unusually well mapped</h3><p>The proposal connects identity, random selection, ballot privacy, incentives, appeals, scoring, governance, and demand. The run-through and attack model make those dependencies visible.</p></div></li>
+          <li><span class="list-number">4</span><div><h3>The implementation is inspectable</h3><p>Contracts, tests, deployment records, application code, operational scripts, and the public repository give reviewers concrete evidence instead of a closed demo.</p></div></li>
+          <li><span class="list-number">5</span><div><h3>The next milestone is operationally specific</h3><p>The portal, app, contracts, five-minute windows, queue, and keeper are prepared. The remaining capstone work is a phone smoke test, three human registrations, one official case, and permanent traces.</p></div></li>
+        </ol>
+      </section>
 
-          <details id="glossary">
-            <summary>Short glossary</summary>
-            <div class="detail-body">
-              <dl class="glossary-grid">
-                <div><dt>Prediction market</dt><dd>A place where people put money behind different answers.</dd></div>
-                <div><dt>Protocol</dt><dd>A shared rulebook carried out by software.</dd></div>
-                <div><dt>Escrow</dt><dd>Money locked until the rules say who receives it.</dd></div>
-                <div><dt>Collateral</dt><dd>Money or assets backing a promise or claim.</dd></div>
-                <div><dt>Token</dt><dd>A digital claim ticket representing a market position or governance voice.</dd></div>
-                <div><dt>Assertion</dt><dd>Someone’s proposed final answer.</dd></div>
-                <div><dt>Challenge</dt><dd>A formal objection to the proposed answer.</dd></div>
-                <div><dt>Bond</dt><dd>Money risked to discourage dishonest or careless claims.</dd></div>
-                <div><dt>Juror panel</dt><dd>A small group selected to decide a dispute.</dd></div>
-                <div><dt>Verified human</dt><dd>A unique person eligible to hold one juror seat.</dd></div>
-                <div><dt>Private ballot</dt><dd>A vote that reveals the aggregate verdict without exposing one person&rsquo;s choice.</dd></div>
-                <div><dt>Appeal</dt><dd>A request for another, usually larger, panel to check a ruling.</dd></div>
-                <div><dt>Finality</dt><dd>The point when the decision pays and cannot reopen.</dd></div>
-                <div><dt>Governance</dt><dd>The process used to change system rules.</dd></div>
-                <div><dt>Aptitude test</dt><dd>A quiz estimating whether a juror understands a topic.</dd></div>
-                <div><dt>Sybil attack</dt><dd>One person pretending to be many people.</dd></div>
-                <div><dt>Smart contract</dt><dd>Blockchain code that moves assets according to rules.</dd></div>
-                <div><dt>Threshold encryption</dt><dd>A lock that needs several key holders to cooperate before it opens.</dd></div>
-              </dl>
-            </div>
-          </details>
-
-          <details id="sources">
-            <summary>Key sources</summary>
-            <div class="detail-body">
-              <ol class="source-list">
-                <li><a href="index.html">Project home page</a>, especially claims and chapter map around <code>index.html:49–153</code>.</li>
-                <li><a href="demothemis-mvp.html">DemoThemis product page</a> and <code>DemoThemisMVP/README.md</code>, especially identity, voting, escrow, and settlement mechanics.</li>
-                <li><a href="demothemis.html">DemoThemis design</a>, especially lifecycle, private ballots, panels, scoring, and appeals around <code>demothemis.html:240–776</code>.</li>
-                <li><a href="break-the-court.html">Break the court model</a> and <a href="assumptions.js">its assumption list</a>, including model computation around <code>break-the-court.html:612–1127</code>.</li>
-                <li><a href="predictionmomo.html">PredictionMoMo design</a>, including tokenization, pool birth, fixed offers, resolution, and parlays around <code>predictionmomo.html:180–554</code>.</li>
-                <li><a href="bootstrap-loop.html">Bootstrap-loop economics</a>, including watcher and aptitude-test assumptions.</li>
-                <li><a href="governance.html">Governance design</a>, especially the two-token firewall around <code>governance.html:99–272</code>.</li>
-                <li><a href="tools/build-site.js">Build script</a>, <a href="tools/validate-gamelab.js">model validator</a>, and <a href="tools/smoke-site.js">site smoke test</a>.</li>
-                <li><a href="https://docs.world.org/world-id/overview">World ID Overview</a>, World developer documentation, reviewed 9 July 2026.</li>
-                <li><a href="https://docs.world.org/world-id/idkit/onchain-verification">World ID On-chain Verification</a>, World developer documentation, reviewed 9 July 2026.</li>
-                <li><a href="https://docs.world.org/world-id/credentials/11">World ID Selfie Check</a>, World developer documentation, reviewed 9 July 2026.</li>
-                <li><a href="https://link.springer.com/chapter/10.1007/978-3-032-05036-6_4">Threshold Receipt-Free Voting with Server-Side Vote Validation</a>, E-Vote-ID 2025.</li>
-              </ol>
-            </div>
-          </details>
+      <section class="review-section" id="gaps">
+        <p class="section-label">Current constraints</p>
+        <h2>What still determines the project&rsquo;s credibility</h2>
+        <div class="table-wrap gap-table" role="region" aria-label="Current project gaps" tabindex="0">
+          <table>
+            <thead><tr><th scope="col">Current gap</th><th scope="col">Why it matters now</th><th scope="col">Decisive completion evidence</th></tr></thead>
+            <tbody>
+              <tr><th scope="row">No Production-human case yet</th><td>The Production verifier is wired, but the mainnet registry and official queue have never completed a real-human case.</td><td>Three registrations, 3/3 seals, 3/3 reveals, final ruling, payments, and the next question opening.</td></tr>
+              <tr><th scope="row">MVP security is intentionally narrow</th><td>A three-seat commit/reveal court demonstrates cost and liveness, not the scaled capture resistance described by the full design.</td><td>Receipt-free voting, stronger randomness, larger appeals, parallel panels, and a materially wider pool.</td></tr>
+              <tr><th scope="row">General liveness needs hardening</th><td>The official question flow avoids party conflicts with a fixed non-juror opener. A general escrow case still needs a bounded outcome when too few eligible jurors can form a panel.</td><td>Deterministic replacements, explicit timeouts, and tests proving every funded case reaches settlement or refund.</td></tr>
+              <tr><th scope="row">PredictionMoMo remains a specification</th><td>The demand loop is persuasive, but no live market currently creates bets, tokenized claims, disputes, or fees for DemoThemis.</td><td>A minimal market contract using the court resolver end to end.</td></tr>
+              <tr><th scope="row">Independent production review remains ahead</th><td>The internal tests are strong, but the privacy, identity, economics, contracts, and operational path have not been audited as one production system.</td><td>External security review after the core privacy, randomness, appeal, and finality mechanisms are implemented.</td></tr>
+            </tbody>
+          </table>
         </div>
       </section>
 
-      <section class="section-block" id="verdict" aria-labelledby="verdict-title">
-        <p class="section-label">Final assessment</p>
-        <h2 id="verdict-title">Bottom line</h2>
-        <div class="final-verdict">
-          <p>The market-to-court bootstrap is a powerful idea: PredictionMoMo creates open demand, fees, and reality-anchored answer keys, while DemoThemis turns that flow into a wider, better measured, and unbuyable court. Verified humans, sealed draws, receipt-free ballots, private consequences, costed appeals, and constitutional governance reinforce one another.</p>
-          <p class="one-line">In one line: an exceptional prediction market feeding bullet proof arbitration that capital cannot buy.</p>
+      <section class="review-section" id="priorities">
+        <p class="section-label">Recommended order</p>
+        <h2>The shortest path from strong project to proven system</h2>
+        <ol class="priority-list">
+          <li><span class="list-number">1</span><div><h3>Run the three-human mainnet capstone</h3><p>Complete the phone handoff, register three Production World ID humans, resolve official question one, preserve every explorer trace, and record the demonstration.</p></div></li>
+          <li><span class="list-number">2</span><div><h3>Harden the court&rsquo;s foundation</h3><p>Add production randomness, receipt-free ballots, deterministic replacement, and bounded finality before expanding the economic surface.</p></div></li>
+          <li><span class="list-number">3</span><div><h3>Ship the scaled arbitration path</h3><p>Implement larger appeals, parallel panels, private reputation, aptitude tests, and reward-pool distribution as one integrated court lifecycle.</p></div></li>
+          <li><span class="list-number">4</span><div><h3>Build the first PredictionMoMo market</h3><p>Use the resolver SDK to take one market from first stake through assertion, challenge, DemoThemis verdict, and payout.</p></div></li>
+          <li><span class="list-number">5</span><div><h3>Validate the complete system independently</h3><p>Audit the contracts and privacy architecture, then test the juror and trader journeys with real users before increasing value at risk.</p></div></li>
+        </ol>
+      </section>
+
+      <section class="review-section" id="bottom-line">
+        <p class="section-label">Conclusion</p>
+        <h2>Bottom line</h2>
+        <div class="bottom-line">
+          <p><strong>DemoThemis is currently a real, source-verified personhood-gated arbitration MVP backed by a much larger and coherent protocol design.</strong> PredictionMoMo is currently the designed product and demand engine that can turn the court into a recurring service.</p>
+          <p>The project&rsquo;s next credibility leap is immediate and measurable: complete the first Production-human case. The leap after that is implementation: move receipt-free privacy, strong randomness, bounded finality, appeals, reputation, and the first market out of the sandbox and into the contract path.</p>
+        </div>
+        <div class="evidence-links" aria-label="Primary project evidence">
+          <a href="DemoThemisMVP/docs/go-live-progress.md">Go-live progress</a>
+          <a href="DemoThemisMVP/docs/MECHANISM_DELTA.md">MVP and full-design boundary</a>
+          <a href="DemoThemisMVP/contracts/deployments/worldchain-mainnet.json">Mainnet deployment</a>
+          <a href="DemoThemisMVP/README.md">MVP README</a>
+          <a href="tools/build-site.js">Published-site manifest</a>
         </div>
       </section>
     </main>
-
-    <aside class="rail">
-      <nav class="contents" aria-labelledby="contents-title">
-        <h2 id="contents-title">On this page</h2>
-        <ol>
-          <li><a href="#quick-answer">Quick answer</a></li>
-          <li><a href="#problem">The problem</a></li>
-          <li><a href="#how-it-works">How it works</a></li>
-          <li><a href="#bootstrap-loop">The bootstrap loop</a></li>
-          <li><a href="#strengths">Strengths</a></li>
-          <li><a href="#resolved-decisions">Resolved privacy decision</a></li>
-          <li><a href="#critical-questions">Design answers</a></li>
-          <li><a href="#recommendations">Recommended path</a></li>
-          <li><a href="#engineering">Repository review</a></li>
-          <li><a href="#appendix">Evidence appendix</a></li>
-          <li><a href="#verdict">Bottom line</a></li>
-        </ol>
-      </nav>
-    </aside>
   </div>
 
   <footer>
     <div class="footer-inner">
-      <strong>DemoThemis &amp; PredictionMoMo · Comprehensive Project Review</strong>
-      <span>Updated 10 July 2026 · Product and architecture review</span>
+      <strong>DemoThemis and PredictionMoMo: current project review</strong>
+      <span>Repository reviewed 16 July 2026 &middot; Operational state recorded 14 July 2026</span>
     </div>
   </footer>
+
+  <script>
+    (function () {
+      var progress = document.getElementById("progress");
+      var sections = Array.prototype.slice.call(document.querySelectorAll("main .review-section"));
+      var links = Array.prototype.slice.call(document.querySelectorAll(".toc a"));
+
+      function updateProgress() {
+        var root = document.documentElement;
+        var max = root.scrollHeight - root.clientHeight;
+        var value = max > 0 ? (root.scrollTop / max) * 100 : 0;
+        progress.style.width = value + "%";
+      }
+
+      function updateContents() {
+        var current = sections[0] ? sections[0].id : "";
+        sections.forEach(function (section) {
+          if (section.getBoundingClientRect().top <= 130) current = section.id;
+        });
+        links.forEach(function (link) {
+          link.classList.toggle("active", link.getAttribute("href") === "#" + current);
+        });
+      }
+
+      function update() {
+        updateProgress();
+        updateContents();
+      }
+
+      document.addEventListener("scroll", update, { passive: true });
+      window.addEventListener("resize", update);
+      update();
+    }());
+  </script>
 </body>
 </html>
