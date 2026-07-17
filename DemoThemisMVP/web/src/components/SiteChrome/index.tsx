@@ -9,7 +9,7 @@ const CHAPTERS = [
   { number: '01', label: 'Run-through', href: '/run-through.html' },
   { number: '02', label: 'DemoThemis', href: '/demothemis.html' },
   { number: '03', label: 'Break the court', href: '/break-the-court.html' },
-  { number: '04', label: 'PredictionMoMo', href: '/predictionmomo.html' },
+  { number: '04', label: 'OmenMarketMaker', href: '/omenmarketmaker.html' },
   {
     number: '05',
     label: 'Bootstrap loop',

@@ -12,7 +12,7 @@ const publicHtml = [
   "run-through.html",
   "demothemis.html",
   "break-the-court.html",
-  "predictionmomo.html",
+  "omenmarketmaker.html",
   "bootstrap-loop.html",
   "governance.html",
   "demothemis-mvp.html"
@@ -22,7 +22,7 @@ const chapterSequence = [
   { file: "run-through.html", title: "Run-through", navTitle: "Run-through", chapter: 1 },
   { file: "demothemis.html", title: "DemoThemis", navTitle: "DemoThemis", chapter: 2 },
   { file: "break-the-court.html", title: "Break the court", navTitle: "Break the court", chapter: 3 },
-  { file: "predictionmomo.html", title: "PredictionMoMo", navTitle: "PredictionMoMo", chapter: 4 },
+  { file: "omenmarketmaker.html", title: "OmenMarketMaker", navTitle: "OmenMarketMaker", chapter: 4 },
   { file: "bootstrap-loop.html", title: "The bootstrap loop", navTitle: "Bootstrap loop", chapter: 5 },
   { file: "governance.html", title: "Governance", navTitle: "Governance", chapter: 6 }
 ];
@@ -220,6 +220,21 @@ function checkChapterSequence(failures) {
   }
 
   const home = readDist("index.html");
+  const marketChapter = readDist("omenmarketmaker.html");
+  const homeMarketFeatures = home.match(/<h3>OmenMarketMaker: six market features<\/h3>\s*<ol[^>]*>([\s\S]*?)<\/ol>/i);
+  const chapterMarketFeatures = marketChapter.match(/<h3>OmenMarketMaker: six market features<\/h3>\s*<ol[^>]*>([\s\S]*?)<\/ol>/i);
+  assert(Boolean(homeMarketFeatures), "Home is missing the OmenMarketMaker feature summary", failures);
+  assert(Boolean(chapterMarketFeatures), "omenmarketmaker.html is missing the shared feature summary", failures);
+  if (homeMarketFeatures && chapterMarketFeatures) {
+    const featureText = (block) => Array.from(block.matchAll(/<li\b[^>]*>([\s\S]*?)<\/li>/gi), (match) => normalizedHtmlText(match[1]));
+    assert(JSON.stringify(featureText(chapterMarketFeatures[1])) === JSON.stringify(featureText(homeMarketFeatures[1])), "OmenMarketMaker chapter features must match Home in wording and order", failures);
+    const chapterTargets = ["start-market", "exploited-arbiter", "self-custody-tokens", "private-markets", "tradeable-disputes", "peer-to-peer-parlays"];
+    const homeTargets = anchorSequence(homeMarketFeatures[1]).map((entry) => entry.href);
+    const localTargets = anchorSequence(chapterMarketFeatures[1]).map((entry) => entry.href);
+    assert(JSON.stringify(homeTargets) === JSON.stringify(chapterTargets.map((target) => `omenmarketmaker.html#${target}`)), "Home feature points must link to their OmenMarketMaker sections", failures);
+    assert(JSON.stringify(localTargets) === JSON.stringify(chapterTargets.map((target) => `#${target}`)), "OmenMarketMaker feature points must link to their local sections", failures);
+  }
+
   const mapCards = anchorSequence(classBlock(home, "map-grid")).map((entry) => {
     const stage = entry.body.match(/class=["']stage["'][^>]*>\s*Chapter\s+(\d+)/i);
     const title = entry.body.match(/<h3\b[^>]*>([\s\S]*?)<\/h3>/i);
@@ -430,15 +445,15 @@ function checkProductModeData(html, failures) {
     const modes = context.__productModes;
     const boundaries = context.__appBoundaries;
     const eventBoundaries = Array.from({ length: 13 }, (_, stageIndex) => context.__appBoundaryForStage(stageIndex));
-    assert(modes.momo && modes.momo.start === 0, "PredictionMoMo tab must start at Event 01", failures);
+    assert(modes.omen && modes.omen.start === 0, "OmenMarketMaker tab must start at Event 01", failures);
     assert(modes.themis && modes.themis.start === 6, "DemoThemis tab must start at Event 07", failures);
-    assert(modes.momo.label === "Full market run" && modes.themis.label === "Court-backed run", "run-through starting-point labels are incorrect", failures);
-    assert(boundaries.momo.appTheme === "momo" && boundaries.momo.appBrand === "PredictionMoMo" && boundaries.momo.appOrigin === "app.predictionmomo.com" && !boundaries.momo.frameTitle, "PredictionMoMo app-boundary config is incorrect", failures);
-    assert(boundaries.handoff.appTheme === "momo" && boundaries.handoff.appBrand === "PredictionMoMo" && boundaries.handoff.appOrigin === "app.predictionmomo.com", "Events 07-08 must remain inside the PredictionMoMo app", failures);
+    assert(modes.omen.label === "Full market run" && modes.themis.label === "Court-backed run", "run-through starting-point labels are incorrect", failures);
+    assert(boundaries.omen.appTheme === "omen" && boundaries.omen.appBrand === "OmenMarketMaker" && boundaries.omen.appOrigin === "app.omenmarketmaker.com" && !boundaries.omen.frameTitle, "OmenMarketMaker app-boundary config is incorrect", failures);
+    assert(boundaries.handoff.appTheme === "omen" && boundaries.handoff.appBrand === "OmenMarketMaker" && boundaries.handoff.appOrigin === "app.omenmarketmaker.com", "Events 07-08 must remain inside the OmenMarketMaker app", failures);
     assert(boundaries.handoff.frameTitle === "Seeding DemoThemis with demand from the Application Layer", "Events 07-08 must label the application-layer demand frame", failures);
     assert(boundaries.themis.appTheme === "themis" && boundaries.themis.appBrand === "DemoThemis" && boundaries.themis.appOrigin === "court.demothemis.com" && !boundaries.themis.frameTitle, "DemoThemis app-boundary config is incorrect", failures);
     assert(!boundaries.protocol, "protocol explainers must not be registered as application boundaries", failures);
-    assert(eventBoundaries.slice(0, 8).every((boundary) => boundary === boundaries.momo), "Events 01-08 must use the PredictionMoMo app", failures);
+    assert(eventBoundaries.slice(0, 8).every((boundary) => boundary === boundaries.omen), "Events 01-08 must use the OmenMarketMaker app", failures);
     assert(eventBoundaries[8] === null && eventBoundaries[10] === null && eventBoundaries[12] === null, "draw, tally, and proof relay must have no application boundary", failures);
     assert(eventBoundaries[9] === boundaries.themis && eventBoundaries[11] === boundaries.themis, "juror and appellant actions must use the DemoThemis app", failures);
   } catch (error) {
@@ -450,7 +465,7 @@ function checkAppOwnershipData(html, failures) {
   const pages = readRunThroughLiteral(html, "APP_PAGES", failures);
   if (!Array.isArray(pages)) return;
   assert(pages.length === 13, "APP_PAGES must define all 13 events", failures);
-  assert(pages.slice(0, 8).every((page) => /^PredictionMoMo\b/.test(page.product || "")), "APP_PAGES Events 01-08 must belong to PredictionMoMo", failures);
+  assert(pages.slice(0, 8).every((page) => /^OmenMarketMaker\b/.test(page.product || "")), "APP_PAGES Events 01-08 must belong to OmenMarketMaker", failures);
   assert([8, 10, 12].every((index) => /on-chain sequence$/i.test(pages[index].product || "")), "automated event data must belong to the DemoThemis on-chain sequence", failures);
   assert([9, 11].every((index) => pages[index].product === "DemoThemis"), "APP_PAGES participant events must belong to DemoThemis", failures);
   assert(!/var\s+(?:PRODUCT_SCREENS|APP_SCREENS)\s*=/.test(html), "run-through must keep one canonical app-page data source", failures);
@@ -561,7 +576,7 @@ function checkRunThroughSurfaceSeparation(html, failures) {
   const flows = readRunThroughLiteral(html, "APP_FLOWS", failures);
 
   if (Array.isArray(surfaces)) {
-    const allowedSurfaces = new Set(["momo", "themis", "protocol"]);
+    const allowedSurfaces = new Set(["omen", "themis", "protocol"]);
     const allowedOwners = new Set(["user", "protocol", "simulator"]);
     assert(surfaces.length === 13, "EVENT_SURFACES must define ownership for all 13 events", failures);
     assert(
@@ -569,7 +584,7 @@ function checkRunThroughSurfaceSeparation(html, failures) {
       "every event must declare a valid surface, actor, and actionOwner",
       failures
     );
-    assert(surfaces.some((entry) => entry && entry.surface === "momo"), "surface metadata is missing PredictionMoMo events", failures);
+    assert(surfaces.some((entry) => entry && entry.surface === "omen"), "surface metadata is missing OmenMarketMaker events", failures);
     assert(surfaces.some((entry) => entry && entry.surface === "themis"), "surface metadata is missing DemoThemis participant events", failures);
     assert(surfaces.some((entry) => entry && entry.surface === "protocol"), "surface metadata is missing automated protocol activity", failures);
     assert(
@@ -629,13 +644,13 @@ function checkRunThroughSurfaceSeparation(html, failures) {
     const finalBlocks = finalState && Array.isArray(finalState.blocks) ? finalState.blocks : [];
     assert(Boolean(finalState), "the final event must define a completed settlement state", failures);
     assert(
-      Boolean(finalState && (finalState.surface === "momo" || finalState.product === "PredictionMoMo")),
-      "the run-through must return to PredictionMoMo for its final state",
+      Boolean(finalState && (finalState.surface === "omen" || finalState.product === "OmenMarketMaker")),
+      "the run-through must return to OmenMarketMaker for its final state",
       failures
     );
     assert(
       finalBlocks.some((block) => block && block.type === "receipt") && /(?:market resolved|settlement|payout|redeemable)/i.test(finalCopy),
-      "the run-through must finish on a PredictionMoMo settlement receipt",
+      "the run-through must finish on an OmenMarketMaker settlement receipt",
       failures
     );
   }
@@ -646,7 +661,7 @@ function checkRunThroughSurfaceSeparation(html, failures) {
   const sequenceProfile = runThroughFunctionSource(html, "sequenceProfileForPage");
   assert(Boolean(protocolRenderer), "run-through is missing the read-only protocol sequence renderer", failures);
   assert(/page\.view\s*===\s*["']sequence["']/.test(sequencePredicate), "sequence rendering must be independent from product ownership", failures);
-  assert(/PredictionMoMo automatic execution/.test(sequenceProfile) && /DemoThemis on-chain sequence/.test(sequenceProfile), "one sequence renderer must carry distinct PredictionMoMo and DemoThemis profiles", failures);
+  assert(/OmenMarketMaker automatic execution/.test(sequenceProfile) && /DemoThemis on-chain sequence/.test(sequenceProfile), "one sequence renderer must carry distinct OmenMarketMaker and DemoThemis profiles", failures);
   if (protocolRenderer) {
     assert(!/makeEl\(\s*["']button["']|\.addEventListener\s*\(|makeLiveActionControl|renderLivePage/.test(protocolRenderer), "the protocol sequence canvas must remain read-only and independent of app-page rendering", failures);
     assert(!/sim-live-preview|sim-browser-bar|sim-url|sim-app-viewport|app-window|app-nav/.test(protocolRenderer), "the protocol sequence renderer must not contain browser or app structure", failures);
@@ -676,11 +691,11 @@ function checkProductStageGroups(html, failures) {
     const source = html.slice(start, end) + "\nthis.__stageGroups = STAGE_GROUPS;";
     vm.runInNewContext(source, context, { filename: "the-design.stage-groups.js" });
     const groups = context.__stageGroups;
-    const momo = groups.filter((group) => group.mode === "momo");
+    const omen = groups.filter((group) => group.mode === "omen");
     const themis = groups.filter((group) => group.mode === "themis");
-    assert(momo.length === 2 && momo[0].start === 0 && momo[momo.length - 1].end === 5, "PredictionMoMo navigator must contain only Events 01-06", failures);
+    assert(omen.length === 2 && omen[0].start === 0 && omen[omen.length - 1].end === 5, "OmenMarketMaker navigator must contain only Events 01-06", failures);
     assert(themis.length === 3 && themis[0].start === 6 && themis[themis.length - 1].end === 12, "DemoThemis navigator must contain only Events 07-13", failures);
-    assert(groups.every((group) => group.mode === "momo" || group.mode === "themis"), "every event group must belong to a product mode", failures);
+    assert(groups.every((group) => group.mode === "omen" || group.mode === "themis"), "every event group must belong to a product mode", failures);
     assert(!/visibleGroups[\s\S]{0,240}\.filter\s*\(/.test(html), "event navigator must show every product's groups together", failures);
     assert(/groupEl\.setAttribute\(["']data-stage-mode["'],\s*group\.mode\)/.test(html), "event groups must retain their individual product themes", failures);
     assert(/steps\.setAttribute\(["']data-stage-mode["'],\s*drawerGroup\.mode\)/.test(html), "expanded event lists must retain their individual product themes", failures);
@@ -786,8 +801,8 @@ function checkCompactAppViews(html, failures) {
     failures
   );
   assert(
-    parlayExecution && parlayExecution.page.surface === "momo" && parlayExecution.page.view === "sequence" && parlayExecution.page.sequenceProfile === "momo" && parlayExecution.page.actionOwner === "protocol",
-    "Event 06 placement must leave the app for a read-only PredictionMoMo execution sequence",
+    parlayExecution && parlayExecution.page.surface === "omen" && parlayExecution.page.view === "sequence" && parlayExecution.page.sequenceProfile === "omen" && parlayExecution.page.actionOwner === "protocol",
+    "Event 06 placement must leave the app for a read-only OmenMarketMaker execution sequence",
     failures
   );
   assert(
@@ -798,8 +813,8 @@ function checkCompactAppViews(html, failures) {
     failures
   );
   assert(
-    cashoutExecution && cashoutExecution.page.surface === "momo" && cashoutExecution.page.view === "sequence" && cashoutExecution.page.sequenceProfile === "momo" && cashoutExecution.page.actionOwner === "protocol",
-    "Event 06 cashout must leave the app for a read-only PredictionMoMo execution sequence",
+    cashoutExecution && cashoutExecution.page.surface === "omen" && cashoutExecution.page.view === "sequence" && cashoutExecution.page.sequenceProfile === "omen" && cashoutExecution.page.actionOwner === "protocol",
+    "Event 06 cashout must leave the app for a read-only OmenMarketMaker execution sequence",
     failures
   );
   assert(
@@ -910,7 +925,7 @@ function checkCompactAppViews(html, failures) {
   const exactSimulatorStepCounts = [2, 3, 1, 2, 2, 4, 1, 1, 2, 1, 2, 2, 1];
   assert(
     JSON.stringify(flows.map((flow) => (flow.steps || []).length)) === JSON.stringify(exactSimulatorStepCounts),
-    "the PredictionMoMo-to-DemoThemis simulator must retain its exact 13-event action path",
+    "the OmenMarketMaker-to-DemoThemis simulator must retain its exact 13-event action path",
     failures
   );
   const appealEnd = demoSnapshot(12, "after-" + flows[11].steps.length);
@@ -919,13 +934,13 @@ function checkCompactAppViews(html, failures) {
   const finalityStartCopy = JSON.stringify(demoSnapshot(13, "start").page);
   const finalityEndCopy = JSON.stringify(demoSnapshot(13, "after-1").page);
   assert(/\bNO\b/i.test(finalityStartCopy) && /final/i.test(finalityStartCopy), "Event 13 must carry the final NO verdict into court finality", failures);
-  assert(/relay/i.test(finalityStartCopy) && /PredictionMoMo/i.test(finalityEndCopy), "Event 13 must relay one final proof back to PredictionMoMo", failures);
-  assert(/Payout received|\$210\.50 received|"Status","Paid"/i.test(finalityEndCopy) && !/Redeemable|redeem/i.test(finalityEndCopy), "Event 13 must finish on a paid PredictionMoMo receipt with no contradictory redemption state", failures);
+  assert(/relay/i.test(finalityStartCopy) && /OmenMarketMaker/i.test(finalityEndCopy), "Event 13 must relay one final proof back to OmenMarketMaker", failures);
+  assert(/Payout received|\$210\.50 received|"Status","Paid"/i.test(finalityEndCopy) && !/Redeemable|redeem/i.test(finalityEndCopy), "Event 13 must finish on a paid OmenMarketMaker receipt with no contradictory redemption state", failures);
   assert(demoSnapshot(9, "start").page.surface === "protocol" && demoSnapshot(9, "after-2").page.surface === "protocol", "Event 09 must remain on the protocol sequence canvas from start through completion", failures);
   assert(demoSnapshot(11, "start").page.surface === "protocol" && demoSnapshot(11, "after-2").page.surface === "protocol", "Event 11 must remain on the protocol sequence canvas from start through completion", failures);
   assert(demoSnapshot(12, "start").page.surface === "themis" && demoSnapshot(12, "after-1").page.surface === "protocol" && demoSnapshot(12, "after-2").page.surface === "protocol", "Event 12 must replace the appeal app with the sequence canvas after payment", failures);
-  assert(demoSnapshot(13, "start").page.surface === "protocol" && demoSnapshot(13, "after-1").page.surface === "momo", "Event 13 must replace the sequence canvas with the PredictionMoMo payout app after relay", failures);
-  assert(pages.slice(0, 8).every((page) => /^PredictionMoMo\b/.test(page.product || "")), "Events 01-08 must remain owned by PredictionMoMo", failures);
+  assert(demoSnapshot(13, "start").page.surface === "protocol" && demoSnapshot(13, "after-1").page.surface === "omen", "Event 13 must replace the sequence canvas with the OmenMarketMaker payout app after relay", failures);
+  assert(pages.slice(0, 8).every((page) => /^OmenMarketMaker\b/.test(page.product || "")), "Events 01-08 must remain owned by OmenMarketMaker", failures);
   assert([8, 10, 12].every((index) => /on-chain sequence$/i.test(pages[index].product || "")), "automated court events must be presented as the DemoThemis on-chain sequence", failures);
   assert([9, 11].every((index) => pages[index].product === "DemoThemis"), "juror and appellant events must be owned by DemoThemis", failures);
   assert(pages.slice(6).every((page) => !/full design/i.test(page.context || "")), "Court-path screens must use product context instead of an internal full-design label", failures);
@@ -1234,7 +1249,7 @@ function checkCompactAppViews(html, failures) {
         visibleArray(page.kpis) +
         (page.blocks || []).map(visibleBlockCopy).join("");
     }
-    const appBoundary = page && page.surface === "themis" ? appBoundaries.themis : appBoundaries.momo;
+    const appBoundary = page && page.surface === "themis" ? appBoundaries.themis : appBoundaries.omen;
     const appBrand = visibleScalar(appBoundary && appBoundary.appBrand || page && page.product);
     const sourceContext = visibleScalar(page && page.context || chrome[0]);
     const frameTitle = event === 8 && page && page.route === "/cases/1182" ? visibleScalar(appBoundaries.handoff && appBoundaries.handoff.frameTitle) : "";
@@ -1493,8 +1508,8 @@ function checkCompactAppViews(html, failures) {
   assert(/var\s+appBoundary\s*=\s*appBoundaryForPage\(page\)/.test(productRenderer), "the embedded surface must follow the resolved page ownership", failures);
   assert(/appViewport\.setAttribute\("data-app-theme",\s*appTheme\)/.test(productRenderer), "the embedded app viewport must declare its own theme independently of the run path", failures);
   assert(/brand\.appendChild\(makeEl\("span",\s*"",\s*appBrand\)\)/.test(productRenderer), "the embedded app brand must follow the current app boundary", failures);
-  assert(/APP_BOUNDARIES\.handoff\.frameTitle/.test(productRenderer), "the PredictionMoMo court handoff must retain its outer integration frame", failures);
-  assert(/makeEl\("span",\s*"app-nav-chip",\s*chrome\.context\)/.test(productRenderer), "the PredictionMoMo web app must keep its normal context chip", failures);
+  assert(/APP_BOUNDARIES\.handoff\.frameTitle/.test(productRenderer), "the OmenMarketMaker court handoff must retain its outer integration frame", failures);
+  assert(/makeEl\("span",\s*"app-nav-chip",\s*chrome\.context\)/.test(productRenderer), "the OmenMarketMaker web app must keep its normal context chip", failures);
   assert(!/app-backend-chip|backendLabel|sends court cases to the/.test(productRenderer), "DemoThemis integration copy must stay outside the web app", failures);
   assert(/makeEl\("div",\s*"sim-demand-frame"\)/.test(productRenderer) && /makeEl\("div",\s*"sim-demand-frame-tab",\s*frameTitle\)/.test(productRenderer), "Events 07-08 must wrap the browser in the labelled demand frame", failures);
   assert(/demandFrame\.appendChild\(demandFrameTab\)[\s\S]*demandFrame\.appendChild\(preview\)[\s\S]*root\.appendChild\(demandFrame\)/.test(productRenderer), "the demand label must frame the whole browser instead of entering the web app", failures);
@@ -1519,14 +1534,14 @@ function checkCompactAppViews(html, failures) {
       const boundaries = modeContext.__appBoundaries;
       const simulatedUrls = {};
       for (const stageIndex of [0, 1, 2, 3, 4, 5, 6, 7, 9, 11]) {
-        const surface = stageIndex < 8 ? "momo" : "themis";
+        const surface = stageIndex < 8 ? "omen" : "themis";
         simulatedUrls[stageIndex] = urlContext.__simulatedAppUrl(pages[stageIndex], boundaries[surface]);
       }
-      assert([0, 1, 2, 3, 4, 5, 6, 7].every((index) => /^app\.predictionmomo\.com\//.test(simulatedUrls[index])), "Events 01-08 must remain on the PredictionMoMo app origin", failures);
+      assert([0, 1, 2, 3, 4, 5, 6, 7].every((index) => /^app\.omenmarketmaker\.com\//.test(simulatedUrls[index])), "Events 01-08 must remain on the OmenMarketMaker app origin", failures);
       assert([9, 11].every((index) => /^court\.demothemis\.com\//.test(simulatedUrls[index])), "participant court events must use the DemoThemis app origin", failures);
-      assert(simulatedUrls[7] === "app.predictionmomo.com/markets/england-euro-final/challenge", `Event 08 challenge must use its production PredictionMoMo route (found ${simulatedUrls[7]})`, failures);
-      assert(simulatedUrls[6] === "app.predictionmomo.com/markets/england-euro-final/result", `Event 07 result proposal must use its production PredictionMoMo route (found ${simulatedUrls[6]})`, failures);
-      assert(simulatedUrls[5] === "app.predictionmomo.com/parlays/new", "Event 06 must open on the production parlay-builder route", failures);
+      assert(simulatedUrls[7] === "app.omenmarketmaker.com/markets/england-euro-final/challenge", `Event 08 challenge must use its production OmenMarketMaker route (found ${simulatedUrls[7]})`, failures);
+      assert(simulatedUrls[6] === "app.omenmarketmaker.com/markets/england-euro-final/result", `Event 07 result proposal must use its production OmenMarketMaker route (found ${simulatedUrls[6]})`, failures);
+      assert(simulatedUrls[5] === "app.omenmarketmaker.com/parlays/new", "Event 06 must open on the production parlay-builder route", failures);
       assert(!/explorer\.demothemis\.com/i.test(html), "protocol explainers must not expose a fake explorer URL", failures);
     } catch (error) {
       failures.push("simulated app URL helper cannot be evaluated: " + error.message);
@@ -1571,11 +1586,11 @@ function checkProductFontAssets(html, failures) {
   for (const file of licenseFiles) {
     assert(fs.existsSync(path.join(outDir, "assets", "fonts", file)), `product font license missing: ${file}`, failures);
   }
-  assert(/font-family:\s*["']Alegreya Sans App["']/i.test(css), "PredictionMoMo font face is missing", failures);
+  assert(/font-family:\s*["']Alegreya Sans App["']/i.test(css), "OmenMarketMaker font face is missing", failures);
   assert(/font-family:\s*["']Literata App["']/i.test(css) && /font-weight:\s*200\s+900/i.test(css), "DemoThemis variable font range is missing", failures);
   assert(/font-family:\s*["']Noto Serif Tibetan App["']/i.test(css) && /unicode-range:\s*U\+0F00-0FFF/i.test(css), "Tibetan fallback range is missing", failures);
   assert(/font-family:\s*["']Noto Sans Symbols 2 App["']/i.test(css), "UI symbol fallback is missing", failures);
-  assert((css.match(/font-family:\s*["']Alegreya Sans App["'][\s\S]*?size-adjust:\s*107%/gi) || []).length === 5, "every PredictionMoMo font face must retain the 107% optical calibration", failures);
+  assert((css.match(/font-family:\s*["']Alegreya Sans App["'][\s\S]*?size-adjust:\s*107%/gi) || []).length === 5, "every OmenMarketMaker font face must retain the 107% optical calibration", failures);
   assert(/font-family:\s*["']Literata App["'][\s\S]*?size-adjust:\s*97%/i.test(css), "DemoThemis Literata must retain the 97% optical calibration", failures);
   assert(!/font-family:\s*["'](?:Alegreya Sans App|Literata App)["'][\s\S]*?size-adjust:\s*100%/i.test(css), "primary product fonts must not fall back to equal CSS scaling", failures);
   assert(/font-family:\s*["']Noto Sans Symbols 2 App["'][\s\S]*?size-adjust:\s*72%/i.test(css), "UI symbol fallback must match the product cap height", failures);
@@ -1583,8 +1598,8 @@ function checkProductFontAssets(html, failures) {
   assert(/font-synthesis:\s*none/i.test(html) && /font-variant-numeric:\s*lining-nums\s+tabular-nums/i.test(html), "product typography must disable synthetic styles and use stable numeric widths", failures);
   assert(/\.product-mode-panel\[data-product-mode\]\s+\.run-control-panel/i.test(html), "event transport controls must inherit product typography", failures);
   assert(/\.product-mode-panel\[data-product-mode\]\s+\.sim-step-guide/i.test(html), "current event guide must inherit product typography", failures);
-  assert(/\.product-mode-panel\[data-product-mode=["']momo["']\]\s+\.run-control-panel/i.test(html) && /\.product-mode-panel\[data-product-mode=["']themis["']\]\s+\.run-control-panel/i.test(html), "event transport controls must inherit each product palette", failures);
-  assert(/\.product-mode-panel\[data-product-mode=["']momo["']\]\s+\.sim-step-guide/i.test(html) && /\.product-mode-panel\[data-product-mode=["']themis["']\]\s+\.sim-step-guide/i.test(html), "current event guide must inherit each product palette", failures);
+  assert(/\.product-mode-panel\[data-product-mode=["']omen["']\]\s+\.run-control-panel/i.test(html) && /\.product-mode-panel\[data-product-mode=["']themis["']\]\s+\.run-control-panel/i.test(html), "event transport controls must inherit each product palette", failures);
+  assert(/\.product-mode-panel\[data-product-mode=["']omen["']\]\s+\.sim-step-guide/i.test(html) && /\.product-mode-panel\[data-product-mode=["']themis["']\]\s+\.sim-step-guide/i.test(html), "current event guide must inherit each product palette", failures);
   assert(/--product-text-caption:\s*\.75rem/i.test(html) && /--product-text-body:\s*\.875rem/i.test(html) && /--product-text-display:\s*1\.3rem/i.test(html) && /--product-text-figure:\s*1\.62rem/i.test(html), "product typography must use a readable shared semantic type scale", failures);
   assert(/--product-weight-control:\s*800/i.test(html) && /--product-weight-control:\s*650/i.test(html), "product typography must compensate weights per font family", failures);
   assert(/--product-leading-copy:\s*1\.4/i.test(html) && /--product-leading-copy:\s*1\.46/i.test(html), "product typography must compensate line spacing per font family", failures);
@@ -1607,10 +1622,10 @@ function checkProductFontAssets(html, failures) {
     }
     assert(uncoveredMicrocopy.length === 0, "product typography leaves sub-caption text unnormalized: " + uncoveredMicrocopy.join(", "), failures);
   }
-  assert(/--bg:\s*#f2e3cd/i.test(html) && /--surface:\s*#fff7e8/i.test(html) && /--accent:\s*#ad520f/i.test(html) && /--accent-ink:\s*#6f4400/i.test(html), "PredictionMoMo must use the high-contrast amber parchment reading palette", failures);
+  assert(/--bg:\s*#f2e3cd/i.test(html) && /--surface:\s*#fff7e8/i.test(html) && /--accent:\s*#ad520f/i.test(html) && /--accent-ink:\s*#6f4400/i.test(html), "OmenMarketMaker must use the high-contrast amber parchment reading palette", failures);
   assert(/\.live-kpis:has\(>\s*\.live-kpi:only-child\)/i.test(html), "single app metrics must stay compact instead of becoming a full-width banner", failures);
   assert(/\.page-appeal-checkout\s+\.app-seat-grid\s*\{[^}]*repeat\(11/i.test(html), "appeal panels must use a dense desktop seat grid", failures);
-  assert(/--action-fill:\s*#ad520f/i.test(html) && /--continue-fill:\s*#087068/i.test(html), "PredictionMoMo app actions need distinct brand and continuation colors", failures);
+  assert(/--action-fill:\s*#ad520f/i.test(html) && /--continue-fill:\s*#087068/i.test(html), "OmenMarketMaker app actions need distinct brand and continuation colors", failures);
   assert(/--action-fill:\s*#2f7199/i.test(html) && /--continue-ink:\s*#172017/i.test(html), "DemoThemis actions need a readable dark-theme foreground pairing", failures);
   assert(/\.page-create-market\s+\.block-fields/i.test(html) && /\.page-final-receipt\s+\.block-closed/i.test(html), "every app view must expose a scan-first anchor surface", failures);
   assert(/\.live-kpis\s*>\s*\.live-kpi:nth-child\(n\)[\s\S]{0,220}background:\s*var\(--surface\)/i.test(html), "app metrics must use neutral structure instead of decorative category colors", failures);
@@ -1619,7 +1634,7 @@ function checkProductFontAssets(html, failures) {
   for (const template of ["create-market", "live-market", "order-book", "wallet-unlock", "private-room", "parlay-slip", "resolution-dashboard", "dispute-handoff", "jury-draw", "juror-workspace", "verdict-page", "appeal-checkout", "final-receipt"]) {
     assert(scanHierarchyCss.includes(`.page-${template}`), `scan-first hierarchy is missing the ${template} app view`, failures);
   }
-  assert(!/#b83c32|#f7f2e8|#fffdf8/i.test(html), "PredictionMoMo must not retain the red or near-white palette", failures);
+  assert(!/#b83c32|#f7f2e8|#fffdf8/i.test(html), "OmenMarketMaker must not retain the red or near-white palette", failures);
 }
 
 function checkRunThroughPriorityUxFixes(html, failures) {
@@ -1662,7 +1677,7 @@ function checkRunThroughPriorityUxFixes(html, failures) {
   assert(/auto/i.test(finalCssValue(".protocol-sequence-scroll", "overflow-y") || ""), "a height-capped sequence canvas must keep its records scrollable", failures);
   assert(finalCssValue(".product-demo.sim-compact .protocol-trace", "grid-template-columns") === "1fr", "compact protocol sequences must become a vertical process lane", failures);
   assert(/\.product-mode-panel\[data-product-mode\]\s+\.product-demo\s+\.protocol-sequence\s+\.protocol-record\.live-card\s*\{[^}]*border-radius:\s*6px[^}]*box-shadow:\s*none/is.test(css), "protocol records must override the later app-card normalization with their flat sequence-node design", failures);
-  assert(/\.protocol-sequence\[data-sequence-profile=["']momo["']\]\s*\{[^}]*--protocol-accent:\s*#f0a064/is.test(css), "PredictionMoMo execution sequences must carry a distinct product-linked system palette", failures);
+  assert(/\.protocol-sequence\[data-sequence-profile=["']omen["']\]\s*\{[^}]*--protocol-accent:\s*#f0a064/is.test(css), "OmenMarketMaker execution sequences must carry a distinct product-linked system palette", failures);
   assert(!/Each mock screen|Product mockup for the current simulation step|The app gets one panel|opens its court app/i.test(html), "standalone explainers must not be described as app or mock screens", failures);
 
   assert(!/function\s+makeLiveContinuationControl\s*\(/.test(html), "same-app continuation controls must reuse the existing next-event button", failures);
@@ -1702,7 +1717,7 @@ function checkRunThroughPriorityUxFixes(html, failures) {
         stage: 0,
         eventComplete: false
       };
-      navigationContext.eventSurfaceDefaults = (stageIndex) => navSurfaces[stageIndex] || { surface: "momo" };
+      navigationContext.eventSurfaceDefaults = (stageIndex) => navSurfaces[stageIndex] || { surface: "omen" };
       navigationContext.currentContinuation = () => navContinuations[navigationContext.stage] || null;
       navigationContext.isEventComplete = () => navigationContext.eventComplete;
       vm.runInNewContext(
@@ -1712,7 +1727,7 @@ function checkRunThroughPriorityUxFixes(html, failures) {
       );
       const resolvedCompletionSurfaces = navSurfaces.map((entry) => entry.surface);
       resolvedCompletionSurfaces[11] = "protocol";
-      resolvedCompletionSurfaces[resolvedCompletionSurfaces.length - 1] = "momo";
+      resolvedCompletionSurfaces[resolvedCompletionSurfaces.length - 1] = "omen";
       const expectedPlacements = ["app", "app", "app", "app", "app", "app", "app", "browser", "explainer", "browser", "explainer", "explainer", "browser"];
       for (let stageIndex = 0; stageIndex < navSurfaces.length; stageIndex += 1) {
         navigationContext.stage = stageIndex;
@@ -1769,10 +1784,10 @@ function checkRunThroughPriorityUxFixes(html, failures) {
         activeAction: -1,
         runStartStage: 0,
         openStageGroup: -1,
-        selectedRunMode: "momo",
+        selectedRunMode: "omen",
         completedStages: {},
-        maxReachedByMode: { momo: 5, themis: 12 },
-        productModeForStage(stageIndex) { return stageIndex < 6 ? "momo" : "themis"; },
+        maxReachedByMode: { omen: 5, themis: 12 },
+        productModeForStage(stageIndex) { return stageIndex < 6 ? "omen" : "themis"; },
         saveProductProgress() {},
         setEventNavigatorOpen() {},
         allowNextGuidedReveal() {},
@@ -1791,9 +1806,9 @@ function checkRunThroughPriorityUxFixes(html, failures) {
           visitContext.activeEventStep = 99;
           visitContext.activeAction = 98;
           visitContext.runStartStage = 0;
-          visitContext.selectedRunMode = "momo";
+          visitContext.selectedRunMode = "omen";
           visitContext.completedStages = Object.fromEntries(Array.from({ length: 13 }, (_, index) => [index, true]));
-          visitContext.maxReachedByMode = { momo: 5, themis: 12 };
+          visitContext.maxReachedByMode = { omen: 5, themis: 12 };
           visitContext.__resetArguments = [];
           const opened = visitContext.__visitEventFromNavigator(targetStage);
           assert(opened === true, `Event ${targetStage + 1} must remain visitable from the full event navigator`, failures);
@@ -1801,7 +1816,7 @@ function checkRunThroughPriorityUxFixes(html, failures) {
           assert(visitContext.activeEventStep === 0 && visitContext.activeAction === -1, `Event ${targetStage + 1} navigation must land on Action 1`, failures);
           assert(visitContext.__resetArguments.length === 1 && visitContext.__resetArguments[0] === false, `Event ${targetStage + 1} navigation must use the first-action reset`, failures);
           assert(visitContext.completedStages[targetStage] === true, `Event ${targetStage + 1} replay must preserve completion history`, failures);
-          assert(visitContext.selectedRunMode === "momo" && visitContext.runStartStage === 0, `Event ${targetStage + 1} replay must preserve the selected starting path`, failures);
+          assert(visitContext.selectedRunMode === "omen" && visitContext.runStartStage === 0, `Event ${targetStage + 1} replay must preserve the selected starting path`, failures);
         }
       }
       visitContext.runStartStage = 6;
@@ -1947,7 +1962,7 @@ function checkRunThroughPriorityUxFixes(html, failures) {
   const productRenderer = productRendererStart >= 0 && productRendererEnd > productRendererStart ? html.slice(productRendererStart, productRendererEnd) : "";
   assert(/var\s+appTheme\s*=\s*appBoundary\.appTheme/.test(productRenderer) && /setAttribute\(["']data-app-theme["'],\s*appTheme\)/.test(productRenderer), "the embedded app theme must derive only from its app boundary", failures);
   assert(!/appTheme\s*=\s*productModeForStage|data-app-theme["'],\s*productModeForStage/.test(productRenderer), "the selected run path must not theme the embedded application", failures);
-  const leakingRouteViewportRule = Array.from(css.matchAll(/([^{}]+)\{([^{}]*)\}/g)).find((match) => /data-product-mode=["'](?:momo|themis)["']/.test(match[1]) && /sim-app-viewport/.test(match[1]));
+  const leakingRouteViewportRule = Array.from(css.matchAll(/([^{}]+)\{([^{}]*)\}/g)).find((match) => /data-product-mode=["'](?:omen|themis)["']/.test(match[1]) && /sim-app-viewport/.test(match[1]));
   assert(!leakingRouteViewportRule, "route-specific palettes must not leak through the embedded app viewport boundary", failures);
 }
 
@@ -2417,14 +2432,14 @@ function checkBuiltHtml(failures) {
   checkCoachmarkTextAvoidance(runThrough, failures);
   checkActionButtonInfoLabels(runThrough, failures);
   assert(/Run-through: from first stake to an unbuyable verdict/i.test(runThrough), "run-through chapter missing public title", failures);
-  assert(/id=["']productTabMomo["']/i.test(runThrough), "run-through missing PredictionMoMo parent tab", failures);
+  assert(/id=["']productTabOmen["']/i.test(runThrough), "run-through missing OmenMarketMaker parent tab", failures);
   assert(/id=["']productTabThemis["']/i.test(runThrough), "run-through missing DemoThemis parent tab", failures);
   assert(!/id=["']productModePanel["'][^>]*role=["']tabpanel["']/i.test(runThrough), "starting-point buttons must not control a misleading tabpanel", failures);
-  assert(/id=["']productTabMomo["'][^>]*aria-pressed=["']false["']/i.test(runThrough) && /id=["']productTabThemis["'][^>]*aria-pressed=["']false["']/i.test(runThrough), "run-through must start without a preselected starting point", failures);
+  assert(/id=["']productTabOmen["'][^>]*aria-pressed=["']false["']/i.test(runThrough) && /id=["']productTabThemis["'][^>]*aria-pressed=["']false["']/i.test(runThrough), "run-through must start without a preselected starting point", failures);
   assert(/id=["']productModePanel["'][^>]*\shidden(?:\s|>)/i.test(runThrough), "event workflow must stay hidden until a product is selected", failures);
   assert(/var\s+selectedRunMode\s*=\s*(?:null|["']["'])/i.test(runThrough) && /productModePanel\.hidden\s*=\s*false/i.test(runThrough), "starting-point selection must reveal the event workflow", failures);
   assert(/class=["'][^"']*product-mode-nav[^"']*is-awaiting-selection/i.test(runThrough), "initial product chooser must receive center-stage styling", failures);
-  assert(/Choose a starting point/i.test(runThrough) && /Court-backed run/i.test(runThrough) && /PredictionMoMo using DemoThemis/i.test(runThrough), "the entry UI must present one PredictionMoMo run with two starting points", failures);
+  assert(/Choose a starting point/i.test(runThrough) && /Court-backed run/i.test(runThrough) && /OmenMarketMaker using DemoThemis/i.test(runThrough), "the entry UI must present one OmenMarketMaker run with two starting points", failures);
   assert(!/Choose a product|DemoThemis simulation|current product:/i.test(runThrough) && /chosen run:/i.test(runThrough), "DemoThemis must not be presented as a second customer-facing product", failures);
   assert(/productModeNav\.classList\.remove\(["']is-awaiting-selection["']\)/i.test(runThrough), "product chooser must compact after selection", failures);
   assert(/\.product-mode-nav\.is-awaiting-selection\s+\.product-tab/i.test(runThrough) && /\.product-tab:hover/i.test(runThrough), "product choices must expose strong interactive affordances", failures);
@@ -2432,23 +2447,23 @@ function checkBuiltHtml(failures) {
   assert(/\.product-mode-nav\.is-awaiting-selection\s+\.product-tab\s*\{[^}]*background:\s*var\(--choice-accent\)/i.test(runThrough), "initial product choices must use solid button backgrounds", failures);
   assert(/\.product-mode-nav\.is-awaiting-selection\s+\.product-tab:active/i.test(runThrough) && /\.product-mode-nav\.is-awaiting-selection\s+\.product-tab-event\s*\{\s*display:\s*inline-flex/i.test(runThrough), "initial product choices must keep pressed and start affordances at small widths", failures);
   assert(/function\s+selectProductMode\s*\(/.test(runThrough), "run-through product tabs are not wired to simulation state", failures);
-  assert(/\.sim-app-viewport\[data-app-theme=["']momo["']\]/i.test(runThrough) && /\.sim-app-viewport\[data-app-theme=["']themis["']\]/i.test(runThrough), "both embedded web apps must expose their own theme boundary", failures);
+  assert(/\.sim-app-viewport\[data-app-theme=["']omen["']\]/i.test(runThrough) && /\.sim-app-viewport\[data-app-theme=["']themis["']\]/i.test(runThrough), "both embedded web apps must expose their own theme boundary", failures);
   assert(/\.sim-live-preview\s*\{[^}]*--browser-chrome-bg:\s*#e8edf1[^}]*--browser-chrome-surface:\s*#f9fbfc[^}]*--browser-chrome-accent:\s*#526b7a/is.test(runThrough), "run-through mock browsers must share one neutral chrome palette", failures);
   assert(/\.sim-live-preview\s*\{[^}]*color:\s*var\(--browser-chrome-ink\)[^}]*font-family:\s*var\(--browser-chrome-font\)[^}]*color-scheme:\s*light/is.test(runThrough), "browser frame must reset inherited product color, type, and native color scheme", failures);
   assert(/\.sim-browser-bar\s*\{[^}]*background:\s*var\(--browser-chrome-bg\)[^}]*font-family:\s*var\(--browser-chrome-font\)/is.test(runThrough), "browser bar must use the shared chrome surface and typography", failures);
   assert(/\.sim-url\s*\{[^}]*border:\s*1px solid var\(--browser-chrome-line\)[^}]*background:\s*var\(--browser-chrome-surface\)[^}]*color:\s*var\(--browser-chrome-muted\)/is.test(runThrough), "browser address field must stay product-neutral", failures);
-  assert(!/\.product-mode-panel\[data-product-mode=["'](?:momo|themis)["']\]\s+\.sim-browser-(?:bar|back)/i.test(runThrough), "product themes must not restyle the outer browser chrome", failures);
-  assert(!/\.product-mode-panel\[data-product-mode=["'](?:momo|themis)["']\]\s+\.sim-live-preview\s*(?:,|\{)/i.test(runThrough), "product palettes must stop at the app viewport instead of recoloring the browser frame", failures);
+  assert(!/\.product-mode-panel\[data-product-mode=["'](?:omen|themis)["']\]\s+\.sim-browser-(?:bar|back)/i.test(runThrough), "product themes must not restyle the outer browser chrome", failures);
+  assert(!/\.product-mode-panel\[data-product-mode=["'](?:omen|themis)["']\]\s+\.sim-live-preview\s*(?:,|\{)/i.test(runThrough), "product palettes must stop at the app viewport instead of recoloring the browser frame", failures);
   const browserChromeRules = Array.from(runThrough.matchAll(/([^{}]+)\{([^{}]*)\}/g)).filter((match) => /\.sim-(?:browser|url)/.test(match[1]));
   const leakingBrowserRule = browserChromeRules.find((match) => /var\(--(?:bg|surface|ink|ink-soft|muted|faint|line|line-strong|accent|accent-soft|accent-ink)\)/.test(match[2]));
   assert(!leakingBrowserRule, "browser chrome must not consume product palette variables", failures);
-  const momoThemeRule = runThrough.match(/\.product-mode-panel\[data-product-mode\]\s+\.sim-app-viewport\[data-app-theme=["']momo["']\]\s*\{([^}]*)\}/i);
+  const omenThemeRule = runThrough.match(/\.product-mode-panel\[data-product-mode\]\s+\.sim-app-viewport\[data-app-theme=["']omen["']\]\s*\{([^}]*)\}/i);
   const themisThemeRule = runThrough.match(/\.product-mode-panel\[data-product-mode\]\s+\.sim-app-viewport\[data-app-theme=["']themis["']\]\s*\{([^}]*)\}/i);
-  const momoThemeCss = momoThemeRule ? momoThemeRule[1] : "";
+  const omenThemeCss = omenThemeRule ? omenThemeRule[1] : "";
   const themisThemeCss = themisThemeRule ? themisThemeRule[1] : "";
-  assert(momoThemeRule, "the PredictionMoMo viewport override is missing", failures);
-  assert(/--bg:\s*#f2e3cd/i.test(momoThemeCss) && /--surface:\s*#fff7e8/i.test(momoThemeCss) && /--ink:\s*#251f1a/i.test(momoThemeCss) && /--accent:\s*#ad520f/i.test(momoThemeCss), "Events 01-08 must keep the PredictionMoMo palette", failures);
-  assert(/Alegreya Sans App/i.test(momoThemeCss) && /color-scheme:\s*light/i.test(momoThemeCss), "PredictionMoMo must keep its typography and light controls", failures);
+  assert(omenThemeRule, "the OmenMarketMaker viewport override is missing", failures);
+  assert(/--bg:\s*#f2e3cd/i.test(omenThemeCss) && /--surface:\s*#fff7e8/i.test(omenThemeCss) && /--ink:\s*#251f1a/i.test(omenThemeCss) && /--accent:\s*#ad520f/i.test(omenThemeCss), "Events 01-08 must keep the OmenMarketMaker palette", failures);
+  assert(/Alegreya Sans App/i.test(omenThemeCss) && /color-scheme:\s*light/i.test(omenThemeCss), "OmenMarketMaker must keep its typography and light controls", failures);
   assert(themisThemeRule, "the DemoThemis viewport theme is missing", failures);
   assert(/--bg:\s*#151a1d/i.test(themisThemeCss) && /--surface:\s*#232a2e/i.test(themisThemeCss) && /--ink:\s*#f6f2e8/i.test(themisThemeCss) && /--accent:\s*#3e7fa8/i.test(themisThemeCss), "Events 09-13 must use the DemoThemis dark palette", failures);
   assert(/Literata App/i.test(themisThemeCss) && /color-scheme:\s*dark/i.test(themisThemeCss), "DemoThemis must use its typography and dark controls", failures);
@@ -2457,20 +2472,20 @@ function checkBuiltHtml(failures) {
   assert(/--bg:\s*#151a1d/i.test(runThrough) && /--surface:\s*#232a2e/i.test(runThrough) && /--ink:\s*#f6f2e8/i.test(runThrough), "the outer DemoThemis journey palette is missing", failures);
   assert(/--accent:\s*#3e7fa8/i.test(runThrough) && /--accent-ink:\s*#c3e7ff/i.test(runThrough), "the outer DemoThemis journey must retain readable court accents", failures);
   assert(/data-product-mode=["']themis["']\]\s+\.simulator-island/i.test(runThrough), "the outer DemoThemis theme must still identify the court journey", failures);
-  assert(/\.sim-demand-frame\s*\{[^}]*border:\s*2px solid[^}]*border-radius:\s*18px/is.test(runThrough), "the PredictionMoMo handoff browser must have a distinct integration border", failures);
+  assert(/\.sim-demand-frame\s*\{[^}]*border:\s*2px solid[^}]*border-radius:\s*18px/is.test(runThrough), "the OmenMarketMaker handoff browser must have a distinct integration border", failures);
   assert(/\.sim-demand-frame-tab\s*\{[^}]*color:\s*#fff[^}]*font-size:\s*\.76rem/is.test(runThrough), "the integration border must use the requested white tab title", failures);
   assert(/\.product-demo\.sim-tight\s+\.sim-demand-frame-tab\s*\{[^}]*max-width:\s*calc\(100% - \.5rem\)[^}]*font-size:\s*\.68rem/is.test(runThrough), "the integration tab must remain readable in compact layouts", failures);
   assert(/Seeding DemoThemis with demand from the Application Layer/.test(runThrough), "the application-layer demand frame title is missing", failures);
   assert(!/Full DemoThemis backend|app-backend-chip/i.test(runThrough), "the old backend label must be removed from the web app", failures);
   assert(!/entry\.group\.mode\s*===\s*mode/.test(runThrough), "event navigator must keep every product's event groups visible", failures);
-  assert(/data-stage-mode=["']momo["']/i.test(runThrough) && /data-stage-mode=["']themis["']/i.test(runThrough), "event navigator must preserve distinct product group themes", failures);
-  assert(/\.product-tab\[data-product-mode=["']momo["']\]\[aria-pressed=["']true["']\]/i.test(runThrough), "Full market run selection must carry its functional accent", failures);
+  assert(/data-stage-mode=["']omen["']/i.test(runThrough) && /data-stage-mode=["']themis["']/i.test(runThrough), "event navigator must preserve distinct product group themes", failures);
+  assert(/\.product-tab\[data-product-mode=["']omen["']\]\[aria-pressed=["']true["']\]/i.test(runThrough), "Full market run selection must carry its functional accent", failures);
   assert(/\.product-tab\[data-product-mode=["']themis["']\]\[aria-pressed=["']true["']\]/i.test(runThrough), "Court-backed run selection must carry its functional accent", failures);
   assert(/\.product-mode-panel\[data-product-mode\]\s+\.event-navigator-toggle/i.test(runThrough), "event navigator interactions must inherit product typography", failures);
   assert(/\.sim-live-preview\s+\.app-tabs\s+span\.on/i.test(runThrough), "active app tabs must carry the selected product accent", failures);
   assert(!/--navigator-band|--app-band|\.event-nav-label::before|\.app-nav::before|conic-gradient|\.app-brand\s+\.dot/i.test(runThrough), "purely decorative product motifs should stay removed", failures);
   assert(!/sim-frame-label|sim-window-dots|sim-live-dot/i.test(runThrough), "duplicated simulator chrome should stay removed", failures);
-  assert(!/<body[^>]*class=["'][^"']*product-(?:momo|themis)/i.test(runThrough), "product theme must not be applied to the page body", failures);
+  assert(!/<body[^>]*class=["'][^"']*product-(?:omen|themis)/i.test(runThrough), "product theme must not be applied to the page body", failures);
   assert(/<p\s+class=["']kicker["']>End-to-end run-through<\/p>/i.test(runThrough), "run-through masthead must stay product-neutral", failures);
   assert(/DemoThemis Intake/i.test(runThrough), "DemoThemis entry event is not branded as court intake", failures);
   assert(/id=["']stageRail["']/i.test(runThrough), "run-through chapter missing stage rail", failures);

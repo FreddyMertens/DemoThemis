@@ -8,7 +8,7 @@
     { f: "run-through.html", t: "Run-through", ch: 1 },
     { f: "demothemis.html", t: "DemoThemis", ch: 2 },
     { f: "break-the-court.html", t: "Break the court", ch: 3 },
-    { f: "predictionmomo.html", t: "PredictionMoMo", ch: 4 },
+    { f: "omenmarketmaker.html", t: "OmenMarketMaker", ch: 4 },
     { f: "bootstrap-loop.html", t: "The bootstrap loop", ch: 5 },
     { f: "governance.html", t: "Governance", ch: 6 }
   ];

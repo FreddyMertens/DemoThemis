@@ -3,8 +3,8 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>PredictionMoMo: open markets with unbuyable arbitration</title>
-<meta name="description" content="PredictionMoMo opens markets with pocket change, turns liquid positions into self-custodied tokens, and can route disputes to the independently operated DemoThemis court.">
+<title>OmenMarketMaker: open markets with unbuyable arbitration</title>
+<meta name="description" content="OmenMarketMaker opens markets with pocket change, turns liquid positions into self-custodied tokens, and can route disputes to the independently operated DemoThemis court.">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@500;700&family=Newsreader:opsz,wght@6..72,200..700&display=swap" rel="stylesheet">
@@ -65,13 +65,6 @@
   .oracle-sources a { border: 1px solid var(--line); border-radius: 999px; background: var(--bg); padding: .16rem .55rem; font-size: .76rem; font-weight: 650; text-decoration: none; }
   .oracle-note { border-left: 4px solid var(--bad); border-radius: 12px; background: var(--bad-soft); color: #7e2f22; padding: 1rem 1.1rem; margin: 1.3rem 0 0; font-family: var(--sans); font-size: .94rem; line-height: 1.55; }
 
-  /* product card chapter jumps */
-  .product-jumps { list-style: none; counter-reset: product-jump; padding-left: 0; }
-  .product-jumps li { counter-increment: product-jump; margin-bottom: .55rem; }
-  .product-jumps a { display: grid; grid-template-columns: 1.55rem 1fr; gap: .55rem; align-items: start; color: inherit; text-decoration: none; border-radius: 8px; padding: .18rem .2rem; }
-  .product-jumps a::before { content: counter(product-jump); display: grid; place-items: center; width: 1.35rem; height: 1.35rem; border-radius: 999px; background: var(--accent-soft); color: var(--accent-ink); font-size: .76rem; font-weight: 800; line-height: 1; }
-  .product-jumps a:hover { color: var(--accent-ink); background: var(--accent-soft); }
-  .product-jumps a:hover::before { background: var(--accent); color: #fff; }
 </style>
 </head>
 <body>
@@ -86,7 +79,7 @@
       <a href="run-through.html"><span class="ch">01</span> Run-through</a>
       <a href="demothemis.html"><span class="ch">02</span> DemoThemis</a>
       <a href="break-the-court.html"><span class="ch">03</span> Break the court</a>
-      <a href="predictionmomo.html"><span class="ch">04</span> PredictionMoMo</a>
+      <a href="omenmarketmaker.html"><span class="ch">04</span> OmenMarketMaker</a>
       <a href="bootstrap-loop.html"><span class="ch">05</span> Bootstrap loop</a>
       <a href="governance.html"><span class="ch">06</span> Governance</a>
       <a href="demothemis-mvp.html">Live Demo MVP</a>
@@ -95,9 +88,9 @@
 </nav>
 
 <header class="hero reveal">
-  <p class="kicker">PredictionMoMo</p>
-  <h1>PredictionMoMo: open markets with unbuyable arbitration</h1>
-  <p class="dek">This chapter follows six PredictionMoMo features: bullet proof arbitration that capital cannot buy, self-custody YES and NO tokens, private markets with neutral escrow, creation from the first bet, tradeable claims during disputes, and peer-to-peer parlays without bookie risk.</p>
+  <p class="kicker">OmenMarketMaker</p>
+  <h1>OmenMarketMaker: open markets with unbuyable arbitration</h1>
+  <p class="dek">This chapter follows six OmenMarketMaker features: bullet proof arbitration that capital cannot buy, self-custody YES and NO tokens, private markets with neutral escrow, creation from the first bet, tradeable claims during disputes, and peer-to-peer parlays without bookie risk.</p>
   <div class="meta">
     <span class="pill">Prediction markets</span>
     <span>10 min read</span>
@@ -108,23 +101,26 @@
 
 <main class="content wrap">
 
-  <div class="product product-feature market reveal">
-    <h3>PredictionMoMo: a prediction market with 6 novel features</h3>
-    <ol class="product-jumps">
-      <li><a href="#exploited-arbiter">Bullet proof arbitration that UMA whales cannot buy.</a></li>
-      <li><a href="#self-custody-tokens">Liquid markets tokenize into ERC-20 YES and NO tokens you self-custody; this lets you provide liquidity and earn interest, post them as collateral, and trade them with leverage.</a></li>
-      <li><a href="#private-markets">Anyone can open a private, invite-only market with neutral escrow: name the odds, invite the other side, and keep those odds fixed for everyone who joins.</a></li>
-      <li><a href="#start-market">Start a new prediction market instantly, on any topic, with any liquidity, even with less than a dollar.</a></li>
-      <li><a href="#tradeable-disputes">Self-custody tokens keep trading throughout disputes, giving holders a market-priced exit while the court takes the time required for a reliable verdict.</a></li>
-      <li><a href="#peer-to-peer-parlays">Native peer-to-peer parlays on liquid markets. By integrating Conditional Tokens Framework (CTF) via token splitting, bettors get live odds and early cashouts without the protocol or a "bookie" ever taking bankruptcy risk.</a></li>
-    </ol>
+  <div class="products single-product">
+    <div class="product market reveal">
+      <span class="pk">Product one</span>
+      <h3>OmenMarketMaker: six market features</h3>
+      <ol class="product-jumps">
+        <li><a href="#start-market">Start a new prediction market instantly, on any topic, with any liquidity, even with less than a dollar.</a></li>
+        <li><a href="#exploited-arbiter">Outcomes cannot be bought and are as fair as can be: Challenged outcomes can go to independent verified-human arbitration instead of a token-weighted court.</a></li>
+        <li><a href="#self-custody-tokens">Liquid markets become self-custodied ERC-20 YES and NO tokens for liquidity, collateral, and leverage.</a></li>
+        <li><a href="#private-markets">Private invite-only markets offer fixed odds with third-party escrow and dispute resolution.</a></li>
+        <li><a href="#tradeable-disputes">Claims remain tradeable through dispute windows, so holders can exit whenever liquidity exists.</a></li>
+        <li><a href="#peer-to-peer-parlays">CTF token splitting enables peer-to-peer parlays, live odds, and early cashouts without bookie bankruptcy risk.</a></li>
+      </ol>
+    </div>
   </div>
 
   <section id="exploited-arbiter" class="reveal">
     <p class="sec-label">Value prop 1</p>
     <h2>1. Bullet proof arbitration that whales cannot buy</h2>
     <p class="lead">Prediction markets do not fail when traders disagree. They fail when everyone has to stop trading the event and start trading whoever gets to define the event. UMA showed one version plainly: token-weighted truth turns a disputed outcome into a governance market with a whale chart attached.</p>
-    <p>Even an ambiguous dispute exposes the structural failure: whale weight, voter conflicts, and after-the-fact rule fights become part of price discovery. Four episodes show why PredictionMoMo can select independent, unbuyable arbitration instead of a token-weighted court.</p>
+    <p>Even an ambiguous dispute exposes the structural failure: whale weight, voter conflicts, and after-the-fact rule fights become part of price discovery. Four episodes show why OmenMarketMaker can select independent, unbuyable arbitration instead of a token-weighted court.</p>
 
     <div class="oracle-case-grid">
       <div class="oracle-case hot">
@@ -176,7 +172,7 @@
       </div>
     </div>
 
-    <p class="oracle-note"><b>The conclusion:</b> a prediction market needs an unbuyable arbiter. UMA shows the whale failure; Kalshi's Khamenei dispute shows the house failure. PredictionMoMo removes both from direct control of the final verdict.</p>
+    <p class="oracle-note"><b>The conclusion:</b> a prediction market needs an unbuyable arbiter. UMA shows the whale failure; Kalshi's Khamenei dispute shows the house failure. OmenMarketMaker removes both from direct control of the final verdict.</p>
     <p>Easy markets clear efficiently through bonded assertions. Contested markets go to randomly drawn verified humans voting privately, with one person counted once, so neither the venue nor the biggest wallet can buy the verdict.</p>
 
     <h3>How a market ends with an unbuyable judge</h3>
@@ -372,7 +368,7 @@
       </table>
     </div></div>
 
-    <p>This is where the custody complaint gets its answer. A YES token is not an entry on anyone's book. It is a bearer asset: post it as collateral in a lending pool, move it to any venue that will take it, or hold it through resolution in a wallet only you control. Nobody can freeze the account, because there is no account. Gas is sponsored for verified humans, so holding and moving the tokens never requires pre-funding a wallet with some second currency. If every PredictionMoMo interface vanished tomorrow, the claim in your wallet would still be yours.</p>
+    <p>This is where the custody complaint gets its answer. A YES token is not an entry on anyone's book. It is a bearer asset: post it as collateral in a lending pool, move it to any venue that will take it, or hold it through resolution in a wallet only you control. Nobody can freeze the account, because there is no account. Gas is sponsored for verified humans, so holding and moving the tokens never requires pre-funding a wallet with some second currency. If every OmenMarketMaker interface vanished tomorrow, the claim in your wallet would still be yours.</p>
   </section>
 
   <section id="private-markets" class="reveal">
@@ -387,7 +383,7 @@
     <p class="sec-label">Value prop 4</p>
     <h2>4. Start a market with the first bet</h2>
     <p><b>Here is the entire act of creating a market:</b> You type a question, you bet a dime on the side you believe, and you share the link. That is the whole ceremony. No listing process, no market maker, no liquidity provider, no seed money waiting in a vault.</p>
-    <p>A new market is a parimutuel pool, the structure Joseph Oller invented for Paris racetracks in 1867 because he wanted betting without a bookmaker setting odds. The pool predates every market maker ever built. Everyone bets into a shared pot, the odds are nothing more than the ratio of the two sides, and when the question resolves the winners split the entire pot pro-rata, minus PredictionMoMo's 2% market fee. One refinement is ours: the first bettors set the odds blind, with no crowd to lean on, so their claims carry a time-weight bonus. A dollar staked early earns a larger slice than a dollar that arrived after the picture cleared.</p>
+    <p>A new market is a parimutuel pool, the structure Joseph Oller invented for Paris racetracks in 1867 because he wanted betting without a bookmaker setting odds. The pool predates every market maker ever built. Everyone bets into a shared pot, the odds are nothing more than the ratio of the two sides, and when the question resolves the winners split the entire pot pro-rata, minus OmenMarketMaker's 2% market fee. One refinement is ours: the first bettors set the odds blind, with no crowd to lean on, so their claims carry a time-weight bonus. A dollar staked early earns a larger slice than a dollar that arrived after the picture cleared.</p>
 
     <div class="widget reveal">
       <div class="widget-head"><span class="live"></span> Born with a dime</div>
@@ -410,7 +406,7 @@
         <div class="stat"><div class="k">$1 on YES pays</div><div class="v" id="PM1py">&hellip;</div></div>
         <div class="stat"><div class="k">$1 on NO pays</div><div class="v" id="PM1pn">&hellip;</div></div>
       </div>
-      <p style="font-family:var(--sans);font-size:.86rem;color:var(--faint);margin:1rem 0 0">PredictionMoMo's 2% market fee comes off the pot. Pro-rata payouts keep both sides live and self-balancing: when YES gets crowded, NO becomes more rewarding and attracts the countertrade.</p>
+      <p style="font-family:var(--sans);font-size:.86rem;color:var(--faint);margin:1rem 0 0">OmenMarketMaker's 2% market fee comes off the pot. Pro-rata payouts keep both sides live and self-balancing: when YES gets crowded, NO becomes more rewarding and attracts the countertrade.</p>
     </div>
 
     <p>Notice what the demo never asks for. <b>Nobody funds the market before the crowd exists, because the first dime in is the market.</b> Your opening bet is the listing fee, the seed, and the dare, all at once, and the share link is the entire distribution strategy.</p>
@@ -553,7 +549,7 @@
   <section class="reveal">
     <p class="sec-label">The economics</p>
     <h2>Independent product economics</h2>
-    <p>PredictionMoMo currently models a 2% market fee at settlement. That fee belongs to PredictionMoMo's economics and is governed without reference to DemoThemis. When selected, DemoThemis separately locks a work-based resolution quote before any jury is drawn; neither fee is a percentage of the other, and neither product controls the other's revenue.</p>
+    <p>OmenMarketMaker currently models a 2% market fee at settlement. That fee belongs to OmenMarketMaker's economics and is governed without reference to DemoThemis. When selected, DemoThemis separately locks a work-based resolution quote before any jury is drawn; neither fee is a percentage of the other, and neither product controls the other's revenue.</p>
 
     <figure class="diagram reveal">
       <div class="diagram-inner">
@@ -561,7 +557,7 @@
           <table class="parts">
             <thead><tr><th>Product</th><th>Its own charge</th><th>Controlled by</th></tr></thead>
             <tbody>
-              <tr><td>PredictionMoMo</td><td>Market fee: 2% in the current model</td><td>PredictionMoMo governance and treasury</td></tr>
+              <tr><td>OmenMarketMaker</td><td>Market fee: 2% in the current model</td><td>OmenMarketMaker governance and treasury</td></tr>
               <tr><td>DemoThemis</td><td>Independent work-based quote; quiet cases cost less</td><td>DemoThemis governance and treasury</td></tr>
             </tbody>
           </table>
@@ -570,7 +566,7 @@
       <figcaption>An integration can create a service payment between the products. <b>It never merges their fees, margins, treasuries, or governance.</b></figcaption>
     </figure>
 
-    <p>That is PredictionMoMo: independent market economics, self-held claims, neutral private escrow, dime-sized market starts, tradeable disputes, and parlays without bookie risk. The next chapter shows how choosing DemoThemis can supply paid resolution cases and independently checkable outcomes without joining the products' economics.</p>
+    <p>That is OmenMarketMaker: independent market economics, self-held claims, neutral private escrow, dime-sized market starts, tradeable disputes, and parlays without bookie risk. The next chapter shows how choosing DemoThemis can supply paid resolution cases and independently checkable outcomes without joining the products' economics.</p>
   </section>
 
   <footer class="endnote reveal">
@@ -579,7 +575,7 @@
       <a href="run-through.html">1. Run-through</a>
       <a href="demothemis.html">2. DemoThemis</a>
       <a href="break-the-court.html">3. Break the court</a>
-      <a href="predictionmomo.html">4. PredictionMoMo</a>
+      <a href="omenmarketmaker.html">4. OmenMarketMaker</a>
       <a href="bootstrap-loop.html">5. Bootstrap loop</a>
       <a href="governance.html">6. Governance</a>
       <a href="demothemis-mvp.html">Live Demo MVP</a>
@@ -654,7 +650,7 @@
       } else if (Y > 0 && N > 0 && bets === 2) {
         narr.textContent = "Both sides are in. The odds are just the ratio of the pools, updating with every bet, and the crowded side's payout shrinks while the thin side's grows, which is what recruits the other side.";
       } else {
-        narr.textContent = "Pot " + courtMoney(Y + N) + " across " + bets + " bets. Each winner takes a pro-rata slice of everything, minus PredictionMoMo's 2% market fee.";
+        narr.textContent = "Pot " + courtMoney(Y + N) + " across " + bets + " bets. Each winner takes a pro-rata slice of everything, minus OmenMarketMaker's 2% market fee.";
       }
     }
     render();

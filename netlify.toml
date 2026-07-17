@@ -35,12 +35,12 @@
 
 [[redirects]]
   from = "/prediction-market"
-  to = "/predictionmomo.html"
+  to = "/omenmarketmaker.html"
   status = 301
 
 [[redirects]]
   from = "/prediction-market.html"
-  to = "/predictionmomo.html"
+  to = "/omenmarketmaker.html"
   status = 301
 
 [[redirects]]

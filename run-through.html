@@ -58,8 +58,8 @@
   .stage-group.open { border-color: color-mix(in srgb, var(--accent) 32%, var(--line)); background: color-mix(in srgb, var(--surface) 88%, #fff); }
   .stage-group.active { border-color: color-mix(in srgb, var(--accent) 48%, var(--line)); background: linear-gradient(180deg, color-mix(in srgb, var(--accent-soft) 52%, var(--surface)), color-mix(in srgb, var(--surface) 94%, #fff)); box-shadow: 0 7px 16px color-mix(in srgb, var(--accent) 8%, transparent); }
   .stage-group.complete { border-color: color-mix(in srgb, var(--good) 34%, var(--line)); }
-  .stage-group[data-stage-mode="momo"],
-  .stage-group-steps[data-stage-mode="momo"] {
+  .stage-group[data-stage-mode="omen"],
+  .stage-group-steps[data-stage-mode="omen"] {
     --bg: #f3e2c8;
     --surface: #fcefd9;
     --ink: #2b241d;
@@ -322,7 +322,7 @@
     overflow: hidden;
   }
   .protocol-sequence::before { content: ""; position: absolute; inset: 0 auto 0 0; width: 4px; background: linear-gradient(180deg, var(--protocol-accent), var(--protocol-good)); z-index: 2; pointer-events: none; }
-  .protocol-sequence[data-sequence-profile="momo"] {
+  .protocol-sequence[data-sequence-profile="omen"] {
     --protocol-line: #6c574b;
     --protocol-accent: #f0a064;
     --protocol-accent-soft: rgba(240, 160, 100, .17);
@@ -336,10 +336,10 @@
       var(--protocol-bg);
     background-size: auto, 24px 24px, 24px 24px, auto;
   }
-  .protocol-sequence[data-sequence-profile="momo"] .protocol-sequence-mark,
-  .protocol-sequence[data-sequence-profile="momo"] .protocol-sequence-badge { border-color: color-mix(in srgb, var(--protocol-accent) 48%, transparent); }
-  .protocol-sequence[data-sequence-profile="momo"] .protocol-sequence-badge { background: var(--protocol-accent-soft); color: #ffd9bc; }
-  .protocol-sequence[data-sequence-profile="momo"] .protocol-sequence-badge.receipts { border-color: color-mix(in srgb, var(--protocol-good) 44%, transparent); background: color-mix(in srgb, var(--protocol-good) 10%, transparent); color: var(--protocol-good); }
+  .protocol-sequence[data-sequence-profile="omen"] .protocol-sequence-mark,
+  .protocol-sequence[data-sequence-profile="omen"] .protocol-sequence-badge { border-color: color-mix(in srgb, var(--protocol-accent) 48%, transparent); }
+  .protocol-sequence[data-sequence-profile="omen"] .protocol-sequence-badge { background: var(--protocol-accent-soft); color: #ffd9bc; }
+  .protocol-sequence[data-sequence-profile="omen"] .protocol-sequence-badge.receipts { border-color: color-mix(in srgb, var(--protocol-good) 44%, transparent); background: color-mix(in srgb, var(--protocol-good) 10%, transparent); color: var(--protocol-good); }
   .protocol-sequence-header { position: relative; z-index: 1; display: grid; grid-template-columns: auto minmax(0, 1fr) auto; align-items: center; gap: .72rem; min-width: 0; border-bottom: 1px solid var(--protocol-line); background: rgba(14, 23, 28, .88); padding: .72rem .82rem .72rem .94rem; backdrop-filter: blur(10px); }
   .protocol-sequence-mark { display: grid; place-items: center; width: 2.65rem; height: 2.65rem; flex: 0 0 auto; border: 1px solid rgba(118, 184, 216, .48); border-radius: 7px; background: var(--protocol-accent-soft); color: var(--protocol-accent); box-shadow: inset 0 0 0 1px rgba(255, 255, 255, .035); }
   .protocol-sequence-mark svg { width: 1.35rem; height: 1.35rem; }
@@ -1582,7 +1582,7 @@
     cursor: pointer;
     transition: transform .14s ease, border-color .14s ease, background .14s ease, box-shadow .14s ease, color .14s ease;
   }
-  .product-tab[data-product-mode="momo"] { --choice-accent: #ae510f; --choice-soft: #f2c48e; --choice-on-accent: #fff6e8; }
+  .product-tab[data-product-mode="omen"] { --choice-accent: #ae510f; --choice-soft: #f2c48e; --choice-on-accent: #fff6e8; }
   .product-tab[data-product-mode="themis"] { --choice-accent: #225d8c; --choice-soft: #e1ecf4; --choice-on-accent: #fffefa; }
   .product-tab:hover { transform: translateY(-2px); color: var(--ink); border-color: color-mix(in srgb, var(--choice-accent) 62%, var(--line)); background: color-mix(in srgb, var(--choice-soft) 44%, var(--surface)); box-shadow: 0 12px 22px -16px color-mix(in srgb, var(--choice-accent) 50%, transparent); }
   .product-tab:active { transform: translateY(0); box-shadow: inset 0 1px 3px color-mix(in srgb, var(--choice-accent) 14%, transparent); }
@@ -1593,7 +1593,7 @@
     background: var(--accent);
     box-shadow: 0 3px 0 color-mix(in srgb, var(--accent) 72%, var(--ink)), 0 9px 18px -15px color-mix(in srgb, var(--accent) 54%, transparent);
   }
-  .product-tab[data-product-mode="momo"][aria-pressed="true"] { --accent: #ae510f; --accent-soft: #f2c48e; --accent-ink: #725000; }
+  .product-tab[data-product-mode="omen"][aria-pressed="true"] { --accent: #ae510f; --accent-soft: #f2c48e; --accent-ink: #725000; }
   .product-tab[data-product-mode="themis"][aria-pressed="true"] { --accent: #225d8c; --accent-soft: #e1ecf4; --accent-ink: #173f62; }
   .product-tab[data-product-mode] { font-family: var(--sans); font-synthesis: none; }
   .product-tab-icon {
@@ -1606,7 +1606,7 @@
     flex: 0 0 auto;
   }
   .product-tab-icon svg { display: block; width: 1.2rem; height: 1.2rem; fill: none; stroke: currentColor; stroke-width: 2; stroke-linecap: round; stroke-linejoin: round; }
-  .product-tab[data-product-mode="momo"] .product-tab-icon { color: #884009; background: #f7d8ae; }
+  .product-tab[data-product-mode="omen"] .product-tab-icon { color: #884009; background: #f7d8ae; }
   .product-tab[data-product-mode="themis"] .product-tab-icon { color: #1e527c; background: #e1ecf4; }
   .product-tab[aria-pressed="true"] .product-tab-icon { border-color: color-mix(in srgb, var(--choice-on-accent) 58%, transparent); background: color-mix(in srgb, var(--choice-on-accent) 13%, transparent); color: var(--choice-on-accent); }
   .product-tab-copy { display: grid; gap: .14rem; min-width: 0; }
@@ -1668,7 +1668,7 @@
   @media (prefers-reduced-motion: reduce) {
     .product-mode-panel { animation: none; }
   }
-  .product-mode-panel[data-product-mode="momo"] {
+  .product-mode-panel[data-product-mode="omen"] {
     --product-ui-font: "Alegreya Sans App", "Noto Serif Tibetan App", "Noto Sans Symbols 2 App", system-ui, sans-serif;
     --product-weight-body: 500;
     --product-weight-meta: 700;
@@ -1731,8 +1731,8 @@
     font-variant-numeric: lining-nums tabular-nums;
   }
 
-  .product-mode-panel[data-product-mode="momo"] .run-control-panel,
-  .product-mode-panel[data-product-mode="momo"] .sim-step-guide {
+  .product-mode-panel[data-product-mode="omen"] .run-control-panel,
+  .product-mode-panel[data-product-mode="omen"] .sim-step-guide {
     --bg: #f2e3cd;
     --surface: #fff7e8;
     --ink: #251f1a;
@@ -1754,12 +1754,12 @@
     --continue-ink: #ffffff;
     --shadow: 0 4px 12px rgba(91, 57, 24, .08);
   }
-  .product-mode-panel[data-product-mode="momo"] .run-control-panel,
-  .product-mode-panel[data-product-mode="momo"] .sim-step-guide {
+  .product-mode-panel[data-product-mode="omen"] .run-control-panel,
+  .product-mode-panel[data-product-mode="omen"] .sim-step-guide {
     border-radius: 8px;
     border-color: color-mix(in srgb, var(--accent) 38%, var(--line));
   }
-  .product-mode-panel[data-product-mode="momo"] .simulator-island {
+  .product-mode-panel[data-product-mode="omen"] .simulator-island {
     border-color: #d3aa77;
     background: #f2e3cd;
   }
@@ -1806,7 +1806,7 @@
   .product-mode-panel[data-product-mode] .sim-app-viewport[data-app-theme="themis"] .action-target::before { color: var(--accent-ink); }
 
   /* The browser stays neutral while each embedded web app owns its own theme. */
-  .product-mode-panel[data-product-mode] .sim-app-viewport[data-app-theme="momo"] {
+  .product-mode-panel[data-product-mode] .sim-app-viewport[data-app-theme="omen"] {
     --product-ui-font: "Alegreya Sans App", "Noto Serif Tibetan App", "Noto Sans Symbols 2 App", system-ui, sans-serif;
     --product-weight-body: 500;
     --product-weight-meta: 700;
@@ -2409,7 +2409,7 @@
       <a href="run-through.html"><span class="ch">01</span> Run-through</a>
       <a href="demothemis.html"><span class="ch">02</span> DemoThemis</a>
       <a href="break-the-court.html"><span class="ch">03</span> Break the court</a>
-      <a href="predictionmomo.html"><span class="ch">04</span> PredictionMoMo</a>
+      <a href="omenmarketmaker.html"><span class="ch">04</span> OmenMarketMaker</a>
       <a href="bootstrap-loop.html"><span class="ch">05</span> Bootstrap loop</a>
       <a href="governance.html"><span class="ch">06</span> Governance</a>
       <a href="demothemis-mvp.html">Live Demo MVP</a>
@@ -2439,23 +2439,23 @@
     <div class="run-game reveal">
         <nav class="product-mode-nav is-awaiting-selection" aria-label="Run-through starting point">
           <div class="product-switch-label">
-            <span>PredictionMoMo + DemoThemis</span>
+            <span>OmenMarketMaker + DemoThemis</span>
             <strong>Choose a starting point</strong>
             <small>Start at market creation or its DemoThemis-backed court path</small>
           </div>
           <div class="product-tabs" role="group" aria-label="Choose where to start">
-            <button class="product-tab" id="productTabMomo" type="button" aria-pressed="false" data-product-mode="momo" aria-label="Start the full PredictionMoMo run at Event 01">
+            <button class="product-tab" id="productTabOmen" type="button" aria-pressed="false" data-product-mode="omen" aria-label="Start the full OmenMarketMaker run at Event 01">
               <span class="product-tab-icon" aria-hidden="true">
                 <svg viewBox="0 0 24 24"><path d="M12 16v5"></path><path d="M16 14.64V21"></path><path d="M20 10.66V21"></path><path d="m22 3-8.65 8.65a.5.5 0 0 1-.7 0L9.35 8.35a.5.5 0 0 0-.7 0L2 15"></path><path d="M4 18.46V21"></path><path d="M8 14.66V21"></path></svg>
               </span>
-              <span class="product-tab-copy"><strong>Full market run</strong><small>PredictionMoMo from creation</small></span>
+              <span class="product-tab-copy"><strong>Full market run</strong><small>OmenMarketMaker from creation</small></span>
               <span class="product-tab-event">Start 01</span>
             </button>
-            <button class="product-tab" id="productTabThemis" type="button" aria-pressed="false" data-product-mode="themis" aria-label="Start the PredictionMoMo court-backed run at Event 07">
+            <button class="product-tab" id="productTabThemis" type="button" aria-pressed="false" data-product-mode="themis" aria-label="Start the OmenMarketMaker court-backed run at Event 07">
               <span class="product-tab-icon" aria-hidden="true">
                 <svg viewBox="0 0 24 24"><path d="M10 18v-7"></path><path d="M11.12 2.2a2 2 0 0 1 1.76 0l7.84 3.85A.5.5 0 0 1 20.5 7h-17a.5.5 0 0 1-.22-.95z"></path><path d="M14 18v-7"></path><path d="M18 18v-7"></path><path d="M3 22h18"></path><path d="M6 18v-7"></path></svg>
               </span>
-              <span class="product-tab-copy"><strong>Court-backed run</strong><small>PredictionMoMo using DemoThemis</small></span>
+              <span class="product-tab-copy"><strong>Court-backed run</strong><small>OmenMarketMaker using DemoThemis</small></span>
               <span class="product-tab-event">Start 07</span>
             </button>
           </div>
@@ -2559,8 +2559,8 @@
         </div>
         <div class="machine-foundation-grid">
           <div class="machine-foundation-item"><b>Custody and proof</b>Funds lock before an unknown panel exists. One bound random draw, live presence checks, private ballots, and an aggregate tally protect each disputed case.</div>
-          <div class="machine-foundation-item"><b>Independent governance</b>PredictionMoMo may tune its own market fee and product settings. DemoThemis may tune its own service pricing and court settings. Neither token reaches across the product boundary or judges an active case.</div>
-          <div class="machine-foundation-item"><b>Commercial boundary</b>When PredictionMoMo selects DemoThemis, it pays the quoted resolution fee as a client. Fees, treasuries, and token economics otherwise remain separate; final money never reopens.</div>
+          <div class="machine-foundation-item"><b>Independent governance</b>OmenMarketMaker may tune its own market fee and product settings. DemoThemis may tune its own service pricing and court settings. Neither token reaches across the product boundary or judges an active case.</div>
+          <div class="machine-foundation-item"><b>Commercial boundary</b>When OmenMarketMaker selects DemoThemis, it pays the quoted resolution fee as a client. Fees, treasuries, and token economics otherwise remain separate; final money never reopens.</div>
         </div>
       </section>
 
@@ -2582,7 +2582,7 @@
       <a href="run-through.html">1. Run-through</a>
       <a href="demothemis.html">2. DemoThemis</a>
       <a href="break-the-court.html">3. Break the court</a>
-      <a href="predictionmomo.html">4. PredictionMoMo</a>
+      <a href="omenmarketmaker.html">4. OmenMarketMaker</a>
       <a href="bootstrap-loop.html">5. Bootstrap loop</a>
       <a href="governance.html">6. Governance</a>
       <a href="demothemis-mvp.html">Live Demo MVP</a>
@@ -2855,7 +2855,7 @@
       title: "Finality and memory",
       sub: "The case finalizes and teaches.",
       mission: "Publish finality, feed the loop",
-      text: "DemoThemis publishes the final appeal proof to PredictionMoMo. Settlement releases once, juror updates settle privately, and the clean result becomes an aptitude-test case.",
+      text: "DemoThemis publishes the final appeal proof to OmenMarketMaker. Settlement releases once, juror updates settle privately, and the clean result becomes an aptitude-test case.",
       nodes: ["appeal", "final", "keys"],
       features: ["instant", "fixed", "tokens", "private", "trade", "parlay"],
       components: ["escrow", "watcher", "draw", "personhood", "ballot", "reserve", "appeal", "finality", "keys"],
@@ -2998,12 +2998,12 @@
     {
       lane: "Finality loop",
       title: "Aptitude test case",
-      body: "DemoThemis publishes the final proof, settles shielded juror updates, and saves the case. PredictionMoMo can then settle its market while juror histories remain private.",
+      body: "DemoThemis publishes the final proof, settles shielded juror updates, and saves the case. OmenMarketMaker can then settle its market while juror histories remain private.",
       change: "Finality published",
       why: "The market is over, but the court is stronger for the next one.",
       next: "More demand",
       tone: "final",
-      results: ["The final proof returns to PredictionMoMo for settlement.", "Final juror debits, refunds, and rewards settle through private updates with proved public totals.", "The resolved case can grade future aptitude tests without publishing juror histories."]
+      results: ["The final proof returns to OmenMarketMaker for settlement.", "Final juror debits, refunds, and rewards settle through private updates with proved public totals.", "The resolved case can grade future aptitude tests without publishing juror histories."]
     }
   ];
 
@@ -3094,10 +3094,10 @@
     },
     {
       label: "Final proof",
-      headline: "Relay finality back to PredictionMoMo.",
-      look: "The sequence canvas shows the one-time proof relay; the final screen is PredictionMoMo's payout receipt.",
+      headline: "Relay finality back to OmenMarketMaker.",
+      look: "The sequence canvas shows the one-time proof relay; the final screen is OmenMarketMaker's payout receipt.",
       use: "Play the relay, then see the user-facing settlement.",
-      notice: "DemoThemis proves the result; PredictionMoMo pays the winning claims."
+      notice: "DemoThemis proves the result; OmenMarketMaker pays the winning claims."
     }
   ];
 
@@ -3200,18 +3200,18 @@
   ];
 
   var STAGE_GROUPS = [
-    { label: "Market setup", start: 0, end: 3, mode: "momo" },
-    { label: "Bet types", start: 4, end: 5, mode: "momo" },
+    { label: "Market setup", start: 0, end: 3, mode: "omen" },
+    { label: "Bet types", start: 4, end: 5, mode: "omen" },
     { label: "Resolution", start: 6, end: 7, mode: "themis" },
     { label: "Jury process", start: 8, end: 10, mode: "themis" },
     { label: "Appeal + loop", start: 11, end: 12, mode: "themis" }
   ];
 
   var PRODUCT_MODES = {
-    momo: {
+    omen: {
       start: 0,
       label: "Full market run",
-      tabId: "productTabMomo"
+      tabId: "productTabOmen"
     },
     themis: {
       start: 6,
@@ -3221,16 +3221,16 @@
   };
 
   var APP_BOUNDARIES = {
-    momo: {
-      appTheme: "momo",
-      appBrand: "PredictionMoMo",
-      appOrigin: "app.predictionmomo.com",
+    omen: {
+      appTheme: "omen",
+      appBrand: "OmenMarketMaker",
+      appOrigin: "app.omenmarketmaker.com",
       frameTitle: ""
     },
     handoff: {
-      appTheme: "momo",
-      appBrand: "PredictionMoMo",
-      appOrigin: "app.predictionmomo.com",
+      appTheme: "omen",
+      appBrand: "OmenMarketMaker",
+      appOrigin: "app.omenmarketmaker.com",
       frameTitle: "Seeding DemoThemis with demand from the Application Layer"
     },
     themis: {
@@ -3242,14 +3242,14 @@
   };
 
   var EVENT_SURFACES = [
-    { surface: "momo", actor: "Market creator", actionOwner: "user" },
-    { surface: "momo", actor: "Trader", actionOwner: "user" },
-    { surface: "momo", actor: "Trader", actionOwner: "user" },
-    { surface: "momo", actor: "Token holder", actionOwner: "user" },
-    { surface: "momo", actor: "Alice", actionOwner: "user" },
-    { surface: "momo", actor: "Parlay bettor", actionOwner: "user" },
-    { surface: "momo", actor: "Result submitter", actionOwner: "user" },
-    { surface: "momo", actor: "Challenger", actionOwner: "user" },
+    { surface: "omen", actor: "Market creator", actionOwner: "user" },
+    { surface: "omen", actor: "Trader", actionOwner: "user" },
+    { surface: "omen", actor: "Trader", actionOwner: "user" },
+    { surface: "omen", actor: "Token holder", actionOwner: "user" },
+    { surface: "omen", actor: "Alice", actionOwner: "user" },
+    { surface: "omen", actor: "Parlay bettor", actionOwner: "user" },
+    { surface: "omen", actor: "Result submitter", actionOwner: "user" },
+    { surface: "omen", actor: "Challenger", actionOwner: "user" },
     { surface: "protocol", actor: "Network", actionOwner: "protocol" },
     { surface: "themis", actor: "Juror", actionOwner: "user" },
     { surface: "protocol", actor: "Network", actionOwner: "protocol" },
@@ -3263,7 +3263,7 @@
   }
 
   function appBoundaryForPage(page) {
-    return APP_BOUNDARIES[(page && page.surface) || "momo"] || null;
+    return APP_BOUNDARIES[(page && page.surface) || "omen"] || null;
   }
 
   var stage = 0;
@@ -3285,9 +3285,9 @@
   var selectedBallotChoice = "";
   var runStartStage = 0;
   var completedStages = {};
-  var maxReachedByMode = { momo: 0, themis: 6 };
+  var maxReachedByMode = { omen: 0, themis: 6 };
   var productProgress = {
-    momo: { stage: 0, step: 0, action: -1 },
+    omen: { stage: 0, step: 0, action: -1 },
     themis: { stage: 6, step: 0, action: -1 }
   };
   var marketLiquidityDraft = { yes: .1, no: 0 };
@@ -3332,7 +3332,7 @@
   }
 
   function productModeForStage(stageIndex) {
-    return stageIndex >= PRODUCT_MODES.themis.start ? "themis" : "momo";
+    return stageIndex >= PRODUCT_MODES.themis.start ? "themis" : "omen";
   }
 
   function syncProductMode() {
@@ -4332,7 +4332,7 @@
   var APP_PAGES = [
     {
       template: "create-market",
-      product: "PredictionMoMo",
+      product: "OmenMarketMaker",
       tabs: ["Create", "Explore", "Portfolio"],
       activeTab: "Create",
       section: "Create market",
@@ -4347,7 +4347,7 @@
     },
     {
       template: "live-market",
-      product: "PredictionMoMo",
+      product: "OmenMarketMaker",
       tabs: ["Market", "Order", "Portfolio"],
       activeTab: "Market",
       route: "/m/england-euro-final",
@@ -4364,7 +4364,7 @@
     },
     {
       template: "order-book",
-      product: "PredictionMoMo",
+      product: "OmenMarketMaker",
       tabs: ["Book", "Ticket", "Liquidity"],
       activeTab: "Book",
       route: "/m/england-euro-final/book",
@@ -4380,7 +4380,7 @@
     },
     {
       template: "wallet-unlock",
-      product: "PredictionMoMo Wallet",
+      product: "OmenMarketMaker Wallet",
       tabs: ["Assets", "Book", "Activity"],
       activeTab: "Assets",
       route: "/portfolio/assets",
@@ -4396,7 +4396,7 @@
     },
     {
       template: "private-room",
-      product: "PredictionMoMo Rooms",
+      product: "OmenMarketMaker Rooms",
       tabs: ["Room", "Terms", "Escrow"],
       activeTab: "Room",
       route: "/rooms/new",
@@ -4412,7 +4412,7 @@
     },
     {
       template: "parlay-slip",
-      product: "PredictionMoMo Parlays",
+      product: "OmenMarketMaker Parlays",
       tabs: ["Slip", "Markets", "Cashout"],
       activeTab: "Slip",
       route: "/parlays/new",
@@ -4429,7 +4429,7 @@
     },
     {
       template: "resolution-dashboard",
-      product: "PredictionMoMo",
+      product: "OmenMarketMaker",
       tabs: ["Result", "Review", "Market"],
       activeTab: "Result",
       route: "/markets/england-euro-final/result",
@@ -4446,7 +4446,7 @@
     },
     {
       template: "dispute-handoff",
-      product: "PredictionMoMo",
+      product: "OmenMarketMaker",
       tabs: ["Challenge", "Case", "Market"],
       activeTab: "Challenge",
       route: "/markets/england-euro-final/challenge",
@@ -4532,12 +4532,12 @@
       activeTab: "Activity",
       section: "On-chain sequence",
       title: "Final proof relay",
-      subtitle: "The closed appeal proof is ready for one-time delivery to PredictionMoMo.",
+      subtitle: "The closed appeal proof is ready for one-time delivery to OmenMarketMaker.",
       status: "Relay pending",
       kpis: [["Verdict", "NO"], ["Appeals", "Closed"], ["Proof", "Ready"]],
       blocks: [
         { type: "closed", title: "Final verdict", hot: 0, value: "NO 18-13" },
-        { type: "table", title: "Court record", hot: 1, rows: [["Resolved case", "Ready", "aptitude tests"], ["Juror updates", "Private", "future cases"], ["Final proof", "Ready", "PredictionMoMo"]] }
+        { type: "table", title: "Court record", hot: 1, rows: [["Resolved case", "Ready", "aptitude tests"], ["Juror updates", "Private", "future cases"], ["Final proof", "Ready", "OmenMarketMaker"]] }
       ]
     }
   ];
@@ -4561,7 +4561,7 @@
             blocks: [
               { type: "receipt", title: "Market published", value: "Will England win the UEFA Euro 2024 final?", details: [["Status", "Trading open"], ["Opening liquidity", "$0.10 YES"], ["Market ID", "PM-EURO-24"]] },
               { type: "odds", title: "Opening odds", yes: 100, no: 0 },
-              { type: "receipt", title: "Market page", value: "app.predictionmomo.com/m/england-euro-final", details: [["Closes", "14 July 2024 19:00 UTC"], ["Resolve rule", "YES only if UEFA records England as the winner; otherwise NO."]] }
+              { type: "receipt", title: "Market page", value: "app.omenmarketmaker.com/m/england-euro-final", details: [["Closes", "14 July 2024 19:00 UTC"], ["Resolve rule", "YES only if UEFA records England as the winner; otherwise NO."]] }
             ]
           }
         },
@@ -4578,7 +4578,7 @@
             activeTab: "Explore",
             kpis: [],
             blocks: [
-              { type: "receipt", title: "Market page", value: "app.predictionmomo.com/m/england-euro-final", details: [["Status", "Trading open"], ["Opening liquidity", "$0.10 YES"], ["Closes", "14 July 2024 19:00 UTC"], ["Resolve rule", "YES only if UEFA records England as the winner; otherwise NO."]] },
+              { type: "receipt", title: "Market page", value: "app.omenmarketmaker.com/m/england-euro-final", details: [["Status", "Trading open"], ["Opening liquidity", "$0.10 YES"], ["Closes", "14 July 2024 19:00 UTC"], ["Resolve rule", "YES only if UEFA records England as the winner; otherwise NO."]] },
               { type: "odds", title: "Opening odds", yes: 100, no: 0 }
             ]
           }
@@ -4631,7 +4631,7 @@
             kpis: [["Balance", "$610"], ["YES", "62%"], ["NO", "38%"]],
             blocks: [
               { type: "odds", title: "Current odds", yes: 62, no: 38 },
-              { type: "receipt", title: "Your position", value: "80.6 YES · 210.5 NO", details: [["Total spent", "$130.00"], ["Fees", "Included"], ["Available balance", "$610.00"], ["Custody", "PredictionMoMo balance"]] }
+              { type: "receipt", title: "Your position", value: "80.6 YES · 210.5 NO", details: [["Total spent", "$130.00"], ["Fees", "Included"], ["Available balance", "$610.00"], ["Custody", "OmenMarketMaker balance"]] }
             ]
           }
         }
@@ -4774,20 +4774,20 @@
       steps: [
         {
           cue: "Tap Place $100 parlay",
-          roleHandoff: "Parlay bettor to PredictionMoMo router",
+          roleHandoff: "Parlay bettor to OmenMarketMaker router",
           target: "block",
           targetTitle: "Bet slip",
           result: "Parlay order submitted",
           after: {
             view: "sequence",
-            sequenceProfile: "momo",
+            sequenceProfile: "omen",
             sequenceProgress: 1,
-            surface: "momo",
-            actor: "PredictionMoMo router",
+            surface: "omen",
+            actor: "OmenMarketMaker router",
             actionOwner: "protocol",
             template: "parlay-execution",
             route: "",
-            product: "PredictionMoMo automatic execution",
+            product: "OmenMarketMaker automatic execution",
             title: "Creating the parlay atomically",
             subtitle: "Both market legs fill in one transaction or the $100 order changes nothing.",
             status: "Routing live",
@@ -4807,7 +4807,7 @@
         {
           cue: "Route both legs atomically",
           actionLabel: "Route both legs atomically",
-          roleHandoff: "PredictionMoMo router to Parlay bettor",
+          roleHandoff: "OmenMarketMaker router to Parlay bettor",
           actionOwner: "protocol",
           target: "block",
           targetTitle: "Atomic placement",
@@ -4815,12 +4815,12 @@
           after: {
             view: "application",
             sequenceProfile: "",
-            surface: "momo",
+            surface: "omen",
             actor: "Parlay bettor",
             actionOwner: "user",
             template: "parlay-position",
             route: "/parlays/PM-4821",
-            product: "PredictionMoMo Parlays",
+            product: "OmenMarketMaker Parlays",
             section: "Open parlay",
             title: "Parlay placed",
             subtitle: "Your parlay is active. Cashout quotes update with live prices.",
@@ -4837,20 +4837,20 @@
         },
         {
           cue: "Tap Accept $128 cashout",
-          roleHandoff: "Parlay bettor to PredictionMoMo router",
+          roleHandoff: "Parlay bettor to OmenMarketMaker router",
           target: "block",
           targetTitle: "Cashout quote",
           result: "Cashout order submitted",
           after: {
             view: "sequence",
-            sequenceProfile: "momo",
+            sequenceProfile: "omen",
             sequenceProgress: 1,
-            surface: "momo",
-            actor: "PredictionMoMo router",
+            surface: "omen",
+            actor: "OmenMarketMaker router",
             actionOwner: "protocol",
             template: "cashout-execution",
             route: "",
-            product: "PredictionMoMo automatic execution",
+            product: "OmenMarketMaker automatic execution",
             title: "Closing the parlay atomically",
             subtitle: "Both claim legs sell together before $128 returns to the connected wallet.",
             status: "Cashout routing",
@@ -4870,7 +4870,7 @@
         {
           cue: "Complete atomic cashout",
           actionLabel: "Complete atomic cashout",
-          roleHandoff: "PredictionMoMo router to Parlay bettor",
+          roleHandoff: "OmenMarketMaker router to Parlay bettor",
           actionOwner: "protocol",
           target: "block",
           targetTitle: "Atomic cashout",
@@ -4878,12 +4878,12 @@
           after: {
             view: "application",
             sequenceProfile: "",
-            surface: "momo",
+            surface: "omen",
             actor: "Parlay bettor",
             actionOwner: "simulator",
             template: "parlay-receipt",
             route: "/parlays/PM-4821/cashout",
-            product: "PredictionMoMo Parlays",
+            product: "OmenMarketMaker Parlays",
             section: "Confirmation",
             title: "Cashout complete",
             subtitle: "$128 was sent to the connected wallet.",
@@ -5195,24 +5195,24 @@
         kpis: [["Verdict", "NO"], ["Proof", "Ready"], ["Record", "Pending"]],
         blocks: [
           { type: "closed", title: "Final verdict", value: "NO 18-13" },
-          { type: "table", title: "Court record", rows: [["Resolved case", "Waiting", "aptitude tests"], ["Juror updates", "Private", "future cases"], ["Final proof", "Ready", "PredictionMoMo"]] }
+          { type: "table", title: "Court record", rows: [["Resolved case", "Waiting", "aptitude tests"], ["Juror updates", "Private", "future cases"], ["Final proof", "Ready", "OmenMarketMaker"]] }
         ]
       },
       steps: [
         {
           cue: "Final proof relay",
           actionLabel: "Final proof relay",
-          roleHandoff: "Protocol sequence to PredictionMoMo payout",
+          roleHandoff: "Protocol sequence to OmenMarketMaker payout",
           actionOwner: "protocol",
           target: "block",
           targetTitle: "Final verdict",
-          result: "Final proof verified by PredictionMoMo",
+          result: "Final proof verified by OmenMarketMaker",
           after: {
-            surface: "momo",
+            surface: "omen",
             actor: "Token holder",
             actionOwner: "simulator",
             template: "settled-market",
-            product: "PredictionMoMo",
+            product: "OmenMarketMaker",
             tabs: ["Market", "Payout", "Proof"],
             route: "/markets/england-euro-final/payout",
             section: "Confirmation",
@@ -5256,7 +5256,7 @@
     "Aggregate proof verification": "Verify the public aggregate without exposing individual ballots.",
     "Pay $31,000 appeal bond": "Pay the required bond to open the 31-juror appeal.",
     "31-juror vote": "Show the larger panel reaching its independent aggregate verdict.",
-    "Final proof relay": "Relay the final proof once so PredictionMoMo can settle winning claims.",
+    "Final proof relay": "Relay the final proof once so OmenMarketMaker can settle winning claims.",
     "Start a new walkthrough": "Restart at a fresh market after this case closes."
   };
 
@@ -5779,7 +5779,7 @@
   }
 
   function eventSurfaceDefaults(stageIndex) {
-    return EVENT_SURFACES[stageIndex] || { surface: "momo", actor: "User", actionOwner: "user" };
+    return EVENT_SURFACES[stageIndex] || { surface: "omen", actor: "User", actionOwner: "user" };
   }
 
   function currentContinuation() {
@@ -5903,7 +5903,7 @@
   function currentSurfaceMeta() {
     var page = resolvedEventPage(APP_PAGES[stage] || {});
     var step = currentTutorialStep();
-    var surface = (step && step.surface) || page.surface || "momo";
+    var surface = (step && step.surface) || page.surface || "omen";
     var actionOwner = (step && step.actionOwner) || page.actionOwner || "user";
     if (isEventComplete() && surface !== "protocol") actionOwner = "simulator";
     return {
@@ -6488,7 +6488,7 @@
     }
     dock.appendChild(top);
 
-    var automaticPrefix = surfaceMeta.sequenceProfile === "momo" ? "Automatic execution · " : "Network step · ";
+    var automaticPrefix = surfaceMeta.sequenceProfile === "omen" ? "Automatic execution · " : "Network step · ";
     if (step) {
       dock.appendChild(makeEl("div", "tutorial-cue", currentActionOwner() === "user" ? targetInstruction() : automaticPrefix + stepActionLabel(step)));
     } else if (!continuation) {
@@ -6937,11 +6937,11 @@
   }
 
   function sequenceProfileForPage(page) {
-    if (page && page.sequenceProfile === "momo") {
+    if (page && page.sequenceProfile === "omen") {
       return {
-        key: "momo",
+        key: "omen",
         icon: "route",
-        title: "PredictionMoMo automatic execution",
+        title: "OmenMarketMaker automatic execution",
         stateLabel: "Execution state",
         factsLabel: "Current execution facts",
         recordsLabel: "Execution records",
@@ -7129,10 +7129,10 @@
   }
 
   function surfaceLabel(surface, view, sequenceProfile) {
-    if (view === "sequence" && sequenceProfile === "momo") return "PredictionMoMo automatic execution";
+    if (view === "sequence" && sequenceProfile === "omen") return "OmenMarketMaker automatic execution";
     if (surface === "themis") return "DemoThemis";
     if (surface === "protocol") return "DemoThemis on-chain sequence";
-    return "PredictionMoMo";
+    return "OmenMarketMaker";
   }
 
   function renderRoleHandoff(page) {
@@ -7223,7 +7223,7 @@
     announceRunStatusOnRender = false;
     var basePage = APP_PAGES[stage] || {
       template: "default",
-      product: focus.lane || "PredictionMoMo",
+      product: focus.lane || "OmenMarketMaker",
       tabs: ["Now"],
       section: item.title,
       title: focus.title,
@@ -7251,10 +7251,10 @@
       root.appendChild(sequence);
       placeNextEventControl(page, null, null, guideDock);
     } else {
-      var appBoundary = appBoundaryForPage(page) || APP_BOUNDARIES.momo;
+      var appBoundary = appBoundaryForPage(page) || APP_BOUNDARIES.omen;
       var appTheme = appBoundary.appTheme;
       var appBrand = appBoundary.appBrand || page.product;
-      var frameTitle = page.surface === "momo" && stage === 7 && activeEventStep > 0 ? APP_BOUNDARIES.handoff.frameTitle : appBoundary.frameTitle;
+      var frameTitle = page.surface === "omen" && stage === 7 && activeEventStep > 0 ? APP_BOUNDARIES.handoff.frameTitle : appBoundary.frameTitle;
       var chrome = pageChrome(page, item);
       var preview = makeEl("section", "sim-live-preview sim-surface-frame");
       preview.setAttribute("data-surface", page.surface);
@@ -8547,14 +8547,14 @@
   }
 
   function restartRunFromContinuation() {
-    selectedRunMode = "momo";
+    selectedRunMode = "omen";
     stage = 0;
     runStartStage = 0;
     selectedBallotChoice = "";
     completedStages = {};
-    maxReachedByMode = { momo: 0, themis: 6 };
+    maxReachedByMode = { omen: 0, themis: 6 };
     productProgress = {
-      momo: { stage: 0, step: 0, action: -1 },
+      omen: { stage: 0, step: 0, action: -1 },
       themis: { stage: 6, step: 0, action: -1 }
     };
     marketLiquidityDraft = { yes: .1, no: 0 };

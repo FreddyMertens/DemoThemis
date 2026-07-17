@@ -3,27 +3,12 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>PredictionMoMo and DemoThemis: open markets, unbuyable arbitration</title>
-<meta name="description" content="Two independent products with an optional integration: PredictionMoMo opens markets, while DemoThemis sells neutral arbitration to any compatible app.">
+<title>OmenMarketMaker and DemoThemis: open markets, unbuyable arbitration</title>
+<meta name="description" content="Two independent products with an optional integration: OmenMarketMaker opens markets, while DemoThemis sells neutral arbitration to any compatible app.">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@500;700&family=Newsreader:opsz,wght@6..72,200..700&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="assets/styles.css">
-<style>
-  .products { display: grid; grid-template-columns: 1fr 1fr; gap: 1rem; margin: 1.6rem 0; }
-  @media (max-width: 640px) { .products { grid-template-columns: 1fr; } }
-  .product { border-radius: var(--radius); border: 1px solid var(--line); background: var(--surface); padding: 1.4rem 1.5rem; box-shadow: var(--shadow); font-family: var(--sans); }
-  .product.market { border-top: 3px solid var(--good); }
-  .product.court { border-top: 3px solid var(--accent); }
-  .product .pk { font-size: .72rem; font-weight: 700; letter-spacing: .08em; text-transform: uppercase; color: var(--faint); }
-  .product h3 { margin: .3rem 0 .5rem; font-size: 1.2rem; }
-  .product p { font-size: .92rem; line-height: 1.55; color: var(--muted); margin: 0; }
-  .product p + p { margin-top: .6rem; }
-  .product ol { margin: .4rem 0 0; padding-left: 1.25rem; font-size: .92rem; line-height: 1.55; color: var(--muted); }
-  .product ol li { margin-bottom: .55rem; }
-  .product ol li::marker { font-weight: 700; color: var(--accent-ink); }
-  .product p .lab { font-weight: 700; color: var(--accent-ink); }
-</style>
 </head>
 <body>
 <div id="progress"></div>
@@ -37,7 +22,7 @@
       <a href="run-through.html"><span class="ch">01</span> Run-through</a>
       <a href="demothemis.html"><span class="ch">02</span> DemoThemis</a>
       <a href="break-the-court.html"><span class="ch">03</span> Break the court</a>
-      <a href="predictionmomo.html"><span class="ch">04</span> PredictionMoMo</a>
+      <a href="omenmarketmaker.html"><span class="ch">04</span> OmenMarketMaker</a>
       <a href="bootstrap-loop.html"><span class="ch">05</span> Bootstrap loop</a>
       <a href="governance.html"><span class="ch">06</span> Governance</a>
       <a href="demothemis-mvp.html">Live Demo MVP</a>
@@ -47,8 +32,8 @@
 
 <header class="hero reveal">
   <p class="kicker">What we are building</p>
-  <h1>Bullet proof arbitration for anyone, with PredictionMoMo as an early customer.</h1>
-  <p class="dek">PredictionMoMo can purchase resolution for selected markets. DemoThemis independently serves those cases through protocol escrow and verified human juries.</p>
+  <h1>Bullet proof arbitration for anyone, with OmenMarketMaker as an early customer.</h1>
+  <p class="dek">OmenMarketMaker can purchase resolution for selected markets. DemoThemis independently serves those cases through protocol escrow and verified human juries.</p>
   <div class="meta">
     <span class="pill">Start here</span>
     <span>4 min overview &middot; 20 min court reference</span>
@@ -61,30 +46,30 @@
 
   <section class="reveal">
     <p class="sec-label">The products</p>
-    <h2>PredictionMoMo markets, DemoThemis arbitration</h2>
+    <h2>OmenMarketMaker markets, DemoThemis arbitration</h2>
 
     <p>Every market ends with a ruling: did the thing happen or not? Polymarket, the biggest prediction market in the world, hands that ruling to a protocol called UMA. Anyone can post a bond and propose an answer. If nobody objects within two hours, it stands. If someone does, UMA's token holders vote on the truth, one token one vote, and voters who side against the majority lose part of their stake. So the rational move is to follow the biggest wallets, and disputed markets have settled against plain reality because of it. Whoever holds enough tokens holds the verdict.</p>
     <div class="products">
       <div class="product market">
         <span class="pk">Product one</span>
-        <h3>PredictionMoMo: six market features</h3>
-        <ol>
-          <li>Challenged outcomes can go to independent verified-human arbitration instead of a token-weighted court.</li>
-          <li>Liquid markets become self-custodied ERC-20 YES and NO tokens for liquidity, collateral, and leverage.</li>
-          <li>Private invite-only markets offer fixed odds with third-party escrow and dispute resolution.</li>
-          <li>Start a new prediction market instantly, on any topic, with any liquidity, even with less than a dollar.</li>
-          <li>Claims remain tradeable through dispute windows, so holders can exit whenever liquidity exists.</li>
-          <li>CTF token splitting enables peer-to-peer parlays, live odds, and early cashouts without bookie bankruptcy risk.</li>
+        <h3>OmenMarketMaker: six market features</h3>
+        <ol class="product-jumps">
+          <li><a href="omenmarketmaker.html#start-market">Start a new prediction market instantly, on any topic, with any liquidity, even with less than a dollar.</a></li>
+          <li><a href="omenmarketmaker.html#exploited-arbiter">Outcomes cannot be bought and are as fair as can be: Challenged outcomes can go to independent verified-human arbitration instead of a token-weighted court.</a></li>
+          <li><a href="omenmarketmaker.html#self-custody-tokens">Liquid markets become self-custodied ERC-20 YES and NO tokens for liquidity, collateral, and leverage.</a></li>
+          <li><a href="omenmarketmaker.html#private-markets">Private invite-only markets offer fixed odds with third-party escrow and dispute resolution.</a></li>
+          <li><a href="omenmarketmaker.html#tradeable-disputes">Claims remain tradeable through dispute windows, so holders can exit whenever liquidity exists.</a></li>
+          <li><a href="omenmarketmaker.html#peer-to-peer-parlays">CTF token splitting enables peer-to-peer parlays, live odds, and early cashouts without bookie bankruptcy risk.</a></li>
         </ol>
       </div>
       <div class="product court">
         <span class="pk">Product two</span>
         <h3>Arbitration service: the most ambitious human infrastructure ever made</h3>
-        <p>Apps provide the interface and demand; DemoThemis independently prices escrow and resolution, then releases or refunds funds by rule. PredictionMoMo can be one early customer among many.</p>
+        <p>Apps provide the interface and demand; DemoThemis independently prices escrow and resolution, then releases or refunds funds by rule. OmenMarketMaker can be one early customer among many.</p>
         <p>World ID uniqueness, per-draw presence checks, sealed draws, receipt-free ballots, private reputation, sponsored gas, and expanding appeals work together to keep verdicts beyond the reach of capital.</p>
       </div>
     </div>
-    <p>The optional integration separates the customer-facing market from neutral adjudication. PredictionMoMo and DemoThemis keep independent fees, margins, treasuries, and governance; marketplaces and online agreements can use the same court without adopting the market.</p>
+    <p>The optional integration separates the customer-facing market from neutral adjudication. OmenMarketMaker and DemoThemis keep independent fees, margins, treasuries, and governance; marketplaces and online agreements can use the same court without adopting the market.</p>
   </section>
 
   <section class="reveal">
@@ -107,9 +92,9 @@
         <h3>Break the court</h3>
         <p>Move the knobs and see which attacks can still make money.</p>
       </a>
-      <a class="map-card" href="predictionmomo.html">
+      <a class="map-card" href="omenmarketmaker.html">
         <span class="stage">Chapter 04</span>
-        <h3>PredictionMoMo</h3>
+        <h3>OmenMarketMaker</h3>
         <p>Markets born as shared pots, then graduated into self-custodied tokens.</p>
       </a>
       <a class="map-card" href="bootstrap-loop.html">
@@ -138,7 +123,7 @@
       <a href="run-through.html">1. Run-through</a>
       <a href="demothemis.html">2. DemoThemis</a>
       <a href="break-the-court.html">3. Break the court</a>
-      <a href="predictionmomo.html">4. PredictionMoMo</a>
+      <a href="omenmarketmaker.html">4. OmenMarketMaker</a>
       <a href="bootstrap-loop.html">5. Bootstrap loop</a>
       <a href="governance.html">6. Governance</a>
       <a href="demothemis-mvp.html">Live Demo MVP</a>
