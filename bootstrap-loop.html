@@ -19,6 +19,16 @@
   .amp .node { flex: 1 1 8.5rem; min-width: 8rem; background: var(--accent-soft); border: 1px solid var(--accent); border-radius: 12px; padding: .8rem; text-align: center; font-family: var(--sans); font-weight: 600; font-size: .9rem; color: var(--accent-ink); }
   .amp .node small { display: block; font-weight: 400; font-size: .74rem; color: var(--muted); margin-top: .2rem; }
   .amp .ar { align-self: center; color: var(--accent); font-size: 1.3rem; font-weight: 700; }
+  .test-path-item .n,
+  .amp .node small { font-size: .78rem; line-height: 1.4; }
+  .test-path-item p,
+  .amp .node { font-size: .94rem; line-height: 1.55; }
+  @media (max-width: 480px) {
+    .test-path { grid-template-columns: 1fr; }
+    .amp { flex-direction: column; }
+    .amp .node { flex-basis: auto; width: 100%; }
+    .amp .ar { align-self: center; transform: rotate(90deg); }
+  }
 </style>
 </head>
 <body>

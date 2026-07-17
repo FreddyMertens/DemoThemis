@@ -2386,6 +2386,84 @@
     .product-mode-panel[data-product-mode] .product-demo .live-card { padding: .6rem; }
     .product-mode-panel[data-product-mode] .product-demo .page-appeal-checkout .app-seat-grid { grid-template-columns: repeat(6, minmax(0, 1fr)); }
   }
+
+  /* Responsive reading guardrails for the simulator and state map. */
+  .run-note { font-size: .98rem; line-height: 1.62; }
+  .product-switch-label span { font-size: .72rem; line-height: 1.35; }
+  .product-switch-label small { font-size: .78rem; line-height: 1.4; }
+  .product-tab-event { font-size: .7rem; }
+  .sim-url { font-size: .72rem; line-height: 1.3; }
+  .sim-browser-next-copy small { font-size: .68rem; line-height: 1.25; }
+  .sim-browser-next-copy strong { font-size: .78rem; line-height: 1.25; }
+  .product-mode-panel[data-product-mode] {
+    --product-text-caption: .78rem;
+    --product-text-meta: .84rem;
+    --product-text-body: .9rem;
+    --product-text-control: .9rem;
+    --product-text-subtitle: 1rem;
+    --product-text-title: 1.1rem;
+    --product-text-display: 1.32rem;
+  }
+  .product-mode-panel[data-product-mode] .run-control-panel :where(.run-controls .btn),
+  .product-mode-panel[data-product-mode] .product-demo .sim-live-preview :where(
+    .app-action-bar button, .sim-app-action, .app-ballot button, .fake-actions button,
+    .liquidity-side, .liquidity-input
+  ) { min-height: 2.75rem; }
+  .protocol-sequence-kicker,
+  .protocol-sequence-current-copy span,
+  .protocol-sequence-fact span,
+  .protocol-trace-copy small,
+  .protocol-sequence-legend { font-size: .76rem; line-height: 1.4; }
+  .protocol-sequence-current h4 { font-size: 1.3rem; line-height: 1.18; }
+  .protocol-sequence-current p,
+  .protocol-record-row { font-size: .84rem; line-height: 1.5; }
+  .protocol-trace-copy strong { font-size: .82rem; line-height: 1.4; }
+  .protocol-record-row small { font-size: .76rem; line-height: 1.4; }
+  .target-callout,
+  .target-callout span,
+  .sim-tooltip { font-size: .78rem; line-height: 1.45; }
+  .target-callout b { font-size: .72rem; line-height: 1.35; }
+  .machine-primer,
+  .machine-route-summary { font-size: .9rem; line-height: 1.58; }
+  .machine-route-button { font-size: .82rem; line-height: 1.2; }
+  .machine-legend,
+  .machine-trade-rail,
+  .machine-phase-head p,
+  .machine-flow-note,
+  .machine-state-short,
+  .machine-state-detail,
+  .machine-subhead p,
+  .machine-foundation-item,
+  .machine-text-outline,
+  .machine-text-content h4 { font-size: .78rem; line-height: 1.48; }
+  .machine-trade-rail strong,
+  .machine-phase-kicker,
+  .machine-phase-transition,
+  .machine-state-kind,
+  .machine-state-branch,
+  .machine-sim-chip { font-size: .72rem; line-height: 1.35; }
+  .machine-phase-head h3 { font-size: 1.05rem; line-height: 1.28; }
+  .machine-state-title { font-size: .86rem; line-height: 1.35; }
+  .machine-foundation-item b { font-size: .82rem; line-height: 1.35; }
+  .machine-text-content li { line-height: 1.5; }
+
+  @media (max-width: 620px) {
+    .content.wrap { padding-inline: .75rem; }
+    .product-mode-nav.is-awaiting-selection { padding: 1.05rem; }
+    .product-mode-nav.is-awaiting-selection .product-switch-label strong { font-size: 1.45rem; line-height: 1.2; }
+    .machine-shell { border-radius: 16px; }
+    .machine-toolbar,
+    .machine-phase-grid { padding: .7rem; }
+  }
+
+  @media (max-width: 380px) {
+    .content.wrap { padding-inline: .6rem; }
+    .product-mode-panel[data-product-mode] { --product-text-caption: .76rem; --product-text-meta: .82rem; }
+    .product-tab { grid-template-columns: auto minmax(0, 1fr); }
+    .product-tab-event { grid-column: 2; justify-self: start; }
+    .machine-phase-grid { padding: .55rem; }
+    .machine-phase { padding: .58rem; }
+  }
 </style>
 </head>
 <body>

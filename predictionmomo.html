@@ -440,6 +440,32 @@
       .lf-tok small { color: var(--faint); font-size: .74rem; }
       .lf-book { border-radius: 12px; border: 1px solid var(--accent); background: var(--accent-soft); padding: .8rem .9rem; font-size: .82rem; color: var(--accent-ink); font-weight: 600; }
       .lf-book small { display: block; font-weight: 400; color: var(--muted); margin-top: .2rem; }
+
+      /* Reading scale for market tables, evidence, and liquidity controls. */
+      .pmnarr,
+      .oracle-case p,
+      .oracle-note { font-size: .96rem; line-height: 1.6; }
+      .funnel .fk,
+      .lf-offer,
+      .lf-prog,
+      .lf-k,
+      .lf-book { font-size: .88rem; line-height: 1.5; }
+      .parts { font-size: .92rem; line-height: 1.5; }
+      .parts th,
+      .oracle-case .lab,
+      .lf-tok small { font-size: .78rem; line-height: 1.4; }
+      .oracle-sources a,
+      .product-jumps a::before { font-size: .82rem; line-height: 1.35; }
+      .lf-tok b { font-size: 1.1rem; line-height: 1.35; }
+      .widget > p[style*="font-size"] { font-size: .92rem !important; line-height: 1.58 !important; }
+
+      @media (max-width: 480px) {
+        .pmbtns { display: grid; grid-template-columns: 1fr; }
+        .pmbtns .btn { width: 100%; }
+        .parts { min-width: 34rem; }
+        .oracle-case,
+        .robustness-card { padding: .9rem; }
+      }
     </style>
     <p class="sec-label">Value prop 4</p>
     <h2>4.2 Fixed odds when the pool price is not enough</h2>

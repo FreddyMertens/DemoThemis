@@ -4506,3 +4506,575 @@ a.text-slate-950 {
     border-radius: 17px;
   }
 }
+
+/* --------------------------------------------------------------------------
+   Responsive reading system
+   -------------------------------------------------------------------------- */
+
+body {
+  font-size: 1rem;
+  line-height: 1.6;
+}
+
+.site-chrome *,
+.site-app-content * {
+  letter-spacing: 0 !important;
+}
+
+.site-brand {
+  font-size: 1.3rem;
+  line-height: 1.1;
+}
+
+.site-chapters a,
+.site-menu-button,
+.mvp-context-links a {
+  font-size: 0.82rem;
+  line-height: 1.35;
+}
+
+.site-chapters a span,
+.mvp-context-label {
+  font-size: 0.7rem;
+  line-height: 1.35;
+}
+
+.app-overview {
+  padding: 3rem 1.5rem 5.5rem;
+}
+
+.app-overview :where(p, li, dd) {
+  font-size: 0.96rem;
+  line-height: 1.65;
+}
+
+.app-overview small {
+  font-size: 0.8rem;
+  line-height: 1.48;
+}
+
+.app-hero {
+  gap: 4rem;
+  padding: 4rem;
+}
+
+.app-hero h1 {
+  font-size: 4.8rem;
+  line-height: 1.02;
+}
+
+.app-play-home .app-hero h1 {
+  font-size: 4.35rem;
+}
+
+.app-hero-dek,
+.app-overview .app-hero-dek {
+  max-width: 40rem;
+  font-size: 1.14rem;
+  line-height: 1.65;
+}
+
+.app-section-heading h2 {
+  font-size: 3.35rem;
+  line-height: 1.08;
+}
+
+.app-personhood h2,
+.app-proof-head h2 {
+  font-size: 3.15rem;
+  line-height: 1.1;
+}
+
+.app-resolver h2 {
+  font-size: 2.45rem;
+  line-height: 1.14;
+}
+
+.app-kicker,
+.app-section-kicker {
+  font-size: 0.76rem;
+  line-height: 1.4;
+}
+
+.app-button,
+.app-text-link,
+.mission-progress a {
+  min-height: 2.75rem;
+  font-size: 0.84rem;
+  line-height: 1.35;
+}
+
+.court-page {
+  font-size: 1rem;
+  line-height: 1.58;
+}
+
+.court-page :where(p, li, dd) {
+  line-height: 1.6;
+}
+
+.court-page .text-xs,
+.court-page .text-\[11px\],
+.court-page .text-\[10px\] {
+  font-size: 0.8rem;
+  line-height: 1.45;
+}
+
+.court-page .text-sm {
+  font-size: 0.92rem;
+  line-height: 1.55;
+}
+
+.court-page [class*='text-[9px]'],
+.court-page [class*='text-[10px]'],
+.court-page [class*='text-[11px]'] {
+  font-size: 0.8rem !important;
+  line-height: 1.45;
+}
+
+.court-page small {
+  font-size: 0.8rem;
+  line-height: 1.48;
+}
+
+.court-mission-brief p,
+.juror-step,
+.juror-mission-complete a,
+.court-case-action,
+.court-instance summary > strong,
+.court-instance summary > span,
+.court-disclosure > summary,
+.court-disclosure > summary span,
+.court-case-facts dt,
+.court-case-facts dd,
+.court-case-sample,
+.court-empty-actions a,
+.court-preview-note > span,
+.court-preview-note strong,
+.court-preview-note p,
+.court-preview-note a,
+.court-about-kicker,
+.court-about-steps span,
+.court-about-links span,
+.court-about-steps strong,
+.court-about-links > a {
+  font-size: 0.82rem;
+  line-height: 1.48;
+}
+
+.court-instance > p,
+.court-case-preview > p,
+.court-about-steps p {
+  font-size: 0.88rem;
+  line-height: 1.6;
+}
+
+.court-about-card > h2 {
+  font-size: 2.2rem;
+  line-height: 1.14;
+}
+
+.court-topbar h1 {
+  font-size: 1.75rem;
+  line-height: 1.18;
+}
+
+.court-topbar.has-start h1 {
+  font-size: 2.2rem;
+  line-height: 1.14;
+}
+
+.court-topbar p,
+.court-about-dek,
+.court-disclosure-content {
+  font-size: 0.94rem;
+  line-height: 1.62;
+}
+
+.oracle-app {
+  padding: 1.75rem 2rem 5rem;
+}
+
+.oracle-app p {
+  font-size: 0.88rem;
+  line-height: 1.58;
+}
+
+.oracle-app small {
+  font-size: 0.76rem;
+  line-height: 1.48;
+}
+
+.oracle-app :where(button, input, textarea, select, a) {
+  font-size: 0.86rem;
+  line-height: 1.4;
+}
+
+.oracle-hero {
+  padding: 3.5rem;
+  gap: 2.5rem;
+}
+
+.oracle-hero h1 {
+  font-size: 3.85rem;
+  line-height: 1.04;
+}
+
+.oracle-hero-copy > p {
+  max-width: 38rem;
+  font-size: 1.05rem;
+  line-height: 1.62;
+}
+
+.oracle-kicker,
+.oracle-eyebrow,
+.oracle-fact > span,
+.oracle-counts span,
+.oracle-fee-card > span,
+.oracle-ruling-copy > span,
+.oracle-section-title span,
+.oracle-review-head > span {
+  font-size: 0.72rem;
+  line-height: 1.4;
+}
+
+.oracle-proof-card strong {
+  font-size: 0.92rem;
+  line-height: 1.35;
+}
+
+.oracle-proof-card small {
+  font-size: 0.76rem;
+  line-height: 1.45;
+}
+
+.oracle-tabs strong {
+  font-size: 0.88rem;
+  line-height: 1.35;
+}
+
+.oracle-tabs small {
+  font-size: 0.75rem;
+}
+
+.oracle-case-card > h2 {
+  font-size: 2.65rem;
+  line-height: 1.12;
+}
+
+.oracle-fact p,
+.oracle-question-unavailable p,
+.oracle-research-note p,
+.oracle-one-at-time p,
+.oracle-submit-steps small,
+.oracle-footer-note p {
+  font-size: 0.82rem;
+  line-height: 1.55;
+}
+
+.oracle-integrity,
+.oracle-chain-mark,
+.oracle-chain-proof summary,
+.oracle-progress small,
+.oracle-receipt-list small,
+.oracle-form-progress,
+.oracle-field > span label,
+.oracle-field > span small,
+.oracle-utc-preview,
+.oracle-fee-card dt {
+  font-size: 0.76rem;
+  line-height: 1.45;
+}
+
+.oracle-question-unavailable strong,
+.oracle-research-note strong,
+.oracle-one-at-time strong,
+.oracle-submit-steps strong,
+.oracle-receipt-list strong {
+  font-size: 0.84rem;
+  line-height: 1.4;
+}
+
+.oracle-chain-proof summary > span,
+.oracle-ready-block span,
+.oracle-seat-number,
+.oracle-ballot-head span,
+.oracle-reveal-summary span,
+.oracle-receipt-list > a > span,
+.oracle-submit-steps > div > span,
+.oracle-review-head i,
+.oracle-footer-note > span {
+  font-size: 0.74rem;
+  line-height: 1.4;
+}
+
+.oracle-chain-read-state,
+.oracle-review-lock,
+.oracle-inline-error,
+.oracle-queue-alert a,
+.oracle-worldscan-link,
+.oracle-tx-link,
+.oracle-final-receipt a {
+  font-size: 0.8rem;
+  line-height: 1.48;
+}
+
+.oracle-fee-card dd {
+  font-size: 0.84rem;
+  line-height: 1.4;
+}
+
+.oracle-progress li > span {
+  font-size: 0.68rem;
+}
+
+.oracle-submit-intro h2 {
+  font-size: 3rem;
+  line-height: 1.08;
+}
+
+.oracle-review-card h3 {
+  font-size: 2.25rem;
+  line-height: 1.14;
+}
+
+.oracle-field textarea,
+.oracle-date-input input {
+  font-size: 1rem;
+  line-height: 1.5;
+}
+
+@media (max-width: 1040px) {
+  .app-hero h1 {
+    font-size: 4.1rem;
+  }
+
+  .app-play-home .app-hero h1 {
+    font-size: 3.85rem;
+  }
+
+  .app-section-heading h2,
+  .app-personhood h2,
+  .app-proof-head h2 {
+    font-size: 2.8rem;
+  }
+}
+
+@media (max-width: 820px) {
+  .app-overview {
+    padding-top: 1.5rem;
+  }
+
+  .app-hero {
+    gap: 2rem;
+    padding: 2.5rem;
+  }
+
+  .app-hero h1,
+  .app-play-home .app-hero h1 {
+    font-size: 3.45rem;
+  }
+
+  .app-section-heading h2,
+  .app-personhood h2,
+  .app-proof-head h2 {
+    font-size: 2.5rem;
+  }
+
+  .oracle-app {
+    padding-inline: 1.25rem;
+  }
+
+  .oracle-hero {
+    padding: 2.5rem;
+  }
+
+  .oracle-hero h1 {
+    font-size: 3.25rem;
+  }
+
+  .oracle-case-card > h2 {
+    font-size: 2.3rem;
+  }
+}
+
+@media (max-width: 680px) {
+  .app-overview {
+    padding: 1rem 1rem 4rem;
+  }
+
+  .app-hero {
+    padding: 1.5rem;
+  }
+
+  .app-hero h1,
+  .app-play-home .app-hero h1 {
+    max-width: 14ch;
+    font-size: 2.8rem;
+    line-height: 1.08;
+  }
+
+  .app-hero-dek,
+  .app-overview .app-hero-dek {
+    font-size: 1.05rem;
+  }
+
+  .app-section-heading h2,
+  .app-personhood h2,
+  .app-proof-head h2 {
+    font-size: 2.15rem;
+  }
+
+  .app-resolver h2 {
+    font-size: 1.9rem;
+  }
+
+  .court-topbar h1 {
+    font-size: 1.6rem;
+  }
+
+  .court-topbar.has-start h1 {
+    font-size: 1.9rem;
+  }
+
+  .court-topbar.has-start {
+    grid-template-columns: 1fr;
+    gap: 0.2rem;
+  }
+
+  .court-topbar.has-start h1 {
+    justify-self: start;
+    text-align: left;
+  }
+
+  .court-topbar.has-start > span[aria-hidden='true'] {
+    display: none;
+  }
+
+  .juror-local-progress {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+
+  .court-case-facts {
+    grid-template-columns: 1fr;
+  }
+
+  .oracle-app {
+    padding: 1rem 0.85rem 4rem;
+  }
+
+  .oracle-hero {
+    padding: 1.5rem;
+    gap: 1.5rem;
+    border-radius: 22px;
+  }
+
+  .oracle-hero h1 {
+    font-size: 2.55rem;
+    line-height: 1.08;
+  }
+
+  .oracle-hero-copy > p {
+    font-size: 1rem;
+  }
+
+  .oracle-hero-actions {
+    grid-template-columns: 1fr;
+  }
+
+  .oracle-proof-stack {
+    grid-template-columns: 1fr;
+    gap: 0.6rem;
+  }
+
+  .oracle-proof-card {
+    min-height: 0;
+    padding: 0.85rem;
+    grid-template-columns: 2.35rem minmax(0, 1fr);
+    align-content: center;
+    justify-items: stretch;
+    text-align: left;
+  }
+
+  .oracle-proof-card small,
+  .oracle-proof-card b {
+    display: block;
+  }
+
+  .oracle-case-card > h2 {
+    font-size: 2rem;
+  }
+
+  .oracle-submit-intro h2 {
+    font-size: 2.25rem;
+  }
+
+  .oracle-review-card h3 {
+    font-size: 1.9rem;
+  }
+}
+
+@media (max-width: 420px) {
+  .site-primary {
+    padding-inline: 0.85rem;
+  }
+
+  .site-brand {
+    font-size: 1.18rem;
+  }
+
+  .app-overview {
+    padding-inline: 0.75rem;
+  }
+
+  .app-hero {
+    padding: 1.25rem;
+  }
+
+  .app-hero h1,
+  .app-play-home .app-hero h1 {
+    font-size: 2.35rem;
+  }
+
+  .app-section-heading h2,
+  .app-personhood h2,
+  .app-proof-head h2 {
+    font-size: 1.9rem;
+  }
+
+  .oracle-app {
+    padding-inline: 0.7rem;
+  }
+
+  .oracle-hero {
+    padding: 1.25rem;
+  }
+
+  .oracle-hero h1 {
+    font-size: 2.2rem;
+  }
+
+  .oracle-kicker {
+    font-size: 0.7rem;
+  }
+
+  .oracle-case-card,
+  .oracle-jury-card,
+  .oracle-submit-form,
+  .oracle-receipt-history {
+    padding: 1rem;
+  }
+
+  .oracle-case-card > h2 {
+    font-size: 1.75rem;
+  }
+
+  .oracle-question-unavailable,
+  .oracle-research-note {
+    grid-template-columns: 1fr;
+  }
+
+  .juror-local-progress {
+    grid-template-columns: 1fr;
+  }
+}

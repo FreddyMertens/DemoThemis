@@ -246,6 +246,82 @@
   .info-icon { display: inline-flex; align-items: center; justify-content: center; cursor: pointer; padding: 10px; margin: -10px -10px -10px -2px; color: var(--muted); opacity: 0.6; transition: opacity 0.2s ease, color 0.2s ease; vertical-align: -0.125em; position: relative; z-index: 10; }
   .info-icon:hover, .info-icon:focus-visible { opacity: 1; color: var(--ink); }
   .info-icon svg { width: 15px; height: 15px; }
+
+  /* Readable dashboard scale: compact labels, full-size explanations. */
+  .dial-group h3,
+  fieldset.dial-group legend,
+  .board-head h3,
+  .insight-panel h3 { font-size: .86rem; line-height: 1.4; }
+  .dial label,
+  .lock,
+  .preset-note,
+  .score small,
+  .node-sub,
+  .attack-summary-copy small,
+  .assumption-copy,
+  .assumption-heading,
+  .assumption-drawer summary,
+  .assumption-head label,
+  .lab-status .lab-status-detail,
+  .preset-strip,
+  .fine-controls summary,
+  .stress-meter span,
+  .stress-row em { font-size: .84rem; line-height: 1.48; }
+  .score .k,
+  .chip,
+  .node::before,
+  .node-val small,
+  .assumption-drawer summary b,
+  .assumption-heading b,
+  .assumption-group h4,
+  .assumption-head output,
+  .assumption-meta,
+  .assumption-help,
+  .assumption-controls,
+  .dependency-card b,
+  .driver-row small,
+  .lab-status .lab-status-clear,
+  .verdict-metric span,
+  .verdict-metric small,
+  .fine-controls summary b,
+  .attack-line b { font-size: .76rem; line-height: 1.4; }
+  .node h4,
+  .attack-summary-copy h4,
+  .attack h4,
+  .story-card h3,
+  .stress-row strong { font-size: 1rem; line-height: 1.35; }
+  .node p,
+  .attack p,
+  .attack-line,
+  .assumption-pin,
+  .dependency-card span,
+  .driver-row,
+  .warning-row,
+  .stress-row p { font-size: .86rem; line-height: 1.55; }
+  .formula { font-size: .88rem; line-height: 1.5; }
+  .score .v { font-size: 1.65rem; line-height: 1.12; }
+  .verdict-metric b { font-size: 1rem; line-height: 1.35; }
+  .preset,
+  .lab-tab,
+  .assumption-actions button,
+  .assumption-row button { min-height: 2.75rem; font-size: .82rem; }
+
+  @media (max-width: 560px) {
+    .panel-card,
+    .board,
+    .stress-hero { padding: .85rem; }
+    .attack > summary { grid-template-columns: minmax(0, 1fr) auto; }
+    .attack > summary .chip { grid-column: 1; grid-row: 2; justify-self: start; }
+    .attack > summary::after { grid-column: 2; grid-row: 1; }
+  }
+
+  @media (max-width: 430px) {
+    .scoreboard { grid-template-columns: 1fr; }
+    .lab-tabs { grid-template-columns: 1fr; }
+    .stress-row summary { grid-template-columns: minmax(0, 1fr) auto; }
+    .stress-row .chip,
+    .stress-row em { grid-column: 1 / -1; }
+  }
 </style>
 <link rel="stylesheet" href="assets/vendor/tippy-shift-away-6.3.7.css">
 <link rel="stylesheet" href="assets/vendor/tippy-6.3.7.css">

@@ -64,6 +64,27 @@
   .stat .v { font-size: clamp(1.05rem, 4.2vw, 1.5rem); }
   .stat .v .chip { white-space: normal; line-height: 1.5; }
   .ctrl-note { font-family: var(--sans); font-size: .78rem; color: var(--faint); margin: .15rem 0 0; }
+
+  /* Reading scale for governance controls and comparison tables. */
+  .chip,
+  .houses .core small,
+  .invoice .iv small,
+  .vals th,
+  .ctrl-note { font-size: .78rem; line-height: 1.4; }
+  .barline .bk,
+  .houses .house .inp,
+  .houses .house .out,
+  .invoice .iv { font-size: .88rem; line-height: 1.5; }
+  .houses .house h4 { font-size: 1rem; line-height: 1.4; }
+  .vals { font-size: .92rem; line-height: 1.5; }
+  .seg button { min-height: 2.75rem; font-size: .9rem; }
+  .stat .v { font-size: 1.4rem; line-height: 1.15; }
+
+  @media (max-width: 480px) {
+    .houses .house,
+    .houses .core { padding: .9rem; }
+    .vals { min-width: 34rem; }
+  }
 </style>
 </head>
 <body>
