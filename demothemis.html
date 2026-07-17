@@ -3,13 +3,18 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>DemoThemis: the most ambitious piece of human infrastructure</title>
+<title>DemoThemis: the most ambitious human infrastructure ever made</title>
 <meta name="description" content="The simple explanation and full mechanics of DemoThemis: bullet proof protocol escrow and unbuyable verified-human arbitration for online deals and prediction markets.">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@500;700&family=Newsreader:opsz,wght@6..72,200..700&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="assets/styles.css">
 <style>
+
+  .demothemis-title { max-width: 16ch; letter-spacing: 0; }
+  .demothemis-title span { display: block; }
+  .demothemis-title .title-product { font-weight: 650; }
+  .demothemis-title .title-claim { max-width: 27ch; margin-top: .55rem; color: var(--accent-ink); font-family: var(--sans); font-size: .46em; font-weight: 650; line-height: 1.22; }
 
   .part-marker { border-top: 1px solid var(--line); padding-top: 2rem; }
   .simple-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 1rem; margin: 1.4rem 0; }
@@ -208,8 +213,11 @@ body.theme-solve { --accent: #2f62cf; --accent-soft: #e6edfa; --accent-ink: #214
 </nav>
 
 <header class="hero reveal">
-  <p class="kicker">DemoThemis</p>
-  <h1>DemoThemis: the most ambitious piece of human infrastructure</h1>
+  <p class="kicker">Arbitration service</p>
+  <h1 class="demothemis-title">
+    <span class="title-product">DemoThemis</span>
+    <span class="title-claim">The most ambitious human infrastructure ever made</span>
+  </h1>
   <p class="dek">DemoThemis is a bullet proof, unbuyable escrow court for online deals and prediction markets. This chapter starts with the plain version, then keeps the full design detail: verified human juries, one sealed draw, private ballots, appeal ladders, and the scoring system that makes careful jurors more valuable over time.</p>
   <div class="meta">
     <span class="pill">Court mechanics</span>

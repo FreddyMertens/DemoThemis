@@ -2385,7 +2385,7 @@ function checkBuiltHtml(failures) {
   assert(/data-attack=["']bloc["']/i.test(gameLab), "gamelab missing coordinated attack card", failures);
 
   const demoThemis = readDist("demothemis.html");
-  assert(/DemoThemis: the most ambitious piece of human infrastructure/i.test(demoThemis), "DemoThemis chapter missing public title", failures);
+  assert(/DemoThemis: the most ambitious human infrastructure ever made/i.test(demoThemis), "DemoThemis chapter missing public title", failures);
   assert(/id=["']simple-version["']/i.test(demoThemis), "DemoThemis chapter missing simple version", failures);
   assert(/id=["']deep-dive["']/i.test(demoThemis), "DemoThemis chapter missing deep dive section", failures);
   assert(/id=["']F1f["']/i.test(demoThemis), "DemoThemis chapter missing live reserve widget", failures);
