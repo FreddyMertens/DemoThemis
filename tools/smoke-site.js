@@ -1646,6 +1646,13 @@ function checkRunThroughPriorityUxFixes(html, failures) {
     assert(liveColumns === "1fr", `${size} simulator layouts must keep app cards in one readable column`, failures);
     assert(Boolean(kpiColumns) && !/repeat\(\s*3\s*,/i.test(kpiColumns), `${size} simulator metrics must wrap responsively instead of forcing three narrow columns`, failures);
   }
+  assert(/\.liquidity-grid\s*\{[^}]*grid-template-columns:\s*1fr/is.test(css), "opening YES and NO liquidity offers must use full rows instead of compressing nested controls", failures);
+  assert(/\.liquidity-offer\s*\{[^}]*grid-template-columns:\s*minmax\(\s*4rem\s*,\s*auto\s*\)\s+minmax\(\s*7rem\s*,\s*1fr\s*\)/is.test(css), "opening liquidity controls must reserve readable room for both the side and amount", failures);
+  assert(/\.liquidity-caption\s*\{[^}]*white-space:\s*nowrap/is.test(css), "the liquidity label must not collapse into one letter per line", failures);
+  assert(/\.page-create-market\s+\.live-card\.block-fields\s*\{[^}]*minmax\(\s*min\(\s*14rem\s*,\s*100%\s*\)/is.test(css), "create-market fields must stack before their controls become unreadably narrow", failures);
+  assert(/\.machine-phase-grid\s*\{[^}]*grid-template-columns:\s*repeat\(\s*2\s*,\s*minmax\(\s*0\s*,\s*1fr\s*\)\s*\)/is.test(css), "the lifecycle map must not force four text-heavy phases into narrow columns", failures);
+  assert(/\.machine-phase:nth-child\(3\)\s*\{[^}]*grid-column:\s*2[^}]*grid-row:\s*2/is.test(css) && /\.machine-phase:nth-child\(4\)\s*\{[^}]*grid-column:\s*1[^}]*grid-row:\s*2/is.test(css), "the two-column lifecycle map must preserve a continuous reading path", failures);
+  assert(/@media\s*\(max-width:\s*920px\)[\s\S]*?\.machine-phase-grid\s*\{[^}]*grid-template-columns:\s*1fr/is.test(css), "the lifecycle map must become one column on narrower screens", failures);
   const responsiveKpiColumns = finalCssValue(".product-mode-panel[data-product-mode] .product-demo .sim-live-preview .live-kpis", "grid-template-columns");
   assert(/repeat\(\s*auto-fit\s*,\s*minmax/i.test(responsiveKpiColumns || ""), "app metrics must use content-sized responsive columns across both product themes", failures);
   assert(/minmax\(\s*0\s*,\s*1fr\s*\)/i.test(finalCssValue(".sim-live-preview", "grid-template-rows") || ""), "the app frame must allow its app viewport to shrink on short screens", failures);

@@ -711,8 +711,8 @@
   .side-button { display: grid; place-items: center; min-height: 2.7rem; border: 1px solid var(--line-strong); border-radius: 12px; background: var(--bg); color: var(--ink); font-weight: 950; }
   .side-button.yes { color: var(--good); background: var(--good-soft); border-color: color-mix(in srgb, var(--good) 38%, var(--line)); }
   .side-button.no { color: var(--bad); background: var(--bad-soft); border-color: color-mix(in srgb, var(--bad) 38%, var(--line)); }
-  .liquidity-grid { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: .46rem; }
-  .liquidity-offer { display: grid; grid-template-columns: minmax(3.7rem, auto) minmax(0, 1fr); gap: .38rem; min-width: 0; }
+  .liquidity-grid { display: grid; grid-template-columns: 1fr; gap: .46rem; }
+  .liquidity-offer { display: grid; grid-template-columns: minmax(4rem, auto) minmax(7rem, 1fr); gap: .38rem; min-width: 0; }
   .liquidity-side { min-height: 3.2rem; border: 1px solid var(--line-strong); border-radius: 11px; background: var(--bg); color: var(--ink); padding: .48rem .66rem; font-family: inherit; font-weight: 950; cursor: pointer; }
   .liquidity-side.good { color: var(--good); background: var(--good-soft); border-color: color-mix(in srgb, var(--good) 42%, var(--line)); }
   .liquidity-side.bad { color: var(--bad); background: var(--bad-soft); border-color: color-mix(in srgb, var(--bad) 42%, var(--line)); }
@@ -720,7 +720,7 @@
   .liquidity-amount { display: grid; grid-template-columns: auto minmax(0, 1fr); grid-template-rows: auto 1fr; align-items: center; column-gap: .28rem; min-width: 0; border: 1px solid var(--line-strong); border-radius: 11px; background: var(--bg); color: var(--ink); padding: .32rem .5rem; }
   .liquidity-amount:focus-within { border-color: var(--accent); box-shadow: 0 0 0 2px var(--accent-soft); }
   .liquidity-caption-row { grid-column: 1 / -1; display: flex; align-items: center; gap: .26rem; min-width: 0; }
-  .liquidity-caption { color: var(--faint); font-size: .56rem; line-height: 1; font-weight: 900; text-transform: uppercase; }
+  .liquidity-caption { color: var(--faint); font-size: .56rem; line-height: 1; font-weight: 900; text-transform: uppercase; white-space: nowrap; }
   .liquidity-caption-row .sim-help,
   .liquidity-preview-label .sim-help { width: 1.18rem; height: 1.18rem; min-width: 1.18rem; font-size: .6rem; }
   .liquidity-currency { color: var(--muted); font-weight: 900; }
@@ -811,6 +811,7 @@
   .checkout-row.winner { background: var(--accent-soft); border-color: color-mix(in srgb, var(--accent) 34%, var(--line)); color: var(--accent-ink); }
   .closed-stamp { display: grid; place-items: center; min-height: 4.2rem; border: 2px solid color-mix(in srgb, var(--good) 45%, var(--line)); border-radius: 14px; background: var(--good-soft); color: var(--good); font-size: 1.22rem; font-weight: 950; text-transform: uppercase; letter-spacing: .06em; }
   .product-demo:not(.sim-compact) .live-card.block-fields:is(.live-span-6, .live-span-7, .live-span-12) { grid-template-columns: repeat(auto-fit, minmax(min(9rem, 100%), 1fr)); }
+  .product-demo:not(.sim-compact) .page-create-market .live-card.block-fields { grid-template-columns: repeat(auto-fit, minmax(min(14rem, 100%), 1fr)); }
   .product-demo:not(.sim-compact) .live-card.block-fields:is(.live-span-6, .live-span-7, .live-span-12) > :is(.live-card-title, .live-action-row, .action-effect) { grid-column: 1 / -1; }
   .product-demo:not(.sim-compact) .live-card.block-receipt:is(.live-span-6, .live-span-7, .live-span-12) { grid-template-columns: minmax(7.5rem, .7fr) minmax(0, 1.3fr); align-items: center; }
   .product-demo:not(.sim-compact) .live-card.block-receipt:is(.live-span-6, .live-span-7, .live-span-12) > :is(.live-card-title, .live-action-row, .action-effect) { grid-column: 1 / -1; }
@@ -1199,7 +1200,7 @@
   .machine-trade-rail { display: grid; grid-template-columns: auto minmax(0, 1fr); gap: .62rem; align-items: center; margin: .85rem .85rem 0; border: 1px solid color-mix(in srgb, var(--machine-market) 28%, var(--line)); border-radius: 13px; background: linear-gradient(90deg, color-mix(in srgb, var(--machine-market-soft) 70%, var(--surface)), color-mix(in srgb, var(--machine-court-soft) 52%, var(--surface))); padding: .58rem .72rem; color: var(--ink-soft); font-size: .76rem; line-height: 1.4; transition: opacity .18s ease, filter .18s ease; }
   .machine-trade-rail strong { color: var(--machine-market); font-size: .67rem; letter-spacing: .08em; text-transform: uppercase; white-space: nowrap; }
   .machine-shell[data-route="quiet"] .machine-trade-rail { opacity: 1; filter: grayscale(.9) saturate(.25); border-color: var(--line); background: color-mix(in srgb, var(--bg) 72%, var(--surface)); }
-  .machine-phase-grid { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: .7rem; padding: .85rem; }
+  .machine-phase-grid { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: .7rem; padding: .85rem; }
   .machine-phase { --phase-color: var(--machine-court); --phase-soft: var(--machine-court-soft); position: relative; min-width: 0; border: 1px solid color-mix(in srgb, var(--phase-color) 18%, var(--line)); border-radius: 17px; background: linear-gradient(180deg, color-mix(in srgb, var(--phase-soft) 36%, var(--surface)) 0, color-mix(in srgb, var(--surface) 96%, #fff) 7.5rem); padding: .66rem; transition: opacity .18s ease, filter .18s ease; }
   .machine-phase[data-phase="build"] { --phase-color: var(--machine-market); --phase-soft: var(--machine-market-soft); }
   .machine-phase[data-phase="check"] { --phase-color: #237f83; --phase-soft: #e2f1f1; }
@@ -1207,6 +1208,12 @@
   .machine-phase[data-phase="finish"] { --phase-color: var(--machine-final); --phase-soft: var(--machine-final-soft); }
   .machine-phase:not(:last-child)::after { content: ""; position: absolute; z-index: 3; top: 2.28rem; right: -.88rem; width: 1rem; border-top: 2px solid color-mix(in srgb, var(--phase-color) 44%, var(--line)); }
   .machine-phase:not(:last-child)::before { content: ""; position: absolute; z-index: 4; top: 2.02rem; right: -.88rem; border-top: .27rem solid transparent; border-bottom: .27rem solid transparent; border-left: .38rem solid color-mix(in srgb, var(--phase-color) 56%, var(--line-strong)); }
+  .machine-phase:nth-child(3) { grid-column: 2; grid-row: 2; }
+  .machine-phase:nth-child(4) { grid-column: 1; grid-row: 2; }
+  .machine-phase:nth-child(2)::after { top: auto; right: auto; bottom: -.88rem; left: 50%; width: 0; height: 1rem; border-top: 0; border-left: 2px solid color-mix(in srgb, var(--phase-color) 44%, var(--line)); }
+  .machine-phase:nth-child(2)::before { top: auto; right: auto; bottom: -.88rem; left: calc(50% - .27rem); border-top: .38rem solid color-mix(in srgb, var(--phase-color) 56%, var(--line-strong)); border-right: .27rem solid transparent; border-bottom: 0; border-left: .27rem solid transparent; }
+  .machine-phase:nth-child(3)::after { right: auto; left: -.88rem; }
+  .machine-phase:nth-child(3)::before { right: auto; left: -.88rem; border-right: .38rem solid color-mix(in srgb, var(--phase-color) 56%, var(--line-strong)); border-left: 0; }
   .machine-phase-head { min-height: 5.55rem; border-bottom: 1px solid color-mix(in srgb, var(--phase-color) 18%, var(--line)); padding: .18rem .16rem .62rem; }
   .machine-phase-kicker { display: block; color: var(--phase-color); font-family: var(--mono); font-size: .65rem; font-weight: 950; letter-spacing: .08em; text-transform: uppercase; }
   .machine-phase-head h3 { margin: .2rem 0 .18rem; color: var(--ink); font-size: .98rem; line-height: 1.12; }
@@ -1274,6 +1281,8 @@
 
   @media (max-width: 920px) {
     .machine-phase-grid { grid-template-columns: 1fr; }
+    .machine-phase:nth-child(3),
+    .machine-phase:nth-child(4) { grid-column: auto; grid-row: auto; }
     .machine-phase:not(:last-child)::after { top: auto; right: auto; bottom: -.74rem; left: 50%; width: 0; height: .74rem; border-top: 0; border-left: 2px solid color-mix(in srgb, var(--phase-color) 44%, var(--line)); }
     .machine-phase:not(:last-child)::before { top: auto; right: auto; bottom: -.78rem; left: calc(50% - .27rem); border-top: .38rem solid color-mix(in srgb, var(--phase-color) 56%, var(--line-strong)); border-right: .27rem solid transparent; border-bottom: 0; border-left: .27rem solid transparent; }
     .machine-phase-head { min-height: 0; }
@@ -2385,84 +2394,6 @@
     .product-mode-panel[data-product-mode] .product-demo .live-head,
     .product-mode-panel[data-product-mode] .product-demo .live-card { padding: .6rem; }
     .product-mode-panel[data-product-mode] .product-demo .page-appeal-checkout .app-seat-grid { grid-template-columns: repeat(6, minmax(0, 1fr)); }
-  }
-
-  /* Responsive reading guardrails for the simulator and state map. */
-  .run-note { font-size: .98rem; line-height: 1.62; }
-  .product-switch-label span { font-size: .72rem; line-height: 1.35; }
-  .product-switch-label small { font-size: .78rem; line-height: 1.4; }
-  .product-tab-event { font-size: .7rem; }
-  .sim-url { font-size: .72rem; line-height: 1.3; }
-  .sim-browser-next-copy small { font-size: .68rem; line-height: 1.25; }
-  .sim-browser-next-copy strong { font-size: .78rem; line-height: 1.25; }
-  .product-mode-panel[data-product-mode] {
-    --product-text-caption: .78rem;
-    --product-text-meta: .84rem;
-    --product-text-body: .9rem;
-    --product-text-control: .9rem;
-    --product-text-subtitle: 1rem;
-    --product-text-title: 1.1rem;
-    --product-text-display: 1.32rem;
-  }
-  .product-mode-panel[data-product-mode] .run-control-panel :where(.run-controls .btn),
-  .product-mode-panel[data-product-mode] .product-demo .sim-live-preview :where(
-    .app-action-bar button, .sim-app-action, .app-ballot button, .fake-actions button,
-    .liquidity-side, .liquidity-input
-  ) { min-height: 2.75rem; }
-  .protocol-sequence-kicker,
-  .protocol-sequence-current-copy span,
-  .protocol-sequence-fact span,
-  .protocol-trace-copy small,
-  .protocol-sequence-legend { font-size: .76rem; line-height: 1.4; }
-  .protocol-sequence-current h4 { font-size: 1.3rem; line-height: 1.18; }
-  .protocol-sequence-current p,
-  .protocol-record-row { font-size: .84rem; line-height: 1.5; }
-  .protocol-trace-copy strong { font-size: .82rem; line-height: 1.4; }
-  .protocol-record-row small { font-size: .76rem; line-height: 1.4; }
-  .target-callout,
-  .target-callout span,
-  .sim-tooltip { font-size: .78rem; line-height: 1.45; }
-  .target-callout b { font-size: .72rem; line-height: 1.35; }
-  .machine-primer,
-  .machine-route-summary { font-size: .9rem; line-height: 1.58; }
-  .machine-route-button { font-size: .82rem; line-height: 1.2; }
-  .machine-legend,
-  .machine-trade-rail,
-  .machine-phase-head p,
-  .machine-flow-note,
-  .machine-state-short,
-  .machine-state-detail,
-  .machine-subhead p,
-  .machine-foundation-item,
-  .machine-text-outline,
-  .machine-text-content h4 { font-size: .78rem; line-height: 1.48; }
-  .machine-trade-rail strong,
-  .machine-phase-kicker,
-  .machine-phase-transition,
-  .machine-state-kind,
-  .machine-state-branch,
-  .machine-sim-chip { font-size: .72rem; line-height: 1.35; }
-  .machine-phase-head h3 { font-size: 1.05rem; line-height: 1.28; }
-  .machine-state-title { font-size: .86rem; line-height: 1.35; }
-  .machine-foundation-item b { font-size: .82rem; line-height: 1.35; }
-  .machine-text-content li { line-height: 1.5; }
-
-  @media (max-width: 620px) {
-    .content.wrap { padding-inline: .75rem; }
-    .product-mode-nav.is-awaiting-selection { padding: 1.05rem; }
-    .product-mode-nav.is-awaiting-selection .product-switch-label strong { font-size: 1.45rem; line-height: 1.2; }
-    .machine-shell { border-radius: 16px; }
-    .machine-toolbar,
-    .machine-phase-grid { padding: .7rem; }
-  }
-
-  @media (max-width: 380px) {
-    .content.wrap { padding-inline: .6rem; }
-    .product-mode-panel[data-product-mode] { --product-text-caption: .76rem; --product-text-meta: .82rem; }
-    .product-tab { grid-template-columns: auto minmax(0, 1fr); }
-    .product-tab-event { grid-column: 2; justify-self: start; }
-    .machine-phase-grid { padding: .55rem; }
-    .machine-phase { padding: .58rem; }
   }
 </style>
 </head>
