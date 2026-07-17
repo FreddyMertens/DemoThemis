@@ -143,6 +143,7 @@ function outputVector(model) {
 }
 
 const assumptionAffectFields = {
+  pricing: ["quotedCaseFee", "requiredCaseFee", "quietCaseFee", "feeRevenue", "requiredFunding", "processingPool", "operationsPool", "panelCompensation", "rewardTopUp", "supportGap", "effectiveFeeRate"],
   reserve: ["reserve", "reserveUnit", "reservePerPricedVote", "reserveVotes", "reserveBurden", "lazyLoss", "bribeCost", "retentionIncome"],
   lazy: ["lazyIncome", "lazyLoss", "lazyMargin", "lazyRatio", "benchmark.lazy.ratio", "risk.lazy", "clear.lazy"],
   supply: ["effectiveJurors", "drawJurors", "supplyLoss", "retention", "reserveRetention"],
@@ -422,6 +423,37 @@ function validateMonotonicity(labModel) {
   noIncrease("Receipt-enforceable bribe benefit with ballot privacy enabled", publicModel.bribeBenefit, privateModel.bribeBenefit);
 }
 
+function validateAdaptivePricing(labModel) {
+  const easy = labModel.compute(stateFor(labModel, "base", (state) => { state.complexity = 0.75; }));
+  const hard = labModel.compute(stateFor(labModel, "base", (state) => { state.complexity = 2; }));
+  if (hard.requiredCaseFee <= easy.requiredCaseFee) fail("Higher case complexity must raise the required case quote");
+
+  const wideSupply = labModel.compute(stateFor(labModel, "base", (state) => { state.jurors = 5000; }));
+  const thinSupply = labModel.compute(stateFor(labModel, "base", (state) => { state.jurors = 100; }));
+  if (thinSupply.panelCompensation <= wideSupply.panelCompensation) fail("Thinner eligible juror supply must raise required panel compensation");
+
+  const emptyReserve = labModel.compute(stateFor(labModel, "base", (state) => { state.reserveCoverage = 0; }));
+  const fullReserve = labModel.compute(stateFor(labModel, "base", (state) => { state.reserveCoverage = 1.5; }));
+  if (emptyReserve.reserveTopUpPerCase <= 0 || Math.abs(fullReserve.reserveTopUpPerCase) > 1e-9) {
+    fail("Reward-reserve top-up must be positive below target and zero at or above target");
+  }
+
+  const base = labModel.compute(stateFor(labModel, "base"));
+  if (base.quietCaseFee >= base.requiredCaseFee) fail("A quiet settlement must cost less than a jury case");
+  if (base.operationsPerCase > defaultAssumptions.operationsCaseCap + 1e-9) fail("Operations charge exceeds its per-case cap");
+
+  const underpricedState = stateFor(labModel, "base", (state) => {
+    state.stake = 100;
+    state.fee = 0.005;
+    state.caseHours = 4;
+    state.complexity = 2;
+  });
+  const underpriced = labModel.compute(underpricedState);
+  if (underpriced.supportGapPerCase <= 0 || labModel.modelState(underpricedState, underpriced).state !== "bad") {
+    fail("A quote above the fee ceiling must expose a support gap and leave the modeled operating range");
+  }
+}
+
 const ranges = extractRangeInputs(html);
 const presets = extractPresetObject(html);
 const visiblePresetNames = extractVisiblePresetNames(html);
@@ -572,6 +604,7 @@ if (labModel) {
   validateProtectionCrossings(labModel);
   validatePanelShortage(labModel);
   validateMonotonicity(labModel);
+  validateAdaptivePricing(labModel);
 
   Object.entries(labModel.PROTECTION_BENCHMARKS).forEach(([key, definition]) => {
     if (!definition.label || !["max", "cover", "min"].includes(definition.kind)) {

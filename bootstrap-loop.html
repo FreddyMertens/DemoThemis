@@ -4,7 +4,7 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>The bootstrap loop: seeding an unbuyable court</title>
-<meta name="description" content="PredictionMoMo gives DemoThemis's bullet proof arbitration paid cases, fees, curated aptitude tests, and proof before outside apps have to trust it.">
+<meta name="description" content="PredictionMoMo can supply early paid cases and curated aptitude tests to an independently priced DemoThemis service.">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@500;700&family=Newsreader:opsz,wght@6..72,200..700&display=swap" rel="stylesheet">
@@ -43,8 +43,8 @@
 
 <header class="hero reveal">
   <p class="kicker">The bootstrap loop</p>
-  <h1>How PredictionMoMo bootstraps an unbuyable court</h1>
-  <p class="dek">PredictionMoMo creates paid resolution work from day one; carefully checked outcomes then help DemoThemis prove its jurors and win outside disputes.</p>
+  <h1>How PredictionMoMo can bootstrap an unbuyable court</h1>
+  <p class="dek">As an early customer, PredictionMoMo can purchase resolution work from DemoThemis; carefully checked outcomes then help the independent court prove its jurors and win outside disputes.</p>
   <div class="meta">
     <span class="pill">Bootstrap loop</span>
     <span>4 min read</span>
@@ -60,14 +60,14 @@
   <section class="reveal" id="first-customer">
     <p class="sec-label">1. The starting point</p>
     <h2>PredictionMoMo starts the flywheel</h2>
-    <p class="lead">PredictionMoMo gives DemoThemis paid cases, dependable revenue, and independently checkable outcomes from day one. Those outcomes identify strong jurors, stronger jurors win more apps, and every new customer brings the court more cases and revenue.</p>
+    <p class="lead">When PredictionMoMo selects DemoThemis, it supplies paid cases and independently checkable outcomes. DemoThemis earns its own service fee; PredictionMoMo's market fee, margin, and treasury remain separate.</p>
 
     <figure class="diagram reveal">
       <div class="diagram-inner">
         <div class="amp">
-          <div class="node">PredictionMoMo opens markets<small>paid cases from day one</small></div>
+          <div class="node">PredictionMoMo selects DemoThemis<small>one customer among many</small></div>
           <span class="ar">&rarr;</span>
-          <div class="node">Fees retain jurors<small>real work funds the bench</small></div>
+          <div class="node">DemoThemis earns service fees<small>its own pricing funds the bench</small></div>
           <span class="ar">&rarr;</span>
           <div class="node">Curated outcomes test quality<small>known answers from reality</small></div>
           <span class="ar">&rarr;</span>
@@ -75,36 +75,37 @@
           <span class="ar">&#8635;</span>
         </div>
       </div>
-      <figcaption>The whole bootstrap loop. <b>Ordinary market activity supplies both demand for the court and evidence that its jurors are improving.</b></figcaption>
+      <figcaption>One possible bootstrap loop. <b>A customer-provider relationship creates early demand without joining the products' economics.</b></figcaption>
     </figure>
   </section>
 
   <section class="reveal" id="market-supplies">
     <p class="sec-label">2. What markets provide</p>
-    <h2>Each market supplies work, money, and answer keys</h2>
-    <p class="lead">Every market gives DemoThemis a real question to settle and fee revenue. When the question has a clean, independently checkable result, its outcome can also become an aptitude test after curation.</p>
+    <h2>Integrated markets supply work and answer keys</h2>
+    <p class="lead">A market that chooses DemoThemis supplies a real question and pays DemoThemis's quoted resolution fee. PredictionMoMo's own market fee remains outside that transaction. Clean, independently checkable outcomes can also become aptitude tests after curation.</p>
 
-    <h3>The fees fund the bench</h3>
-    <p>A 2% settlement fee routes 70% to juror pay, 20% to the reward pool, and 10% to operations. Revenue rises with use instead of committing the court to a fixed payroll.</p>
+    <h3>DemoThemis receipts fund its bench</h3>
+    <p>Each jury quote locks before selection: processing cost + required panel compensation + reward-reserve top-up + capped operations charge. Panel pay follows workload and eligible supply, the reserve top-up falls to zero at target, and operations cannot exceed its approved public budget or per-case cap. Quiet cases omit panel compensation, so they cost less.</p>
 
     <div class="widget reveal">
-      <div class="widget-head"><span class="live"></span> Revenue grows the bench</div>
+      <div class="widget-head"><span class="live"></span> Build a typical 15-seat jury quote</div>
       <div class="controls">
-        <div class="row"><label for="zVol">Monthly money settled through markets</label> <b id="zVolOut">$5.0M</b></div>
-        <input id="zVol" type="range" min="100000" max="50000000" step="100000" value="5000000">
-        <div class="row"><label for="zFee">Fee taken on that flow</label> <b id="zFeeOut">2.0%</b></div>
-        <input id="zFee" type="range" min="5" max="30" step="1" value="20">
+        <div class="row"><label for="zCases">Contested cases per month</label> <b id="zCasesOut">500</b></div>
+        <input id="zCases" type="range" min="10" max="5000" step="10" value="500">
+        <div class="row"><label for="zHours">Expected work per juror</label> <b id="zHoursOut">30 min</b></div>
+        <input id="zHours" type="range" min="1" max="16" step="1" value="2">
         <div class="row"><label for="zActive">Active jurors available</label> <b id="zActiveOut">2,000</b></div>
         <input id="zActive" type="range" min="100" max="20000" step="100" value="2000">
       </div>
       <div class="readout">
-        <div class="stat"><div class="k">Monthly fee revenue</div><div class="v" id="zRev">$100k</div></div>
-        <div class="stat"><div class="k">Goes to the juror pool</div><div class="v accent" id="zPool">$70k</div></div>
-        <div class="stat"><div class="k">Pay pressure per active juror</div><div class="v" id="zJur">&hellip;</div></div>
+        <div class="stat"><div class="k">Typical jury quote</div><div class="v accent" id="zQuote">&hellip;</div></div>
+        <div class="stat"><div class="k">Required panel pay</div><div class="v" id="zPanel">&hellip;</div></div>
+        <div class="stat"><div class="k">Reserve top-up</div><div class="v" id="zReserve">&hellip;</div></div>
+        <div class="stat"><div class="k">Direct pay per active juror</div><div class="v" id="zJur">&hellip;</div></div>
       </div>
-      <p style="font-family:var(--sans);font-size:.86rem;color:var(--faint);margin:1rem 0 0">Fee revenue automatically expands juror compensation and reserve capacity, while a larger active bench distributes the growing workload.</p>
+      <p style="font-family:var(--sans);font-size:.86rem;color:var(--faint);margin:1rem 0 0">Illustrative normal-complexity case at 70% reserve coverage. The quote also includes $3 processing and the smaller of the approved monthly operations budget per case or its $100 cap, then intake checks the published fee ceiling.</p>
     </div>
-    <p>As settlement volume grows, the same fixed routing recruits more jurors, funds stronger reserves, and increases the court's capacity without a fixed payroll.</p>
+    <p>As case volume rises, the quote pays more when each eligible juror carries more work and less when supply catches up. Pricing moves only between published epochs; the case's complexity class and quote are fixed before the draw.</p>
 
     <h3>Objective outcomes provide answer keys</h3>
     <p>For ordinary cases, the <a href="demothemis.html#quality-engine">scoring system</a> rewards useful judgment beyond the obvious majority guess. Objective results&mdash;a final score, timestamped price, or election&mdash;add an outside answer key that measures the whole panel against reality.</p>
@@ -143,14 +144,14 @@
   <section class="reveal" id="next-customer">
     <p class="sec-label">4. Expansion</p>
     <h2>A stronger court attracts the next customer</h2>
-    <p class="lead">PredictionMoMo is the first rung. Its fees, cases, and measured results give DemoThemis the performance record that wins wider disputes from other apps.</p>
+    <p class="lead">PredictionMoMo can be an early customer. Fees paid for the cases it actually sends, plus measured results from those cases, can help DemoThemis build a performance record for other apps.</p>
 
     <ol class="stepper reveal">
       <li>
         <span class="step-n">1</span>
         <div class="step-body">
-          <h3>Markets only</h3>
-          <p>Market fees pay jurors, curated objective outcomes grade them, and public verdicts plus aggregate proofs build a verifiable record without exposing juror histories.</p>
+          <h3>Initial customers</h3>
+          <p>DemoThemis service fees pay jurors, curated objective outcomes grade them, and public verdicts plus aggregate proofs build a verifiable record without exposing juror histories.</p>
         </div>
       </li>
       <li>
@@ -190,21 +191,20 @@
 
 <script src="assets/common.js"></script>
 <script>
-// ============ bootstrap economics ============
+// ============ adaptive jury quote ============
 (function () {
   "use strict";
-  var vol = document.getElementById("zVol");
-  var fee = document.getElementById("zFee");
+  var cases = document.getElementById("zCases");
+  var hours = document.getElementById("zHours");
   var active = document.getElementById("zActive");
-  if (!vol || !fee || !active) return;
-  var volOut = document.getElementById("zVolOut");
-  var feeOut = document.getElementById("zFeeOut");
+  if (!cases || !hours || !active) return;
+  var casesOut = document.getElementById("zCasesOut");
+  var hoursOut = document.getElementById("zHoursOut");
   var activeOut = document.getElementById("zActiveOut");
-  var rev = document.getElementById("zRev");
-  var pool = document.getElementById("zPool");
+  var quote = document.getElementById("zQuote");
+  var panel = document.getElementById("zPanel");
+  var reserve = document.getElementById("zReserve");
   var jur = document.getElementById("zJur");
-
-  var POOL_SHARE = 0.7;
 
   function money(n) {
     if (n >= 1000000) return "$" + (n / 1000000).toFixed(n >= 10000000 ? 0 : 1) + "M";
@@ -213,20 +213,26 @@
   }
 
   function update() {
-    var v = parseInt(vol.value, 10);
-    var f = parseInt(fee.value, 10) / 10;
+    var c = parseInt(cases.value, 10);
+    var h = parseInt(hours.value, 10) / 4;
     var a = parseInt(active.value, 10);
-    var revenue = v * (f / 100);
-    var poolUsd = revenue * POOL_SHARE;
-    volOut.textContent = money(v);
-    feeOut.textContent = f.toFixed(1) + "%";
+    var seats = 15;
+    var load = c * seats / Math.max(1, a);
+    var pressure = Math.max(.75, Math.min(2.5, Math.sqrt(load / 4)));
+    var panelPay = 12 * h * pressure * seats;
+    var reserveTopUp = panelPay * .3;
+    var operations = Math.min(100, 4000 / Math.max(1, c));
+    var total = 3 + panelPay + reserveTopUp + operations;
+    casesOut.textContent = c.toLocaleString("en-US");
+    hoursOut.textContent = h < 1 ? Math.round(h * 60) + " min" : h.toFixed(h % 1 ? 2 : 0).replace(/\.00$/, "") + (h === 1 ? " hour" : " hours");
     activeOut.textContent = a.toLocaleString("en-US");
-    rev.textContent = money(revenue);
-    pool.textContent = money(poolUsd);
-    jur.textContent = money(poolUsd / Math.max(1, a));
+    quote.textContent = money(total);
+    panel.textContent = money(panelPay);
+    reserve.textContent = money(reserveTopUp);
+    jur.textContent = money(c * panelPay / Math.max(1, a)) + "/mo";
   }
-  vol.addEventListener("input", update);
-  fee.addEventListener("input", update);
+  cases.addEventListener("input", update);
+  hours.addEventListener("input", update);
   active.addEventListener("input", update);
   update();
 })();

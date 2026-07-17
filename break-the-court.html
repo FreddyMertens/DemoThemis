@@ -351,13 +351,14 @@
               </div>
             </fieldset>
             <details class="fine-controls">
-              <summary><span>All court settings</span><b>fees, timing, accuracy, rentals</b></summary>
+              <summary><span>All court settings</span><b>pricing, timing, accuracy, rentals</b></summary>
               <div class="dial-group">
-                <h3>Case timing and fees</h3>
+                <h3>Case timing and adaptive pricing</h3>
                 <div class="dial"><label for="lag">Pending-pay weeks <output id="lagOut" for="lag">&hellip;</output></label><input id="lag" type="range" min="1" max="8" step="1" value="2"></div>
-                <div class="dial"><label for="fee">Case fee <output id="feeOut" for="fee">&hellip;</output></label><input id="fee" type="range" min="5" max="30" step="1" value="20"></div>
-                <div class="dial"><label for="payShare">Immediate-pay share <output id="payShareOut" for="payShare">&hellip;</output></label><input id="payShare" type="range" min="55" max="75" step="1" value="70"></div>
-                <div class="dial"><label for="rewardShare">Long-term reward share <output id="rewardShareOut" for="rewardShare">&hellip;</output></label><input id="rewardShare" type="range" min="10" max="25" step="1" value="20"></div>
+                <div class="dial"><label for="fee">Jury-fee ceiling <output id="feeOut" for="fee">&hellip;</output></label><input id="fee" type="range" min="5" max="30" step="1" value="20"></div>
+                <div class="dial"><label for="caseHours">Expected work per juror <output id="caseHoursOut" for="caseHours">&hellip;</output></label><input id="caseHours" type="range" min="1" max="16" step="1" value="2"></div>
+                <div class="dial"><label for="complexity">Case complexity <output id="complexityOut" for="complexity">&hellip;</output></label><input id="complexity" type="range" min="75" max="200" step="5" value="100"></div>
+                <div class="dial"><label for="reserveCoverage">Reward-reserve coverage <output id="reserveCoverageOut" for="reserveCoverage">&hellip;</output></label><input id="reserveCoverage" type="range" min="0" max="150" step="5" value="70"></div>
               </div>
               <div class="dial-group">
                 <h3>Juror accuracy</h3>
@@ -378,7 +379,7 @@
             <div class="board">
               <div class="board-head"><h3>How the defences respond</h3><span class="chip" id="bottleneckChip">&hellip;</span></div>
               <div class="map">
-                <div class="node" id="nodeDemand" data-n="01"><h4>Demand funds the court</h4><p>Disputed value creates fee revenue for juror pay and long-term rewards.</p><div class="node-stats" id="nodeDemandV">&hellip;</div></div>
+                <div class="node" id="nodeDemand" data-n="01"><h4>Each quote funds its work</h4><p>Processing, panel compensation, reserve top-up, and capped operations are priced before the draw.</p><div class="node-stats" id="nodeDemandV">&hellip;</div></div>
                 <div class="node" id="nodePay" data-n="02"><h4>Funding keeps jurors available</h4><p>Viable compensation supports a wider retained and drawable juror pool.</p><div class="node-stats" id="nodePayV">&hellip;</div></div>
                 <div class="node" id="nodePanel" data-n="03"><h4>Random panels resist control</h4><p>Case-bound draws and scaled jury rules push attacker-majority odds down.</p><div class="node-stats" id="nodePanelV">&hellip;</div></div>
                 <div class="node" id="nodeKeys" data-n="04"><h4>Aptitude tests protect quality</h4><p>Known-answer tests distinguish careful judgment from crowd-copying.</p><div class="node-stats" id="nodeKeysV">&hellip;</div></div>
@@ -436,7 +437,7 @@
         <details class="assumption-drawer">
           <summary><span>Model relationships</span><b>four short equations</b></summary>
           <div class="story">
-            <div class="story-card"><h3>Funding</h3><p class="formula">disputed value &times; fee = court revenue<br>revenue funds immediate pay, rewards, and operations</p></div>
+            <div class="story-card"><h3>Funding</h3><p class="formula">processing + panel pay + reserve top-up + capped operations<br>= locked jury quote within the published ceiling</p></div>
             <div class="story-card"><h3>Juror exposure</h3><p class="formula">pay per vote &times; exposure rule = pending pay at risk<br>collectible loss must exceed the shortcut benefit</p></div>
             <div class="story-card"><h3>Jury control</h3><p class="formula">qualified coalition seats + usable rentals<br>finite random draw &rarr; attacker-majority chance</p></div>
             <div class="story-card"><h3>Decision quality</h3><p class="formula">individual answer accuracy + aptitude-test signal<br>&rarr; correct-majority estimate</p></div>
@@ -486,7 +487,7 @@
     Array.prototype.forEach.call(document.querySelectorAll(".lab-shell input, .lab-shell button"), function (control) { control.disabled = true; });
     if (window.console && console.error) console.error(error);
   }
-  var ids = ["flow", "stake", "lag", "fee", "payShare", "rewardShare", "jurors", "skill", "careless", "slash", "syntheticTests", "bloc", "rented", "rerolls"];
+  var ids = ["flow", "stake", "lag", "fee", "caseHours", "complexity", "reserveCoverage", "jurors", "skill", "careless", "slash", "syntheticTests", "bloc", "rented", "rerolls"];
   var lockIds = ["lockDraw", "lockBallot", "lockFace", "lockReserve", "lockKeys", "lockAppeal"];
   var ATTACK_LABELS = {
     capture: "Coordinated coalition",
@@ -515,12 +516,12 @@
   function minBenchmarkRatio(actual, floor) { return actual / Math.max(EPSILON, floor); }
   function benchmarkPressure(check) { return !check || !check.applicable || check.ratio === Infinity ? 0 : clamp(1 / Math.max(EPSILON, check.ratio), 0, 1); }
   var PRESET_CASES = {
-    base: { flow: 5000000, stake: 45, lag: 4, fee: 20, payShare: 70, rewardShare: 20, jurors: 52, skill: 68, careless: 25, slash: 100, bloc: 300, rented: 0, rerolls: 1, locks: true, syntheticTests: 1000 },
-    cold: { flow: 500000, stake: 35, lag: 4, fee: 20, payShare: 70, rewardShare: 20, jurors: 25, skill: 72, careless: 25, slash: 100, bloc: 120, rented: 300, rerolls: 1, locks: true, syntheticTests: 500 },
-    surge: { flow: 35000000, stake: 58, lag: 5, fee: 20, payShare: 70, rewardShare: 20, jurors: 48, skill: 68, careless: 25, slash: 100, bloc: 500, rented: 0, rerolls: 1, locks: true, syntheticTests: 2000 },
-    whale: { flow: 25000000, stake: 90, lag: 5, fee: 20, payShare: 70, rewardShare: 20, jurors: 100, skill: 72, careless: 20, slash: 100, bloc: 650, rented: 0, rerolls: 1, locks: true, syntheticTests: 5000 },
-    bloc: { flow: 8000000, stake: 65, lag: 4, fee: 20, payShare: 70, rewardShare: 20, jurors: 100, skill: 68, careless: 25, slash: 100, bloc: 1000, rented: 0, rerolls: 1, locks: true, syntheticTests: 6000 },
-    drift: { flow: 1200000, stake: 38, lag: 6, fee: 20, payShare: 70, rewardShare: 20, jurors: 45, skill: 72, careless: 25, slash: 100, bloc: 100, rented: 0, rerolls: 1, locks: true, syntheticTests: 700 }
+    base: { flow: 5000000, stake: 45, lag: 4, fee: 20, caseHours: 2, complexity: 100, reserveCoverage: 70, jurors: 52, skill: 68, careless: 25, slash: 100, bloc: 300, rented: 0, rerolls: 1, locks: true, syntheticTests: 1000 },
+    cold: { flow: 500000, stake: 35, lag: 4, fee: 20, caseHours: 2, complexity: 100, reserveCoverage: 70, jurors: 25, skill: 72, careless: 25, slash: 100, bloc: 120, rented: 300, rerolls: 1, locks: true, syntheticTests: 500 },
+    surge: { flow: 35000000, stake: 58, lag: 5, fee: 20, caseHours: 2, complexity: 100, reserveCoverage: 70, jurors: 48, skill: 68, careless: 25, slash: 100, bloc: 500, rented: 0, rerolls: 1, locks: true, syntheticTests: 2000 },
+    whale: { flow: 25000000, stake: 90, lag: 5, fee: 20, caseHours: 2, complexity: 100, reserveCoverage: 70, jurors: 100, skill: 72, careless: 20, slash: 100, bloc: 650, rented: 0, rerolls: 1, locks: true, syntheticTests: 5000 },
+    bloc: { flow: 8000000, stake: 65, lag: 4, fee: 20, caseHours: 2, complexity: 100, reserveCoverage: 70, jurors: 100, skill: 68, careless: 25, slash: 100, bloc: 1000, rented: 0, rerolls: 1, locks: true, syntheticTests: 6000 },
+    drift: { flow: 1200000, stake: 38, lag: 6, fee: 20, caseHours: 2, complexity: 100, reserveCoverage: 70, jurors: 45, skill: 72, careless: 25, slash: 100, bloc: 100, rented: 0, rerolls: 1, locks: true, syntheticTests: 700 }
   };
   var STRESS_CASES = [
     { id: "cold", label: "Thin juror pool", note: "266 opted-in jurors · 300 rental attempts", preset: "cold" },
@@ -541,7 +542,7 @@
   var ASSUMPTIONS = window.ASSUMPTIONS;
   var OUTPUT_DEPENDENCIES = [
     { label: "Correct-majority estimate", deps: "individual answer accuracy, jury size, aptitude tests, reward incentive" },
-    { label: "Average juror funding", deps: "monthly disputed value, fee split, case workload, retained jurors" },
+    { label: "Average juror funding", deps: "eligible supply, case volume, panel size, expected work, complexity" },
     { label: "Lazy-vote margin", deps: "pay per vote, shortcut benefit, collectible penalty, pending-pay exposure" },
     { label: "Drawable jurors", deps: "opted-in jurors, pending-pay burden, reward pool, eligibility assumptions" },
     { label: "Jury-control chance", deps: "drawable pool, coalition qualification, rentals, face checks, public draw, scaled jury rules" },
@@ -569,6 +570,7 @@
   function attackLabel(key) { return ATTACK_LABELS[key] || ATTACK_LABELS[key === "bloc" ? "capture" : key] || key; }
   function attackForRisk(key) { return RISK_TO_ATTACK[key] || key; }
   var AFFECT_LABELS = {
+    pricing: "case quote",
     reserve: "money at risk",
     lazy: "lazy voting",
     supply: "juror supply",
@@ -589,12 +591,14 @@
     var weakestAttack = checks[0] || null;
     var quality = { key: "quality", applicable: m.correctPanel !== null, ratio: m.correctPanel === null ? 0 : m.correctPanel / QUALITY_FLOOR, actual: m.correctPanel, floor: QUALITY_FLOOR };
     var weakest = !weakestAttack || quality.ratio < weakestAttack.ratio ? quality : weakestAttack;
-    var state = m.panelShortage || m.appealPanelShortage || !weakest || weakest.ratio < 1 ? "bad" : weakest.ratio < STRONG_BENCHMARK_RATIO ? "mid" : "good";
+    var pricingGap = m.supportGapPerCase > EPSILON;
+    var state = pricingGap || m.panelShortage || m.appealPanelShortage || !weakest || weakest.ratio < 1 ? "bad" : weakest.ratio < STRONG_BENCHMARK_RATIO ? "mid" : "good";
     var disabledLocks = lockIds.filter(function (id) { return !v[id]; });
     return {
       state: state,
       label: state === "good" ? "Strong" : state === "mid" ? "Thin margin" : "Outside range",
       teaching: disabledLocks.length > 0,
+      pricingGap: pricingGap,
       disabledLocks: disabledLocks,
       cleared: checks.filter(function (check) { return check.ratio < 1; }).map(function (check) { return check.key; }),
       top: weakest ? { key: weakest.key, attack: attackForRisk(weakest.key), value: weakest.key === "quality" ? clamp(1 - m.correctPanel, 0, 1) : benchmarkPressure(weakest), ratio: weakest.ratio } : { key: "capture", attack: "bloc", value: 1, ratio: 0 },
@@ -609,9 +613,9 @@
     s.stake = clamp(s.stake, 100, 5000000);
     s.lag = clamp(Math.round(s.lag), 1, 8);
     s.fee = clamp(s.fee, .005, .03);
-    s.payShare = clamp(s.payShare, .55, .75);
-    s.rewardShare = clamp(s.rewardShare, .1, .25);
-    s.opsShare = Math.max(0, 1 - s.payShare - s.rewardShare);
+    s.caseHours = clamp(s.caseHours, .25, 4);
+    s.complexity = clamp(s.complexity, .75, 2);
+    s.reserveCoverage = clamp(s.reserveCoverage, 0, 1.5);
     s.jurors = Math.round(clamp(s.jurors, 100, 5000));
     s.skill = clamp(s.skill, .52, .88);
     s.careless = clamp(s.careless, .1, .5);
@@ -674,6 +678,7 @@
 
   function formatAssumption(a, value) {
     if (a.format === "pct") return pct(value);
+    if (a.format === "money") return money(value);
     if (a.format === "int") return num(value);
     if (a.format === "mult") return value.toFixed(value < 2 ? 2 : 1) + "x";
     if (a.format === "weight") return value.toFixed(2);
@@ -694,9 +699,9 @@
       lag: p.lag,
       challenge: 1,
       fee: p.fee / 1000,
-      payShare: p.payShare / 100,
-      rewardShare: p.rewardShare / 100,
-      opsShare: Math.max(0, 1 - p.payShare / 100 - p.rewardShare / 100),
+      caseHours: p.caseHours / 4,
+      complexity: p.complexity / 100,
+      reserveCoverage: p.reserveCoverage / 100,
       jurors: Math.round(span(p.jurors, 100, 5000)),
       syntheticTests: p.syntheticTests,
       skill: p.skill / 100,
@@ -874,9 +879,9 @@
     v.stake = span(v.stake, 100, 5000000);
     v.challenge = 1; // Pure court: 100% of cases go to court
     v.fee = v.fee / 1000;
-    v.payShare = v.payShare / 100;
-    v.rewardShare = v.rewardShare / 100;
-    v.opsShare = Math.max(0, 1 - v.payShare - v.rewardShare);
+    v.caseHours = v.caseHours / 4;
+    v.complexity = v.complexity / 100;
+    v.reserveCoverage = v.reserveCoverage / 100;
     v.jurors = Math.round(span(v.jurors, 100, 5000));
     v.syntheticTests = parseInt(byId("syntheticTests").value, 10);
     v.skill = v.skill / 100;
@@ -893,15 +898,50 @@
     var panel = panelFor(v.stake);
     var majority = Math.floor(panel / 2) + 1;
     var seatVotes = courtCases * panel;
-    var feeRevenue = v.flow * v.fee;
-    var jurorPayPool = feeRevenue * v.payShare;
-    var rewardPool = feeRevenue * v.rewardShare;
-    var payPerVote = jurorPayPool / Math.max(EPSILON, seatVotes);
-    var reserveUnit = payPerVote * a.reservePayMultiple;
     var activeJurors = Math.max(1, v.jurors);
     var supply = null;
+    var payPerVote = 0;
+    var reserveUnit = 0;
+    var panelCompensation = 0;
+    var processingPerCase = 0;
+    var reserveTopUpPerCase = 0;
+    var operationsPerCase = 0;
+    var requiredCaseFee = 0;
+    var quotedCaseFee = 0;
+    var quietCaseFee = 0;
+    var feeCeilingPerCase = 0;
+    var supportGapPerCase = 0;
+    var feeRevenue = 0;
+    var requiredFunding = 0;
+    var jurorPayPool = 0;
+    var rewardTopUp = 0;
+    var rewardPool = 0;
+    var processingPool = 0;
+    var operationsPool = 0;
+    var reserveGap = clamp(1 - v.reserveCoverage, 0, 1);
+    var payPressureMultiplier = 1;
 
     for (var si = 0; si < 4; si++) {
+      var workloadPerJuror = seatVotes / Math.max(1, activeJurors);
+      payPressureMultiplier = clamp(Math.sqrt(workloadPerJuror / Math.max(.1, a.targetSeatsPerJuror)), .75, 2.5);
+      payPerVote = a.baseJurorHourlyPay * v.caseHours * v.complexity * payPressureMultiplier;
+      reserveUnit = payPerVote * a.reservePayMultiple;
+      panelCompensation = payPerVote * panel;
+      processingPerCase = a.processingCostPerCase;
+      reserveTopUpPerCase = panelCompensation * reserveGap;
+      operationsPerCase = Math.min(a.operationsCaseCap, a.operationsMonthlyBudget / Math.max(EPSILON, courtCases));
+      quietCaseFee = processingPerCase + operationsPerCase;
+      requiredCaseFee = quietCaseFee + panelCompensation + reserveTopUpPerCase;
+      feeCeilingPerCase = v.stake * v.fee;
+      quotedCaseFee = Math.min(requiredCaseFee, feeCeilingPerCase);
+      supportGapPerCase = Math.max(0, requiredCaseFee - feeCeilingPerCase);
+      feeRevenue = quotedCaseFee * courtCases;
+      requiredFunding = requiredCaseFee * courtCases;
+      jurorPayPool = panelCompensation * courtCases;
+      rewardTopUp = reserveTopUpPerCase * courtCases;
+      processingPool = processingPerCase * courtCases;
+      operationsPool = operationsPerCase * courtCases;
+      rewardPool = Math.min(jurorPayPool * .2, rewardTopUp + jurorPayPool * .1 * Math.min(1, v.reserveCoverage));
       var votesPerJurorMonth = seatVotes / Math.max(1, activeJurors);
       var pendingVotes = votesPerJurorMonth * (v.lag / 4);
       var payPressure = jurorPayPool / Math.max(1, activeJurors);
@@ -932,7 +972,9 @@
         rewardSignal: rewardSignal,
         retention: retention,
         effectiveJurors: nextActiveJurors,
-        supplyLoss: Math.max(0, v.jurors - nextActiveJurors)
+        supplyLoss: Math.max(0, v.jurors - nextActiveJurors),
+        workloadPerJuror: workloadPerJuror,
+        payPressureMultiplier: payPressureMultiplier
       };
       activeJurors = nextActiveJurors;
     }
@@ -1044,6 +1086,25 @@
       reserveVotes: supply.reserveVotes,
       reserveFloorApplied: supply.reserveFloorApplied,
       feeRevenue: feeRevenue,
+      requiredFunding: requiredFunding,
+      quotedCaseFee: quotedCaseFee,
+      requiredCaseFee: requiredCaseFee,
+      quietCaseFee: quietCaseFee,
+      feeCeilingPerCase: feeCeilingPerCase,
+      effectiveFeeRate: quotedCaseFee / Math.max(1, v.stake),
+      supportGapPerCase: supportGapPerCase,
+      supportGap: supportGapPerCase * courtCases,
+      processingPerCase: processingPerCase,
+      processingPool: processingPool,
+      panelCompensation: panelCompensation,
+      reserveTopUpPerCase: reserveTopUpPerCase,
+      rewardTopUp: rewardTopUp,
+      operationsPerCase: operationsPerCase,
+      operationsPool: operationsPool,
+      reserveCoverage: v.reserveCoverage,
+      reserveGap: reserveGap,
+      workloadPerJuror: supply.workloadPerJuror,
+      payPressureMultiplier: supply.payPressureMultiplier,
       jurorPayPool: jurorPayPool,
       rewardPool: rewardPool,
       rewardPerJuror: supply.rewardPerJuror,
@@ -1154,8 +1215,9 @@
     setRangeValue("stake", money(v.stake));
     setRangeValue("lag", v.lag + (v.lag === 1 ? " week" : " weeks"));
     setRangeValue("fee", pct(v.fee));
-    setRangeValue("payShare", pct(v.payShare));
-    setRangeValue("rewardShare", pct(v.rewardShare));
+    setRangeValue("caseHours", v.caseHours < 1 ? Math.round(v.caseHours * 60) + " min" : v.caseHours.toFixed(v.caseHours % 1 ? 2 : 0).replace(/\.00$/, "") + (v.caseHours === 1 ? " hour" : " hours"));
+    setRangeValue("complexity", Math.round(v.complexity * 100) + "%");
+    setRangeValue("reserveCoverage", Math.round(v.reserveCoverage * 100) + "%");
     setRangeValue("jurors", num(v.jurors));
     setRangeValue("skill", pct(v.skill));
     setRangeValue("careless", pct(v.careless));
@@ -1183,12 +1245,12 @@
     byId("captureOut").textContent = m.capture === null ? "No panel" : pct(m.capture);
     byId("captureSub").textContent = m.panelShortage ? "need " + m.panel + " drawable jurors; only " + num(m.drawJurors) + " available" : num(m.coordinatedSeats) + " coalition + " + num(m.rentalSeats) + " rental seats in " + num(m.drawJurors) + " drawable jurors" + (m.parallelPanels > 1 ? " · " + m.parallelPanels + " juries must agree" : "");
 
-    byId("nodeDemandV").innerHTML = `<div class="node-val">${casesText(m.courtCases)} <small>cases / month</small></div><div class="node-sub"><b>${money(m.feeRevenue)}</b> funds court work</div>`;
+    byId("nodeDemandV").innerHTML = `<div class="node-val">${money(m.quotedCaseFee)} <small>typical jury quote</small></div><div class="node-sub"><b>${money(m.panelCompensation)}</b> panel pay &middot; <b>${money(m.reserveTopUpPerCase)}</b> reserve top-up${m.supportGapPerCase > 0 ? ` &middot; <b>${money(m.supportGapPerCase)}</b> above ceiling` : ""}</div>`;
     byId("nodePayV").innerHTML = `<div class="node-val">${money(m.payPressure + m.rewardPerJuror)} <small>funded / juror</small></div><div class="node-sub"><b>${num(m.effectiveJurors)}</b> retained · <b>${num(m.drawJurors)}</b> drawable</div>`;
     byId("nodePanelV").innerHTML = m.correctPanel === null ? `<div class="node-val">No panel</div><div class="node-sub">need <b>${m.panel}</b> drawable jurors</div>` : `<div class="node-val">${pct(m.correctPanel)} <small>correct majority</small></div><div class="node-sub"><b>${pct(m.capture)}</b> coalition-control chance</div>`;
     byId("nodeKeysV").innerHTML = `<div class="node-val">${pct(m.keySignal)} <small>independent signal</small></div><div class="node-sub"><b>${num(m.testSeats)}</b> graded seats · <b>${num(m.keyScale)}</b> target</div>`;
 
-    nodeClass(byId("nodeDemand"), m.feeRevenue > 0 ? "good" : "bad");
+    nodeClass(byId("nodeDemand"), m.supportGapPerCase > 0 ? "bad" : "good");
     nodeClass(byId("nodePay"), payState);
     nodeClass(byId("nodePanel"), m.panelShortage ? "bad" : (benchmarkClass(m.benchmarks.capture) === "good" && correctState === "good" ? "good" : (benchmarkClass(m.benchmarks.capture) === "bad" || correctState === "bad" ? "bad" : "mid")));
     nodeClass(byId("nodeKeys"), benchmarkClass(m.benchmarks.drift));
@@ -1324,7 +1386,8 @@
     var below = state.cleared.map(function (key) { return attackLabel(key); });
     var top = state.top;
     var detail;
-    if (m.panelShortage) detail = "The current " + m.panel + "-seat jury cannot form from " + num(m.drawJurors) + " drawable jurors.";
+    if (m.supportGapPerCase > EPSILON) detail = "The required quote exceeds the fee ceiling by " + money(m.supportGapPerCase) + " per case; intake must raise the minimum or show an explicit subsidy.";
+    else if (m.panelShortage) detail = "The current " + m.panel + "-seat jury cannot form from " + num(m.drawJurors) + " drawable jurors.";
     else if (m.appealPanelShortage) detail = "The next " + m.nextSeats + "-seat appeal jury cannot form from " + num(m.drawJurors) + " drawable jurors.";
     else if (state.state === "bad" && top.key === "quality") detail = "Decision quality does not meet its 75% operating floor.";
     else if (state.state === "bad") detail = "Failed protection benchmark: " + below.join(", ") + ". Closest check is " + attackLabel(top.key) + ".";
@@ -1394,7 +1457,13 @@
     var weakest = state.top;
     confidence = confidence || lastConfidence;
     clearsEl.replaceChildren();
-    if (state.teaching && state.state === "bad") {
+    if (state.pricingGap) {
+      status.className = "lab-status vulnerable";
+      grid.className = "lab-grid vulnerable";
+      icon.textContent = "!";
+      label.textContent = "Quote exceeds the fee ceiling";
+      detail.textContent = "Required processing, panel pay, reserve top-up, and capped operations are " + money(m.supportGapPerCase) + " above the allowed quote per case.";
+    } else if (state.teaching && state.state === "bad") {
       status.className = "lab-status vulnerable";
       grid.className = "lab-grid vulnerable";
       icon.textContent = "!";
@@ -1449,7 +1518,10 @@
       label.textContent = "Robust under modeled conditions";
       detail.textContent = "All " + state.total + " applicable attack checks hold, and decision quality clears its 75% floor.";
     }
-    if (m.panelShortage) {
+    if (state.pricingGap) {
+      byId("weakestOut").textContent = "Funding ceiling";
+      byId("weakestSub").textContent = money(m.supportGapPerCase) + " support needed per case";
+    } else if (m.panelShortage) {
       byId("weakestOut").textContent = "Panel unavailable";
       byId("weakestSub").textContent = num(m.drawJurors) + " of " + m.panel + " jurors ready";
     } else if (m.appealPanelShortage) {
@@ -1527,7 +1599,8 @@
   function setWarnings(v, m) {
     var warnings = [];
     var state = modelState(v, m);
-    if (state.state === "bad") addWarning(warnings, "Outside modeled range", state.top.key === "quality" ? "Correct-majority chance is below the 75% operating floor." : "At least one published protection benchmark is not met.");
+    if (m.supportGapPerCase > EPSILON) addWarning(warnings, "Quote exceeds ceiling", money(m.supportGapPerCase) + " per case must be covered by an explicit subsidy or higher minimum; juror pay is not reduced.");
+    if (state.state === "bad" && !state.pricingGap) addWarning(warnings, "Outside modeled range", state.top.key === "quality" ? "Correct-majority chance is below the 75% operating floor." : "At least one published protection benchmark is not met.");
     if (m.blocCapped) addWarning(warnings, "Attack seats capped by pool", "Usable coalition and rental seats cannot exceed the drawable juror pool.");
     if (m.panelShortage) addWarning(warnings, "Current panel cannot form", "This case needs " + m.panel + " drawable jurors; only " + num(m.drawJurors) + " are available.");
     if (m.appealPanelShortage) addWarning(warnings, "Appeal panel cannot form", "The next appeal needs " + m.nextSeats + " drawable jurors; only " + num(m.drawJurors) + " are available.");

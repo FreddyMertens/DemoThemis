@@ -2550,8 +2550,8 @@
         </div>
         <div class="machine-foundation-grid">
           <div class="machine-foundation-item"><b>Custody and proof</b>Funds lock before an unknown panel exists. One bound random draw, live presence checks, private ballots, and an aggregate tally protect each disputed case.</div>
-          <div class="machine-foundation-item"><b>Two governments</b>The market token may tune business settings, including a 0–1% margin above the court invoice. Person-weighted court governance may tune court settings. Neither is the judge in an active case.</div>
-          <div class="machine-foundation-item"><b>Constitutional firewall</b>The court invoice routes first, the market token cannot appoint or pay the bench, final money never reopens, and later collusion reports punish people rather than rewrite payment.</div>
+          <div class="machine-foundation-item"><b>Independent governance</b>PredictionMoMo may tune its own market fee and product settings. DemoThemis may tune its own service pricing and court settings. Neither token reaches across the product boundary or judges an active case.</div>
+          <div class="machine-foundation-item"><b>Commercial boundary</b>When PredictionMoMo selects DemoThemis, it pays the quoted resolution fee as a client. Fees, treasuries, and token economics otherwise remain separate; final money never reopens.</div>
         </div>
       </section>
 
@@ -3506,7 +3506,7 @@
       id: "case-locked", phase: "judge", order: 1, title: "Case and escrow lock",
       short: "Evidence, value at stake, and dispute contents freeze before the draw.",
       routes: ["dispute"], sim: [8], simSteps: [0],
-      detail: "Locking first prevents parties from changing the case after seeing who will judge it. It also fixes the inputs used to choose panel size and appeal cost.",
+      detail: "Locking first prevents parties from changing the case after seeing who will judge it. It also fixes the complexity class, work-based quote, panel size, and appeal-cost inputs before selection.",
       actor: "DemoThemis intake", money: "All relevant funds remain in escrow", condition: "The challenge is accepted", next: "Choose the correct court route"
     },
     {
@@ -3577,7 +3577,7 @@
       id: "settle-funds", phase: "finish", order: 2, title: "Settle funds and route the invoice",
       short: "One final operation pays public escrow, routes fees, and proves shielded juror updates in aggregate.",
       routes: ["quiet", "dispute"], sim: [12], simSteps: [1],
-      detail: "Settlement is atomic, not two clocks. Pool winners split the pot, tokens redeem, private escrow and parlays follow the final result, and the 70/20/10 invoice routes first. Juror debits, refunds, bonuses, scores, and pay update inside shielded commitments; batched proofs expose only balanced totals, never a wallet-level consequence.",
+      detail: "Settlement is atomic, not two clocks. Pool winners split the pot, tokens redeem, and the selected resolution provider receives its independent service fee. A DemoThemis jury quote covers processing, required panel compensation, any reserve top-up, and capped operations; a quiet result omits the jury cost. Juror updates settle inside shielded commitments; batched proofs expose only balanced totals, never a wallet-level consequence.",
       actor: "Settlement contracts plus private-account proofs", money: "Public escrow routes normally; individual juror amounts remain shielded", condition: "The final release rule is available", next: "Permanent closed record"
     },
     {
@@ -3619,8 +3619,8 @@
       id: "bootstrap-loop", phase: "finish", order: 7, group: "aftercare-rails", branch: "Next market ↺ Phase 01", title: "The next market gets a stronger court",
       short: "More markets create more evidence, more paid jurors, and eventually support outside escrow disputes.",
       routes: ["quiet", "dispute"], sim: [12], simSteps: [1],
-      detail: "This is the bootstrap loop: market fees fund the court; clean outcomes train it; a stronger court makes the market and later external escrow integrations more trustworthy.",
-      actor: "The combined PredictionMoMo and DemoThemis system", money: "New fees fund future service", condition: "Repeated settled use", next: "New markets and, later, outside escrow cases"
+      detail: "This is the optional bootstrap loop: clients that choose DemoThemis pay its independent service fee; clean outcomes train the court; a stronger court can win more integrations.",
+      actor: "Independent products connected by a service agreement", money: "DemoThemis earns fees only from cases sent to it", condition: "Repeated settled use", next: "New markets and, later, outside escrow cases"
     }
   ];
 

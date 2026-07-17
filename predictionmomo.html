@@ -4,7 +4,7 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>PredictionMoMo: open markets with unbuyable arbitration</title>
-<meta name="description" content="PredictionMoMo opens markets with pocket change, turns liquid positions into self-custodied tokens, and resolves disputes through DemoThemis's bullet proof, unbuyable human court.">
+<meta name="description" content="PredictionMoMo opens markets with pocket change, turns liquid positions into self-custodied tokens, and can route disputes to the independently operated DemoThemis court.">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@500;700&family=Newsreader:opsz,wght@6..72,200..700&display=swap" rel="stylesheet">
@@ -45,14 +45,6 @@
   .parts th { text-align: left; font-size: .72rem; letter-spacing: .06em; text-transform: uppercase; color: var(--faint); padding: .4rem .6rem; border-bottom: 2px solid var(--line-strong); }
   .parts td { padding: .55rem .6rem; border-bottom: 1px solid var(--line); vertical-align: top; color: var(--ink-soft); }
   .parts td:first-child { font-weight: 600; white-space: nowrap; }
-
-  /* fee split */
-  .budgetbar { display: flex; height: 36px; border-radius: 9px; overflow: hidden; border: 1px solid var(--line-strong); font-family: var(--sans); font-size: .76rem; font-weight: 700; color: #fff; margin: 1rem 0 .35rem; }
-  .budgetbar div { display: grid; place-items: center; white-space: nowrap; }
-  .bb-j { background: var(--accent); width: 70%; }
-  .bb-i { background: var(--good); width: 20%; }
-  .bb-p { background: #9aa0ab; width: 10%; }
-  .bb-keys { display: flex; gap: 1rem; flex-wrap: wrap; font-family: var(--sans); font-size: .8rem; color: var(--muted); }
 
   /* oracle evidence */
   .oracle-case-grid { display: grid; grid-template-columns: 1fr 1fr; gap: .9rem; margin: 1.4rem 0; }
@@ -132,7 +124,7 @@
     <p class="sec-label">Value prop 1</p>
     <h2>1. Bullet proof arbitration that whales cannot buy</h2>
     <p class="lead">Prediction markets do not fail when traders disagree. They fail when everyone has to stop trading the event and start trading whoever gets to define the event. UMA showed one version plainly: token-weighted truth turns a disputed outcome into a governance market with a whale chart attached.</p>
-    <p>Even an ambiguous dispute exposes the structural failure: whale weight, voter conflicts, and after-the-fact rule fights become part of price discovery. Four episodes show why PredictionMoMo replaces UMA's court with unbuyable arbitration.</p>
+    <p>Even an ambiguous dispute exposes the structural failure: whale weight, voter conflicts, and after-the-fact rule fights become part of price discovery. Four episodes show why PredictionMoMo can select independent, unbuyable arbitration instead of a token-weighted court.</p>
 
     <div class="oracle-case-grid">
       <div class="oracle-case hot">
@@ -395,7 +387,7 @@
     <p class="sec-label">Value prop 4</p>
     <h2>4. Start a market with the first bet</h2>
     <p><b>Here is the entire act of creating a market:</b> You type a question, you bet a dime on the side you believe, and you share the link. That is the whole ceremony. No listing process, no market maker, no liquidity provider, no seed money waiting in a vault.</p>
-    <p>A new market is a parimutuel pool, the structure Joseph Oller invented for Paris racetracks in 1867 because he wanted betting without a bookmaker setting odds. The pool predates every market maker ever built. Everyone bets into a shared pot, the odds are nothing more than the ratio of the two sides, and when the question resolves the winners split the entire pot pro-rata, minus the 2% fee skimmed at settlement. One refinement is ours: the first bettors set the odds blind, with no crowd to lean on, so their claims carry a time-weight bonus. A dollar staked early earns a larger slice than a dollar that arrived after the picture cleared.</p>
+    <p>A new market is a parimutuel pool, the structure Joseph Oller invented for Paris racetracks in 1867 because he wanted betting without a bookmaker setting odds. The pool predates every market maker ever built. Everyone bets into a shared pot, the odds are nothing more than the ratio of the two sides, and when the question resolves the winners split the entire pot pro-rata, minus PredictionMoMo's 2% market fee. One refinement is ours: the first bettors set the odds blind, with no crowd to lean on, so their claims carry a time-weight bonus. A dollar staked early earns a larger slice than a dollar that arrived after the picture cleared.</p>
 
     <div class="widget reveal">
       <div class="widget-head"><span class="live"></span> Born with a dime</div>
@@ -418,7 +410,7 @@
         <div class="stat"><div class="k">$1 on YES pays</div><div class="v" id="PM1py">&hellip;</div></div>
         <div class="stat"><div class="k">$1 on NO pays</div><div class="v" id="PM1pn">&hellip;</div></div>
       </div>
-      <p style="font-family:var(--sans);font-size:.86rem;color:var(--faint);margin:1rem 0 0">The 2% settlement fee comes off the pot. Pro-rata payouts keep both sides live and self-balancing: when YES gets crowded, NO becomes more rewarding and attracts the countertrade.</p>
+      <p style="font-family:var(--sans);font-size:.86rem;color:var(--faint);margin:1rem 0 0">PredictionMoMo's 2% market fee comes off the pot. Pro-rata payouts keep both sides live and self-balancing: when YES gets crowded, NO becomes more rewarding and attracts the countertrade.</p>
     </div>
 
     <p>Notice what the demo never asks for. <b>Nobody funds the market before the crowd exists, because the first dime in is the market.</b> Your opening bet is the listing fee, the seed, and the dare, all at once, and the share link is the entire distribution strategy.</p>
@@ -560,22 +552,25 @@
   </section>
   <section class="reveal">
     <p class="sec-label">The economics</p>
-    <h2>The fee that pays the court</h2>
-    <p>The whole business model is one number, printed once. A 2% fee comes off every pot at settlement and splits three ways: 70% pays the jurors, 20% feeds the reward pool that pays the active, high-quality ones, 10% runs the protocol. The 2% base and its split are constitutional and route first; <a href="governance.html">the market's own token</a> may vote a margin of up to one extra point on top, which is the company's revenue, and the juror payroll never depends on it. The market pays for the court that settles it, and the court is what makes it worth betting in.</p>
+    <h2>Independent product economics</h2>
+    <p>PredictionMoMo currently models a 2% market fee at settlement. That fee belongs to PredictionMoMo's economics and is governed without reference to DemoThemis. When selected, DemoThemis separately locks a work-based resolution quote before any jury is drawn; neither fee is a percentage of the other, and neither product controls the other's revenue.</p>
 
     <figure class="diagram reveal">
       <div class="diagram-inner">
-        <div class="budgetbar"><div class="bb-j">70%</div><div class="bb-i">20%</div><div class="bb-p">10%</div></div>
-        <div class="bb-keys">
-          <span>70% juror pay</span>
-          <span>20% reward pool</span>
-          <span>10% protocol operations</span>
+        <div class="parts-wrap">
+          <table class="parts">
+            <thead><tr><th>Product</th><th>Its own charge</th><th>Controlled by</th></tr></thead>
+            <tbody>
+              <tr><td>PredictionMoMo</td><td>Market fee: 2% in the current model</td><td>PredictionMoMo governance and treasury</td></tr>
+              <tr><td>DemoThemis</td><td>Independent work-based quote; quiet cases cost less</td><td>DemoThemis governance and treasury</td></tr>
+            </tbody>
+          </table>
         </div>
       </div>
-      <figcaption>The 2% settlement fee, split once. <b>The split sums to one, so no dollar is ever promised twice.</b></figcaption>
+      <figcaption>An integration can create a service payment between the products. <b>It never merges their fees, margins, treasuries, or governance.</b></figcaption>
     </figure>
 
-    <p>That is PredictionMoMo: unbuyable arbitration, self-held claims, neutral private escrow, dime-sized market starts, tradeable disputes, and parlays without bookie risk. The next chapter shows how settled markets both pay jurors and help identify the careful ones.</p>
+    <p>That is PredictionMoMo: independent market economics, self-held claims, neutral private escrow, dime-sized market starts, tradeable disputes, and parlays without bookie risk. The next chapter shows how choosing DemoThemis can supply paid resolution cases and independently checkable outcomes without joining the products' economics.</p>
   </section>
 
   <footer class="endnote reveal">
@@ -659,7 +654,7 @@
       } else if (Y > 0 && N > 0 && bets === 2) {
         narr.textContent = "Both sides are in. The odds are just the ratio of the pools, updating with every bet, and the crowded side's payout shrinks while the thin side's grows, which is what recruits the other side.";
       } else {
-        narr.textContent = "Pot " + courtMoney(Y + N) + " across " + bets + " bets. Each winner takes a pro-rata slice of everything, minus the 2% settlement fee.";
+        narr.textContent = "Pot " + courtMoney(Y + N) + " across " + bets + " bets. Each winner takes a pro-rata slice of everything, minus PredictionMoMo's 2% market fee.";
       }
     }
     render();

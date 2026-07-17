@@ -289,13 +289,13 @@
 
   window.initTooltips = function() {
     const MAIN_COPIES = {
-      flow: "The total value disputed through the court each month. It sets monthly case volume and fee revenue.",
+      flow: "The total value disputed through the court each month. Together with typical case value, it sets case volume and juror workload.",
       stake: "The typical value at risk in a contested case. The model uses it as a proxy for case stakes, jury size, and attack value.",
-      challenge: "The percentage of total settlement flow that escalates to court. The rest are 'quiet cases' that settle without jurors but still pay the system fee.",
       lag: "How many weeks juror pay at risk remains pending before finality. Longer windows increase its burden and the value of delay.",
-      fee: "The fee charged on monthly disputed value. It funds immediate juror pay, long-term rewards, and operations.",
-      payShare: "The share of fee revenue paid to jurors for current case work.",
-      rewardShare: "The share of fee revenue reserved for long-term juror quality rewards.",
+      fee: "The maximum share of case value the work-based jury quote may charge. Governance can set this ceiling only between 0.5% and 3%.",
+      caseHours: "The expected evidence and decision time for each juror. It is locked with the case before selection.",
+      complexity: "The published complexity multiplier applied to expected juror work. It is fixed before the draw.",
+      reserveCoverage: "Current reward-reserve funding versus its target. Cases top it up only below 100% coverage.",
       jurors: "The opted-in registered juror pool before retention, availability, and draw eligibility are applied. This launch-scale model spans 100 to 5,000 jurors.",
       skill: "The chance that a careful juror reaches the correct answer before aptitude-test and reward effects are applied.",
       careless: "The assumed error rate of lazy, shortcut voting. It helps set the juror pay at risk needed to make that shortcut unprofitable.",
