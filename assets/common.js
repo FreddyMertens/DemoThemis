@@ -34,6 +34,16 @@
   }
   var here = fileOf(location.pathname);
 
+  function initLocalFileLinks() {
+    if (location.protocol !== "file:") return;
+    var homeFile = /\/DemoThemisMVP\/web\/public\//i.test(location.pathname)
+      ? "proposal-home.html"
+      : "index.html";
+    Array.prototype.forEach.call(document.querySelectorAll('a[href="/"]'), function (link) {
+      link.setAttribute("href", homeFile);
+    });
+  }
+
   function slug(s) {
     return s.toLowerCase().replace(/[^a-z0-9]+/g, "-").replace(/^-+|-+$/g, "").slice(0, 48);
   }
@@ -384,6 +394,7 @@
   window.addEventListener("resize", onProgress);
   onProgress();
   initReveal();
+  initLocalFileLinks();
   initNav();
   initSeries();
   initToc();

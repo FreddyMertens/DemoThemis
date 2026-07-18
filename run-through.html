@@ -2395,6 +2395,236 @@
     .product-mode-panel[data-product-mode] .product-demo .live-card { padding: .6rem; }
     .product-mode-panel[data-product-mode] .product-demo .page-appeal-checkout .app-seat-grid { grid-template-columns: repeat(6, minmax(0, 1fr)); }
   }
+
+  /* Responsive hardening for the embedded product run-through. */
+  .product-mode-nav,
+  .product-tabs,
+  .product-tab,
+  .product-tab-copy,
+  .product-tab-copy > *,
+  .run-progress-summary,
+  .sim-browser-bar > *,
+  .protocol-sequence-header > *,
+  .protocol-sequence-badges,
+  .tutorial-top > *,
+  .receipt-detail > *,
+  .liquidity-offer > *,
+  .mini-row > *,
+  .app-route-step > *,
+  .evidence-item > * { min-width: 0; }
+  .product-tab-copy small { overflow-wrap: anywhere; }
+
+  /* Receipt rows respond to the card they occupy, not only to the page width. */
+  .live-card { container: live-card / inline-size; }
+  @container live-card (max-width: 16rem) {
+    .receipt-detail {
+      grid-template-columns: minmax(0, 1fr);
+      align-items: start;
+      gap: .12rem;
+    }
+    .receipt-detail dd {
+      width: 100%;
+      overflow-wrap: anywhere;
+      word-break: normal;
+    }
+  }
+
+  /* The 12-column card plan is a desktop layout. Tablet-sized app surfaces stack. */
+  @container run-stage (max-width: 760px) {
+    .product-mode-panel[data-product-mode] .product-demo .live-main,
+    .product-mode-panel[data-product-mode] .product-demo .protocol-sequence-records,
+    .product-mode-panel[data-product-mode] .product-demo .protocol-trace {
+      grid-template-columns: minmax(0, 1fr);
+    }
+    .product-mode-panel[data-product-mode] .product-demo .live-main > .live-card,
+    .product-mode-panel[data-product-mode] .product-demo .protocol-sequence .protocol-record.live-card {
+      --protocol-record-span: 12;
+      grid-column: 1 / -1;
+    }
+    .product-mode-panel[data-product-mode] .product-demo .protocol-trace-step:not(:last-child)::after {
+      top: auto;
+      right: auto;
+      bottom: -.58rem;
+      left: 1.42rem;
+      width: 1px;
+      height: .58rem;
+      transform: none;
+    }
+  }
+
+  @media (max-width: 720px) {
+    .product-switch-label {
+      grid-template-columns: minmax(0, 1fr);
+      align-items: start;
+    }
+    .product-switch-label small { grid-column: 1; }
+  }
+
+  @media (max-width: 420px) {
+    .product-mode-nav { padding: .52rem; }
+    .product-tabs,
+    .product-mode-nav.is-awaiting-selection .product-tabs { grid-template-columns: minmax(0, 1fr); }
+    .product-tab,
+    .product-mode-nav.is-awaiting-selection .product-tab {
+      grid-template-columns: auto minmax(0, 1fr);
+      width: 100%;
+    }
+    .product-tab-event { display: none; }
+    .product-mode-nav.is-awaiting-selection .product-tab-event {
+      display: inline-flex;
+      grid-column: 2;
+      justify-self: start;
+    }
+    .run-progress-summary {
+      display: grid;
+      grid-template-columns: auto minmax(0, 1fr) auto;
+      align-items: center;
+      justify-content: stretch;
+      gap: .35rem;
+      width: 100%;
+      overflow: visible;
+      white-space: normal;
+    }
+    .run-progress-sep,
+    .run-progress-stage { display: none; }
+    .run-progress-title {
+      overflow: visible;
+      text-overflow: clip;
+      white-space: normal;
+    }
+    .event-navigator-toggle { justify-self: end; }
+  }
+
+  @container run-stage (max-width: 320px) {
+    .product-mode-panel[data-product-mode] .product-demo .sim-browser-bar {
+      grid-template-columns: minmax(0, 1fr);
+      gap: .3rem;
+    }
+    .product-mode-panel[data-product-mode] .product-demo .sim-url { display: none; }
+    .product-mode-panel[data-product-mode] .product-demo .sim-browser-back,
+    .product-mode-panel[data-product-mode] .product-demo .sim-browser-next {
+      grid-column: 1;
+      width: 100%;
+      max-width: none;
+      min-width: 0;
+      justify-content: space-between;
+    }
+    .product-mode-panel[data-product-mode] .product-demo :is(.sim-browser-back-label, .sim-browser-next-copy strong) {
+      overflow: visible;
+      text-overflow: clip;
+      white-space: normal;
+      overflow-wrap: anywhere;
+    }
+    .product-mode-panel[data-product-mode] .product-demo .tutorial-top {
+      display: grid;
+      grid-template-columns: minmax(0, 1fr);
+      align-items: start;
+    }
+    .product-mode-panel[data-product-mode] .product-demo :is(.tutorial-step, .tutorial-rewind) {
+      justify-self: start;
+      white-space: normal;
+    }
+    .product-mode-panel[data-product-mode] .product-demo :is(
+      .liquidity-offer,
+      .liquidity-preview,
+      .trade-ticket,
+      .long-ticket .trade-ticket,
+      .big-odds,
+      .side-picker,
+      .app-ballot,
+      .token-wallet,
+      .participant-grid,
+      .scoreboard,
+      .protocol-sequence-facts
+    ) { grid-template-columns: minmax(0, 1fr); }
+    .product-mode-panel[data-product-mode] .product-demo :is(
+      .mini-row,
+      .app-row,
+      .app-route-step,
+      .checkout-row,
+      .check-item,
+      .face-check,
+      .evidence-item,
+      .protocol-record-row,
+      .ticket-summary
+    ) {
+      display: grid;
+      grid-template-columns: minmax(0, 1fr);
+      align-items: start;
+      justify-content: stretch;
+    }
+    .product-mode-panel[data-product-mode] .product-demo :is(
+      .mini-row,
+      .app-row,
+      .app-route-step,
+      .checkout-row,
+      .check-item,
+      .face-check,
+      .evidence-item,
+      .protocol-record-row,
+      .ticket-summary
+    ) :is(b, small, span) {
+      grid-column: 1;
+      max-width: 100%;
+      text-align: left;
+      white-space: normal;
+      overflow-wrap: anywhere;
+      word-break: normal;
+    }
+    .product-mode-panel[data-product-mode] .product-demo .protocol-sequence-header {
+      grid-template-columns: auto minmax(0, 1fr);
+    }
+    .product-mode-panel[data-product-mode] .product-demo .protocol-sequence-badges {
+      grid-column: 1 / -1;
+      justify-content: flex-start;
+      padding-left: 0;
+    }
+    .product-mode-panel[data-product-mode] .product-demo .protocol-sequence-current {
+      grid-template-columns: minmax(0, 1fr);
+      align-items: start;
+    }
+    .product-mode-panel[data-product-mode] .product-demo :is(.protocol-sequence-badge, .protocol-sequence-status) {
+      justify-self: start;
+      max-width: 100%;
+      white-space: normal;
+    }
+    .product-mode-panel[data-product-mode] .product-demo .protocol-sequence-status { justify-self: start; }
+    .product-mode-panel[data-product-mode] .product-demo :is(
+      .protocol-sequence-badge,
+      .protocol-sequence-status,
+      .protocol-record-row,
+      .mini-row,
+      .app-row,
+      .app-route-step,
+      .checkout-row,
+      .check-item,
+      .face-check,
+      .evidence-item
+    ) { font-size: max(.7rem, var(--product-text-caption)); }
+  }
+
+  @media (max-width: 320px) {
+    .machine-shell :where(*) { min-width: 0; }
+    .machine-toolbar,
+    .machine-phase-grid { padding: .55rem; }
+    .machine-route-button,
+    .machine-trade-rail strong,
+    .machine-phase-transition,
+    .machine-state-kind,
+    .machine-state-branch,
+    .machine-sim-chip {
+      max-width: 100%;
+      white-space: normal;
+      overflow-wrap: anywhere;
+    }
+  }
+
+  /* Keep the built-in responsive audit deterministic even when the browser is backgrounded. */
+  .layout-audit-mode .reveal {
+    opacity: 1;
+    transform: none;
+    transition: none;
+  }
 </style>
 </head>
 <body>
@@ -4143,7 +4373,7 @@
   function updateSimulatorSizeState() {
     var demoEl = document.getElementById("productDemo");
     var width = demoEl ? Math.round(demoEl.getBoundingClientRect().width) : Math.round(window.innerWidth || 0);
-    var isCompact = width <= 620;
+    var isCompact = width <= 760;
     var isTight = width <= 540;
     var isUltra = width <= 380;
     if (demoEl) {
@@ -6132,7 +6362,7 @@
 
   function activeCoachmarkTarget() {
     var root = document.getElementById("productDemo");
-    var target = root && root.querySelector(".guided-target");
+    var target = root && root.querySelector(".guided-target:not(:disabled)");
     if (target) return target;
     var continuation = document.getElementById("runNext");
     if (continuation && continuation.classList.contains("guided-target") && !continuation.hidden && !continuation.disabled) return continuation;
@@ -8115,15 +8345,40 @@
     var boundary = coachmarkBoundaryForTarget(target);
     var targetRect = coachmarkClippedTargetRect(target, boundary);
     if (!targetRect || targetRect.width < 1 || targetRect.height < 1) {
+      coach.hidden = true;
       coach.style.opacity = "0";
       coach.style.visibility = "hidden";
       coach.style.pointerEvents = "none";
       hideCoachmarkConnector();
       return;
     }
+    coach.hidden = false;
     coach.style.removeProperty("opacity");
     coach.style.removeProperty("visibility");
     coach.style.removeProperty("pointer-events");
+    var demoSurface = document.getElementById("productDemo");
+    var compactCoachmark = demoSurface && demoSurface.getBoundingClientRect().width <= 760;
+    if (compactCoachmark) {
+      var compactAudit = {
+        startedAt: startedAt,
+        stage: stage,
+        step: activeEventStep,
+        targetKey: targetKey,
+        reason: coachmarkInvalidationReason,
+        cacheHit: false,
+        textMapComplete: true,
+        textRectCount: 0,
+        candidateCount: 0,
+        vacancyCandidateCount: 0,
+        zeroTextCandidateCount: 0,
+        clearConnectorCandidateCount: 0
+      };
+      renderCoachmarkInline(coach, target, targetKey, compactAudit);
+      recordCoachmarkAudit(coach, compactAudit);
+      coachmarkTargetKey = targetKey;
+      coachmarkInvalidationReason = "positioned";
+      return;
+    }
     var obstacleResult = collectCoachmarkTextRects(target, boundary, targetKey);
     var measurements = measureCoachmarkWidths(coach, boundary);
     targetRect = coachmarkClippedTargetRect(target, boundary);
@@ -8843,6 +9098,7 @@
 
   function installLayoutAuditHook() {
     if (!/[?&]layoutAudit=1(?:&|$)/.test(window.location.search)) return;
+    document.documentElement.classList.add("layout-audit-mode");
     function readAuditValue(name) {
       var pattern = new RegExp("(?:[?&#&])" + name + "=([0-9]+)");
       var match = (window.location.search + window.location.hash).match(pattern);

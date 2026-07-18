@@ -223,17 +223,25 @@ function checkChapterSequence(failures) {
   const marketChapter = readDist("omenmarketmaker.html");
   const homeMarketFeatures = home.match(/<h3>OmenMarketMaker: six market features<\/h3>\s*<ol[^>]*>([\s\S]*?)<\/ol>/i);
   const chapterMarketFeatures = marketChapter.match(/<h3>OmenMarketMaker: six market features<\/h3>\s*<ol[^>]*>([\s\S]*?)<\/ol>/i);
+  const chapterTargets = ["exploited-arbiter", "start-market", "self-custody-tokens", "tradeable-disputes", "peer-to-peer-parlays", "private-markets"];
   assert(Boolean(homeMarketFeatures), "Home is missing the OmenMarketMaker feature summary", failures);
   assert(Boolean(chapterMarketFeatures), "omenmarketmaker.html is missing the shared feature summary", failures);
   if (homeMarketFeatures && chapterMarketFeatures) {
     const featureText = (block) => Array.from(block.matchAll(/<li\b[^>]*>([\s\S]*?)<\/li>/gi), (match) => normalizedHtmlText(match[1]));
     assert(JSON.stringify(featureText(chapterMarketFeatures[1])) === JSON.stringify(featureText(homeMarketFeatures[1])), "OmenMarketMaker chapter features must match Home in wording and order", failures);
-    const chapterTargets = ["start-market", "exploited-arbiter", "self-custody-tokens", "private-markets", "tradeable-disputes", "peer-to-peer-parlays"];
     const homeTargets = anchorSequence(homeMarketFeatures[1]).map((entry) => entry.href);
     const localTargets = anchorSequence(chapterMarketFeatures[1]).map((entry) => entry.href);
     assert(JSON.stringify(homeTargets) === JSON.stringify(chapterTargets.map((target) => `omenmarketmaker.html#${target}`)), "Home feature points must link to their OmenMarketMaker sections", failures);
     assert(JSON.stringify(localTargets) === JSON.stringify(chapterTargets.map((target) => `#${target}`)), "OmenMarketMaker feature points must link to their local sections", failures);
   }
+  const marketSectionTargets = Array.from(marketChapter.matchAll(/<section\b[^>]*\bid=["']([^"']+)["']/gi), (match) => match[1]);
+  assert(JSON.stringify(marketSectionTargets) === JSON.stringify(chapterTargets), "OmenMarketMaker value-prop sections must follow the numbered feature order", failures);
+  const numberedMarketHeadings = Array.from(
+    marketChapter.matchAll(/<p\b[^>]*class=["'][^"']*\bsec-label\b[^"']*["'][^>]*>\s*Value prop\s+(\d+)\s*<\/p>\s*<h2\b[^>]*>\s*(\d+(?:\.\d+)?)(?:\.\s+|\s+)/gi),
+    (match) => [match[1], match[2]]
+  );
+  const expectedMarketHeadings = [["1", "1"], ["2", "2"], ["2", "2.1"], ["2", "2.2"], ["3", "3"], ["4", "4"], ["5", "5"], ["6", "6"]];
+  assert(JSON.stringify(numberedMarketHeadings) === JSON.stringify(expectedMarketHeadings), "OmenMarketMaker value-prop labels and headings must use the canonical numbering", failures);
 
   const mapCards = anchorSequence(classBlock(home, "map-grid")).map((entry) => {
     const stage = entry.body.match(/class=["']stage["'][^>]*>\s*Chapter\s+(\d+)/i);
@@ -249,6 +257,9 @@ function checkChapterSequence(failures) {
   assert(/Start the tour with Run-through\./i.test(home), "Home signoff must start the tour with Run-through", failures);
 
   const commonSource = readDist("assets/common.js");
+  assert(/function\s+initLocalFileLinks\s*\(\)/.test(commonSource), "assets/common.js is missing local-file Home link handling", failures);
+  assert(/location\.protocol\s*!==\s*["']file:["']/.test(commonSource) && /querySelectorAll\(["']a\[href=\\?["']\/\\?["']\]["']\)/.test(commonSource), "local-file Home handling must only rewrite root links under file URLs", failures);
+  assert(/initLocalFileLinks\(\);\s*initNav\(\);/.test(commonSource), "local Home links must be repaired before navigation state is initialized", failures);
   const commonLiteral = commonSource.match(/var\s+CHAPTERS\s*=\s*(\[[\s\S]*?\]);/);
   assert(Boolean(commonLiteral), "assets/common.js is missing its canonical CHAPTERS list", failures);
   if (commonLiteral) {
@@ -1639,6 +1650,7 @@ function checkProductFontAssets(html, failures) {
 
 function checkRunThroughPriorityUxFixes(html, failures) {
   const css = Array.from(html.matchAll(/<style\b[^>]*>([\s\S]*?)<\/style>/gi), (match) => match[1]).join("\n");
+  const simulatorSizeSource = runThroughFunctionSource(html, "updateSimulatorSizeState");
 
   function normalizedSelector(selector) {
     return selector.trim().replace(/\s+/g, " ");
@@ -1661,6 +1673,9 @@ function checkRunThroughPriorityUxFixes(html, failures) {
     assert(liveColumns === "1fr", `${size} simulator layouts must keep app cards in one readable column`, failures);
     assert(Boolean(kpiColumns) && !/repeat\(\s*3\s*,/i.test(kpiColumns), `${size} simulator metrics must wrap responsively instead of forcing three narrow columns`, failures);
   }
+  assert(/isCompact\s*=\s*width\s*<=\s*760/.test(simulatorSizeSource), "tablet-width product surfaces must enter the compact layout before cards become unreadable", failures);
+  assert(/@container\s+live-card\s*\(max-width:\s*16rem\)[\s\S]*?\.receipt-detail\s*\{[^}]*grid-template-columns:\s*minmax\(0,\s*1fr\)/i.test(css), "narrow receipt cards must stack their label and value instead of collapsing the value track", failures);
+  assert(/@container\s+run-stage\s*\(max-width:\s*760px\)[\s\S]*?\.live-main[\s\S]*?\.protocol-sequence-records[\s\S]*?grid-template-columns:\s*minmax\(0,\s*1fr\)/i.test(css), "tablet product surfaces must stack app cards and protocol records in one readable column", failures);
   assert(/\.liquidity-grid\s*\{[^}]*grid-template-columns:\s*1fr/is.test(css), "opening YES and NO liquidity offers must use full rows instead of compressing nested controls", failures);
   assert(/\.liquidity-offer\s*\{[^}]*grid-template-columns:\s*minmax\(\s*4rem\s*,\s*auto\s*\)\s+minmax\(\s*7rem\s*,\s*1fr\s*\)/is.test(css), "opening liquidity controls must reserve readable room for both the side and amount", failures);
   assert(/\.liquidity-caption\s*\{[^}]*white-space:\s*nowrap/is.test(css), "the liquidity label must not collapse into one letter per line", failures);
@@ -2338,13 +2353,15 @@ function checkActionButtonInfoLabels(html, failures) {
     failures
   );
   assert(
-    /root[\s\S]*querySelector\(["']\.guided-target["']\)/.test(activeTargetSource) &&
+    /root[\s\S]*querySelector\(["']\.guided-target:not\(:disabled\)["']\)/.test(activeTargetSource) &&
       /getElementById\(["']runNext["']\)/.test(activeTargetSource) &&
       /classList\.contains\(["']guided-target["']\)/.test(activeTargetSource) &&
       /activeCoachmarkTarget\(\)/.test(positionerSource),
-    "coachmark discovery must include both in-app actions and the shared next-event continuation",
+    "coachmark discovery must include enabled in-app actions and the shared next-event continuation",
     failures
   );
+  assert(/coach\.hidden\s*=\s*true/.test(positionerSource) && /coach\.hidden\s*=\s*false/.test(positionerSource), "off-screen coachmarks must remain hidden until they have a valid target rectangle", failures);
+  assert(/compactCoachmark[\s\S]*renderCoachmarkInline\(/.test(positionerSource), "compact product surfaces must render coachmarks inline instead of covering the app", failures);
   assert(
     /requestAnimationFrame\(/.test(queuePositionSource) &&
       /setTimeout\([\s\S]*positionCoachmarkNow\(\)[\s\S]*120/.test(queuePositionSource) &&
@@ -2384,6 +2401,15 @@ function checkActionButtonInfoLabels(html, failures) {
 }
 
 function checkBuiltHtml(failures) {
+  const sharedStyles = readDist("assets/styles.css");
+  const neutralLevel = (name) => {
+    const match = sharedStyles.match(new RegExp(`--${name}:\\s*([^;]+)`));
+    return match ? match[1].trim() : "";
+  };
+  const neutralLevels = [neutralLevel("canvas"), neutralLevel("bg"), neutralLevel("surface")];
+  assert(neutralLevels.every(Boolean) && new Set(neutralLevels).size === 3, "page canvas, inset panels, and raised cards must use distinct neutral colors", failures);
+  assert(/body\s*\{[^}]*background:\s*var\(--canvas\)/s.test(sharedStyles), "the editorial page must use the dedicated canvas color", failures);
+
   for (const file of publicHtml) {
     const html = readDist(file);
     checkMetadata(file, html, failures);

@@ -4,7 +4,8 @@
    UI-kit styles. Fonts are wired to CSS variables by the sandbox layout. */
 
 .sbx {
-  /* warm paper + soft ink, straight from the pitch site */
+  /* Three neutral levels mirror the pitch site's page, inset, and card hierarchy. */
+  --canvas: #edeae4;
   --bg: #f7f5ef;
   --surface: #fffdf9;
   --ink: #23262e;
@@ -34,7 +35,7 @@
   --sans: var(--font-app-sans), system-ui, -apple-system, 'Segoe UI', Roboto, sans-serif;
   --mono: var(--font-app-mono), ui-monospace, 'SFMono-Regular', Menlo, monospace;
 
-  background: var(--bg);
+  background: var(--canvas);
   color: var(--ink);
   font-family: var(--serif);
   font-size: 1.08rem;
