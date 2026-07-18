@@ -176,11 +176,11 @@ export function LiveBallot({
         ) : (
           <>
             <div className="oracle-vote-options" role="group" aria-label="Choose your answer">
-              <button type="button" className={vote === true ? 'is-selected is-yes' : ''} aria-pressed={vote === true} onClick={() => setVote(true)} disabled={busy}>
+              <button type="button" className={`is-yes-option${vote === true ? ' is-selected is-yes' : ''}`} aria-pressed={vote === true} onClick={() => setVote(true)} disabled={busy}>
                 <span>YES</span>
                 <small>The YES rule is satisfied</small>
               </button>
-              <button type="button" className={vote === false ? 'is-selected is-no' : ''} aria-pressed={vote === false} onClick={() => setVote(false)} disabled={busy}>
+              <button type="button" className={`is-no-option${vote === false ? ' is-selected is-no' : ''}`} aria-pressed={vote === false} onClick={() => setVote(false)} disabled={busy}>
                 <span>NO</span>
                 <small>The YES rule is not satisfied</small>
               </button>

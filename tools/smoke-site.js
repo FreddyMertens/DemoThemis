@@ -365,6 +365,7 @@ function checkMvpPage(html, failures) {
   assert(/id=["']mvpSimSurface["']/i.test(html) && /function\s+liveView\s*\(/i.test(html) && /function\s+submitView\s*\(/i.test(html) && /function\s+onboardingView\s*\(/i.test(html), "demothemis-mvp.html preview is missing a public Live MVP route", failures);
   assert(/data-preview-route=["']live["']/i.test(html) && /data-preview-route=["']submit["']/i.test(html) && /data-preview-route=["']onboard["']/i.test(html), "demothemis-mvp.html preview should expose live, submit, and juror routes", failures);
   assert(/function\s+caseAction\s*\(/i.test(html) && /data-sim-action=["']advance["']/i.test(html) && /mvp-tutorial-target/i.test(html), "demothemis-mvp.html tutorial progression should happen on highlighted controls inside the app UI", failures);
+  assert(/class=["']is-yes-option/i.test(html) && /class=["']is-no-option/i.test(html), "demothemis-mvp.html YES and NO controls should expose persistent interaction classes", failures);
   assert(/function\s+updateTutorial\s*\(/i.test(html) && /Skip to ruling/i.test(html), "demothemis-mvp.html should keep tutorial guidance concise", failures);
   assert(/function\s+initLocalPreviewLinks\s*\(/i.test(html) && /location\.protocol\s*===\s*["']file:["']/i.test(html), "demothemis-mvp.html preview should repair app routes when opened locally", failures);
   assert(/assets\/mvp-simulator\.css/i.test(html), "demothemis-mvp.html is missing the live-product preview stylesheet", failures);
