@@ -118,7 +118,7 @@ function checkDistFiles(failures) {
   for (const file of publicHtml) {
     assert(fs.existsSync(path.join(outDir, file)), `missing built public page: ${file}`, failures);
   }
-  for (const file of ["_headers", "_redirects", "robots.txt", "sitemap.xml", "404.html", "assets/styles.css", "assets/common.js"]) {
+  for (const file of ["_headers", "_redirects", "robots.txt", "sitemap.xml", "404.html", "assets/styles.css", "assets/mvp-simulator.css", "assets/common.js"]) {
     assert(fs.existsSync(path.join(outDir, file)), `missing built support file: ${file}`, failures);
   }
 }
@@ -221,9 +221,12 @@ function checkChapterSequence(failures) {
 
   const home = readDist("index.html");
   const marketChapter = readDist("omenmarketmaker.html");
-  const homeMarketFeatures = home.match(/<h3>OmenMarketMaker: six market features<\/h3>\s*<ol[^>]*>([\s\S]*?)<\/ol>/i);
+  const homeMarketFeatures = home.match(/<h3>OmenMarketMaker<\/h3>\s*<p\b[^>]*class=["'][^"']*\bproduct-tagline\b[^"']*["'][^>]*>[\s\S]*?<\/p>\s*<ol[^>]*>([\s\S]*?)<\/ol>/i);
   const chapterMarketFeatures = marketChapter.match(/<h3>OmenMarketMaker: six market features<\/h3>\s*<ol[^>]*>([\s\S]*?)<\/ol>/i);
   const chapterTargets = ["exploited-arbiter", "start-market", "self-custody-tokens", "tradeable-disputes", "peer-to-peer-parlays", "private-markets"];
+  const courtProductAt = home.indexOf('<article class="product court">');
+  const marketProductAt = home.indexOf('<article class="product market">');
+  assert(courtProductAt >= 0 && marketProductAt > courtProductAt, "Home must present the arbitration service as Product one before OmenMarketMaker as Product two", failures);
   assert(Boolean(homeMarketFeatures), "Home is missing the OmenMarketMaker feature summary", failures);
   assert(Boolean(chapterMarketFeatures), "omenmarketmaker.html is missing the shared feature summary", failures);
   if (homeMarketFeatures && chapterMarketFeatures) {
@@ -355,14 +358,34 @@ function checkMvpPage(html, failures) {
     );
   }
 
-  assert(/role=["']tablist["']/i.test(html), "demothemis-mvp.html product preview is missing its tab list", failures);
-  assert(/id=["']mvp-tab-live["'][^>]*>Live case</i.test(html), "demothemis-mvp.html is missing the Live case tab", failures);
-  assert(/id=["']mvp-tab-submit["'][^>]*>Submit a case</i.test(html), "demothemis-mvp.html is missing the Submit a case tab", failures);
+  assert(/Preview the whole DemoThemis Live MVP app/i.test(html) && /Click through the whole live MVP/i.test(html), "demothemis-mvp.html should name the experience as a complete click-through MVP preview", failures);
+  assert(/id=["']mvp-simulator["']/i.test(html), "demothemis-mvp.html is missing the interactive MVP preview", failures);
+  assert(/id=["']mvpTutorialMeta["']/i.test(html) && /id=["']mvpTutorialBack["']/i.test(html) && /id=["']mvpTutorialSkip["']/i.test(html), "demothemis-mvp.html preview is missing its compact in-app tutorial controls", failures);
+  assert(!/class=["'][^"']*mvp-sim-step-rail/i.test(html) && !/class=["'][^"']*mvp-browser-shell/i.test(html) && !/id=["']mvpSimNext["']/i.test(html), "demothemis-mvp.html should not retain the outer step rail, browser frame, or duplicate Next control", failures);
+  assert(/id=["']mvpSimSurface["']/i.test(html) && /function\s+liveView\s*\(/i.test(html) && /function\s+submitView\s*\(/i.test(html) && /function\s+onboardingView\s*\(/i.test(html), "demothemis-mvp.html preview is missing a public Live MVP route", failures);
+  assert(/data-preview-route=["']live["']/i.test(html) && /data-preview-route=["']submit["']/i.test(html) && /data-preview-route=["']onboard["']/i.test(html), "demothemis-mvp.html preview should expose live, submit, and juror routes", failures);
+  assert(/function\s+caseAction\s*\(/i.test(html) && /data-sim-action=["']advance["']/i.test(html) && /mvp-tutorial-target/i.test(html), "demothemis-mvp.html tutorial progression should happen on highlighted controls inside the app UI", failures);
+  assert(/function\s+updateTutorial\s*\(/i.test(html) && /Skip to ruling/i.test(html), "demothemis-mvp.html should keep tutorial guidance concise", failures);
+  assert(/function\s+initLocalPreviewLinks\s*\(/i.test(html) && /location\.protocol\s*===\s*["']file:["']/i.test(html), "demothemis-mvp.html preview should repair app routes when opened locally", failures);
+  assert(/assets\/mvp-simulator\.css/i.test(html), "demothemis-mvp.html is missing the live-product preview stylesheet", failures);
   assert(/\bone (?:official )?question (?:is active|at a time)\b/i.test(html), "demothemis-mvp.html should explain the one-at-a-time rule", failures);
   assert(/\bthree (?:World ID-)?verified humans\b/i.test(html), "demothemis-mvp.html should identify the three verified jurors", failures);
   assert(/\bon[- ]?chain\b/i.test(html), "demothemis-mvp.html should explain the on-chain result", failures);
-  assert(/\bNo evidence or source field\b/i.test(html), "demothemis-mvp.html should explain that jurors research independently", failures);
-  assert(!/\bsandbox\b|\bsimulat(?:e|ed|es|ion|or)\b/i.test(html), "demothemis-mvp.html should stay focused on the real product process", failures);
+  assert(/\bJurors research independently\b/i.test(html), "demothemis-mvp.html should explain that jurors research independently", failures);
+  assert(/\b20 MUSD locked before the draw\b/i.test(html) && /\b1\.00 MUSD\b/i.test(html) && /\b15\.00 MUSD\b/i.test(html) && /\b2\.50 MUSD\b/i.test(html) && /\b1\.50 MUSD\b/i.test(html), "demothemis-mvp.html ruling receipt should account for the 20 MUSD illustrative work-based quote", failures);
+  assert(/\bAll completed jurors receive the work payment locked for this case\b/i.test(html) && /\b5\.00 MUSD\b/i.test(html), "demothemis-mvp.html ruling receipt should pay completed work rather than only the majority", failures);
+  assert(/\bNo permanent fee split\b/i.test(html) && /\bCurrent demand\b/i.test(html) && /\bReward-reserve top-up\b/i.test(html) && /\bCapped operations\b/i.test(html), "demothemis-mvp.html should show the current demand-responsive quote design", failures);
+  assert(!/70\s*\/\s*20\s*\/\s*10/i.test(html), "demothemis-mvp.html should not present the retired permanent 70/20/10 split", failures);
+  assert(/\bSafe local preview\b/i.test(html) && /No wallet, identity proof, token, or transaction is used here/i.test(html), "demothemis-mvp.html should clearly separate the local preview from the deployed product", failures);
+
+  const inlineScripts = Array.from(html.matchAll(/<script(?![^>]*\bsrc\s*=)[^>]*>([\s\S]*?)<\/script>/gi), (match) => match[1]);
+  for (const [index, script] of inlineScripts.entries()) {
+    try {
+      new vm.Script(script, { filename: "demothemis-mvp.inline-" + (index + 1) + ".js" });
+    } catch (error) {
+      failures.push("demothemis-mvp inline script " + (index + 1) + " has invalid JavaScript: " + error.message);
+    }
+  }
 }
 
 function checkStateMachineData(html, failures) {

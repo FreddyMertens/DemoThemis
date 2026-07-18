@@ -10,7 +10,7 @@ The mechanism has four parts.
 
 First, an optimistic layer for the easy cases. Anyone can assert an answer and post a bond. If nobody challenges within two hours, the answer settles and the bond returns. Most questions are not controversial, so most never reach a jury, and the system stays cheap.
 
-Second, random selection over verified humans. When someone does challenge, the question goes to a jury drawn at random from the people who hold a World ID and have opted in as jurors. Jurors do not choose their cases. You cannot volunteer for the one market you want to swing.
+Second, random selection over verified humans. When someone does challenge, the question goes to a jury drawn at random from the people who hold a World ID and have opted in as jurors. Jurors do not choose their cases, but they may decline one they do not assess themselves as capable of judging; the next standby takes the seat. You cannot volunteer for the one market you want to swing.
 
 Third, private votes that open together. Each juror submits a hash of their vote, then reveals it after the commit window closes. No juror sees another answer before committing, so there is nothing to copy and no bandwagon to join.
 

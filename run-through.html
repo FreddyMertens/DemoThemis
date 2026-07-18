@@ -3766,7 +3766,7 @@
       id: "seat-checked", phase: "judge", order: 4, title: "Conflicts removed; humans check in",
       short: "Wallet conflicts are replaced, and the drawn person proves live presence for this case.",
       routes: ["dispute"], sim: [8], simSteps: [2],
-      detail: "A juror holding the disputed market position is skipped for the next deterministic standby. A missed presence grace period activates the same standby order and records a reliability ding rather than a verdict-linked slash.",
+      detail: "A juror holding the disputed market position is skipped for the next deterministic standby. A juror who does not assess themselves as capable of judging the case may decline, and the next standby takes the seat. A missed presence grace period activates the same standby order and records a reliability ding rather than a verdict-linked slash.",
       actor: "Drawn jurors, World App proof, deterministic standby list", money: "Still locked; no vote-dependent payment", condition: "Before a ballot unlocks", next: "Evidence review and private ballot"
     },
     {

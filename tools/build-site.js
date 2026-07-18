@@ -16,6 +16,7 @@ const publicFiles = [
   "demothemis-mvp.html",
   "assumptions.js",
   "assets/common.js",
+  "assets/mvp-simulator.css",
   "assets/styles.css",
   "assets/vendor/popper-2.11.8.LICENSE.txt",
   "assets/vendor/popper-2.11.8.min.js",
@@ -55,7 +56,7 @@ const internalNamePatterns = [
 
 // These routes are supplied by the unified Next.js application rather than the
 // proposal's static output directory.
-const applicationRoutes = new Set(["/app", "/sandbox", "/home", "/about"]);
+const applicationRoutes = new Set(["/app", "/sandbox", "/home", "/about", "/onboard"]);
 
 function toPosix(file) {
   return file.split(path.sep).join("/");

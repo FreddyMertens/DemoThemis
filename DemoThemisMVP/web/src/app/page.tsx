@@ -39,6 +39,41 @@ type OracleQuestion = CaseContent & {
   judgedAsOf?: string;
 };
 
+const mvpRoadmapRows = [
+  {
+    capability: 'Identity & draw',
+    liveTitle: 'Verified personhood, limited draw',
+    liveBody: 'World ID 4.0, a nullifier sybil gate, wallet-bound proofs, and a post-question draw for this three-seat demo.',
+    milestone: 'M1',
+    roadmapTitle: 'Verifiable production randomness',
+    roadmapBody: 'VRF or drand replaces the current blockhash-based seed, with correctness and verifier hardening.',
+  },
+  {
+    capability: 'Ballot privacy',
+    liveTitle: 'Sealed commit/reveal ballots',
+    liveBody: 'Votes stay hidden until reveal, then become public and receipt-ful so the ruling can execute on-chain.',
+    milestone: 'M2',
+    roadmapTitle: 'Receipt-free private ballots',
+    roadmapBody: 'MACI-style encrypted voting hides juror identity and vote before and after the aggregate tally.',
+  },
+  {
+    capability: 'Panel security',
+    liveTitle: 'One three-seat panel',
+    liveBody: 'Uniform selection proves the full mechanism without reputation weighting, appeals, or parallel panels.',
+    milestone: 'M3b',
+    roadmapTitle: 'Security that scales with stakes',
+    roadmapBody: 'Private Wilson-gated reputation, 7→15→31 appeals, and independent parallel panels.',
+  },
+  {
+    capability: 'Settlement & reach',
+    liveTitle: 'Atomic settlement by rule',
+    liveBody: 'The majority closes the case; the 70/20/10 split and slashes settle with no admin override.',
+    milestone: 'M3a–M6',
+    roadmapTitle: 'Cheaper settlement, reusable court',
+    roadmapBody: 'An optimistic fast path, cyclic reward payout, resolution SDK, first pilot, independent review, and moderated juror testing.',
+  },
+] as const;
+
 const phaseLabels: Record<Phase, string> = {
   Open: 'Question filed',
   Commit: 'Answers being sealed',
@@ -128,6 +163,59 @@ function ProductTabs({ tab, onChange }: { tab: ProductTab; onChange: (tab: Produ
         <span><strong>Submit a case</strong><small>See the filing screen</small></span>
       </button>
     </div>
+  );
+}
+
+function MvpRoadmapComparison() {
+  return (
+    <section className="oracle-roadmap" aria-labelledby="oracle-roadmap-title">
+      <header className="oracle-roadmap-intro">
+        <div>
+          <span className="oracle-roadmap-kicker">MVP versus funded roadmap</span>
+          <h2 id="oracle-roadmap-title">Built now. Funded next.</h2>
+        </div>
+        <p>The live court proves the core mechanism. Each roadmap milestone removes a named production limit without presenting future work as active today.</p>
+      </header>
+
+      <div className="oracle-roadmap-shell">
+        <div className="oracle-roadmap-grid" role="table" aria-label="Deployed DemoThemis MVP compared with the funded roadmap">
+          <div className="oracle-roadmap-row oracle-roadmap-head" role="row">
+            <span className="oracle-roadmap-axis" role="columnheader">Capability</span>
+            <div className="is-live" role="columnheader">
+              <span><i /> Deployed MVP</span>
+              <small>World Chain · source-verified</small>
+            </div>
+            <div className="is-roadmap" role="columnheader">
+              <span>Funded roadmap <ArrowRight /></span>
+              <small>Milestone-gated upgrades</small>
+            </div>
+          </div>
+
+          <div className="oracle-roadmap-table" role="rowgroup">
+            {mvpRoadmapRows.map((row, index) => (
+              <div className="oracle-roadmap-row" role="row" key={row.capability}>
+                <div className="oracle-roadmap-label" role="rowheader"><span>0{index + 1}</span><strong>{row.capability}</strong></div>
+                <div className="oracle-roadmap-cell is-live" role="cell">
+                  <span className="oracle-roadmap-status">Live on-chain</span>
+                  <strong>{row.liveTitle}</strong>
+                  <p>{row.liveBody}</p>
+                </div>
+                <div className="oracle-roadmap-cell is-roadmap" role="cell">
+                  <span className="oracle-roadmap-status">{row.milestone}</span>
+                  <strong>{row.roadmapTitle}</strong>
+                  <p>{row.roadmapBody}</p>
+                </div>
+              </div>
+            ))}
+          </div>
+        </div>
+
+        <div className="oracle-roadmap-note">
+          <ShieldCheck />
+          <p><strong>Clear scope boundary.</strong> Roadmap capabilities are not active in this interface; they are the funded path from this three-person court to production-scale resolution.</p>
+        </div>
+      </div>
+    </section>
   );
 }
 
@@ -719,6 +807,8 @@ function OracleHome() {
           hasActiveCase={!!activeCase || (dashboard.data?.unofficialActiveCaseIds.length ?? 0) > 0}
         />
       )}
+
+      <MvpRoadmapComparison />
 
       <footer className="oracle-footer-note">
         <span>Built for clarity</span>
