@@ -39,10 +39,15 @@
   .simple-list span { display: block; color: var(--muted); font-size: .86rem; line-height: 1.5; }
   .deep-note { border-left: 3px solid var(--accent); padding-left: 1rem; color: var(--muted); font-family: var(--sans); }
   .underhood-map { display: grid; grid-template-columns: repeat(3, 1fr); gap: 1rem; margin: 1.3rem 0; }
-  .underhood-map a { display: block; border: 1px solid var(--line); border-radius: var(--radius); background: var(--surface); padding: 1rem 1.05rem; box-shadow: var(--shadow); text-decoration: none; font-family: var(--sans); }
-  .underhood-map .eyebrow { display: block; font-family: var(--mono); font-size: .72rem; font-weight: 700; color: var(--accent-ink); margin-bottom: .4rem; text-transform: uppercase; letter-spacing: .04em; }
-  .underhood-map b { display: block; color: var(--ink); margin-bottom: .35rem; }
-  .underhood-map span:last-child { display: block; color: var(--muted); font-size: .86rem; line-height: 1.5; }
+  .underhood-map a { display: flex; min-height: 8.75rem; position: relative; flex-direction: column; justify-content: space-between; gap: 1rem; border: 1.5px solid var(--line); border-radius: var(--radius); background: var(--surface); padding: 1.05rem 1.1rem; box-shadow: var(--shadow); text-decoration: none; font-family: var(--sans); cursor: pointer; transition: transform .18s ease, box-shadow .18s ease, filter .18s ease; }
+  .underhood-map a:hover { transform: translateY(-3px); box-shadow: 0 14px 30px rgba(16, 24, 40, .13); filter: saturate(1.06); }
+  .underhood-map a:active { transform: translateY(0) scale(.985); box-shadow: 0 5px 14px rgba(16, 24, 40, .11); }
+  .underhood-map a:focus-visible { outline: 3px solid color-mix(in srgb, var(--accent) 42%, transparent); outline-offset: 3px; }
+  .underhood-map .eyebrow { display: block; padding-right: 2.4rem; font-family: var(--mono); font-size: .72rem; font-weight: 700; color: var(--accent-ink); text-transform: uppercase; letter-spacing: .04em; }
+  .underhood-map b { display: block; max-width: 13rem; color: var(--ink); font-size: 1.04rem; line-height: 1.35; }
+  .underhood-map .link-cue { display: flex; align-items: center; justify-content: space-between; gap: .75rem; width: 100%; border-top: 1px solid color-mix(in srgb, currentColor 18%, transparent); padding-top: .72rem; color: var(--ink); font-family: var(--mono); font-size: .69rem; font-weight: 700; letter-spacing: .035em; text-transform: uppercase; }
+  .underhood-map .link-cue span { display: grid; width: 1.7rem; height: 1.7rem; place-items: center; border-radius: 999px; background: rgba(255, 255, 255, .72); font-size: 1rem; transition: transform .18s ease; }
+  .underhood-map a:hover .link-cue span { transform: translateX(3px); }
   .underhood-map > a:nth-child(1) { border-color: var(--triad-mint-border); background: var(--triad-mint); }
   .underhood-map > a:nth-child(2) { border-color: var(--triad-lavender-border); background: var(--triad-lavender); }
   .underhood-map > a:nth-child(3) { border-color: var(--triad-amber-border); background: var(--triad-amber); }
@@ -324,7 +329,7 @@ body.theme-solve { --accent: #2f62cf; --accent-soft: #e6edfa; --accent-ink: #214
 
   <section class="reveal" id="bootstrap">
     <p class="sec-label">Bootstrap</p>
-    <h2>OmenMarketMaker can be an early customer</h2>
+    <h2>OmenMarketMaker to seed DemoThemis with demand</h2>
     <p>When OmenMarketMaker selects DemoThemis, it sends a case and pays DemoThemis's independently quoted resolution fee. OmenMarketMaker's market margin and treasury remain entirely separate. Every completed case contributes to the shared juror-quality record, while independently checkable outcomes can add later confirmation.</p>
     <p class="deep-note">That is one launch path, not a product dependency. Continue for the mechanics and interactive stress tests behind each claim.</p>
   </section>
@@ -334,9 +339,9 @@ body.theme-solve { --accent: #2f62cf; --accent-soft: #e6edfa; --accent-ink: #214
     <h2>Under the hood</h2>
     <p>Read straight through, or jump to the layer whose assumptions you want to inspect.</p>
     <div class="underhood-map">
-      <a href="#trust-layer"><span class="eyebrow">Problem and role</span><b>Why a neutral court matters</b><span>DemoThemis turns rented arbitration into a shared court, with protocol escrow ready when assets need automatic settlement.</span></a>
-      <a href="#capture-resistance"><span class="eyebrow">Attack resistance</span><b>What makes the court unbuyable</b><span>Verified humans, live reserves, sealed randomness, face checks, receipt-free ballots, and panel scaling each remove a different shortcut.</span></a>
-      <a href="#quality-engine"><span class="eyebrow">Juror quality</span><b>How careful jurors stand out</b><span>Completed cases, difficulty-adjusted scoring, written criteria, appeals, and later evidence show how the system rewards useful judgment over crowd-following.</span></a>
+      <a href="#trust-layer"><span class="eyebrow">Problem and role</span><b>Why a neutral court matters</b><span class="link-cue">Open section <span aria-hidden="true">&rarr;</span></span></a>
+      <a href="#capture-resistance"><span class="eyebrow">Attack resistance</span><b>What makes the court unbuyable</b><span class="link-cue">Open section <span aria-hidden="true">&rarr;</span></span></a>
+      <a href="#quality-engine"><span class="eyebrow">Juror quality</span><b>How careful jurors stand out</b><span class="link-cue">Open section <span aria-hidden="true">&rarr;</span></span></a>
     </div>
   </section>
 
