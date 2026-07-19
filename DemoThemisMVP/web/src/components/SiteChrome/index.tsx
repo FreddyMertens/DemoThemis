@@ -2,6 +2,7 @@
 
 import { useEffect, useRef, useState } from 'react';
 import Link from 'next/link';
+import Image from 'next/image';
 import { usePathname, useSearchParams } from 'next/navigation';
 
 const CHAPTERS = [
@@ -91,7 +92,14 @@ export function SiteChrome() {
             while Next's own root is published at `/app` in the unified deployment. */}
         {/* eslint-disable-next-line @next/next/no-html-link-for-pages */}
         <a className="site-brand" href="/" aria-label="DemoThemis proposal home">
-          DemoThemis<span>.</span>
+          <Image
+            className="site-brand-wordmark"
+            src="/assets/brand/demothemis/wordmark.png"
+            width={1766}
+            height={216}
+            alt=""
+            priority
+          />
         </a>
         <button
           ref={menuButtonRef}

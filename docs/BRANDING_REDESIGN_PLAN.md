@@ -3,6 +3,10 @@
 ## Status
 
 - Planning document only; no redesign implementation is included here.
+- The original run-through exclusion in this document is superseded for its
+  separate follow-up pass by `RUN_THROUGH_DESIGN_UPDATE_PLAN.md`. The exclusion
+  remains part of this plan's historical scope and must not be read as blocking
+  that dedicated redesign.
 - The source branding library is
   `C:\Users\eddya\Documents\Codex\2026-07-16\se\outputs\title-favicon-gallery\assets-current`.
 - `run-through.html`, its generated public copy, and its simulator-specific UI are
@@ -91,7 +95,7 @@ plural wording inside the animation is a release blocker.
 
 | Canonical source asset | Size | Production role | Constraint |
 | --- | ---: | --- | --- |
-| `DemoThemisLogo.png` | 1766 × 216 | DemoThemis hero lockup and large product card | Pale artwork requires an approved dark backing; do not tint the raster with CSS |
+| `DemoThemisLogo.png` | 1766 × 216 | DemoThemis hero lockup | Preserve the pale embossed artwork on its approved ivory/stone field; never place it on a black or near-black backing and do not tint the raster with CSS |
 | `DemoThemisFavicon.png` | 512 × 512 | DT mark source | Generate optically checked smaller derivatives rather than scaling the raw file everywhere |
 | `OmenMarketMakerLogo.riv` | about 30 KB | Animated Omen hero identity | Self-host runtime and WASM; provide a static first frame and reduced-motion fallback |
 | `OmenMarketMakerFavicon.png` | 512 × 512 | OM mark source | Check the fine green grid at 16 and 32 pixels and simplify only if it becomes unreadable |
@@ -141,10 +145,11 @@ copy, footers, and shared explanatory material retain the warm neutral editorial
 system. This provides continuity and prevents a reader from feeling as though
 every chapter belongs to a different website.
 
-The shared navigation may use a compact DT mark because DemoThemis is the site
-identity and domain, but it must not apply DemoThemis's full page theme to every
-chapter. On the Omen page, the navigation remains the neutral proposal shell and
-the Omen hero establishes the page identity beneath it.
+The shared navigation uses the supplied full DemoThemis wordmark because
+DemoThemis is the site identity and domain, but it must not apply DemoThemis's
+full page theme to every chapter. On the Omen page, the navigation remains the
+neutral proposal shell and the Omen hero establishes the page identity beneath
+it.
 
 ### 2. Identity follows product ownership
 
@@ -160,10 +165,13 @@ panels instead of coloring an entire section ambiguously.
 
 ### 3. Full logos are anchors, not wallpaper
 
-- Use one full product lockup in the primary brand moment of a relevant page.
-- Use compact marks for repeated navigation, diagrams, badges, and application
-  chrome.
+- Use the full DemoThemis wordmark in shared navigation and only one additional
+  large product lockup when a page needs a deliberate hero brand moment.
+- Use compact marks for diagrams, badges, favicons, and ownership labels.
 - Do not repeat the full wordmark in every section or footer.
+- Do not follow a full DemoThemis wordmark with a second visible `DemoThemis`
+  title. The logo can carry the product name while the live heading carries the
+  page-specific claim, or a compact DT mark can accompany a live product title.
 - Do not place both full logos side by side unless the content is explicitly about
   their relationship.
 
@@ -206,18 +214,20 @@ artwork. Pale values are surfaces and emboss details, not body-text colors.
 --dt-accent: #786a5e;
 --dt-accent-strong: #6a5b50;
 --dt-ink: #292522;
---dt-on-dark: #f6f3f2;
+--dt-wordmark: #ccc3bc;
 ```
 
 Usage:
 
 - Warm ivory and stone for backgrounds and cards.
-- Dark brown-charcoal for headings and controls.
+- Dark brown-charcoal for readable text and control labels, never as a
+  DemoThemis brand background.
 - Taupe for selected states, borders, links, progress, and focus treatment.
 - Sculpted shadows should be shallow and broad; avoid glossy gradients across
   whole reading sections.
-- The pale wordmark should sit on a deliberate dark charcoal/taupe brand plate.
-  It should not be recolored or placed directly on a similarly pale page.
+- The pale wordmark belongs directly on a softly separated ivory/stone field,
+  matching the approved artwork. Use border, shallow emboss shadow, and spacing
+  for definition; never solve contrast by putting DemoThemis on black.
 
 ### OmenMarketMaker palette
 
@@ -294,21 +304,29 @@ mobile reading rhythm should remain stable.
 
 ### DemoThemis
 
-- Full wordmark: one primary placement per DemoThemis page, normally the hero.
-- DT mark: shared proposal navigation, compact tool headers, MVP chrome, favicon,
-  and social compositions.
+- Full wordmark: shared proposal, preview, and live-app navigation; an additional
+  large hero placement is optional and should not repeat a live product-name
+  title.
+- Wordmark field: ivory/stone only. Black and near-black backing plates are not
+  part of the DemoThemis identity.
+- The wordmark should normally sit directly on the neutral ivory navigation or
+  hero field without a decorative rectangle around it.
+- DT mark: compact tools, diagrams, ownership labels, favicon, and social
+  compositions.
 - Minimum intended UI size: 28 CSS pixels for the compact mark.
-- The shared top navigation should use DT mark plus live `DemoThemis` text rather
-  than attempting to shrink the very wide wordmark.
+- The shared top navigation must use the actual wordmark asset rather than a DT
+  favicon followed by retyped `DemoThemis` text.
 
 ### OmenMarketMaker
 
-- Animated wordmark: Omen chapter hero only in this pass.
-- Static poster: homepage product card, social images, loading fallback, print,
-  file-protocol fallback, and reduced-motion fallback.
+- Animated wordmark: Omen chapter hero and the primary homepage Omen product
+  card.
+- Static poster: first-frame fallback for both Rive placements, social images,
+  print, file-protocol fallback, and reduced-motion fallback.
 - OM mark: compact Omen-owned cards, governance/fee rows, bootstrap nodes,
   favicon, and social compositions.
-- Do not autoplay the full animation in repeated cards or below-the-fold panels.
+- Do not autoplay the full animation in any additional repeated cards or
+  below-the-fold panels.
 
 ### Accessibility
 
@@ -316,8 +334,9 @@ mobile reading rhythm should remain stable.
   `alt` value.
 - If live product-name text is immediately adjacent, use `alt=""` and treat the
   image as decorative.
-- Rive canvas is decorative when the real heading is present: set it
-  `aria-hidden="true"` and keep the heading in the document.
+- Rive canvas is decorative: set it `aria-hidden="true"`, give its containing
+  logo lockup the product-name label, and preserve a semantic visually hidden
+  heading when the logo replaces visible title text.
 - Never put essential navigation text only inside a raster asset or canvas.
 
 ## Reusable implementation model
@@ -383,14 +402,15 @@ appears to belong to.
    The two product marks must have equal visual weight; DT's role as the site
    mark must not make Omen look like a DemoThemis sub-product.
 2. Rebuild the DemoThemis product card as a warm ivory institutional panel:
-   - full wordmark on a dark brand plate;
+   - full DemoThemis wordmark integrated directly into the ivory card canvas;
+   - no separate logo frame and no duplicate visible typed product title;
    - warm stone border and shallow sculpted shadow;
    - taupe links and small DT ownership mark.
 3. Rebuild the Omen product card as a high-contrast market panel:
-   - static Omen poster, not a second autoplaying Rive canvas;
-   - near-black title zone and controlled green grid accent;
-   - light reading area if necessary to preserve the six-feature list's
-     readability.
+   - full Rive wordmark with a static first-frame fallback;
+   - no duplicate visible typed product title or nested logo box;
+   - near-black card canvas, electric-green grid structure, and light feature
+     text throughout.
 4. Keep the paragraph explaining the relationship neutral.
 5. Add compact ownership treatments to the chapter map:
    - DemoThemis: Chapter 02, Chapter 03, and Live Demo MVP.
@@ -404,8 +424,9 @@ appears to belong to.
 **Role:** The fullest expression of the DemoThemis identity.
 
 1. Apply `data-page-brand="demothemis"`.
-2. Add one full wordmark hero lockup on a dark taupe/charcoal plate while keeping
-   the existing `<h1>`, claim, introduction, and metadata as live text.
+2. Add one full wordmark hero lockup on the approved ivory/stone field. Use that
+   lockup as the product-name heading and keep the claim, introduction, and
+   metadata as live text without repeating a visible `DemoThemis` title below it.
 3. Recolor the Simple overview / Deep dive selector into a warm stone control:
    selected states use dark taupe and ivory; focus remains clearly visible.
 4. Bring the three reading categories into one DemoThemis family. Preserve their
@@ -500,8 +521,10 @@ appears to belong to.
 1. Apply the DemoThemis page scope to the hero, feature facts, comparison chart,
    simulator frame, and calls to action.
 2. Add one full wordmark brand moment in the page hero or opening application
-   plate; use the DT mark in the compact preview header.
-3. Replace the text-only `mvp-sim-site-brand` lockup with DT mark plus live text.
+   surface, always on ivory/stone; keep it unframed unless a layout boundary has
+   an independent functional purpose.
+3. Replace the text-only `mvp-sim-site-brand` lockup with the supplied full
+   DemoThemis wordmark.
 4. Keep the simulator tutorial, all actions, field values, comparison wording,
    route behavior, and receipt/result flow unchanged.
 5. Ensure this preview and the live app share the same core brand tokens so one
@@ -511,9 +534,11 @@ appears to belong to.
 
 **Role:** Product UI, not proposal decoration.
 
-1. Update `SiteChrome` to use DT mark plus live text.
+1. Update `SiteChrome` to use the supplied full DemoThemis wordmark.
 2. Add DemoThemis tokens to `globals.css`; translate existing generic accents
    through semantic component variables rather than blind global replacement.
+   Do not introduce black or near-black DemoThemis hero, logo, or brand-panel
+   backgrounds.
 3. Apply the mark selectively to onboarding, About, and empty/entry states. Do
    not stamp it onto every transaction or court card.
 4. Keep the application more functional and restrained than the editorial
@@ -534,8 +559,8 @@ tokens must be updated together to prevent preview/live drift.
 
 ### Shared navigation, footer, and generated 404
 
-1. Use a 28–32 pixel DT mark plus live DemoThemis text in the shared proposal and
-   Next navigation.
+1. Use the supplied full DemoThemis wordmark in the shared proposal, preview, and
+   Next navigation; do not rebuild it from the favicon and live text.
 2. Retain the neutral navigation surface across all page brands.
 3. Let page identity begin below the sticky navigation so Omen does not appear to
    own the proposal shell.
@@ -547,7 +572,7 @@ tokens must be updated together to prevent preview/live drift.
 
 Rive motion is a product signature, not a general animation system.
 
-- Load it only on the Omen chapter in this pass.
+- Load it only on the homepage Omen product card and Omen chapter hero.
 - Self-host the JavaScript runtime and WASM; do not depend on a CDN.
 - Add explicit canvas width and height to prevent layout shift.
 - Keep a static poster visible until the animation is ready.
@@ -620,6 +645,9 @@ Next public references.
     `tools/build-site.js`, while the unified Netlify deployment uses
     `netlify.toml` because `_headers` is excluded during preparation. Rive must be
     tested under both configurations.
+11. Keep local route ownership correct: `tools/preview-mvp.js` must serve or
+    redirect `/` to the proposal homepage. The MVP remains available from
+    `/demothemis-mvp.html` and the app-preview routes; it must not replace Home.
 
 ## Performance requirements
 
@@ -629,8 +657,9 @@ Next public references.
 - Produce optimized WebP/AVIF derivatives for large decorative/social uses when
   they are visibly equivalent; retain PNG for favicon and alpha-critical output.
 - Lazy-load below-the-fold decorative images.
-- Load the Omen Rive runtime only on the page that uses it.
-- Do not autoplay motion on the homepage product card.
+- Load the Omen Rive runtime only on the two pages that use it.
+- The homepage product card is the only autoplaying Rive placement outside the
+  Omen chapter hero.
 - Measure the redesign against the existing page rather than accepting a large
   unexamined payload increase.
 
@@ -708,7 +737,7 @@ optical review, and token contrast checks pass.
 
 ### Phase 2 — Shared shell and homepage
 
-1. Add the compact DT navigation lockup to static and Next shells.
+1. Add the full DemoThemis navigation wordmark to static and Next shells.
 2. Keep navigation/footer backgrounds neutral.
 3. Redesign the homepage's two product cards and ownership markers.
 4. Leave the run-through chapter card internally unchanged.
@@ -761,8 +790,8 @@ and all assets survive the unified build.
 
 1. Compare new screenshots with the baseline at 320, 375, 768, 1024, and 1440
    pixel widths.
-2. Test keyboard, touch, reduced motion, high contrast, 200% zoom, print, and dark
-   hero readability.
+2. Test keyboard, touch, reduced motion, high contrast, 200% zoom, print, the pale
+   DemoThemis wordmark on ivory, and the dark Omen hero.
 3. Run proposal build, smoke tests, Next lint, and Next production build.
 4. Inspect the deployed headers, Rive fallback, favicons, and social previews.
 5. Perform a final scoped diff proving run-through files were not changed.
@@ -798,6 +827,8 @@ The redesign is complete only when all of the following are true:
   typography, spacing, and footer structure remain coherent.
 - DemoThemis pages use the supplied ivory/stone identity without low-contrast pale
   text.
+- No DemoThemis wordmark, hero, product card, app hero, or social card uses black
+  or near-black as its brand background.
 - Omen pages use the actual near-black/electric-green identity rather than generic
   teal styling.
 - Mixed pages identify ownership at the component level, not merely by page.
@@ -806,6 +837,13 @@ The redesign is complete only when all of the following are true:
 - One canonical asset set with correct `DemoThemis` and `OmenMarketMaker` spelling
   feeds both the static proposal and Next application.
 - Full wordmarks are used selectively; compact marks handle repeated UI.
+- DemoThemis navigation uses the real full wordmark without an enclosing
+  decorative plate.
+- Homepage product cards use their full logos as the visible titles: DemoThemis
+  on ivory and animated OmenMarketMaker on near-black, with no nested logo boxes
+  or duplicate typed headings.
+- A full DemoThemis wordmark is not immediately repeated by a visible
+  `DemoThemis` title.
 - Rive has static, reduced-motion, CSP-failure, and file/loading fallbacks.
 - The rendered Rive identity visibly uses canonical singular OmenMarketMaker
   naming.
@@ -820,10 +858,10 @@ The redesign is complete only when all of the following are true:
 
 | Risk | Mitigation |
 | --- | --- |
-| DemoThemis wordmark disappears on a pale page | Use the original artwork on a deliberate dark brand plate; keep live dark text nearby |
+| DemoThemis wordmark loses definition on ivory | Preserve the approved ivory field and use its subtle outline, shallow emboss shadow, border, and generous spacing; never switch to a black plate |
 | Omen green is mistaken for success/YES | Keep semantic labels/icons and reserve electric green for brand structure when state meaning is present |
 | Long black Omen sections reduce reading comfort | Limit dark treatment to hero and feature bands; keep long copy on light surfaces |
-| Rive adds runtime weight or fails under CSP | Load only on Omen page, self-host, use static poster first, and test blocked-runtime behavior |
+| Rive adds runtime weight or fails under CSP | Load only on the homepage and Omen chapter, self-host, use static poster first, and test blocked-runtime behavior |
 | Static and Next assets drift | Keep root `assets/brand` canonical and copy through the existing unified build |
 | Generated public HTML is edited directly | Modify root source only and regenerate; add review checks for generated copies |
 | Positional CSS misbrands reordered components | Replace ownership-bearing `:nth-child()` rules with semantic classes/data attributes |

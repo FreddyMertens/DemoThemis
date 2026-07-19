@@ -137,11 +137,7 @@ def draw_omen_grid(draw: ImageDraw.ImageDraw, box: tuple[int, int, int, int], st
 
 
 def social_demo(wordmark: Image.Image) -> Image.Image:
-    card = Image.new("RGBA", (1200, 630), DT["ink"])
-    draw = ImageDraw.Draw(card, "RGBA")
-    draw.ellipse((-160, -350, 700, 510), fill=(120, 106, 94, 32))
-    draw.ellipse((680, 230, 1400, 950), fill=(204, 195, 188, 20))
-    draw.rounded_rectangle((74, 92, 1126, 538), radius=44, outline=DT["accent"], width=3)
+    card = Image.new("RGBA", (1200, 630), DT["canvas"])
     paste_contained(card, wordmark, (120, 190, 1080, 440))
     return card
 
@@ -156,7 +152,7 @@ def social_omen(poster: Image.Image) -> Image.Image:
 
 
 def social_shared(wordmark: Image.Image, poster: Image.Image) -> Image.Image:
-    card = Image.new("RGBA", (1200, 630), DT["ink"])
+    card = Image.new("RGBA", (1200, 630), DT["canvas"])
     draw = ImageDraw.Draw(card, "RGBA")
     draw.rectangle((600, 0, 1200, 630), fill=OMM["black"])
     draw_omen_grid(draw, (760, 0, 1200, 630), 48)

@@ -18,6 +18,52 @@ const publicHtml = [
   "demothemis-mvp.html"
 ];
 
+const brandImageByPage = {
+  "index.html": "assets/brand/social/proposal-home-1200x630.jpg",
+  "run-through.html": "assets/brand/social/shared-system-1200x630.jpg",
+  "demothemis.html": "assets/brand/social/demothemis-1200x630.jpg",
+  "break-the-court.html": "assets/brand/social/demothemis-1200x630.jpg",
+  "omenmarketmaker.html": "assets/brand/social/omenmarketmaker-1200x630.jpg",
+  "bootstrap-loop.html": "assets/brand/social/shared-system-1200x630.jpg",
+  "governance.html": "assets/brand/social/shared-system-1200x630.jpg",
+  "demothemis-mvp.html": "assets/brand/social/mvp-1200x630.jpg"
+};
+
+const pageThemeByFile = {
+  "index.html": "neutral",
+  "run-through.html": "neutral",
+  "demothemis.html": "demothemis",
+  "break-the-court.html": "demothemis",
+  "omenmarketmaker.html": "omen",
+  "bootstrap-loop.html": "neutral",
+  "governance.html": "neutral",
+  "demothemis-mvp.html": "demothemis"
+};
+
+const requiredBrandAssets = [
+  "assets/brand-rive.js",
+  "assets/brand/brand-manifest.json",
+  "assets/brand/demothemis/favicon.ico",
+  "assets/brand/demothemis/mark-16.png",
+  "assets/brand/demothemis/mark-32.png",
+  "assets/brand/demothemis/mark-180.png",
+  "assets/brand/demothemis/mark-192.png",
+  "assets/brand/demothemis/mark-512.png",
+  "assets/brand/demothemis/wordmark.png",
+  "assets/brand/omenmarketmaker/favicon.ico",
+  "assets/brand/omenmarketmaker/mark-16.png",
+  "assets/brand/omenmarketmaker/mark-32.png",
+  "assets/brand/omenmarketmaker/mark-180.png",
+  "assets/brand/omenmarketmaker/mark-192.png",
+  "assets/brand/omenmarketmaker/mark-512.png",
+  "assets/brand/omenmarketmaker/wordmark-poster.png",
+  "assets/brand/omenmarketmaker/wordmark.riv",
+  ...new Set(Object.values(brandImageByPage)),
+  "assets/vendor/rive/LICENSE.txt",
+  "assets/vendor/rive/rive-2.38.5.js",
+  "assets/vendor/rive/rive-2.38.5.wasm"
+];
+
 const chapterSequence = [
   { file: "run-through.html", title: "Run-through", navTitle: "Run-through", chapter: 1 },
   { file: "demothemis.html", title: "DemoThemis", navTitle: "DemoThemis", chapter: 2 },
@@ -28,6 +74,7 @@ const chapterSequence = [
 ];
 
 const forbiddenPublicPaths = [
+  "/predictionmomo.html",
   "/glossary",
   "/glossary.html",
   "/SKILL.md",
@@ -121,15 +168,23 @@ function checkDistFiles(failures) {
   for (const file of ["_headers", "_redirects", "robots.txt", "sitemap.xml", "404.html", "assets/styles.css", "assets/mvp-simulator.css", "assets/common.js"]) {
     assert(fs.existsSync(path.join(outDir, file)), `missing built support file: ${file}`, failures);
   }
+  for (const file of requiredBrandAssets) {
+    assert(fs.existsSync(path.join(outDir, file)), `missing built brand asset: ${file}`, failures);
+  }
 }
 
 function checkHeaders(failures) {
   const headers = readDist("_headers");
+  const genericHeaders = headers.split("\n\n/")[0];
   assert(/Content-Security-Policy:/i.test(headers), "_headers missing Content-Security-Policy", failures);
   assert(/frame-ancestors 'none'/i.test(headers), "CSP missing frame-ancestors 'none'", failures);
   assert(/X-Content-Type-Options: nosniff/i.test(headers), "_headers missing nosniff", failures);
   assert(/Referrer-Policy: strict-origin-when-cross-origin/i.test(headers), "_headers missing Referrer-Policy", failures);
   assert(!/unpkg\.com/i.test(headers), "_headers should not allow unpkg.com", failures);
+  assert(!/wasm-unsafe-eval/i.test(genericHeaders), "generic CSP must not grant WASM execution to every route", failures);
+  assert(/\n\/\n[\s\S]*wasm-unsafe-eval/i.test(headers), "proposal homepage CSP must allow its local Rive WASM runtime", failures);
+  assert(/\/index\.html[\s\S]*wasm-unsafe-eval/i.test(headers), "index.html CSP must allow its local Rive WASM runtime", failures);
+  assert(/\/omenmarketmaker\*[\s\S]*wasm-unsafe-eval/i.test(headers), "OmenMarketMaker CSP must allow its local Rive WASM runtime", failures);
 }
 
 function checkMetadata(file, html, failures) {
@@ -139,7 +194,19 @@ function checkMetadata(file, html, failures) {
   assert(new RegExp(`<link\\s+[^>]*rel=["']canonical["'][^>]*href=["']${expectedUrl.replace(/[.*+?^${}()|[\]\\]/g, "\\$&")}["']`, "i").test(html), `${file} missing expected canonical ${expectedUrl}`, failures);
   assert(/<meta\s+[^>]*property=["']og:title["'][^>]*content=["'][^"']+["']/i.test(html), `${file} missing og:title`, failures);
   assert(/<meta\s+[^>]*property=["']og:description["'][^>]*content=["'][^"']+["']/i.test(html), `${file} missing og:description`, failures);
-  assert(/<meta\s+[^>]*name=["']twitter:card["'][^>]*content=["']summary["']/i.test(html), `${file} missing twitter:card`, failures);
+  const image = brandImageByPage[file];
+  const expectedCard = image ? "summary_large_image" : "summary";
+  assert(new RegExp(`<meta\\s+[^>]*name=["']twitter:card["'][^>]*content=["']${expectedCard}["']`, "i").test(html), `${file} missing ${expectedCard} twitter:card`, failures);
+  if (image) {
+    const expectedImageUrl = `${siteUrl}/${image}`.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
+    assert(new RegExp(`<meta\\s+[^>]*property=["']og:image["'][^>]*content=["']${expectedImageUrl}["']`, "i").test(html), `${file} missing route-specific og:image`, failures);
+    assert(new RegExp(`<meta\\s+[^>]*name=["']twitter:image["'][^>]*content=["']${expectedImageUrl}["']`, "i").test(html), `${file} missing route-specific twitter:image`, failures);
+    assert(/<link\s+[^>]*rel=["']icon["'][^>]*href=["'][^"']*assets\/brand/i.test(html), `${file} missing branded favicon`, failures);
+    assert(/<link\s+[^>]*rel=["']apple-touch-icon["']/i.test(html), `${file} missing apple touch icon`, failures);
+    assert(/<meta\s+[^>]*name=["']theme-color["']/i.test(html), `${file} missing theme color`, failures);
+  } else {
+    assert(!/og:image|twitter:image|summary_large_image|assets\/brand|data-page-brand/i.test(html), `${file} must remain outside the branding redesign`, failures);
+  }
 }
 
 function openingTags(html, tag) {
@@ -221,11 +288,11 @@ function checkChapterSequence(failures) {
 
   const home = readDist("index.html");
   const marketChapter = readDist("omenmarketmaker.html");
-  const homeMarketFeatures = home.match(/<h3>OmenMarketMaker<\/h3>\s*<p\b[^>]*class=["'][^"']*\bproduct-tagline\b[^"']*["'][^>]*>[\s\S]*?<\/p>\s*<ol[^>]*>([\s\S]*?)<\/ol>/i);
+  const homeMarketFeatures = home.match(/<h3\b[^>]*>OmenMarketMaker<\/h3>\s*<p\b[^>]*class=["'][^"']*\bproduct-tagline\b[^"']*["'][^>]*>[\s\S]*?<\/p>\s*<ol[^>]*>([\s\S]*?)<\/ol>/i);
   const chapterMarketFeatures = marketChapter.match(/<h3>OmenMarketMaker: six market features<\/h3>\s*<ol[^>]*>([\s\S]*?)<\/ol>/i);
   const chapterTargets = ["exploited-arbiter", "start-market", "self-custody-tokens", "tradeable-disputes", "peer-to-peer-parlays", "private-markets"];
-  const courtProductAt = home.indexOf('<article class="product court">');
-  const marketProductAt = home.indexOf('<article class="product market">');
+  const courtProductAt = home.search(/<article\b[^>]*class=["'][^"']*\bproduct\b[^"']*\bcourt\b/i);
+  const marketProductAt = home.search(/<article\b[^>]*class=["'][^"']*\bproduct\b[^"']*\bmarket\b/i);
   assert(courtProductAt >= 0 && marketProductAt > courtProductAt, "Home must present the arbitration service as Product one before OmenMarketMaker as Product two", failures);
   assert(
     home.includes("DemoThemis and OmenMarketMaker are entirely separate products but both require the other to exist, DemoThemis needs OmenMarketMaker to bootstrap its existence and create demand and OmenMarketMaker needs DemoThemis' superior arbitration to create a superior product to existing markets."),
@@ -774,8 +841,8 @@ function checkProductStageGroups(html, failures) {
     const groups = context.__stageGroups;
     const omen = groups.filter((group) => group.mode === "omen");
     const themis = groups.filter((group) => group.mode === "themis");
-    assert(omen.length === 2 && omen[0].start === 0 && omen[omen.length - 1].end === 5, "OmenMarketMaker navigator must contain only Events 01-06", failures);
-    assert(themis.length === 3 && themis[0].start === 6 && themis[themis.length - 1].end === 12, "DemoThemis navigator must contain only Events 07-13", failures);
+    assert(omen.length === 2 && omen[0].start === 0 && omen[omen.length - 1].end === 5, "OmenMarketMaker navigator must contain Events 01-06", failures);
+    assert(themis.length === 3 && themis[0].start === 6 && themis[themis.length - 1].end === 12, "DemoThemis navigator shell must begin at Event 07", failures);
     assert(groups.every((group) => group.mode === "omen" || group.mode === "themis"), "every event group must belong to a product mode", failures);
     assert(!/visibleGroups[\s\S]{0,240}\.filter\s*\(/.test(html), "event navigator must show every product's groups together", failures);
     assert(/groupEl\.setAttribute\(["']data-stage-mode["'],\s*group\.mode\)/.test(html), "event groups must retain their individual product themes", failures);
@@ -1603,7 +1670,7 @@ function checkCompactAppViews(html, failures) {
   const productRenderer = html.slice(productRendererStart, productRendererEnd);
   assert(/var\s+appBoundary\s*=\s*appBoundaryForPage\(page\)/.test(productRenderer), "the embedded surface must follow the resolved page ownership", failures);
   assert(/appViewport\.setAttribute\("data-app-theme",\s*appTheme\)/.test(productRenderer), "the embedded app viewport must declare its own theme independently of the run path", failures);
-  assert(/brand\.appendChild\(makeEl\("span",\s*"",\s*appBrand\)\)/.test(productRenderer), "the embedded app brand must follow the current app boundary", failures);
+  assert(/brand\.appendChild\(makeProductWordmark\(appTheme\s*===\s*"omen"\s*\?\s*"omen"\s*:\s*"demothemis",\s*"app-brand-wordmark",\s*appBrand\)\)/.test(productRenderer), "the embedded app wordmark must follow the current app boundary", failures);
   assert(/APP_BOUNDARIES\.handoff\.frameTitle/.test(productRenderer), "the OmenMarketMaker court handoff must retain its outer integration frame", failures);
   assert(/makeEl\("span",\s*"app-nav-chip",\s*chrome\.context\)/.test(productRenderer), "the OmenMarketMaker web app must keep its normal context chip", failures);
   assert(!/app-backend-chip|backendLabel|sends court cases to the/.test(productRenderer), "DemoThemis integration copy must stay outside the web app", failures);
@@ -1851,7 +1918,7 @@ function checkRunThroughPriorityUxFixes(html, failures) {
   const syncEnd = html.indexOf("function saveProductProgress", syncStart);
   const syncSource = syncStart >= 0 && syncEnd > syncStart ? html.slice(syncStart, syncEnd) : "";
   assert(/getAttribute\(["']data-product-mode["']\)\s*===\s*selectedRunMode/.test(syncSource) && /setAttribute\(["']aria-pressed["']/.test(syncSource), "starting-point selection must remain tied to selectedRunMode", failures);
-  assert(/var\s+(?:mode|stageMode)\s*=\s*productModeForStage\(stage\)/.test(syncSource) && /setAttribute\(["']data-product-mode["'],\s*(?:mode|stageMode)\)/.test(syncSource), "the current journey theme must still follow the current event", failures);
+  assert(/var\s+stageMode\s*=\s*productModeForStage\(stage\)/.test(syncSource) && /setAttribute\(["']data-product-mode["'],\s*selectedRunMode\)/.test(syncSource) && /setAttribute\(["']data-current-section["'],\s*stageMode\)/.test(syncSource), "the chosen starting point must stay separate from the current event section", failures);
   assert(!/selectedRunMode\s*=\s*productModeForStage\(stage\)/.test(html), "event progress must not overwrite the chosen starting path", failures);
 
   const selectStart = html.indexOf("function selectProductMode");
@@ -2496,6 +2563,201 @@ function checkActionButtonInfoLabels(html, failures) {
   });
 }
 
+function checkBrandSystem(failures) {
+  const builtRunThrough = readDist("run-through.html");
+  assert(/<body\b[^>]*data-page-brand=["']neutral["']/i.test(builtRunThrough), "run-through must use the shared neutral page shell", failures);
+  assert(/assets\/run-through-brand\.css/i.test(builtRunThrough), "run-through is missing its dedicated product-brand layer", failures);
+  assert(/brand-with-wordmark[\s\S]*assets\/brand\/demothemis\/wordmark\.png/i.test(builtRunThrough), "run-through navigation must use the DemoThemis wordmark", failures);
+  assert(/data-omen-rive[\s\S]*assets\/brand\/omenmarketmaker\/wordmark-poster\.png/i.test(builtRunThrough), "run-through selector must use the live OmenMarketMaker wordmark", failures);
+  assert(/data-active-brand/i.test(builtRunThrough) && /activeBrandForPage/i.test(builtRunThrough), "run-through appearance must follow the active product surface", failures);
+  assert(/SYSTEM_STATE_OWNERS/i.test(builtRunThrough) && /data-owner/i.test(builtRunThrough), "run-through lifecycle states must expose product ownership", failures);
+  assert(/tutorial-inline-slot/i.test(builtRunThrough) && /\.target-callout\s*\{\s*display:\s*none\s*!important/i.test(readDist("assets/run-through-brand.css")), "run-through tutorial must stay inside the simulated app frame", failures);
+
+  for (const [file, theme] of Object.entries(pageThemeByFile)) {
+    const html = readDist(file);
+    assert(new RegExp(`<body\\b[^>]*data-page-brand=["']${theme}["']`, "i").test(html), `${file} is missing its scoped ${theme} page theme`, failures);
+    assert(/assets\/brand\//i.test(html), `${file} has no deployed brand asset reference`, failures);
+    const siteNav = (html.match(/<nav\b[^>]*class=["'][^"']*\bsitenav\b[^"']*["'][^>]*>([\s\S]*?)<\/nav>/i) || ["", ""])[1];
+    assert(/brand-with-wordmark[\s\S]*assets\/brand\/demothemis\/wordmark\.png/i.test(siteNav), `${file} navigation must use the supplied DemoThemis wordmark`, failures);
+    assert(!/brand-with-mark[\s\S]*assets\/brand\/demothemis\/mark-32\.png/i.test(siteNav), `${file} navigation must not rebuild DemoThemis from the favicon and live text`, failures);
+  }
+
+  const styles = readDist("assets/styles.css");
+  const requiredTokens = [
+    ["dt-canvas", "#f6f3f2"],
+    ["dt-emboss", "#ccc3bc"],
+    ["dt-accent", "#786a5e"],
+    ["dt-ink", "#292522"],
+    ["dt-emission", "#00e5ff"],
+    ["dt-emission-ink", "#006f7b"],
+    ["omm-black", "#000402"],
+    ["omm-green", "#04e26d"],
+    ["omm-mint", "#5dfeaa"],
+    ["omm-white", "#fefefe"]
+  ];
+  for (const [name, value] of requiredTokens) {
+    assert(new RegExp(`--${name}:\\s*${value}`, "i").test(styles), `shared styles missing logo-derived ${name} token`, failures);
+  }
+  assert(/--dt-wordmark-underline:\s*linear-gradient\([\s\S]*?rgba\(var\(--dt-emission-rgb\),\s*\.16\)\s*0%[\s\S]*?var\(--dt-emission\)\s*42%[\s\S]*?var\(--dt-emission\)\s*50%[\s\S]*?var\(--dt-emission\)\s*58%[\s\S]*?center\s*\/\s*100%\s*2px\s*no-repeat,\s*linear-gradient\([\s\S]*?rgba\(var\(--dt-emission-rgb\),\s*\.16\)\s*50%[\s\S]*?center\s*\/\s*100%\s*100%\s*no-repeat/i.test(styles), "shared wordmark underline needs a continuous cyan two-pixel light core inside its subtle scalable halo", failures);
+  assert(/--dt-wordmark-underline-shape:\s*polygon\([\s\S]*?0\s+38%[\s\S]*?50%\s+0[\s\S]*?100%\s+38%[\s\S]*?100%\s+62%[\s\S]*?50%\s+100%[\s\S]*?0\s+62%/i.test(styles), "shared wordmark underline must taper in thickness as well as opacity toward both edges", failures);
+  assert(/body\[data-page-brand=["']demothemis["']\]/i.test(styles), "DemoThemis page theme is not scoped", failures);
+  assert(/body\[data-page-brand=["']omen["']\]/i.test(styles), "OmenMarketMaker page theme is not scoped", failures);
+  assert(/\[data-brand=["'](?:demothemis|omen|neutral|shared)["']\]/i.test(styles), "ownership-level brand primitives are missing", failures);
+  assert(/forced-colors:\s*active/i.test(styles) && /prefers-reduced-motion:\s*reduce/i.test(styles) && /@media\s+print/i.test(styles), "brand system is missing accessibility or print fallbacks", failures);
+
+  const staticEmission = styles.split("/* ===== DemoThemis emission system: underline, equal rim, illustration ===== */")[1] || "";
+  assert(Boolean(staticEmission), "shared styles are missing the DemoThemis cyan interaction system", failures);
+  assert(/body\[data-page-brand=["']demothemis["']\]/i.test(staticEmission) && /:not\(\[data-page-brand=["']omen["']\]\)/i.test(staticEmission), "cyan interactions must be scoped to DemoThemis and exclude OmenMarketMaker", failures);
+  assert(/\.sitenav\s+:is\(\.brand,\s*\.nav-links a\)::after/i.test(staticEmission) && /background:\s*transparent[\s\S]*?box-shadow:\s*none/i.test(staticEmission), "DemoThemis navigation must use emitted underlines rather than glowing boxes", failures);
+  assert(/\.sitenav\s+:is\(\.brand,\s*\.nav-links a\)::after\s*\{[^}]*left:\s*\.46rem;[^}]*opacity:\s*\.22;[^}]*transform:\s*scaleX\(\.3\)[^}]*transform-origin:\s*center/i.test(staticEmission), "idle site-navigation underlines must remain text-width-relative while extending to thirty percent of each label", failures);
+  assert(/\.sitenav \.brand\.brand-with-wordmark::after\s*\{[^}]*right:\s*0;[^}]*top:\s*calc\(50%\s*\+\s*clamp\(\.52rem,\s*\.856vw,\s*\.642rem\)\s*\+\s*3px\);[^}]*bottom:\s*auto;[^}]*left:\s*0;[^}]*height:\s*auto;[^}]*aspect-ratio:\s*84\s*\/\s*1;[^}]*background:\s*var\(--dt-wordmark-underline\)[^}]*opacity:\s*\.52[^}]*transform:\s*scaleX\(1\)/i.test(staticEmission), "DemoThemis nav wordmark needs a visibly full-width, proportionally scaled idle underline with the canonical three-pixel image gap", failures);
+  assert(/\.sitenav \.brand\.brand-with-wordmark:hover::after\s*\{[^}]*filter:\s*var\(--dt-wordmark-underline-hover-filter\)/i.test(staticEmission), "DemoThemis nav wordmark needs the strong layered hover emission", failures);
+  assert(/\.dt-wordmark-emission::after\s*\{[^}]*right:\s*0;[^}]*top:\s*calc\(100%\s*\+\s*3px\);[^}]*bottom:\s*auto;[^}]*left:\s*0;[^}]*height:\s*auto;[^}]*aspect-ratio:\s*84\s*\/\s*1;[^}]*background:\s*var\(--dt-wordmark-underline\)[^}]*clip-path:\s*var\(--dt-wordmark-underline-shape\)[^}]*opacity:\s*\.52/i.test(staticEmission) && /\.dt-wordmark-emission:hover::after\s*\{[^}]*var\(--dt-wordmark-underline-hover-filter\)[^}]*opacity:\s*1/i.test(staticEmission), "static DemoThemis hero and product wordmarks must share the canonical three-pixel gap, taper, scale, and hover underline", failures);
+  assert(!/\.reading-pane|\.reading-category|(?:^|[\s,(])\.is-active(?:[\s,):]|$)/im.test(staticEmission), "emission selectors must not wrap article panes or rely on generic active-state classes", failures);
+  assert(/\.simple-step[\s\S]*?\.simple-card[\s\S]*?\.diagram-inner[\s\S]*?\.widget/i.test(staticEmission), "static DemoThemis teaching graphics are missing their restrained illustration treatment", failures);
+  assert(/box-shadow:\s*0 0 0 1px var\(--dt-emission\),\s*0 0 10px rgba\(var\(--dt-emission-rgb\)/i.test(staticEmission), "hover rims must use an equal stroke and centred zero-offset halo", failures);
+  assert(/:not\(:disabled\):hover/i.test(staticEmission) && /:not\(:disabled\):active/i.test(staticEmission), "static DemoThemis controls need distinct hover and pressed states", failures);
+  assert(/aria-selected=["']true["']/i.test(staticEmission) && /aria-pressed=["']true["']/i.test(staticEmission), "static DemoThemis controls need persistent selected/on states", failures);
+  assert(/body\[data-page-brand=["']demothemis["']\] :is\(\.mvp-button\.primary, \.mvp-submit-action\):not\(:disabled\)\s*\{[^}]*background:\s*color-mix\(in srgb,\s*var\(--dt-emission\)\s*5%,\s*var\(--dt-surface\)\)[^}]*color:\s*var\(--dt-ink\)/i.test(staticEmission), "static MVP primary actions must use cyan light on ivory instead of a solid taupe fill", failures);
+  assert(/:disabled/i.test(staticEmission) && /:focus-visible/i.test(staticEmission), "static DemoThemis controls need disabled and keyboard-focus states", failures);
+  assert(/outline:\s*2px solid var\(--dt-emission-ink\)/i.test(staticEmission) && /0 0 0 5px rgba\(var\(--dt-emission-rgb\)/i.test(staticEmission), "DemoThemis keyboard focus needs a contrast-safe core and cyan halo", failures);
+  assert(/prefers-reduced-motion:\s*reduce/i.test(staticEmission) && /forced-colors:\s*active/i.test(staticEmission), "DemoThemis interactions need reduced-motion and forced-colors fallbacks", failures);
+  assert(!/animation\s*:/i.test(staticEmission), "DemoThemis emission must be state-driven rather than a continuous decorative animation", failures);
+
+  const previewInteractionStyles = readDist("assets/mvp-simulator.css");
+  const previewEmission = previewInteractionStyles.split("/* MVP emission: underline navigation, equal control rims, quiet illustration colour. */")[1] || "";
+  assert(Boolean(previewEmission) && /--dt-emission/i.test(previewEmission), "embedded MVP preview is missing the shared cyan emission states", failures);
+  assert(/\.mvp-sim-context-nav :is\(button, a\)::after\s*\{[^}]*opacity:\s*\.22;[^}]*transform:\s*scaleX\(\.3\)/i.test(previewEmission), "embedded preview idle navigation underlines must use the longer relative width", failures);
+  assert(/\.mvp-sim-site-brand::after\s*\{[^}]*right:\s*0;[^}]*left:\s*0;[^}]*height:\s*auto;[^}]*aspect-ratio:\s*84\s*\/\s*1;[^}]*var\(--dt-wordmark-underline\)[^}]*clip-path:\s*var\(--dt-wordmark-underline-shape\)[^}]*opacity:\s*\.52/i.test(previewEmission), "embedded MVP wordmark must share the full-width proportionally scaled tapered underline", failures);
+  assert(/mvp-sim-context-nav[\s\S]*?::after/i.test(previewEmission) && /oracle-fact[\s\S]*?oracle-seat/i.test(previewEmission), "embedded MVP preview needs underline navigation and illustration highlights", failures);
+  assert(/oracle-vote-options button:focus-visible/i.test(previewEmission) && /YES\/NO preserve green\/taupe meaning/i.test(previewEmission), "embedded MVP voting must keep semantic colors while gaining cyan keyboard focus", failures);
+  assert(/:not\(:disabled\):hover/i.test(previewEmission) && /:not\(:disabled\):active/i.test(previewEmission) && /:disabled/i.test(previewEmission), "embedded MVP controls need hover, pressed, and disabled states", failures);
+  assert(/\.mvp-sim-product :is\(\.mvp-tutorial-actions button:last-child, \.oracle-primary-action, \.mvp-preview-onboard-status button\):not\(:disabled\)\s*\{[^}]*background:\s*color-mix\(in srgb,\s*var\(--dt-emission\)\s*5%,\s*var\(--surface\)\)[^}]*color:\s*var\(--ink\)/i.test(previewEmission), "embedded MVP primary actions must replace the clashing taupe fill with a restrained cyan wash", failures);
+  assert(/:is\(\.mvp-preview-world-badge, \.mvp-preview-onboard-icon, \.mvp-preview-disclosure li > b\)\s*\{[^}]*background:\s*color-mix\(in srgb,\s*var\(--dt-emission\)\s*9%,\s*var\(--surface\)\)[^}]*color:\s*var\(--dt-emission-ink\)/i.test(previewEmission), "embedded MVP onboarding markers must use cyan light on ivory instead of solid taupe", failures);
+  assert(/\.mvp-tutorial-target::after\s*\{[^}]*background:\s*var\(--dt-emission\)[^}]*box-shadow:\s*0 0 0 1px rgba\(var\(--dt-emission-rgb\)/i.test(previewInteractionStyles) && /@keyframes mvp-tutorial-target\s*\{[^}]*var\(--dt-emission-rgb\)[\s\S]*?var\(--dt-emission-rgb\)/i.test(previewInteractionStyles), "embedded MVP tutorial focus must use the restrained cyan guide pulse instead of the old brown and purple treatment", failures);
+  assert(/prefers-reduced-motion:\s*reduce/i.test(previewEmission) && /forced-colors:\s*active/i.test(previewEmission), "embedded MVP interactions need accessibility fallbacks", failures);
+  assert(!/animation\s*:/i.test(previewEmission), "embedded MVP emission must not add a continuous animation", failures);
+
+  const demoStageRule = (styles.match(/\.brand-stage--demothemis\s*\{([^}]*)\}/i) || ["", ""])[1];
+  assert(/background:\s*transparent/i.test(demoStageRule) && /box-shadow:\s*none/i.test(demoStageRule), "DemoThemis wordmark stage must sit directly on the ivory page without a decorative rectangle", failures);
+  assert(/\.brand-stage--demothemis::after\s*\{[^}]*display:\s*none/i.test(styles), "DemoThemis wordmark stage must suppress the shared framed-stage outline", failures);
+
+  const home = readDist("index.html");
+  const homeDemoProduct = (home.match(/<article\b[^>]*data-brand=["']demothemis["'][^>]*>([\s\S]*?)<\/article>/i) || ["", ""])[1];
+  const homeOmenProduct = (home.match(/<article\b[^>]*data-brand=["']omen["'][^>]*>([\s\S]*?)<\/article>/i) || ["", ""])[1];
+  assert(/product-logo-lockup--demothemis[\s\S]*assets\/brand\/demothemis\/wordmark\.png/i.test(homeDemoProduct), "homepage DemoThemis card must use the full supplied wordmark", failures);
+  assert(/product-logo-lockup--demothemis[\s\S]*dt-wordmark-emission[\s\S]*wordmark\.png/i.test(homeDemoProduct), "homepage DemoThemis wordmark is missing its canonical underline wrapper", failures);
+  assert(/<h3\b[^>]*class=["'][^"']*\bsr-only\b[^"']*["'][^>]*>DemoThemis<\/h3>/i.test(homeDemoProduct), "homepage DemoThemis logo must replace the visible typed title while preserving the article heading", failures);
+  assert(!/<h3\b(?![^>]*\bsr-only\b)[^>]*>\s*DemoThemis\s*<\/h3>/i.test(homeDemoProduct), "homepage DemoThemis card must not repeat the logo as a visible typed title", failures);
+  assert(/product-logo-lockup--omen[\s\S]*data-omen-rive[\s\S]*wordmark-poster\.png[\s\S]*<canvas/i.test(homeOmenProduct), "homepage OmenMarketMaker card must use the Rive wordmark with a static poster fallback", failures);
+  assert(/<h3\b[^>]*class=["'][^"']*\bsr-only\b[^"']*["'][^>]*>OmenMarketMaker<\/h3>/i.test(homeOmenProduct), "homepage Omen logo must replace the visible typed title while preserving the article heading", failures);
+  assert(!/<h3\b(?![^>]*\bsr-only\b)[^>]*>\s*OmenMarketMaker\s*<\/h3>/i.test(homeOmenProduct), "homepage Omen card must not repeat the logo as a visible typed title", failures);
+  assert(/assets\/vendor\/rive\/rive-2\.38\.5\.js/i.test(home) && /assets\/brand-rive\.js/i.test(home), "homepage Omen card is missing its local Rive scripts", failures);
+  assert(/\.product-pair \.product\[data-brand=["']omen["']\][^{]*\{[^}]*var\(--omm-black\)/i.test(styles), "homepage Omen card must use its near-black brand canvas", failures);
+  assert(/\.product-logo-lockup--demothemis img\s*\{[^}]*width:\s*min\(100%,\s*25rem\)/i.test(styles), "homepage DemoThemis wordmark must be integrated directly into the card canvas", failures);
+  assert(/body\[data-page-brand=["']neutral["']\] \.product-pair \.product\[data-brand=["']demothemis["']\]\s*\{[^}]*border:\s*1px solid rgba\(var\(--dt-emission-rgb\)[^}]*box-shadow:\s*0 0 0 1px/i.test(styles), "homepage DemoThemis card must use the equal cyan emission rim", failures);
+  assert(/body\[data-page-brand=["']neutral["']\] \.product-pair \.product\[data-brand=["']demothemis["']\]\s*\{[^}]*box-shadow:\s*0 0 0 1px rgba\(var\(--dt-emission-rgb\),\s*\.08\),\s*0 0 4px rgba\(var\(--dt-emission-rgb\),\s*\.035\)/i.test(styles), "homepage DemoThemis card idle halo must remain restrained", failures);
+  assert(/\.product\[data-brand=["']demothemis["']\]::before\s*\{[^}]*display:\s*none/i.test(styles), "homepage DemoThemis card must remove the old unequal top accent stroke", failures);
+  assert(/\.product\[data-brand=["']demothemis["']\]:hover\s*\{[^}]*0 0 12px rgba\(var\(--dt-emission-rgb\)/i.test(styles), "homepage DemoThemis card needs a centred hover glow", failures);
+  assert(/\.product\[data-brand=["']demothemis["']\] \.product-summary-label\s*\{(?!\s*color:)(?![^}]*;\s*color:)[^}]*text-decoration-color:\s*rgba\(var\(--dt-emission-rgb\),\s*\.42\)[^}]*text-decoration-thickness:\s*1px[^}]*text-underline-offset:\s*\.24em/i.test(styles), "homepage DemoThemis labels must retain their original text colours with the canonical idle underline", failures);
+  assert(/\.product\[data-brand=["']demothemis["']\] \.product-summary-label:hover\s*\{[^}]*text-decoration-color:\s*var\(--dt-emission\)[^}]*text-decoration-thickness:\s*2px[^}]*text-shadow:/i.test(styles), "homepage DemoThemis labels must each have the canonical cyan hover underline", failures);
+  assert(/\.product\[data-brand=["']demothemis["']\] \.product-summary-label:active\s*\{[^}]*text-decoration-color:\s*var\(--dt-emission-ink\)[^}]*transition-duration:\s*45ms/i.test(styles), "homepage DemoThemis label underlines need a responsive pressed state", failures);
+  assert(/\.product-pair\s*\{[^}]*grid-auto-rows:\s*1fr[^}]*align-items:\s*stretch/i.test(styles) && /\.product-pair \.product\s*\{[^}]*height:\s*100%/i.test(styles), "homepage product cards must form an equal-height, equal-width desktop pair", failures);
+  assert(/\.product-pair \.product\[data-brand=["']omen["']\] ol\.product-jumps li\s*\{[^}]*background:\s*var\(--omm-surface\)/i.test(styles), "homepage Omen feature rows must use an opaque surface so the card mesh stays behind them", failures);
+  assert(/\.product-pair \.product\[data-brand=["']omen["']\]::after\s*\{[^}]*card-grid\.svg[^}]*animation:\s*omen-card-grid-scroll\s+30s\s+linear\s+infinite/i.test(styles) && /@keyframes\s+omen-card-grid-scroll\s*\{[^}]*translateX\(-340px\)/i.test(styles), "homepage Omen card grid must move its cached tile with one linear compositor-friendly translation", failures);
+  const omenCardGrid = readDist("assets/brand/omenmarketmaker/card-grid.svg");
+  assert(/width=["']34["'][^>]*height=["']34["']/i.test(omenCardGrid) && /stroke-opacity=["']\.32["']/i.test(omenCardGrid), "homepage Omen card grid must use a visible cached 34-pixel tile", failures);
+  assert(/\.product-pair \.product\[data-brand=["']omen["']\] \.product-jumps a\s*\{[^}]*text-decoration:\s*none/i.test(styles) && /\.product-pair \.product\[data-brand=["']omen["']\] \.product-jumps a:hover,[\s\S]*?text-decoration-color:\s*var\(--omm-mint\)/i.test(styles), "homepage Omen links must reveal their green underlines only on hover or keyboard focus", failures);
+  assert(/prefers-reduced-motion:\s*reduce[\s\S]*?\.product-pair \.product\[data-brand=["']omen["']\]::after,\s*body\[data-page-brand=["']omen["']\] \.hero\.brand-hero::after\s*\{[^}]*animation:\s*none/i.test(styles), "Omen card and chapter meshes must respect reduced-motion preferences", failures);
+
+  const demoChapter = readDist("demothemis.html");
+  const demoHero = (demoChapter.match(/<header\b[^>]*class=["'][^"']*\bhero\b[^"']*["'][^>]*>([\s\S]*?)<\/header>/i) || ["", ""])[1];
+  assert(/brand-stage--demothemis/i.test(demoHero) && /class=["']sr-only["']>DemoThemis<\/span>/i.test(demoHero), "DemoThemis hero must keep one accessible product name with the full visual wordmark", failures);
+  assert(/brand-stage--demothemis[\s\S]*dt-wordmark-emission[\s\S]*wordmark\.png/i.test(demoHero), "DemoThemis chapter hero wordmark is missing its canonical underline wrapper", failures);
+  assert(!/title-product/i.test(demoHero), "DemoThemis hero must not repeat its wordmark as a second visible product-name title", failures);
+
+  const omen = readDist("omenmarketmaker.html");
+  assert(/data-omen-rive/i.test(omen) && /wordmark-poster\.png/i.test(omen) && /omen-brand-canvas/i.test(omen), "OmenMarketMaker hero must provide both a static poster and Rive canvas", failures);
+  assert(/assets\/vendor\/rive\/rive-2\.38\.5\.js/i.test(omen) && /assets\/brand-rive\.js/i.test(omen), "OmenMarketMaker hero is missing its local Rive scripts", failures);
+  const omenHero = (omen.match(/<header\b[^>]*class=["'][^"']*\bbrand-hero\b[^"']*["'][^>]*>([\s\S]*?)<\/header>/i) || ["", ""])[1];
+  assert(/data-omen-rive[^>]*role=["']img["'][^>]*aria-label=["']OmenMarketMaker["']/i.test(omenHero), "OmenMarketMaker hero logo must provide the visible page-title identity", failures);
+  assert(/<h1>Open markets with unbuyable arbitration<\/h1>/i.test(omenHero), "OmenMarketMaker hero must keep the capitalized non-duplicative descriptor as its page heading", failures);
+  assert(!/<p\b[^>]*class=["'][^"']*\bkicker\b/i.test(omenHero) && !/<h1[^>]*>[^<]*OmenMarketMaker/i.test(omenHero), "OmenMarketMaker hero must not repeat its Rive logo in either text-title position", failures);
+  assert(/<title>OmenMarketMaker: Open markets with unbuyable arbitration<\/title>/i.test(omen), "OmenMarketMaker document title must capitalize Open", failures);
+  assert(/body\[data-page-brand=["']omen["']\] \.hero\.brand-hero::after\s*\{[^}]*card-grid\.svg[^}]*animation:\s*omen-card-grid-scroll\s+30s\s+linear\s+infinite/i.test(styles), "OmenMarketMaker hero must share the animated product-card mesh", failures);
+  const riveLoader = readDist("assets/brand-rive.js");
+  assert(/querySelectorAll\(["']\[data-omen-rive\]["']\)/i.test(riveLoader), "Rive loader must support both homepage and chapter wordmarks", failures);
+  assert(/RuntimeLoader\.setWasmUrl/i.test(riveLoader) && /assets\/vendor\/rive\/rive-2\.38\.5\.wasm/i.test(riveLoader), "Rive loader must use the self-hosted WASM file", failures);
+  assert(/RIVE_PLAYBACK_RATE\s*=\s*0\.5/i.test(riveLoader) && /elapsedTime\s*\*\s*RIVE_PLAYBACK_RATE/i.test(riveLoader), "Omen Rive wordmarks must play at half speed without reducing their render frame rate", failures);
+  assert(/prefers-reduced-motion:\s*reduce/i.test(riveLoader), "Rive loader must respect reduced motion", failures);
+  assert(/IntersectionObserver/i.test(riveLoader) && /visibilitychange/i.test(riveLoader) && /\.cleanup\(/i.test(riveLoader), "Rive loader must lazy-start, pause offscreen, and clean up", failures);
+
+  const mvp = readDist("demothemis-mvp.html");
+  assert(/mvp-sim-site-brand[\s\S]*assets\/brand\/demothemis\/wordmark\.png/i.test(mvp), "MVP preview header is missing the full DemoThemis wordmark", failures);
+  assert(/brand-stage--demothemis[\s\S]*dt-wordmark-emission[\s\S]*wordmark\.png/i.test(mvp), "MVP page hero wordmark is missing its canonical underline wrapper", failures);
+  assert(!/mvp-sim-site-brand[\s\S]{0,300}assets\/brand\/demothemis\/mark-32\.png/i.test(mvp), "MVP preview header must not use the favicon-plus-text lockup", failures);
+  assert(/\.mvp-hero \.brand-stage--demothemis\s*\{[^}]*place-items:\s*center start/i.test(styles) && /\.mvp-hero \.brand-wordmark\s*\{[^}]*object-position:\s*left center/i.test(styles), "MVP hero wordmark must align with the left edge of its title copy", failures);
+
+  const appRoot = path.join(root, "DemoThemisMVP", "web", "src");
+  const appLayout = fs.readFileSync(path.join(appRoot, "app", "layout.tsx"), "utf8");
+  const appManifest = fs.readFileSync(path.join(appRoot, "app", "manifest.ts"), "utf8");
+  const appPage = fs.readFileSync(path.join(appRoot, "app", "page.tsx"), "utf8");
+  const siteChrome = fs.readFileSync(path.join(appRoot, "components", "SiteChrome", "index.tsx"), "utf8");
+  const appStyles = fs.readFileSync(path.join(appRoot, "app", "globals.css"), "utf8");
+  const sandboxStyles = fs.readFileSync(path.join(appRoot, "app", "sandbox", "sandbox.css"), "utf8");
+  const appHeroRule = (appStyles.match(/\.oracle-hero\s*\{([^}]*)\}/i) || ["", ""])[1];
+  const appBrandLockupRule = (appStyles.match(/\.oracle-brand-lockup\s*\{([^}]*)\}/i) || ["", ""])[1];
+  const appBrandImageRule = (appStyles.match(/\.oracle-brand-lockup\s+img\s*\{([^}]*)\}/i) || ["", ""])[1];
+  assert(/wordmark\.png/i.test(siteChrome) && /site-brand-wordmark/i.test(siteChrome), "live MVP chrome is missing the full DemoThemis wordmark", failures);
+  assert(!/mark-32\.png|site-brand-word["']/i.test(siteChrome), "live MVP chrome must not rebuild DemoThemis from the favicon and live text", failures);
+  assert(/wordmark\.png/i.test(appPage) && /oracle-brand-lockup/i.test(appPage), "live MVP hero is missing its DemoThemis wordmark lockup", failures);
+  assert(/#f6f3f2|#f2efec|#e9e8e5/i.test(appHeroRule) && !/#292522|#1d1a18|#1d1b2a/i.test(appHeroRule), "live MVP hero must use DemoThemis ivory and stone rather than a dark brand background", failures);
+  assert(/background:\s*transparent/i.test(appBrandLockupRule) && /border:\s*0/i.test(appBrandLockupRule) && /box-shadow:\s*none/i.test(appBrandLockupRule), "live MVP wordmark must sit directly on the ivory hero without a decorative rectangle", failures);
+  assert(!/invert\s*\(/i.test(appBrandImageRule), "live MVP wordmark must preserve the supplied raster colors rather than invert them", failures);
+  const appEmission = appStyles.split("/* ===== DemoThemis emission: underline, equal rim, illustration ===== */")[1] || "";
+  assert(/--dt-emission:\s*#00e5ff/i.test(appStyles) && /--dt-emission-ink:\s*#006f7b/i.test(appStyles), "live MVP is missing the canonical cyan and readable teal tokens", failures);
+  assert(Boolean(appEmission) && /:not\(:disabled\):hover/i.test(appEmission) && /:not\(:disabled\):active/i.test(appEmission), "live MVP controls need cyan hover and pressed states", failures);
+  assert(/:is\([\s\S]*?\.app-button\.is-primary,[\s\S]*?\.juror-mission-complete a,[\s\S]*?\.court-empty-actions a:first-child,[\s\S]*?\.oracle-primary-action[\s\S]*?\):not\(:disabled\)\s*\{[^}]*background:\s*color-mix\(in srgb,\s*var\(--dt-emission\)\s*5%,\s*var\(--surface\)\)[^}]*color:\s*var\(--ink\)/i.test(appEmission), "live MVP primary actions must use the minimalist cyan-on-ivory hierarchy", failures);
+  assert(/\.court-page \.bg-slate-900,[\s\S]*?\.mission-progress li\.is-active \.mission-progress-number,[\s\S]*?\.juror-step\.is-active[\s\S]*?background:\s*color-mix\(in srgb,\s*var\(--dt-emission\)\s*9%,\s*var\(--surface\)\)\s*!important/i.test(appEmission), "live MVP active markers and legacy dark buttons must no longer retain the solid taupe fill", failures);
+  assert(/aria-selected=["']true["']/i.test(appEmission) && /aria-pressed=["']true["']/i.test(appEmission) && /:disabled/i.test(appEmission), "live MVP controls need selected/on and disabled states", failures);
+  assert(/oracle-vote-options button\.is-selected\.is-yes/i.test(appEmission) && /oracle-vote-options button\.is-selected\.is-no/i.test(appEmission), "live MVP YES/NO voting must preserve semantic selection colors", failures);
+  assert(/:is\(\.site-brand,\s*\.site-chapters a,\s*\.mvp-context-links a\)::after/i.test(appEmission), "live MVP navigation must use emitted underlines rather than glowing boxes", failures);
+  assert(/:is\(\.site-brand,\s*\.site-chapters a,\s*\.mvp-context-links a\)::after\s*\{[^}]*opacity:\s*\.22;[^}]*transform:\s*scaleX\(\.3\)/i.test(appEmission), "live MVP idle navigation underlines must use the longer relative width", failures);
+  assert(/\.site-brand\.site-brand::after\s*\{[^}]*right:\s*0;[^}]*left:\s*0;[^}]*height:\s*auto;[^}]*aspect-ratio:\s*84\s*\/\s*1;[^}]*var\(--dt-wordmark-underline\)[^}]*clip-path:\s*var\(--dt-wordmark-underline-shape\)[^}]*opacity:\s*\.52/i.test(appEmission) && /\.oracle-brand-lockup::after\s*\{[^}]*right:\s*0;[^}]*left:\s*0;[^}]*height:\s*auto;[^}]*aspect-ratio:\s*84\s*\/\s*1;[^}]*var\(--dt-wordmark-underline\)[^}]*clip-path:\s*var\(--dt-wordmark-underline-shape\)[^}]*opacity:\s*0?\.52/i.test(appStyles), "live MVP chrome and hero wordmarks must share the full-width proportionally scaled tapered underline", failures);
+  assert(/\.app-mechanism-step[\s\S]*?\.app-concept-card[\s\S]*?\.oracle-fact/i.test(appEmission), "live MVP is missing restrained cyan treatment for neutral teaching graphics", failures);
+  assert(/prefers-reduced-motion:\s*reduce/i.test(appEmission) && /forced-colors:\s*active/i.test(appEmission) && !/animation\s*:/i.test(appEmission), "live MVP emission needs static, accessible fallbacks without looping animation", failures);
+
+  const sandboxEmission = sandboxStyles.split("/* Sandbox emission: equal control rims and restrained teaching-graphic colour. */")[1] || "";
+  assert(/--dt-emission:\s*#00e5ff/i.test(sandboxStyles) && /--dt-emission-ink:\s*#006f7b/i.test(sandboxStyles), "sandbox is missing the canonical DemoThemis emission tokens", failures);
+  assert(Boolean(sandboxEmission) && /:not\(:disabled\):hover/i.test(sandboxEmission) && /:not\(:disabled\):active/i.test(sandboxEmission), "sandbox controls need hover and pressed emission states", failures);
+  assert(/details\[open\]\s*>\s*summary/i.test(sandboxEmission) && /:disabled/i.test(sandboxEmission) && /:focus-visible/i.test(sandboxEmission), "sandbox controls need open, disabled, and focus states", failures);
+  assert(/\.sbx-steps li[\s\S]*?\.sbx-stat[\s\S]*?\.sbx-widget/i.test(sandboxEmission), "sandbox teaching graphics are missing their restrained illustration treatment", failures);
+  assert(/prefers-reduced-motion:\s*reduce/i.test(sandboxEmission) && /forced-colors:\s*active/i.test(sandboxEmission), "sandbox emission needs accessibility fallbacks", failures);
+  assert(/summary_large_image/i.test(appLayout) && /mvp-1200x630\.jpg/i.test(appLayout) && /mark-180\.png/i.test(appLayout), "live MVP metadata is missing branded social and icon assets", failures);
+  assert(/mark-192\.png/i.test(appManifest) && /mark-512\.png/i.test(appManifest) && /theme_color:\s*'#f6f3f2'/i.test(appManifest), "live MVP manifest is missing its complete DemoThemis icon set", failures);
+  const appFavicon = fs.readFileSync(path.join(appRoot, "app", "favicon.ico"));
+  const brandFavicon = fs.readFileSync(path.join(root, "assets", "brand", "demothemis", "favicon.ico"));
+  assert(appFavicon.equals(brandFavicon), "live MVP favicon does not match the generated DemoThemis favicon", failures);
+
+  const notFound = readDist("404.html");
+  assert(/data-page-brand=["']demothemis["']/i.test(notFound) && /assets\/brand\/demothemis\/mark-192\.png/i.test(notFound), "404 page is missing the DemoThemis identity", failures);
+
+  const generator = fs.readFileSync(path.join(root, "tools", "generate-brand-assets.py"), "utf8");
+  const socialDemo = (generator.match(/def\s+social_demo\([^)]*\)[^:]*:\s*([\s\S]*?)\n\s*def\s+social_omen/i) || ["", ""])[1];
+  const socialShared = (generator.match(/def\s+social_shared\([^)]*\)[^:]*:\s*([\s\S]*?)\n\s*def\s+social_mvp/i) || ["", ""])[1];
+  assert(/Image\.new\([^\n]*DT\["canvas"\]/i.test(socialDemo) && !/Image\.new\([^\n]*DT\["ink"\]/i.test(socialDemo), "DemoThemis social card generator must begin on ivory", failures);
+  assert(!/rounded_rectangle/i.test(socialDemo), "DemoThemis social card must not wrap the full wordmark in a decorative rectangle", failures);
+  assert(/Image\.new\([^\n]*DT\["canvas"\]/i.test(socialShared) && /OMM\["black"\]/i.test(socialShared), "shared social card must keep the DemoThemis half ivory and the Omen half black", failures);
+
+  const previewServer = fs.readFileSync(path.join(root, "tools", "preview-mvp.js"), "utf8");
+  assert(/relative\s*\|\|\s*["']index\.html["']/i.test(previewServer), "local preview server must resolve its root to the proposal homepage", failures);
+  assert(/url\.pathname\s*===\s*["']\/["'][\s\S]{0,120}redirect\(response,\s*["']\/index\.html["']\)/i.test(previewServer), "local preview server must route / to the proposal homepage", failures);
+  assert(!/url\.pathname\s*===\s*["']\/["'][\s\S]{0,120}demothemis-mvp\.html/i.test(previewServer), "local preview server must not replace the homepage with the MVP", failures);
+  for (const route of ["/app", "/home", "/onboard"]) {
+    assert(previewServer.includes(`url.pathname === "${route}"`), `local preview server must preserve the ${route} MVP shortcut`, failures);
+  }
+}
+
 function checkBuiltHtml(failures) {
   const sharedStyles = readDist("assets/styles.css");
   const neutralLevel = (name) => {
@@ -2514,6 +2776,8 @@ function checkBuiltHtml(failures) {
     assert(!/unpkg\.com/i.test(html), `${file} should not load unpkg.com`, failures);
     assert(/assets\/styles\.css/i.test(html), `${file} missing shared stylesheet`, failures);
   }
+
+  checkBrandSystem(failures);
 
   checkChapterSequence(failures);
 
@@ -2579,21 +2843,15 @@ function checkBuiltHtml(failures) {
   const browserChromeRules = Array.from(runThrough.matchAll(/([^{}]+)\{([^{}]*)\}/g)).filter((match) => /\.sim-(?:browser|url)/.test(match[1]));
   const leakingBrowserRule = browserChromeRules.find((match) => /var\(--(?:bg|surface|ink|ink-soft|muted|faint|line|line-strong|accent|accent-soft|accent-ink)\)/.test(match[2]));
   assert(!leakingBrowserRule, "browser chrome must not consume product palette variables", failures);
-  const omenThemeRule = runThrough.match(/\.product-mode-panel\[data-product-mode\]\s+\.sim-app-viewport\[data-app-theme=["']omen["']\]\s*\{([^}]*)\}/i);
-  const themisThemeRule = runThrough.match(/\.product-mode-panel\[data-product-mode\]\s+\.sim-app-viewport\[data-app-theme=["']themis["']\]\s*\{([^}]*)\}/i);
-  const omenThemeCss = omenThemeRule ? omenThemeRule[1] : "";
-  const themisThemeCss = themisThemeRule ? themisThemeRule[1] : "";
-  assert(omenThemeRule, "the OmenMarketMaker viewport override is missing", failures);
-  assert(/--bg:\s*#f2e3cd/i.test(omenThemeCss) && /--surface:\s*#fff7e8/i.test(omenThemeCss) && /--ink:\s*#251f1a/i.test(omenThemeCss) && /--accent:\s*#ad520f/i.test(omenThemeCss), "Events 01-08 must keep the OmenMarketMaker palette", failures);
-  assert(/Alegreya Sans App/i.test(omenThemeCss) && /color-scheme:\s*light/i.test(omenThemeCss), "OmenMarketMaker must keep its typography and light controls", failures);
-  assert(themisThemeRule, "the DemoThemis viewport theme is missing", failures);
-  assert(/--bg:\s*#151a1d/i.test(themisThemeCss) && /--surface:\s*#232a2e/i.test(themisThemeCss) && /--ink:\s*#f6f2e8/i.test(themisThemeCss) && /--accent:\s*#3e7fa8/i.test(themisThemeCss), "Events 09-13 must use the DemoThemis dark palette", failures);
-  assert(/Literata App/i.test(themisThemeCss) && /color-scheme:\s*dark/i.test(themisThemeCss), "DemoThemis must use its typography and dark controls", failures);
-  const leakingThemisViewportRule = Array.from(runThrough.matchAll(/([^{}]+)\{([^{}]*)\}/g)).find((match) => /data-product-mode=["']themis["']/.test(match[1]) && /sim-app-viewport/.test(match[1]));
-  assert(!leakingThemisViewportRule, "the outer run path must not choose the embedded app theme", failures);
-  assert(/--bg:\s*#151a1d/i.test(runThrough) && /--surface:\s*#232a2e/i.test(runThrough) && /--ink:\s*#f6f2e8/i.test(runThrough), "the outer DemoThemis journey palette is missing", failures);
-  assert(/--accent:\s*#3e7fa8/i.test(runThrough) && /--accent-ink:\s*#c3e7ff/i.test(runThrough), "the outer DemoThemis journey must retain readable court accents", failures);
-  assert(/data-product-mode=["']themis["']\]\s+\.simulator-island/i.test(runThrough), "the outer DemoThemis theme must still identify the court journey", failures);
+  const runBrandCss = readDist("assets/run-through-brand.css");
+  assert(/data-active-brand=["']omen["']/i.test(runBrandCss) && /--bg:\s*var\(--omm-black\)/i.test(runBrandCss), "OmenMarketMaker surfaces must use the near-black and green brand palette", failures);
+  assert(/data-app-theme=["']omen["'][\s\S]*?--accent:\s*var\(--omm-green\)/i.test(runBrandCss), "OmenMarketMaker app screens must use electric-green interaction states", failures);
+  assert(/card-grid\.svg/i.test(runBrandCss) && /run-omen-grid-scroll\s+30s\s+linear\s+infinite/i.test(runBrandCss), "OmenMarketMaker surfaces need the smooth moving brand grid", failures);
+  assert(/data-active-brand=["']demothemis["']/i.test(runBrandCss) && /--bg:\s*var\(--dt-canvas\)/i.test(runBrandCss), "DemoThemis surfaces must use the ivory brand canvas", failures);
+  assert(/data-app-theme=["']themis["'][\s\S]*?--accent:\s*var\(--dt-emission\)/i.test(runBrandCss), "DemoThemis app screens must use cyan emission states", failures);
+  assert(/protocol-sequence:not\(\[data-sequence-profile=["']omen["']\]\)[\s\S]*?--protocol-bg:\s*var\(--dt-canvas\)/i.test(runBrandCss), "DemoThemis protocol sequences must remain light ivory rather than black", failures);
+  assert(/\.app-brand-wordmark/i.test(runBrandCss) && /makeProductWordmark\(appTheme\s*===\s*["']omen["']/i.test(runThrough), "simulated app navigation must use the supplied full wordmarks", failures);
+  assert(/data-product-mode["'],\s*selectedRunMode/i.test(runThrough) && /setAttribute\(["']data-active-brand["'],\s*activeBrand\)/i.test(runThrough), "starting-point state and active product ownership must remain separate", failures);
   assert(/\.sim-demand-frame\s*\{[^}]*border:\s*2px solid[^}]*border-radius:\s*18px/is.test(runThrough), "the OmenMarketMaker handoff browser must have a distinct integration border", failures);
   assert(/\.sim-demand-frame-tab\s*\{[^}]*color:\s*#fff[^}]*font-size:\s*\.76rem/is.test(runThrough), "the integration border must use the requested white tab title", failures);
   assert(/\.product-demo\.sim-tight\s+\.sim-demand-frame-tab\s*\{[^}]*max-width:\s*calc\(100% - \.5rem\)[^}]*font-size:\s*\.68rem/is.test(runThrough), "the integration tab must remain readable in compact layouts", failures);

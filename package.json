@@ -1,0 +1,14 @@
+{
+  "name": "demothemis-proposal-site",
+  "private": true,
+  "scripts": {
+    "build": "node tools/build-site.js",
+    "smoke": "node tools/smoke-site.js",
+    "audit:run-through": "node tools/audit-run-through-layout.js",
+    "validate:gamelab": "node tools/validate-gamelab.js",
+    "prepare": "node tools/prepare-unified-site.js"
+  },
+  "devDependencies": {
+    "playwright": "1.61.1"
+  }
+}

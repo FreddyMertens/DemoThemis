@@ -16,8 +16,35 @@ const publicFiles = [
   "demothemis-mvp.html",
   "assumptions.js",
   "assets/common.js",
+  "assets/brand-rive.js",
   "assets/mvp-simulator.css",
+  "assets/run-through-brand.css",
   "assets/styles.css",
+  "assets/brand/brand-manifest.json",
+  "assets/brand/demothemis/favicon.ico",
+  "assets/brand/demothemis/mark-16.png",
+  "assets/brand/demothemis/mark-32.png",
+  "assets/brand/demothemis/mark-180.png",
+  "assets/brand/demothemis/mark-192.png",
+  "assets/brand/demothemis/mark-512.png",
+  "assets/brand/demothemis/wordmark.png",
+  "assets/brand/omenmarketmaker/favicon.ico",
+  "assets/brand/omenmarketmaker/mark-16.png",
+  "assets/brand/omenmarketmaker/mark-32.png",
+  "assets/brand/omenmarketmaker/mark-180.png",
+  "assets/brand/omenmarketmaker/mark-192.png",
+  "assets/brand/omenmarketmaker/mark-512.png",
+  "assets/brand/omenmarketmaker/card-grid.svg",
+  "assets/brand/omenmarketmaker/wordmark-poster.png",
+  "assets/brand/omenmarketmaker/wordmark.riv",
+  "assets/brand/social/demothemis-1200x630.jpg",
+  "assets/brand/social/mvp-1200x630.jpg",
+  "assets/brand/social/omenmarketmaker-1200x630.jpg",
+  "assets/brand/social/proposal-home-1200x630.jpg",
+  "assets/brand/social/shared-system-1200x630.jpg",
+  "assets/vendor/rive/LICENSE.txt",
+  "assets/vendor/rive/rive-2.38.5.js",
+  "assets/vendor/rive/rive-2.38.5.wasm",
   "assets/vendor/popper-2.11.8.LICENSE.txt",
   "assets/vendor/popper-2.11.8.min.js",
   "assets/vendor/tippy-6.3.7.LICENSE",
@@ -38,6 +65,59 @@ const publicFiles = [
   "assets/fonts/OFL-Noto-Serif-Tibetan.txt",
   "assets/fonts/OFL-Noto-Sans-Symbols-2.txt"
 ];
+
+const defaultBrandMetadata = {
+  icon: "assets/brand/demothemis/favicon.ico",
+  icon32: "assets/brand/demothemis/mark-32.png",
+  appleIcon: "assets/brand/demothemis/mark-180.png",
+  themeColor: "#f6f3f2"
+};
+
+const pageBrandMetadata = {
+  "index.html": {
+    ...defaultBrandMetadata,
+    image: "assets/brand/social/proposal-home-1200x630.jpg",
+    imageAlt: "DemoThemis and OmenMarketMaker proposal"
+  },
+  "run-through.html": {
+    ...defaultBrandMetadata,
+    image: "assets/brand/social/shared-system-1200x630.jpg",
+    imageAlt: "DemoThemis and OmenMarketMaker interactive run-through"
+  },
+  "demothemis.html": {
+    ...defaultBrandMetadata,
+    image: "assets/brand/social/demothemis-1200x630.jpg",
+    imageAlt: "DemoThemis"
+  },
+  "break-the-court.html": {
+    ...defaultBrandMetadata,
+    image: "assets/brand/social/demothemis-1200x630.jpg",
+    imageAlt: "DemoThemis court attack-resistance chapter"
+  },
+  "omenmarketmaker.html": {
+    icon: "assets/brand/omenmarketmaker/favicon.ico",
+    icon32: "assets/brand/omenmarketmaker/mark-32.png",
+    appleIcon: "assets/brand/omenmarketmaker/mark-180.png",
+    themeColor: "#000402",
+    image: "assets/brand/social/omenmarketmaker-1200x630.jpg",
+    imageAlt: "OmenMarketMaker"
+  },
+  "bootstrap-loop.html": {
+    ...defaultBrandMetadata,
+    image: "assets/brand/social/shared-system-1200x630.jpg",
+    imageAlt: "DemoThemis and OmenMarketMaker bootstrap loop"
+  },
+  "governance.html": {
+    ...defaultBrandMetadata,
+    image: "assets/brand/social/shared-system-1200x630.jpg",
+    imageAlt: "Independent DemoThemis and OmenMarketMaker governance"
+  },
+  "demothemis-mvp.html": {
+    ...defaultBrandMetadata,
+    image: "assets/brand/social/mvp-1200x630.jpg",
+    imageAlt: "DemoThemis Live Demo MVP"
+  }
+};
 
 const internalNamePatterns = [
   /\.md$/i,
@@ -99,6 +179,10 @@ function pageUrl(file) {
   return file === "index.html" ? `${siteUrl}/` : `${siteUrl}/${file.replace(/\.html$/i, "")}`;
 }
 
+function assetUrl(file) {
+  return `${siteUrl}/${file.replace(/^\/+/, "")}`;
+}
+
 function escapeAttr(value) {
   return String(value)
     .replace(/&/g, "&amp;")
@@ -131,6 +215,7 @@ function enhanceHtmlMetadata(file, html) {
   const title = escapeAttr(extractTitle(html, file));
   const description = escapeAttr(extractMetaDescription(html));
   const url = escapeAttr(pageUrl(file));
+  const brand = pageBrandMetadata[file] || null;
   const tags = [];
 
   if (!hasTag(html, /<link\s+[^>]*rel=["']canonical["']/i)) {
@@ -152,13 +237,38 @@ function enhanceHtmlMetadata(file, html) {
     tags.push(`<meta property="og:url" content="${url}">`);
   }
   if (!hasTag(html, /<meta\s+[^>]*name=["']twitter:card["']/i)) {
-    tags.push('<meta name="twitter:card" content="summary">');
+    tags.push(`<meta name="twitter:card" content="${brand ? "summary_large_image" : "summary"}">`);
   }
   if (!hasTag(html, /<meta\s+[^>]*name=["']twitter:title["']/i)) {
     tags.push(`<meta name="twitter:title" content="${title}">`);
   }
   if (!hasTag(html, /<meta\s+[^>]*name=["']twitter:description["']/i)) {
     tags.push(`<meta name="twitter:description" content="${description}">`);
+  }
+
+  if (brand) {
+    const image = escapeAttr(assetUrl(brand.image));
+    const imageAlt = escapeAttr(brand.imageAlt);
+    if (!hasTag(html, /<link\s+[^>]*rel=["']icon["']/i)) {
+      tags.push(`<link rel="icon" href="${escapeAttr(brand.icon)}">`);
+      tags.push(`<link rel="icon" type="image/png" sizes="32x32" href="${escapeAttr(brand.icon32)}">`);
+    }
+    if (!hasTag(html, /<link\s+[^>]*rel=["']apple-touch-icon["']/i)) {
+      tags.push(`<link rel="apple-touch-icon" sizes="180x180" href="${escapeAttr(brand.appleIcon)}">`);
+    }
+    if (!hasTag(html, /<meta\s+[^>]*name=["']theme-color["']/i)) {
+      tags.push(`<meta name="theme-color" content="${escapeAttr(brand.themeColor)}">`);
+    }
+    if (!hasTag(html, /<meta\s+[^>]*property=["']og:image["']/i)) {
+      tags.push(`<meta property="og:image" content="${image}">`);
+      tags.push('<meta property="og:image:width" content="1200">');
+      tags.push('<meta property="og:image:height" content="630">');
+      tags.push(`<meta property="og:image:alt" content="${imageAlt}">`);
+    }
+    if (!hasTag(html, /<meta\s+[^>]*name=["']twitter:image["']/i)) {
+      tags.push(`<meta name="twitter:image" content="${image}">`);
+      tags.push(`<meta name="twitter:image:alt" content="${imageAlt}">`);
+    }
   }
 
   if (!tags.length) return html;
@@ -228,19 +338,38 @@ function validateSeoMetadata() {
     { label: "og:title", pattern: /<meta\s+[^>]*property=["']og:title["'][^>]*content=["'][^"']+["']/i },
     { label: "og:description", pattern: /<meta\s+[^>]*property=["']og:description["'][^>]*content=["'][^"']+["']/i },
     { label: "og:url", pattern: /<meta\s+[^>]*property=["']og:url["'][^>]*content=["'][^"']+["']/i },
-    { label: "twitter:card", pattern: /<meta\s+[^>]*name=["']twitter:card["'][^>]*content=["']summary["']/i },
     { label: "twitter:title", pattern: /<meta\s+[^>]*name=["']twitter:title["'][^>]*content=["'][^"']+["']/i },
     { label: "twitter:description", pattern: /<meta\s+[^>]*name=["']twitter:description["'][^>]*content=["'][^"']+["']/i }
   ];
 
   for (const file of htmlFiles) {
     const html = fs.readFileSync(path.join(outDir, file), "utf8");
+    const brand = pageBrandMetadata[file] || null;
     for (const item of required) {
       if (!item.pattern.test(html)) missing.push(`${file}: ${item.label}`);
     }
     const canonical = html.match(/<link\s+[^>]*rel=["']canonical["'][^>]*href=["']([^"']+)["']/i);
     if (canonical && canonical[1] !== pageUrl(file)) {
       missing.push(`${file}: canonical should be ${pageUrl(file)}, found ${canonical[1]}`);
+    }
+    const expectedCard = brand ? "summary_large_image" : "summary";
+    if (!new RegExp(`<meta\\s+[^>]*name=["']twitter:card["'][^>]*content=["']${expectedCard}["']`, "i").test(html)) {
+      missing.push(`${file}: twitter:card should be ${expectedCard}`);
+    }
+    if (brand) {
+      const imageUrl = assetUrl(brand.image).replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
+      const brandedRequired = [
+        { label: "icon", pattern: /<link\s+[^>]*rel=["']icon["'][^>]*href=["'][^"']+["']/i },
+        { label: "apple-touch-icon", pattern: /<link\s+[^>]*rel=["']apple-touch-icon["'][^>]*href=["'][^"']+["']/i },
+        { label: "theme-color", pattern: /<meta\s+[^>]*name=["']theme-color["'][^>]*content=["'][^"']+["']/i },
+        { label: "og:image", pattern: new RegExp(`<meta\\s+[^>]*property=["']og:image["'][^>]*content=["']${imageUrl}["']`, "i") },
+        { label: "twitter:image", pattern: new RegExp(`<meta\\s+[^>]*name=["']twitter:image["'][^>]*content=["']${imageUrl}["']`, "i") }
+      ];
+      for (const item of brandedRequired) {
+        if (!item.pattern.test(html)) missing.push(`${file}: ${item.label}`);
+      }
+    } else if (/og:image|twitter:image|summary_large_image|assets\/brand/i.test(html)) {
+      missing.push(`${file}: page uses brand metadata without a pageBrandMetadata entry`);
     }
   }
 
@@ -258,7 +387,8 @@ function buildSitemap() {
 }
 
 function buildHeaders() {
-  return `/*\n  X-Content-Type-Options: nosniff\n  Referrer-Policy: strict-origin-when-cross-origin\n  Permissions-Policy: camera=(), microphone=(), geolocation=(), payment=()\n  X-Frame-Options: DENY\n  Content-Security-Policy: default-src 'self'; img-src 'self' data: https:; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src 'self' https://fonts.gstatic.com; script-src 'self' 'unsafe-inline'; connect-src 'self'; frame-ancestors 'none'; base-uri 'self'; form-action 'self'; object-src 'none'\n`;
+  const common = "default-src 'self'; img-src 'self' data: https:; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src 'self' https://fonts.gstatic.com; connect-src 'self'; frame-ancestors 'none'; base-uri 'self'; form-action 'self'; object-src 'none'";
+  return `/*\n  X-Content-Type-Options: nosniff\n  Referrer-Policy: strict-origin-when-cross-origin\n  Permissions-Policy: camera=(), microphone=(), geolocation=(), payment=()\n  X-Frame-Options: DENY\n  Content-Security-Policy: ${common}; script-src 'self' 'unsafe-inline'\n\n/\n  Content-Security-Policy: ${common}; script-src 'self' 'unsafe-inline' 'wasm-unsafe-eval'\n\n/index.html\n  Content-Security-Policy: ${common}; script-src 'self' 'unsafe-inline' 'wasm-unsafe-eval'\n\n/omenmarketmaker*\n  Content-Security-Policy: ${common}; script-src 'self' 'unsafe-inline' 'wasm-unsafe-eval'\n`;
 }
 
 function buildRedirects() {
@@ -284,7 +414,7 @@ function buildRedirects() {
 }
 
 function build404() {
-  return `<!DOCTYPE html>\n<html lang="en">\n<head>\n<meta charset="UTF-8">\n<meta name="viewport" content="width=device-width, initial-scale=1.0">\n<title>DemoThemis: page not found</title>\n<meta name="robots" content="noindex">\n<link rel="stylesheet" href="assets/styles.css">\n</head>\n<body>\n<main class="content wrap" style="padding-top:4rem">\n  <p class="sec-label">404</p>\n  <h1>Page not found</h1>\n  <p>The public site only serves the published DemoThemis chapters and assets.</p>\n  <p><a href="/">Return home</a></p>\n</main>\n</body>\n</html>\n`;
+  return `<!DOCTYPE html>\n<html lang="en">\n<head>\n<meta charset="UTF-8">\n<meta name="viewport" content="width=device-width, initial-scale=1.0">\n<title>DemoThemis: page not found</title>\n<meta name="robots" content="noindex">\n<meta name="theme-color" content="#f6f3f2">\n<link rel="icon" href="assets/brand/demothemis/favicon.ico">\n<link rel="stylesheet" href="assets/styles.css">\n</head>\n<body data-page-brand="demothemis">\n<main class="content wrap" style="padding-top:4rem">\n  <img class="brand-mark" src="assets/brand/demothemis/mark-192.png" width="72" height="72" alt="">\n  <p class="sec-label">404</p>\n  <h1>Page not found</h1>\n  <p>The public site only serves the published DemoThemis chapters and assets.</p>\n  <p><a href="/">Return home</a></p>\n</main>\n</body>\n</html>\n`;
 }
 
 ensureInsideRoot(outDir);

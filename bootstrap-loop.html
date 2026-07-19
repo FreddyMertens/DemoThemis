@@ -8,7 +8,7 @@
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@500;700&family=Newsreader:opsz,wght@6..72,200..700&display=swap" rel="stylesheet">
-<link rel="stylesheet" href="assets/styles.css">
+<link rel="stylesheet" href="assets/styles.css?v=20260719-emission-11">
 <style>
   .test-path { display: grid; grid-template-columns: repeat(auto-fit, minmax(13rem, 1fr)); gap: 1rem; }
   .test-path-item { border-left: 3px solid var(--accent); padding: .1rem 0 .1rem .9rem; }
@@ -26,9 +26,8 @@
 
 <nav class="sitenav" aria-label="Primary">
   <div class="sitenav-inner">
-    <a class="brand brand-with-mark" href="/">
-      <img class="brand-mark" src="assets/brand/demothemis/mark-32.png" width="32" height="32" alt="">
-      <span class="brand-word">DemoThemis<span class="dot">.</span></span>
+    <a class="brand brand-with-wordmark" href="/" aria-label="DemoThemis home">
+      <img class="brand-nav-wordmark" src="assets/brand/demothemis/wordmark.png" width="1766" height="216" alt="">
     </a>
     <button class="nav-toggle" type="button" aria-label="Menu" aria-expanded="false">&#9776;</button>
     <div class="nav-links">
@@ -51,7 +50,7 @@
     <span data-brand="demothemis"><img class="brand-mark" src="assets/brand/demothemis/mark-192.png" width="192" height="192" alt=""></span>
   </div>
   <p class="kicker">The bootstrap loop</p>
-  <h1>How OmenMarketMaker can bootstrap an unbuyable court</h1>
+  <h1>How <span class="brand-name">OmenMarket<wbr>Maker</span> can bootstrap an unbuyable court</h1>
   <p class="dek">As an early customer, OmenMarketMaker can purchase resolution work from DemoThemis; carefully checked outcomes then help the independent court prove its jurors and win outside disputes.</p>
   <div class="meta">
     <span class="pill">Bootstrap loop</span>

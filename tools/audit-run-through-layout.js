@@ -1,7 +1,23 @@
 const path = require("node:path");
 const fs = require("node:fs");
 const { pathToFileURL } = require("node:url");
-const { chromium } = require("playwright");
+
+function loadPlaywrightChromium() {
+  try {
+    return require("playwright").chromium;
+  } catch (primaryError) {
+    const runtimeModules = path.resolve(path.dirname(process.execPath), "..", "node_modules");
+    const pnpmStore = path.join(runtimeModules, ".pnpm");
+    if (fs.existsSync(pnpmStore)) {
+      const corePackage = fs.readdirSync(pnpmStore).find((name) => name.startsWith("playwright-core@"));
+      const bundledCore = corePackage && path.join(pnpmStore, corePackage, "node_modules", "playwright-core");
+      if (bundledCore && fs.existsSync(bundledCore)) return require(bundledCore).chromium;
+    }
+    throw new Error("Playwright is required for the run-through layout audit. Run npm install at the project root first.\n" + primaryError.message);
+  }
+}
+
+const chromium = loadPlaywrightChromium();
 
 const ROOT = path.resolve(__dirname, "..");
 const RUN_THROUGH_URL = pathToFileURL(path.join(ROOT, "run-through.html")).href;

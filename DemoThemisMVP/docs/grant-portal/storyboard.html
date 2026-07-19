@@ -1,918 +1,461 @@
 <!doctype html>
 <html lang="en">
 <head>
-<meta charset="utf-8" />
-<meta name="viewport" content="width=device-width, initial-scale=1" />
-<title>DemoThemis — Demo Video Storyboard</title>
-<style>
-  :root{
-    /* cinematic shell */
-    --bg:#0a0d16; --bg2:#0f1320; --panel:#141a28; --line:#212a3e; --ink:#e8edf7; --dim:#9aa7c2; --faint:#6b7896;
-    --accent:#34d399; --accent2:#6366f1;
-    /* app design tokens (must match the real app) */
-    --slate900:#0f172a; --slate800:#1e293b; --slate700:#334155; --slate600:#475569; --slate500:#64748b;
-    --slate400:#94a3b8; --slate300:#cbd5e1; --slate200:#e2e8f0; --slate100:#f1f5f9; --slate50:#f8fafc;
-    --emerald:#059669; --emerald700:#047857; --emerald800:#065f46; --emerald100:#d1fae5; --emerald50:#ecfdf5; --emerald200:#a7f3d0; --emerald400:#34d399;
-    --rose:#e11d48; --rose700:#be123c; --rose100:#ffe4e6; --rose50:#fff1f2; --rose200:#fecdd3;
-    --indigo:#4f46e5; --indigo600:#4338ca; --indigo50:#eef2ff; --indigo100:#e0e7ff; --indigo700:#3730a3;
-    --blue50:#eff6ff; --blue700:#1d4ed8; --amber50:#fffbeb; --amber700:#b45309; --amber200:#fde68a;
-    --teal:#14b8a6; --orange50:#fff7ed; --orange700:#c2410c;
-  }
-  *{box-sizing:border-box}
-  html{scroll-behavior:smooth}
-  body{margin:0;background:radial-gradient(1100px 500px at 50% -10%,#16203a 0,transparent 55%),var(--bg);
-    color:var(--ink);font-family:system-ui,-apple-system,Segoe UI,Roboto,Helvetica,Arial,sans-serif;
-    -webkit-font-smoothing:antialiased}
-  a{color:#93c5fd;text-decoration:none}
-  code{font-family:ui-monospace,SFMono-Regular,Menlo,Consolas,monospace;font-size:.88em;background:#1b2340;color:#bcd0ff;border-radius:5px;padding:1px 5px}
-
-  /* ---------- shell ---------- */
-  header.top{position:sticky;top:0;z-index:60;background:rgba(10,13,22,.86);backdrop-filter:blur(10px);border-bottom:1px solid var(--line)}
-  .top .row{max-width:1080px;margin:0 auto;padding:12px 20px;display:flex;align-items:center;gap:16px}
-  .brand{font-weight:800;letter-spacing:.02em;white-space:nowrap}
-  .brand .tag{color:var(--accent);font-weight:700}
-  .runtime{color:var(--dim);font-size:13px;font-variant-numeric:tabular-nums;white-space:nowrap}
-  .play{margin-left:auto;background:var(--accent);color:#04231a;border:none;border-radius:99px;font-weight:800;
-    font-size:13px;padding:8px 16px;cursor:pointer;white-space:nowrap}
-  .play:hover{filter:brightness(1.08)}
-  /* filmstrip */
-  .strip{max-width:1080px;margin:0 auto;padding:0 16px 10px;display:flex;gap:7px;overflow-x:auto}
-  .chip{flex:none;display:flex;flex-direction:column;gap:2px;min-width:96px;padding:7px 9px;border:1px solid var(--line);
-    border-radius:10px;background:var(--bg2);cursor:pointer;transition:border-color .15s,background .15s}
-  .chip:hover{border-color:#3b4a6b}
-  .chip.active{border-color:var(--accent);background:#10261f}
-  .chip .n{font-size:10px;color:var(--faint);font-weight:700}
-  .chip .t{font-size:11px;color:var(--dim);line-height:1.2}
-  .chip.active .t{color:var(--ink)}
-
-  .intro{max-width:760px;margin:26px auto 6px;padding:0 20px;text-align:center}
-  .intro h1{font-size:30px;margin:.2em 0}
-  .intro p{color:var(--dim);font-size:15px;line-height:1.6}
-  .intro .note{margin-top:10px;display:inline-block;font-size:12px;color:var(--faint);border:1px solid var(--line);
-    border-radius:99px;padding:5px 12px}
-
-  /* ---------- panels ---------- */
-  .reel{max-width:1080px;margin:8px auto 80px;padding:0 20px}
-  .panel{padding:34px 0;border-top:1px solid var(--line);scroll-margin-top:120px}
-  .panel:first-child{border-top:none}
-  .stagewrap{display:flex;justify-content:center}
-  .stage{position:relative;cursor:zoom-in;transition:transform .2s}
-  .stage:hover{transform:translateY(-2px)}
-  .script{max-width:720px;margin:18px auto 0}
-  .meta{display:flex;flex-wrap:wrap;gap:8px;align-items:center;margin-bottom:6px}
-  .meta .num{font-weight:800;color:var(--accent);font-size:13px}
-  .meta .tc{font-variant-numeric:tabular-nums;font-size:12px;color:var(--faint);background:var(--bg2);border:1px solid var(--line);border-radius:6px;padding:2px 7px}
-  .meta .dev{font-size:11px;color:var(--faint);text-transform:uppercase;letter-spacing:.06em}
-  .script h3{margin:2px 0 8px;font-size:20px}
-  .narr{color:#cdd7ea;font-size:15px;line-height:1.65;margin:0}
-  .narr b{color:#fff}
-  .wc{font-size:11px;color:var(--faint);margin-top:6px}
-
-  /* ---------- device chrome ---------- */
-  .browser{width:760px;max-width:92vw;border-radius:12px;overflow:hidden;border:1px solid #cbd5e1;
-    box-shadow:0 30px 60px -20px rgba(0,0,0,.7);background:#fff}
-  .bbar{display:flex;align-items:center;gap:8px;padding:9px 12px;background:#e9edf3;border-bottom:1px solid #d6dbe4}
-  .dot{width:11px;height:11px;border-radius:99px;display:inline-block}
-  .dot.r{background:#ff5f57}.dot.y{background:#febc2e}.dot.g{background:#28c840}
-  .url{flex:1;margin-left:6px;background:#fff;border:1px solid #d6dbe4;border-radius:7px;font-size:12px;color:#475569;
-    padding:5px 10px;font-family:ui-monospace,monospace;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
-  .url .lock{color:#16a34a}
-  .bscreen{background:#fff;color:var(--slate900);max-height:560px;overflow:hidden}
-
-  .phone{width:330px;max-width:88vw;border-radius:42px;padding:11px;background:#0b0f1a;border:1px solid #2a3550;
-    box-shadow:0 30px 60px -20px rgba(0,0,0,.75)}
-  .pscreen{position:relative;background:#fff;color:var(--slate900);border-radius:32px;overflow:hidden;height:724px}
-  .status{display:flex;justify-content:space-between;align-items:center;padding:9px 22px 4px;font-size:12px;font-weight:600;color:#0f172a}
-  .status .r{display:flex;gap:5px;align-items:center}
-  .notch{position:absolute;top:9px;left:50%;transform:translateX(-50%);width:104px;height:22px;background:#0b0f1a;border-radius:0 0 14px 14px;z-index:5}
-  .pbody{height:calc(724px - 34px);overflow:hidden}
-
-  /* ---------- real app component styles ---------- */
-  .app{padding:0;font-size:14px}
-  .topbar{display:grid;grid-template-columns:1fr auto 1fr;align-items:center;padding:12px 16px;border-bottom:1px solid var(--slate100)}
-  .topbar .back{font-size:13px;color:var(--slate500)}
-  .topbar .ttl{font-weight:600;color:var(--slate900);text-align:center;white-space:nowrap}
-  .main{padding:13px 14px 12px;display:flex;flex-direction:column;gap:10px}
-  .ib{background:var(--blue50);border:1px solid #dbeafe;border-radius:12px;padding:10px 12px;font-size:11.5px;color:#334155;line-height:1.45}
-  .ib b{color:#1e293b}
-  .gas{display:inline-flex;align-items:center;gap:5px;background:var(--emerald100);color:var(--emerald800);
-    font-size:10px;font-weight:700;border-radius:99px;padding:4px 9px}
-  .card{background:#fff;border:1px solid var(--slate200);border-radius:14px;padding:14px}
-  .stepcard{display:flex;gap:11px;background:#fff;border:1px solid var(--slate200);border-radius:14px;padding:11px}
-  .stepnum{flex:none;width:28px;height:28px;border-radius:99px;background:var(--slate900);color:#fff;font-weight:700;font-size:13px;display:grid;place-items:center}
-  .stepcard .st{font-weight:600;color:var(--slate800);font-size:13px}
-  .stepcard .sb{color:var(--slate500);font-size:11.5px;line-height:1.4}
-  .btn-dark{width:100%;background:var(--slate900);color:#fff;border:none;border-radius:14px;padding:13px;font-weight:700;font-size:14px;cursor:default}
-  .btn-out{border:2px solid var(--slate900);color:var(--slate900);background:#fff;border-radius:12px;padding:8px 14px;font-weight:700;font-size:13px}
-  .nav{position:absolute;bottom:0;left:0;right:0;display:flex;justify-content:space-around;padding:9px 0 12px;border-top:1px solid var(--slate100);background:#fff}
-  .nav .ni{display:flex;flex-direction:column;align-items:center;gap:2px;font-size:11px;color:var(--slate400)}
-  .nav .ni.on{color:var(--slate800)}
-  .pill{display:inline-flex;align-items:center;border-radius:99px;font-size:11px;font-weight:700;padding:3px 9px}
-  .pill.commit{background:#dbeafe;color:#1e40af}.pill.reveal{background:#ede9fe;color:#5b21b6}
-  .pill.resolved{background:var(--emerald100);color:var(--emerald800)}
-  .pill.qtype{background:#ccfbf1;color:#0f766e}.pill.etype{background:var(--indigo50);color:#3730a3}
-  .pill.yes{background:var(--emerald100);color:var(--emerald800)}.pill.simd{background:#fef3c7;color:#92400e;font-size:9px;text-transform:uppercase}
-
-  .statcard{flex:1;background:#fff;border:1px solid var(--slate200);border-radius:14px;padding:12px}
-  .statcard .v{font-size:22px;font-weight:800;color:var(--slate900);font-variant-numeric:tabular-nums}
-  .statcard .k{font-size:11.5px;color:var(--slate500)}
-  .statcard .s{font-size:10px;color:var(--slate400)}
-
-  .addrtag{font-family:ui-monospace,monospace;font-size:10px;background:var(--slate100);color:var(--slate600);border-radius:6px;padding:2px 6px}
-
-  /* sandbox specifics (serif, indigo) */
-  .sbx{font-family:Georgia,'Times New Roman',serif;color:var(--slate900)}
-  .sbx-banner{background:var(--indigo600);color:#e9e7ff;font-family:system-ui,sans-serif;font-size:12px;padding:9px 16px;text-align:center}
-  .sbx-banner b{color:#fff}
-  .sbx-pad{padding:16px 20px}
-  .sbx-label{font-family:system-ui,sans-serif;color:var(--indigo);font-weight:700;font-size:11px;letter-spacing:.12em;text-transform:uppercase}
-  .sbx h2{font-size:26px;margin:4px 0 6px}
-  .sbx .lead{font-size:13.5px;color:#3b3b45;line-height:1.5;margin:0 0 4px}
-  .sechead{font-family:system-ui,sans-serif;display:flex;align-items:center;justify-content:space-between;margin:4px 0 10px}
-  .sechead .l{color:var(--indigo);font-weight:700;font-size:12px;letter-spacing:.06em;text-transform:uppercase}
-  .acard{border:1px solid var(--slate200);border-radius:14px;background:#fff;padding:14px;font-family:system-ui,sans-serif}
-  .acard.tok{border-top:4px solid var(--rose)} .acard.hum{border-top:4px solid var(--emerald)}
-  .acard h4{margin:0;font-size:15px;display:flex;justify-content:space-between;align-items:baseline}
-  .acard h4 .sub{font-size:11px;color:var(--slate400);font-weight:400}
-  .stakebar{position:relative;height:34px;border-radius:9px;background:var(--slate100);overflow:hidden;margin:12px 0 8px}
-  .stakebar .fill{position:absolute;inset:0 auto 0 0;background:var(--rose);display:flex;align-items:center;padding-left:12px;color:#fff;font-weight:700;font-size:13px}
-  .stakebar .mid{position:absolute;top:0;bottom:0;left:50%;border-left:2px solid #fff;font-size:9px;color:#fff;padding-left:3px;display:flex;align-items:center;font-weight:700}
-  .verdict{display:inline-flex;border-radius:99px;font-weight:800;font-size:12px;padding:5px 12px;letter-spacing:.02em}
-  .verdict.bought{background:var(--rose);color:#fff}.verdict.holds{background:var(--emerald);color:#fff}
-  .acard p{font-size:12.5px;color:#475569;line-height:1.45}
-  .acard .note{border-radius:10px;padding:9px 11px;font-size:12px;line-height:1.45;margin-top:8px}
-  .acard .note.red{background:var(--rose50);color:#9f1239} .acard .note.grn{background:var(--emerald50);color:#065f46}
-  .circles{display:flex;gap:5px;margin:8px 0}
-  .circ{width:34px;height:34px;border-radius:99px;border:2px solid #c7d2fe}
-  .circ.h{background:var(--emerald)} .circ.b{background:var(--rose)}
-
-  /* worldscan */
-  .ws{font-family:system-ui,sans-serif;color:#1f2937}
-  .ws-top{display:flex;align-items:center;gap:8px;padding:10px 16px;background:#0f1115;color:#fff;font-weight:800;letter-spacing:.04em;font-size:13px}
-  .ws-top .g{color:#4ade80}
-  .ws-pad{padding:14px 18px}
-  .ws-h{font-size:14px;font-weight:700;margin:0 0 10px;color:#111827}
-  .ws-row{display:grid;grid-template-columns:150px 1fr;gap:8px;padding:8px 0;border-bottom:1px solid #eef0f3;font-size:12.5px}
-  .ws-row .k{color:#6b7280}
-  .ws-row .v{color:#111827;font-family:ui-monospace,monospace;word-break:break-all}
-  .ws-ok{display:inline-flex;align-items:center;gap:5px;background:#dcfce7;color:#166534;border-radius:6px;padding:2px 8px;font-weight:700;font-size:11.5px;font-family:system-ui}
-  .trace{margin-top:12px;background:#f8fafc;border:1px solid #e5e7eb;border-radius:10px;padding:10px 12px;font-family:ui-monospace,monospace;font-size:11.5px;color:#334155}
-  .trace .ln{padding:3px 0;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
-  .trace .call{color:#7c3aed} .trace .ok{color:#16a34a} .trace .ad{color:#0891b2}
-
-  .qr{width:120px;height:120px;border-radius:10px;background:
-    repeating-conic-gradient(#0f172a 0% 25%, #fff 0% 50%) 0 0/22px 22px;border:6px solid #fff;box-shadow:0 0 0 1px #e2e8f0}
-
-  /* ---------- comparison slides ---------- */
-  .slide{width:840px;max-width:94vw;background:#fff;border:1px solid #d6dbe4;border-radius:14px;padding:22px 26px;
-    box-shadow:0 30px 60px -20px rgba(0,0,0,.7);color:var(--slate900)}
-  .slide .kk{font-size:11px;font-weight:800;letter-spacing:.12em;text-transform:uppercase;color:var(--indigo)}
-  .slide h3.st{font-size:22px;margin:3px 0 4px;color:var(--slate900)}
-  .slide .sub{color:var(--slate500);font-size:13px;margin:0 0 14px}
-  .foot-note{margin-top:12px;font-size:11px;color:var(--slate400)}
-  /* matrix */
-  table.cmp{width:100%;border-collapse:separate;border-spacing:0;font-size:12px}
-  table.cmp th,table.cmp td{padding:7px 9px;text-align:left;vertical-align:top;border-bottom:1px solid #eef1f6}
-  table.cmp thead th{font-size:11px;color:#475569;border-bottom:2px solid #e2e8f0;font-weight:700}
-  table.cmp thead th.us{color:#065f46}
-  table.cmp thead th.us .tag-us{background:#059669;color:#fff;border-radius:6px;padding:1px 6px;font-size:10px}
-  table.cmp td.dim{font-weight:700;color:#334155;white-space:nowrap}
-  td.uscell{background:#ecfdf5}
-  .dot{display:inline-block;width:8px;height:8px;border-radius:99px;margin-right:5px;vertical-align:middle}
-  .dot.g{background:#10b981}.dot.a{background:#f59e0b}.dot.r{background:#ef4444}
-  /* cost-to-corrupt + referee diagrams */
-  .legend{display:flex;gap:16px;flex-wrap:wrap;font-size:12px;margin-top:8px}
-  .legend span{display:inline-flex;align-items:center;gap:6px;color:#475569}
-  .legend i{width:16px;height:3px;border-radius:2px;display:inline-block}
-  .refgrid{display:grid;grid-template-columns:1fr 1fr;gap:16px;margin-top:6px}
-  .refbox{border:1px solid #e2e8f0;border-radius:12px;padding:14px}
-  .refbox.bad{background:#fff7f7;border-color:#fecaca}
-  .refbox.good{background:#f0fdf4;border-color:#bbf7d0}
-  .refbox .rh{font-weight:800;font-size:13px;margin-bottom:2px}
-  .refbox .rs{font-size:11px;color:#64748b;margin-bottom:10px}
-  .badge2{display:inline-block;border-radius:99px;font-size:10px;font-weight:800;padding:3px 9px}
-  .badge2.r{background:#fee2e2;color:#b91c1c}.badge2.g{background:#dcfce7;color:#166534}
-  .stage-row{display:flex;align-items:center;justify-content:center;gap:8px;margin:8px 0}
-  .node{border:1px solid #cbd5e1;background:#fff;border-radius:10px;padding:7px 11px;font-size:11px;font-weight:600;text-align:center;color:#334155}
-  .node.party{background:#f8fafc}
-  .node.judge{border-color:#ef4444;background:#fff1f2;color:#b91c1c}
-  .node.court{border-color:#10b981;background:#ecfdf5;color:#065f46}
-  .arrowx{color:#94a3b8;font-size:14px}
-  .inc{margin:8px 0 0;padding-left:16px;font-size:11.5px;color:#475569}
-  .inc li{margin:3px 0}
-  .vp{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-top:10px}
-  .vp .v{display:flex;gap:8px;align-items:flex-start;border:1px solid #e2e8f0;border-radius:10px;padding:9px 11px;background:#fcfdff}
-  .vp .v .ic{flex:none;color:#059669;font-weight:800}
-  .vp .v .vt{font-size:11.5px;color:#334155}
-  .vp .v .vt b{color:#0f172a}
-
-  .lightbox{position:fixed;inset:0;z-index:100;background:rgba(5,8,14,.9);display:none;align-items:center;justify-content:center;padding:20px;cursor:zoom-out}
-  .lightbox.on{display:flex}
-  .lightbox > div{transform:scale(1.18)}
-  .hint{color:var(--faint);font-size:11px;text-align:center;margin-top:10px}
-  @media(max-width:520px){ .lightbox > div{transform:none} .browser,.phone{transform:none} }
-</style>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <meta name="color-scheme" content="light">
+  <title>DemoThemis — demo video storyboard</title>
+  <style>
+    :root{
+      --paper:#f2eee8;
+      --surface:#fffdf9;
+      --surface-2:#f8f5ef;
+      --ink:#23202b;
+      --muted:#6e6877;
+      --line:#d9d2ca;
+      --violet:#5c48df;
+      --violet-soft:#ebe7ff;
+      --mint:#28b892;
+      --mint-soft:#ddf6ed;
+      --amber:#b06a12;
+      --amber-soft:#fff0d8;
+      --blue:#2d7196;
+      --blue-soft:#e1f1f8;
+      --night:#171429;
+      --night-2:#2b2351;
+      --shadow:0 18px 48px rgba(31,26,44,.12);
+      --serif:"Iowan Old Style","Palatino Linotype",Palatino,Georgia,serif;
+      --sans:Inter,ui-sans-serif,-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;
+      --mono:"SFMono-Regular",Consolas,"Liberation Mono",monospace;
+    }
+    *{box-sizing:border-box}
+    html,body{height:100%;margin:0}
+    body{overflow:hidden;background:var(--paper);color:var(--ink);font-family:var(--sans);font-size:15px}
+    button,a{font:inherit}
+    button{color:inherit}
+    a{color:inherit}
+    .app{height:100%;display:grid;grid-template-rows:auto auto minmax(0,1fr);isolation:isolate}
+    .topbar{position:relative;z-index:5;display:flex;align-items:center;gap:18px;min-height:66px;padding:10px 22px;background:rgba(255,253,249,.94);border-bottom:1px solid var(--line);backdrop-filter:blur(18px)}
+    .brand{display:flex;align-items:center;gap:11px;min-width:250px}
+    .brand-mark{display:grid;place-items:center;width:34px;height:34px;border-radius:50%;background:linear-gradient(145deg,var(--night),var(--violet));color:#fff;font-family:var(--serif);font-size:19px;box-shadow:inset 0 0 0 1px rgba(255,255,255,.24)}
+    .brand strong{display:block;font-family:var(--serif);font-size:17px;line-height:1}
+    .brand small{display:block;margin-top:4px;color:var(--muted);font-size:10px;font-weight:750;letter-spacing:.12em;text-transform:uppercase}
+    .runtime{display:flex;align-items:center;gap:8px;margin-left:auto;color:var(--muted);font-family:var(--mono);font-size:11px;white-space:nowrap}
+    .scope-key{display:flex;align-items:center;gap:6px}
+    .key{display:inline-flex;align-items:center;gap:6px;border:1px solid var(--line);border-radius:999px;padding:5px 8px;background:#fff;font-size:10px;font-weight:800;letter-spacing:.06em;text-transform:uppercase}
+    .key:before{content:"";width:7px;height:7px;border-radius:50%;background:var(--mint)}
+    .key.design:before{background:var(--violet)}
+    .controls{display:flex;align-items:center;gap:7px}
+    .icon-btn,.play-btn{min-height:36px;border:1px solid var(--line);border-radius:10px;background:#fff;cursor:pointer;transition:transform .16s ease,border-color .16s ease,background .16s ease}
+    .icon-btn{display:grid;place-items:center;width:38px;font-size:18px}
+    .play-btn{display:flex;align-items:center;gap:8px;padding:0 13px;background:var(--night);border-color:var(--night);color:#fff;font-size:12px;font-weight:800}
+    .icon-btn:hover,.play-btn:hover{transform:translateY(-1px);border-color:var(--violet)}
+    .icon-btn:focus-visible,.play-btn:focus-visible,.chapter:focus-visible,.shot-dot:focus-visible{outline:3px solid rgba(92,72,223,.25);outline-offset:2px}
+    .chapterbar{position:relative;z-index:4;display:grid;grid-template-columns:auto minmax(0,1fr) auto;align-items:center;gap:14px;padding:8px 22px;background:var(--surface);border-bottom:1px solid var(--line)}
+    .chapter-label{font-size:10px;font-weight:850;letter-spacing:.13em;text-transform:uppercase;color:var(--muted)}
+    .chapters{display:flex;gap:6px;min-width:0;overflow-x:auto;scrollbar-width:none}
+    .chapters::-webkit-scrollbar{display:none}
+    .chapter{flex:none;display:flex;align-items:center;gap:6px;border:0;border-radius:9px;padding:7px 9px;background:transparent;color:var(--muted);cursor:pointer;font-size:11px;font-weight:700;white-space:nowrap}
+    .chapter span{font-family:var(--mono);font-size:9px;color:#9a92a5}
+    .chapter.active{background:var(--violet-soft);color:#4635b7}
+    .chapter.visited{color:var(--ink)}
+    .capture-note{color:var(--muted);font-size:10px;white-space:nowrap}
+    .deck{position:relative;min-height:0;padding:14px 18px 18px}
+    .scene{position:absolute;inset:14px 18px 18px;display:grid;grid-template-columns:minmax(0,1.65fr) minmax(330px,.75fr);gap:14px;opacity:0;pointer-events:none;transform:translateX(22px);transition:opacity .28s ease,transform .28s ease}
+    .scene.active{opacity:1;pointer-events:auto;transform:none}
+    .visual{position:relative;min-width:0;min-height:0;overflow:hidden;border:1px solid rgba(255,255,255,.1);border-radius:18px;background:var(--night);box-shadow:var(--shadow)}
+    .visual:before{content:"";position:absolute;inset:0;background:radial-gradient(circle at 82% 10%,rgba(95,72,223,.34),transparent 36%),radial-gradient(circle at 15% 90%,rgba(44,190,166,.18),transparent 34%);pointer-events:none;z-index:0}
+    .browser-frame{position:absolute;inset:14px;display:grid;grid-template-rows:34px minmax(0,1fr);overflow:hidden;border-radius:12px;background:#fff;box-shadow:0 16px 36px rgba(0,0,0,.24);z-index:1}
+    .browser-bar{display:grid;grid-template-columns:72px minmax(0,1fr) 72px;align-items:center;gap:8px;padding:0 10px;background:#ece8e2;border-bottom:1px solid #d3cdc6}
+    .browser-dots{display:flex;gap:5px}
+    .browser-dots i{width:8px;height:8px;border-radius:50%;background:#c6beb5}.browser-dots i:nth-child(1){background:#ef7b72}.browser-dots i:nth-child(2){background:#efbd5f}.browser-dots i:nth-child(3){background:#68bd7d}
+    .browser-url{overflow:hidden;border:1px solid #d6d0ca;border-radius:6px;padding:5px 9px;background:#faf9f7;color:#716a73;font-family:var(--mono);font-size:9px;text-overflow:ellipsis;white-space:nowrap}
+    .browser-tag{justify-self:end;color:#817a84;font-size:9px;font-weight:800;text-transform:uppercase}
+    .screen{position:relative;min-height:0;overflow:hidden;background:#ebe8e2}
+    .screen img{display:block;width:100%;height:100%;object-fit:cover;object-position:center top}
+    .screen.contain img{object-fit:contain;background:#ebe8e2}
+    .screen.pos-center img{object-position:center center}
+    .focus-ring{position:absolute;border:3px solid #fff;border-radius:13px;box-shadow:0 0 0 5px rgba(92,72,223,.8),0 8px 26px rgba(23,20,41,.25);pointer-events:none}
+    .focus-ring span{position:absolute;top:-18px;left:-5px;border-radius:999px;padding:5px 8px;background:var(--violet);color:#fff;font-size:9px;font-weight:850;letter-spacing:.05em;text-transform:uppercase;white-space:nowrap}
+    .frame-caption{position:absolute;left:28px;bottom:26px;z-index:3;max-width:min(64%,520px);border:1px solid rgba(255,255,255,.22);border-radius:10px;padding:9px 11px;background:rgba(23,20,41,.88);color:#fff;box-shadow:0 10px 24px rgba(0,0,0,.2);backdrop-filter:blur(10px)}
+    .frame-caption b{display:block;font-size:11px}.frame-caption span{display:block;margin-top:2px;color:#d5d0e8;font-size:10px;line-height:1.35}
+    .phone-stage{display:grid;place-items:center;padding:18px;background:linear-gradient(145deg,#15132a,#302762)}
+    .phone-stage:after{content:"";position:absolute;inset:0;background-image:linear-gradient(rgba(255,255,255,.025) 1px,transparent 1px),linear-gradient(90deg,rgba(255,255,255,.025) 1px,transparent 1px);background-size:28px 28px}
+    .phone{position:relative;z-index:1;height:calc(100% - 18px);aspect-ratio:430/860;padding:7px;border:1px solid rgba(255,255,255,.3);border-radius:30px;background:#11101a;box-shadow:0 24px 50px rgba(0,0,0,.4)}
+    .phone img{width:100%;height:100%;object-fit:cover;object-position:top;border-radius:23px}
+    .phone:before{content:"";position:absolute;top:12px;left:50%;z-index:2;width:29%;height:16px;border-radius:99px;background:#11101a;transform:translateX(-50%)}
+    .camera-cue{position:absolute;right:30px;top:28px;z-index:4;max-width:250px;border:1px solid rgba(255,255,255,.28);border-radius:13px;padding:11px 13px;background:rgba(255,253,249,.93);color:var(--ink);box-shadow:0 10px 30px rgba(0,0,0,.18)}
+    .camera-cue small{display:block;color:var(--violet);font-size:9px;font-weight:900;letter-spacing:.11em;text-transform:uppercase}.camera-cue b{display:block;margin-top:4px;font-family:var(--serif);font-size:16px}.camera-cue span{display:block;margin-top:4px;color:var(--muted);font-size:10px;line-height:1.4}
+    .split{position:absolute;inset:14px;display:grid;grid-template-columns:1fr 1fr;gap:10px;z-index:1}
+    .split figure{position:relative;min-width:0;min-height:0;margin:0;overflow:hidden;border-radius:12px;background:#fff;box-shadow:0 12px 28px rgba(0,0,0,.25)}
+    .split img{width:100%;height:100%;object-fit:cover;object-position:center top}
+    .split figcaption{position:absolute;left:10px;top:10px;border-radius:999px;padding:5px 8px;background:rgba(23,20,41,.9);color:#fff;font-size:9px;font-weight:850;letter-spacing:.06em;text-transform:uppercase}
+    .capture-board{position:absolute;inset:14px;z-index:1;display:grid;grid-template-columns:minmax(0,1fr) 280px;gap:12px;overflow:hidden;border-radius:13px;background:#f7f3ed;box-shadow:0 16px 36px rgba(0,0,0,.24)}
+    .capture-image{position:relative;overflow:hidden;background:#ece8e2}
+    .capture-image img{width:100%;height:100%;object-fit:cover;object-position:center top;filter:saturate(.72) brightness(.62)}
+    .capture-image:after{content:"";position:absolute;inset:0;background:linear-gradient(90deg,rgba(23,20,41,.25),rgba(23,20,41,.05))}
+    .capture-copy{display:flex;flex-direction:column;justify-content:center;padding:22px;background:linear-gradient(160deg,#fffdf9,#eee8ff)}
+    .capture-copy .cap{display:inline-flex;align-self:flex-start;border-radius:999px;padding:5px 8px;background:var(--amber-soft);color:#85500f;font-size:9px;font-weight:900;letter-spacing:.08em;text-transform:uppercase}
+    .capture-copy h3{margin:12px 0 7px;font-family:var(--serif);font-size:27px;line-height:1.02}.capture-copy p{margin:0;color:var(--muted);font-size:12px;line-height:1.55}
+    .capture-route{margin-top:14px;padding-top:12px;border-top:1px solid var(--line);font-family:var(--mono);font-size:10px;color:#4b407a}
+    .capture-steps{display:grid;gap:8px;margin-top:15px}
+    .capture-steps div{display:flex;gap:9px;align-items:flex-start}.capture-steps b{display:grid;place-items:center;flex:none;width:21px;height:21px;border-radius:50%;background:var(--night);color:#fff;font-family:var(--mono);font-size:9px}.capture-steps span{font-size:11px;line-height:1.35}
+    .evidence-board{position:absolute;inset:14px;z-index:1;display:grid;grid-template-columns:1.05fr .95fr;gap:10px;padding:20px;border-radius:13px;background:linear-gradient(145deg,#f8f5ef,#e9e4ff);box-shadow:0 16px 36px rgba(0,0,0,.24)}
+    .evidence-lead{display:flex;flex-direction:column;justify-content:center;padding:18px}.evidence-lead .eyebrow{color:var(--violet);font-size:10px;font-weight:900;letter-spacing:.11em;text-transform:uppercase}.evidence-lead h3{margin:8px 0;font-family:var(--serif);font-size:36px;line-height:1}.evidence-lead p{max-width:540px;margin:0;color:var(--muted);line-height:1.55}.evidence-grid{display:grid;grid-template-columns:1fr 1fr;gap:9px}.evidence-card{display:flex;flex-direction:column;justify-content:space-between;border:1px solid var(--line);border-radius:12px;padding:13px;background:rgba(255,255,255,.88)}.evidence-card b{font-size:12px}.evidence-card span{color:var(--muted);font-size:10px;line-height:1.4}.evidence-card code{margin-top:12px;color:#4e3fb3;font-size:9px}
+    .mosaic{position:absolute;inset:14px;z-index:1;display:grid;grid-template-columns:1.25fr .75fr .75fr;grid-template-rows:1fr 1fr;gap:8px}
+    .mosaic figure{position:relative;margin:0;overflow:hidden;border-radius:10px;background:#fff;box-shadow:0 9px 24px rgba(0,0,0,.24)}
+    .mosaic figure:first-child{grid-row:1/3}.mosaic img{width:100%;height:100%;object-fit:cover;object-position:center top}.mosaic figcaption{position:absolute;left:8px;bottom:8px;border-radius:7px;padding:5px 7px;background:rgba(23,20,41,.88);color:#fff;font-size:9px;font-weight:800}
+    .mosaic-note{position:absolute;right:28px;bottom:26px;z-index:3;border-radius:9px;padding:8px 10px;background:#fff;color:var(--ink);box-shadow:0 8px 22px rgba(0,0,0,.18);font-size:9px;font-weight:800}
+    .notes{position:relative;display:flex;min-width:0;min-height:0;flex-direction:column;overflow:hidden;border:1px solid var(--line);border-radius:18px;background:var(--surface);box-shadow:0 12px 34px rgba(31,26,44,.08)}
+    .notes-head{padding:18px 18px 14px;border-bottom:1px solid var(--line);background:linear-gradient(160deg,#fffdf9,#f7f2ff)}
+    .meta-row{display:flex;align-items:center;gap:8px;flex-wrap:wrap}
+    .scene-no{font-family:var(--mono);font-size:11px;color:var(--violet);font-weight:900}.timecode{font-family:var(--mono);font-size:10px;color:var(--muted)}
+    .status{margin-left:auto;border-radius:999px;padding:5px 7px;font-size:9px;font-weight:900;letter-spacing:.07em;text-transform:uppercase}.status.live{background:var(--mint-soft);color:#15765e}.status.phone{background:var(--blue-soft);color:#245f7f}.status.capture{background:var(--amber-soft);color:#89530d}.status.design{background:var(--violet-soft);color:#4c3ac1}.status.docs{background:#ebe8e3;color:#5f5964}.status.hybrid{background:linear-gradient(90deg,var(--mint-soft),var(--violet-soft));color:#3f3760}
+    .notes h2{margin:10px 0 6px;font-family:var(--serif);font-size:30px;line-height:1}.speaker{color:var(--muted);font-size:11px}.speaker b{color:var(--ink)}
+    .notes-body{min-height:0;overflow:auto;padding:14px 18px 16px;scrollbar-width:thin}
+    .direction{display:grid;grid-template-columns:72px 1fr;gap:10px;padding:10px 0;border-bottom:1px solid #ebe6e0}.direction:first-child{padding-top:0}.direction label{color:var(--violet);font-size:9px;font-weight:900;letter-spacing:.09em;text-transform:uppercase}.direction p{margin:0;color:#514b58;font-size:11px;line-height:1.45}
+    .say{margin:14px 0 0;border-left:3px solid var(--violet);padding:2px 0 2px 12px;color:#302a38;font-family:var(--serif);font-size:16px;line-height:1.47}.say b{color:#2d2491}
+    .proof-note{display:flex;gap:8px;margin-top:13px;border:1px solid #e6dfd7;border-radius:10px;padding:9px;background:var(--surface-2);color:var(--muted);font-size:10px;line-height:1.4}.proof-note:before{content:"i";display:grid;place-items:center;flex:none;width:18px;height:18px;border-radius:50%;background:var(--night);color:#fff;font-family:var(--serif);font-weight:900}
+    .live-link{display:flex;align-items:center;justify-content:space-between;gap:10px;margin-top:12px;border:1px solid var(--line);border-radius:9px;padding:9px 10px;background:#fff;text-decoration:none;font-size:10px;font-weight:800}.live-link code{overflow:hidden;color:var(--muted);font-size:9px;text-overflow:ellipsis;white-space:nowrap}.live-link:hover{border-color:var(--violet);color:var(--violet)}
+    .shotbar{display:grid;grid-template-columns:auto minmax(0,1fr) auto;align-items:center;gap:10px;padding:10px 18px;border-top:1px solid var(--line);background:#faf7f2}
+    .shotbar small{color:var(--muted);font-size:9px;font-weight:800;text-transform:uppercase}.dots{display:flex;gap:4px;min-width:0;overflow-x:auto;scrollbar-width:none}.dots::-webkit-scrollbar{display:none}.shot-dot{flex:1;min-width:18px;height:6px;border:0;border-radius:99px;background:#ddd6cf;cursor:pointer}.shot-dot.active{background:var(--violet)}.shot-dot.past{background:#9588ea}.word-count{font-family:var(--mono);font-size:9px;color:var(--muted);white-space:nowrap}
+    .sr-only{position:absolute!important;width:1px;height:1px;padding:0;margin:-1px;overflow:hidden;clip:rect(0,0,0,0);white-space:nowrap;border:0}
+    @media (max-width:1100px){
+      body{overflow:auto;overflow-x:hidden}.app{min-height:100%;height:auto}.topbar{position:sticky;top:0}.scope-key,.capture-note{display:none}.scene{position:relative;inset:auto;display:none;grid-template-columns:1fr;min-height:auto;scroll-margin-top:124px}.scene.active{display:grid}.deck{min-height:auto}.visual{aspect-ratio:16/10;min-height:0}.notes{min-height:420px}.notes-body{overflow:visible}.runtime{margin-left:auto}.chapterbar{position:sticky;top:66px}.phone-stage{aspect-ratio:16/10}.phone{height:94%}
+    }
+    @media (max-width:660px){
+      .topbar{gap:8px;min-height:54px;padding:8px 10px}.brand{min-width:0}.brand small{display:none}.brand strong{font-size:15px}.runtime{display:none}.play-btn{padding:0 10px}.play-btn span:last-child{display:none}.chapterbar{top:54px;grid-template-columns:1fr;padding:7px 10px}.chapter-label,.capture-note{display:none}.deck{padding:8px}.scene{gap:8px}.visual{border-radius:12px}.visual:has(.capture-board),.visual:has(.evidence-board){aspect-ratio:auto;min-height:340px}.browser-frame{inset:7px}.browser-bar{grid-template-columns:46px minmax(0,1fr) 34px;height:30px}.browser-tag{display:none}.screen img{object-fit:cover}.frame-caption{left:16px;bottom:14px;max-width:78%}.focus-ring{display:none}.phone-stage{aspect-ratio:4/5}.camera-cue{display:none}.split{inset:7px;display:flex;overflow-x:auto;scroll-snap-type:x mandatory}.split figure{flex:0 0 88%;scroll-snap-align:center}.capture-board,.evidence-board{inset:7px;grid-template-columns:1fr;overflow:auto}.capture-image{display:none}.capture-copy{padding:18px}.evidence-grid{grid-template-columns:1fr 1fr}.evidence-lead h3{font-size:28px}.mosaic{inset:7px;grid-template-columns:1fr 1fr;grid-template-rows:1fr 1fr 1fr}.mosaic figure:first-child{grid-row:1/2;grid-column:1/3}.mosaic-note{display:none}.notes{border-radius:12px}.notes-head{padding:15px}.notes h2{font-size:27px}.notes-body{padding:13px 15px}.direction{grid-template-columns:1fr;gap:5px}.say{font-size:15px}.shotbar{padding:9px 15px}
+    }
+    @media (max-width:420px){
+      .topbar{padding:6px}.brand{flex:1}.brand strong{display:none}.brand-mark{width:32px;height:32px}.controls{gap:5px}.icon-btn,.play-btn{width:34px;min-height:34px}.play-btn{justify-content:center;padding:0}
+    }
+    @media (prefers-reduced-motion:reduce){*,*:before,*:after{scroll-behavior:auto!important;transition:none!important}}
+  </style>
 </head>
 <body>
+<div class="app">
+  <header class="topbar">
+    <div class="brand"><span class="brand-mark">D</span><span><strong>DemoThemis</strong><small>video storyboard</small></span></div>
+    <div class="scope-key" aria-label="Scope legend"><span class="key">Live MVP</span><span class="key design">Scaled design</span></div>
+    <div class="runtime" id="runtime">13 shots · 3:58</div>
+    <div class="controls">
+      <button class="icon-btn" id="prev" type="button" aria-label="Previous shot">←</button>
+      <button class="play-btn" id="play" type="button"><span id="playIcon">▶</span><span id="playText">Preview sequence</span></button>
+      <button class="icon-btn" id="next" type="button" aria-label="Next shot">→</button>
+      <button class="icon-btn" id="full" type="button" aria-label="Enter full screen">⛶</button>
+    </div>
+  </header>
 
-<header class="top">
-  <div class="row">
-    <div class="brand">🎬 DemoThemis <span class="tag">demo storyboard</span></div>
-    <div class="runtime" id="runtime">14 frames · ~4:50</div>
-    <button class="play" id="playbtn">▶ Play through</button>
-  </div>
-  <div class="strip" id="strip"></div>
-</header>
+  <nav class="chapterbar" aria-label="Document site coverage">
+    <span class="chapter-label">Whole proposal</span>
+    <div class="chapters" id="chapters">
+      <button class="chapter" type="button" data-chapter="home"><span>00</span> Home</button>
+      <button class="chapter" type="button" data-chapter="run"><span>01</span> Run-through</button>
+      <button class="chapter" type="button" data-chapter="demothemis"><span>02</span> DemoThemis</button>
+      <button class="chapter" type="button" data-chapter="break"><span>03</span> Break the court</button>
+      <button class="chapter" type="button" data-chapter="omen"><span>04</span> OmenMarketMaker</button>
+      <button class="chapter" type="button" data-chapter="bootstrap"><span>05</span> Bootstrap loop</button>
+      <button class="chapter" type="button" data-chapter="governance"><span>06</span> Governance</button>
+      <button class="chapter" type="button" data-chapter="mvp"><span>LIVE</span> Demo MVP</button>
+    </div>
+    <span class="capture-note">Actual UI captured 19 Jul 2026</span>
+  </nav>
 
-<div class="intro">
-  <h1>Demo video — shot-by-shot</h1>
-  <p>A faithful storyboard of the 3–4 minute demo. Every frame is the <b>real app's UI</b>, recreated exactly;
-     accounts and case data are illustrative placeholders for the capstone run. Click any frame to enlarge,
-     or hit <b>Play through</b>. The panels are what the camera shows; the notes beneath each one are the spoken script.</p>
-  <span class="note">Frames are pixel-built from the live app at demo-themis-mvp.vercel.app</span>
+  <main class="deck" id="deck">
+    <section class="scene active" id="shot-1" data-title="The job" data-duration="10" data-chapter="mvp">
+      <div class="visual">
+        <div class="browser-frame"><div class="browser-bar"><span class="browser-dots"><i></i><i></i><i></i></span><span class="browser-url">demothemis.netlify.app/app</span><span class="browser-tag">Live</span></div><div class="screen"><img src="storyboard-assets/01-live-mvp-hero.png" alt="Current DemoThemis live MVP hero and public question"></div></div>
+        <div class="camera-cue"><small>Opening cut</small><b>Founders on camera</b><span>2–3 seconds together, then cut directly to this live screen.</span></div>
+        <div class="frame-caption"><b>Open with the product, not a diagram.</b><span>The viewer sees the live question in the first ten seconds.</span></div>
+      </div>
+      <article class="notes">
+        <header class="notes-head"><div class="meta-row"><span class="scene-no">SHOT 01</span><span class="timecode"></span><span class="status live">Live UI</span></div><h2>The job</h2><div class="speaker"><b>Speaker:</b> Founder 1</div></header>
+        <div class="notes-body"><div class="direction"><label>On screen</label><p>Both founders for one sentence, then the current `/app` hero.</p></div><div class="direction"><label>Action</label><p>Cut on “well-defined case.” Let the headline settle before scrolling.</p></div><blockquote class="say">DemoThemis is a reusable court for any well-defined case. Anyone can fund a jury; independent verified humans decide; an on-chain ruling returns to the requester.</blockquote><div class="proof-note">Lead with the general court. Escrow is optional execution, not the product definition.</div><a class="live-link" href="https://demothemis.netlify.app/app" target="_blank" rel="noopener"><code>/app</code><span>Open live screen ↗</span></a></div>
+        <footer class="shotbar"><small>Shot map</small><div class="dots"></div><span class="word-count"></span></footer>
+      </article>
+    </section>
+
+    <section class="scene" id="shot-2" data-title="One precise public question" data-duration="15" data-chapter="mvp">
+      <div class="visual">
+        <div class="browser-frame"><div class="browser-bar"><span class="browser-dots"><i></i><i></i><i></i></span><span class="browser-url">demothemis.netlify.app/app#oracle-live-panel</span><span class="browser-tag">Live</span></div><div class="screen"><img src="storyboard-assets/02-live-case.png" alt="Current live case with exact question, YES rule, time and three jury seats"><div class="focus-ring" style="left:2%;top:2%;width:69%;height:56%"><span>Fixed before voting</span></div></div></div>
+        <div class="frame-caption"><b>One question. One exact rule. One time.</b><span>No selected evidence pack; jurors research independently.</span></div>
+      </div>
+      <article class="notes">
+        <header class="notes-head"><div class="meta-row"><span class="scene-no">SHOT 02</span><span class="timecode"></span><span class="status live">Live UI</span></div><h2>One precise public question</h2><div class="speaker"><b>Speaker:</b> Founder 1</div></header>
+        <div class="notes-body"><div class="direction"><label>On screen</label><p>The DART question, exact YES condition, judged-as-of time, independent-research note, and empty seats.</p></div><div class="direction"><label>Action</label><p>Scroll just enough to keep the question and three-seat panel in one frame.</p></div><blockquote class="say">The MVP starts with one precise public question. Its wording, exact YES rule, and judgment time are fixed before anyone votes. Jurors receive no preferred source; they research the public facts independently.</blockquote><div class="proof-note">This is the deployed MVP’s present state: the official question waits for exactly three verified jurors.</div><a class="live-link" href="https://demothemis.netlify.app/app#oracle-live-panel" target="_blank" rel="noopener"><code>/app#oracle-live-panel</code><span>Open live screen ↗</span></a></div>
+        <footer class="shotbar"><small>Shot map</small><div class="dots"></div><span class="word-count"></span></footer>
+      </article>
+    </section>
+
+    <section class="scene" id="shot-3" data-title="How cases enter" data-duration="13" data-chapter="mvp">
+      <div class="visual">
+        <div class="browser-frame"><div class="browser-bar"><span class="browser-dots"><i></i><i></i><i></i></span><span class="browser-url">demothemis.netlify.app/app?tab=submit</span><span class="browser-tag">Live</span></div><div class="screen"><img src="storyboard-assets/04-submit-case.png" alt="Current case submission form and visible fee split"><div class="focus-ring" style="left:1.5%;top:4%;width:71%;height:62%"><span>Requester defines the case</span></div></div></div>
+        <div class="frame-caption"><b>A clear filing, not an operator’s judgment.</b><span>The preview is editable and sends nothing during the demo.</span></div>
+      </div>
+      <article class="notes">
+        <header class="notes-head"><div class="meta-row"><span class="scene-no">SHOT 03</span><span class="timecode"></span><span class="status live">Live UI</span></div><h2>How cases enter</h2><div class="speaker"><b>Speaker:</b> Founder 2</div></header>
+        <div class="notes-body"><div class="direction"><label>On screen</label><p>Submit-a-case tab: question, YES rule, date, fixed 2 MUSD demo fee, and 70/20/10 split.</p></div><div class="direction"><label>Action</label><p>Open the tab, pause on the three fields, then point to the fee distribution.</p></div><blockquote class="say">A requester defines the case and funds the work. This preview makes the payload explicit: the question, decision rule, deadline, and fee. DemoThemis supplies the independent ruling—not the underlying dispute.</blockquote><div class="proof-note">The current screen is a prepared submission preview; it does not transmit or file anything.</div><a class="live-link" href="https://demothemis.netlify.app/app?tab=submit#oracle-submit-panel" target="_blank" rel="noopener"><code>/app?tab=submit</code><span>Open live screen ↗</span></a></div>
+        <footer class="shotbar"><small>Shot map</small><div class="dots"></div><span class="word-count"></span></footer>
+      </article>
+    </section>
+
+    <section class="scene" id="shot-4" data-title="Three verified humans" data-duration="22" data-chapter="mvp">
+      <div class="visual phone-stage">
+        <div class="phone"><img src="storyboard-assets/03-join-jury-mobile.png" alt="Current mobile join-jury screen in World App"></div>
+        <div class="camera-cue"><small>Phone capture</small><b>Record inside World App</b><span>Use the actual World ID sheet and sponsored transaction during the capstone.</span></div>
+        <div class="frame-caption"><b>One World ID → one juror seat.</b><span>Joining stays voluntary; a juror can leave when not serving.</span></div>
+      </div>
+      <article class="notes">
+        <header class="notes-head"><div class="meta-row"><span class="scene-no">SHOT 04</span><span class="timecode"></span><span class="status phone">Phone capture</span></div><h2>Three verified humans</h2><div class="speaker"><b>Speaker:</b> Founder 2</div></header>
+        <div class="notes-body"><div class="direction"><label>On screen</label><p>Current `/onboard` screen, then a tight montage of the three real World App registrations.</p></div><div class="direction"><label>Action</label><p>Open World App, verify, post the valueless 5 MUSD demo bond, and show the Worldscan confirmation. Repeat as a quick 3-person montage.</p></div><blockquote class="say">Each seat belongs to one World ID-verified person, bound to the wallet they use. The juror posts a small valueless demo bond and joins the pool in World App. A second wallet cannot turn the same person into a second juror.</blockquote><div class="proof-note">Capture the real World ID prompt and transaction here. Never substitute the old hand-built phone mockup.</div><a class="live-link" href="https://demothemis.netlify.app/onboard" target="_blank" rel="noopener"><code>/onboard</code><span>Open current screen ↗</span></a></div>
+        <footer class="shotbar"><small>Shot map</small><div class="dots"></div><span class="word-count"></span></footer>
+      </article>
+    </section>
+
+    <section class="scene" id="shot-5" data-title="One case, three seats" data-duration="14" data-chapter="mvp">
+      <div class="visual">
+        <div class="capture-board"><div class="capture-image"><img src="storyboard-assets/02-live-case.png" alt="Current live case before the capstone jury fills"></div><div class="capture-copy"><span class="cap">Capture after capstone</span><h3>Replace 0 of 3 with the live 3 of 3 state.</h3><p>Use the same current interface—no reconstructed panel. Keep the question fingerprint and World Chain badge visible.</p><div class="capture-route">/app#oracle-live-panel</div><div class="capture-steps"><div><b>1</b><span>Three verified addresses seated</span></div><div><b>2</b><span>Question fingerprint confirmed</span></div><div><b>3</b><span>Seal window begins</span></div></div></div></div>
+      </div>
+      <article class="notes">
+        <header class="notes-head"><div class="meta-row"><span class="scene-no">SHOT 05</span><span class="timecode"></span><span class="status capture">Capture after capstone</span></div><h2>One case, three seats</h2><div class="speaker"><b>Speaker:</b> Founder 1</div></header>
+        <div class="notes-body"><div class="direction"><label>On screen</label><p>The current live-case panel after all three verified registrations complete.</p></div><div class="direction"><label>Action</label><p>Refresh once, then hold on the three seated addresses and confirmed question fingerprint.</p></div><blockquote class="say">When the third juror joins, the official question opens and the contract seats all three. The interface reads that state from World Chain; an operator does not choose the panel or edit the question.</blockquote><div class="proof-note">Amber means the UI exists, but this exact live state must be recorded after the capstone transaction.</div><a class="live-link" href="https://demothemis.netlify.app/app#oracle-live-panel" target="_blank" rel="noopener"><code>/app#oracle-live-panel</code><span>Open live screen ↗</span></a></div>
+        <footer class="shotbar"><small>Shot map</small><div class="dots"></div><span class="word-count"></span></footer>
+      </article>
+    </section>
+
+    <section class="scene" id="shot-6" data-title="Seal, reveal, majority" data-duration="24" data-chapter="mvp">
+      <div class="visual">
+        <div class="capture-board"><div class="capture-image"><img src="storyboard-assets/01-live-mvp-hero.png" alt="Current MVP visual language behind a capstone capture plan"></div><div class="capture-copy"><span class="cap">Capture after capstone</span><h3>Three short phone beats. One live counter.</h3><p>Record only the current ballot component and live panel counts. Do not expose a salt or invent a completed receipt.</p><div class="capture-route">/case/[live id]</div><div class="capture-steps"><div><b>1</b><span>Juror seals YES or NO</span></div><div><b>2</b><span>Live screen reaches 3/3 sealed</span></div><div><b>3</b><span>Reveal reaches 3/3; contract can resolve</span></div></div></div></div>
+      </div>
+      <article class="notes">
+        <header class="notes-head"><div class="meta-row"><span class="scene-no">SHOT 06</span><span class="timecode"></span><span class="status capture">Capture after capstone</span></div><h2>Seal, reveal, majority</h2><div class="speaker"><b>Speaker:</b> Founder 2</div></header>
+        <div class="notes-body"><div class="direction"><label>On screen</label><p>Three phone cuts: seal, 3/3 sealed, reveal; intercut with the live case counter.</p></div><div class="direction"><label>Action</label><p>Keep every wallet and salt private. End on “Ready for the ruling,” then resolve from the public screen.</p></div><blockquote class="say">Each juror researches independently, then seals a YES or NO answer before anyone reveals. After all three commitments are locked, they reveal. The contract checks each commitment, counts one person once, and records the majority with no administrator deciding the result.</blockquote><div class="proof-note">The live MVP uses commit/reveal. Receipt-free private voting belongs to the funded design and is not described as live here.</div><a class="live-link" href="https://demothemis.netlify.app/app" target="_blank" rel="noopener"><code>/case/[live id]</code><span>Start from the live case ↗</span></a></div>
+        <footer class="shotbar"><small>Shot map</small><div class="dots"></div><span class="word-count"></span></footer>
+      </article>
+    </section>
+
+    <section class="scene" id="shot-7" data-title="A permanent result" data-duration="20" data-chapter="mvp">
+      <div class="visual">
+        <div class="capture-board"><div class="capture-image"><img src="storyboard-assets/15-built-now-funded-next.png" alt="Current MVP interface behind a planned receipt capture"></div><div class="capture-copy"><span class="cap">Capture after capstone</span><h3>Hold on the real case receipt.</h3><p>Show the ruling, panel, fee distribution, payouts, and direct Worldscan links from the current `/case/[id]` page.</p><div class="capture-route">/case/[resolved id]</div><div class="capture-steps"><div><b>1</b><span>Majority answer recorded</span></div><div><b>2</b><span>70 / 20 / 10 distribution visible</span></div><div><b>3</b><span>Permanent transaction links open</span></div></div></div></div>
+      </div>
+      <article class="notes">
+        <header class="notes-head"><div class="meta-row"><span class="scene-no">SHOT 07</span><span class="timecode"></span><span class="status capture">Capture after capstone</span></div><h2>A permanent result</h2><div class="speaker"><b>Speaker:</b> Founder 1</div></header>
+        <div class="notes-body"><div class="direction"><label>On screen</label><p>The actual resolved case page: answer, progress, three jurors, payouts, fee split, and chain links.</p></div><div class="direction"><label>Action</label><p>Scroll once from “The jury answered…” into the permanent receipt. Open one Worldscan link in a new tab.</p></div><blockquote class="say">The majority becomes a permanent case receipt. The same rules distribute the demo fee to jurors, the reward pool, and protocol operations. Every transition and payout is inspectable, while no operator can rewrite the answer.</blockquote><div class="proof-note">Use only the real resolved case ID created by the capstone. Do not pre-fill a fictional hash.</div><a class="live-link" href="https://demothemis.netlify.app/app" target="_blank" rel="noopener"><code>/case/[resolved id]</code><span>Start from the live case ↗</span></a></div>
+        <footer class="shotbar"><small>Shot map</small><div class="dots"></div><span class="word-count"></span></footer>
+      </article>
+    </section>
+
+    <section class="scene" id="shot-8" data-title="Proof behind the proof" data-duration="14" data-chapter="mvp">
+      <div class="visual">
+        <div class="evidence-board"><div class="evidence-lead"><span class="eyebrow">Capture after capstone</span><h3>Show the receipts, not a reconstructed explorer.</h3><p>Use the live app’s transaction links and the source-verified contracts. One quick cut proves personhood enforcement, duplicate rejection, the ruling, and payout.</p></div><div class="evidence-grid"><div class="evidence-card"><b>World ID gate</b><span>Wallet-bound proof and nullifier check</span><code>real tx ↗</code></div><div class="evidence-card"><b>Duplicate rejected</b><span>The same human cannot take another seat</span><code>real revert ↗</code></div><div class="evidence-card"><b>Ruling recorded</b><span>Majority outcome on World Chain</span><code>real tx ↗</code></div><div class="evidence-card"><b>Fee distributed</b><span>Jurors, reward pool, protocol</span><code>real tx ↗</code></div></div></div>
+      </div>
+      <article class="notes">
+        <header class="notes-head"><div class="meta-row"><span class="scene-no">SHOT 08</span><span class="timecode"></span><span class="status capture">Capture after capstone</span></div><h2>Proof behind the proof</h2><div class="speaker"><b>Speaker:</b> Founder 2</div></header>
+        <div class="notes-body"><div class="direction"><label>On screen</label><p>Worldscan opened from the live case receipt, then the verified contract page and the documented duplicate-proof rejection.</p></div><div class="direction"><label>Action</label><p>Use two fast cuts. Zoom only the status, method, contract, and event—not a wall of hexadecimal text.</p></div><blockquote class="say">The interface is the readable layer; World Chain is the proof. The registration, duplicate protection, sealed answers, ruling, and distribution all have receipts, and the contracts are source-verified for independent inspection.</blockquote><div class="proof-note">This replaces the old illustrative Worldscan reconstruction with real post-capstone evidence.</div><a class="live-link" href="https://demothemis.netlify.app/app" target="_blank" rel="noopener"><code>Worldscan links inside the live receipt</code><span>Open app ↗</span></a></div>
+        <footer class="shotbar"><small>Shot map</small><div class="dots"></div><span class="word-count"></span></footer>
+      </article>
+    </section>
+
+    <section class="scene" id="shot-9" data-title="Follow the full system" data-duration="32" data-chapter="run">
+      <div class="visual">
+        <div class="split"><figure><img src="storyboard-assets/06-run-through-start.png" alt="Run-through starting-point selector"><figcaption>Choose court-backed run</figcaption></figure><figure><img src="storyboard-assets/07-run-through-court.png" alt="Run-through Event 07 court-backed product screen"><figcaption>Advance 07 → 13</figcaption></figure></div>
+        <div class="frame-caption"><b>Chapter 01 · Run-through</b><span>Show the court-backed route from bonded answer to finality.</span></div>
+      </div>
+      <article class="notes">
+        <header class="notes-head"><div class="meta-row"><span class="scene-no">SHOT 09</span><span class="timecode"></span><span class="status design">Scaled design</span></div><h2>Follow the full system</h2><div class="speaker"><b>Speaker:</b> Founder 1</div></header>
+        <div class="notes-body"><div class="direction"><label>On screen</label><p>Run-through chapter. Select “Court-backed run,” then advance Events 07–13: proposal, challenge, draw, ballot, verdict, appeal, finality.</p></div><div class="direction"><label>Action</label><p>Let each event title land; skip internal copy. Pause on the bound draw, private ballot, widening appeal, and final release.</p></div><blockquote class="say">The live MVP proves the three-seat core. The Run-through chapter shows how the completed protocol serves a product end to end: a bonded answer is challenged, one case-bound jury is drawn, ballots lock, an appeal widens the panel, and finality releases funds. This is the scaled design the grant finishes—not a claim about what is already deployed.</blockquote><div class="proof-note">Full-featured appeals, presence checks, receipt-free ballots, and larger panels stay labeled as funded design.</div><a class="live-link" href="https://demothemis.netlify.app/run-through#system-run" target="_blank" rel="noopener"><code>/run-through · Court-backed run</code><span>Open chapter ↗</span></a></div>
+        <footer class="shotbar"><small>Shot map</small><div class="dots"></div><span class="word-count"></span></footer>
+      </article>
+    </section>
+
+    <section class="scene" id="shot-10" data-title="The complete court design" data-duration="13" data-chapter="demothemis">
+      <div class="visual">
+        <div class="browser-frame"><div class="browser-bar"><span class="browser-dots"><i></i><i></i><i></i></span><span class="browser-url">demothemis.netlify.app/demothemis</span><span class="browser-tag">Chapter 02</span></div><div class="screen"><img src="storyboard-assets/11-doc-demothemis.png" alt="DemoThemis design chapter simple version"></div></div>
+        <div class="frame-caption"><b>General-purpose court.</b><span>Anyone can define a case, fund jurors, and receive a ruling.</span></div>
+      </div>
+      <article class="notes">
+        <header class="notes-head"><div class="meta-row"><span class="scene-no">SHOT 10</span><span class="timecode"></span><span class="status design">Scaled design</span></div><h2>The complete court design</h2><div class="speaker"><b>Speaker:</b> Founder 2</div></header>
+        <div class="notes-body"><div class="direction"><label>On screen</label><p>DemoThemis chapter hero and “simple version.” Briefly reveal the under-the-hood section list.</p></div><div class="direction"><label>Action</label><p>Say the lifecycle in one breath; do not scroll the 20-minute reference.</p></div><blockquote class="say">The main DemoThemis chapter explains the full court: open access for well-defined cases, verified-human draws, private ballots, widening appeals, and quality evidence that makes careful jurors more valuable over time.</blockquote><div class="proof-note">Optional escrow may execute a ruling, but DemoThemis itself is not an escrow-only court.</div><a class="live-link" href="https://demothemis.netlify.app/demothemis" target="_blank" rel="noopener"><code>/demothemis</code><span>Open chapter ↗</span></a></div>
+        <footer class="shotbar"><small>Shot map</small><div class="dots"></div><span class="word-count"></span></footer>
+      </article>
+    </section>
+
+    <section class="scene" id="shot-11" data-title="Try to break it" data-duration="26" data-chapter="break">
+      <div class="visual">
+        <div class="split"><figure><img src="storyboard-assets/08-break-court-baseline.png" alt="Break the Court robust scaled baseline"><figcaption>Baseline · 6/6 hold</figcaption></figure><figure><img src="storyboard-assets/09-break-court-defense-off.png" alt="Break the Court showing a breakpoint after private ballots are disabled"><figcaption>Defense off · breakpoint found</figcaption></figure></div>
+        <div class="frame-caption"><b>Chapter 03 · Break the Court</b><span>Change pressure, remove one rail, see the exact danger line, then reset.</span></div>
+      </div>
+      <article class="notes">
+        <header class="notes-head"><div class="meta-row"><span class="scene-no">SHOT 11</span><span class="timecode"></span><span class="status design">Scaled design</span></div><h2>Try to break it</h2><div class="speaker"><b>Speaker:</b> Founder 1</div></header>
+        <div class="notes-body"><div class="direction"><label>On screen</label><p>Scaled baseline → 1,000-person coalition → turn off Private ballot → breakpoint → restore baseline.</p></div><div class="direction"><label>Action</label><p>Keep the top verdict banner and closest challenge visible. End by switching the defense back on.</p></div><blockquote class="say">Break the Court makes the security thesis falsifiable. The baseline names the closest danger and its margin. We can increase the attacker coalition, disable the private ballot, and immediately expose a provable-bribe breakpoint. Restore the defense and the model recovers. The six tests cover coalitions, bribes, rentals, lazy voting, appeal delay, and crowd-following.</blockquote><div class="proof-note">This is an interactive scaled-protocol model, not live chain data. The label stays visible throughout the shot.</div><a class="live-link" href="https://demothemis.netlify.app/break-the-court" target="_blank" rel="noopener"><code>/break-the-court</code><span>Open attack lab ↗</span></a></div>
+        <footer class="shotbar"><small>Shot map</small><div class="dots"></div><span class="word-count"></span></footer>
+      </article>
+    </section>
+
+    <section class="scene" id="shot-12" data-title="Everything in the proposal" data-duration="20" data-chapter="home">
+      <div class="visual">
+        <div class="mosaic"><figure><img src="storyboard-assets/10-doc-home.png" alt="Proposal home map"><figcaption>Home · system map</figcaption></figure><figure><img src="storyboard-assets/11-doc-demothemis.png" alt="DemoThemis chapter"><figcaption>DemoThemis</figcaption></figure><figure><img src="storyboard-assets/12-doc-omenmarketmaker.png" alt="OmenMarketMaker example customer chapter"><figcaption>Example customer</figcaption></figure><figure><img src="storyboard-assets/13-doc-bootstrap-loop.png" alt="Bootstrap loop chapter"><figcaption>Bootstrap loop</figcaption></figure><figure><img src="storyboard-assets/14-doc-governance.png" alt="Governance chapter"><figcaption>Governance</figcaption></figure></div>
+        <div class="mosaic-note">Run-through · Break the Court · Live MVP already shown</div>
+      </div>
+      <article class="notes">
+        <header class="notes-head"><div class="meta-row"><span class="scene-no">SHOT 12</span><span class="timecode"></span><span class="status docs">Documentation</span></div><h2>Everything in the proposal</h2><div class="speaker"><b>Speaker:</b> Founder 2</div></header>
+        <div class="notes-body"><div class="direction"><label>On screen</label><p>Five-card mosaic; the permanent chapter ribbon keeps all eight public destinations visible.</p></div><div class="direction"><label>Action</label><p>Move across the mosaic left-to-right in five short cuts. Do not enter any long chapter.</p></div><blockquote class="say">The document site keeps the whole argument inspectable: Home maps it; Run-through plays it; DemoThemis specifies the court; Break the Court attacks it. OmenMarketMaker is only an independent example customer outside this grant. The bootstrap loop explains demand and juror evidence; Governance separates business control from truth; and Live MVP anchors every claim in what exists today.</blockquote><div class="proof-note">This sentence explicitly covers Home, all six canonical chapters, and the Live Demo MVP without turning the video into a catalogue.</div><a class="live-link" href="https://demothemis.netlify.app/proposal-home.html" target="_blank" rel="noopener"><code>8 public destinations</code><span>Open proposal map ↗</span></a></div>
+        <footer class="shotbar"><small>Shot map</small><div class="dots"></div><span class="word-count"></span></footer>
+      </article>
+    </section>
+
+    <section class="scene" id="shot-13" data-title="What the grant completes" data-duration="15" data-chapter="mvp">
+      <div class="visual">
+        <div class="browser-frame"><div class="browser-bar"><span class="browser-dots"><i></i><i></i><i></i></span><span class="browser-url">demothemis.netlify.app/app#oracle-roadmap-title</span><span class="browser-tag">Scope</span></div><div class="screen"><img src="storyboard-assets/15-built-now-funded-next.png" alt="Current Built now, Funded next scope table"><div class="focus-ring" style="left:15%;top:19%;width:69%;height:57%"><span>Honest scope boundary</span></div></div></div>
+        <div class="camera-cue"><small>Closing cut</small><b>Both founders on camera</b><span>End with the build plan, then one direct invitation.</span></div>
+        <div class="frame-caption"><b>Built now. Funded next.</b><span>The grant closes named production gaps in the reusable court.</span></div>
+      </div>
+      <article class="notes">
+        <header class="notes-head"><div class="meta-row"><span class="scene-no">SHOT 13</span><span class="timecode"></span><span class="status hybrid">Live / funded</span></div><h2>What the grant completes</h2><div class="speaker"><b>Speaker:</b> Both founders</div></header>
+        <div class="notes-body"><div class="direction"><label>On screen</label><p>“Built now. Funded next.” table, then both founders for the final line.</p></div><div class="direction"><label>Action</label><p>Point once from deployed MVP to funded roadmap. Cut to founders on “production-ready.”</p></div><blockquote class="say">What exists now proves the core mechanism. This grant completes the production path: verifiable randomness, receipt-free ballots, stronger panel security, cheaper settlement, a reusable integration, independent review, and real juror testing. We are ready to turn the live proof into a production-ready public court.</blockquote><div class="proof-note">Finish on DemoThemis alone. Do not describe any downstream product as part of the funding request.</div><a class="live-link" href="https://demothemis.netlify.app/app#oracle-roadmap-title" target="_blank" rel="noopener"><code>/app · Built now. Funded next.</code><span>Open scope table ↗</span></a></div>
+        <footer class="shotbar"><small>Shot map</small><div class="dots"></div><span class="word-count"></span></footer>
+      </article>
+    </section>
+    <div class="sr-only" id="announce" aria-live="polite"></div>
+  </main>
 </div>
-
-<div class="reel" id="reel">
-
-  <!-- ============ 01 HOOK ============ -->
-  <section class="panel" id="p1">
-    <div class="stagewrap"><div class="stage">
-      <div class="browser">
-        <div class="bbar"><span class="dot r"></span><span class="dot y"></span><span class="dot g"></span>
-          <div class="url"><span class="lock">🔒</span> demo-themis-mvp.vercel.app/sandbox</div></div>
-        <div class="bscreen sbx">
-          <div class="sbx-banner">● <b>Simulation.</b> Illustrative model on the design's published parameters. The on-chain demo lives at /home.</div>
-          <div class="sbx-pad">
-            <div class="sechead"><span class="l">● The comparative attack: buy this verdict</span><span class="pill simd">Simulated</span></div>
-            <div style="display:grid;grid-template-columns:1fr 1fr;gap:14px">
-              <div class="acard tok">
-                <h4>Stake-weighted oracle <span class="sub">naive stake vote</span></h4>
-                <div class="stakebar"><div class="fill" style="width:63%">63% of stake</div><div class="mid" style="left:50%">50%</div></div>
-                <span class="verdict bought">VERDICT BOUGHT</span>
-                <p>Costs <b>$200k</b> to control a voting majority (half the staked value). The budget clears it.</p>
-              </div>
-              <div class="acard hum">
-                <h4>DemoThemis human court <span class="sub">one human, one vote</span></h4>
-                <div class="circles"><span class="circ h"></span><span class="circ b"></span><span class="circ h"></span><span class="circ h"></span><span class="circ b"></span><span class="circ h"></span><span class="circ h"></span></div>
-                <span class="verdict holds">VERDICT HOLDS</span> <span style="font-size:11.5px;color:#475569"> 2/7 bribed on this draw</span>
-                <p>The budget bribes <b>38,461</b> of 200,000 humans (19.2% of the pool). A random panel is drawn after the question, so a single panel flips with probability <b>2.91%</b>.</p>
-              </div>
-            </div>
-          </div>
-        </div>
-      </div>
-    </div></div>
-    <div class="script">
-      <div class="meta"><span class="num">01</span><span class="tc">0:00 – 0:25</span><span class="dev">Sandbox · the hook</span></div>
-      <h3>Buy this verdict</h3>
-      <p class="narr">Every dispute oracle shares one flaw: in a naive stake-vote, whoever owns the most tokens owns the verdict. Same question, same attacker budget — <b>$200,000 buys 63% of the stake, and it's bought</b> — and a bought majority stays bought, so the next verdict is free. DemoThemis answers differently: one verified human, one vote, a random panel drawn only <b>after</b> the question — so the same budget can't target the panel; it would have to corrupt a near-majority of the whole pool for only a ~3% chance, and <b>the verdict holds</b>. And nothing carries over — every new case means fresh bribes from scratch, and any panel you somehow do capture just gets appealed into a bigger one.</p>
-      <p class="wc">Illustrative: a naive stake-vote, not UMA/Kleros (which add defenses), and DemoThemis's multi-panel security is its design; the live MVP is a single 3-seat demo panel, and security scales with pool width.</p>
-    </div>
-  </section>
-
-  <!-- ============ 02 THE MATH ============ -->
-  <section class="panel" id="p2">
-    <div class="stagewrap"><div class="stage">
-      <div class="browser">
-        <div class="bbar"><span class="dot r"></span><span class="dot y"></span><span class="dot g"></span>
-          <div class="url"><span class="lock">🔒</span> demo-themis-mvp.vercel.app/sandbox</div></div>
-        <div class="bscreen sbx">
-          <div class="sbx-pad">
-            <h2 style="font-size:20px;margin:2px 0 12px">Probability of flipping the verdict, by budget</h2>
-            <svg viewBox="0 0 700 300" style="width:100%;height:auto;font-family:system-ui">
-              <line x1="60" y1="20" x2="60" y2="250" stroke="#cbd5e1"/>
-              <line x1="60" y1="250" x2="680" y2="250" stroke="#cbd5e1"/>
-              <text x="14" y="34" fill="#94a3b8" font-size="13">100%</text>
-              <text x="30" y="254" fill="#94a3b8" font-size="13">0</text>
-              <!-- token court: jumps to 100% almost immediately -->
-              <path d="M60 250 L150 250 L150 30 L680 30" fill="none" stroke="#e11d48" stroke-width="3"/>
-              <text x="500" y="22" fill="#e11d48" font-size="13" font-weight="700">Token court — bought (100%)</text>
-              <!-- human court: stays very low, slight rise -->
-              <path d="M60 248 C 260 246, 460 238, 680 214" fill="none" stroke="#059669" stroke-width="3"/>
-              <text x="430" y="208" fill="#059669" font-size="13" font-weight="700">DemoThemis — barely moves</text>
-              <!-- current budget marker -->
-              <line x1="300" y1="20" x2="300" y2="250" stroke="#6366f1" stroke-width="2" stroke-dasharray="5 5"/>
-              <text x="306" y="40" fill="#6366f1" font-size="12">your budget: $250k</text>
-            </svg>
-          </div>
-        </div>
-      </div>
-    </div></div>
-    <div class="script">
-      <div class="meta"><span class="num">02</span><span class="tc">0:25 – 0:45</span><span class="dev">Sandbox · the math</span></div>
-      <h3>Why it can't be bought</h3>
-      <p class="narr">Why can't you just buy it? Because there's nothing to buy. Flipping a token court needs half the stake — a fixed price, paid once, reusable forever. DemoThemis draws the panel at random <i>after</i> the question, so you can't know who to bribe. To land a bought majority on one case you'd have to pre-corrupt a near-majority of the <b>entire human pool</b> and hope the draw seats enough of them — and pay it all again, from scratch, on the next case. And above a value line, panels stack — 7, then 15, then 31 — and because each independent panel must <i>all</i> agree, the capture odds multiply, so the cost climbs with the pot. The token court flips at 100%. The human court barely moves — and, by design, gets costlier as the pool, the case volume, and the pot grow. Buying a verdict means buying a crowd you can't see. <span style="color:#8fa0c4">(That "rises with the pot" curve is the parallel-panel design; the live MVP is a single 3-seat panel.)</span></p>
-    </div>
-  </section>
-
-  <!-- ============ 03 JOIN ============ -->
-  <section class="panel" id="p3">
-    <div class="stagewrap"><div class="stage">
-      <div class="phone"><div class="pscreen"><div class="notch"></div>
-        <div class="status"><span>9:41</span><span class="r">● ● ●  🔋</span></div>
-        <div class="pbody app">
-          <div class="topbar"><span class="back">← Court</span><span class="ttl">Become a juror</span><span></span></div>
-          <div class="main">
-            <div class="ib"><b>World Chain mainnet</b> (chain 480) · <b>valueless MockUSD</b></div>
-            <div class="card" style="text-align:center">
-              <div style="font-weight:700;color:var(--slate900);font-size:13px">Verified human #1 — one person, one vote</div>
-              <div style="margin-top:8px"><span class="gas">⚡ World App will sponsor verified humans</span></div>
-            </div>
-            <div class="stepcard"><div class="stepnum">1</div><div><div class="st">Verify a unique human</div><div class="sb">World ID proof checked on-chain</div></div></div>
-            <div class="stepcard"><div class="stepnum">2</div><div><div class="st">Post a $5 bond</div><div class="sb">Refundable $5 MUSD bond</div></div></div>
-            <div class="stepcard"><div class="stepnum">3</div><div><div class="st">Join the drawable pool</div><div class="sb">Eligible for random panels</div></div></div>
-            <button class="btn-dark">Verify with World ID &amp; join</button>
-          </div>
-          <div class="nav"><div class="ni on">⌂<span>Court</span></div><div class="ni">⊕<span>Open</span></div><div class="ni">ⓘ<span>About</span></div></div>
-        </div>
-      </div></div>
-    </div></div>
-    <div class="script">
-      <div class="meta"><span class="num">03</span><span class="tc">0:45 – 1:05</span><span class="dev">Mini App · World App</span></div>
-      <h3>Join the court — one tap</h3>
-      <p class="narr">So how do you become one of those humans? Open DemoThemis in World App and tap once. Step one: prove you're a unique person with World ID — checked <b>on-chain</b>, so one person gets exactly one juror seat and no wallet can do it twice. Step two: post a small, refundable bond, so even a one-vote juror has skin in the game. Step three: you join the drawable pool, eligible to be picked onto random panels. World App's sponsored-gas path is captured at the capstone. <b>One tap does all of it.</b></p>
-      <p class="wc">This runs on World Chain mainnet with valueless MockUSD, so no real money is at stake — but seats are gated by real on-chain World ID verification.</p>
-    </div>
-  </section>
-
-  <!-- ============ 04 VERIFY ============ -->
-  <section class="panel" id="p4">
-    <div class="stagewrap"><div class="stage">
-      <div class="phone"><div class="pscreen"><div class="notch"></div>
-        <div class="status"><span>9:41</span><span class="r">● ● ●  🔋</span></div>
-        <div class="pbody" style="background:#0b0f1a;position:relative;height:690px">
-          <!-- dimmed app behind -->
-          <div style="filter:blur(2px);opacity:.4">
-            <div class="app"><div class="topbar" style="border-color:#1e293b"><span class="back" style="color:#64748b">← Court</span><span class="ttl" style="color:#e2e8f0">Become a juror</span><span></span></div></div>
-          </div>
-          <!-- World ID sheet -->
-          <div style="position:absolute;left:0;right:0;bottom:0;background:#fff;border-radius:26px 26px 0 0;padding:22px 20px 26px;text-align:center">
-            <div style="width:40px;height:5px;border-radius:9px;background:#e2e8f0;margin:0 auto 18px"></div>
-            <div style="width:84px;height:84px;border-radius:99px;margin:0 auto 14px;background:radial-gradient(circle at 35% 30%,#fff 0,#cbd5e1 38%,#0f172a 78%);box-shadow:0 0 0 8px #f1f5f9"></div>
-            <div style="font-size:18px;font-weight:800;color:#0f172a">Verify you're a unique human</div>
-            <div style="font-size:13px;color:#64748b;margin-top:6px;line-height:1.5">DemoThemis is requesting proof of personhood.<br>One World ID = one juror seat.</div>
-            <div style="margin-top:16px;border:1px solid #e2e8f0;border-radius:12px;padding:11px 14px;text-align:left;font-size:12.5px;color:#334155">
-              <div style="display:flex;justify-content:space-between;padding:3px 0"><span style="color:#64748b">App</span><span style="font-weight:600">DemoThemis</span></div>
-              <div style="display:flex;justify-content:space-between;padding:3px 0"><span style="color:#64748b">Action</span><span style="font-family:ui-monospace,monospace">juror-registration</span></div>
-              <div style="display:flex;justify-content:space-between;padding:3px 0"><span style="color:#64748b">Credential</span><span style="color:#059669;font-weight:700">🌐 Orb verified</span></div>
-            </div>
-            <button style="margin-top:16px;width:100%;background:#0f172a;color:#fff;border:none;border-radius:99px;padding:14px;font-weight:800;font-size:15px">Verify with World ID</button>
-          </div>
-        </div>
-      </div></div>
-    </div></div>
-    <div class="script">
-      <div class="meta"><span class="num">04</span><span class="tc">1:05 – 1:25</span><span class="dev">World App · World ID</span></div>
-      <h3>Proof of a unique human</h3>
-      <p class="narr">World ID confirms you're a <b>real, unique human</b> — not a bot, not a duplicate — without revealing who you are. Orb-verified personhood, the strongest guarantee World offers. This is the moment the whole system rests on: a proof that you are <b>one of one</b>. You approve it on your phone, and that proof is carried straight into the registration transaction — no trusted middleman.</p>
-    </div>
-  </section>
-
-  <!-- ============ 05 REGISTERED ============ -->
-  <section class="panel" id="p5">
-    <div class="stagewrap"><div class="stage">
-      <div class="phone"><div class="pscreen"><div class="notch"></div>
-        <div class="status"><span>9:41</span><span class="r">● ● ●  🔋</span></div>
-        <div class="pbody app">
-          <div class="topbar"><span class="back">← Court</span><span class="ttl">Become a juror</span><span></span></div>
-          <div class="main">
-            <div class="card" style="border-color:var(--emerald200);background:var(--emerald50);text-align:center;padding:20px">
-              <div style="font-size:30px">🎉</div>
-              <div style="font-size:17px;font-weight:800;color:#065f46;margin-top:4px">You are a juror.</div>
-              <div style="font-size:13px;color:#047857;margin-top:4px">One person, one vote — and no wallet can do this twice.</div>
-              <div style="margin-top:10px"><a style="font-size:11.5px;color:#047857;text-decoration:underline">View your registration on worldscan ↗</a></div>
-              <div style="margin-top:14px"><span class="btn-dark" style="display:block;padding:12px">Go to the court</span></div>
-            </div>
-            <div class="card" style="display:flex;justify-content:space-between;align-items:center">
-              <div><div style="font-size:11px;color:var(--slate500)">Your seat</div><div style="font-weight:700;color:var(--slate900)">Juror #1 · bond $5 MUSD</div></div>
-              <span class="addrtag">0x7A3F…C1d3</span>
-            </div>
-          </div>
-          <div class="nav"><div class="ni on">⌂<span>Court</span></div><div class="ni">⊕<span>Open</span></div><div class="ni">ⓘ<span>About</span></div></div>
-        </div>
-      </div></div>
-    </div></div>
-    <div class="script">
-      <div class="meta"><span class="num">05</span><span class="tc">1:25 – 1:45</span><span class="dev">Mini App · confirmed</span><span class="pill simd">illustrative · pre-capstone</span></div>
-      <h3>You're juror #1</h3>
-      <p class="narr">At the capstone, that's it — you're juror number one. The bond is posted, your seat is active, and the registration is on World Chain. No spreadsheet, no admin, no waiting. <b>One tap, World App's sponsored-gas path, and a verifiable on-chain record</b> you can open on worldscan. From here you're in the drawable pool — eligible to be picked, at random, for any case the court hears.</p>
-      <p class="wc">This runs on World Chain mainnet — chain 480 — with valueless MockUSD, so no real money is at stake.</p>
-    </div>
-  </section>
-
-  <!-- ============ 06 ON-CHAIN PROOF ============ -->
-  <section class="panel" id="p6">
-    <div class="stagewrap"><div class="stage">
-      <div class="browser">
-        <div class="bbar"><span class="dot r"></span><span class="dot y"></span><span class="dot g"></span>
-          <div class="url"><span class="lock">🔒</span> worldscan.org/tx/0x7d3e9a1c…b4a6c2</div></div>
-        <div class="bscreen ws">
-          <div class="ws-top">◎ <span>WORLD<span class="g">SCAN</span></span> <span style="margin-left:auto;font-weight:400;font-size:11px;color:#9ca3af">World Chain · 480</span></div>
-          <div class="ws-pad">
-            <div class="ws-h">Transaction Details</div>
-            <div class="ws-row"><span class="k">Transaction Hash</span><span class="v">0x7d3e9a1c4f8b2056e1a9c0d4b7f63e82a5c1d09f4e6b8a2370c5f1e9d8b4a6c2</span></div>
-            <div class="ws-row"><span class="k">Status</span><span class="v"><span class="ws-ok">✓ Success</span></span></div>
-            <div class="ws-row"><span class="k">Block</span><span class="v">18,440,217  <span style="color:#16a34a">(42 confirmations)</span></span></div>
-            <div class="ws-row"><span class="k">From</span><span class="v">0x7A3Fbe21…C1d3</span></div>
-            <div class="ws-row"><span class="k">Interacted With</span><span class="v">JurorRegistry · 0x2269…7F84</span></div>
-            <div class="ws-row"><span class="k">Gas Used</span><span class="v">571,304 <span style="color:#6b7280">(the bulk is the on-chain Groth16 check)</span></span></div>
-            <div style="font-size:12.5px;font-weight:700;color:#111827;margin:14px 0 4px">Internal Transactions / Call Trace</div>
-            <div class="trace">
-              <div class="ln"><span class="call">CALL</span> JurorRegistry.<b>registerWithPermit2</b>(signal, proof)</div>
-              <div class="ln">&nbsp;&nbsp;└─ <span class="call">CALL</span> WorldIDGate.<b>verify</b>(signal, proof) <span class="ok">✓</span></div>
-              <div class="ln">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;└─ <span class="call">STATICCALL</span> WorldIDVerifier.<b>verify</b>(…) <span class="ad">@ 0x0000…94d7</span> <span class="ok">✓ proof valid</span></div>
-              <div class="ln">&nbsp;&nbsp;└─ <span class="call">CALL</span> Permit2.transferFrom(bond 5 MUSD) <span class="ok">✓</span></div>
-              <div class="ln">&nbsp;&nbsp;└─ <span class="call">EVENT</span> Registered(juror, nullifier, jurorCount=1)</div>
-            </div>
-          </div>
-        </div>
-      </div>
-    </div></div>
-    <div class="script">
-      <div class="meta"><span class="num">06</span><span class="tc">1:45 – 2:10</span><span class="dev">worldscan · the proof</span><span class="pill simd">illustrative · pre-capstone</span></div>
-      <h3>The unlock: a real human jury, on-chain — and why now</h3>
-      <p class="narr">A one-human-one-vote court <b>couldn't exist on-chain until World ID 4.0 moved verification on-chain</b>. UMA and Kleros decide by capital because that primitive didn't exist when they were built — so this is why it's a World project, and why now. Watch it inside the transaction: the registry calls the gate, the gate calls World's on-chain verifier, the personhood proof is checked live, and the bond moves through a MiniKit/Permit2 sponsored batch. A forged proof reverts; a second wallet for the same human reverts — the nullifier is tied to the <b>person, not the wallet</b>, so 10,000 wallets buy zero seats.</p>
-      <p class="wc">And the proof only works from your wallet — a stolen World ID proof reverts before the check. (World ID is the strongest on-chain personhood primitive; it resists Sybil farms, not the bribery of distinct humans.) This worldscan view is an illustrative reconstruction of the capstone registration: no live registration exists yet — jurorCount is still zero, and the proven on-chain traces to date use the Staging verifier.</p>
-    </div>
-  </section>
-
-  <!-- ============ 07 VOTE ============ -->
-  <section class="panel" id="p7">
-    <div class="stagewrap"><div class="stage">
-      <div class="phone"><div class="pscreen"><div class="notch"></div>
-        <div class="status"><span>9:41</span><span class="r">● ● ●  🔋</span></div>
-        <div class="pbody app">
-          <div class="topbar"><span class="back">← Court</span><span class="ttl">Case #1</span><span></span></div>
-          <div class="main">
-            <div style="display:flex;gap:6px;flex-wrap:wrap"><span class="pill commit">Commit</span><span class="pill etype">Escrow deal</span></div>
-            <div style="display:flex;gap:4px;align-items:center;margin:2px 0">
-              <span style="flex:1;height:5px;border-radius:9px;background:#e2e8f0"></span>
-              <span style="flex:1;height:5px;border-radius:9px;background:#0f172a"></span>
-              <span style="flex:1;height:5px;border-radius:9px;background:#0f172a"></span>
-              <span style="flex:1;height:5px;border-radius:9px;background:#0f172a"></span>
-              <span style="flex:1;height:5px;border-radius:9px;background:#e2e8f0"></span>
-            </div>
-            <div style="display:flex;justify-content:space-between;font-size:9px;color:#94a3b8"><span>Assertion</span><span>Open</span><span style="color:#0f172a;font-weight:700">Commit</span><span>Reveal</span><span>Resolved</span></div>
-            <div class="card">
-              <div style="font-weight:700;font-size:14px;color:var(--slate900)">Was the milestone delivered per the agreed terms?</div>
-              <div style="font-size:12px;color:var(--slate600);margin-top:4px">500 MUSD freelance escrow, disputed by the payer.</div>
-              <div style="font-size:11px;color:var(--emerald700);font-weight:600;margin-top:8px">✓ content matches the on-chain hash</div>
-            </div>
-            <div class="card">
-              <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:8px"><div style="font-weight:600;font-size:13px">Commit your vote</div><span class="gas">⚡ Sponsored gas path</span></div>
-              <div style="display:flex;gap:8px;margin-bottom:8px">
-                <div style="flex:1;border:1px solid var(--emerald400);background:var(--emerald50);color:var(--emerald800);border-radius:9px;padding:9px;text-align:center;font-weight:600;font-size:13px">YES — pay payee</div>
-                <div style="flex:1;border:1px solid var(--slate200);color:var(--slate500);border-radius:9px;padding:9px;text-align:center;font-weight:600;font-size:13px">NO — refund</div>
-              </div>
-              <div style="font-size:9.5px;color:var(--slate400);word-break:break-all">commitment keccak(vote, salt, caseId, your address) = 0x9af3c1e0…</div>
-              <div style="font-size:9.5px;color:var(--slate400);margin-top:3px">salt (saved on this device — keep it to reveal) = 0x4b8e…</div>
-              <button class="btn-dark" style="margin-top:9px;padding:10px;font-size:12px">Commit vote</button>
-            </div>
-            <div><div style="font-size:11px;font-weight:600;color:var(--slate500);margin-bottom:4px">Panel (3)</div>
-              <div style="display:flex;gap:5px"><span class="addrtag">0x7A3F…C1d3</span><span class="addrtag">0x9c12…4eF8</span><span class="addrtag">0x4De9…A07b</span></div>
-            </div>
-          </div>
-          <div class="nav"><div class="ni on">⌂<span>Court</span></div><div class="ni">⊕<span>Open</span></div><div class="ni">ⓘ<span>About</span></div></div>
-        </div>
-      </div></div>
-    </div></div>
-    <div class="script">
-      <div class="meta"><span class="num">07</span><span class="tc">2:10 – 2:35</span><span class="dev">Mini App · the ballot</span></div>
-      <h3>A random panel — vote in secret</h3>
-      <p class="narr">A dispute comes in — a 500-MUSD escrow deal — and a random panel is drawn from the whole verified-human pool <i>after</i> the question — so no attacker could have known to bribe you. You vote in secret: <b>commit</b> a hidden YES or NO now, <b>reveal</b> it later, so your vote can't be copied in real time — and your bond is on the line if you vanish. Like UMA and Kleros, this commit/reveal isn't yet receipt-free; bribe-resistant MACI voting is on the roadmap. Tap your verdict — pay the payee, or refund; the World App gas-sponsorship path is part of the capstone trace.</p>
-    </div>
-  </section>
-
-  <!-- ============ 08 VERDICT ============ -->
-  <section class="panel" id="p8">
-    <div class="stagewrap"><div class="stage">
-      <div class="phone"><div class="pscreen"><div class="notch"></div>
-        <div class="status"><span>9:41</span><span class="r">● ● ●  🔋</span></div>
-        <div class="pbody app">
-          <div class="topbar"><span class="back">← Court</span><span class="ttl">Case #1</span><span></span></div>
-          <div class="main">
-            <div style="display:flex;gap:6px;flex-wrap:wrap"><span class="pill resolved">Resolved</span><span class="pill etype">Escrow deal</span><span class="pill yes">Payee paid</span></div>
-            <div style="display:flex;gap:4px;align-items:center;margin:2px 0">
-              <span style="flex:1;height:5px;border-radius:9px;background:#e2e8f0"></span>
-              <span style="flex:1;height:5px;border-radius:9px;background:#0f172a"></span>
-              <span style="flex:1;height:5px;border-radius:9px;background:#0f172a"></span>
-              <span style="flex:1;height:5px;border-radius:9px;background:#0f172a"></span>
-              <span style="flex:1;height:5px;border-radius:9px;background:#0f172a"></span>
-            </div>
-            <div style="display:flex;justify-content:space-between;font-size:9px;color:#94a3b8"><span>Assertion</span><span>Open</span><span>Commit</span><span>Reveal</span><span style="color:#0f172a;font-weight:700">Resolved</span></div>
-            <div class="card" style="border-color:var(--emerald200);background:var(--emerald50)">
-              <div style="font-weight:700;font-size:13px;color:#065f46">Verdict: YES — pay the payee</div>
-            </div>
-            <div class="card">
-              <div style="font-size:12px;color:var(--slate600)">Tally <b style="color:var(--slate900)">YES 3 · NO 0</b> · all jurors revealed on time.</div>
-            </div>
-            <div><div style="font-size:11px;font-weight:600;color:var(--slate500);margin-bottom:4px">Panel (3) — revealed on-chain</div>
-              <div style="display:flex;gap:5px"><span class="addrtag">0x7A3F…C1d3 ✓</span><span class="addrtag">0x9c12…4eF8 ✓</span><span class="addrtag">0x4De9…A07b ✓</span></div>
-            </div>
-          </div>
-          <div class="nav"><div class="ni on">⌂<span>Court</span></div><div class="ni">⊕<span>Open</span></div><div class="ni">ⓘ<span>About</span></div></div>
-        </div>
-      </div></div>
-    </div></div>
-    <div class="script">
-      <div class="meta"><span class="num">08</span><span class="tc">2:35 – 3:00</span><span class="dev">Mini App · resolved</span></div>
-      <h3>The verdict moves the money — in one transaction</h3>
-      <p class="narr">When the panel reveals, the majority decides — and the <b>same transaction releases the money</b>: <code>resolve → escrow.settle</code>, one atomic step, no claim button, no marshal, no one in between. (UMA and Kleros emit a ruling something else must act on; a platform is a human clicking refund.) Three verified humans, one vote each, settled the 500-MUSD deal. The fee splits 70/20/10, and a convicting majority <b>never</b> earns the loser's bond — no profit in railroading a dissenter.</p>
-      <p class="wc">Atomic over the funds the escrow already holds; a real-world delivery still needs an honest party or oracle.</p>
-    </div>
-  </section>
-
-  <!-- ============ 09 REAL & AT SCALE ============ -->
-  <section class="panel" id="p9">
-    <div class="stagewrap"><div class="stage">
-      <div class="browser">
-        <div class="bbar"><span class="dot r"></span><span class="dot y"></span><span class="dot g"></span>
-          <div class="url"><span class="lock">🔒</span> demo-themis-mvp.vercel.app/home</div></div>
-        <div class="bscreen">
-          <div style="padding:16px 20px">
-            <div style="font-size:20px;font-weight:800;color:var(--slate900);margin-bottom:10px">DemoThemis Court</div>
-            <div style="display:flex;gap:12px;margin-bottom:12px">
-              <div class="statcard"><div class="v">3</div><div class="k">Verified jurors</div></div>
-              <div class="statcard"><div class="v">15</div><div class="k">Bonds held</div><div class="s">MUSD</div></div>
-              <div class="statcard"><div class="v">0.4</div><div class="k">Reward pool</div><div class="s">MUSD</div></div>
-            </div>
-            <div style="font-size:13px;font-weight:700;color:var(--slate900);margin:6px 0 8px">Cases</div>
-            <div style="display:flex;flex-direction:column;gap:8px">
-              <div class="card" style="display:flex;justify-content:space-between;align-items:center;padding:11px">
-                <div><div style="font-weight:600;font-size:13px">#1 · Escrow deal — milestone dispute</div><div style="font-size:11px;color:var(--slate500)">3 jurors · revealed 3/3</div></div>
-                <div style="display:flex;gap:5px"><span class="pill resolved">Resolved</span><span class="pill yes">Payee paid</span></div>
-              </div>
-              <div class="card" style="display:flex;justify-content:space-between;align-items:center;padding:11px">
-                <div><div style="font-weight:600;font-size:13px">#0 · Resolution question</div><div style="font-size:11px;color:var(--slate500)">3 jurors · revealed 3/3</div></div>
-                <div style="display:flex;gap:5px"><span class="pill resolved">Resolved</span><span class="pill yes">YES</span></div>
-              </div>
-            </div>
-            <div style="margin-top:12px;border:1px dashed var(--slate300);border-radius:12px;padding:10px 12px;font-size:11.5px;color:var(--slate500);display:flex;justify-content:space-between;align-items:center">
-              <span>Seeded <b>Sepolia cohort</b> · <b>20 jurors</b> · resolved cases</span>
-              <span class="pill simd">Simulated</span>
-            </div>
-          </div>
-        </div>
-      </div>
-    </div></div>
-    <div class="script">
-      <div class="meta"><span class="num">09</span><span class="tc">3:00 – 3:20</span><span class="dev">/home + cohort · it's real</span></div>
-      <h3>Real where it counts, honest everywhere</h3>
-      <p class="narr">This isn't a mockup. The capstone-ready court is deployed on World Chain mainnet with <b>real on-chain World ID</b> — every contract source-verified and open, with human registration pending the 3-person capstone. It runs on <b>valueless MockUSD</b>, so no real money is ever at stake. Alongside it, a seeded 20-juror cohort demonstrates the full multi-juror flow end to end — resolved cases across both types — all clearly <b>labeled as a simulation</b>. It's an MVP — UMA and Kleros are production systems orders of magnitude larger — but real personhood where it counts, and honest labeling everywhere else.</p>
-    </div>
-  </section>
-
-  <!-- ============ 10 LANDSCAPE / MATRIX ============ -->
-  <section class="panel" id="p10">
-    <div class="stagewrap"><div class="stage">
-      <div class="slide">
-        <div class="kk">How it compares</div>
-        <h3 class="st">DemoThemis vs the field</h3>
-        <table class="cmp">
-          <thead><tr><th></th><th class="us"><span class="tag-us">DemoThemis</span></th><th>UMA</th><th>Kleros</th><th>Airbnb · eBay · Uber</th></tr></thead>
-          <tbody>
-            <tr><td class="dim">Who decides</td>
-              <td class="uscell"><span class="dot g"></span>Verified humans · 1&nbsp;human&nbsp;1&nbsp;vote</td>
-              <td><span class="dot a"></span>Token stakers · 1&nbsp;UMA&nbsp;1&nbsp;vote</td>
-              <td><span class="dot a"></span>Jurors drawn ∝ PNK stake</td>
-              <td><span class="dot r"></span>Platform's own staff</td></tr>
-            <tr><td class="dim">Decider's incentive</td>
-              <td class="uscell"><span class="dot a"></span>Coherence (Schelling) + bond at stake</td>
-              <td><span class="dot a"></span>Coherence (Schelling) + stake slashed</td>
-              <td><span class="dot a"></span>Coherence (Schelling) + stake slashed</td>
-              <td><span class="dot r"></span><b>Retain revenue · cut cost — not truth</b></td></tr>
-            <tr><td class="dim">Decider sybil resistance</td>
-              <td class="uscell"><span class="dot g"></span>Proof-of-personhood (World&nbsp;ID)</td>
-              <td><span class="dot a"></span>Economic — bounded by CoC&gt;~2×PfC + slashing</td>
-              <td><span class="dot a"></span>Economic — capital buys draw odds</td>
-              <td><span class="dot a"></span>Closed pool — vetted staff (but conflicted)</td></tr>
-            <tr><td class="dim">Conflict of interest</td>
-              <td class="uscell"><span class="dot g"></span>Disinterested; slashes → pool, never to winners</td>
-              <td><span class="dot r"></span>Voters can hold positions they judge</td>
-              <td><span class="dot a"></span>Disinterested (sortition); coherent earn slashed PNK</td>
-              <td><span class="dot r"></span>Referee is a player in the game</td></tr>
-            <tr><td class="dim">Operator can override a verdict?</td>
-              <td class="uscell"><span class="dot g"></span>No admin path — wire once, set the clock, done</td>
-              <td><span class="dot a"></span>Governance-mediated (token DAO)</td>
-              <td><span class="dot a"></span>Governance-mediated (DAO + courts)</td>
-              <td><span class="dot r"></span>Yes — it's the operator's kill switch</td></tr>
-            <tr><td class="dim">Cost to "capture"</td>
-              <td class="uscell"><span class="dot g"></span>Corrupt a near-majority of the <b>whole pool</b> (panel is unknowable) — per case, for only a chance</td>
-              <td><span class="dot a"></span>Buy ~51% of staked tokens (re-prices; tail risk)</td>
-              <td><span class="dot a"></span>~51% of court PNK + escalating appeals</td>
-              <td><span class="dot r"></span>Not external — the arbiter is the interested party</td></tr>
-            <tr><td class="dim">Reusable capture?</td>
-              <td class="uscell"><span class="dot g"></span>No — fresh panel every case</td>
-              <td><span class="dot a"></span>Position persists, but wrong votes slashed / forkable</td>
-              <td><span class="dot a"></span>Partly — re-drawn &amp; re-risked each case</td>
-              <td><span class="dot a"></span>Conflict recurs every case</td></tr>
-            <tr><td class="dim">Transparency</td>
-              <td class="uscell"><span class="dot g"></span>Fully on-chain</td>
-              <td><span class="dot g"></span>Fully on-chain</td>
-              <td><span class="dot g"></span>Fully on-chain</td>
-              <td><span class="dot r"></span>Opaque — templated email</td></tr>
-            <tr><td class="dim">Appeal</td>
-              <td class="uscell"><span class="dot a"></span>1 free redraw on-chain; ladder is roadmap</td>
-              <td><span class="dot a"></span>Re-vote (same electorate) + social fork</td>
-              <td><span class="dot g"></span>Strong — geometric 2n+1 ladder</td>
-              <td><span class="dot a"></span>In-house first; external final (bank / AAA)</td></tr>
-            <tr><td class="dim">Live at scale today</td>
-              <td class="uscell"><span class="dot a"></span>Grant-demo MVP · 3-seat mainnet slice</td>
-              <td><span class="dot g"></span>Production — secures Polymarket</td>
-              <td><span class="dot g"></span>Production — live since 2018</td>
-              <td><span class="dot g"></span>Planetary scale</td></tr>
-          </tbody>
-        </table>
-        <div class="foot-note"><span class="dot g"></span>strong · <span class="dot a"></span>partial · <span class="dot r"></span>weak</div>
-      </div>
-    </div></div>
-    <div class="script">
-      <div class="meta"><span class="num">10</span><span class="tc">—</span><span class="dev">How it compares · the landscape</span></div>
-      <h3>DemoThemis vs UMA, Kleros &amp; the platforms</h3>
-      <p class="narr">How does it stack up? UMA and Kleros are credible, transparent, and have real defenses — but both decide by <b>capital</b>: UMA is one-token-one-vote, Kleros weights juror draws by stake, so influence tracks wealth. A contested 2025 UMA resolution — the $160M Polymarket "Zelensky suit" market — drew public <i>accusations</i> of large-holder influence; disputed, not proven, but the concern is real. Centralized arbiters like Airbnb or eBay are fast and familiar, but the company that profits from the deal also judges it. Being honest: all three decentralized courts run on the same Schelling-coherence incentive, and UMA and Kleros are mature and well-defended — Kleros even wins on appeal. DemoThemis's categorical difference is <b>who decides</b>: verified-distinct humans, one human one vote, a fresh panel every case — not stake.</p>
-      <p class="wc">One caveat on this table: the personhood and unknowable-pool advantages are mainnet-only — today's live MVP runs a mock cohort behind a single 3-seat panel, and security scales with pool width, so parallel panels, the appeal ladder, reputation, and receipt-free ballots are still roadmap. And the "no override" claim is source-verified: the only deployer powers are one-time wiring plus the phase clock for future cases — no pause, no verdict override, no fund-seizure — though the contracts are unaudited and non-upgradeable.</p>
-    </div>
-  </section>
-
-  <!-- ============ 11 COST TO CORRUPT ============ -->
-  <section class="panel" id="p11">
-    <div class="stagewrap"><div class="stage">
-      <div class="slide">
-        <div class="kk">Cost to corrupt</div>
-        <h3 class="st">Where the security models break</h3>
-        <p class="sub"><i>Drag the sliders — the math is the court's own (hypergeometric capture, $6.50/juror floor).</i></p>
-        <div id="c2c" style="font-family:system-ui">
-          <div style="display:flex;flex-wrap:wrap;gap:12px 22px;align-items:flex-end;margin:.2rem 0 .7rem;font-size:13px;color:#334155">
-            <label style="display:flex;flex-direction:column;gap:4px;min-width:230px;flex:1">
-              <span>Juror pool size — <b id="c2cPoolV" style="font-variant-numeric:tabular-nums">200,000</b> verified humans</span>
-              <input id="c2cPool" type="range" min="3" max="6" step="0.01" value="5.301" style="width:100%">
-            </label>
-            <label style="display:flex;flex-direction:column;gap:4px;min-width:230px;flex:1">
-              <span>Cases the attacker wants to flip — <b id="c2cCasesV" style="font-variant-numeric:tabular-nums">1</b></span>
-              <input id="c2cCases" type="range" min="1" max="100" step="1" value="1" style="width:100%">
-            </label>
-            <span style="display:inline-flex;gap:6px;align-items:center">
-              <button type="button" class="c2cT" data-t="0.5" style="padding:5px 10px;border:1px solid #0f172a;border-radius:8px;background:#0f172a;color:#fff;font:inherit;font-size:12px;cursor:pointer">even odds (50%)</button>
-              <button type="button" class="c2cT" data-t="0.9" style="padding:5px 10px;border:1px solid #cbd5e1;border-radius:8px;background:#fff;color:#0f172a;font:inherit;font-size:12px;cursor:pointer">reliable (90%)</button>
-            </span>
-            <button type="button" id="c2cPlay" style="padding:5px 12px;border:1px solid #0f172a;border-radius:8px;background:#0f172a;color:#fff;font:inherit;font-size:12px;cursor:pointer">▶ grow the pool</button>
-          </div>
-          <svg id="c2cChart" viewBox="0 0 780 300" style="width:100%;height:auto"></svg>
-          <div id="c2cReadout" style="font-size:13px;line-height:1.55;margin-top:.5rem;color:#334155"></div>
-        </div>
-        <script>
-        (function(){
-          function lgamma(z){var g=7,c=[0.99999999999980993,676.5203681218851,-1259.1392167224028,771.32342877765313,-176.61502916214059,12.507343278686905,-0.13857109526572012,9.9843695780195716e-6,1.5056327351493116e-7];if(z<0.5)return Math.log(Math.PI/Math.sin(Math.PI*z))-lgamma(1-z);z-=1;var x=c[0];for(var i=1;i<g+2;i++)x+=c[i]/(z+i);var t=z+g+0.5;return 0.5*Math.log(2*Math.PI)+(z+0.5)*Math.log(t)-t+Math.log(x);}
-          function lc(n,k){if(k<0||k>n||n<0)return -Infinity;return lgamma(n+1)-lgamma(k+1)-lgamma(n-k+1);}
-          function hyperTail(N,K,n,maj){K=Math.min(K,N);var lo=Math.max(maj,Math.max(0,n-(N-K))),hi=Math.min(n,K);if(lo>hi)return 0;var d=lc(N,n),s=0;for(var i=lo;i<=hi;i++)s+=Math.exp(lc(K,i)+lc(N-K,n-i)-d);return Math.min(1,Math.max(0,s));}
-          var PANEL=7,MAJ=4,BRIBE=6.5,TOKEN=200000;
-          function Kstar(N,t){var lo=MAJ,hi=N,ans=N;while(lo<=hi){var m=(lo+hi)>>1;if(hyperTail(N,m,PANEL,MAJ)>=t){ans=m;hi=m-1;}else lo=m+1;}return ans;}
-          function perCase(N,t){return Kstar(Math.round(N),t)*BRIBE;}
-          function money(n){var s=n<0?'-':'';n=Math.abs(n);if(n>=1e9)return s+'$'+(n/1e9).toFixed(2)+'B';if(n>=1e6)return s+'$'+(n/1e6).toFixed(2)+'M';if(n>=1e3)return s+'$'+Math.round(n/1e3)+'k';return s+'$'+Math.round(n);}
-          var pool=document.getElementById('c2cPool'),cases=document.getElementById('c2cCases'),poolV=document.getElementById('c2cPoolV'),casesV=document.getElementById('c2cCasesV'),chart=document.getElementById('c2cChart'),readout=document.getElementById('c2cReadout'),play=document.getElementById('c2cPlay'),tBtns=document.querySelectorAll('.c2cT');
-          var target=0.5;
-          var W=780,H=300,padL=66,padR=18,padT=18,padB=40,plotW=W-padL-padR,plotH=H-padT-padB,XLO=3,XHI=6,YLO=4,YHI=9;
-          function X(n){return padL+(Math.log10(n)-XLO)/(XHI-XLO)*plotW;}
-          function Yv(c){c=Math.max(1,c);return padT+(1-(Math.log10(c)-YLO)/(YHI-YLO))*plotH;}
-          function curN(){return Math.round(Math.pow(10,parseFloat(pool.value)));}
-          function render(){
-            var N=curN(),C=parseInt(cases.value,10);poolV.textContent=N.toLocaleString('en-US');casesV.textContent=C;
-            var pc='',mc='';for(var lx=XLO;lx<=XHI+1e-9;lx+=(XHI-XLO)/40){var n=Math.round(Math.pow(10,lx)),v=perCase(n,target);pc+=(pc?' L':'M')+' '+X(n).toFixed(1)+' '+Yv(v).toFixed(1);mc+=(mc?' L':'M')+' '+X(n).toFixed(1)+' '+Yv(v*C).toFixed(1);}
-            var tokY=Yv(TOKEN),pcN=perCase(N,target),tot=pcN*C,mk=X(N),g='';
-            for(var d=YLO;d<=YHI;d++){var y=Yv(Math.pow(10,d));g+='<line x1="'+padL+'" y1="'+y.toFixed(1)+'" x2="'+(W-padR)+'" y2="'+y.toFixed(1)+'" stroke="#eef2f7"/><text x="'+(padL-8)+'" y="'+(y+4).toFixed(1)+'" text-anchor="end" font-size="10" fill="#94a3b8">'+money(Math.pow(10,d))+'</text>';}
-            for(var xd=XLO;xd<=XHI;xd++){var xx=X(Math.pow(10,xd));g+='<text x="'+xx.toFixed(1)+'" y="'+(H-22)+'" text-anchor="middle" font-size="10" fill="#94a3b8">'+money(Math.pow(10,xd)).replace('$','')+'</text>';}
-            chart.innerHTML=g
-              +'<text x="'+padL+'" y="12" font-size="11" fill="#64748b">cost to corrupt ↑</text>'
-              +'<text x="'+(W-padR)+'" y="'+(H-6)+'" text-anchor="end" font-size="11" fill="#64748b">juror pool size →</text>'
-              +'<line x1="'+padL+'" y1="'+tokY.toFixed(1)+'" x2="'+(W-padR)+'" y2="'+tokY.toFixed(1)+'" stroke="#ef4444" stroke-width="2.5"/>'
-              +'<text x="'+(padL+6)+'" y="'+(tokY-6).toFixed(1)+'" font-size="11" font-weight="700" fill="#b91c1c">Token court — $200k once, flips all '+C+' free (reusable)</text>'
-              +(C>1?'<path d="'+mc+'" fill="none" stroke="#059669" stroke-width="2" stroke-dasharray="6 4" opacity="0.65"/><text x="'+(W-padR-4)+'" y="'+(Yv(perCase(1e6,target)*C)-5).toFixed(1)+'" text-anchor="end" font-size="10.5" fill="#047857">× '+C+' cases (no reuse)</text>':'')
-              +'<path d="'+pc+'" fill="none" stroke="#059669" stroke-width="3"/>'
-              +'<text x="'+(W-padR-4)+'" y="'+(Yv(perCase(1e6,target))-6).toFixed(1)+'" text-anchor="end" font-size="11" font-weight="700" fill="#047857">DemoThemis — bribe the pool, per case</text>'
-              +'<line x1="'+mk.toFixed(1)+'" y1="'+padT+'" x2="'+mk.toFixed(1)+'" y2="'+(padT+plotH)+'" stroke="#0f172a" stroke-width="1" stroke-dasharray="3 3" opacity="0.45"/>'
-              +'<circle cx="'+mk.toFixed(1)+'" cy="'+Yv(pcN).toFixed(1)+'" r="4" fill="#059669"/>'
-              +(C>1?'<circle cx="'+mk.toFixed(1)+'" cy="'+Yv(tot).toFixed(1)+'" r="4" fill="#059669" opacity="0.65"/>':'');
-            var frac=Math.round(Kstar(N,target)/N*100);
-            readout.innerHTML='To flip <b>'+C+'</b> case'+(C>1?'s':'')+' in a pool of <b>'+N.toLocaleString('en-US')+'</b> verified humans at '+(target*100)+'% odds, an attacker must bribe ≈<b>'+Kstar(N,target).toLocaleString('en-US')+'</b> of them (<b>'+frac+'%</b> of the pool) — and, because a fresh panel is drawn for every case and a receipt-free ballot can’t be verified, pay it again every case: <b style="color:#047857">'+money(tot)+'</b>. The token court (UMA/Kleros): a one-time <b style="color:#b91c1c">$200k</b> buys half the stake and flips all '+C+' for free.';
-          }
-          pool.addEventListener('input',render);cases.addEventListener('input',render);
-          tBtns.forEach(function(b){b.addEventListener('click',function(){target=parseFloat(b.getAttribute('data-t'));tBtns.forEach(function(x){var on=x===b;x.style.background=on?'#0f172a':'#fff';x.style.color=on?'#fff':'#0f172a';x.style.borderColor=on?'#0f172a':'#cbd5e1';});render();});});
-          var anim=null;play.addEventListener('click',function(){if(anim){clearInterval(anim);anim=null;play.textContent='▶ grow the pool';return;}var v=3;play.textContent='⏸ growing…';anim=setInterval(function(){v+=0.045;if(v>=6){v=6;clearInterval(anim);anim=null;play.textContent='▶ grow the pool';}pool.value=v.toFixed(2);render();},30);});
-          render();
-        })();
-        </script>
-      </div>
-    </div></div>
-    <div class="script">
-      <div class="meta"><span class="num">11</span><span class="tc">—</span><span class="dev">Cost to corrupt · the math</span></div>
-      <h3>Capital has a ceiling. Personhood doesn't.</h3>
-      <p class="narr">The security models differ at the root. UMA's safety is one global inequality — market cap above twice the profit from corruption — true on average, but it <b>thins on the single biggest question</b>. Kleros makes capture costly with escalating appeals, yet it's still a contest of stake. DemoThemis prices corruption <b>per question</b>: the panel is drawn at random <i>after</i> the question, so there's no panel to buy — you'd have to bribe a near-majority of <b>every human in the pool</b> and merely hope the draw seats enough of them, for a probability still under one. In a 200,000-strong pool that's ~$650k for a coin flip on a <b>single</b> case — versus ~$200k to own a token court forever — and DemoThemis re-pays it every case while the token court reuses its buy. On the chart the two lines cross at ≈62,000 jurors: past that, one DemoThemis case already costs more than owning the token court forever, and the gap widens with every case. By design several independent panels must all agree, so those odds multiply pᴺ. On mainnet <b>today</b> that's a single 3-seat demo panel — the pool-width and multiplied security are the funded design — but capture already never carries to the next case.</p>
-      <p class="wc">The honest floor here is $6.50 a juror — a $1.50 fee plus a $5 bond, with reputation valued at zero in the MVP — and the permanent World-ID ban pushes it higher. And the MVP's 3-of-3 demo is the one degenerate spot where the pool equals the panel, so about $13 flips it — a liveness and cost demo, not the real security cost.</p>
-    </div>
-  </section>
-
-  <!-- ============ 12 WHO'S THE REFEREE ============ -->
-  <section class="panel" id="p12">
-    <div class="stagewrap"><div class="stage">
-      <div class="slide">
-        <div class="kk">Game theory · vs centralized escrow</div>
-        <h3 class="st">Who's the referee?</h3>
-        <p class="sub">The company that profits from the deal also judges the dispute.</p>
-        <div class="refgrid">
-          <div class="refbox bad">
-            <div class="rh">Centralized escrow</div>
-            <div class="rs">Airbnb · eBay / PayPal · Uber · Amazon</div>
-            <div class="stage-row">
-              <span class="node party">Buyer</span><span class="arrowx">⇄</span>
-              <span class="node judge">Platform<br><b>= JUDGE</b><br><span style="font-weight:400">takes 3–30% fee</span></span>
-              <span class="arrowx">⇄</span><span class="node party">Seller</span>
-            </div>
-            <div style="text-align:center"><span class="badge2 r">⚠ referee is a player — judges its own revenue</span></div>
-            <ul class="inc">
-              <li>Keep scarce high-value supply (Superhosts, top drivers)</li>
-              <li>Minimize chargebacks, liability &amp; support cost — "refund the loudest"</li>
-              <li>Writes &amp; rewrites the rules; first appeal is in-house (external final = bank / AAA)</li>
-            </ul>
-          </div>
-          <div class="refbox good">
-            <div class="rh">DemoThemis</div>
-            <div class="rs">a credibly-neutral on-chain court</div>
-            <div class="stage-row">
-              <span class="node party">Buyer</span><span class="arrowx">⇄</span><span class="node party">Seller</span>
-            </div>
-            <div class="stage-row">
-              <span class="node court">⚖ Random panel of verified humans<br><span style="font-weight:400">outside the deal · bonded</span></span>
-            </div>
-            <div style="text-align:center"><span class="badge2 g">✓ disinterested third party</span></div>
-            <ul class="inc">
-              <li>No GMV, no supply to retain, no liability to dodge</li>
-              <li>Paid for <b>coherence</b>, never an outcome; majority never earns the loser's bond</li>
-              <li>Separate on-chain contract — not the marketplace; can't be leaned on or rewritten</li>
-            </ul>
-          </div>
-        </div>
-      </div>
-    </div></div>
-    <div class="script">
-      <div class="meta"><span class="num">12</span><span class="tc">—</span><span class="dev">Game theory · vs Airbnb/eBay/Uber</span></div>
-      <h3>The judge was never paid to be right</h3>
-      <p class="narr">The biggest flaw isn't that these platforms get hacked — it's that the judge was <b>never paid to be right</b>. When Airbnb, eBay, or Uber settle a dispute, the company that profits from it is also the arbiter, rewarded for retention and lower cost, not the truth — so the ruling can tilt toward <b>either</b> side, whichever protects its revenue. DemoThemis hands the decision to <b>bonded, disinterested humans with no stake in the marketplace</b> — and routes every slash to a neutral pool, never the winning jurors.</p>
-    </div>
-  </section>
-
-  <!-- ============ 13 START NEUTRAL ============ -->
-  <section class="panel" id="p13">
-    <div class="stagewrap"><div class="stage">
-      <div class="slide">
-        <div class="kk">For builders · go-to-market</div>
-        <h3 class="st">Building a marketplace? Don't build the dispute desk.</h3>
-        <div class="refgrid">
-          <div class="refbox bad">
-            <div class="rh">Run your own dispute desk</div>
-            <div class="rs">the usual default</div>
-            <ul class="inc">
-              <li><b>Born conflicted</b> — both sides assume you'll protect your own revenue</li>
-              <li>Build &amp; staff support, tooling, escalation, legal — ongoing cost</li>
-              <li>You own the liability and every "they were biased" complaint</li>
-              <li>Trust is earned slowly; one bad ruling burns it</li>
-            </ul>
-          </div>
-          <div class="refbox good">
-            <div class="rh">Start on DemoThemis</div>
-            <div class="rs">neutral from transaction #1 · built for World</div>
-            <ul class="inc">
-              <li><b>"An impartial court decides — not us"</b>: instant trust you can't fake</li>
-              <li><b>Two functions</b> — open a dispute, receive the verdict — is the whole integration</li>
-              <li>Customers <i>and</i> jurors both already live in <b>World App</b> — your market and your jury in one place</li>
-              <li>No admin path to override a verdict — wire once, set the clock; <b>grep it</b> on worldscan</li>
-            </ul>
-          </div>
-        </div>
-      </div>
-    </div></div>
-    <div class="script">
-      <div class="meta"><span class="num">13</span><span class="tc">—</span><span class="dev">For builders · start neutral</span></div>
-      <h3>Better to start here than build your own</h3>
-      <p class="narr">Building a marketplace? Don't run disputes yourself — you'd start <b>conflicted</b>, both sides assuming you protect your revenue, and you'd pay to staff it. Start on a neutral court instead: <b>"an impartial court decides, not us"</b> is a trust advantage a new brand can't fake, and the integration is <b>two functions</b> — open a dispute, receive the verdict. On World it fits perfectly: your customers <i>and</i> your jurors both already live in World App. Starting neutral is cheaper, faster, and more credible than retrofitting trust later. You grow the marketplace; the court keeps it fair.</p>
-      <p class="wc">Forward-looking: today this is a grant-demo MVP on valueless MockUSD — the platform stays merchant-of-record and legally liable. DemoThemis lowers perceived bias and build cost; it doesn't transfer legal liability.</p>
-    </div>
-  </section>
-
-  <!-- ============ 14 TRY IT ============ -->
-  <section class="panel" id="p14">
-    <div class="stagewrap"><div class="stage">
-      <div class="browser">
-        <div class="bbar"><span class="dot r"></span><span class="dot y"></span><span class="dot g"></span>
-          <div class="url"><span class="lock">🔒</span> demo-themis-mvp.vercel.app</div></div>
-        <div class="bscreen">
-          <div style="padding:22px 24px">
-            <div style="border-radius:18px;padding:22px;color:#e7ecf6;background:radial-gradient(700px 240px at 12% -20%,#1b2c54 0,transparent 60%),linear-gradient(135deg,#0b1020,#13203b)">
-              <div style="color:#34d399;font-weight:800;letter-spacing:.16em;font-size:11px">DEMOTHEMIS</div>
-              <div style="font-size:24px;font-weight:800;margin:6px 0">A court of verified humans — not token stake.</div>
-            </div>
-            <div style="display:flex;gap:16px;margin-top:16px;align-items:center">
-              <div class="qr"></div>
-              <div>
-                <div style="font-weight:800;color:var(--slate900);font-size:15px">3 · Try it in World App</div>
-                <div style="font-size:13px;color:var(--slate600);margin:4px 0 10px;max-width:42ch">Scan with World App to verify and join the court.</div>
-                <span style="display:inline-block;border:2px solid var(--slate900);border-radius:12px;padding:8px 16px;font-weight:700;font-size:13px;color:var(--slate900)">📱 Open in World App</span>
-                <div style="font-size:12px;color:var(--slate500);margin-top:10px;font-family:ui-monospace,monospace">demo-themis-mvp.vercel.app</div>
-              </div>
-            </div>
-          </div>
-        </div>
-      </div>
-    </div></div>
-    <div class="script">
-      <div class="meta"><span class="num">14</span><span class="tc">—</span><span class="dev">Landing · the close</span></div>
-      <h3>A court you can't simply buy</h3>
-      <p class="narr">DemoThemis: one verified human, one vote — decided by people with <b>no stake in either party</b>. Not capital, like UMA and Kleros. Not the platform's own desk, like Airbnb or eBay. The design is a credibly-neutral court that's <b>far costlier to buy, pack, or capture</b> — the panel is drawn at random after the question, so you'd have to corrupt a near-majority of the <b>entire human pool</b>, every single case, for only a chance, and it gets costlier the more the verdict is worth. The capstone-ready MVP proves the mechanism with a 3-seat demo panel; that resistance scales with pool width. Watch the attack in the sandbox, scan the QR, and file a dispute yourself — verify in World App over a sponsored-gas path, with valueless MockUSD.</p>
-    </div>
-  </section>
-
-</div>
-
-<div class="lightbox" id="lightbox"><div id="lbinner"></div></div>
-<p class="hint">Tip: click a frame to enlarge · ← → to step · <b>Play through</b> auto-advances on each shot's timecode</p>
-
 <script>
-const panels = Array.from(document.querySelectorAll('.panel'));
-const titles = ['Buy this verdict','Why it can\'t be bought','Join the court','Proof of a unique human','You\'re juror #1','Verified on-chain','The ballot','The verdict','It\'s real (+ cohort)','How it compares','Cost to corrupt','Who\'s the referee?','Start neutral','Try it'];
-const secs = [22,18,18,16,16,22,22,22,18,26,24,26,24,16]; // per-frame seconds for autoplay
-let cur = 0;
+(() => {
+  const scenes = Array.from(document.querySelectorAll('.scene'));
+  const chapterButtons = Array.from(document.querySelectorAll('.chapter'));
+  const prev = document.getElementById('prev');
+  const next = document.getElementById('next');
+  const play = document.getElementById('play');
+  const playIcon = document.getElementById('playIcon');
+  const playText = document.getElementById('playText');
+  const announce = document.getElementById('announce');
+  const runtime = document.getElementById('runtime');
+  let current = 0;
+  let timer = null;
+  let playing = false;
 
-// compute running timecodes from secs, fill each panel's .tc + the runtime label
-const fmt = s => Math.floor(s/60) + ':' + String(s%60).padStart(2,'0');
-let _acc = 0;
-panels.forEach((p,i)=>{
-  const tc = p.querySelector('.tc');
-  if(tc) tc.textContent = fmt(_acc) + ' – ' + fmt(_acc + (secs[i]||20));
-  _acc += secs[i]||20;
-});
-document.getElementById('runtime').textContent = panels.length + ' frames · ~' + fmt(_acc);
+  const fmt = value => `${Math.floor(value / 60)}:${String(value % 60).padStart(2, '0')}`;
+  let elapsed = 0;
+  let totalWords = 0;
+  scenes.forEach((scene, index) => {
+    const duration = Number(scene.dataset.duration || 0);
+    scene.querySelector('.timecode').textContent = `${fmt(elapsed)} – ${fmt(elapsed + duration)}`;
+    elapsed += duration;
+    const words = (scene.querySelector('.say')?.textContent.trim().match(/\b[\w’'-]+\b/g) || []).length;
+    totalWords += words;
+    scene.querySelector('.word-count').textContent = `${words} spoken words`;
+    const dotWrap = scene.querySelector('.dots');
+    scenes.forEach((item, dotIndex) => {
+      const dot = document.createElement('button');
+      dot.type = 'button';
+      dot.className = 'shot-dot';
+      dot.setAttribute('aria-label', `Go to shot ${dotIndex + 1}: ${item.dataset.title}`);
+      dot.addEventListener('click', () => go(dotIndex));
+      dotWrap.appendChild(dot);
+    });
+  });
+  runtime.textContent = `${scenes.length} shots · ${fmt(elapsed)} · ${totalWords} words`;
 
-// build filmstrip
-const strip = document.getElementById('strip');
-panels.forEach((p,i)=>{
-  const c = document.createElement('div'); c.className='chip'; c.dataset.i=i;
-  c.innerHTML = `<span class="n">${String(i+1).padStart(2,'0')}</span><span class="t">${titles[i]}</span>`;
-  c.onclick = ()=>goto(i,true);
-  strip.appendChild(c);
-});
-const chips = Array.from(strip.children);
+  function syncDots(){
+    scenes.forEach((scene, sceneIndex) => {
+      scene.querySelectorAll('.shot-dot').forEach((dot, dotIndex) => {
+        dot.classList.toggle('active', dotIndex === current);
+        dot.classList.toggle('past', dotIndex < current);
+        dot.setAttribute('aria-current', dotIndex === current ? 'step' : 'false');
+      });
+    });
+  }
 
-function setActive(i){
-  cur=i;
-  chips.forEach((c,k)=>c.classList.toggle('active',k===i));
-  chips[i].scrollIntoView({inline:'center',block:'nearest',behavior:'smooth'});
-}
-function goto(i,scroll){
-  i=Math.max(0,Math.min(panels.length-1,i));
-  setActive(i);
-  if(scroll) panels[i].scrollIntoView({behavior:'smooth',block:'start'});
-}
+  function syncChapters(chapterOverride = null){
+    const chapter = chapterOverride || scenes[current].dataset.chapter;
+    const currentChapterIndex = chapterButtons.findIndex(button => button.dataset.chapter === chapter);
+    chapterButtons.forEach((button, index) => {
+      button.classList.toggle('active', button.dataset.chapter === chapter);
+      button.classList.toggle('visited', currentChapterIndex >= 0 && index < currentChapterIndex);
+      button.setAttribute('aria-current', button.dataset.chapter === chapter ? 'page' : 'false');
+    });
+    const active = chapterButtons.find(button => button.dataset.chapter === chapter);
+    if (active) {
+      const strip = active.parentElement;
+      const itemBox = active.getBoundingClientRect();
+      const stripBox = strip.getBoundingClientRect();
+      if (itemBox.left < stripBox.left + 8) strip.scrollLeft += itemBox.left - stripBox.left - 8;
+      if (itemBox.right > stripBox.right - 8) strip.scrollLeft += itemBox.right - stripBox.right + 8;
+    }
+  }
 
-// scroll-spy
-const io = new IntersectionObserver((es)=>{
-  es.forEach(e=>{ if(e.isIntersecting){ const i=panels.indexOf(e.target); if(i>=0) setActive(i); } });
-},{rootMargin:'-45% 0px -45% 0px'});
-panels.forEach(p=>io.observe(p));
+  function go(index, fromPlay = false, chapterOverride = null){
+    current = Math.max(0, Math.min(scenes.length - 1, index));
+    scenes.forEach((scene, i) => {
+      const isCurrent = i === current;
+      scene.classList.toggle('active', isCurrent);
+      scene.setAttribute('aria-hidden', String(!isCurrent));
+      scene.inert = !isCurrent;
+    });
+    prev.disabled = current === 0;
+    next.disabled = current === scenes.length - 1;
+    syncDots();
+    syncChapters(chapterOverride);
+    history.replaceState(null, '', `#shot-${current + 1}`);
+    announce.textContent = `Shot ${current + 1} of ${scenes.length}: ${scenes[current].dataset.title}`;
+    if (matchMedia('(max-width:1100px)').matches) {
+      requestAnimationFrame(() => scenes[current].scrollIntoView({block:'start'}));
+    }
+    if (fromPlay && current === scenes.length - 1) stop();
+  }
 
-// keyboard
-addEventListener('keydown',e=>{
-  if(e.key==='ArrowRight'||e.key==='ArrowDown'){e.preventDefault();goto(cur+1,true);}
-  if(e.key==='ArrowLeft'||e.key==='ArrowUp'){e.preventDefault();goto(cur-1,true);}
-  if(e.key===' '){e.preventDefault();togglePlay();}
-  if(e.key==='Escape')closeLb();
-});
+  function schedule(){
+    if (!playing) return;
+    const duration = Number(scenes[current].dataset.duration || 10);
+    timer = setTimeout(() => {
+      if (current >= scenes.length - 1) return stop();
+      go(current + 1, true);
+      schedule();
+    }, Math.max(2200, duration * 105));
+  }
 
-// lightbox
-const lb=document.getElementById('lightbox'), lbi=document.getElementById('lbinner');
-document.querySelectorAll('.stage').forEach(s=>{
-  s.onclick=()=>{ lbi.innerHTML=''; lbi.appendChild(s.firstElementChild.cloneNode(true)); lb.classList.add('on'); };
-});
-function closeLb(){ lb.classList.remove('on'); }
-lb.onclick=closeLb;
+  function start(){
+    if (current === scenes.length - 1) go(0);
+    playing = true;
+    playIcon.textContent = 'Ⅱ';
+    playText.textContent = 'Pause preview';
+    schedule();
+  }
 
-// autoplay
-let playing=false, timer=null;
-const btn=document.getElementById('playbtn');
-function togglePlay(){ playing?stopPlay():startPlay(); }
-function startPlay(){
-  playing=true; btn.textContent='⏸ Pause';
-  const step=()=>{
-    if(!playing) return;
-    if(cur>=panels.length-1){ stopPlay(); return; }
-    goto(cur+1,true);
-    timer=setTimeout(step, secs[cur]*120); // compressed: ~1/8 real time so it previews quickly
-  };
-  goto(0,true);
-  timer=setTimeout(step, secs[0]*120);
-}
-function stopPlay(){ playing=false; btn.textContent='▶ Play through'; clearTimeout(timer); }
-btn.onclick=togglePlay;
+  function stop(){
+    playing = false;
+    clearTimeout(timer);
+    timer = null;
+    playIcon.textContent = '▶';
+    playText.textContent = 'Preview sequence';
+  }
 
-setActive(0);
+  prev.addEventListener('click', () => { stop(); go(current - 1); });
+  next.addEventListener('click', () => { stop(); go(current + 1); });
+  play.addEventListener('click', () => playing ? stop() : start());
+  document.getElementById('full').addEventListener('click', async () => {
+    try {
+      if (!document.fullscreenElement) await document.documentElement.requestFullscreen();
+      else await document.exitFullscreen();
+    } catch (_) {}
+  });
+  chapterButtons.forEach(button => button.addEventListener('click', () => {
+    stop();
+    const chapter = button.dataset.chapter;
+    const index = scenes.findIndex(scene => scene.dataset.chapter === chapter);
+    if (index >= 0) go(index);
+    else go(11, false, chapter);
+  }));
+  addEventListener('keydown', event => {
+    if (event.defaultPrevented || event.altKey || event.ctrlKey || event.metaKey) return;
+    const tag = event.target?.tagName;
+    if (tag === 'BUTTON' || tag === 'A' || tag === 'INPUT' || tag === 'TEXTAREA' || tag === 'SELECT') return;
+    if (event.key === 'ArrowRight') { stop(); go(current + 1); }
+    if (event.key === 'ArrowLeft') { stop(); go(current - 1); }
+  });
+  const match = location.hash.match(/^#shot-(\d+)$/);
+  go(match ? Number(match[1]) - 1 : 0);
+})();
 </script>
 </body>
 </html>

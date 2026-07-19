@@ -13,6 +13,7 @@ const legacyProposalFiles = [
   "the-design.html",
   "game-theory.html",
   "prediction-market.html",
+  "predictionmomo.html",
   "hybrid-juror-prediction-market-integration.html",
   "mvp.html"
 ];

@@ -1,6 +1,7 @@
 'use client';
 
 import Link from 'next/link';
+import Image from 'next/image';
 import { useRouter, useSearchParams } from 'next/navigation';
 import { Suspense, type KeyboardEvent, useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import {
@@ -727,6 +728,15 @@ function OracleHome() {
     <main className="oracle-app" id="main-content" tabIndex={-1}>
       <section className="oracle-hero" aria-labelledby="oracle-title">
         <div className="oracle-hero-copy">
+          <div className="oracle-brand-lockup" aria-hidden="true">
+            <Image
+              src="/assets/brand/demothemis/wordmark.png"
+              width={1766}
+              height={216}
+              alt=""
+              priority
+            />
+          </div>
           <span className="oracle-kicker"><i /> Live Demo MVP · World Chain</span>
           <h1 id="oracle-title">
             <span>One public question.</span>

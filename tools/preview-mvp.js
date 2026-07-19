@@ -17,7 +17,9 @@ const contentTypes = {
   ".js": "text/javascript; charset=utf-8",
   ".json": "application/json; charset=utf-8",
   ".png": "image/png",
+  ".riv": "application/octet-stream",
   ".svg": "image/svg+xml; charset=utf-8",
+  ".wasm": "application/wasm",
   ".webp": "image/webp",
 };
 
@@ -28,7 +30,7 @@ function redirect(response, location) {
 
 function localFile(pathname) {
   const relative = decodeURIComponent(pathname).replace(/^\/+/, "");
-  const resolved = path.resolve(root, relative || "demothemis-mvp.html");
+  const resolved = path.resolve(root, relative || "index.html");
   const rootPrefix = root.endsWith(path.sep) ? root : root + path.sep;
   if (resolved !== root && !resolved.startsWith(rootPrefix)) return null;
   return resolved;
@@ -38,7 +40,7 @@ const server = http.createServer((request, response) => {
   const url = new URL(request.url || "/", `http://${host}:${port}`);
 
   if (url.pathname === "/") {
-    redirect(response, "/demothemis-mvp.html#product-preview");
+    redirect(response, "/index.html");
     return;
   }
   if (url.pathname === "/app" || url.pathname === "/home") {
@@ -83,7 +85,8 @@ const server = http.createServer((request, response) => {
 });
 
 server.listen(port, host, () => {
-  console.log(`DemoThemis Live MVP preview: http://${host}:${port}/`);
+  console.log(`Proposal home: http://${host}:${port}/`);
+  console.log(`DemoThemis Live MVP preview: http://${host}:${port}/demothemis-mvp.html#product-preview`);
   console.log("Press Ctrl+C to stop the local preview.");
 });
 

@@ -1,4 +1,4 @@
-# DemoThemis — World Foundation Spark Track application
+# DemoThemis — World Foundation grant application for a production-ready v1
 
 ## 1. Summary
 
@@ -11,7 +11,7 @@ to seat its jurors by personhood rather than capital (dated 2026-06-20 scan — 
 
 ## 2. The problem
 
-Every marketplace, P2P trade, freelance deal, and prediction market needs a way to settle
+Every marketplace, P2P trade, freelance deal, and online service needs a way to settle
 disputes. Today that means a centralized operator (a trust bottleneck) or a *decentralized*
 court that decides by money. The two live decentralized courts decide by capital: **Kleros**
 draws jurors in proportion to PNK **stake** (stake-weighted sortition), and **UMA's** DVM is a
@@ -45,10 +45,11 @@ surface). Three surfaces, one Next.js app: the **World App Mini App** (the live 
 a read-only **scale cohort**.
 
 The yes/no question type is the neutral resolver surface. Any World App, escrow flow,
-marketplace, DAO, or data product can route an objective question to the court and receive a
-personhood-resolved on-chain answer. **M4 funds the resolution SDK and the first neutral yes/no
-pilot integration** to start the case-flow flywheel. If a prediction-style product later consumes
-that resolver, it is a separate consumer of the court, not the grant-funded product.
+marketplace, DAO, or data product can route a well-defined question to the court and receive a
+personhood-resolved on-chain answer. **M4 funds the resolution SDK and a neutral reference
+integration** that proves this path end to end. The grant completes DemoThemis itself: a stable,
+general resolution interface that future applications can build against without waiting for
+another court milestone or grant.
 
 > **Honest scope note (carried through this application):** the live mainnet instance runs a
 > **3-seat panel drawn from a 3-juror pool (3/3)** — chosen to prove the full flow cheaply. With
@@ -90,11 +91,11 @@ capstone is the last step), built solo at the founder's expense. One honesty rul
 |---|---|
 | World ID 4.0 verified **in the transaction** (real Groth16) | VRF/drand draw randomness — M1 |
 | **Nullifier sybil gate** (one human, one seat) | Receipt-free MACI-style ballots — M2 |
-| **Wallet-bound** proof (a stolen proof reverts) | Appeal ladder (7→15→31) + parallel pᴺ panels — M3b |
+| **Wallet-bound** proof (a stolen proof reverts) | Appeals, parallel panels, Invalid/void, and presence/decline/replacement — M3b |
 | Random two-step panel draw, **after** the question (exhaustive at the 3/3 demo size) | Juror reputation / Wilson gate — M3b |
 | Commit/reveal voting *(receipt-ful — see §7)* | Reward-pool cyclic payout — M3a |
-| 70/20/10 fee split + 2% escrow fee; **slash-to-pool, never to winners** | Optimistic fast path (~95% settle free) — M3a |
-| **Atomic** escrow settlement | Resolution SDK + first neutral yes/no pilot integration — M4 |
+| 70/20/10 fee split + 2% escrow fee; **slash-to-pool, never to winners** | Optimistic fast path for uncontested cases — M3a |
+| **Atomic** escrow settlement | Stable resolution SDK + neutral reference integration — M4 |
 | **No admin override**: no upgrade, no pause, no fund-extraction path, no override of any in-flight case | Independent security review — M5 |
 | 6 source-verified contracts · 77 Foundry tests · **97.2% line / 93.7% statement coverage** (measured) · invariants + fuzz | |
 
@@ -176,13 +177,14 @@ What's bought today, and what isn't:
   dissent. Panel sizes (7→15→31) follow the **Condorcet jury theorem**: odd panels of
   better-than-chance humans converge on the truth as they grow. This scoring is interactive today
   in the /sandbox reputation demo.
-- **Open edges, named (the honesty rule applied to attacks).** Two we don't yet close: *ambiguous
+- **Open edges, named (the honesty rule applied to attacks).** Two the MVP does not yet close: *ambiguous
   questions* — today a tie or no-quorum resolves to status quo (question NO / escrow refunds the
   payer), so a genuinely unanswerable question defaults to NO; an explicit **Invalid/void
-  outcome**, flagged when independent parallel panels split on a truly ambiguous question, is
-  funded roadmap (M3). And *credential rental* — a verified human can rent their seat; the
-  per-draw liveness check that closes it is out of MVP scope. We surface both rather than let a
-  reviewer find them.
+  outcome**, flagged when independent parallel panels split on a genuinely ambiguous question,
+  is funded in M3b. And *credential rental or an unavailable juror* — M3b adds a World ID-based
+  per-draw presence check plus a decline-and-replace protocol path, so jurors serve only when
+  they are present and assess themselves as capable; M6 hardens and tests that user flow. Both
+  gaps are part of this grant's completion scope, not deferred to an unspecified later build.
 
 ## 8. Traction & technical credibility
 
@@ -195,61 +197,67 @@ both co-founders in parallel (§9, §11) — to a standard meant to survive scru
 - **77 Foundry tests** with real system invariants (token conservation, registry solvency,
   bonded-juror) plus fuzz; **97.2% line / 93.7% statement coverage** (measured via `forge
   coverage`, not asserted).
-- **No external audit is claimed anywhere** — an independent security review is funded
-  **milestone M5**, in the requested Spark tranche.
+- **No external audit is claimed anywhere** — an independent review of the completed funded
+  protocol is milestone **M5** in this request.
 - The MVP went through an adversarial pre-submission review; the correctness items it surfaced
   (escrow timeout/refund, partial-slash guard, a Production-verifier forged-proof pre-check) are
   folded into **M1** rather than papered over.
 
 ## 9. Milestones, timeline & budget
 
-The requested Spark grant funds the path from honest single-panel demo to a **hardened,
-randomness-backed, independently-reviewed** live court with the first real human on-chain. The
-larger mechanism build is pre-scoped as a Scale-track follow-on, unlocked by that live usage.
-Every tranche releases only on a verifiable acceptance artifact; **no upfront tranche**,
-clawback-compatible. Delivered by **two co-founders in parallel** (same person-effort, half the
-calendar — Spark in ~1 month, the full roadmap in ~3), and **priced lean and capped at
-US$50,000**, below comparable mainnet-protocol grants. AI makes development the cheap
-part, so the weight is shifted into the human-intensive work it doesn't cheapen: the roadmap
-**ends with juror UX + moderated user-testing (M6, the largest line)** — because whether
-real humans complete the onboard → commit → *return-to-reveal* loop is the court's highest-risk
-surface (a no-show forfeits a bond and can deadlock a panel) and is exactly what World rewards:
-real usage.
+This request funds every remaining milestone required to turn the honest single-panel MVP into a
+**production-ready DemoThemis v1**: verifiable randomness, receipt-free ballots, the optimistic
+path and reward distribution, private reputation, expanding appeals, parallel panels, an
+Invalid/void outcome, a stable integration SDK, an independent review of the completed protocol,
+and real verified-human testing with per-draw presence and decline/replacement flows. No core
+security, finality, juror-safety, or integration milestone depends on a hypothetical follow-on
+grant.
 
-**Spark grant requested — US$14,000 (~1 month):**
+Every tranche releases only on a verifiable acceptance artifact; **no upfront tranche**,
+clawback-compatible. Two co-founders deliver the work in parallel in approximately **three
+months**, priced lean and capped at **US$50,000**. M6 remains the largest line because the final
+test is not whether the contracts compile, but whether verified humans reliably complete the
+real juror loop on their own phones.
+
+**Grant requested — US$50,000 (~3 months):**
 
 | # | Milestone | Acceptance artifact | Cost |
 |---|---|---|---|
 | M1 | VRF/drand randomness + correctness hardening + Production-verifier forged-proof pre-check | verified randomness contract + draw trace; expanded tests; the forged-proof revert trace | $4,000 |
-| M5 | Independent security review of the live court | published report; criticals/highs resolved | $10,000 |
-
-**Pre-scoped Scale follow-on — US$36,000 (Months 2–3):** M2 receipt-free ballots ($8k) ·
-M3a optimistic path + reward payout ($4k) · M3b reputation + appeal ladder + parallel panels
-($6k) · M4 resolution SDK + first neutral yes/no pilot integration ($5k) · **M6 juror UX
-hardening + moderated user-testing ($13k) — the largest line, final step.** **Full roadmap:
-US$50,000, ~3 months.**
+| M2 | Receipt-free ballots | unlinkable end-to-end ballot and consequence-accounting trace; threat model; tests | $8,000 |
+| M3a | Optimistic fast path + private reward-pool distribution | uncontested settlement and private aggregate-payout traces | $4,000 |
+| M3b | Private reputation + appeals + parallel panels + Invalid/void + juror liveness | source-verified contracts and traces for each path | $6,000 |
+| M4 | Stable resolution SDK + neutral reference integration | published SDK/docs and traced mainnet question + escrow integrations | $5,000 |
+| M5 | Independent review of the completed funded protocol | published report; every critical/high finding resolved | $10,000 |
+| M6 | Juror UX hardening + moderated testing of presence and replacement flows | shipped UX, measured completion/return-to-finality rates, accessibility report | $13,000 |
+|  | **Total** | **A reviewed, tested, integration-ready DemoThemis v1** | **$50,000** |
 
 Full bottom-up pricing, effort estimates, acceptance criteria, the timeline, the WLD payout
 mapping, and unit economics: **[docs/GRANT_BUDGET.md](GRANT_BUDGET.md)**.
 
 ## 10. Sustainability & go-to-market
 
-DemoThemis stays what §1 calls it — a **personhood-gated arbitration court** — and this section is about how that court goes from empty to self-sustaining. Two fees are built in already: a **2% escrow fee** (retained only when a deal is disputed; refunded on a clean release) and a **flat 2 MUSD per-question case fee** — two distinct mechanisms, both split 70/20/10 (jurors / reward pool / protocol) on-chain today, in **valueless test tokens, so there is no real fee revenue yet** (`jurorCount() == 0` until the capstone). The meter exists; what it lacks is a **first source of repeatable cases** to turn on.
+DemoThemis stays what §1 calls it — a **personhood-gated arbitration court** — and this section is
+about how the completed court becomes self-sustaining. Two fees are built in already: a **2%
+escrow fee** (retained only when a deal is disputed; refunded on a clean release) and a **flat 2
+MUSD per-question case fee**. Both are split 70/20/10 (jurors / reward pool / protocol) on-chain
+today in **valueless test tokens, so there is no real fee revenue yet** (`jurorCount() == 0` until
+the capstone). The meter exists; what it lacks is a production-ready court and repeatable case
+flow.
 
 A juror court is a **two-sided system**: it needs verified jurors *and* a steady stream of cases,
 and it is useless empty. The cold-start plan therefore starts with the broadest grant-safe
-surface: a **resolution SDK** that lets any World App consumer route a yes/no question to the
-court, plus one controlled pilot integration that proves the path end to end. Escrow disputes
-remain the headline application, but they are naturally sparse; repeatable yes/no resolutions
-give the court enough case flow to train jurors, show earnings, and build public history.
+surface: a **resolution SDK** that lets any World App route a well-defined question or disputed
+deal to the court, plus a neutral reference integration that proves both paths end to end.
+Escrow disputes are naturally sparse; reusable question resolution gives the court additional
+case flow to test juror reliability, show earnings, and build public history.
 
-The pilot is deliberately framed as a **consumer of the resolver**, not as the grant deliverable.
-The grant builds neutral infrastructure: open SDK, documented API, source-verified settlement
-path, and explorer-traced outcomes. DemoThemis takes no bet, sets no odds, holds no stake, and
-does not require any reviewer to approve a market product in order to approve the court.
-Prediction-style products are one possible high-volume consumer because they need objective
-answers, but the same SDK serves escrow, marketplaces, DAO decisions, service-level disputes,
-and any World App flow that needs a credibly neutral yes/no result.
+The grant deliverable is entirely DemoThemis: the court, juror system, open SDK, documented API,
+source-verified settlement paths, stable lifecycle events, and explorer-traced outcomes. The
+reference integration exists only to prove that an independent consumer can open a case, follow
+its challenge and appeal lifecycle, receive YES, NO, or INVALID finality, and execute an optional
+escrow ruling. The same interface can serve marketplaces, DAOs, service-level disputes,
+community decisions, and any World App that needs a credibly neutral result.
 
 That case flow compounds in two ways. First, every completed court case contributes to one shared
 juror-quality record through difficulty-adjusted agreement, consistency with its written criteria,
@@ -259,10 +267,10 @@ Second, the SDK makes adoption modular:
 external apps do not need to build their own dispute desk, juror pool, World ID proof path, or
 settlement contracts. They can call the court and inherit the public resolution history.
 
-So the sustainability claim is simple: **fee volume, not a follow-on grant, is the path to
-self-sustaining**. The 2% disputed-escrow fee and flat per-question fee are already modeled
-on-chain in valueless tokens; M4 turns the question side into reusable infrastructure, and M6
-tests whether real verified humans reliably complete the juror loop that earns those fees.
+So the sustainability claim is simple: **this grant completes the reusable court; fee volume
+supports it afterward**. The 2% disputed-escrow fee and flat per-question fee are already modeled
+on-chain in valueless tokens; M4 makes both case types easy to integrate, and M6 verifies that
+real humans reliably complete the juror loop that earns those fees.
 
 ## 11. Team & eligibility
 
@@ -281,19 +289,14 @@ tests whether real verified humans reliably complete the juror loop that earns t
 - **Eligibility facts recorded:** one co-founder is a **United Kingdom resident**; the other is
   based in **Baltimore, Maryland, United States on a work visa**. This records location/residency
   facts only; it does **not** assert U.S. citizenship or tax residency.
-- **What is 100% certain from current public materials:** the current World Foundation Grants page
-  lists Spark Track for small teams/early founders building Mini Apps, and World's June 2026
-  developer update says the Mini App Grants Program is **"now open to United States builders"**.
-  Therefore U.S. location is not presented here as an automatic application disqualifier.
-- **What is also 100% certain from current legal terms:** applicants still need to satisfy
-  sanctions/export-control restrictions, KYC/AML, tax, and lawful-use obligations; certain
-  Worldcoin Grant features may not be available to New York residents/entities. Baltimore,
-  Maryland is not New York.
-- **What is not 100% certain from public sources:** whether any particular work-visa resident can
-  personally receive WLD, whether the Foundation prefers a specific payee/signatory structure, and
-  whether any grant-agreement-specific restriction changes the payout route. Final eligibility
-  depends on KYC, sanctions screening, applicant citizenship/tax-residency answers, WLD/token
-  availability, and the signed grant agreement.
+- **Current eligibility warning:** the current World Foundation Grants page says grants are not
+  available to people or companies resident, located, incorporated, or represented by a
+  registered agent in the United States or certain other restricted territories. That conflicts
+  with an earlier developer announcement and must not be resolved by assumption.
+- **Required before submission:** obtain written confirmation from the Foundation about whether
+  and how this two-co-founder team may apply, then answer all citizenship, residence, tax,
+  sanctions/export-control, KYC/AML, payout-recipient, and entity questions exactly as instructed.
+  No particular signatory or payout structure is asserted as eligible in this draft.
 - **Source links for the eligibility note:** [World Foundation Grants](https://world.org/grants),
   [World Dev Summer update](https://world.org/blog/developers/world-dev-summer-build-for-world-network-get-rewarded),
   and [World Foundation User Terms](https://world.org/legal/user-terms-and-conditions).
@@ -307,9 +310,9 @@ tests whether real verified humans reliably complete the juror loop that earns t
 
 | Claim / item | Link |
 |---|---|
-| Live site (browser demo, no wallet) | `«https://… production URL — fill before submission»` |
-| Buy-this-verdict attack demo (sandbox) | `«/sandbox on the live site — fill before submission»` |
-| Source repository (MIT) | `«https://github.com/… — public at submission»` |
+| Live site (browser demo, no wallet) | [demothemis.netlify.app/app](https://demothemis.netlify.app/app) |
+| Buy-this-verdict attack demo (sandbox) | [demothemis.netlify.app/sandbox](https://demothemis.netlify.app/sandbox) |
+| Source repository (MIT) | [FreddyMertens/DemoThemis](https://github.com/FreddyMertens/DemoThemis) |
 | Source-verified mainnet contracts | [worldscan.org](https://worldscan.org) — addresses in [README](../README.md#deployed-contracts) |
 | On-chain World ID enforcement traces (Step 3.5) | [docs/DEMO.md](DEMO.md) |
 | Sepolia scale cohort | [docs/DEMO.md](DEMO.md) |
@@ -324,11 +327,10 @@ tests whether real verified humans reliably complete the juror loop that earns t
 
 ### Pre-submission checklist (the artifacts this copy promises)
 
-- [ ] Fill the demo entry points in §12 (live site, attack demo, repo) — **independent of the
-      capstone; do these first.**
+- [ ] Confirm the live site, sandbox, and repository links still open from a signed-out browser.
 - [ ] Run the 3-human mainnet capstone → flip §5 status, fill the §12 capstone + sponsored-gas rows.
 - [ ] Record + link the demo video (best filmed during the capstone).
-- [ ] Flip the repo public (after the capstone traces land; pre-scan for secrets first).
-- [ ] Confirm final citizenship, tax-residency, sanctions/export-control, KYC/AML, and payout-recipient answers for both co-founders (§11); do not use the old "non-US" shortcut.
-- [ ] Fill every `«...»`: applicant name, production URL, repo URL, payout wallet.
+- [ ] Obtain written eligibility guidance, then confirm citizenship, residence, tax,
+      sanctions/export-control, KYC/AML, entity, signatory, and payout-recipient answers (§11).
+- [ ] Fill every remaining `«...»`: legal names, team profiles, signatory, and payout wallet.
 - [ ] Confirm the final third-party audit quote for M5 and the MACI library for M2 (GRANT_BUDGET.md).

@@ -8,16 +8,15 @@
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@500;700&family=Newsreader:opsz,wght@6..72,200..700&display=swap" rel="stylesheet">
-<link rel="stylesheet" href="assets/styles.css">
+<link rel="stylesheet" href="assets/styles.css?v=20260719-emission-11">
 </head>
 <body data-page-brand="neutral">
 <div id="progress"></div>
 
 <nav class="sitenav" aria-label="Primary">
   <div class="sitenav-inner">
-    <a class="brand brand-with-mark" href="/">
-      <img class="brand-mark" src="assets/brand/demothemis/mark-32.png" width="32" height="32" alt="">
-      <span class="brand-word">DemoThemis<span class="dot">.</span></span>
+    <a class="brand brand-with-wordmark" href="/" aria-label="DemoThemis home">
+      <img class="brand-nav-wordmark" src="assets/brand/demothemis/wordmark.png" width="1766" height="216" alt="">
     </a>
     <button class="nav-toggle" type="button" aria-label="Menu" aria-expanded="false">&#9776;</button>
     <div class="nav-links">
@@ -35,7 +34,7 @@
 
 <header class="hero reveal">
   <p class="kicker">What we are building</p>
-  <h1>Bullet proof arbitration for anyone, with OmenMarketMaker as an early customer.</h1>
+  <h1>Bullet proof arbitration for anyone, with <span class="brand-name">OmenMarket<wbr>Maker</span> as an early customer.</h1>
   <p class="dek">OmenMarketMaker can purchase resolution for selected markets. DemoThemis independently serves those cases through verified-human juries, with protocol escrow available whenever a ruling needs to move funds.</p>
   <div class="meta">
     <span class="pill">Start here</span>
@@ -58,10 +57,10 @@
           <span class="pk">Product one</span>
           <span class="product-kind">Resolution layer</span>
         </div>
-        <div class="product-brand-stage" data-brand="demothemis" aria-hidden="true">
-          <img class="brand-wordmark" src="assets/brand/demothemis/wordmark.png" width="1766" height="216" alt="">
+        <div class="product-logo-lockup product-logo-lockup--demothemis" role="img" aria-label="DemoThemis">
+          <span class="dt-wordmark-emission"><img src="assets/brand/demothemis/wordmark.png" width="1766" height="216" alt=""></span>
         </div>
-        <h3>DemoThemis</h3>
+        <h3 class="sr-only">DemoThemis</h3>
         <p class="product-tagline">Arbitration service: the most ambitious human infrastructure ever made.</p>
         <p class="product-summary product-summary-goal"><strong class="product-summary-label">Goal:</strong> a protocol escrow and arbitration service so good that customers want every online deal to run through it, from Uber to eBay to Airbnb to AdSense. Apps bring demand and interface; DemoThemis holds the funds, decides disputes, and releases or refunds by rule.</p>
         <p class="product-summary product-summary-how"><strong class="product-summary-label">How:</strong> robust, ungameable mechanics with proof of personhood to overcome the need for plutocracy. OmenMarketMaker supplies the first demand, data, and escrow volume.</p>
@@ -72,10 +71,11 @@
           <span class="pk">Product two</span>
           <span class="product-kind">Prediction market</span>
         </div>
-        <div class="product-brand-stage" data-brand="omen" aria-hidden="true">
-          <img class="brand-wordmark" src="assets/brand/omenmarketmaker/wordmark-poster.png" width="1000" height="300" alt="">
+        <div class="product-logo-lockup product-logo-lockup--omen omen-rive-shell" data-omen-rive role="img" aria-label="OmenMarketMaker">
+          <img src="assets/brand/omenmarketmaker/wordmark-poster.png" width="1000" height="300" alt="" aria-hidden="true">
+          <canvas width="1000" height="300" aria-hidden="true"></canvas>
         </div>
-        <h3>OmenMarketMaker</h3>
+        <h3 class="sr-only">OmenMarketMaker</h3>
         <p class="product-tagline">Six novel market features, combined to make a superior prediction market platform</p>
         <ol class="product-jumps">
           <li><a href="omenmarketmaker.html#exploited-arbiter">Outcomes cannot be bought and arbitration &amp; appeals are robust &amp; reliable: Challenged outcomes go to independent verified-human arbitration instead of a token-weighted court.</a></li>
@@ -152,6 +152,8 @@
 
 </main>
 
+<script src="assets/vendor/rive/rive-2.38.5.js"></script>
+<script src="assets/brand-rive.js"></script>
 <script src="assets/common.js"></script>
 </body>
 </html>

@@ -5,29 +5,33 @@
 
 .sbx {
   /* Three neutral levels mirror the pitch site's page, inset, and card hierarchy. */
-  --canvas: #edeae4;
-  --bg: #f7f5ef;
+  --canvas: #f6f3f2;
+  --bg: #f2efec;
   --surface: #fffdf9;
-  --ink: #23262e;
-  --ink-soft: #3a3f4a;
-  --muted: #5c6470;
-  --faint: #5c6470;
-  --line: #eae4d9;
-  --line-strong: #ddd6ca;
-  --accent: #5a4bd6;
-  --accent-soft: #ece9fc;
-  --accent-ink: #3a2fa0;
+  --ink: #292522;
+  --ink-soft: #433c37;
+  --muted: #6f655e;
+  --faint: #6f655e;
+  --line: #e5ded8;
+  --line-strong: #d4cac2;
+  --accent: #786a5e;
+  --accent-soft: #ece7e3;
+  --accent-ink: #6a5b50;
+  --dt-emission: #00e5ff;
+  --dt-emission-ink: #006f7b;
+  --dt-emission-rgb: 0, 229, 255;
+  --dt-emission-wash: rgba(0, 229, 255, 0.08);
   --good: #0f9b70;
   --good-soft: #e2f5ed;
   --bad: #d4523c;
   --bad-soft: #fbe8e2;
   --gold: #c79a14;
-  --triad-mint: color-mix(in srgb, var(--good-soft) 72%, var(--surface));
-  --triad-mint-border: color-mix(in srgb, var(--good) 24%, var(--line));
-  --triad-lavender: color-mix(in srgb, var(--accent-soft) 74%, var(--surface));
-  --triad-lavender-border: color-mix(in srgb, var(--accent) 22%, var(--line));
-  --triad-amber: color-mix(in srgb, #fff1d8 72%, var(--surface));
-  --triad-amber-border: color-mix(in srgb, #b56c12 22%, var(--line));
+  --triad-mint: color-mix(in srgb, #e9e8e5 48%, var(--surface));
+  --triad-mint-border: color-mix(in srgb, #ab9e94 50%, var(--line));
+  --triad-lavender: color-mix(in srgb, #ccc3bc 24%, var(--surface));
+  --triad-lavender-border: color-mix(in srgb, #786a5e 38%, var(--line));
+  --triad-amber: color-mix(in srgb, #ab9e94 18%, var(--surface));
+  --triad-amber-border: color-mix(in srgb, #6a5b50 34%, var(--line));
   --shadow: 0 1px 2px rgba(46, 40, 30, 0.05), 0 12px 30px -14px rgba(46, 40, 30, 0.14);
   --shadow-lg: 0 2px 6px rgba(46, 40, 30, 0.06), 0 26px 54px -24px rgba(46, 40, 30, 0.22);
   --radius: 16px;
@@ -1323,5 +1327,134 @@
     grid-column: 1 / -1;
     grid-row: 2;
     width: 100%;
+  }
+}
+
+/* Sandbox emission: equal control rims and restrained teaching-graphic colour. */
+.sbx :is(button, summary, .sbx-mission-next > a) {
+  border-color: rgba(var(--dt-emission-rgb), .28);
+  box-shadow: 0 0 0 1px rgba(var(--dt-emission-rgb), .13), 0 0 5px rgba(var(--dt-emission-rgb), .06);
+  transition:
+    color 140ms ease,
+    background-color 140ms ease,
+    border-color 140ms ease,
+    box-shadow 140ms ease,
+    transform 70ms ease;
+}
+
+.sbx .sbx-seg button.active,
+.sbx [aria-selected="true"],
+.sbx [aria-pressed="true"],
+.sbx details[open] > summary {
+  border-color: rgba(var(--dt-emission-rgb), .78);
+  background-color: color-mix(in srgb, var(--dt-emission) 8%, var(--surface));
+  color: var(--ink);
+  box-shadow: 0 0 0 1px rgba(var(--dt-emission-rgb), .64), 0 0 9px rgba(var(--dt-emission-rgb), .24);
+}
+
+.sbx :is(p, li) a:not(.sbx-btn) {
+  color: var(--dt-emission-ink);
+  text-decoration-line: underline;
+  text-decoration-color: rgba(var(--dt-emission-rgb), .42);
+  text-decoration-thickness: 1px;
+  text-underline-offset: .24em;
+  text-decoration-skip-ink: auto;
+  transition: color 140ms ease, text-decoration-color 140ms ease, text-shadow 140ms ease;
+}
+
+.sbx input[type='range'] {
+  background: color-mix(in srgb, var(--dt-emission-ink) 42%, var(--line));
+  background-clip: content-box;
+}
+
+.sbx input[type='range']::-webkit-slider-thumb {
+  background: var(--dt-emission-ink);
+  box-shadow: 0 0 0 1px var(--dt-emission), 0 0 7px rgba(var(--dt-emission-rgb), .28);
+}
+
+.sbx input[type='range']::-moz-range-thumb {
+  background: var(--dt-emission-ink);
+  box-shadow: 0 0 0 1px var(--dt-emission), 0 0 7px rgba(var(--dt-emission-rgb), .28);
+}
+
+.sbx :is(.sbx-steps li, .sbx-stat, .sbx-payout-row, .sbx-widget) {
+  border-color: rgba(var(--dt-emission-rgb), .2);
+  box-shadow: 0 0 0 1px rgba(var(--dt-emission-rgb), .07);
+  transition: border-color 160ms ease, box-shadow 160ms ease, background-color 160ms ease;
+}
+
+.sbx .sbx-steps li > span {
+  border-color: rgba(var(--dt-emission-rgb), .52);
+  background: color-mix(in srgb, var(--dt-emission) 10%, var(--surface));
+  color: var(--dt-emission-ink);
+  box-shadow: 0 0 7px rgba(var(--dt-emission-rgb), .13);
+}
+
+.sbx .sbx-widget:focus-within {
+  border-color: rgba(var(--dt-emission-rgb), .74);
+  box-shadow: 0 0 0 1px rgba(var(--dt-emission-rgb), .62), 0 0 10px rgba(var(--dt-emission-rgb), .22);
+}
+
+@media (hover: hover) and (pointer: fine) {
+  .sbx :is(button, summary, .sbx-mission-next > a):not(:disabled):hover {
+    border-color: var(--dt-emission);
+    box-shadow: 0 0 0 1px var(--dt-emission), 0 0 10px rgba(var(--dt-emission-rgb), .32);
+    filter: none;
+  }
+
+  .sbx :is(p, li) a:not(.sbx-btn):hover {
+    color: var(--dt-emission-ink);
+    text-decoration-color: var(--dt-emission);
+    text-decoration-thickness: 2px;
+    text-shadow: 0 0 7px rgba(var(--dt-emission-rgb), .24);
+  }
+
+  .sbx :is(.sbx-steps li, .sbx-stat, .sbx-payout-row, .sbx-widget):hover {
+    border-color: rgba(var(--dt-emission-rgb), .82);
+    box-shadow: 0 0 0 1px rgba(var(--dt-emission-rgb), .68), 0 0 10px rgba(var(--dt-emission-rgb), .24);
+  }
+}
+
+.sbx :is(button, summary, .sbx-mission-next > a):not(:disabled):active {
+  transform: scale(.99);
+  box-shadow: 0 0 0 1px var(--dt-emission), 0 0 5px rgba(var(--dt-emission-rgb), .3);
+  transition-duration: 45ms;
+}
+
+.sbx :is(button, input):disabled,
+.sbx :is([aria-disabled="true"], .is-disabled) {
+  border-color: var(--line-strong);
+  box-shadow: none;
+  filter: none;
+  opacity: .48;
+  cursor: not-allowed;
+}
+
+.sbx :focus-visible {
+  outline: 2px solid var(--dt-emission-ink);
+  outline-offset: 3px;
+  box-shadow: 0 0 0 5px rgba(var(--dt-emission-rgb), .2), 0 0 10px rgba(var(--dt-emission-rgb), .24);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .sbx :is(button, input, summary, a),
+  .sbx :is(.sbx-steps li, .sbx-stat, .sbx-payout-row, .sbx-widget) {
+    transition: none;
+  }
+
+  .sbx :is(button, summary, a):active {
+    transform: none;
+  }
+}
+
+@media (forced-colors: active) {
+  .sbx :is(button, input, summary, a),
+  .sbx :is(.sbx-steps li, .sbx-stat, .sbx-payout-row, .sbx-widget) {
+    box-shadow: none;
+    forced-color-adjust: auto;
+  }
+
+  .sbx :focus-visible {
+    outline: 2px solid Highlight;
   }
 }

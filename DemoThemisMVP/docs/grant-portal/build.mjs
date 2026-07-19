@@ -1,7 +1,7 @@
 // Builds a self-contained grant-review portal by inlining the real docs into the shell.
 // Run from anywhere:  node docs/grant-portal/build.mjs
 // Re-run after editing any source doc to refresh the portal.
-import { readFileSync, writeFileSync, copyFileSync } from 'node:fs';
+import { readFileSync, writeFileSync, copyFileSync, cpSync } from 'node:fs';
 import { fileURLToPath } from 'node:url';
 import { dirname, join, resolve } from 'node:path';
 
@@ -16,7 +16,7 @@ const MANIFEST = [
     desc:'The 12-section submission copy — led by on-chain World ID and hardened against reviewer rebuttals.' },
   { id:'budget', title:'Budget & milestones',         group:'The application', badge:'done',
     file:join(docs,'GRANT_BUDGET.md'), source:'docs/GRANT_BUDGET.md',
-    desc:'The priced $50k / 3-month plan: $14k Spark + $36k Scale, with user-testing (M6) as the largest line.' },
+    desc:'One milestone-gated $50k / 3-month request that completes the production-ready DemoThemis v1.' },
 
   { id:'differentiation', title:'Differentiation',    group:'Positioning',
     file:join(docs,'DIFFERENTIATION.md'), source:'docs/DIFFERENTIATION.md',
@@ -62,13 +62,15 @@ for (const d of MANIFEST) {
 // Standalone HTML pages embedded via iframe (copied into the portal dir so the server serves them as siblings).
 const HTML_ASSETS = [
   { id:'storyboard', title:'Demo video storyboard', group:'The live build', file:'storyboard.html',
-    src:join(docs,'storyboard.html'), desc:'Shot-by-shot plan for the 3–4 minute demo video (hook → mainnet flow → scale history).' },
+    src:join(docs,'storyboard.html'), desc:'A 3:58 recording plan built from the current MVP UI, capstone capture gates, and every public proposal chapter.' },
 ];
 const htmlMeta = [];
 for (const a of HTML_ASSETS) {
   try { copyFileSync(a.src, join(here, a.file)); htmlMeta.push({ id:a.id, title:a.title, group:a.group, file:a.file, desc:a.desc }); n++; }
   catch (e) { console.error('  ! asset missing, skipped:', a.src); }
 }
+try { cpSync(join(docs, 'storyboard-assets'), join(here, 'storyboard-assets'), { recursive:true, force:true }); }
+catch (e) { console.error('  ! storyboard assets missing, skipped:', join(docs, 'storyboard-assets')); }
 blocks += `<script>window.__HTML_DOCS__ = ${JSON.stringify(htmlMeta)};</script>\n`;
 
 const shell = readFileSync(join(here, '_shell.html'), 'utf8');

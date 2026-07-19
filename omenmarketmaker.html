@@ -3,12 +3,12 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>OmenMarketMaker: open markets with unbuyable arbitration</title>
+<title>OmenMarketMaker: Open markets with unbuyable arbitration</title>
 <meta name="description" content="OmenMarketMaker opens markets with pocket change, turns liquid positions into self-custodied tokens, and can route disputes to the independently operated DemoThemis court.">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@500;700&family=Newsreader:opsz,wght@6..72,200..700&display=swap" rel="stylesheet">
-<link rel="stylesheet" href="assets/styles.css">
+<link rel="stylesheet" href="assets/styles.css?v=20260719-emission-11">
 <style>
   /* parimutuel demo */
   .pmsplit { display: flex; height: 44px; border-radius: 12px; overflow: hidden; border: 1px solid var(--line); font-family: var(--sans); font-weight: 700; color: #fff; margin-bottom: .9rem; }
@@ -72,9 +72,8 @@
 
 <nav class="sitenav" aria-label="Primary">
   <div class="sitenav-inner">
-    <a class="brand brand-with-mark" href="/">
-      <img class="brand-mark" src="assets/brand/demothemis/mark-32.png" width="32" height="32" alt="">
-      <span class="brand-word">DemoThemis<span class="dot">.</span></span>
+    <a class="brand brand-with-wordmark" href="/" aria-label="DemoThemis home">
+      <img class="brand-nav-wordmark" src="assets/brand/demothemis/wordmark.png" width="1766" height="216" alt="">
     </a>
     <button class="nav-toggle" type="button" aria-label="Menu" aria-expanded="false">&#9776;</button>
     <div class="nav-links">
@@ -91,12 +90,11 @@
 </nav>
 
 <header class="hero brand-hero reveal">
-  <div class="omen-rive-shell" data-omen-rive>
+  <div class="omen-rive-shell" data-omen-rive role="img" aria-label="OmenMarketMaker">
     <img src="assets/brand/omenmarketmaker/wordmark-poster.png" width="1000" height="300" alt="" aria-hidden="true">
     <canvas id="omen-brand-canvas" width="1000" height="300" aria-hidden="true"></canvas>
   </div>
-  <p class="kicker">OmenMarketMaker</p>
-  <h1>OmenMarketMaker: open markets with unbuyable arbitration</h1>
+  <h1>Open markets with unbuyable arbitration</h1>
   <p class="dek">This chapter follows six OmenMarketMaker features: bullet proof arbitration that capital cannot buy, creation from the first bet, self-custody YES and NO tokens, tradeable claims during disputes, fully collateralized parlays without a central bookmaker, and private markets with neutral escrow.</p>
   <div class="meta">
     <span class="pill">Prediction markets</span>

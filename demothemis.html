@@ -8,14 +8,14 @@
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@500;700&family=Newsreader:opsz,wght@6..72,200..700&display=swap" rel="stylesheet">
-<link rel="stylesheet" href="assets/styles.css">
+<link rel="stylesheet" href="assets/styles.css?v=20260719-emission-11">
 <script>document.documentElement.classList.add("reader-tabs-enabled");</script>
 <style>
 
-  .demothemis-title { max-width: 16ch; letter-spacing: 0; }
+  .demothemis-title { max-width: none; letter-spacing: 0; }
   .demothemis-title span { display: block; }
-  .demothemis-title .title-product { font-weight: 650; }
-  .demothemis-title .title-claim { max-width: 27ch; margin-top: .55rem; color: var(--accent-ink); font-family: var(--sans); font-size: .46em; font-weight: 650; line-height: 1.22; }
+  .demothemis-title .brand-stage { margin-bottom: .8rem; }
+  .demothemis-title .title-claim { max-width: 27ch; color: var(--accent-ink); font-family: var(--sans); font-size: .46em; font-weight: 650; line-height: 1.22; }
 
   .part-marker { border-top: 1px solid var(--line); padding-top: 2rem; }
   .reader-switch { position: relative; z-index: 12; display: none; justify-content: center; margin: 1.8rem 0 2.7rem; }
@@ -229,9 +229,8 @@ body.theme-solve { --accent: #2f62cf; --accent-soft: #e6edfa; --accent-ink: #214
 
 <nav class="sitenav" aria-label="Primary">
   <div class="sitenav-inner">
-    <a class="brand brand-with-mark" href="/">
-      <img class="brand-mark" src="assets/brand/demothemis/mark-32.png" width="32" height="32" alt="">
-      <span class="brand-word">DemoThemis<span class="dot">.</span></span>
+    <a class="brand brand-with-wordmark" href="/" aria-label="DemoThemis home">
+      <img class="brand-nav-wordmark" src="assets/brand/demothemis/wordmark.png" width="1766" height="216" alt="">
     </a>
     <button class="nav-toggle" type="button" aria-label="Menu" aria-expanded="false">&#9776;</button>
     <div class="nav-links">
@@ -248,14 +247,12 @@ body.theme-solve { --accent: #2f62cf; --accent-soft: #e6edfa; --accent-ink: #214
 </nav>
 
 <header class="hero reveal">
-  <div class="brand-hero-lockup">
-    <div class="brand-stage brand-stage--demothemis" aria-hidden="true">
-      <img class="brand-wordmark" src="assets/brand/demothemis/wordmark.png" width="1766" height="216" alt="">
-    </div>
-  </div>
   <p class="kicker">Arbitration service</p>
   <h1 class="demothemis-title">
-    <span class="title-product">DemoThemis</span>
+    <span class="brand-stage brand-stage--demothemis" aria-hidden="true">
+      <span class="dt-wordmark-emission"><img class="brand-wordmark" src="assets/brand/demothemis/wordmark.png" width="1766" height="216" alt=""></span>
+    </span>
+    <span class="sr-only">DemoThemis</span>
     <span class="title-claim">The most ambitious human infrastructure ever made</span>
   </h1>
   <div class="meta">

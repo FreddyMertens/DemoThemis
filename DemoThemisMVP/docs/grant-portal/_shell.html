@@ -4,7 +4,7 @@
 <meta charset="utf-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1" />
 <title>DemoThemis — Grant Review Portal</title>
-<meta name="description" content="A navigable review portal for the DemoThemis World Foundation Spark Track grant application." />
+<meta name="description" content="A navigable review portal for the DemoThemis World Foundation grant application." />
 <script src="https://cdn.jsdelivr.net/npm/marked@12.0.0/marked.min.js"></script>
 <style>
   :root{
@@ -197,7 +197,7 @@
   <aside class="sidebar">
     <div class="brand">
       <h1><span class="dot"></span> DemoThemis</h1>
-      <div class="sub">Grant Review Portal · World Spark Track</div>
+      <div class="sub">Grant Review Portal · World Foundation</div>
     </div>
     <div class="search"><input id="search" type="text" placeholder="Search sections…  ( / )" autocomplete="off" spellcheck="false" /></div>
     <nav id="nav"></nav>
@@ -235,7 +235,7 @@
 <template id="tpl-overview">
   <div class="ov">
     <div class="hero">
-      <span class="tag">● Spark-ready · capstone pending</span>
+      <span class="tag">● Full-v1 request · capstone pending</span>
       <h1>Everything assembled for the grant, in one place</h1>
       <p>DemoThemis is a decentralized arbitration court whose jury is gated by <b>on-chain World ID</b> — one verified human, one vote, instead of one dollar, one vote. The point isn't just Sybil-resistance: where a stake-weighted oracle (UMA, Kleros) is bought once — acquire a majority of the stake and you decide this case and every future case for free — DemoThemis draws each panel at <b>random, after the question is posed</b>, from the whole verified-human pool. There's no known set of jurors to buy, so to swing a specific verdict you'd have to pre-corrupt a near-majority of the <b>entire pool</b>, re-pay it for <b>every case</b>, and still only get a <i>probability</i> — one that collapses as the pool, the case volume, and the value at stake grow (the at-scale design — pool width, parallel pᴺ panels, appeals — is modeled in the labeled sandbox; the live court is a 3/3 cost-and-liveness demo). This portal collects the full application, priced milestone plan, positioning, independent diligence, and live on-chain evidence. Pick a card or use the sidebar.</p>
     </div>
@@ -244,7 +244,7 @@
       <div class="stat"><div class="v ok">6</div><div class="l">source-verified mainnet contracts</div></div>
       <div class="stat"><div class="v">77</div><div class="l">Foundry tests (invariants + fuzz)</div></div>
       <div class="stat"><div class="v ok">97.2%</div><div class="l">line coverage (measured)</div></div>
-      <div class="stat"><div class="v acc">$50k</div><div class="l">3-month roadmap · $14k Spark lead</div></div>
+      <div class="stat"><div class="v acc">$50k</div><div class="l">3-month production-ready v1</div></div>
       <div class="stat"><div class="v warn">0</div><div class="l">jurorCount() — capstone not yet run</div></div>
     </div>
 
@@ -255,7 +255,7 @@
     <h2 style="margin-top:34px">Status — what's left before submission</h2>
     <p class="h2sub">From the independent review's critical path. Green = done · amber = pending the capstone · red = hard eligibility gate.</p>
     <div class="checks">
-      <div class="chk done"><span class="ic">✓</span><div><div class="ct">Milestones priced + budget written</div><div class="cs">$14k Spark (M1+M5) + $36k Scale follow-on = $50k, milestone-gated; M6 user-testing is the largest line.</div></div><span class="tagx pill ok">done</span></div>
+      <div class="chk done"><span class="ic">✓</span><div><div class="ct">Milestones priced + budget written</div><div class="cs">One $50k request funds M1–M6 through reviewed, integration-ready v1; M6 verified-human testing is the final launch gate.</div></div><span class="tagx pill ok">done</span></div>
       <div class="chk done"><span class="ic">✓</span><div><div class="ct">Application copy written</div><div class="cs">12 sections, leads with on-chain World ID, hardened by a 4-lens reviewer panel.</div></div><span class="tagx pill ok">done</span></div>
       <div class="chk done"><span class="ic">✓</span><div><div class="ct">Deployment-JSON honesty leak fixed</div><div class="cs">Stale "3 real humans register here" line reconciled to jurorCount()==0.</div></div><span class="tagx pill ok">done</span></div>
       <div class="chk pend"><span class="ic">◷</span><div><div class="ct">Run the 3-human mainnet capstone</div><div class="cs">The master technical key — flips "Deep World ID usage" + "Working demo" to proven.</div></div><span class="tagx pill warn">pending</span></div>
@@ -353,8 +353,8 @@
       h2.innerHTML='<div class="src">🎬 '+esc(e.source)+'</div><h1 class="dt">'+esc(e.title)+'</h1>'+
         '<div class="meta"><span>'+esc(e.group)+'</span><span>·</span><a href="'+esc(e.htmlFile)+'" target="_blank" rel="noopener">open full page ↗</a></div>';
       w2.appendChild(h2);
-      var fr=document.createElement('iframe'); fr.src=e.htmlFile; fr.setAttribute('title',e.title);
-      fr.style.cssText='width:100%;height:calc(100vh - 210px);border:1px solid var(--line);border-radius:12px;background:#fff';
+      var fr=document.createElement('iframe'); fr.src=e.htmlFile+'?embed=1'; fr.setAttribute('title',e.title); fr.allowFullscreen=true; fr.setAttribute('allow','fullscreen');
+      fr.style.cssText='width:100%;height:calc(100vh - 128px);min-height:520px;border:1px solid var(--line);border-radius:12px;background:#fff';
       w2.appendChild(fr); view.appendChild(w2);
       crumb.innerHTML='<b>'+esc(e.title)+'</b>'; tocEl.innerHTML='<div class="empty">Standalone page</div>';
       main.scrollTop=0; setBar(); return;
