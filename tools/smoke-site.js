@@ -684,8 +684,8 @@ function checkRunThroughSurfaceSeparation(html, failures) {
       failures
     );
     assert(
-      finalBlocks.some((block) => block && block.type === "receipt") && /(?:market resolved|settlement|payout|redeemable)/i.test(finalCopy),
-      "the run-through must finish on an OmenMarketMaker settlement receipt",
+      finalBlocks.some((block) => block && block.type === "settlement") && /(?:market resolved|settlement|payout|redeemable)/i.test(finalCopy),
+      "the run-through must finish on an OmenMarketMaker settlement result",
       failures
     );
   }
@@ -803,7 +803,7 @@ function checkCompactAppViews(html, failures) {
   });
 
   const resolvedSnapshots = snapshots.filter((snapshot) => snapshot.state !== "base");
-  assert(resolvedSnapshots.length === 37, `app simulator must expose exactly 37 resolved states (found ${resolvedSnapshots.length})`, failures);
+  assert(resolvedSnapshots.length === 34, `app simulator must expose exactly 34 streamlined states (found ${resolvedSnapshots.length})`, failures);
   const deadPageKeys = ["intent", "summary", "sideTitle", "sideRows"];
   assert(
     pages.every((page) => deadPageKeys.every((key) => !Object.prototype.hasOwnProperty.call(page, key))) &&
@@ -829,7 +829,7 @@ function checkCompactAppViews(html, failures) {
   const parlayExecution = demoSnapshot(6, "after-1");
   const parlayPosition = demoSnapshot(6, "after-2");
   const cashoutExecution = demoSnapshot(6, "after-3");
-  const cashoutReceipt = demoSnapshot(6, "after-4");
+  const cashoutResult = demoSnapshot(6, "after-4");
   assert(
     parlayStart && parlayStart.page.view === "application" && parlayStart.page.route === "/parlays/new" && !(parlayStart.page.blocks || []).some((block) => block.type === "route"),
     "Event 06 must begin as a production parlay builder without backend route controls",
@@ -842,9 +842,9 @@ function checkCompactAppViews(html, failures) {
   );
   assert(
     parlayPosition && parlayPosition.page.view === "application" && parlayPosition.page.route === "/parlays/PM-4821" &&
-      (parlayPosition.page.blocks || []).some((block) => block.type === "receipt" && block.title === "Parlay confirmed" && Array.isArray(block.details) && block.details.length >= 4) &&
+      (parlayPosition.page.blocks || []).some((block) => block.type === "record" && block.title === "Parlay transaction" && Array.isArray(block.details) && block.details.length >= 4) &&
       !(parlayPosition.page.blocks || []).some((block) => block.type === "route"),
-    "Event 06 must return to a real parlay position and structured confirmation receipt",
+    "Event 06 must return to a real parlay position with permanent expandable transaction details",
     failures
   );
   assert(
@@ -853,10 +853,10 @@ function checkCompactAppViews(html, failures) {
     failures
   );
   assert(
-    cashoutReceipt && cashoutReceipt.page.view === "application" && cashoutReceipt.page.route === "/parlays/PM-4821/cashout" &&
-      (cashoutReceipt.page.blocks || []).some((block) => block.type === "receipt" && block.title === "Payment confirmed" && Array.isArray(block.details) && block.details.length >= 4) &&
-      !(cashoutReceipt.page.blocks || []).some((block) => block.type === "route" || /fill check|revert/i.test(JSON.stringify(block))),
-    "Event 06 must finish in the app with a structured cashout receipt and no backend diagnostics",
+    cashoutResult && cashoutResult.page.view === "application" && cashoutResult.page.route === "/parlays/PM-4821/cashout" &&
+      (cashoutResult.page.blocks || []).some((block) => block.type === "settlement" && block.title === "Cashout result" && Array.isArray(block.details) && block.details.length >= 4) &&
+      !(cashoutResult.page.blocks || []).some((block) => block.type === "route" || /fill check|revert/i.test(JSON.stringify(block))),
+    "Event 06 must finish in the app with a durable cashout result and no backend diagnostics",
     failures
   );
 
@@ -867,10 +867,10 @@ function checkCompactAppViews(html, failures) {
     "Event 07 must present a production confirmation with the result, challenge period, and exact bond",
     failures
   );
-  const proposalReceipt = demoBlock(demoSnapshot(7, "after-1"), (block) => block.type === "receipt" && block.title === "Proposal confirmed");
+  const proposalRecord = demoBlock(demoSnapshot(7, "after-1"), (block) => block.type === "record" && block.title === "Proposal details");
   assert(
-    proposalReceipt && Array.isArray(proposalReceipt.details) && /\$250 locked/i.test(rowValue(proposalReceipt, "Bond") || "") && /UTC/i.test(rowValue(proposalReceipt, "Challenge ends") || "") && /^0x/i.test(rowValue(proposalReceipt, "Transaction") || ""),
-    "Event 07 must finish with a structured bond, deadline, and transaction receipt",
+    proposalRecord && Array.isArray(proposalRecord.details) && /\$250 locked/i.test(rowValue(proposalRecord, "Bond") || "") && /UTC/i.test(rowValue(proposalRecord, "Challenge ends") || "") && /^0x/i.test(rowValue(proposalRecord, "Transaction") || ""),
+    "Event 07 must keep bond, deadline, and transaction details on the published result page",
     failures
   );
 
@@ -886,12 +886,12 @@ function checkCompactAppViews(html, failures) {
   assert(!rowValue(challengeTicket, "Evidence"), "Event 08 must not submit evidence for jurors to inherit", failures);
   assert(challengeStartOdds && challengeStartOdds.yes === 91 && challengeStartOdds.no === 9, "Event 08 must show the unchanged 91/9 market before the challenge is submitted", failures);
   const challengeEnd = demoSnapshot(8, "after-1");
-  const challengeReceipt = demoBlock(challengeEnd, (block) => block.type === "receipt" && block.title === "Challenge receipt");
+  const challengeRecord = demoBlock(challengeEnd, (block) => block.type === "record" && block.title === "Case activity");
   const challengeEndOdds = demoBlock(challengeEnd, (block) => block.type === "odds" && block.title === "Live market odds");
   assert(
-    challengeReceipt && challengeReceipt.value === "Case #1182" && rowValue(challengeReceipt, "Challenge") === "NO" && rowValue(challengeReceipt, "Status") === "Awaiting panel selection" &&
+    challengeRecord && challengeEnd.page.route === "/cases/1182" && /NO challenge accepted/i.test(challengeRecord.value || "") && rowValue(challengeRecord, "Case") === "#1182" && rowValue(challengeRecord, "Status") === "Awaiting panel selection" &&
       !(challengeEnd.page.blocks || []).some((block) => block.type === "handoff"),
-    "Event 08 must show a production case receipt instead of backend handoff plumbing",
+    "Event 08 must open the real case page with permanent activity instead of a receipt interstitial",
     failures
   );
   assert(challengeEndOdds && challengeEndOdds.yes === 44 && challengeEndOdds.no === 56, "Event 08 must reprice to 44/56 only after the challenge is submitted", failures);
@@ -912,17 +912,17 @@ function checkCompactAppViews(html, failures) {
     "Event 10 must expose exactly the YES and NO ballot choices",
     failures
   );
-  const ballotReceipt = demoBlock(demoSnapshot(10, "after-1"), (block) => block.type === "receipt" && block.title === "Submission receipt");
-  const ballotReceiptCopy = JSON.stringify(ballotReceipt || {});
+  const ballotRecord = demoBlock(demoSnapshot(10, "after-1"), (block) => block.type === "record" && block.title === "Submission details");
+  const ballotRecordCopy = JSON.stringify(ballotRecord || {});
   assert(
-    ballotReceipt && rowValue(ballotReceipt, "Ballot contents") === "Hidden" && /^0x/i.test(rowValue(ballotReceipt, "Submission ID") || "") && /pending finality/i.test(rowValue(ballotReceipt, "Juror fee") || "") && !/\b(?:YES|NO)\b/.test(ballotReceiptCopy),
-    "Event 10 receipt must confirm submission without revealing the juror's selected outcome",
+    ballotRecord && rowValue(ballotRecord, "Ballot contents") === "Hidden" && /^0x/i.test(rowValue(ballotRecord, "Submission ID") || "") && /pending finality/i.test(rowValue(ballotRecord, "Juror fee") || "") && !/\b(?:YES|NO)\b/.test(ballotRecordCopy),
+    "Event 10 must lock the ballot workspace and retain submission details without revealing the selected outcome",
     failures
   );
 
   const appealStart = demoSnapshot(12, "start");
   const appealCheckout = demoBlock(appealStart, (block) => block.type === "checkout" && block.title === "Required bond");
-  const appealCaseStatus = demoBlock(appealStart, (block) => block.type === "receipt" && block.title === "Case status");
+  const appealCaseStatus = demoBlock(appealStart, (block) => block.type === "record" && block.title === "Case status");
   assert(
     rowValue(appealCheckout, "31-juror minimum") === "$12,400" && rowValue(appealCheckout, "Security minimum") === "$31,000" && rowValue(appealCheckout, "Delay minimum") === "$8,200" && rowValue(appealCheckout, "Required bond") === "$31,000" && appealCheckout.winner === "Highest minimum applied",
     "Event 12 must show each minimum and the highest applied appeal bond",
@@ -932,10 +932,10 @@ function checkCompactAppViews(html, failures) {
 
   const proofStart = demoBlock(demoSnapshot(11, "start"), (block) => block.type === "proof");
   const proofPosted = demoBlock(demoSnapshot(11, "after-1"), (block) => block.type === "proof" && block.title === "Aggregate tally");
-  const proofVerified = demoBlock(demoSnapshot(11, "after-2"), (block) => block.type === "receipt" && block.title === "Tally proof");
+  const proofVerified = demoBlock(demoSnapshot(11, "after-2"), (block) => block.type === "proof" && block.title === "Verified verdict");
   assert(proofStart && proofStart.verified === false, "Event 11 must mark the unposted aggregate proof as unverified", failures);
   assert(proofPosted && proofPosted.verified === false, "Event 11 must keep the posted tally unverified until its explicit proof check", failures);
-  assert(proofVerified && /verified/i.test((proofVerified.value || "") + " " + (proofVerified.note || "")), "Event 11 must show a verified tally-proof receipt after the check", failures);
+  assert(proofVerified && /verified/i.test((proofVerified.stamp || "") + " " + (proofVerified.note || "")), "Event 11 must show the verified verdict as the durable protocol result", failures);
 
   function seatBlocksFor(event) {
     return snapshots
@@ -957,12 +957,18 @@ function checkCompactAppViews(html, failures) {
     "DemoThemis Events 07-13 must retain the shorter 1/1/2/1/2/2/1 action path",
     failures
   );
-  const exactSimulatorStepCounts = [2, 3, 1, 2, 2, 4, 1, 1, 2, 1, 2, 2, 1];
+  const exactSimulatorStepCounts = [1, 2, 1, 1, 2, 4, 1, 1, 2, 1, 2, 2, 1];
   assert(
     JSON.stringify(flows.map((flow) => (flow.steps || []).length)) === JSON.stringify(exactSimulatorStepCounts),
-    "the OmenMarketMaker-to-DemoThemis simulator must retain its exact 13-event action path",
+    "the OmenMarketMaker-to-DemoThemis simulator must retain its streamlined 13-event state path",
     failures
   );
+  const configuredBlocks = pages.flatMap((page) => page.blocks || []).concat(
+    flows.flatMap((flow) => (flow.steps || []).flatMap((step) => step.after && step.after.blocks || []))
+  );
+  assert(!configuredBlocks.some((block) => block && block.type === "receipt"), "receipt cards must not return as mandatory simulator states", failures);
+  const confirmationSteps = flows.flatMap((flow) => (flow.steps || []).filter((step) => step.toast));
+  assert(confirmationSteps.length >= 10 && confirmationSteps.every((step) => step.toast.title && step.toast.body && step.toast.detail), "meaningful destination changes must define concise in-app confirmation copy", failures);
   const appealEnd = demoSnapshot(12, "after-" + flows[11].steps.length);
   const appealEndCopy = JSON.stringify(appealEnd && appealEnd.page || {});
   assert(/\bNO\b/i.test(appealEndCopy) && /final|resolved/i.test(appealEndCopy), "Event 12 must show a final NO appeal verdict before finality", failures);
@@ -970,7 +976,7 @@ function checkCompactAppViews(html, failures) {
   const finalityEndCopy = JSON.stringify(demoSnapshot(13, "after-1").page);
   assert(/\bNO\b/i.test(finalityStartCopy) && /final/i.test(finalityStartCopy), "Event 13 must carry the final NO verdict into court finality", failures);
   assert(/relay/i.test(finalityStartCopy) && /OmenMarketMaker/i.test(finalityEndCopy), "Event 13 must relay one final proof back to OmenMarketMaker", failures);
-  assert(/Payout received|\$210\.50 received|"Status","Paid"/i.test(finalityEndCopy) && !/Redeemable|redeem/i.test(finalityEndCopy), "Event 13 must finish on a paid OmenMarketMaker receipt with no contradictory redemption state", failures);
+  assert(/Settlement complete|Payout received|\$210\.50|"status":"Paid"/i.test(finalityEndCopy) && !/Redeemable|redeem/i.test(finalityEndCopy), "Event 13 must finish on a paid OmenMarketMaker settlement with no contradictory redemption state", failures);
   assert(demoSnapshot(9, "start").page.surface === "protocol" && demoSnapshot(9, "after-2").page.surface === "protocol", "Event 09 must remain on the protocol sequence canvas from start through completion", failures);
   assert(demoSnapshot(11, "start").page.surface === "protocol" && demoSnapshot(11, "after-2").page.surface === "protocol", "Event 11 must remain on the protocol sequence canvas from start through completion", failures);
   assert(demoSnapshot(12, "start").page.surface === "themis" && demoSnapshot(12, "after-1").page.surface === "protocol" && demoSnapshot(12, "after-2").page.surface === "protocol", "Event 12 must replace the appeal app with the sequence canvas after payment", failures);
@@ -1032,7 +1038,7 @@ function checkCompactAppViews(html, failures) {
   const knownBlockTypes = new Set([
     "ballot", "bars", "beacon", "checklist", "checkout", "closed", "countdown", "evidence",
     "faceChecks", "fields", "handoff", "legs", "liquidity", "odds", "participants", "proof",
-    "receipt", "route", "scoreboard", "seats", "table", "ticket", "tokens"
+    "receipt", "record", "route", "scoreboard", "seats", "settlement", "table", "ticket", "tokens"
   ]);
   const moneyValuePattern = /^(?:[$£€]\s*\d[\d,]*(?:\.\d+)?[kmb]?|\d[\d,]*(?:\.\d+)?[kmb]?\s*(?:USD|USDC|WLD|ETH))$/i;
   const actionVerbPattern = /^(?:submit|stake|buy|sell|take|fill|post|publish|pay|resolve|claim|invite|lock|build|cash\s*out|run|check|seal|open|show|challenge|return|restart)\b/i;
@@ -1102,6 +1108,17 @@ function checkCompactAppViews(html, failures) {
             const detailLabels = block.details.map((detail) => String(detail && detail[0] || "").trim().toLowerCase());
             assert(new Set(detailLabels).size === detailLabels.length, `${blockLabel} contains duplicate receipt-detail labels`, failures);
           }
+          break;
+        case "record":
+          assertText(block.value, `${blockLabel} value`);
+          assert(Array.isArray(block.details) && block.details.length >= 2, `${blockLabel} must preserve at least two permanent details`, failures);
+          if (Array.isArray(block.details)) assertTupleList(block.details, 2, `${blockLabel} details`);
+          break;
+        case "settlement":
+          assertText(block.value, `${blockLabel} value`);
+          assertText(block.status, `${blockLabel} status`);
+          assert(Array.isArray(block.details) && block.details.length >= 4, `${blockLabel} must preserve payout and proof details`, failures);
+          if (Array.isArray(block.details)) assertTupleList(block.details, 2, `${blockLabel} details`);
           break;
         case "odds":
           assert(Number.isFinite(block.yes) && block.yes >= 0 && block.yes <= 100, `${blockLabel} YES odds must be between 0 and 100`, failures);
@@ -1226,8 +1243,7 @@ function checkCompactAppViews(html, failures) {
     "Events 01-07 must use concise production-style in-app continuation labels",
     failures
   );
-  assert([3, 4, 5].every((index) => continuations[index] && continuations[index].dock === "page"), "unrelated feature changes in Events 04-06 must use the app page action area instead of a receipt", failures);
-  assert([0, 1, 2, 6].every((index) => continuations[index] && continuations[index].dock !== "page"), "contextual continuations in Events 01-03 and 07 must remain attached to their relevant card", failures);
+  assert(continuations.every((continuation) => continuation && continuation.dock !== "card"), "event continuations must use the destination page or product boundary instead of a receipt card", failures);
   assert(continuations[6] && continuations[6].targetTitle === "Challenge period", "Event 07 challenge navigation must attach to the open challenge period", failures);
   assert(continuations[9] && continuations[9].action === "View aggregate tally" && continuations[10] && continuations[10].action === "Review appeal bond" && continuations[11] && continuations[11].action === "View final proof relay", "court-path continuation labels must describe the next visible state", failures);
   assert(flows[6] && flows[7] && flows[6].start.account !== flows[7].start.account, "the result submitter and challenger must use different production accounts", failures);
@@ -1258,7 +1274,10 @@ function checkCompactAppViews(html, failures) {
     let copy = ["title", "value", "result", "note", "summaryLabel", "summaryValue", "winner", "payout", "question", "code", "yes", "no"]
       .map((key) => visibleScalar(block && block[key]))
       .join("");
-    for (const key of ["rows", "details", "left", "right", "tabs", "steps", "people", "legs", "tokens"]) copy += visibleArray(block && block[key]);
+    for (const key of ["rows", "details", "left", "right", "tabs", "steps", "people", "legs", "tokens"]) {
+      if (key === "details" && block && (block.type === "record" || block.type === "settlement") && !block.open) continue;
+      copy += visibleArray(block && block[key]);
+    }
     if (block && Array.isArray(block.options)) copy += block.options.map((option) => visibleScalar(Array.isArray(option) ? option[0] : option)).join("");
     if (block && Array.isArray(block.bars)) copy += block.bars.map((bar) => visibleScalar(bar[0]) + visibleScalar(bar[1])).join("");
     return copy;
@@ -1299,8 +1318,8 @@ function checkCompactAppViews(html, failures) {
       ((page && page.blocks) || []).map(visibleBlockCopy).join("");
   }
 
-  const maxStateCopyBudgets = { 7: 370, 8: 425, 9: 339, 10: 354, 11: 386, 12: 401, 13: 428 };
-  const traversalCopyBudgets = { 7: 1416, 8: 1534, 9: 1337, 10: 1433, 11: 1374, 12: 1415, 13: 1991 };
+  const maxStateCopyBudgets = { 7: 370, 8: 425, 9: 350, 10: 380, 11: 386, 12: 401, 13: 520 };
+  const traversalCopyBudgets = { 7: 1416, 8: 1534, 9: 1350, 10: 1433, 11: 1374, 12: 1415, 13: 1991 };
   let demoTraversalCopy = 0;
 
   for (let event = 7; event <= 13; event += 1) {
@@ -1395,36 +1414,32 @@ function checkCompactAppViews(html, failures) {
   );
 
   const event1Published = snapshots.find((snapshot) => snapshot.event === 1 && snapshot.state === "after-1");
-  const event1Opened = snapshots.find((snapshot) => snapshot.event === 1 && snapshot.state === "after-2");
   const event2AfterYes = snapshots.find((snapshot) => snapshot.event === 2 && snapshot.state === "after-1");
   const event2AfterNo = snapshots.find((snapshot) => snapshot.event === 2 && snapshot.state === "after-2");
-  const event2Position = snapshots.find((snapshot) => snapshot.event === 2 && snapshot.state === "after-3");
   const event3Estimate = snapshots.find((snapshot) => snapshot.event === 3 && snapshot.state === "start");
   const event3Fill = snapshots.find((snapshot) => snapshot.event === 3 && snapshot.state === "after-1");
   const event4ClaimReady = snapshots.find((snapshot) => snapshot.event === 4 && snapshot.state === "start");
   const event4Claimed = snapshots.find((snapshot) => snapshot.event === 4 && snapshot.state === "after-1");
-  const event4Book = snapshots.find((snapshot) => snapshot.event === 4 && snapshot.state === "after-2");
   const event5Funded = snapshots.find((snapshot) => snapshot.event === 5 && snapshot.state === "after-2");
   const snapshotCopy = (snapshot) => JSON.stringify(snapshot && snapshot.page || {});
-  assert(event1Published && event1Published.page.route === "/markets/PM-EURO-24/receipt" && event1Opened && event1Opened.page.route === "/m/england-euro-final", "Event 01 must move from its publish confirmation to the actual public market route", failures);
+  assert(event1Published && event1Published.page.route === "/m/england-euro-final" && /Market details/.test(snapshotCopy(event1Published)) && !/\/receipt/.test(event1Published.page.route), "Event 01 must publish directly to the actual public market page", failures);
   assert(/\$690/.test(snapshotCopy(event2AfterYes)) && /80\.6 YES/.test(snapshotCopy(event2AfterYes)), "Event 02 YES fill must spend $50 from $740 and hold 80.6 YES", failures);
-  assert(/\$610/.test(snapshotCopy(event2AfterNo)) && /210\.5 NO/.test(snapshotCopy(event2AfterNo)), "Event 02 NO fill must leave $610 and hold 210.5 NO", failures);
-  assert(/80\.6 YES/.test(snapshotCopy(event2Position)) && /210\.5 NO/.test(snapshotCopy(event2Position)), "Event 02 position summary must reconcile both filled holdings", failures);
+  assert(/\$610/.test(snapshotCopy(event2AfterNo)) && /80\.6 YES/.test(snapshotCopy(event2AfterNo)) && /210\.5 NO/.test(snapshotCopy(event2AfterNo)), "Event 02 NO fill must immediately reconcile both holdings and the $610 balance", failures);
   assert(/Estimated fill/.test(snapshotCopy(event3Estimate)) && /Estimated average/.test(snapshotCopy(event3Estimate)) && /Estimated cost/.test(snapshotCopy(event3Estimate)) && !/Fill status/.test(snapshotCopy(event3Estimate)), "Event 03 must present a customer-facing estimated fill instead of matching-engine steps", failures);
-  assert(/740 YES/.test(snapshotCopy(event3Fill)) && /\$525\.20/.test(snapshotCopy(event3Fill)) && /\$84\.80/.test(snapshotCopy(event3Fill)) && /Order receipt/.test(snapshotCopy(event3Fill)) && /\$0\.00/.test(snapshotCopy(event3Fill)), "Event 03 fill must reconcile the order in a production receipt with an exact fee", failures);
+  assert(/740 YES/.test(snapshotCopy(event3Fill)) && /\$525\.20/.test(snapshotCopy(event3Fill)) && /\$84\.80/.test(snapshotCopy(event3Fill)) && /Fill details/.test(snapshotCopy(event3Fill)) && /\$0\.00/.test(snapshotCopy(event3Fill)), "Event 03 fill must reconcile the order on the updated book with permanent exact-fee details", failures);
   assert(/Eligible to claim/.test(snapshotCopy(event4ClaimReady)) && /Your position/.test(snapshotCopy(event4ClaimReady)) && /Why eligible/.test(snapshotCopy(event4ClaimReady)) && /820\.6 YES/.test(snapshotCopy(event4ClaimReady)) && /210\.5 NO/.test(snapshotCopy(event4ClaimReady)), "Event 04 must attach claiming to the position and demote graduation checks to read-only eligibility details", failures);
-  assert(/Claim confirmed/.test(snapshotCopy(event4Claimed)) && /World Chain/.test(snapshotCopy(event4Claimed)) && /Transaction/.test(snapshotCopy(event4Claimed)), "Event 04 claim confirmation must look like a production wallet receipt", failures);
-  assert(!/\"title\":\"Order book\"/.test(snapshotCopy(event4Claimed)) && /Wallet assets/.test(snapshotCopy(event4Claimed)) && /\"title\":\"Order book\"/.test(snapshotCopy(event4Book)), "Event 04 must not reveal the order book before the user opens it", failures);
+  assert(/Claim transaction/.test(snapshotCopy(event4Claimed)) && /World Chain/.test(snapshotCopy(event4Claimed)) && /Transaction/.test(snapshotCopy(event4Claimed)), "Event 04 must retain permanent wallet transaction details", failures);
+  assert(/Wallet assets/.test(snapshotCopy(event4Claimed)) && /\"title\":\"Order book\"/.test(snapshotCopy(event4Claimed)), "Event 04 must combine the claimed assets and destination order book after one tap", failures);
   assert(/\$20,000 locked/.test(snapshotCopy(event5Funded)) && /PM-ROOM-204/.test(snapshotCopy(event5Funded)) && !/60c|40c/.test(snapshotCopy(event5Funded)), "Event 05 funded room must show coherent equal-stake terms and a room reference", failures);
-  assert(!/Final payout unlocked|redeem YES\/NO/.test(html), "Event 13 supporting copy must remain consistent with its automatic payout receipt", failures);
+  assert(!/Final payout unlocked|redeem YES\/NO/.test(html), "Event 13 supporting copy must remain consistent with its automatic settlement", failures);
 
   assert(!/function\s+renderIntentStrip\s*\(/.test(html), "app views must not render the removed Why/Money/Next strip", failures);
   assert(!/title\.appendChild\(makeEl\("span",\s*"",\s*blockTypeLabel\(type\)\)\)/.test(html), "app cards must not repeat internal block-type labels", failures);
   const toastAnimationStart = html.indexOf("@keyframes toast-rise");
   const toastAnimationEnd = html.indexOf("@keyframes browser-back-icon-nudge", toastAnimationStart);
   const toastAnimation = toastAnimationStart >= 0 && toastAnimationEnd > toastAnimationStart ? html.slice(toastAnimationStart, toastAnimationEnd) : "";
-  assert(/to\s*\{\s*opacity:\s*1/.test(toastAnimation) && !/-50%/.test(toastAnimation), "inline state feedback must enter in place and remain visible", failures);
-  assert(/\.sim-result-toast::before\s*\{\s*content:\s*"→"/.test(html), "state feedback must use a neutral transition symbol instead of a success mark", failures);
+  assert(/to\s*\{\s*opacity:\s*1/.test(toastAnimation) && /@keyframes\s+toast-away/.test(toastAnimation) && /@keyframes\s+toast-progress/.test(toastAnimation), "in-app confirmation must enter clearly, remain briefly, and then disappear", failures);
+  assert(/function\s+renderStepConfirmation\s*\(/.test(html) && /sim-toast-icon/.test(html) && /aria-hidden/.test(html), "state feedback must render as one non-interactive in-app confirmation", failures);
   assert(!/headActions\.appendChild\(makeEl\("div",\s*"app-nav-chip",\s*chrome\.context\)\)/.test(html), "app header must not duplicate navigation context", failures);
   assert(/function\s+compactPageKpis\s*\(/.test(html), "app KPI rendering must remove values already visible in the current blocks", failures);
   assert(/var\s+marketLiquidityDraft\s*=\s*\{\s*yes:\s*\.1,\s*no:\s*0\s*\}/.test(html), "Event 01 opening-liquidity draft state is missing", failures);
@@ -1436,7 +1451,7 @@ function checkCompactAppViews(html, failures) {
     /liveFieldValue\(0,\s*"Question"/.test(liveFieldDraftSource) &&
       /liveFieldValue\(0,\s*"Close time"/.test(liveFieldDraftSource) &&
       /liveFieldValue\(0,\s*"Resolve condition"/.test(liveFieldDraftSource) &&
-      /block\.title\s*===\s*"Market page"/.test(liveFieldDraftSource),
+      /block\.title\s*===\s*"Market details"/.test(liveFieldDraftSource),
     "all edited public-market fields must persist onto the published page",
     failures
   );
@@ -1447,9 +1462,9 @@ function checkCompactAppViews(html, failures) {
       /liveFieldValue\(4,\s*"Winner receives"/.test(liveFieldDraftSource) &&
       /block\.type\s*===\s*"fields"[\s\S]{0,260}liveFieldValue\(4,\s*row\[0\],\s*row\[1\]\)/.test(liveFieldDraftSource) &&
       /activeEventStep\s*===\s*1/.test(liveFieldDraftSource) &&
-      /block\.title\s*===\s*"Room funded"/.test(liveFieldDraftSource) &&
-      !/block\.title\s*===\s*"Room funded"[\s\S]{0,360}setReceiptDetail\(block,\s*"Resolve rule"/.test(liveFieldDraftSource),
-    "edited private-room terms must persist in the terms view without bloating the funding receipt",
+      /block\.title\s*===\s*"Escrow record"/.test(liveFieldDraftSource) &&
+      !/block\.title\s*===\s*"Escrow record"[\s\S]{0,360}setReceiptDetail\(block,\s*"Resolve rule"/.test(liveFieldDraftSource),
+    "edited private-room terms must persist in the terms view without bloating the permanent escrow record",
     failures
   );
   assert(/document\.createElement\(controlType\s*===\s*"textarea"\s*\?\s*"textarea"\s*:\s*"input"\)/.test(html), "editable market forms must use native inputs and textareas", failures);
@@ -1459,7 +1474,7 @@ function checkCompactAppViews(html, failures) {
   assert(html.includes('if (!/^(?:YES|NO)$/i.test(cleanTip(roomSide)))') && html.includes('Choose YES or NO for your side.'), "private-room side entry must accept only a coherent YES or NO position", failures);
   assert(liveFieldDraftSource.includes('if (block.type === "participants")') && liveFieldDraftSource.includes('["Bob", "Signed " + opposingSide]'), "private-room participants must reflect the edited opposing sides after funding", failures);
   assert(/safeLiquidityAmount\(marketLiquidityDraft\.yes\)[\s\S]{0,120}safeLiquidityAmount\(marketLiquidityDraft\.no\)\s*<=\s*0/.test(html), "market publishing must require funded opening liquidity", failures);
-  assert(/function\s+advanceEventStep\s*\(\)\s*\{[\s\S]{0,180}currentStepValidation\(\)/.test(html), "invalid form state must be unable to advance the simulator", failures);
+  assert(/function\s+advanceEventStep\s*\(options\)\s*\{[\s\S]{0,220}currentStepValidation\(\)/.test(html), "invalid form state must be unable to advance the simulator", failures);
   assert(/function\s+makeHelpTip\s*\(/.test(html) && /className\s*=\s*"sim-help"|makeEl\("button",\s*"sim-help",\s*"\?"\)/.test(html), "event explainers must use a visible question-mark control", failures);
   assert(/if\s*\(block\.help\)\s*titleMain\.appendChild\(makeHelpTip\(block\.title\s*\|\|\s*blockTypeLabel\(type\),\s*blockHelpText\(block\)\)\)/.test(html), "app cards must show help only when production-specific help is explicitly supplied", failures);
   assert(!/BLOCK_HELP_BY_TYPE/.test(html), "generic simulator narration must not be injected into production app cards", failures);
@@ -2070,7 +2085,8 @@ function checkBackNavigationCoverage(html, failures) {
         }
         predecessorCount += 1;
         const expectedStage = stepIndex > 0 ? stageIndex : stageIndex - 1;
-        const expectedStep = stepIndex > 0 ? stepIndex - 1 : flows[stageIndex - 1].steps.length;
+        let expectedStep = stepIndex > 0 ? stepIndex - 1 : flows[stageIndex - 1].steps.length;
+        while (stepIndex > 0 && expectedStep > 0 && flows[stageIndex].steps[expectedStep] && flows[stageIndex].steps[expectedStep].autoAdvance) expectedStep -= 1;
         assert(
           previous && previous.stage === expectedStage && previous.step === expectedStep,
           `Event ${stageIndex + 1}, state ${stepIndex} must return to Event ${expectedStage + 1}, state ${expectedStep}`,
@@ -2078,8 +2094,8 @@ function checkBackNavigationCoverage(html, failures) {
         );
       }
     }
-    assert(stateCount === 37, "the Back regression matrix must cover all 37 event/action states", failures);
-    assert(predecessorCount === 36, "exactly 36 event/action states must have a valid predecessor", failures);
+    assert(stateCount === 34, "the Back regression matrix must cover all 34 streamlined states", failures);
+    assert(predecessorCount === 33, "exactly 33 streamlined states must have a valid predecessor", failures);
   } catch (error) {
     failures.push("Back navigation history cannot be evaluated: " + error.message);
   }
@@ -2130,8 +2146,14 @@ function checkCoachmarkTextAvoidance(html, failures) {
       /getClientRects\(\)/.test(textCollector) &&
       /coachmarkClipForElement/.test(textCollector) &&
       /querySelectorAll\(["']input, textarea, select["']\)/.test(textCollector) &&
-      /control\.value[\s\S]*placeholder[\s\S]*visibleContent/.test(textCollector),
-    "coachmark placement must measure visible, clipping-aware text lines rather than whole UI panels",
+      /control\.value[\s\S]*placeholder[\s\S]*visibleContent/.test(textCollector) &&
+      /querySelectorAll\(["']\.sim-result-toast["']\)[\s\S]*noticeGap\s*=\s*10[\s\S]*visibleNotice/.test(textCollector),
+    "coachmark placement must measure visible, clipping-aware text and keep floating confirmations unobstructed",
+    failures
+  );
+  assert(
+    /animationName\s*!==\s*["']toast-rise["'][\s\S]*invalidateCoachmarkGeometry\(["']toast-entered["'],\s*true\)[\s\S]*invalidateCoachmarkGeometry\(["']toast-dismissed["'],\s*true\)/.test(html),
+    "coachmark placement must be recomputed after a confirmation settles and after it disappears",
     failures
   );
   assert(
@@ -2171,8 +2193,10 @@ function checkCoachmarkTextAvoidance(html, failures) {
     /\.sim-live-preview\.has-inline-coachmark\s*,\s*\.protocol-sequence\.has-inline-coachmark\s*\{[^}]*grid-template-rows:\s*auto auto minmax\(0,\s*1fr\)/is.test(html) &&
       /\.sim-live-preview\.has-inline-coachmark\s*>\s*\.coachmark-inline-slot\s*,[\s\S]*?\.protocol-sequence\.has-inline-coachmark\s*>\s*\.coachmark-inline-slot\s*\{[^}]*grid-row:\s*2[^}]*order:\s*0/is.test(html) &&
       /\.sim-live-preview\.has-inline-coachmark\s*>\s*\.sim-app-viewport\s*,[\s\S]*?\.protocol-sequence\.has-inline-coachmark\s*>\s*\.protocol-sequence-scroll\s*\{[^}]*grid-row:\s*3/is.test(html) &&
-      /classList\.add\(["']has-inline-coachmark["']\)/.test(inlineRenderer),
-    "the in-flow fallback must reserve its own row without collapsing the application viewport",
+      /classList\.add\(["']has-inline-coachmark["']\)/.test(inlineRenderer) &&
+      /--sim-toast-safe-top/.test(inlineRenderer) &&
+      /--sim-toast-safe-top/.test(html),
+    "the in-flow fallback must reserve its own row without collapsing the application viewport or covering a confirmation",
     failures
   );
   assert(
@@ -2413,7 +2437,9 @@ function checkActionButtonInfoLabels(html, failures) {
     failures
   );
   const guidedStateCount = flows.reduce((total, flow) => total + (flow.steps || []).length, 0) + continuations.length;
-  assert(guidedStateCount === 37, `the simulator must expose a guided label in all 37 action states (found ${guidedStateCount})`, failures);
+  assert(guidedStateCount === 34, `the simulator must expose a clear label in all 34 user and automatic states (found ${guidedStateCount})`, failures);
+  const automaticSteps = flows.flatMap((flow) => (flow.steps || []).filter((step) => step.autoAdvance));
+  assert(automaticSteps.length === 5 && automaticSteps.every((step) => step.actionOwner === "protocol"), "exactly five internal protocol transitions must autoplay without extra user taps", failures);
   flows.forEach((flow, eventIndex) => {
     (flow.steps || []).forEach((step, stepIndex) => {
       const label = String(step.actionLabel || String(step.cue || "").replace(/^Tap\s+/i, "") || step.title || "").replace(/\s+/g, " ").trim();

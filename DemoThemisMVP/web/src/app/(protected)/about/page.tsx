@@ -18,7 +18,7 @@ export default function About() {
           <p className="court-about-kicker">Live Demo MVP</p>
           <h2>A complete decision in three steps</h2>
           <p className="court-about-dek">
-            DemoThemis gives one precise public question to three verified humans, then records their majority answer
+            This MVP gives one precise public question to three verified humans, then records their majority answer
             on World Chain.
           </p>
           <div className="court-about-steps">
@@ -58,8 +58,9 @@ export default function About() {
         <details className="court-disclosure">
           <summary>What the product is—and is not</summary>
           <div className="court-disclosure-content text-xs leading-relaxed text-slate-600">
-            DemoThemis resolves objective yes-or-no questions. It does not curate an evidence pack, take bets, or
-            weight votes by token holdings: each juror finds public information and decides independently.
+            DemoThemis is a general-purpose court: anyone can define a case, fund the juror fees, and receive an
+            on-chain ruling. This MVP demonstrates objective yes-or-no questions; jurors find public information
+            independently, the court takes no bets, and votes never depend on token holdings.
           </div>
         </details>
       </Page.Main>

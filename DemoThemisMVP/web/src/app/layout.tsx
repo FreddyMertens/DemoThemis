@@ -26,9 +26,9 @@ const mono = JetBrains_Mono({
 });
 
 export const metadata: Metadata = {
-  title: 'DemoThemis — a resolution oracle of verified humans',
+  title: 'DemoThemis — a general-purpose verified-human court',
   description:
-    'One public question, three World ID-verified humans, and one transparent on-chain answer. Live on World Chain.',
+    'Anyone can define a case, fund the juror fees, and receive an on-chain ruling. This MVP demonstrates one public yes/no case.',
 };
 
 export default async function RootLayout({

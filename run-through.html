@@ -206,6 +206,8 @@
     --browser-chrome-accent-soft: #dbe4e9;
     --browser-chrome-font: "Inter", system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
     --browser-chrome-mono: "JetBrains Mono", ui-monospace, SFMono-Regular, Consolas, monospace;
+    position: relative;
+    isolation: isolate;
     display: grid;
     grid-template-rows: auto minmax(0, 1fr);
     min-width: 0;
@@ -517,11 +519,17 @@
   .tutorial-dots span { width: .46rem; height: .46rem; border-radius: 50%; background: var(--line-strong); }
   .tutorial-dots span.done { background: var(--good); }
   .tutorial-dots span.active { background: var(--accent); box-shadow: 0 0 0 4px var(--accent-soft); }
-  .sim-result-toast { position: relative; z-index: 1; display: flex; align-items: center; gap: .62rem; width: auto; max-width: none; margin: .52rem; border: 1px solid color-mix(in srgb, var(--accent) 42%, var(--line)); border-radius: 12px; background: color-mix(in srgb, var(--accent-soft) 54%, var(--surface)); color: var(--ink); padding: .58rem .68rem; box-shadow: 0 10px 20px color-mix(in srgb, var(--accent) 12%, transparent); animation: toast-rise .42s ease-out both; pointer-events: none; }
-  .sim-result-toast::before { content: "→"; display: flex; align-items: center; justify-content: center; width: 2.2rem; height: 2.2rem; background: var(--accent); border-radius: 50%; color: #fff; font-size: 1.1rem; font-weight: 900; flex: 0 0 auto; box-shadow: 0 4px 10px color-mix(in srgb, var(--accent) 34%, transparent), inset 0 1px 2px rgba(255, 255, 255, 0.4); text-shadow: 0 1px 2px rgba(0, 0, 0, 0.2); }
-  .sim-toast-content { display: flex; flex-direction: column; align-items: flex-start; text-align: left; min-width: 0; }
-  .sim-toast-header { color: var(--accent-ink); font-family: var(--sans); font-size: .65rem; font-weight: 950; letter-spacing: .1rem; line-height: 1; text-transform: uppercase; margin-bottom: .2rem; }
-  .sim-toast-body { font-family: var(--sans); font-size: .82rem; line-height: 1.25; font-weight: 800; color: var(--ink); }
+  .sim-toast-layer { position: absolute; z-index: 48; top: var(--sim-toast-safe-top, 3.35rem); right: .62rem; display: grid; justify-items: end; width: min(27rem, calc(100% - 1.24rem)); pointer-events: none; }
+  .sim-result-toast { position: relative; isolation: isolate; display: grid; grid-template-columns: auto minmax(0, 1fr) auto; align-items: center; gap: .66rem; width: min(24rem, 100%); border: 1px solid color-mix(in srgb, var(--good) 44%, var(--line-strong)); border-radius: 14px; background: color-mix(in srgb, var(--surface) 96%, var(--good-soft)); color: var(--ink); padding: .62rem .68rem .68rem; box-shadow: 0 18px 38px color-mix(in srgb, var(--ink) 18%, transparent), 0 0 0 1px color-mix(in srgb, var(--surface) 72%, transparent); overflow: hidden; animation: toast-rise .34s cubic-bezier(.2, .8, .2, 1) both; pointer-events: none; }
+  .sim-result-toast.is-leaving { animation: toast-away .24s ease-in both; }
+  .sim-toast-icon { display: grid; place-items: center; width: 2.35rem; height: 2.35rem; border-radius: 50%; background: var(--good); color: #fff; box-shadow: 0 7px 16px color-mix(in srgb, var(--good) 28%, transparent), inset 0 0 0 1px rgba(255, 255, 255, .3); }
+  .sim-toast-icon svg { width: 1.18rem; height: 1.18rem; }
+  .sim-toast-content { display: grid; gap: .12rem; min-width: 0; text-align: left; }
+  .sim-toast-header { color: var(--good); font-family: var(--sans); font-size: .62rem; font-weight: 950; letter-spacing: .09em; line-height: 1.1; text-transform: uppercase; }
+  .sim-toast-body { color: var(--ink); font-family: var(--sans); font-size: .84rem; line-height: 1.22; font-weight: 900; overflow-wrap: anywhere; }
+  .sim-toast-detail { color: var(--muted); font-family: var(--sans); font-size: .68rem; line-height: 1.25; font-weight: 700; overflow-wrap: anywhere; }
+  .sim-toast-saved { align-self: start; border: 1px solid color-mix(in srgb, var(--good) 30%, var(--line)); border-radius: 999px; background: var(--good-soft); color: var(--good); padding: .24rem .42rem; font-size: .58rem; line-height: 1; font-weight: 900; letter-spacing: .04em; white-space: nowrap; }
+  .sim-toast-progress { position: absolute; z-index: 2; inset: auto 0 0; height: 3px; background: color-mix(in srgb, var(--good) 54%, transparent); transform-origin: left center; animation: toast-progress var(--toast-duration, 4.2s) linear both; }
   .sim-tooltip { position: fixed; z-index: 9999; left: 0; top: 0; max-width: min(19rem, calc(100vw - 1.25rem)); border: 1px solid color-mix(in srgb, var(--accent) 28%, transparent); border-radius: 11px; background: color-mix(in srgb, var(--ink) 94%, #111); color: #fff; box-shadow: 0 18px 36px rgba(31, 36, 48, .22); padding: .58rem .66rem; font-family: var(--sans); font-size: .72rem; line-height: 1.34; opacity: 0; pointer-events: none; transform: translateY(4px); transition: opacity .12s ease, transform .12s ease; }
   .sim-tooltip.is-visible { opacity: 1; transform: translateY(0); }
   .sim-help { display: inline-grid; place-items: center; width: 1.5rem; height: 1.5rem; min-width: 1.5rem; border: 1px solid var(--line-strong); border-radius: 50%; background: var(--bg); color: var(--accent-ink); padding: 0; font-family: var(--sans); font-size: .72rem; line-height: 1; font-weight: 950; letter-spacing: 0; text-transform: none; cursor: help; box-shadow: none; flex: 0 0 auto; transition: border-color .12s ease, background .12s ease, color .12s ease, box-shadow .12s ease; }
@@ -568,6 +576,41 @@
   .receipt-detail { display: grid; grid-template-columns: minmax(6.4rem, .7fr) minmax(0, 1.3fr); align-items: baseline; gap: .45rem .75rem; border-top: 1px solid color-mix(in srgb, var(--line) 78%, transparent); padding-top: .34rem; }
   .receipt-detail dt { color: var(--muted); font-size: .68rem; font-weight: 750; line-height: 1.25; }
   .receipt-detail dd { min-width: 0; margin: 0; color: var(--ink); font-size: .74rem; font-weight: 850; line-height: 1.25; overflow-wrap: anywhere; }
+  .live-card.block-record { display: block; padding: 0; overflow: hidden; }
+  .activity-record { display: block; min-width: 0; }
+  .activity-record > summary { display: grid; grid-template-columns: auto minmax(0, 1fr) auto auto; align-items: center; gap: .58rem; min-width: 0; padding: .62rem; cursor: pointer; list-style: none; }
+  .activity-record > summary::-webkit-details-marker { display: none; }
+  .activity-record > summary::marker { content: ""; }
+  .activity-record > summary:focus-visible { outline: 2px solid var(--accent); outline-offset: -3px; }
+  .record-mark { display: grid; place-items: center; width: 2rem; height: 2rem; border-radius: 9px; background: var(--good-soft); color: var(--good); }
+  .record-mark svg { width: 1.02rem; height: 1.02rem; }
+  .record-copy { display: grid; gap: .1rem; min-width: 0; }
+  .record-copy strong { color: var(--ink); font-size: .78rem; line-height: 1.15; font-weight: 900; }
+  .record-copy span { color: var(--muted); font-size: .64rem; line-height: 1.2; font-weight: 700; }
+  .record-value { max-width: 11rem; color: var(--ink); font-size: .76rem; line-height: 1.18; font-weight: 900; text-align: right; overflow-wrap: anywhere; }
+  .record-chevron { position: relative; width: 1.35rem; height: 1.35rem; border-radius: 50%; background: var(--bg); color: var(--muted); transition: transform .18s ease, background .18s ease, color .18s ease; }
+  .record-chevron::before { content: ""; position: absolute; left: 50%; top: 45%; width: .38rem; height: .38rem; border-right: 2px solid currentColor; border-bottom: 2px solid currentColor; transform: translate(-50%, -50%) rotate(45deg); }
+  .activity-record[open] .record-chevron { background: var(--accent-soft); color: var(--accent-ink); transform: rotate(180deg); }
+  .record-panel { display: grid; gap: .48rem; border-top: 1px solid var(--line); background: color-mix(in srgb, var(--bg) 74%, var(--surface)); padding: .58rem .64rem .64rem; }
+  .record-panel .app-note { margin: 0; }
+  .live-card.block-settlement { position: relative; overflow: hidden; border-color: color-mix(in srgb, var(--good) 42%, var(--line)); background: linear-gradient(145deg, color-mix(in srgb, var(--good-soft) 60%, var(--surface)), var(--surface) 58%); }
+  .live-card.block-settlement::after { content: ""; position: absolute; right: -2rem; bottom: -3.8rem; width: 9rem; height: 9rem; border-radius: 50%; background: color-mix(in srgb, var(--good) 10%, transparent); pointer-events: none; }
+  .settlement-hero { position: relative; z-index: 1; display: grid; grid-template-columns: auto minmax(0, 1fr) auto; align-items: center; gap: .7rem; }
+  .settlement-mark { display: grid; place-items: center; width: 2.8rem; height: 2.8rem; border-radius: 50%; background: var(--good); color: #fff; box-shadow: 0 9px 20px color-mix(in srgb, var(--good) 26%, transparent), inset 0 0 0 1px rgba(255, 255, 255, .28); }
+  .settlement-mark svg { width: 1.36rem; height: 1.36rem; }
+  .settlement-copy { display: grid; gap: .06rem; min-width: 0; }
+  .settlement-copy span { color: var(--muted); font-size: .64rem; line-height: 1.1; font-weight: 850; letter-spacing: .08em; text-transform: uppercase; }
+  .settlement-copy b { color: var(--ink); font-size: 1.5rem; line-height: 1.05; font-weight: 950; letter-spacing: -.02em; }
+  .settlement-copy small { color: var(--good); font-size: .7rem; line-height: 1.2; font-weight: 900; }
+  .settlement-status { border: 1px solid color-mix(in srgb, var(--good) 35%, var(--line)); border-radius: 999px; background: var(--good-soft); color: var(--good); padding: .28rem .5rem; font-size: .62rem; line-height: 1; font-weight: 900; white-space: nowrap; }
+  .settlement-details { position: relative; z-index: 1; margin-top: .56rem; border-top: 1px solid color-mix(in srgb, var(--good) 22%, var(--line)); padding-top: .5rem; }
+  .settlement-details summary { color: var(--accent-ink); font-size: .7rem; line-height: 1.2; font-weight: 850; cursor: pointer; }
+  .settlement-details .receipt-details { margin-top: .46rem; }
+  .automatic-progress { display: grid; grid-template-columns: auto minmax(0, 1fr); align-items: center; gap: .54rem; border: 1px solid color-mix(in srgb, var(--accent) 34%, var(--line)); border-radius: 9px; background: color-mix(in srgb, var(--accent-soft) 44%, var(--surface)); padding: .48rem .56rem; }
+  .automatic-progress-mark { position: relative; width: 1.55rem; height: 1.55rem; border: 2px solid color-mix(in srgb, var(--accent) 24%, var(--line)); border-top-color: var(--accent); border-radius: 50%; animation: automatic-spin .9s linear infinite; }
+  .automatic-progress-copy { display: grid; gap: .06rem; min-width: 0; }
+  .automatic-progress-copy strong { color: var(--accent-ink); font-size: .72rem; line-height: 1.15; font-weight: 900; }
+  .automatic-progress-copy span { color: var(--muted); font-size: .62rem; line-height: 1.2; font-weight: 700; }
   .app-action-card { display: grid; gap: .52rem; min-width: 0; border: 2px solid color-mix(in srgb, var(--accent) 34%, var(--line)); border-radius: 15px; background: linear-gradient(180deg, color-mix(in srgb, var(--accent-soft) 62%, var(--surface)), color-mix(in srgb, var(--surface) 94%, #fff)); box-shadow: 0 14px 26px color-mix(in srgb, var(--accent) 13%, transparent); padding: .62rem; }
   .action-dock-head { display: flex; align-items: center; justify-content: space-between; gap: .5rem; min-width: 0; }
   .app-action-card .mini { display: inline-flex; align-items: center; gap: .32rem; color: var(--accent-ink); font-size: .68rem; line-height: 1.1; font-weight: 950; letter-spacing: .08em; text-transform: uppercase; }
@@ -991,7 +1034,21 @@
   .product-demo.sim-ultra .message { padding: .32rem .38rem; font-size: .64rem; }
   .product-demo.sim-ultra .app-seat-grid { gap: .16rem; }
   .product-demo.sim-ultra .closed-stamp { min-height: 2.6rem; font-size: .78rem; }
-  .product-demo.sim-ultra .sim-result-toast { display: none; }
+  .product-demo.sim-ultra .sim-toast-layer { top: var(--sim-toast-safe-top, 2.85rem); right: .34rem; width: calc(100% - .68rem); }
+  .product-demo.sim-ultra .sim-result-toast { grid-template-columns: auto minmax(0, 1fr); gap: .48rem; width: 100%; padding: .5rem .54rem .56rem; border-radius: 11px; }
+  .product-demo.sim-ultra .sim-toast-icon { width: 1.9rem; height: 1.9rem; }
+  .product-demo.sim-ultra .sim-toast-saved { display: none; }
+  .product-demo.sim-ultra .sim-toast-body { font-size: .72rem; }
+  .product-demo.sim-ultra .sim-toast-detail { font-size: .6rem; }
+  .product-demo.sim-ultra .live-card.block-record { padding: 0; }
+  .product-demo.sim-ultra .activity-record > summary { grid-template-columns: auto minmax(0, 1fr) auto; gap: .42rem; padding: .46rem; }
+  .product-demo.sim-ultra .record-mark { width: 1.72rem; height: 1.72rem; }
+  .product-demo.sim-ultra .record-value { grid-column: 2; max-width: none; text-align: left; }
+  .product-demo.sim-ultra .record-chevron { grid-column: 3; grid-row: 1 / span 2; }
+  .product-demo.sim-ultra .settlement-hero { grid-template-columns: auto minmax(0, 1fr); gap: .5rem; }
+  .product-demo.sim-ultra .settlement-status { grid-column: 2; justify-self: start; }
+  .product-demo.sim-ultra .settlement-mark { width: 2.2rem; height: 2.2rem; }
+  .product-demo.sim-ultra .settlement-copy b { font-size: 1.1rem; }
   @container run-stage (max-width: 620px) {
     .product-demo { grid-template-columns: 1fr; min-height: 0; padding: 0; }
     .sim-step-guide { grid-template-columns: auto minmax(0, 1fr); }
@@ -1151,7 +1208,21 @@
     .message { padding: .32rem .38rem; font-size: .64rem; }
     .app-seat-grid { gap: .16rem; }
     .closed-stamp { min-height: 2.6rem; font-size: .78rem; }
-    .sim-result-toast { display: none; }
+    .sim-toast-layer { top: var(--sim-toast-safe-top, 2.85rem); right: .34rem; width: calc(100% - .68rem); }
+    .sim-result-toast { grid-template-columns: auto minmax(0, 1fr); gap: .48rem; width: 100%; padding: .5rem .54rem .56rem; border-radius: 11px; }
+    .sim-toast-icon { width: 1.9rem; height: 1.9rem; }
+    .sim-toast-saved { display: none; }
+    .sim-toast-body { font-size: .72rem; }
+    .sim-toast-detail { font-size: .6rem; }
+    .live-card.block-record { padding: 0; }
+    .activity-record > summary { grid-template-columns: auto minmax(0, 1fr) auto; gap: .42rem; padding: .46rem; }
+    .record-mark { width: 1.72rem; height: 1.72rem; }
+    .record-value { grid-column: 2; max-width: none; text-align: left; }
+    .record-chevron { grid-column: 3; grid-row: 1 / span 2; }
+    .settlement-hero { grid-template-columns: auto minmax(0, 1fr); gap: .5rem; }
+    .settlement-status { grid-column: 2; justify-self: start; }
+    .settlement-mark { width: 2.2rem; height: 2.2rem; }
+    .settlement-copy b { font-size: 1.1rem; }
   }
   .mobile-art { display: none; }
   .mobile-art-tile { display: grid; grid-template-columns: 2.25rem 1fr; gap: .62rem; align-items: center; border: 1px solid var(--line); border-radius: 12px; background: var(--surface); padding: .64rem .7rem; min-width: 0; font-family: var(--sans); }
@@ -1349,6 +1420,17 @@
     from { opacity: 0; transform: translateY(8px) scale(.98); }
     to { opacity: 1; transform: translateY(0) scale(1); }
   }
+  @keyframes toast-away {
+    from { opacity: 1; transform: translateY(0) scale(1); }
+    to { opacity: 0; transform: translateY(-6px) scale(.985); }
+  }
+  @keyframes toast-progress {
+    from { transform: scaleX(1); }
+    to { transform: scaleX(0); }
+  }
+  @keyframes automatic-spin {
+    to { transform: rotate(360deg); }
+  }
   @keyframes browser-back-icon-nudge {
     0%, 72%, 100% { transform: translateX(0); }
     78% { transform: translateX(-2px); }
@@ -1402,6 +1484,8 @@
     .sim-app-action.guided-target::after,
     .target-callout,
     .sim-result-toast,
+    .sim-toast-progress,
+    .automatic-progress-mark,
     .app-action-card.is-idle .action-word { animation: none; }
   }
 
@@ -1841,6 +1925,19 @@
     color-scheme: light;
     font-family: var(--product-ui-font);
   }
+  .product-mode-panel[data-product-mode] .sim-toast-layer[data-app-theme="omen"] {
+    --product-ui-font: "Alegreya Sans App", "Noto Serif Tibetan App", "Noto Sans Symbols 2 App", system-ui, sans-serif;
+    --sans: var(--product-ui-font);
+    --surface: #fff7e8;
+    --ink: #251f1a;
+    --muted: #655244;
+    --line: #dcb98d;
+    --line-strong: #b9824c;
+    --good: #087068;
+    --good-soft: #d9efea;
+    font-family: var(--product-ui-font);
+    color-scheme: light;
+  }
   .product-mode-panel[data-product-mode] .sim-app-viewport[data-app-theme="themis"] {
     --product-ui-font: "Literata App", "Noto Sans Symbols 2 App", Georgia, serif;
     --product-weight-body: 450;
@@ -1876,6 +1973,19 @@
     color-scheme: dark;
     font-family: var(--product-ui-font);
     font-optical-sizing: auto;
+  }
+  .product-mode-panel[data-product-mode] .sim-toast-layer[data-app-theme="themis"] {
+    --product-ui-font: "Literata App", "Noto Sans Symbols 2 App", Georgia, serif;
+    --sans: var(--product-ui-font);
+    --surface: #232a2e;
+    --ink: #f6f2e8;
+    --muted: #bdc6c6;
+    --line: #3e4a50;
+    --line-strong: #65737b;
+    --good: #b6c98f;
+    --good-soft: #2c3929;
+    font-family: var(--product-ui-font);
+    color-scheme: dark;
   }
   .product-mode-panel[data-product-mode] .sim-live-preview .app-tabs { gap: .58rem; }
   .product-mode-panel[data-product-mode] .sim-live-preview .app-tabs span { border: 0; border-bottom: 2px solid transparent; border-radius: 0; background: transparent; padding: .28rem .08rem; }
@@ -1943,7 +2053,7 @@
   }
 
   .product-mode-panel[data-product-mode] .product-demo .sim-step-guide :where(.sim-step-copy) { gap: var(--product-text-gap); }
-  .product-mode-panel[data-product-mode] .product-demo .sim-step-guide :where(.sim-step-badge span, .sim-step-copy strong, .tutorial-step, .tutorial-advance span) {
+  .product-mode-panel[data-product-mode] .product-demo .sim-step-guide :where(.sim-step-badge span, .sim-step-copy strong, .tutorial-step, .tutorial-advance span, .automatic-progress-copy span) {
     font-size: var(--product-text-caption);
     line-height: var(--product-leading-ui);
     font-weight: var(--product-weight-meta);
@@ -1968,7 +2078,7 @@
     line-height: var(--product-leading-ui);
     font-weight: var(--product-weight-title);
   }
-  .product-mode-panel[data-product-mode] .product-demo .sim-step-guide :where(.tutorial-advance b) {
+  .product-mode-panel[data-product-mode] .product-demo .sim-step-guide :where(.tutorial-advance b, .automatic-progress-copy strong) {
     font-size: var(--product-text-control);
     line-height: var(--product-leading-tight);
     font-weight: var(--product-weight-control);
@@ -1990,7 +2100,8 @@
     .app-eyebrow, .app-metric span, .app-panel .mini, .app-receipt strong, .sim-help,
     .app-action-card .mini, .live-card-title span, .live-kpi span,
     .liquidity-caption, .liquidity-preview small,
-    .intent-item span, .live-field label, .sim-toast-header,
+    .intent-item span, .live-field label, .sim-toast-header, .sim-toast-saved,
+    .record-copy span, .settlement-copy span, .settlement-status,
     .action-status, .action-target, .action-effect strong,
     .odds-side span, .wallet-token span, .team-score span, .countdown span,
     .evidence-item span, .proof-stamp
@@ -2008,6 +2119,7 @@
     .liquidity-preview b, .liquidity-currency,
     .action-index, .action-effect, .ticket-summary, .check-item,
     .participant span, .leg-card span, .face-check, .beacon-readout code,
+    .record-value, .settlement-copy small, .settlement-details summary,
     .sim-app-next-label
   ) {
     font-size: var(--product-text-meta);
@@ -2015,7 +2127,7 @@
     font-weight: var(--product-weight-meta);
   }
   .product-mode-panel[data-product-mode] .product-demo .sim-live-preview :where(
-    .fake-sub, .app-hero p, .live-head p, .sim-toast-body,
+    .fake-sub, .app-hero p, .live-head p, .sim-toast-body, .sim-toast-detail,
     .app-receipt span, .app-note, .sim-tooltip
   ) {
     font-size: var(--product-text-body);
@@ -2023,7 +2135,7 @@
     font-weight: var(--product-weight-body);
   }
   .product-mode-panel[data-product-mode] .product-demo .sim-live-preview :where(
-    .app-brand, .app-panel h5, .live-card-title, .fake-ticket b
+    .app-brand, .app-panel h5, .live-card-title, .fake-ticket b, .record-copy strong
   ) {
     font-size: var(--product-text-subtitle);
     line-height: var(--product-leading-ui);
@@ -2037,7 +2149,7 @@
     font-weight: var(--product-weight-display);
   }
   .product-mode-panel[data-product-mode] .product-demo .sim-live-preview :where(
-    .fake-field .v, .app-metric b, .live-kpi b, .app-receipt b, .app-value,
+    .fake-field .v, .app-metric b, .live-kpi b, .app-receipt b, .app-value, .settlement-copy b,
     .wallet-token b, .participant b, .leg-card b
   ) {
     font-size: var(--product-text-title);
@@ -2848,7 +2960,7 @@
       fees: 0,
       loop: ["cases"],
       log: "The market opens with a public resolution rule and creator-funded liquidity.",
-      actions: ["Publish market", "Open market page"]
+      actions: ["Publish market"]
     },
     {
       title: "The crowd prices it",
@@ -2869,7 +2981,7 @@
       fees: 37,
       loop: ["cases", "fees"],
       log: "The market grows without a house quoting prices.",
-      actions: ["Buy YES", "Buy NO", "Review position"]
+      actions: ["Buy YES", "Buy NO"]
     },
     {
       title: "Fixed odds appear",
@@ -2911,7 +3023,7 @@
       fees: 840,
       loop: ["cases", "fees"],
       log: "The claim becomes something a user can move, lend, route, or post as collateral.",
-      actions: ["Claim wallet tokens", "Open order book"]
+      actions: ["Claim wallet tokens"]
     },
     {
       title: "Private room opens",
@@ -3016,7 +3128,7 @@
       fees: 2360,
       loop: ["cases", "fees", "jurors"],
       log: "The case meets the court: one roll, one panel, no whale vote.",
-      actions: ["Play bound draw", "Record presence receipts"]
+      actions: ["Play bound draw"]
     },
     {
       title: "Ballots are locked",
@@ -3058,7 +3170,7 @@
       fees: 2360,
       loop: ["cases", "fees", "jurors"],
       log: "The verdict changes prices, but the losing side can still climb.",
-      actions: ["Publish aggregate proof", "Verify aggregate proof"]
+      actions: ["Publish aggregate proof"]
     },
     {
       title: "Appeal climbs",
@@ -3079,7 +3191,7 @@
       fees: 2360,
       loop: ["cases", "fees", "jurors"],
       log: "Appeals are allowed, but every retry gets bigger, pricier, and finite.",
-      actions: ["Pay $31,000 appeal bond", "Complete 31-juror vote"]
+      actions: ["Pay $31,000 appeal bond"]
     },
     {
       title: "Finality and memory",
@@ -3242,14 +3354,14 @@
       label: "Market start",
       headline: "Write the rule and seed the market.",
       look: "The form pairs an exact resolve condition with separate YES and NO opening-liquidity controls.",
-      use: "Publish the market, then open the market page.",
+      use: "Publish once; the live market page opens immediately.",
       notice: "Publishing locks the written rule and every funded opening offer into escrow."
     },
     {
       label: "Live pricing",
       headline: "Watch money become odds.",
       look: "The screen is a live market: odds, trade ticket, recent trades, and your position.",
-      use: "Buy YES, buy NO, then review the position.",
+      use: "Buy YES, then buy NO; the position updates in place.",
       notice: "The ratio of money on each side becomes the public price; there is no house quote."
     },
     {
@@ -3263,7 +3375,7 @@
       label: "Wallet claims",
       headline: "See the market graduate into tokens.",
       look: "This is now a wallet view: the robustness checks passed and YES/NO assets exist.",
-      use: "Claim the wallet tokens, then open the order book.",
+      use: "Claim once; the wallet order book opens with the assets ready.",
       notice: "The user holds portable claims instead of a website-only balance."
     },
     {
@@ -3277,28 +3389,28 @@
       label: "Parlay route",
       headline: "Build a parlay without making the protocol the bookie.",
       look: "The app shows a familiar two-leg slip; automatic execution is shown separately after each order.",
-      use: "Place the $100 parlay, review its receipt, then accept the $128 cashout.",
-      notice: "Each standalone sequence shows the all-or-none route without presenting backend controls as app features."
+      use: "Place the $100 parlay, watch routing complete automatically, then accept the $128 cashout.",
+      notice: "The user makes the decisions; automatic execution shows the all-or-none route without adding fake controls."
     },
     {
       label: "Result proposal",
       headline: "Confirm the outcome and bond.",
       look: "The production screen shows the result, exact bond, 24-hour challenge period, and open market.",
       use: "Confirm and post YES.",
-      notice: "The receipt records the locked bond, deadline, and transaction."
+      notice: "The published result page keeps the locked bond, deadline, and transaction available together."
     },
     {
       label: "Challenge",
       headline: "Turn a disputed answer into a court case.",
       look: "The production screen shows the proposed result, NO challenge, and exact bond outcomes.",
       use: "Submit the NO challenge and $250 bond.",
-      notice: "The confirmation names the new case and its panel-selection status."
+      notice: "The destination is the real case page, with the bond and transaction available as permanent details."
     },
     {
       label: "Human draw",
       headline: "Draw one bound panel of verified humans.",
-      look: "The sequence shows the public beacon, bound draw, and independent presence receipts.",
-      use: "Play the draw; watch three presence receipts arrive.",
+      look: "The sequence shows the public beacon, bound draw, and independent presence checks.",
+      use: "Play the draw once; the three presence checks complete automatically.",
       notice: "One panel is bound to this case; the protocol cannot reroll for a friendlier jury."
     },
     {
@@ -3306,27 +3418,27 @@
       headline: "Cast an encrypted ballot privately.",
       look: "The juror workspace shows the case rule, research instruction, and private ballot.",
       use: "Choose YES or NO, then seal the ballot.",
-      notice: "The receipt confirms submission without revealing the selected outcome."
+      notice: "The ballot workspace locks after submission and keeps the submission record without exposing the vote."
     },
     {
       label: "Verdict proof",
       headline: "Publish the aggregate result.",
       look: "The sequence canvas shows three sealed ballots reaching threshold before the aggregate proof.",
-      use: "Play publication, then verification of the aggregate proof.",
+      use: "Play publication once; verification follows automatically.",
       notice: "Individual votes stay private while the aggregate verdict becomes public."
     },
     {
       label: "Appeal bond",
       headline: "Review the 31-juror appeal bond.",
       look: "The checkout identifies each minimum, the applied $31,000 bond, wallet balance, and deadline.",
-      use: "Pay the bond, then play the completed panel vote.",
+      use: "Pay the bond once; the 31-person panel vote then completes automatically.",
       notice: "Appeals remain possible, but retrying gets larger, pricier, and finite."
     },
     {
       label: "Final proof",
       headline: "Relay finality back to OmenMarketMaker.",
-      look: "The sequence canvas shows the one-time proof relay; the final screen is OmenMarketMaker's payout receipt.",
-      use: "Play the relay, then see the user-facing settlement.",
+      look: "The sequence canvas shows the one-time proof relay; the final screen is OmenMarketMaker's settlement result.",
+      use: "Play the relay, then see the payout and proof together.",
       notice: "DemoThemis proves the result; OmenMarketMaker pays the winning claims."
     }
   ];
@@ -3336,7 +3448,7 @@
       action: "Open live market",
       from: "Market creator",
       to: "Bettor / trader",
-      targetTitle: "Market page",
+      targetTitle: "Market details",
       note: "The creator shares the market URL; traders now price the public market."
     },
     {
@@ -3350,7 +3462,7 @@
       action: "View claim eligibility",
       from: "Same bettor",
       to: "Token holder",
-      targetTitle: "Order receipt",
+      targetTitle: "Fill details",
       note: "The filled position is ready to become wallet-held claims."
     },
     {
@@ -3365,7 +3477,7 @@
       action: "Build a parlay",
       from: "Room participant",
       to: "Parlay bettor",
-      targetTitle: "Room funded",
+      targetTitle: "Escrow record",
       note: "The bettor switches from one wager to a combined bet slip.",
       dock: "page"
     },
@@ -3388,42 +3500,42 @@
       action: "View protocol draw",
       from: "Watcher / challenger",
       to: "DemoThemis network",
-      targetTitle: "Challenge receipt",
+      targetTitle: "Case activity",
       note: "DemoThemis receives the case; its on-chain sequence begins."
     },
     {
       action: "Open juror workspace",
       from: "DemoThemis network",
       to: "Drawn juror",
-      targetTitle: "Panel receipt",
+      targetTitle: "Presence checks",
       note: "The case moves from public tracking to a verified juror's workspace."
     },
     {
       action: "View aggregate tally",
       from: "Drawn juror",
       to: "DemoThemis network",
-      targetTitle: "Submission receipt",
+      targetTitle: "Submission details",
       note: "Private votes are tallied; the public sees the aggregate proof."
     },
     {
       action: "Review appeal bond",
       from: "DemoThemis network",
       to: "Losing side",
-      targetTitle: "Pending updates",
+      targetTitle: "Verified verdict",
       note: "The losing side decides whether a larger panel is worth paying for."
     },
     {
       action: "View final proof relay",
       from: "DemoThemis network",
       to: "Finality relay",
-      targetTitle: "Appeal verdict",
+      targetTitle: "Appeal proof",
       note: "With appeals closed, DemoThemis can send the final proof once."
     },
     {
       action: "Start a new walkthrough",
       from: "Token holder",
       to: "Market creator",
-      targetTitle: "Payout receipt",
+      targetTitle: "Settlement complete",
       note: "The market is settled; restart at a fresh question.",
       restart: true
     }
@@ -3548,6 +3660,11 @@
   var announceRunStatusOnRender = false;
   var simulatorFocusToken = 0;
   var runAnnouncementTimeout = null;
+  var pendingConfirmation = null;
+  var confirmationTimers = [];
+  var automaticStepTimer = null;
+  var automaticStepToken = 0;
+  var suppressSimulatorFocusRestoreOnce = false;
 
   function money(n) {
     if (n >= 1000000) return "$" + (n / 1000000).toFixed(1) + "M";
@@ -3604,6 +3721,8 @@
   function selectProductMode(mode) {
     var config = PRODUCT_MODES[mode];
     if (!config || selectedRunMode === mode) return false;
+    cancelAutomaticStep();
+    clearStepConfirmation();
     saveProductProgress();
     selectedRunMode = mode;
     var progress = productProgress[mode] || { stage: config.start, step: 0, action: -1 };
@@ -4694,11 +4813,11 @@
     {
       template: "protocol-draw",
       product: "DemoThemis on-chain sequence",
-      tabs: ["Activity", "Draw", "Receipts"],
+      tabs: ["Activity", "Draw", "Presence"],
       activeTab: "Activity",
       section: "On-chain sequence",
       title: "Bound panel selection",
-      subtitle: "Public receipts show how one case seed selects three verified humans.",
+      subtitle: "Public events show how one case seed selects three verified humans.",
       status: "Awaiting draw event",
       kpis: [["Draws", "Pending"], ["Seats", "3"], ["Reroll", "No"]],
       blocks: [
@@ -4734,7 +4853,7 @@
       status: "Ballots 1/3",
       kpis: [["Ballots", "1/3"], ["Privacy", "Kept"]],
       blocks: [
-        { type: "route", title: "Ballot receipts", hot: 0, steps: [["04", "Ballot", "received"], ["09", "Ballot", "pending"], ["12", "Ballot", "pending"]] },
+        { type: "route", title: "Ballot arrivals", hot: 0, steps: [["04", "Ballot", "received"], ["09", "Ballot", "pending"], ["12", "Ballot", "pending"]] },
         { type: "proof", title: "Tally", hot: 1, result: "Locked", note: "Opens at 3/3.", verified: false }
       ]
     },
@@ -4752,7 +4871,7 @@
       kpis: [["Bond due", "$31,000"], ["Time left", "14 days"], ["Wallet", "$44,200"]],
       blocks: [
         { type: "checkout", title: "Required bond", hot: 0, rows: [["31-juror minimum", "$12,400"], ["Security minimum", "$31,000"], ["Delay minimum", "$8,200"], ["Required bond", "$31,000"]], winner: "Highest minimum applied" },
-        { type: "receipt", title: "Case status", hot: 0, value: "NO 2–1 · Provisional", details: [["Appeal window", "Open"], ["Deadline", "29 Jul 2024, 22:30 UTC"]] }
+        { type: "record", title: "Case status", hot: 0, value: "NO 2–1 · Provisional", caption: "Permanent case record", details: [["Appeal window", "Open"], ["Deadline", "29 Jul 2024, 22:30 UTC"]] }
       ]
     },
     {
@@ -4781,35 +4900,18 @@
           target: "block",
           targetTitle: "Market form",
           result: "Market posted",
-          after: {
-            route: "/markets/PM-EURO-24/receipt",
-            title: "England Euro 2024 market is live",
-            subtitle: "Share the market page or open it now.",
-            status: "Market live",
-            activeTab: "Explore",
-            kpis: [],
-            blocks: [
-              { type: "receipt", title: "Market published", value: "Will England win the UEFA Euro 2024 final?", details: [["Status", "Trading open"], ["Opening liquidity", "$0.10 YES"], ["Market ID", "PM-EURO-24"]] },
-              { type: "odds", title: "Opening odds", yes: 100, no: 0 },
-              { type: "receipt", title: "Market page", value: "app.omenmarketmaker.com/m/england-euro-final", details: [["Closes", "14 July 2024 19:00 UTC"], ["Resolve rule", "YES only if UEFA records England as the winner; otherwise NO."]] }
-            ]
-          }
-        },
-        {
-          cue: "Tap Open market page",
-          target: "block",
-          targetTitle: "Market page",
-          result: "Market page opened",
+          toast: { title: "Market published", body: "Trading is live", detail: "PM-EURO-24 · Opening liquidity locked" },
           after: {
             route: "/m/england-euro-final",
+            section: "Live market",
             title: "Public market page",
-            subtitle: "The market is open and ready to share.",
-            status: "Ready for traders",
+            subtitle: "The market is open, shareable, and ready for traders.",
+            status: "Trading open",
             activeTab: "Explore",
             kpis: [],
             blocks: [
-              { type: "receipt", title: "Market page", value: "app.omenmarketmaker.com/m/england-euro-final", details: [["Status", "Trading open"], ["Opening liquidity", "$0.10 YES"], ["Closes", "14 July 2024 19:00 UTC"], ["Resolve rule", "YES only if UEFA records England as the winner; otherwise NO."]] },
-              { type: "odds", title: "Opening odds", yes: 100, no: 0 }
+              { type: "odds", title: "Opening odds", yes: 100, no: 0 },
+              { type: "record", title: "Market details", value: "PM-EURO-24 · Trading open", caption: "Permanent market record", details: [["Opening liquidity", "$0.10 YES"], ["Closes", "14 July 2024 19:00 UTC"], ["Resolve rule", "YES only if UEFA records England as the winner; otherwise NO."]] }
             ]
           }
         }
@@ -4839,29 +4941,15 @@
           target: "block",
           targetTitle: "Trade ticket",
           result: "NO order filled",
+          toast: { title: "Position updated", body: "210.5 NO added at 38¢", detail: "Both sides are now visible in your position" },
           after: {
-            status: "Both sides active",
+            status: "Position updated",
             activeTab: "Market",
             kpis: [["Balance", "$610"], ["YES", "62%"], ["NO", "38%"]],
             blocks: [
               { type: "odds", title: "Current odds", yes: 62, no: 38 },
-              { type: "receipt", title: "NO order filled", value: "210.5 NO · $80.00", details: [["Average price", "38c"], ["Fees", "Included"], ["Order", "PM-NO-210"], ["Available balance", "$610.00"]] },
-              { type: "table", title: "Recent trades", rows: [["Your NO buy", "+210.5 NO", "38c avg"], ["Your YES buy", "+80.6 YES", "62c avg"], ["YES buy", "+$120", "62c"]] }
-            ]
-          }
-        },
-        {
-          cue: "Tap Review position",
-          target: "block",
-          targetTitle: "NO order filled",
-          result: "Position reviewed",
-          after: {
-            status: "Position ready",
-            activeTab: "Market",
-            kpis: [["Balance", "$610"], ["YES", "62%"], ["NO", "38%"]],
-            blocks: [
-              { type: "odds", title: "Current odds", yes: 62, no: 38 },
-              { type: "receipt", title: "Your position", value: "80.6 YES · 210.5 NO", details: [["Total spent", "$130.00"], ["Fees", "Included"], ["Available balance", "$610.00"], ["Custody", "OmenMarketMaker balance"]] }
+              { type: "tokens", title: "Your position", tokens: [["YES holding", "80.6 YES", "good"], ["NO holding", "210.5 NO", "bad"]] },
+              { type: "record", title: "Order details", value: "210.5 NO · $80.00", caption: "Permanent trade record", details: [["Average price", "38c"], ["Fees", "Included"], ["Order", "PM-NO-210"], ["Available balance", "$610.00"]] }
             ]
           }
         }
@@ -4875,6 +4963,7 @@
           target: "block",
           targetTitle: "Estimated fill",
           result: "Best prices filled in order",
+          toast: { title: "Order filled", body: "740 YES · 70.97¢ average", detail: "Best available prices were used in order" },
           after: {
             title: "740 YES shares filled",
             subtitle: "Your order filled at the two best available prices.",
@@ -4883,7 +4972,7 @@
             kpis: [["Shares", "740"], ["Avg. price", "70.97c"], ["Balance", "$84.80"]],
             blocks: [
               { type: "table", title: "Order book", rows: [["YES 70c", "500 filled", "done"], ["YES 73c", "240 filled", "done"], ["Next YES", "75c", "live"]] },
-              { type: "receipt", title: "Order receipt", value: "740 YES · $525.20", details: [["Price detail", "500 @ 70c + 240 @ 73c"], ["Average price", "70.97c"], ["Fee", "$0.00"], ["Order", "PM-YES-740"]] }
+              { type: "record", title: "Fill details", value: "740 YES · $525.20", caption: "Permanent trade record", details: [["Price detail", "500 @ 70c + 240 @ 73c"], ["Average price", "70.97c"], ["Fee", "$0.00"], ["Order", "PM-YES-740"]] }
             ]
           }
         }
@@ -4908,34 +4997,18 @@
           target: "block",
           targetTitle: "Your position",
           result: "Wallet tokens claimed",
-          after: {
-            route: "/portfolio/assets",
-            title: "Claim confirmed",
-            subtitle: "Your YES and NO assets are now in the connected wallet.",
-            status: "Self-custody live",
-            activeTab: "Assets",
-            kpis: [["Wallet", "0x7c...42"], ["YES", "820.6"], ["NO", "210.5"]],
-            blocks: [
-              { type: "tokens", title: "Wallet assets", tokens: [["YES token", "820.6 YES", "good"], ["NO token", "210.5 NO", "bad"]] },
-              { type: "receipt", title: "Claim confirmed", value: "820.6 YES · 210.5 NO", details: [["To", "0x7c...42"], ["Network", "World Chain"], ["Transaction", "0x8f...c1"], ["Confirmed", "14 Jul 2024 · 20:43 UTC"]] }
-            ]
-          }
-        },
-        {
-          cue: "Tap Open order book",
-          target: "block",
-          targetTitle: "Wallet assets",
-          result: "Wallet order book opened",
+          toast: { title: "Claims moved to wallet", body: "820.6 YES + 210.5 NO", detail: "Self-custody is live on World Chain" },
           after: {
             route: "/portfolio/book",
             title: "Wallet order book",
-            subtitle: "Trade the claimed assets from your connected wallet.",
-            status: "Order book live",
+            subtitle: "Your claimed assets are ready to trade from the connected wallet.",
+            status: "Self-custody live",
             activeTab: "Book",
-            kpis: [["Wallet", "0x7c...42"], ["Book", "Open"], ["Transfer", "Enabled"]],
+            kpis: [["Wallet", "0x7c...42"], ["Book", "Open"], ["Custody", "Self-held"]],
             blocks: [
               { type: "tokens", title: "Wallet assets", tokens: [["YES token", "820.6 YES", "good"], ["NO token", "210.5 NO", "bad"]] },
-              { type: "table", title: "Order book", rows: [["Sell YES", "61c", "8,400 YES"], ["Buy NO", "39c", "6,100 NO"], ["Sell NO", "41c", "2,250 NO"]] }
+              { type: "table", title: "Order book", rows: [["Sell YES", "61c", "8,400 YES"], ["Buy NO", "39c", "6,100 NO"], ["Sell NO", "41c", "2,250 NO"]] },
+              { type: "record", title: "Claim transaction", value: "Confirmed · World Chain", caption: "Permanent wallet record", details: [["Assets", "820.6 YES · 210.5 NO"], ["To", "0x7c...42"], ["Transaction", "0x8f...c1"], ["Confirmed", "14 Jul 2024 · 20:43 UTC"]] }
             ]
           }
         }
@@ -4981,6 +5054,7 @@
           target: "block",
           targetTitle: "Visible terms",
           result: "Room accepted and funded",
+          toast: { title: "Room funded", body: "$20,000 locked", detail: "Alice and Bob confirmed the same terms" },
           after: {
             route: "/rooms/PM-ROOM-204/escrow",
             title: "Private room funded",
@@ -4992,7 +5066,7 @@
             kpis: [["Visibility", "Private"], ["Signatures", "2/2"], ["Escrow", "$20k"]],
             blocks: [
               { type: "participants", title: "Counterparties", people: [["Alice", "Signed YES"], ["Bob", "Signed NO"]] },
-              { type: "receipt", title: "Room funded", value: "$20,000 locked", details: [["Alice", "$10,000 · YES"], ["Bob", "$10,000 · NO"], ["Status", "Both signed"], ["Room", "PM-ROOM-204"]] },
+              { type: "record", title: "Escrow record", value: "$20,000 locked", caption: "Permanent agreement record", details: [["Alice", "$10,000 · YES"], ["Bob", "$10,000 · NO"], ["Status", "Both signed"], ["Room", "PM-ROOM-204"]] },
               { type: "checklist", title: "Dispute resolution", rows: [["Provider", "DemoThemis"], ["Status", "Available if challenged"]] }
             ]
           }
@@ -5030,7 +5104,7 @@
             ],
             blocks: [
               { type: "table", title: "Atomic placement", rows: [["England YES", "62c", "ready"], ["Rain YES", "48c", "ready"]] },
-              { type: "receipt", title: "Execution rule", value: "Both legs or no change", note: "Order PM-4821 · $100 reserved" }
+              { type: "table", title: "Execution guarantee", rows: [["Rule", "All legs or none", "atomic"], ["Reserved", "$100", "PM-4821"]] }
             ]
           }
         },
@@ -5039,9 +5113,12 @@
           actionLabel: "Route both legs atomically",
           roleHandoff: "OmenMarketMaker router to Parlay bettor",
           actionOwner: "protocol",
+          autoAdvance: true,
+          autoDelay: 1700,
           target: "block",
           targetTitle: "Atomic placement",
           result: "Parlay confirmed",
+          toast: { title: "Parlay placed", body: "$100 across 2 legs", detail: "All-or-none execution completed" },
           after: {
             view: "application",
             sequenceProfile: "",
@@ -5060,8 +5137,8 @@
             kpis: [["Stake", "$100"], ["Max return", "$336"], ["Status", "Active"]],
             blocks: [
               { type: "legs", title: "Your parlay", legs: [["England wins", "YES 62c"], ["Rain tomorrow", "YES 48c"]], payout: "Max return $336" },
-              { type: "receipt", title: "Parlay confirmed", value: "$100 placed · 2 legs", details: [["Order", "PM-4821"], ["Wallet", "0x7c...42"], ["Status", "Confirmed"], ["Transaction", "0xa81f...9c2e"], ["Time", "14 Jul 2024 · 18:42 UTC"]] },
-              { type: "ticket", title: "Cashout quote", rows: [["Receive", "$128"], ["Profit", "+$28"], ["Quote expires", "00:15"]], summaryLabel: "Cashout amount", summaryValue: "$128" }
+              { type: "ticket", title: "Cashout quote", rows: [["Receive", "$128"], ["Profit", "+$28"], ["Quote expires", "00:15"]], summaryLabel: "Cashout amount", summaryValue: "$128" },
+              { type: "record", title: "Parlay transaction", value: "$100 · 2 legs", caption: "Permanent order record", details: [["Order", "PM-4821"], ["Wallet", "0x7c...42"], ["Status", "Confirmed"], ["Transaction", "0xa81f...9c2e"], ["Time", "14 Jul 2024 · 18:42 UTC"]] }
             ]
           }
         },
@@ -5093,7 +5170,7 @@
             ],
             blocks: [
               { type: "table", title: "Atomic cashout", rows: [["England leg", "Sell", "ready"], ["Rain leg", "Sell", "ready"]] },
-              { type: "receipt", title: "Cashout request", value: "$128 quoted", note: "Quote CQ-128 · 0x7c...42" }
+              { type: "table", title: "Cashout guarantee", rows: [["Quote", "$128", "locked"], ["Rule", "Both legs or none", "atomic"]] }
             ]
           }
         },
@@ -5102,19 +5179,22 @@
           actionLabel: "Complete atomic cashout",
           roleHandoff: "OmenMarketMaker router to Parlay bettor",
           actionOwner: "protocol",
+          autoAdvance: true,
+          autoDelay: 1700,
           target: "block",
           targetTitle: "Atomic cashout",
           result: "$128 payment confirmed",
+          toast: { title: "Cashout complete", body: "$128 received", detail: "$28 profit · Position closed" },
           after: {
             view: "application",
             sequenceProfile: "",
             surface: "omen",
             actor: "Parlay bettor",
             actionOwner: "simulator",
-            template: "parlay-receipt",
+            template: "parlay-position",
             route: "/parlays/PM-4821/cashout",
             product: "OmenMarketMaker Parlays",
-            section: "Confirmation",
+            section: "Closed parlay",
             title: "Cashout complete",
             subtitle: "$128 was sent to the connected wallet.",
             status: "Confirmed",
@@ -5122,7 +5202,7 @@
             user: "0x7c...42",
             kpis: [["Received", "$128"], ["Profit", "+$28"], ["Position", "Closed"]],
             blocks: [
-              { type: "receipt", title: "Payment confirmed", value: "$128 received", details: [["Wallet", "0x7c...42"], ["Network", "World Chain"], ["Status", "Confirmed"], ["Transaction", "0xc42a...71be"], ["Time", "14 Jul 2024 · 19:16 UTC"]] },
+              { type: "settlement", title: "Cashout result", label: "Received", value: "$128.00", delta: "+$28 profit", status: "Paid", details: [["Wallet", "0x7c...42"], ["Network", "World Chain"], ["Transaction", "0xc42a...71be"], ["Time", "14 Jul 2024 · 19:16 UTC"]] },
               { type: "table", title: "Closed position", rows: [["Order", "PM-4821", "closed"], ["Stake", "$100", "settled"], ["Profit", "+$28", "paid"]] }
             ]
           }
@@ -5151,10 +5231,11 @@
           target: "block",
           targetTitle: "Proposal summary",
           result: "Bonded YES posted for review",
+          toast: { title: "YES result posted", body: "$250 bond locked", detail: "The 24-hour challenge window is open" },
           after: {
             route: "/markets/england-euro-final/result",
-            section: "Confirmation",
-            title: "Result proposal",
+            section: "Published result",
+            title: "YES result posted",
             subtitle: "YES is open to challenge until the review period ends.",
             status: "Challenge period open",
             statusTone: "neutral",
@@ -5163,9 +5244,9 @@
             actor: "Result submitter",
             kpis: [["Result", "YES"], ["Bond", "$250 locked"], ["Time left", "23:58"]],
             blocks: [
-              { type: "receipt", title: "Proposal confirmed", value: "YES · Pending", details: [["Bond", "$250 locked"], ["Challenge ends", "15 Jul 2024, 22:30 UTC"], ["Transaction", "0x31ab…90f2"]] },
               { type: "countdown", title: "Challenge period", value: "23:58", note: "Time left" },
-              { type: "odds", title: "Market still open", yes: 91, no: 9 }
+              { type: "odds", title: "Market still open", yes: 91, no: 9 },
+              { type: "record", title: "Proposal details", value: "YES · Pending", caption: "Permanent result record", details: [["Bond", "$250 locked"], ["Challenge ends", "15 Jul 2024, 22:30 UTC"], ["Transaction", "0x31ab…90f2"]] }
             ]
           }
         }
@@ -5193,11 +5274,12 @@
           target: "block",
           targetTitle: "Challenge ticket",
           result: "Court case opened",
+          toast: { title: "Case opened", body: "NO challenge accepted", detail: "Case #1182 · $250 bond locked" },
           after: {
             route: "/cases/1182",
             context: "Case #1182",
-            section: "Confirmation",
-            title: "Challenge submitted",
+            section: "Case #1182",
+            title: "Independent review opened",
             subtitle: "DemoThemis is selecting an independent panel.",
             status: "Awaiting panel selection",
             statusTone: "neutral",
@@ -5206,7 +5288,7 @@
             actor: "Challenger",
             kpis: [["Case", "#1182"], ["Challenge", "NO"], ["Bond", "$250 locked"]],
             blocks: [
-              { type: "receipt", title: "Challenge receipt", value: "Case #1182", details: [["Challenge", "NO"], ["Bond", "$250 locked"], ["Status", "Awaiting panel selection"], ["Transaction", "0xa842…1182"]] },
+              { type: "record", title: "Case activity", value: "NO challenge accepted", caption: "Permanent case record", details: [["Case", "#1182"], ["Bond", "$250 locked"], ["Status", "Awaiting panel selection"], ["Transaction", "0xa842…1182"]] },
               { type: "odds", title: "Live market odds", yes: 44, no: 56 }
             ]
           }
@@ -5251,9 +5333,11 @@
           }
         },
         {
-          cue: "Presence receipts",
-          actionLabel: "Presence receipts",
+          cue: "Presence checks",
+          actionLabel: "Presence checks",
           actionOwner: "protocol",
+          autoAdvance: true,
+          autoDelay: 1500,
           target: "block",
           targetTitle: "Presence checks",
           result: "3 jurors present",
@@ -5261,14 +5345,14 @@
             title: "Three jurors verified",
             subtitle: "Every drawn person passed a live presence check.",
             status: "Presence checked",
-            activeTab: "Receipts",
+            activeTab: "Presence",
             surface: "protocol",
             actor: "Network",
             actionOwner: "protocol",
             kpis: [["Present", "3/3"], ["Draws", "1"], ["Reroll", "No"]],
             blocks: [
               { type: "faceChecks", title: "Presence checks", rows: [["Juror 04", "Present"], ["Juror 09", "Present"], ["Juror 12", "Present"]] },
-              { type: "receipt", title: "Panel receipt", value: "3 verified humans", note: "Seats are people, not token weight." }
+              { type: "proof", title: "Bound panel", stamp: "3 of 3 present", result: "Three verified humans", note: "Seats are people, not token weight." }
             ]
           }
         }
@@ -5283,17 +5367,19 @@
           target: "block",
           targetTitle: "Encrypted ballot",
           result: "Encrypted ballot sealed",
+          toast: { title: "Ballot sealed", body: "Encrypted and submitted", detail: "Your selected outcome stays private" },
           after: {
             route: "/cases/1182/ballot",
-            section: "Confirmation",
-            title: "Ballot submitted",
-            subtitle: "Your encrypted ballot is recorded; its contents remain hidden.",
-            status: "Confirmed",
+            section: "Private ballot",
+            title: "Ballot sealed",
+            subtitle: "The workspace is locked; your selected outcome remains hidden.",
+            status: "Encrypted & submitted",
             activeTab: "Ballot",
             account: "Juror 04",
             kpis: [["Juror fee", "$92 pending"], ["Case", "#1182"], ["Ballot", "Submitted"]],
             blocks: [
-              { type: "receipt", title: "Submission receipt", value: "Confirmed", details: [["Case", "#1182"], ["Ballot contents", "Hidden"], ["Submission ID", "0x7d90…c118"], ["Juror fee", "$92 pending finality"], ["Reserve", "Locked until finality"]] }
+              { type: "proof", title: "Ballot box", stamp: "Encrypted & recorded", result: "Submission accepted", note: "The selected outcome is intentionally hidden." },
+              { type: "record", title: "Submission details", value: "Case #1182 · Confirmed", caption: "Permanent private record", details: [["Ballot contents", "Hidden"], ["Submission ID", "0x7d90…c118"], ["Juror fee", "$92 pending finality"], ["Reserve", "Locked until finality"]], note: "This record proves submission, never the vote choice." }
             ]
           }
         }
@@ -5310,7 +5396,7 @@
         activeTab: "Activity",
         kpis: [["Ballots", "1/3"], ["Privacy", "Kept"]],
         blocks: [
-          { type: "route", title: "Ballot receipts", steps: [["04", "Ballot", "received"], ["09", "Ballot", "pending"], ["12", "Ballot", "pending"]] },
+          { type: "route", title: "Ballot arrivals", steps: [["04", "Ballot", "received"], ["09", "Ballot", "pending"], ["12", "Ballot", "pending"]] },
           { type: "proof", title: "Tally", result: "Locked", note: "Opens at 3/3.", verified: false }
         ]
       },
@@ -5320,7 +5406,7 @@
           actionLabel: "Aggregate proof publication",
           actionOwner: "protocol",
           target: "block",
-          targetTitle: "Ballot receipts",
+          targetTitle: "Ballot arrivals",
           result: "3/3 ballots received; aggregate proof posted",
           after: {
             title: "Aggregate proof posted",
@@ -5333,7 +5419,7 @@
             kpis: [["Ballots", "3/3"], ["Verdict", "NO"], ["Privacy", "Kept"]],
             blocks: [
               { type: "proof", title: "Aggregate tally", result: "NO wins 2-1", note: "Ready to verify.", verified: false },
-              { type: "route", title: "Ballot receipts", steps: [["04", "Ballot", "received"], ["09", "Ballot", "received"], ["12", "Ballot", "received"]] }
+              { type: "route", title: "Ballot arrivals", steps: [["04", "Ballot", "received"], ["09", "Ballot", "received"], ["12", "Ballot", "received"]] }
             ]
           }
         },
@@ -5341,6 +5427,8 @@
           cue: "Aggregate proof verification",
           actionLabel: "Aggregate proof verification",
           actionOwner: "protocol",
+          autoAdvance: true,
+          autoDelay: 1600,
           target: "block",
           targetTitle: "Aggregate tally",
           result: "Aggregate proof verified",
@@ -5354,8 +5442,8 @@
             actionOwner: "protocol",
             kpis: [["Verdict", "NO"], ["Proof", "Valid"], ["Privacy", "Kept"]],
             blocks: [
-              { type: "receipt", title: "Tally proof", value: "NO wins 2-1", note: "Verified; ballots private." },
-              { type: "receipt", title: "Pending updates", value: "Proved, not settled", note: "Appeal remains open." }
+              { type: "proof", title: "Verified verdict", stamp: "Proof verified", result: "NO wins 2-1", note: "Individual ballots remain private." },
+              { type: "table", title: "Case status", rows: [["Appeal window", "Open", "next"], ["Settlement", "Pending", "not paid"], ["Privacy", "Kept", "3 ballots"]] }
             ]
           }
         }
@@ -5386,7 +5474,7 @@
             kpis: [["Bond", "$31,000"], ["Panel", "31"], ["Status", "Voting"]],
             blocks: [
               { type: "seats", title: "Appeal panel", count: 31, on: 31 },
-              { type: "receipt", title: "Payment receipt", value: "$31,000 bond received", details: [["Case", "#1182"], ["Panel", "31 jurors"], ["Transaction", "0xc31a…1182"]] }
+              { type: "table", title: "Appeal bond", rows: [["Amount", "$31,000", "locked"], ["Case", "#1182", "open"], ["Transaction", "0xc31a…1182", "confirmed"]] }
             ]
           }
         },
@@ -5394,6 +5482,8 @@
           cue: "31-juror vote",
           actionLabel: "31-juror vote",
           actionOwner: "protocol",
+          autoAdvance: true,
+          autoDelay: 1800,
           target: "block",
           targetTitle: "Appeal panel",
           result: "Appeal vote complete",
@@ -5409,7 +5499,7 @@
             kpis: [["Verdict", "NO 18-13"], ["Panel", "31"], ["Appeals", "Closed"]],
             blocks: [
               { type: "seats", title: "Appeal panel", count: 31, on: 31 },
-              { type: "receipt", title: "Appeal verdict", value: "NO wins 18-13", note: "Appeals are closed; the final proof is ready." }
+              { type: "proof", title: "Appeal proof", stamp: "Appeals closed", result: "NO wins 18-13", note: "The final proof is ready for settlement." }
             ]
           }
         }
@@ -5437,6 +5527,7 @@
           target: "block",
           targetTitle: "Final verdict",
           result: "Final proof verified by OmenMarketMaker",
+          toast: { title: "Settlement complete", body: "$210.50 payout received", detail: "Final result NO · Proof verified" },
           after: {
             surface: "omen",
             actor: "Token holder",
@@ -5445,16 +5536,15 @@
             product: "OmenMarketMaker",
             tabs: ["Market", "Payout", "Proof"],
             route: "/markets/england-euro-final/payout",
-            section: "Confirmation",
-            title: "Payout received",
+            section: "Settlement",
+            title: "Settlement complete",
             subtitle: "Your winning NO claims were paid after final settlement.",
             status: "Paid",
             activeTab: "Payout",
             account: "0x7c...42",
             kpis: [["Result", "NO"], ["Payout", "$210.50"], ["Market", "Closed"]],
             blocks: [
-              { type: "receipt", title: "Payout receipt", value: "$210.50 received", details: [["Winning claims", "210.5 NO"], ["Destination", "0x7c...42"], ["Status", "Paid"], ["Transaction", "0xf190…c42a"]] },
-              { type: "receipt", title: "Proof verified", value: "Final result · NO", details: [["Case", "#1182"], ["Proof", "0x9b31…18ff"], ["Market", "Closed"]] }
+              { type: "settlement", title: "Settlement complete", label: "Payout received", value: "$210.50", delta: "210.5 winning NO claims", status: "Paid", open: true, details: [["Destination", "0x7c...42"], ["Transaction", "0xf190…c42a"], ["Final result", "NO"], ["Case", "#1182"], ["Proof", "0x9b31…18ff"], ["Market", "Closed"]] }
             ]
           }
         }
@@ -5464,13 +5554,10 @@
 
   var CONTROL_COACH_COPY = {
     "Publish market": "Lock the resolve condition and funded opening offers, then publish the market page.",
-    "Open market page": "Open the public market page traders will use next.",
     "Buy YES": "Fill a YES trade from the ticket. More YES demand pushes the price up.",
     "Buy NO": "Switch sides and buy NO. Opposing flow pulls the price back.",
-    "Review position": "Review the YES and NO fills together with the market's current split.",
     "Take 70c offer": "Take the maker's posted price before any next-best liquidity is used.",
     "Claim wallet tokens": "Move eligible YES and NO balances into wallet-held claims.",
-    "Open order book": "Open the wallet order book so claims can move outside the app.",
     "Invite Bob": "Send the room invite before either side locks funds.",
     "Accept & fund room": "Accept the fixed terms and lock both sides' stakes in neutral escrow.",
     "Place $100 parlay": "Submit the two-leg order; the automatic route fills every leg or changes nothing.",
@@ -5480,7 +5567,7 @@
     "Confirm and post YES": "Confirm YES and lock the $250 bond for the 24-hour challenge period.",
     "Submit NO challenge · $250": "Lock the $250 challenge bond and submit NO for independent review.",
     "Bound draw": "Show the public seed selecting one bound panel for this case.",
-    "Presence receipts": "Show each drawn seat's independent live-presence receipt.",
+    "Presence checks": "Show each drawn person's independent live-presence verification.",
     "Seal ballot": "Submit an encrypted ballot without creating a transferable receipt.",
     "Aggregate proof publication": "Wait for all three encrypted ballots, then publish only the aggregate tally.",
     "Aggregate proof verification": "Verify the public aggregate without exposing individual ballots.",
@@ -5958,8 +6045,7 @@
       var resolveCondition = liveFieldValue(0, "Resolve condition", "YES only if UEFA records England as the winner of the 14 July 2024 final; otherwise NO.");
       page.title = question;
       (page.blocks || []).forEach(function (block) {
-        if (block.title === "Market published") block.value = question;
-        if (block.title === "Market page") {
+        if (block.title === "Market details") {
           setReceiptDetail(block, "Closes", closeTime);
           setReceiptDetail(block, "Resolve rule", resolveCondition);
         }
@@ -5986,7 +6072,7 @@
             return person;
           });
         }
-        if (block.title === "Room funded") {
+        if (block.title === "Escrow record") {
           block.value = winnerReceives + " locked";
           setReceiptDetail(block, "Alice", stake + " · " + yourSide);
           setReceiptDetail(block, "Bob", stake + " · " + opposingSide);
@@ -5999,7 +6085,7 @@
   function applyBallotChoice(page) {
     if (stage !== 9 || activeEventStep < 1 || !selectedBallotChoice) return page;
     (page.blocks || []).forEach(function (block) {
-      if (block.title === "Ballot box") block.result = "Encrypted " + selectedBallotChoice + " sealed";
+      if (block.title === "Ballot box") block.result = "Encrypted ballot sealed";
     });
     return page;
   }
@@ -6045,7 +6131,7 @@
     var placement = nextControlPlacement(page);
     var continuation = currentContinuation();
     var continuationHost = null;
-    var continuationDock = continuation && continuation.dock === "page" ? "page" : "card";
+    var continuationDock = continuation && continuation.dock === "card" ? "card" : "page";
     if (placement === "app" && appWindow && continuation) {
       if (continuationDock === "page") {
         continuationHost = appWindow.querySelector(".live-main");
@@ -6090,8 +6176,116 @@
     return (currentFlow().steps || []).length;
   }
 
+  function cancelConfirmationTimers() {
+    confirmationTimers.forEach(function (timer) { window.clearTimeout(timer); });
+    confirmationTimers = [];
+  }
+
+  function clearStepConfirmation() {
+    cancelConfirmationTimers();
+    pendingConfirmation = null;
+  }
+
+  function queueStepConfirmation(step, targetStep) {
+    clearStepConfirmation();
+    if (!step || !step.toast) return;
+    var duration = Math.max(2800, Math.min(7000, Number(step.toast.duration) || 4200));
+    pendingConfirmation = {
+      stage: stage,
+      step: targetStep,
+      title: cleanTip(step.toast.title || step.result || "Complete"),
+      body: cleanTip(step.toast.body || step.result || "Action complete"),
+      detail: cleanTip(step.toast.detail || "Details remain available on this page"),
+      duration: duration,
+      expiresAt: Date.now() + duration
+    };
+  }
+
+  function currentStepConfirmation() {
+    if (!pendingConfirmation) return null;
+    if (pendingConfirmation.stage !== stage || pendingConfirmation.step !== activeEventStep || pendingConfirmation.expiresAt <= Date.now()) {
+      clearStepConfirmation();
+      return null;
+    }
+    return pendingConfirmation;
+  }
+
+  function renderStepConfirmation(host, appTheme) {
+    var notice = currentStepConfirmation();
+    if (!host || !notice) return;
+    cancelConfirmationTimers();
+    var remaining = Math.max(1, notice.expiresAt - Date.now());
+    var layer = makeEl("div", "sim-toast-layer");
+    var toast = makeEl("div", "sim-result-toast");
+    var icon = makeEl("span", "sim-toast-icon");
+    var content = makeEl("span", "sim-toast-content");
+    layer.setAttribute("data-app-theme", appTheme || "omen");
+    layer.setAttribute("aria-hidden", "true");
+    toast.style.setProperty("--toast-duration", remaining + "ms");
+    icon.innerHTML = lucideMini("shield-check");
+    content.appendChild(makeEl("span", "sim-toast-header", notice.title));
+    content.appendChild(makeEl("span", "sim-toast-body", notice.body));
+    content.appendChild(makeEl("span", "sim-toast-detail", notice.detail));
+    toast.appendChild(icon);
+    toast.appendChild(content);
+    toast.appendChild(makeEl("span", "sim-toast-saved", "Details on page"));
+    toast.appendChild(makeEl("span", "sim-toast-progress"));
+    layer.appendChild(toast);
+    host.appendChild(layer);
+    function settleToastCoachmark(event) {
+      if (event.target !== toast || event.animationName !== "toast-rise") return;
+      toast.removeEventListener("animationend", settleToastCoachmark);
+      invalidateCoachmarkGeometry("toast-entered", true);
+      queueCoachmarkPosition();
+    }
+    toast.addEventListener("animationend", settleToastCoachmark);
+
+    confirmationTimers.push(window.setTimeout(function () {
+      if (pendingConfirmation !== notice) return;
+      toast.classList.add("is-leaving");
+    }, Math.max(0, remaining - 240)));
+    confirmationTimers.push(window.setTimeout(function () {
+      if (pendingConfirmation === notice) pendingConfirmation = null;
+      if (layer.parentNode) layer.parentNode.removeChild(layer);
+      confirmationTimers = [];
+      invalidateCoachmarkGeometry("toast-dismissed", true);
+      queueCoachmarkPosition();
+    }, remaining));
+  }
+
+  function cancelAutomaticStep() {
+    automaticStepToken += 1;
+    if (automaticStepTimer) window.clearTimeout(automaticStepTimer);
+    automaticStepTimer = null;
+  }
+
+  function scheduleAutomaticStep() {
+    cancelAutomaticStep();
+    var step = currentTutorialStep();
+    if (!step || !step.autoAdvance || isEventComplete()) return;
+    var expectedStage = stage;
+    var expectedStep = activeEventStep;
+    var token = automaticStepToken;
+    var delay = Math.max(700, Math.min(5000, Number(step.autoDelay) || 1500));
+    function completeWhenVisible() {
+      if (token !== automaticStepToken || stage !== expectedStage || activeEventStep !== expectedStep) return;
+      if (document.hidden) {
+        automaticStepTimer = window.setTimeout(completeWhenVisible, 400);
+        return;
+      }
+      automaticStepTimer = null;
+      advanceEventStep({ automatic: true });
+    }
+    automaticStepTimer = window.setTimeout(completeWhenVisible, delay);
+  }
+
   function previousRunState(stageIndex, stepIndex) {
-    if (stepIndex > 0) return { stage: stageIndex, step: stepIndex - 1 };
+    if (stepIndex > 0) {
+      var steps = (APP_FLOWS[stageIndex] && APP_FLOWS[stageIndex].steps) || [];
+      var previousStep = stepIndex - 1;
+      while (previousStep > 0 && steps[previousStep] && steps[previousStep].autoAdvance) previousStep -= 1;
+      return { stage: stageIndex, step: previousStep };
+    }
     if (stageIndex <= 0) return null;
     var previousFlow = APP_FLOWS[stageIndex - 1] || { steps: [] };
     return { stage: stageIndex - 1, step: (previousFlow.steps || []).length };
@@ -6150,6 +6344,8 @@
   }
 
   function resetEventFlow(toEnd) {
+    cancelAutomaticStep();
+    clearStepConfirmation();
     activeEventStep = toEnd ? eventStepCount() : 0;
     activeAction = activeEventStep > 0 ? activeEventStep - 1 : -1;
     if (!toEnd && stage === 9) selectedBallotChoice = "";
@@ -6273,7 +6469,10 @@
     document.querySelectorAll(".coachmark-inline-slot").forEach(function (slot) {
       var parent = slot.parentElement;
       slot.remove();
-      if (parent) parent.classList.remove("has-inline-coachmark");
+      if (parent) {
+        parent.classList.remove("has-inline-coachmark");
+        parent.style.removeProperty("--sim-toast-safe-top");
+      }
     });
   }
 
@@ -6578,6 +6777,8 @@
     choice: "Choice",
     liquidity: "Liquidity",
     receipt: "Receipt",
+    record: "Activity",
+    settlement: "Settlement",
     odds: "Market",
     ticket: "Ticket",
     table: "List",
@@ -6608,6 +6809,8 @@
     choice: "list-checks",
     liquidity: "coins",
     receipt: "receipt-text",
+    record: "file-check-2",
+    settlement: "wallet-cards",
     odds: "chart-no-axes-combined",
     ticket: "ticket",
     table: "list-checks",
@@ -6729,14 +6932,26 @@
     if (completedStep && completedStep.result) dock.appendChild(makeEl("div", "tutorial-result", completedStep.result));
 
     if (step && currentActionOwner() !== "user") {
-      var advance = makeEl("button", "tutorial-advance guided-target");
-      advance.type = "button";
-      tagWorkflowAction(advance, stepActionLabel(step), stepCoachText(step), currentActionOwner());
-      setAttributeToken(advance, "aria-describedby", "guidedCoachmark", true);
-      advance.appendChild(makeEl("span", "", "Play"));
-      advance.appendChild(makeEl("b", "", stepActionLabel(step)));
-      advance.addEventListener("click", advanceEventStep);
-      dock.appendChild(advance);
+      if (step.autoAdvance) {
+        var automatic = makeEl("div", "automatic-progress");
+        automatic.setAttribute("role", "status");
+        automatic.setAttribute("aria-label", stepActionLabel(step) + " is completing automatically");
+        automatic.appendChild(makeEl("span", "automatic-progress-mark"));
+        var automaticCopy = makeEl("span", "automatic-progress-copy");
+        automaticCopy.appendChild(makeEl("strong", "", stepActionLabel(step)));
+        automaticCopy.appendChild(makeEl("span", "", "Completing automatically — no extra tap needed"));
+        automatic.appendChild(automaticCopy);
+        dock.appendChild(automatic);
+      } else {
+        var advance = makeEl("button", "tutorial-advance guided-target");
+        advance.type = "button";
+        tagWorkflowAction(advance, stepActionLabel(step), stepCoachText(step), currentActionOwner());
+        setAttributeToken(advance, "aria-describedby", "guidedCoachmark", true);
+        advance.appendChild(makeEl("span", "", "Play"));
+        advance.appendChild(makeEl("b", "", stepActionLabel(step)));
+        advance.addEventListener("click", advanceEventStep);
+        dock.appendChild(advance);
+      }
     }
 
     var dots = makeEl("div", "tutorial-dots");
@@ -6761,6 +6976,8 @@
     choice: 5,
     liquidity: 6,
     receipt: 4,
+    record: 4,
+    settlement: 7,
     odds: 5,
     table: 7,
     ticket: 7,
@@ -6819,8 +7036,37 @@
     return distributeLiveBlockSpans((blocks || []).map(liveBlockLayoutWeight));
   }
 
+  function renderActivityRecord(block, span) {
+    var card = document.createElement("details");
+    card.className = "live-card block-record activity-record live-span-" + (span || 4) + (block.tone ? " " + block.tone : "");
+    card.setAttribute("data-block-title", block.title || "Activity details");
+    if (block.wide) card.classList.add("wide");
+    if (block.open) card.open = true;
+
+    var summary = document.createElement("summary");
+    var mark = makeEl("span", "record-mark");
+    mark.innerHTML = lucideMini(block.icon || "file-check-2");
+    var copy = makeEl("span", "record-copy");
+    copy.appendChild(makeEl("strong", "", block.title || "Activity details"));
+    copy.appendChild(makeEl("span", "", block.caption || "Permanent record"));
+    summary.appendChild(mark);
+    summary.appendChild(copy);
+    summary.appendChild(makeEl("span", "record-value", block.value || "View details"));
+    var chevron = makeEl("span", "record-chevron");
+    chevron.setAttribute("aria-hidden", "true");
+    summary.appendChild(chevron);
+    card.appendChild(summary);
+
+    var panel = makeEl("div", "record-panel");
+    appendReceiptDetails(panel, block.details);
+    if (block.note) panel.appendChild(makeEl("p", "app-note", block.note));
+    card.appendChild(panel);
+    return card;
+  }
+
   function renderLiveBlock(block, span) {
     var type = block.type || "panel";
+    if (type === "record") return renderActivityRecord(block, span);
     var isHot = hasHot(block.hot);
     var isCurrentTarget = blockIsCurrentTarget(block);
     var card = makeEl("div", "live-card " + blockClassName(type) + " " + (block.tone || ""));
@@ -6935,6 +7181,27 @@
     } else if (type === "receipt") {
       card.appendChild(makeEl("div", "app-value", block.value));
       appendReceiptDetails(card, block.details);
+      if (block.note) card.appendChild(makeEl("div", "app-note", block.note));
+    } else if (type === "settlement") {
+      var settlement = makeEl("div", "settlement-hero");
+      var settlementMark = makeEl("span", "settlement-mark");
+      settlementMark.innerHTML = lucideMini(block.icon || "wallet-cards");
+      var settlementCopy = makeEl("div", "settlement-copy");
+      settlementCopy.appendChild(makeEl("span", "", block.label || "Received"));
+      settlementCopy.appendChild(makeEl("b", "", block.value || "Complete"));
+      if (block.delta) settlementCopy.appendChild(makeEl("small", "", block.delta));
+      settlement.appendChild(settlementMark);
+      settlement.appendChild(settlementCopy);
+      settlement.appendChild(makeEl("span", "settlement-status", block.status || "Complete"));
+      card.appendChild(settlement);
+      if ((block.details || []).length) {
+        var settlementDetails = document.createElement("details");
+        settlementDetails.className = "settlement-details";
+        if (block.open) settlementDetails.open = true;
+        settlementDetails.appendChild(makeEl("summary", "", block.detailsLabel || "Proof & transaction details"));
+        appendReceiptDetails(settlementDetails, block.details);
+        card.appendChild(settlementDetails);
+      }
       if (block.note) card.appendChild(makeEl("div", "app-note", block.note));
     } else if (type === "odds") {
       var odds = makeEl("div", "big-odds");
@@ -7426,11 +7693,17 @@
     var label = (STEP_GUIDES[stage] && STEP_GUIDES[stage].label) || STAGES[stage].title;
     var steps = (currentFlow().steps || []);
     var completedStep = activeEventStep > 0 ? steps[Math.min(activeEventStep - 1, steps.length - 1)] : null;
+    var message;
     if (isEventComplete()) {
-      return "Event " + eventNumber + " complete. " + (completedStep && completedStep.result ? completedStep.result : label + " complete.");
+      message = "Event " + eventNumber + " complete. " + (completedStep && completedStep.result ? completedStep.result : label + " complete.");
+    } else if (completedStep && completedStep.result) {
+      message = completedStep.result;
+    } else {
+      message = "Event " + eventNumber + ": " + label + ".";
     }
-    if (completedStep && completedStep.result) return completedStep.result;
-    return "Event " + eventNumber + ": " + label + ".";
+    var notice = currentStepConfirmation();
+    if (notice) message += " " + notice.title + ". " + notice.body + ". " + notice.detail + ".";
+    return message;
   }
 
   function announceRunStatus(message) {
@@ -7446,8 +7719,10 @@
   function renderProductDemo(item, focus) {
     var root = document.getElementById("productDemo");
     if (!root) return;
-    var focusSnapshot = captureSimulatorFocus(root);
-    var shouldRestoreFocus = Boolean(focusSnapshot) || restoreSimulatorFocusOnRender;
+    var suppressFocusRestore = suppressSimulatorFocusRestoreOnce;
+    suppressSimulatorFocusRestoreOnce = false;
+    var focusSnapshot = suppressFocusRestore ? null : captureSimulatorFocus(root);
+    var shouldRestoreFocus = !suppressFocusRestore && (Boolean(focusSnapshot) || restoreSimulatorFocusOnRender);
     var shouldAnnounceStatus = announceRunStatusOnRender;
     restoreSimulatorFocusOnRender = false;
     announceRunStatusOnRender = false;
@@ -7533,6 +7808,7 @@
       appViewport.appendChild(appWindow);
       preview.appendChild(browserBar);
       preview.appendChild(appViewport);
+      renderStepConfirmation(preview, appTheme);
       if (frameTitle) {
         var demandFrame = makeEl("div", "sim-demand-frame");
         var demandFrameTab = makeEl("div", "sim-demand-frame-tab", frameTitle);
@@ -7548,6 +7824,7 @@
     }
     if (shouldRestoreFocus) restoreSimulatorFocus(root, focusSnapshot);
     if (shouldAnnounceStatus) announceRunStatus(currentRunStatusMessage());
+    scheduleAutomaticStep();
     queueCoachmarkPosition();
   }
 
@@ -7801,6 +8078,23 @@
         var controlClip = coachmarkClipForElement(control, boundary, clipCache);
         var visibleContent = controlClip && coachmarkRectIntersection(contentRect, controlClip);
         if (visibleContent && visibleContent.width > .5 && visibleContent.height > .5) rects.push(visibleContent);
+      }
+    }
+    if (complete) {
+      var floatingNotices = scope.querySelectorAll(".sim-result-toast");
+      for (var noticeIndex = 0; noticeIndex < floatingNotices.length; noticeIndex += 1) {
+        if (rects.length >= 1200) {
+          complete = false;
+          break;
+        }
+        var floatingNotice = floatingNotices[noticeIndex];
+        var noticeStyle = getComputedStyle(floatingNotice);
+        if (noticeStyle.display === "none" || noticeStyle.visibility === "hidden" || Number(noticeStyle.opacity) === 0) continue;
+        var noticeRect = floatingNotice.getBoundingClientRect();
+        var noticeGap = 10;
+        var paddedNotice = coachmarkRect(noticeRect.left - noticeGap, noticeRect.top - noticeGap, noticeRect.width + noticeGap * 2, noticeRect.height + noticeGap * 2);
+        var visibleNotice = coachmarkRectIntersection(paddedNotice, boundary);
+        if (visibleNotice && visibleNotice.width > .5 && visibleNotice.height > .5) rects.push(visibleNotice);
       }
     }
     coachmarkObstacleCache = { key: cacheKey, rects: rects, complete: complete };
@@ -8284,6 +8578,10 @@
     if (mount.parent.matches(".sim-live-preview, .protocol-sequence")) mount.parent.classList.add("has-inline-coachmark");
     mount.parent.insertBefore(slot, mount.before || null);
     slot.appendChild(coach);
+    if (mount.parent.matches(".sim-live-preview")) {
+      var inlineAppViewport = mount.parent.querySelector(".sim-app-viewport");
+      if (inlineAppViewport) mount.parent.style.setProperty("--sim-toast-safe-top", Math.max(0, inlineAppViewport.offsetTop + 6) + "px");
+    }
     coachmarkLastPlacement = { targetKey: targetKey, mode: "inline", placement: "inline", align: "flow", width: Math.round(coach.getBoundingClientRect().width) };
     audit.mode = "inline";
     audit.placement = "inline";
@@ -8734,7 +9032,8 @@
     allowAutoRevealTarget = true;
   }
 
-  function advanceEventStep() {
+  function advanceEventStep(options) {
+    var automatic = Boolean(options && options.automatic);
     var validation = currentStepValidation();
     if (!validation.valid) {
       syncGuidedActionValidity();
@@ -8742,24 +9041,32 @@
     }
     var total = eventStepCount();
     if (activeEventStep >= total) return;
+    var completedStep = currentTutorialStep();
+    cancelAutomaticStep();
+    queueStepConfirmation(completedStep, activeEventStep + 1);
     activeAction = activeEventStep;
     activeEventStep += 1;
     if (isEventComplete()) completedStages[stage] = true;
     saveProductProgress();
-    prepareSimulatorTransition(true);
+    suppressSimulatorFocusRestoreOnce = automatic;
+    prepareSimulatorTransition(!automatic);
     var item = STAGES[stage];
     var focus = FOCUS_STEPS[stage];
     renderStageArt(item, focus);
     renderControls();
     syncSystemMachineStage();
-    scrollToChangedAppArea();
-    window.setTimeout(revealGuidedTargetIfNeeded, 640);
-    window.setTimeout(revealGuidedTargetIfNeeded, 1180);
+    if (!automatic) {
+      scrollToChangedAppArea();
+      window.setTimeout(revealGuidedTargetIfNeeded, 640);
+      window.setTimeout(revealGuidedTargetIfNeeded, 1180);
+    }
   }
 
   function rewindCurrentEventStep() {
     var previous = previousRunState(stage, activeEventStep);
     if (!previous) return false;
+    cancelAutomaticStep();
+    clearStepConfirmation();
     var crossedEvent = previous.stage !== stage;
     var wasComplete = isEventComplete();
     if (crossedEvent) {
