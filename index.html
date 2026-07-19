@@ -10,12 +10,15 @@
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@500;700&family=Newsreader:opsz,wght@6..72,200..700&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="assets/styles.css">
 </head>
-<body>
+<body data-page-brand="neutral">
 <div id="progress"></div>
 
 <nav class="sitenav" aria-label="Primary">
   <div class="sitenav-inner">
-    <a class="brand" href="/">DemoThemis<span class="dot">.</span></a>
+    <a class="brand brand-with-mark" href="/">
+      <img class="brand-mark" src="assets/brand/demothemis/mark-32.png" width="32" height="32" alt="">
+      <span class="brand-word">DemoThemis<span class="dot">.</span></span>
+    </a>
     <button class="nav-toggle" type="button" aria-label="Menu" aria-expanded="false">&#9776;</button>
     <div class="nav-links">
       <a href="/">Home</a>
@@ -50,10 +53,13 @@
 
     <p>Every market ends with a ruling: did the thing happen or not? Polymarket, the biggest prediction market in the world, hands that ruling to a protocol called UMA. Anyone can post a bond and propose an answer. If nobody objects within two hours, it stands. If someone does, UMA's token holders vote on the truth, one token one vote, and voters who side against the majority lose part of their stake. So the rational move is to follow the biggest wallets, and disputed markets have settled against plain reality because of it. Whoever holds enough tokens holds the verdict.</p>
     <div class="products product-pair">
-      <article class="product court">
+      <article class="product court" data-brand="demothemis">
         <div class="product-topline">
           <span class="pk">Product one</span>
           <span class="product-kind">Resolution layer</span>
+        </div>
+        <div class="product-brand-stage" data-brand="demothemis" aria-hidden="true">
+          <img class="brand-wordmark" src="assets/brand/demothemis/wordmark.png" width="1766" height="216" alt="">
         </div>
         <h3>DemoThemis</h3>
         <p class="product-tagline">Arbitration service: the most ambitious human infrastructure ever made.</p>
@@ -61,10 +67,13 @@
         <p class="product-summary product-summary-how"><strong class="product-summary-label">How:</strong> robust, ungameable mechanics with proof of personhood to overcome the need for plutocracy. OmenMarketMaker supplies the first demand, data, and escrow volume.</p>
         <p class="product-summary product-summary-worldcoin"><strong class="product-summary-label">Using Worldcoin to ensure 1 juror = 1 human:</strong> a World ID iris scan makes each arbitrator one unique person with one vote, a face check on their own phone confirms presence at every draw, and settlement runs on-chain with gas sponsored for verified humans.</p>
       </article>
-      <article class="product market">
+      <article class="product market" data-brand="omen">
         <div class="product-topline">
           <span class="pk">Product two</span>
           <span class="product-kind">Prediction market</span>
+        </div>
+        <div class="product-brand-stage" data-brand="omen" aria-hidden="true">
+          <img class="brand-wordmark" src="assets/brand/omenmarketmaker/wordmark-poster.png" width="1000" height="300" alt="">
         </div>
         <h3>OmenMarketMaker</h3>
         <p class="product-tagline">Six novel market features, combined to make a superior prediction market platform</p>
@@ -91,34 +100,34 @@
         <h3>Run-through</h3>
         <p>Play one market through creation, tokenization, dispute, appeal, and finality.</p>
       </a>
-      <a class="map-card" href="demothemis.html">
+      <a class="map-card" href="demothemis.html" data-brand="demothemis">
         <span class="stage">Chapter 02</span>
         <h3>DemoThemis</h3>
         <p>Bullet proof, unbuyable arbitration through funded verified juries, private ballots, appeals, and juror scoring&mdash;with optional neutral escrow when funds must move.</p>
       </a>
-      <a class="map-card" href="break-the-court.html">
+      <a class="map-card" href="break-the-court.html" data-brand="demothemis">
         <span class="stage">Chapter 03</span>
         <h3>Break the court</h3>
         <p>Move the knobs and see which attacks can still make money.</p>
       </a>
-      <a class="map-card" href="omenmarketmaker.html">
+      <a class="map-card" href="omenmarketmaker.html" data-brand="omen">
         <span class="stage">Chapter 04</span>
         <h3>OmenMarketMaker</h3>
         <p>Markets born as shared pots, then graduated into self-custodied tokens.</p>
       </a>
-      <a class="map-card" href="bootstrap-loop.html">
+      <a class="map-card" href="bootstrap-loop.html" data-brand="shared">
         <span class="stage">Chapter 05</span>
         <h3>The bootstrap loop</h3>
         <p>How markets supply paid cases, juror tests, revenue, and proof.</p>
       </a>
-      <a class="map-card" href="governance.html">
+      <a class="map-card" href="governance.html" data-brand="shared">
         <span class="stage">Chapter 06</span>
         <h3>Governance</h3>
         <p>Separate governments for the market business and the neutral court.</p>
       </a>
     </div>
 
-    <aside class="callout" aria-labelledby="working-mvp-title">
+    <aside class="callout brand-panel" data-brand="demothemis" aria-labelledby="working-mvp-title">
       <p class="sec-label">Open DemoThemis</p>
       <h3 id="working-mvp-title">See verified-human arbitration in action</h3>
       <p>Follow one precise question through three World ID-verified jurors, sealed ballots, an on-chain majority answer, and automatic settlement.</p>

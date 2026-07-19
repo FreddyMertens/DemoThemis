@@ -9,6 +9,7 @@
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@500;700&family=Newsreader:opsz,wght@6..72,200..700&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="assets/styles.css">
+<script>document.documentElement.classList.add("reader-tabs-enabled");</script>
 <style>
 
   .demothemis-title { max-width: 16ch; letter-spacing: 0; }
@@ -17,6 +18,28 @@
   .demothemis-title .title-claim { max-width: 27ch; margin-top: .55rem; color: var(--accent-ink); font-family: var(--sans); font-size: .46em; font-weight: 650; line-height: 1.22; }
 
   .part-marker { border-top: 1px solid var(--line); padding-top: 2rem; }
+  .reader-switch { position: relative; z-index: 12; display: none; justify-content: center; margin: 1.8rem 0 2.7rem; }
+  .reader-tabs-enabled .reader-switch { display: flex; }
+  .reader-tabs { display: grid; width: min(100%, 35rem); grid-template-columns: repeat(2, minmax(0, 1fr)); gap: .4rem; border: 1px solid var(--line-strong); border-radius: 16px; background: color-mix(in srgb, var(--surface) 90%, transparent); box-shadow: var(--shadow); padding: .4rem; backdrop-filter: blur(14px); }
+  .reader-tab { display: flex; min-width: 0; align-items: center; justify-content: space-between; gap: .8rem; border: 1px solid transparent; border-radius: 12px; background: transparent; padding: .78rem .9rem; color: var(--muted); font-family: var(--sans); text-align: left; cursor: pointer; transition: background .18s ease, border-color .18s ease, color .18s ease, box-shadow .18s ease, transform .18s ease; }
+  .reader-tab span { display: block; font-size: .92rem; font-weight: 750; line-height: 1.2; }
+  .reader-tab small { display: block; color: inherit; font-family: var(--mono); font-size: .65rem; font-weight: 700; line-height: 1.25; opacity: .72; }
+  .reader-tab:hover { border-color: var(--line-strong); color: var(--ink); }
+  .reader-tab:active { transform: scale(.985); }
+  .reader-tab[aria-selected="true"] { border-color: var(--ink); background: var(--ink); color: #fff; box-shadow: 0 7px 18px rgba(16, 24, 40, .2); }
+  .reader-tab:focus-visible { outline: 3px solid color-mix(in srgb, var(--accent) 44%, transparent); outline-offset: 3px; }
+  .reader-tabs-enabled .reading-pane:not(.is-active) { display: none; }
+  .reader-tabs-enabled .toc-mode-block:not(.is-active) { display: none; }
+  .reading-pane > section, .reading-category > section { margin: 3.2rem 0; }
+  .reading-category { scroll-margin-top: 6.5rem; }
+  .simple-category-heading { margin: 3.8rem 0 2rem; border: 1px solid var(--line-strong); border-radius: 16px; padding: 1rem 1.1rem; background: var(--surface); box-shadow: var(--shadow); }
+  .simple-category-heading .sec-label { margin: 0 0 .35rem; }
+  .simple-category-heading h2 { margin: 0; font-size: clamp(1.35rem, 3vw, 1.8rem); }
+  .reading-category[data-reader-category="problem"] .simple-category-heading { border-color: var(--triad-mint-border); background: var(--triad-mint); }
+  .reading-category[data-reader-category="problem"] .simple-category-heading .sec-label { color: #096b4c; }
+  .reading-category[data-reader-category="resistance"] .simple-category-heading { border-color: var(--triad-lavender-border); background: var(--triad-lavender); }
+  .reading-category[data-reader-category="quality"] .simple-category-heading { border-color: var(--triad-amber-border); background: var(--triad-amber); }
+  .reading-category[data-reader-category="quality"] .simple-category-heading .sec-label { color: #8b510a; }
   .simple-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 1rem; margin: 1.4rem 0; }
   .simple-grid.two { grid-template-columns: repeat(2, 1fr); }
   .simple-grid.four { grid-template-columns: repeat(4, 1fr); }
@@ -53,20 +76,25 @@
   .underhood-map > a:nth-child(3) { border-color: var(--triad-amber-border); background: var(--triad-amber); }
   .underhood-map > a:nth-child(1) .eyebrow { color: #096b4c; }
   .underhood-map > a:nth-child(3) .eyebrow { color: #8b510a; }
-  .toc-grouped .toc-parts { columns: 1; border-left: 0; margin-top: .45rem; }
-  .toc-grouped .toc-part { margin: 0 0 .65rem; }
-  .toc-grouped .toc-main { color: var(--accent-ink); font-weight: 700; padding: .3rem .85rem .2rem; border-left: 2px solid var(--accent); margin-left: -2px; }
-  .toc-grouped .toc-time { display: block; margin-top: .12rem; font-family: var(--mono); font-size: .7rem; font-weight: 700; color: var(--faint); }
-  .toc-grouped details { margin: .12rem 0 0 .85rem; }
-  .toc-grouped summary { cursor: pointer; color: var(--muted); font-size: .78rem; font-weight: 600; }
-  .toc-grouped summary:hover { color: var(--ink); }
-  .toc-grouped details ul { columns: 1; margin: .35rem 0 0; padding: 0; border-left: 2px solid var(--line); }
-  .toc-grouped details li a { color: var(--faint); font-size: .8rem; padding: .24rem .7rem; }
-  .toc-grouped details li a:hover { color: var(--ink); }
+  .toc-grouped .toc-mode-heading { margin: .45rem 0 .25rem; border-left: 2px solid var(--accent); padding: .2rem .85rem; color: var(--accent-ink); font-size: .84rem; font-weight: 750; }
+  .toc-grouped .toc-time { display: block; margin-top: .12rem; color: var(--faint); font-family: var(--mono); font-size: .66rem; font-weight: 700; }
+  .toc-grouped .toc-category-links { columns: 1; margin: .35rem 0 0 .85rem; padding: 0; border-left: 2px solid var(--line); }
+  .toc-grouped .toc-category-links li a { color: var(--faint); font-size: .8rem; padding: .3rem .7rem; }
+  .toc-grouped .toc-category-links li a:hover, .toc-grouped .toc-category-links li a.active { color: var(--ink); }
   @container lifecycle (min-width: 54rem) { .simple-loop { grid-template-columns: repeat(3, minmax(0, 1fr)); } }
   @container lifecycle (max-width: 38rem) { .simple-loop { grid-template-columns: 1fr; } }
+  @media (min-width: 1120px) {
+    .reader-switch { position: sticky; top: 4.65rem; }
+    .reading-pane section[id], .reading-category[id] { scroll-margin-top: 10rem; }
+  }
   @media (max-width: 880px) { .simple-grid, .simple-grid.two, .simple-grid.four, .simple-list, .underhood-map { grid-template-columns: 1fr; } }
-  @media (max-width: 640px) { .simple-loop { grid-template-columns: 1fr; } }
+  @media (max-width: 640px) {
+    .reader-switch { margin: 1.15rem 0 2rem; }
+    .reader-tabs { border-radius: 14px; }
+    .reader-tab { align-items: flex-start; flex-direction: column; gap: .18rem; padding: .72rem .7rem; }
+    .simple-loop { grid-template-columns: 1fr; }
+  }
+  @media (prefers-reduced-motion: reduce) { .reader-tab, .underhood-map a, .underhood-map .link-cue span { transition: none; } }
 
 .vhub { display: flex; align-items: center; justify-content: center; gap: .8rem; flex-wrap: wrap; }
   .vhub .apps { display: grid; gap: .45rem; }
@@ -196,12 +224,15 @@ body.theme-solve { --accent: #2f62cf; --accent-soft: #e6edfa; --accent-ink: #214
   .bondnote { font-family: var(--sans); font-size: .9rem; color: var(--ink-soft); background: var(--bg); border: 1px solid var(--line-strong); border-radius: 10px; padding: .75rem .95rem; margin-bottom: 1rem; min-height: 2.8rem; }
 </style>
 </head>
-<body>
+<body data-page-brand="demothemis">
 <div id="progress"></div>
 
 <nav class="sitenav" aria-label="Primary">
   <div class="sitenav-inner">
-    <a class="brand" href="/">DemoThemis<span class="dot">.</span></a>
+    <a class="brand brand-with-mark" href="/">
+      <img class="brand-mark" src="assets/brand/demothemis/mark-32.png" width="32" height="32" alt="">
+      <span class="brand-word">DemoThemis<span class="dot">.</span></span>
+    </a>
     <button class="nav-toggle" type="button" aria-label="Menu" aria-expanded="false">&#9776;</button>
     <div class="nav-links">
       <a href="/">Home</a>
@@ -217,6 +248,11 @@ body.theme-solve { --accent: #2f62cf; --accent-soft: #e6edfa; --accent-ink: #214
 </nav>
 
 <header class="hero reveal">
+  <div class="brand-hero-lockup">
+    <div class="brand-stage brand-stage--demothemis" aria-hidden="true">
+      <img class="brand-wordmark" src="assets/brand/demothemis/wordmark.png" width="1766" height="216" alt="">
+    </div>
+  </div>
   <p class="kicker">Arbitration service</p>
   <h1 class="demothemis-title">
     <span class="title-product">DemoThemis</span>
@@ -235,40 +271,49 @@ body.theme-solve { --accent: #2f62cf; --accent-soft: #e6edfa; --accent-ink: #214
 
   <aside id="toc" class="toc toc-grouped reveal" data-manual-toc>
     <p class="toc-title">On this page</p>
-    <ul class="toc-parts">
-      <li class="toc-part">
-        <a class="toc-main" href="#simple-version">Simple version<span class="toc-time">4 min overview</span></a>
-        <details>
-          <summary>Show sections</summary>
-          <ul>
-            <li><a href="#why-it-exists">Why it exists</a></li>
-            <li><a href="#case-lifecycle">Case lifecycle</a></li>
-            <li><a href="#attack-model">Attack model</a></li>
-            <li><a href="#juror-quality">Juror quality</a></li>
-            <li><a href="#disputes-courts">Disputes and courts</a></li>
-            <li><a href="#bootstrap">Bootstrap</a></li>
-          </ul>
-        </details>
-      </li>
-      <li class="toc-part">
-        <a class="toc-main" href="#deep-dive">Under the hood<span class="toc-time">20 min reference</span></a>
-        <details>
-          <summary>Show sections</summary>
-          <ul>
-            <li><a href="#trust-layer">Why a neutral court matters</a></li>
-            <li><a href="#capture-resistance">What makes the court unbuyable</a></li>
-            <li><a href="#quality-engine">How careful jurors stand out</a></li>
-          </ul>
-        </details>
-      </li>
-    </ul>
+    <div class="toc-mode-block is-active" data-reader-toc="simple">
+      <p class="toc-mode-heading">Simple overview<span class="toc-time">4 min overview</span></p>
+      <ul class="toc-category-links">
+        <li><a href="#simple-problem">Problem and role</a></li>
+        <li><a href="#simple-resistance">Attack resistance</a></li>
+        <li><a href="#simple-quality">Juror quality</a></li>
+      </ul>
+    </div>
+    <div class="toc-mode-block" data-reader-toc="deep">
+      <p class="toc-mode-heading">Deep dive<span class="toc-time">20 min reference</span></p>
+      <ul class="toc-category-links">
+        <li><a href="#trust-layer">Problem and role</a></li>
+        <li><a href="#capture-resistance">Attack resistance</a></li>
+        <li><a href="#quality-engine">Juror quality</a></li>
+      </ul>
+    </div>
   </aside>
 
+  <div class="reader-switch reveal">
+    <div class="reader-tabs" role="tablist" aria-label="Choose reading depth">
+      <button class="reader-tab" id="reader-tab-simple" type="button" role="tab" aria-selected="true" aria-controls="reader-panel-simple" tabindex="0" data-reader-mode="simple"><span>Simple overview</span><small>4 min read</small></button>
+      <button class="reader-tab" id="reader-tab-deep" type="button" role="tab" aria-selected="false" aria-controls="reader-panel-deep" tabindex="-1" data-reader-mode="deep"><span>Deep dive</span><small>20 min reference</small></button>
+    </div>
+    <p class="sr-only" id="reader-mode-status" aria-live="polite"></p>
+  </div>
+
+  <div class="reading-pane is-active" id="reader-panel-simple" role="tabpanel" aria-labelledby="reader-tab-simple" data-reader-pane="simple">
   <section class="reveal" id="simple-version">
     <p class="sec-label">4 min overview</p>
     <h2>The simple version</h2>
     <p class="lead">DemoThemis is a bullet proof, unbuyable court for any well-defined case. Anyone can fund the jurors and receive a ruling; when money is involved, optional protocol escrow can execute it automatically.</p>
+    <div class="underhood-map" aria-label="Simple overview categories">
+      <a href="#simple-problem"><span class="eyebrow">Problem and role</span><b>Why a neutral court matters</b><span class="link-cue">Go to section <span aria-hidden="true">&rarr;</span></span></a>
+      <a href="#simple-resistance"><span class="eyebrow">Attack resistance</span><b>What makes the court unbuyable</b><span class="link-cue">Go to section <span aria-hidden="true">&rarr;</span></span></a>
+      <a href="#simple-quality"><span class="eyebrow">Juror quality</span><b>How careful jurors stand out</b><span class="link-cue">Go to section <span aria-hidden="true">&rarr;</span></span></a>
+    </div>
   </section>
+
+  <div class="reading-category" id="simple-problem" data-reader-category="problem">
+    <header class="simple-category-heading">
+      <p class="sec-label">Problem and role</p>
+      <h2>Why a neutral court matters</h2>
+    </header>
 
   <section class="reveal" id="why-it-exists">
     <p class="sec-label">Why it exists</p>
@@ -294,6 +339,13 @@ body.theme-solve { --accent: #2f62cf; --accent-soft: #e6edfa; --accent-ink: #214
     </ol>
     <p>DemoThemis locks the full work-based quote before anyone is drawn, so the selected panel is fully funded before the case begins.</p>
   </section>
+  </div>
+
+  <div class="reading-category" id="simple-resistance" data-reader-category="resistance">
+    <header class="simple-category-heading">
+      <p class="sec-label">Attack resistance</p>
+      <h2>What makes the court unbuyable</h2>
+    </header>
 
   <section class="reveal" id="attack-model">
     <p class="sec-label">Attack model</p>
@@ -308,6 +360,19 @@ body.theme-solve { --accent: #2f62cf; --accent-soft: #e6edfa; --accent-ink: #214
     </div>
   </section>
 
+  <section class="reveal" id="disputes-courts">
+    <p class="sec-label">Appeals and finality</p>
+    <h2>An appeal brings in a larger, fresh jury</h2>
+    <p>A losing party can fund a new decision by a larger panel: 7 jurors, then 15, then 31. When no appeal is funded&mdash;or the final panel rules&mdash;the decision becomes final. Later proof of collusion can punish jurors, but it cannot reopen the ruling or a completed settlement.</p>
+  </section>
+  </div>
+
+  <div class="reading-category" id="simple-quality" data-reader-category="quality">
+    <header class="simple-category-heading">
+      <p class="sec-label">Juror quality</p>
+      <h2>How careful jurors stand out</h2>
+    </header>
+
   <section class="reveal" id="juror-quality">
     <p class="sec-label">Juror quality</p>
     <h2>The court has to learn who is careful</h2>
@@ -321,30 +386,28 @@ body.theme-solve { --accent: #2f62cf; --accent-soft: #e6edfa; --accent-ink: #214
     </div>
   </section>
 
-  <section class="reveal" id="disputes-courts">
-    <p class="sec-label">Appeals and finality</p>
-    <h2>An appeal brings in a larger, fresh jury</h2>
-    <p>A losing party can fund a new decision by a larger panel: 7 jurors, then 15, then 31. When no appeal is funded&mdash;or the final panel rules&mdash;the decision becomes final. Later proof of collusion can punish jurors, but it cannot reopen the ruling or a completed settlement.</p>
-  </section>
-
   <section class="reveal" id="bootstrap">
     <p class="sec-label">Bootstrap</p>
     <h2>OmenMarketMaker to seed DemoThemis with demand</h2>
     <p>When OmenMarketMaker selects DemoThemis, it sends a case and pays DemoThemis's independently quoted resolution fee. OmenMarketMaker's market margin and treasury remain entirely separate. Every completed case contributes to the shared juror-quality record, while independently checkable outcomes can add later confirmation.</p>
-    <p class="deep-note">That is one launch path, not a product dependency. Continue for the mechanics and interactive stress tests behind each claim.</p>
+    <p class="deep-note">That is one launch path, not a product dependency. Switch to Deep dive for the mechanics and interactive stress tests behind each claim.</p>
   </section>
+  </div>
+  </div>
 
+  <div class="reading-pane" id="reader-panel-deep" role="tabpanel" aria-labelledby="reader-tab-deep" data-reader-pane="deep">
   <section class="reveal part-marker" id="deep-dive">
     <p class="sec-label">20 min reference</p>
     <h2>Under the hood</h2>
     <p>Read straight through, or jump to the layer whose assumptions you want to inspect.</p>
     <div class="underhood-map">
-      <a href="#trust-layer"><span class="eyebrow">Problem and role</span><b>Why a neutral court matters</b><span class="link-cue">Open section <span aria-hidden="true">&rarr;</span></span></a>
-      <a href="#capture-resistance"><span class="eyebrow">Attack resistance</span><b>What makes the court unbuyable</b><span class="link-cue">Open section <span aria-hidden="true">&rarr;</span></span></a>
-      <a href="#quality-engine"><span class="eyebrow">Juror quality</span><b>How careful jurors stand out</b><span class="link-cue">Open section <span aria-hidden="true">&rarr;</span></span></a>
+      <a href="#trust-layer"><span class="eyebrow">Problem and role</span><b>Why a neutral court matters</b><span class="link-cue">Go to section <span aria-hidden="true">&rarr;</span></span></a>
+      <a href="#capture-resistance"><span class="eyebrow">Attack resistance</span><b>What makes the court unbuyable</b><span class="link-cue">Go to section <span aria-hidden="true">&rarr;</span></span></a>
+      <a href="#quality-engine"><span class="eyebrow">Juror quality</span><b>How careful jurors stand out</b><span class="link-cue">Go to section <span aria-hidden="true">&rarr;</span></span></a>
     </div>
   </section>
 
+  <div class="reading-category" data-reader-category="problem">
   <section class="reveal part-marker" id="trust-layer">
     <p class="sec-label">Problem and role</p>
     <h2>Why a neutral court matters</h2>
@@ -384,7 +447,9 @@ body.theme-solve { --accent: #2f62cf; --accent-soft: #e6edfa; --accent-ink: #214
     <h2>The history is useful without being public</h2>
     <p>Each case leaves only the history needed to grade juror quality and prove the court followed its rules: who served, how the panel split, whether an appeal changed the result, and whether reality later confirmed it. When escrow is attached, the same receipt proves it followed the ruling. This is not a public reputation feed. Parties and the requester receive a signed receipt, while scoring receives the minimum case data it needs. Public markets resolve publicly because traders need settlement; private arbitrations stay private by default.</p>
   </section>
+  </div>
 
+  <div class="reading-category" data-reader-category="resistance">
   <section class="reveal part-marker" id="capture-resistance">
     <p class="sec-label">Attack resistance</p>
     <h2>What makes the court unbuyable</h2>
@@ -587,7 +652,9 @@ body.theme-solve { --accent: #2f62cf; --accent-soft: #e6edfa; --accent-ink: #214
 
     <p>Non-overlap stops one corrupted seat appearing twice, making the actual odds better than simple multiplication with replacement. Receipt-free voting also makes the required coordination unenforceable: a recruited juror can take payment and vote honestly on every panel. Parallel panels supplement rather than replace the wide pool, sealed draw, and private ballot.</p>
   </section>
+  </div>
 
+  <div class="reading-category" data-reader-category="quality">
   <section class="reveal part-marker" id="quality-engine">
     <p class="sec-label">Juror quality</p>
     <h2>How careful jurors stand out</h2>
@@ -809,6 +876,8 @@ body.theme-solve { --accent: #2f62cf; --accent-soft: #e6edfa; --accent-ink: #214
       <p style="font-family:var(--sans);font-size:.86rem;color:var(--faint);margin:1rem 0 0">The court does not route cases into separate accuracy systems. It records the evidence each case can provide, then updates one shared juror-quality history.</p>
     </div>
   </section>
+  </div>
+  </div>
 
   <footer class="endnote reveal">
     <nav id="series" aria-label="Where you are in the series"></nav>
@@ -822,11 +891,157 @@ body.theme-solve { --accent: #2f62cf; --accent-soft: #e6edfa; --accent-ink: #214
       <a href="demothemis-mvp.html">Live Demo MVP</a>
       <a href="/">Home &middot; the map</a>
     </div>
-    <p class="signoff">Bullet proof, unbuyable arbitration, explained once simply and then under the hood.</p>
+    <p class="signoff">Bullet proof, unbuyable arbitration at the level of detail you choose.</p>
   </footer>
 
 </main>
 
+<script>
+// ============ simple / deep-dive reader ============
+(function () {
+  "use strict";
+  var tabs = Array.prototype.slice.call(document.querySelectorAll("[data-reader-mode]"));
+  var panes = Array.prototype.slice.call(document.querySelectorAll("[data-reader-pane]"));
+  var tocBlocks = Array.prototype.slice.call(document.querySelectorAll("[data-reader-toc]"));
+  var status = document.getElementById("reader-mode-status");
+  if (tabs.length !== 2 || panes.length !== 2) return;
+
+  var roots = { simple: "simple-version", deep: "deep-dive" };
+  var categoryTargets = {
+    simple: { problem: "simple-problem", resistance: "simple-resistance", quality: "simple-quality" },
+    deep: { problem: "trust-layer", resistance: "capture-resistance", quality: "quality-engine" }
+  };
+  var activeMode = "simple";
+  var reduceMotion = window.matchMedia && window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+
+  function decodedHash() {
+    var raw = location.hash ? location.hash.slice(1) : "";
+    try { return decodeURIComponent(raw); } catch (error) { return raw; }
+  }
+
+  function targetFromHash() {
+    var id = decodedHash();
+    return id ? document.getElementById(id) : null;
+  }
+
+  function paneModeFor(target) {
+    if (!target) return null;
+    var pane = target.closest("[data-reader-pane]");
+    return pane ? pane.getAttribute("data-reader-pane") : null;
+  }
+
+  function categoryFor(target) {
+    if (!target) return null;
+    var category = target.closest("[data-reader-category]");
+    return category ? category.getAttribute("data-reader-category") : null;
+  }
+
+  function viewportCategory() {
+    var pane = document.querySelector('[data-reader-pane="' + activeMode + '"]');
+    if (!pane) return null;
+    var categories = Array.prototype.slice.call(pane.querySelectorAll("[data-reader-category]"));
+    var marker = Math.min(window.innerHeight * 0.32, 280);
+    var nearest = null;
+    categories.forEach(function (category) {
+      var rect = category.getBoundingClientRect();
+      if (rect.top <= marker) nearest = category;
+    });
+    return nearest ? nearest.getAttribute("data-reader-category") : null;
+  }
+
+  function activeCategory() {
+    var hashTarget = targetFromHash();
+    if (hashTarget && paneModeFor(hashTarget) === activeMode) return categoryFor(hashTarget) || viewportCategory();
+    return viewportCategory();
+  }
+
+  function updateToc(category) {
+    Array.prototype.forEach.call(document.querySelectorAll("#toc a[href^='#']"), function (link) {
+      var target = document.getElementById(link.getAttribute("href").slice(1));
+      var matchesMode = paneModeFor(target) === activeMode;
+      var matchesCategory = category && categoryFor(target) === category;
+      link.classList.toggle("active", Boolean(matchesMode && matchesCategory));
+      if (matchesMode && matchesCategory) link.setAttribute("aria-current", "location");
+      else link.removeAttribute("aria-current");
+    });
+  }
+
+  function setMode(mode, announce) {
+    if (!categoryTargets[mode]) mode = "simple";
+    activeMode = mode;
+    document.documentElement.setAttribute("data-reader-mode", mode);
+
+    tabs.forEach(function (tab) {
+      var selected = tab.getAttribute("data-reader-mode") === mode;
+      tab.setAttribute("aria-selected", selected ? "true" : "false");
+      tab.setAttribute("tabindex", selected ? "0" : "-1");
+    });
+    panes.forEach(function (pane) {
+      var selected = pane.getAttribute("data-reader-pane") === mode;
+      pane.classList.toggle("is-active", selected);
+      pane.hidden = !selected;
+    });
+    tocBlocks.forEach(function (block) {
+      var selected = block.getAttribute("data-reader-toc") === mode;
+      block.classList.toggle("is-active", selected);
+      block.hidden = !selected;
+    });
+    updateToc(activeCategory());
+    if (announce && status) status.textContent = mode === "simple" ? "Simple overview selected." : "Deep dive selected.";
+    window.dispatchEvent(new Event("resize"));
+  }
+
+  function scrollToId(id, smooth) {
+    var target = document.getElementById(id);
+    if (!target) return;
+    window.requestAnimationFrame(function () {
+      target.scrollIntoView({ behavior: smooth && !reduceMotion ? "smooth" : "auto", block: "start" });
+    });
+  }
+
+  function selectFromTab(mode) {
+    var category = activeCategory();
+    var id = category && categoryTargets[mode][category] ? categoryTargets[mode][category] : roots[mode];
+    setMode(mode, true);
+    if (location.hash !== "#" + id) history.pushState(null, "", "#" + id);
+  }
+
+  tabs.forEach(function (tab, index) {
+    tab.addEventListener("click", function () { selectFromTab(tab.getAttribute("data-reader-mode")); });
+    tab.addEventListener("keydown", function (event) {
+      var next = null;
+      if (event.key === "ArrowRight" || event.key === "ArrowDown") next = (index + 1) % tabs.length;
+      if (event.key === "ArrowLeft" || event.key === "ArrowUp") next = (index - 1 + tabs.length) % tabs.length;
+      if (event.key === "Home") next = 0;
+      if (event.key === "End") next = tabs.length - 1;
+      if (next === null) return;
+      event.preventDefault();
+      tabs[next].focus();
+      selectFromTab(tabs[next].getAttribute("data-reader-mode"));
+    });
+  });
+
+  function syncFromHash() {
+    var target = targetFromHash();
+    var mode = paneModeFor(target) || "simple";
+    setMode(mode, false);
+    if (target) scrollToId(target.id, false);
+  }
+
+  var scrollTicking = false;
+  window.addEventListener("scroll", function () {
+    if (scrollTicking) return;
+    scrollTicking = true;
+    window.requestAnimationFrame(function () {
+      updateToc(viewportCategory());
+      scrollTicking = false;
+    });
+  }, { passive: true });
+  window.addEventListener("hashchange", syncFromHash);
+
+  syncFromHash();
+})();
+</script>
 <script src="assets/common.js"></script>
 <script>
 // Shared combinatorics helpers for the court widgets.

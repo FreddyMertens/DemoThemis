@@ -66,12 +66,15 @@
   .ctrl-note { font-family: var(--sans); font-size: .78rem; color: var(--faint); margin: .15rem 0 0; }
 </style>
 </head>
-<body>
+<body data-page-brand="neutral">
 <div id="progress"></div>
 
 <nav class="sitenav" aria-label="Primary">
   <div class="sitenav-inner">
-    <a class="brand" href="/">DemoThemis<span class="dot">.</span></a>
+    <a class="brand brand-with-mark" href="/">
+      <img class="brand-mark" src="assets/brand/demothemis/mark-32.png" width="32" height="32" alt="">
+      <span class="brand-word">DemoThemis<span class="dot">.</span></span>
+    </a>
     <button class="nav-toggle" type="button" aria-label="Menu" aria-expanded="false">&#9776;</button>
     <div class="nav-links">
       <a href="/">Home</a>
@@ -87,6 +90,11 @@
 </nav>
 
 <header class="hero reveal">
+  <div class="dual-brand-lockup" aria-hidden="true">
+    <span data-brand="omen"><img class="brand-mark" src="assets/brand/omenmarketmaker/mark-192.png" width="192" height="192" alt=""></span>
+    <i></i>
+    <span data-brand="demothemis"><img class="brand-mark" src="assets/brand/demothemis/mark-192.png" width="192" height="192" alt=""></span>
+  </div>
   <p class="kicker">Governance</p>
   <h1>The firewall behind unbuyable arbitration</h1>
   <p class="dek">OmenMarketMaker uses one-token-one-vote business governance. DemoThemis weights verified people and service behind rules that keep the court unbuyable.</p>
@@ -109,15 +117,15 @@
     <figure class="diagram reveal">
       <div class="diagram-inner">
         <div class="houses">
-          <div class="house biz">
+          <div class="house biz house--omen" data-brand="omen">
             <h4>OmenMarketMaker token</h4>
             <div class="inp">1 token = 1 vote, plain plutocracy, no personhood required</div>
             <div class="inp">value accrual: OmenMarketMaker's own fees and treasury policy</div>
             <div class="inp">airdropped to early verified traders, then trades freely</div>
             <p class="out">Turns the business dials: its own margin, curation bar, graduation threshold, treasury and growth spend.</p>
           </div>
-          <div class="core">Independent products<small>neither token controls the other's pricing, treasury, appointments, or verdicts</small></div>
-          <div class="house civ">
+          <div class="core" data-brand="neutral">Independent products<small>neither token controls the other's pricing, treasury, appointments, or verdicts</small></div>
+          <div class="house civ house--demothemis" data-brand="demothemis">
             <h4>The court token</h4>
             <div class="inp">&radic;tokens, per verified person, counted once per World ID</div>
             <div class="inp">&times; service multiplier: service fees paid + reputation-credited cases</div>
@@ -131,7 +139,7 @@
   </section>
 
   <!-- ============ the company token ============ -->
-  <section class="reveal">
+  <section class="reveal" data-brand="omen">
     <p class="sec-label">The company token</p>
     <h2>Capital governs growth, never truth</h2>
     <p>One-token-one-vote gives the business a direct mandate to compete. The market token steers growth spending, thresholds, its treasury, and a product margin capped at one percentage point. That margin belongs entirely to OmenMarketMaker. DemoThemis sets a separate resolution fee, paid only when OmenMarketMaker selects its service. Early traders receive a World-ID-gated genesis airdrop based on daily-net volume; afterward the token floats freely.</p>
@@ -140,9 +148,9 @@
     <figure class="diagram reveal">
       <div class="diagram-inner">
         <div class="invoice">
-          <div class="iv">OmenMarketMaker economics<small>its own market fee, margin, and treasury</small></div>
-          <div class="iv first">Product boundary<small>separate pricing, governance, and ledgers</small></div>
-          <div class="iv">DemoThemis economics<small>its own resolution fee and internal distribution</small></div>
+          <div class="iv" data-brand="omen">OmenMarketMaker economics<small>its own market fee, margin, and treasury</small></div>
+          <div class="iv first" data-brand="neutral">Product boundary<small>separate pricing, governance, and ledgers</small></div>
+          <div class="iv" data-brand="demothemis">DemoThemis economics<small>its own resolution fee and internal distribution</small></div>
         </div>
       </div>
       <figcaption>Two ledgers, not one fee waterfall. <b>Selecting DemoThemis creates a normal client-provider payment; it never defines OmenMarketMaker profit or merges governance.</b></figcaption>
@@ -153,7 +161,7 @@
   </section>
 
   <!-- ============ the court token ============ -->
-  <section class="reveal">
+  <section class="reveal" data-brand="demothemis">
     <p class="sec-label">The court token</p>
     <h2>One person's square root</h2>
     <p>Court weight is the square root of linked tokens, counted once per World ID. Voice therefore grows slower than wealth, while personhood closes square-root voting's usual loophole: a whale cannot take the root again through each new wallet. Linked balances sum before the root; unverified wallets can hold and trade tokens but have no vote.</p>
@@ -266,8 +274,8 @@
       <table class="vals">
         <thead><tr><th>Token</th><th>Genesis allocation</th><th>After genesis</th><th>Economic role</th></tr></thead>
         <tbody>
-          <tr><td>OmenMarketMaker</td><td>1B: 30% community airdrop and usage; 25% vested investors; 25% treasury; 20% team over four years with a one-year cliff</td><td>10% year-one growth emissions, tapering to 0% over ten years</td><td>Funds market incentives, integrations, referrals, and liquidity; seeks profit.</td></tr>
-          <tr><td>DemoThemis court</td><td>Fixed 1B: 50% streamed over eight years by decayed service score; 20% to first-year case sponsors and jurors; 20% treasury; 10% builders</td><td>No inflation; trades freely because voting weight, not transfer restrictions, supplies the defense</td><td>Fees pay jurors and reward pools; forfeited assertion bonds pay successful catchers.</td></tr>
+          <tr data-brand="omen"><td>OmenMarketMaker</td><td>1B: 30% community airdrop and usage; 25% vested investors; 25% treasury; 20% team over four years with a one-year cliff</td><td>10% year-one growth emissions, tapering to 0% over ten years</td><td>Funds market incentives, integrations, referrals, and liquidity; seeks profit.</td></tr>
+          <tr data-brand="demothemis"><td>DemoThemis court</td><td>Fixed 1B: 50% streamed over eight years by decayed service score; 20% to first-year case sponsors and jurors; 20% treasury; 10% builders</td><td>No inflation; trades freely because voting weight, not transfer restrictions, supplies the defense</td><td>Fees pay jurors and reward pools; forfeited assertion bonds pay successful catchers.</td></tr>
         </tbody>
       </table>
     </div>

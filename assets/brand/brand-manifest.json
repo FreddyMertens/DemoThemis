@@ -1,0 +1,51 @@
+{
+  "source": "approved assets-current gallery",
+  "canonical_names": [
+    "DemoThemis",
+    "OmenMarketMaker"
+  ],
+  "button_state_assets_deployed": false,
+  "palette": {
+    "demothemis": {
+      "canvas": "#f6f3f2",
+      "soft": "#e9e8e5",
+      "emboss": "#ccc3bc",
+      "border": "#ab9e94",
+      "accent": "#786a5e",
+      "strong": "#6a5b50",
+      "ink": "#292522"
+    },
+    "omenmarketmaker": {
+      "black": "#000402",
+      "dark": "#01130a",
+      "surface": "#0b1710",
+      "green": "#04e26d",
+      "green_dark": "#00592a",
+      "mint": "#5dfeaa",
+      "white": "#fefefe",
+      "light": "#f4f5f1"
+    }
+  },
+  "masters": {
+    "DemoThemisLogo.png": {
+      "sha256": "142fc9fe764b74dbd8441231562410819e23503d1dd0ecfcf900c29d6ca848fd",
+      "production_use": "DemoThemis wordmark"
+    },
+    "DemoThemisFavicon.png": {
+      "sha256": "0ef62860060adf389c371a53124f5462114abebb38c783fdf4a2d4878811d06b",
+      "production_use": "DemoThemis icon master"
+    },
+    "OmenMarketMakerLogo.riv": {
+      "sha256": "e7418caa55fc40855bd876b8b3c6f40c823115050ebb8e18c5bc9096c962b719",
+      "production_use": "OmenMarketMaker animated wordmark"
+    },
+    "OmenMarketMakerFavicon.png": {
+      "sha256": "8d5ae2e7c8b54e422a88c0c0195d7c3d61f4da5283d7932edbcc7b616ad2ebe7",
+      "production_use": "OmenMarketMaker icon master"
+    },
+    "OmenMarketMakerButtonIdle.png": {
+      "sha256": "c121b68bf3d74f5319deac9854a2be642bd5c8acbe3518071155aa820e32574a",
+      "production_use": "Static Omen wordmark poster source only"
+    }
+  }
+}

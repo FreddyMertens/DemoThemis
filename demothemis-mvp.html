@@ -11,12 +11,15 @@
 <link rel="stylesheet" href="assets/styles.css">
 <link rel="stylesheet" href="assets/mvp-simulator.css">
 </head>
-<body class="mvp-page">
+<body class="mvp-page" data-page-brand="demothemis">
 <div id="progress"></div>
 
 <nav class="sitenav" aria-label="Primary">
   <div class="sitenav-inner">
-    <a class="brand" href="/">DemoThemis<span class="dot">.</span></a>
+    <a class="brand brand-with-mark" href="/">
+      <img class="brand-mark" src="assets/brand/demothemis/mark-32.png" width="32" height="32" alt="">
+      <span class="brand-word">DemoThemis<span class="dot">.</span></span>
+    </a>
     <button class="nav-toggle" type="button" aria-label="Menu" aria-expanded="false" aria-controls="primary-nav">&#9776;</button>
     <div class="nav-links" id="primary-nav">
       <a href="/">Home</a>
@@ -32,6 +35,11 @@
 </nav>
 
 <header class="hero mvp-hero reveal">
+  <div class="brand-hero-lockup">
+    <div class="brand-stage brand-stage--demothemis">
+      <img class="brand-wordmark" src="assets/brand/demothemis/wordmark.png" width="1766" height="216" alt="DemoThemis">
+    </div>
+  </div>
   <p class="kicker">Live Demo MVP</p>
   <h1>One public question.<br>Three verified humans.<br>One on-chain answer.</h1>
   <p class="dek">DemoThemis is a verified-human resolution oracle. Three jurors research a precise yes-or-no question, seal their votes, and let the contract record the majority answer.</p>

@@ -21,12 +21,15 @@
   .amp .ar { align-self: center; color: var(--accent); font-size: 1.3rem; font-weight: 700; }
 </style>
 </head>
-<body>
+<body data-page-brand="neutral">
 <div id="progress"></div>
 
 <nav class="sitenav" aria-label="Primary">
   <div class="sitenav-inner">
-    <a class="brand" href="/">DemoThemis<span class="dot">.</span></a>
+    <a class="brand brand-with-mark" href="/">
+      <img class="brand-mark" src="assets/brand/demothemis/mark-32.png" width="32" height="32" alt="">
+      <span class="brand-word">DemoThemis<span class="dot">.</span></span>
+    </a>
     <button class="nav-toggle" type="button" aria-label="Menu" aria-expanded="false">&#9776;</button>
     <div class="nav-links">
       <a href="/">Home</a>
@@ -42,6 +45,11 @@
 </nav>
 
 <header class="hero reveal">
+  <div class="dual-brand-lockup" aria-hidden="true">
+    <span data-brand="omen"><img class="brand-mark" src="assets/brand/omenmarketmaker/mark-192.png" width="192" height="192" alt=""></span>
+    <i></i>
+    <span data-brand="demothemis"><img class="brand-mark" src="assets/brand/demothemis/mark-192.png" width="192" height="192" alt=""></span>
+  </div>
   <p class="kicker">The bootstrap loop</p>
   <h1>How OmenMarketMaker can bootstrap an unbuyable court</h1>
   <p class="dek">As an early customer, OmenMarketMaker can purchase resolution work from DemoThemis; carefully checked outcomes then help the independent court prove its jurors and win outside disputes.</p>
@@ -65,13 +73,13 @@
     <figure class="diagram reveal">
       <div class="diagram-inner">
         <div class="amp">
-          <div class="node">OmenMarketMaker selects DemoThemis<small>one customer among many</small></div>
+          <div class="node" data-brand="omen">OmenMarketMaker selects DemoThemis<small>one customer among many</small></div>
           <span class="ar">&rarr;</span>
-          <div class="node">DemoThemis earns service fees<small>its own pricing funds the bench</small></div>
+          <div class="node" data-brand="demothemis">DemoThemis earns service fees<small>its own pricing funds the bench</small></div>
           <span class="ar">&rarr;</span>
-          <div class="node">Completed cases test quality<small>agreement, appeals, later evidence</small></div>
+          <div class="node" data-brand="demothemis">Completed cases test quality<small>agreement, appeals, later evidence</small></div>
           <span class="ar">&rarr;</span>
-          <div class="node">Trusted verdicts win customers<small>more court demand</small></div>
+          <div class="node" data-brand="shared">Trusted verdicts win customers<small>more court demand</small></div>
           <span class="ar">&#8635;</span>
         </div>
       </div>
@@ -87,7 +95,7 @@
     <h3>DemoThemis receipts fund its bench</h3>
     <p>Each jury quote locks before selection: processing cost + required panel compensation + reward-reserve top-up + capped operations charge. Panel pay follows workload and eligible supply, the reserve top-up falls to zero at target, and operations cannot exceed its approved public budget or per-case cap. Each submitted case includes the required panel compensation.</p>
 
-    <div class="widget reveal">
+    <div class="widget brand-panel reveal" data-brand="demothemis">
       <div class="widget-head"><span class="live"></span> Build a typical 15-seat jury quote</div>
       <div class="controls">
         <div class="row"><label for="zCases">Contested cases per month</label> <b id="zCasesOut">500</b></div>
@@ -112,25 +120,25 @@
     <p>The same quality system applies to market outcomes, delivery specifications, and community-standard cases. The evidence available may differ, but every final case contributes.</p>
   </section>
 
-  <section class="reveal" id="trustworthy-tests">
+  <section class="reveal" id="trustworthy-tests" data-brand="demothemis">
     <p class="sec-label">3. Quality control</p>
     <h2>Every quality signal passes a reliability check</h2>
     <p class="lead">Case difficulty, written criteria, appeal outcomes, and later independent evidence are weighted by how much they reveal before updating a juror's record.</p>
 
-    <div class="widget test-rule reveal">
+    <div class="widget test-rule brand-panel reveal" data-brand="demothemis">
       <div class="widget-head"><span class="live"></span> From completed case to quality evidence</div>
       <div class="test-path">
-        <div class="test-path-item">
+        <div class="test-path-item" data-brand="demothemis">
           <span class="n">01</span>
           <b>Fix the standard</b>
           <p>Lock the question, decision criteria, and evidence rules before anyone is drawn, so jurors are measured against the same task.</p>
         </div>
-        <div class="test-path-item">
+        <div class="test-path-item" data-brand="demothemis">
           <span class="n">02</span>
           <b>Compare every signal</b>
           <p>Use difficulty-adjusted agreement, consistency with the criteria, appeal survival, and later independent evidence when available.</p>
         </div>
-        <div class="test-path-item">
+        <div class="test-path-item" data-brand="demothemis">
           <span class="n">03</span>
           <b>Update private histories</b>
           <p>Every completed case adds evidence to the shared quality system. Exact scores and case histories stay private.</p>
@@ -141,7 +149,7 @@
     <p>As volume grows, the court gets more evidence across more kinds of judgment without excluding any case from accuracy evaluation.</p>
   </section>
 
-  <section class="reveal" id="next-customer">
+  <section class="reveal" id="next-customer" data-brand="demothemis">
     <p class="sec-label">4. Expansion</p>
     <h2>A stronger court attracts the next customer</h2>
     <p class="lead">OmenMarketMaker can be an early customer. Fees paid for the cases it actually sends, plus measured results from those cases, can help DemoThemis build a performance record for other apps.</p>
