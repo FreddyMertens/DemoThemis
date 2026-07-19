@@ -382,6 +382,21 @@ figcaption b { color: var(--muted); font-weight: 600; }
   font-size: .9rem;
   line-height: 1.58;
 }
+.product-pair .product .product-summary + .product-summary {
+  margin-top: .9rem;
+}
+.product-summary-label {
+  color: var(--summary-label-color, var(--accent-ink));
+  font-weight: 800;
+  letter-spacing: .01em;
+  text-decoration-line: underline;
+  text-decoration-color: color-mix(in srgb, var(--summary-label-color, var(--accent)) 45%, transparent);
+  text-decoration-thickness: 2px;
+  text-underline-offset: .2em;
+}
+.product-summary-goal { --summary-label-color: #4637b7; }
+.product-summary-how { --summary-label-color: #7650a8; }
+.product-summary-worldcoin { --summary-label-color: #27639b; }
 .product-facts {
   display: grid;
   gap: .65rem;
