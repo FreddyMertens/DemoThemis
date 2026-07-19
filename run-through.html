@@ -2883,7 +2883,7 @@
                   <div class="unlock" data-component="reserve"><b>Live reserve <span class="tag">locked</span></b><small>Final private debits fund a proved aggregate reward transfer.</small></div>
                   <div class="unlock" data-component="appeal"><b>Appeal floors <span class="tag">locked</span></b><small>Rungs price the next panel, attack risk, and delay rent.</small></div>
                   <div class="unlock" data-component="finality"><b>Finality plus reports <span class="tag">locked</span></b><small>Escrow ends; collusion reports never expire.</small></div>
-                  <div class="unlock" data-component="keys"><b>Aptitude tests <span class="tag">locked</span></b><small>Clean resolved markets become test cases for juror quality.</small></div>
+                  <div class="unlock" data-component="keys"><b>Quality evidence <span class="tag">locked</span></b><small>Every completed case strengthens the shared juror-quality record.</small></div>
                 </div>
               </div>
             </div>
@@ -3225,11 +3225,11 @@
       title: "Finality and memory",
       sub: "The case finalizes and teaches.",
       mission: "Publish finality, feed the loop",
-      text: "DemoThemis publishes the final appeal proof to OmenMarketMaker. Settlement releases once, juror updates settle privately, and the clean result becomes an aptitude-test case.",
+      text: "DemoThemis publishes the final appeal proof to OmenMarketMaker. Settlement releases once, juror updates settle privately, and the completed case adds quality evidence.",
       nodes: ["appeal", "final", "keys"],
       features: ["instant", "fixed", "tokens", "private", "trade", "parlay"],
       components: ["escrow", "watcher", "draw", "personhood", "ballot", "reserve", "appeal", "finality", "keys"],
-      tokens: ["Finality proof", "Aptitude test case", "Private juror updates"],
+      tokens: ["Finality proof", "Quality evidence", "Private juror updates"],
       pot: 118000,
       yes: .02,
       claims: "Payout received",
@@ -3367,13 +3367,13 @@
     },
     {
       lane: "Finality loop",
-      title: "Aptitude test case",
+      title: "Quality evidence saved",
       body: "DemoThemis publishes the final proof, settles shielded juror updates, and saves the case. OmenMarketMaker can then settle its market while juror histories remain private.",
       change: "Finality published",
       why: "The market is over, but the court is stronger for the next one.",
       next: "More demand",
       tone: "final",
-      results: ["The final proof returns to OmenMarketMaker for settlement.", "Final juror debits, refunds, and rewards settle through private updates with proved public totals.", "The resolved case can grade future aptitude tests without publishing juror histories."]
+      results: ["The final proof returns to OmenMarketMaker for settlement.", "Final juror debits, refunds, and rewards settle through private updates with proved public totals.", "The completed case updates the shared juror-quality record without publishing juror histories."]
     }
   ];
 
@@ -3896,11 +3896,11 @@
       actor: "DemoThemis intake", money: "All relevant funds remain in escrow", condition: "The challenge is accepted", next: "Choose the correct court route"
     },
     {
-      id: "court-route", phase: "judge", order: 2, kind: "decision", title: "Objective or rubric court?",
-      short: "Use objective truth when reality will grade it; use a disclosed rubric when it will not.",
+      id: "court-route", phase: "judge", order: 2, kind: "decision", title: "What evidence defines the case?",
+      short: "Every case uses the same court; written criteria and available evidence define what jurors assess.",
       routes: ["dispute"], sim: [],
-      detail: "The two courts share draw, privacy, and appeal rules but grade jurors differently. Objective cases can later become answer-key tests; subjective cases need rubric and appeal evidence.",
-      actor: "Pre-written case rule", money: "Unchanged in escrow", condition: "The answer type is known before judgment", next: "Build the panel plan"
+      detail: "All cases share the draw, privacy, appeals, and one juror-quality system. Every final case contributes difficulty-adjusted agreement, criteria consistency, appeal survival, and later independent evidence when available.",
+      actor: "Pre-written case criteria", money: "Unchanged in escrow", condition: "The question and judging criteria are fixed before judgment", next: "Build the panel plan"
     },
     {
       id: "panel-drawn", phase: "judge", order: 3, title: "Panel plan and one bound draw",
@@ -3974,25 +3974,25 @@
       actor: "Protocol record layer", money: "Already settled and cannot reopen", condition: "Settlement transaction completes", next: "Curation and long-term accountability"
     },
     {
-      id: "curation-gate", phase: "finish", order: 5, kind: "decision", title: "Is this a clean teaching case?",
-      short: "Volume, watcher coverage, a clean window, and a precise answer qualify the case for the aptitude library.",
+      id: "curation-gate", phase: "finish", order: 5, kind: "decision", title: "Is later independent evidence available?",
+      short: "Every completed jury case updates juror quality; a checkable outside result can add another accuracy signal.",
       routes: ["quiet", "dispute"], sim: [12], simSteps: [1],
-      detail: "Only clean, checkable outcomes grade jurors. Private cases also require participant consent and are assigned exclusively to people who did not participate.",
-      actor: "Curation rules and spot checks", money: "No settlement money changes", condition: "After finality", next: "Aptitude library, or record only"
+      detail: "Difficulty-adjusted agreement, written-criteria consistency, and appeal survival already count. Reliable later evidence is verified and added without deciding whether the case qualifies for scoring.",
+      actor: "Quality engine and evidence checks", money: "No settlement money changes", condition: "After finality", next: "Shared quality update"
     },
     {
-      id: "record-only", phase: "finish", order: 6, group: "curation-outcome", branch: "Audit only", afterNote: "Meanwhile, accountability and the next-cycle loop run independently ↓", title: "Auditable record retained",
-      short: "Cases outside the teaching standard remain auditable without influencing future juror scores.",
+      id: "record-only", phase: "finish", order: 6, group: "curation-outcome", branch: "No outside result", afterNote: "Meanwhile, accountability and the next-cycle loop run independently ↓", title: "Case evidence updates quality",
+      short: "The completed case updates jurors from difficulty, criteria consistency, and appeal evidence.",
       routes: ["quiet", "dispute"], sim: [],
-      detail: "The quality gate protects the answer-key library while preserving a complete record of settled cases.",
-      actor: "Curation rules", money: "No settlement money changes", condition: "The case stays outside the teaching library", next: "Keep the record and preserve the aptitude standard"
+      detail: "A missing external answer does not exclude the case. Its reliable internal and appeal signals update the same shared juror-quality record.",
+      actor: "Quality engine", money: "Future pay and selection may change; past settlement does not", condition: "No later independent result is available", next: "Keep the record and improve future selection"
     },
     {
-      id: "quality-update", phase: "finish", order: 6, group: "curation-outcome", branch: "Curated", title: "Juror quality updates",
-      short: "Aptitude, peer evidence, appeal survival, draw rate, pay, weight, and suspension signals improve.",
+      id: "quality-update", phase: "finish", order: 6, group: "curation-outcome", branch: "Outside result", title: "Juror quality gains another check",
+      short: "The external result joins the case's peer, criteria, and appeal evidence in one shared record.",
       routes: ["quiet", "dispute"], sim: [12], simSteps: [1],
-      detail: "Curated objective outcomes give the court an external answer key. Resolved cases, appeals, and rubric coherence update future selection and rewards without changing the closed case.",
-      actor: "Quality engine", money: "Future pay and rewards may change; past payout does not", condition: "A usable resolved record exists", next: "A wider, better measured juror pool"
+      detail: "Reliable later evidence can confirm or correct the signal from the final panel. It strengthens the same update every completed case receives without changing the closed case.",
+      actor: "Quality engine", money: "Future pay and rewards may change; past payout does not", condition: "A reliable later result exists", next: "A wider, better measured juror pool"
     },
     {
       id: "collusion-clock", phase: "finish", order: 7, group: "aftercare-rails", branch: "Justice · stays open", title: "Accountability stays open",
@@ -4005,7 +4005,7 @@
       id: "bootstrap-loop", phase: "finish", order: 7, group: "aftercare-rails", branch: "Next market ↺ Phase 01", title: "The next market gets a stronger court",
       short: "More markets create more evidence, more paid jurors, and eventually support outside escrow disputes.",
       routes: ["quiet", "dispute"], sim: [12], simSteps: [1],
-      detail: "This is the optional bootstrap loop: clients that choose DemoThemis pay its independent service fee; clean outcomes train the court; a stronger court can win more integrations.",
+      detail: "This is the optional bootstrap loop: clients that choose DemoThemis pay its independent service fee; completed cases strengthen the court; a stronger court can win more integrations.",
       actor: "Independent products connected by a service agreement", money: "DemoThemis earns fees only from cases sent to it", condition: "Repeated settled use", next: "New markets and, later, outside escrow cases"
     }
   ];
@@ -4047,8 +4047,8 @@
     { from: "release-rule", to: "settle-funds", when: "one final answer", kind: "forward" },
     { from: "settle-funds", to: "closed-record", when: "atomic settlement succeeds", kind: "forward" },
     { from: "closed-record", to: "curation-gate", when: "learning rail", kind: "parallel" },
-    { from: "curation-gate", to: "record-only", when: "teaching standard is not met", kind: "branch" },
-    { from: "curation-gate", to: "quality-update", when: "curation passes", kind: "branch" },
+    { from: "curation-gate", to: "record-only", when: "no later outside result", kind: "branch" },
+    { from: "curation-gate", to: "quality-update", when: "later outside result is verified", kind: "branch" },
     { from: "closed-record", to: "collusion-clock", when: "accountability rail", kind: "parallel" },
     { from: "closed-record", to: "bootstrap-loop", when: "next-cycle rail", kind: "parallel" },
     { from: "bootstrap-loop", to: "rules-fixed", when: "new market", kind: "loop" }
@@ -4699,7 +4699,7 @@
     },
     {
       actor: { title: "Final escrow", sub: "market cannot reopen", icon: "vault", tone: "accent", mark: "END" },
-      core: { title: "Aptitude test case", sub: "clean record saved", icon: "score", tone: "accent", mark: "TEST" },
+      core: { title: "Quality evidence", sub: "completed case saved", icon: "score", tone: "accent", mark: "SCORE" },
       result: { title: "Better court", sub: "scores raise trust", icon: "score", tone: "good", mark: "UP" },
       chips: [["Final proof", "good"], ["Record saved", "accent"], ["Juror updates", "good"]]
     }
@@ -4914,7 +4914,7 @@
       kpis: [["Verdict", "NO"], ["Appeals", "Closed"], ["Proof", "Ready"]],
       blocks: [
         { type: "closed", title: "Final verdict", hot: 0, value: "NO 18-13" },
-        { type: "table", title: "Court record", hot: 1, rows: [["Resolved case", "Ready", "aptitude tests"], ["Juror updates", "Private", "future cases"], ["Final proof", "Ready", "OmenMarketMaker"]] }
+        { type: "table", title: "Court record", hot: 1, rows: [["Resolved case", "Ready", "quality evidence"], ["Juror updates", "Private", "future cases"], ["Final proof", "Ready", "OmenMarketMaker"]] }
       ]
     }
   ];
@@ -5543,7 +5543,7 @@
         kpis: [["Verdict", "NO"], ["Proof", "Ready"], ["Record", "Pending"]],
         blocks: [
           { type: "closed", title: "Final verdict", value: "NO 18-13" },
-          { type: "table", title: "Court record", rows: [["Resolved case", "Waiting", "aptitude tests"], ["Juror updates", "Private", "future cases"], ["Final proof", "Ready", "OmenMarketMaker"]] }
+          { type: "table", title: "Court record", rows: [["Resolved case", "Waiting", "quality evidence"], ["Juror updates", "Private", "future cases"], ["Final proof", "Ready", "OmenMarketMaker"]] }
         ]
       },
       steps: [
@@ -5890,7 +5890,7 @@
     } else {
       svg += node(50, 94, 126, 90, "Escrow", "final", "accent", hot0);
       svg += node(258, 80, 122, 74, "Payout", "winning NO paid", "good", hot0);
-      svg += node(258, 190, 122, 74, "Aptitude test case", "clean record", "accent", hot1);
+      svg += node(258, 190, 122, 74, "Quality evidence", "case record", "accent", hot1);
       svg += node(500, 96, 136, 76, "Juror update", "private", "good", hot1);
       svg += node(500, 210, 136, 56, "Next demand", "more trust", "soft", hot2);
       svg += flow(176, 139, 258, 118, "good", hot0);

@@ -251,9 +251,11 @@ Prediction-style products are one possible high-volume consumer because they nee
 answers, but the same SDK serves escrow, marketplaces, DAO decisions, service-level disputes,
 and any World App flow that needs a credibly neutral yes/no result.
 
-That case flow compounds in two ways. First, every cleanly-settled case becomes a public answer
-record that can grade jurors against reality; the same volume that funds the bench also calibrates
-it (the §7 reputation scoring, live in the /sandbox demo). Second, the SDK makes adoption modular:
+That case flow compounds in two ways. First, every completed court case contributes to one shared
+juror-quality record through difficulty-adjusted agreement, consistency with its written criteria,
+and appeal survival; independently checkable outcomes can add later confirmation. The same volume
+that funds the bench also calibrates it (the §7 reputation scoring, live in the /sandbox demo).
+Second, the SDK makes adoption modular:
 external apps do not need to build their own dispute desk, juror pool, World ID proof path, or
 settlement contracts. They can call the court and inherit the public resolution history.
 

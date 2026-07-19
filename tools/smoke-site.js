@@ -310,6 +310,7 @@ function checkChapterSequence(failures) {
 
   const runThrough = readDist("run-through.html");
   const demoThemis = readDist("demothemis.html");
+  const bootstrapLoop = readDist("bootstrap-loop.html");
   const demoThemisHero = (demoThemis.match(/<header\b[^>]*class=["'][^"']*\bhero\b[^"']*["'][^>]*>([\s\S]*?)<\/header>/i) || ["", ""])[1];
   const simpleDemoThemis = (demoThemis.match(/<section\b[^>]*id=["']simple-version["'][^>]*>([\s\S]*?)<\/section>/i) || ["", ""])[1];
   assert(/<span\s+class=["']pill["']>Start here<\/span>/i.test(runThrough), "Run-through must carry the Start here marker", failures);
@@ -330,6 +331,12 @@ function checkChapterSequence(failures) {
   assert(!demoThemis.includes("The reserve prices laziness, not status") && !demoThemis.includes("The live reserve makes careless voting lose money"), "DemoThemis simple attack model must remove the superseded reserve card", failures);
   assert(demoThemis.includes("The jury cannot be rerolled") && demoThemis.includes("Each case gets one publicly verifiable random draw. The requester, an app, and DemoThemis must accept that panel; they cannot discard it and try again."), "DemoThemis simple attack model must explain the one-draw rule in plain language", failures);
   assert(!demoThemis.includes("The draw cannot be shopped") && !demoThemis.includes("One case, one roll, no app-controlled reruns"), "DemoThemis simple attack model must remove the superseded draw-shopping shorthand", failures);
+  assert(demoThemis.includes("Different evidence, one quality record") && demoThemis.includes("No case type is excluded"), "DemoThemis must use one juror-quality record across every case type", failures);
+  assert(!/Two courts, one constitution|separate rubric court|kept separate from the objective|only the promised standard and grader change/i.test(demoThemis), "DemoThemis must remove the split objective-versus-rubric accuracy system", failures);
+  assert(runThrough.includes("What evidence defines the case?") && runThrough.includes("Every final case contributes difficulty-adjusted agreement"), "Run-through must show one quality system for every final case", failures);
+  assert(!/Objective or rubric court\?|grade jurors differently|Only clean, checkable outcomes grade jurors|without influencing future juror scores/i.test(runThrough), "Run-through must not exclude non-objective cases from juror-quality scoring", failures);
+  assert(bootstrapLoop.includes("Every completed case strengthens scoring") && bootstrapLoop.includes("every final case contributes"), "Bootstrap loop must explain that every final case contributes to juror quality", failures);
+  assert(!/Rubric courts handle subjective questions|Every aptitude test passes a quality gate|eligible market outcomes steadily supply independently verified, curated aptitude tests/i.test(bootstrapLoop), "Bootstrap loop must remove the objective-only accuracy model", failures);
   const courtLifecycle = (demoThemis.match(/<section\b[^>]*id=["']case-lifecycle["'][^>]*>([\s\S]*?)<\/section>/i) || ["", ""])[1];
   assert((courtLifecycle.match(/<li\s+class=["']simple-step["']/g) || []).length === 6, "DemoThemis lifecycle must contain exactly six court-owned steps", failures);
   assert(!/\.simple-step:last-child\s*\{[^}]*grid-column/i.test(demoThemis), "DemoThemis six-step lifecycle must not leave an unbalanced spanning row", failures);
@@ -469,7 +476,7 @@ function checkStateMachineData(html, failures) {
   assert(hasEdge("larger-panel", "panel-drawn", "loop"), "a funded appeal must loop to a fresh panel draw", failures);
   const seatCheck = data.states.find((state) => state.id === "seat-checked");
   assert(seatCheck && /deterministic standby/i.test(seatCheck.detail || ""), "seat checks must explain deterministic standby continuity", failures);
-  assert(hasEdge("curation-gate", "record-only", "branch") && hasEdge("curation-gate", "quality-update", "branch"), "curation must branch between record-only and juror learning", failures);
+  assert(hasEdge("curation-gate", "record-only", "branch") && hasEdge("curation-gate", "quality-update", "branch"), "quality evidence must branch on whether later independent confirmation exists", failures);
   assert(hasEdge("closed-record", "collusion-clock", "parallel") && hasEdge("closed-record", "bootstrap-loop", "parallel"), "post-finality accountability and growth must run in parallel", failures);
 
   function routeReaches(route, startId, targetId) {

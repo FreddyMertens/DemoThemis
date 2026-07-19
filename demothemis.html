@@ -306,26 +306,26 @@ body.theme-solve { --accent: #2f62cf; --accent-soft: #e6edfa; --accent-ink: #214
   <section class="reveal" id="juror-quality">
     <p class="sec-label">Juror quality</p>
     <h2>The court has to learn who is careful</h2>
-    <p>A court cannot simply grade jurors by asking whether they were right, because many disputes have no answer sheet. DemoThemis uses two anchors instead: clean prediction-market outcomes where reality eventually posts the answer, and a peer-scoring rule that gives credit only when a vote carried information beyond the obvious majority.</p>
+    <p>Every completed case adds evidence about juror accuracy. DemoThemis looks for useful judgment beyond the obvious majority, consistency with the case's written criteria, decisions that survive appeal, and later independent confirmation when it exists.</p>
     <div class="simple-list">
-      <div><b>Resolved cases for aptitude tests</b><span>Settled objective markets become graded questions after curation, keeping the court tied to reality instead of self-agreement.</span></div>
+      <div><b>Every case contributes</b><span>Market outcomes, delivery disputes, and judgment calls all update the same juror-quality record.</span></div>
       <div><b>Credit above the obvious</b><span>Matching a landslide vote earns little; being right on hard near-ties earns much more.</span></div>
+      <div><b>Use every available check</b><span>Written criteria, appeals, and later real-world evidence can strengthen or correct the signal from the panel.</span></div>
       <div><b>Error bars matter</b><span>Reputation is a score with uncertainty attached, so a bad week does not equal a proven bad juror.</span></div>
       <div><b>Pay does most of the reward</b><span>Careful jurors earn more and get drawn more often, but caps stop any one juror from dominating the pool.</span></div>
     </div>
   </section>
 
   <section class="reveal" id="disputes-courts">
-    <p class="sec-label">Disputes and courts</p>
-    <h2>Appeals, finality, and the two kinds of truth</h2>
-    <p>Appeals cover the next panel, panel-grinding risk, and delay. A wider pool pushes the price toward panel cost, while the finite ladder delivers finality and later collusion reports punish offenders without reopening the final ruling or any completed settlement.</p>
-    <p>There are also two kinds of cases. Objective cases ask questions reality can later grade, like a price, match, shipment, or market outcome. Rubric cases ask whether work met a spec or whether a listing matched what was delivered. Both share the same court constitution: random draw, private ballots, appeal ladder. The grader changes.</p>
+    <p class="sec-label">Appeals and finality</p>
+    <h2>An appeal brings in a larger, fresh jury</h2>
+    <p>A losing party can fund a new decision by a larger panel: 7 jurors, then 15, then 31. When no appeal is funded&mdash;or the final panel rules&mdash;the decision becomes final. Later proof of collusion can punish jurors, but it cannot reopen the ruling or a completed settlement.</p>
   </section>
 
   <section class="reveal" id="bootstrap">
     <p class="sec-label">Bootstrap</p>
     <h2>OmenMarketMaker can be an early customer</h2>
-    <p>When OmenMarketMaker selects DemoThemis, it sends a case and pays DemoThemis's independently quoted resolution fee. OmenMarketMaker's market margin and treasury remain entirely separate. Clean outcomes can become aptitude tests, helping DemoThemis build a public record for other customers.</p>
+    <p>When OmenMarketMaker selects DemoThemis, it sends a case and pays DemoThemis's independently quoted resolution fee. OmenMarketMaker's market margin and treasury remain entirely separate. Every completed case contributes to the shared juror-quality record, while independently checkable outcomes can add later confirmation.</p>
     <p class="deep-note">That is one launch path, not a product dependency. Continue for the mechanics and interactive stress tests behind each claim.</p>
   </section>
 
@@ -336,7 +336,7 @@ body.theme-solve { --accent: #2f62cf; --accent-soft: #e6edfa; --accent-ink: #214
     <div class="underhood-map">
       <a href="#trust-layer"><span class="eyebrow">Problem and role</span><b>Why a neutral court matters</b><span>DemoThemis turns rented arbitration into a shared court, with protocol escrow ready when assets need automatic settlement.</span></a>
       <a href="#capture-resistance"><span class="eyebrow">Attack resistance</span><b>What makes the court unbuyable</b><span>Verified humans, live reserves, sealed randomness, face checks, receipt-free ballots, and panel scaling each remove a different shortcut.</span></a>
-      <a href="#quality-engine"><span class="eyebrow">Juror quality</span><b>How careful jurors stand out</b><span>Resolved cases for aptitude tests, peer scoring, error bars, appeals, and court types show how the system rewards useful judgment over crowd-following.</span></a>
+      <a href="#quality-engine"><span class="eyebrow">Juror quality</span><b>How careful jurors stand out</b><span>Completed cases, difficulty-adjusted scoring, written criteria, appeals, and later evidence show how the system rewards useful judgment over crowd-following.</span></a>
     </div>
   </section>
 
@@ -371,7 +371,7 @@ body.theme-solve { --accent: #2f62cf; --accent-soft: #e6edfa; --accent-ink: #214
       <figcaption>Many apps, one shared arbiter. <b>The court answers to none of them, which is exactly why all of them can use it.</b></figcaption>
     </figure>
 
-    <p>The requester supplies the case, evidence or rubric, and juror fee. DemoThemis returns the ruling; when assets are involved, optional escrow can release or refund them by rule. Each customer replaces a private backstop with one shared court.</p>
+    <p>The requester supplies the case, decision criteria, evidence rules, and juror fee. DemoThemis returns the ruling; when assets are involved, optional escrow can release or refund them by rule. Each customer replaces a private backstop with one shared court.</p>
   </section>
 
   <section class="reveal">
@@ -586,8 +586,8 @@ body.theme-solve { --accent: #2f62cf; --accent-soft: #e6edfa; --accent-ink: #214
   <section class="reveal part-marker" id="quality-engine">
     <p class="sec-label">Juror quality</p>
     <h2>How careful jurors stand out</h2>
-    <p class="lead">DemoThemis combines evidence from peers and reality to identify careful jurors without turning agreement into the answer key.</p>
-    <p>Across many cases, careful jurors are drawn and paid more while careless ones receive less. Peer signal measures useful judgment above the obvious majority, and curated outcomes anchor the score to reality.</p>
+    <p class="lead">Every completed case contributes evidence about juror accuracy without turning the first majority into the answer key.</p>
+    <p>Across many cases, DemoThemis combines useful agreement above the obvious, consistency with written criteria, appeal survival, and later independent evidence when available. Careful jurors are drawn and paid more while careless ones receive less.</p>
   </section>
 
   <section class="reveal">
@@ -610,7 +610,7 @@ body.theme-solve { --accent: #2f62cf; --accent-soft: #e6edfa; --accent-ink: #214
       <figcaption>The herding loop, four steps from rule to ruin. <b>A court that pays for agreement ends up with flawless scores and no information.</b></figcaption>
     </figure>
 
-    <p>This is not a rare edge case. Once agreement determines careers, herding is the stable strategy: independent judgment adds risk but no reward. The design instead combines curated questions that reality can grade with a rule that pays only for information beyond the obvious majority. <a href="bootstrap-loop.html">The loop chapter</a> explains where the graded questions come from.</p>
+    <p>This is not a rare edge case. Once agreement determines careers, herding is the stable strategy: independent judgment adds risk but no reward. The design instead scores useful judgment above the obvious majority, checks whether decisions fit the case's written criteria and survive appeal, and adds later independent evidence when available. <a href="bootstrap-loop.html">The loop chapter</a> explains how completed cases strengthen the record.</p>
   </section>
 
   <section class="reveal">
@@ -670,7 +670,7 @@ body.theme-solve { --accent: #2f62cf; --accent-soft: #e6edfa; --accent-ink: #214
       <figcaption>Same agreement rate, opposite value. <b>The baseline subtraction is what makes reading the case the only strategy that earns.</b></figcaption>
     </figure>
 
-    <p>Clean market outcomes become aptitude tests after curation, then jurors are scored against reality instead of each other. This prevents a whole pool from agreeing comfortably with its own mistake. Private-market questions are especially useful because they never had a public page for jurors to look up. The complete rule is <b>peer agreement above the obvious, anchored by curated real outcomes</b>.</p>
+    <p>Every completed case updates the same quality record. Difficulty-adjusted agreement, consistency with the written criteria, and appeal survival provide ongoing evidence; later independent outcomes add an external check when available. The complete rule is <b>useful judgment above the obvious, tested against every reliable signal the case can provide</b>.</p>
   </section>
 
   <section class="reveal">
@@ -785,14 +785,14 @@ body.theme-solve { --accent: #2f62cf; --accent-soft: #e6edfa; --accent-ink: #214
   </section>
 
   <section class="reveal">
-    <p class="sec-label">Two courts</p>
-    <h2>Two courts, one constitution</h2>
-    <p>If reality will post an answer&mdash;a closing price, delivery record, or match result&mdash;the objective court can grade against it and turn curated outcomes into future aptitude tests. A lone bonded dissenter can still appeal into a wider panel.</p>
-    <p>Some questions never receive that scoreboard: whether files met a specification or a listing matched what arrived. A separate rubric court opens narrowly for evidence checked against a stated rubric. It keeps its own reputation history because rubric judgment and objective forecasting measure different skills. Its three signals are coherence between item scores and verdict, accuracy in predicting the panel split, and whether decisions survive appeal.</p>
-    <p>Pure community-standard disputes open only after that narrower court has enough appeal-tested evidence. Parties are told the standard before filing. Both courts share the random draw, private ballots, and appeal ladder; only the promised standard and grader change.</p>
+    <p class="sec-label">One court</p>
+    <h2>Different evidence, one quality record</h2>
+    <p>Every case uses the same random draw, private ballots, appeal ladder, and juror-quality system. The question and decision criteria are fixed before the draw, and every final case contributes evidence about juror accuracy.</p>
+    <p>A market result may later provide independent confirmation. A delivery dispute can show whether jurors applied a written specification consistently. A community-standard case contributes difficulty-adjusted agreement and appeal evidence. The available signals vary; whether the case counts does not.</p>
+    <p>Scores combine useful agreement above the obvious majority, consistency with the written criteria, appeal survival, and later independent evidence when available. No case type is excluded, and no first majority becomes automatic truth.</p>
 
     <div class="widget reveal">
-      <div class="widget-head"><span class="live"></span> Which court does your question go to?</div>
+      <div class="widget-head"><span class="live"></span> How does this case add quality evidence?</div>
       <div class="controls">
         <div class="row"><label>Pick a case</label> <span class="seg" id="RT1seg">
           <button data-k="btc" class="active">Did bitcoin close above $100k?</button>
@@ -801,7 +801,7 @@ body.theme-solve { --accent: #2f62cf; --accent-soft: #e6edfa; --accent-ink: #214
         </span></div>
       </div>
       <div class="routepanel" id="RT1panel">&hellip;</div>
-      <p style="font-family:var(--sans);font-size:.86rem;color:var(--faint);margin:1rem 0 0">The router is one question deep: will reality post the answer? The court, the grader, and the promise made to the parties all follow from that single bit.</p>
+      <p style="font-family:var(--sans);font-size:.86rem;color:var(--faint);margin:1rem 0 0">The court does not route cases into separate accuracy systems. It records the evidence each case can provide, then updates one shared juror-quality history.</p>
     </div>
   </section>
 
@@ -1308,9 +1308,9 @@ function courtSeg(id, onPick) {
   if (!seg) return;
   var panel = document.getElementById("RT1panel");
   var CONTENT = {
-    btc: '<div class="rt">Objective court.</div><div class="rg">Reality posts the closing price whether anyone likes it or not. The question settles on the bonded assertion layer, escalates to panels graded through aptitude tests only if challenged, and the settled outcome, once curated, becomes one more resolved case for aptitude tests. The parties were promised the checkable truth, and a lone bonded dissenter can always appeal the panel into a larger one.</div>',
-    logo: '<div class="rt">Rubric court, rubric tier.</div><div class="rg">Reality never grades it, but the spec does: file formats, dimensions, deadline, each a checkable rubric item with a thin rim of judgment. Jurors score the items before the verdict, are graded on rubric coherence and on predicting the panel split, and the verdict survives or dies on the appeal ladder. This tier is where the rubric court earns its own track record, kept separate from the objective court&rsquo;s.</div>',
-    apt: '<div class="rt">Rubric court, community-standard tier, opens later.</div><div class="rg">No spec, no fixed external result, pure reasonable-person judgment. Here the panel is an honest sample of the community standard itself, and both parties are told exactly that, up front, before they file. This tier stays closed until the rubric tier has thousands of appeal-tested cases proving the graders work.</div>'
+    btc: '<div class="rt">Same court, with later external confirmation.</div><div class="rg">Jurors assess the case under its written rule. The final panel and any appeals update the shared quality record, and the published closing price can later add an independent accuracy check.</div>',
+    logo: '<div class="rt">Same court, with written-criteria evidence.</div><div class="rg">Jurors compare the files with the promised formats, dimensions, and deadline. Criteria consistency, useful agreement, and appeal survival all update the same quality record.</div>',
+    apt: '<div class="rt">Same court, with judgment and appeal evidence.</div><div class="rg">Jurors apply the description and evidence rules fixed before the draw. Difficulty-adjusted agreement, appeal survival, and any later evidence update the same juror-quality record.</div>'
   };
   function pick(k) { panel.innerHTML = CONTENT[k]; }
   Array.prototype.forEach.call(seg.querySelectorAll("button"), function (btn) {
