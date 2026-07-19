@@ -1435,13 +1435,14 @@ body[data-page-brand="neutral"] section[data-brand="omen"] > h2 { color: var(--o
 
 .mvp-content { max-width: 76rem; margin: 0 auto; padding: 0 1.5rem; }
 .mvp-content > section { margin: clamp(4.2rem, 8vw, 7rem) 0; }
+.mvp-content > .mvp-demo-section:first-child { margin-top: 0; }
 .mvp-hero { max-width: 72rem; padding-top: clamp(4.8rem, 9vw, 8.2rem); padding-bottom: 1.6rem; }
 .mvp-hero::before { width: 46rem; height: 25rem; opacity: .78; }
 .mvp-hero .brand-stage--demothemis { place-items: center start; }
 .mvp-hero .brand-wordmark { margin: 0; object-position: left center; }
 .mvp-hero h1 { max-width: 65rem; font-size: clamp(3rem, 7.2vw, 5.85rem); line-height: .96; letter-spacing: -.045em; }
 .mvp-hero .dek { max-width: 49rem; margin-top: 1.45rem; font-size: clamp(1.12rem, 2vw, 1.4rem); line-height: 1.55; }
-.mvp-hero-actions { display: flex; flex-wrap: wrap; gap: .7rem; margin: 0 0 1.6rem; font-family: var(--sans); }
+.mvp-hero-actions { display: flex; flex-wrap: wrap; gap: .7rem; margin: 0; font-family: var(--sans); }
 
 .mvp-button {
   display: inline-flex;
@@ -1464,28 +1465,10 @@ body[data-page-brand="neutral"] section[data-brand="omen"] > h2 { color: var(--o
 .mvp-button.primary:hover { background: var(--mvp-purple-deep); }
 .mvp-button.secondary { background: rgba(255, 253, 249, .82); backdrop-filter: blur(8px); }
 
-.mvp-hero-facts {
-  display: inline-flex;
-  flex-wrap: wrap;
-  overflow: hidden;
-  border: 1px solid var(--line-strong);
-  border-radius: 999px;
-  color: var(--muted);
-  background: rgba(255, 253, 249, .72);
-  box-shadow: 0 10px 30px -24px rgba(36, 30, 76, .38);
-  font: 600 .74rem/1 var(--sans);
-  backdrop-filter: blur(8px);
-}
-.mvp-hero-facts span { display: flex; align-items: center; gap: .42rem; padding: .68rem .85rem; }
-.mvp-hero-facts span + span { border-left: 1px solid var(--line); }
-.mvp-hero-facts strong { color: var(--accent-ink); font: 750 .84rem/1 var(--mono); }
-
 .mvp-section-head { display: grid; grid-template-columns: minmax(0, 1fr) auto; gap: 1.5rem; align-items: end; margin-bottom: 1.35rem; }
 .mvp-section-head > div { max-width: 49rem; }
 .mvp-section-head h2 { max-width: 44rem; }
 .mvp-section-head p:last-child { color: var(--muted); }
-.mvp-text-link { display: inline-flex; min-height: 2.75rem; align-items: center; gap: .35rem; white-space: nowrap; color: var(--accent-ink); font: 700 .8rem/1.2 var(--sans); }
-
 .mvp-browser-shell {
   overflow: hidden;
   border: 1px solid #292b40;
@@ -1685,7 +1668,6 @@ body[data-page-brand="neutral"] section[data-brand="omen"] > h2 { color: var(--o
 
 @media (max-width: 760px) {
   .mvp-section-head { grid-template-columns: 1fr; }
-  .mvp-text-link { justify-self: start; }
   .mvp-case-criteria { grid-template-columns: 1fr; }
   .mvp-resolution-steps { grid-template-columns: 1fr; }
   .mvp-resolution-steps li + li { margin-top: .35rem; }
@@ -1702,9 +1684,6 @@ body[data-page-brand="neutral"] section[data-brand="omen"] > h2 { color: var(--o
   .mvp-content { padding-inline: 1rem; }
   .mvp-hero { padding-inline: 1rem; }
   .mvp-hero h1 { font-size: 2.8rem; }
-  .mvp-hero-facts { width: 100%; border-radius: 15px; }
-  .mvp-hero-facts span { flex: 1 1 9rem; }
-  .mvp-hero-facts span + span { border-left: 0; }
   .mvp-browser-shell { border-radius: 17px; }
   .mvp-browser-bar { grid-template-columns: minmax(0, 1fr) auto; }
   .mvp-window-dots { display: none; }
@@ -1724,9 +1703,6 @@ body[data-page-brand="neutral"] section[data-brand="omen"] > h2 { color: var(--o
   .mvp-hero-actions, .mvp-hero-actions .mvp-button { width: 100%; }
   .mvp-browser-badge { display: none; }
   .mvp-browser-bar { grid-template-columns: 1fr; }
-  .mvp-hero-facts { display: grid; grid-template-columns: 1fr; }
-  .mvp-hero-facts span { border-top: 1px solid var(--line); }
-  .mvp-hero-facts span:first-child { border-top: 0; }
   .mvp-comparison-header { grid-template-columns: 1fr 1fr; }
   .mvp-comparison-header .mvp-comparison-axis { display: none; }
   .mvp-comparison-header .mvp-comparison-heading { min-height: 4.8rem; padding: .85rem .75rem; }

@@ -490,7 +490,9 @@ function checkMvpPage(html, failures) {
   assert(/\bAll completed jurors receive the work payment locked for this case\b/i.test(html) && /\b5\.00 MUSD\b/i.test(html), "demothemis-mvp.html ruling receipt should pay completed work rather than only the majority", failures);
   assert(/\bNo permanent fee split\b/i.test(html) && /\bCurrent demand\b/i.test(html) && /\bReward-reserve top-up\b/i.test(html) && /\bCapped operations\b/i.test(html), "demothemis-mvp.html should show the current demand-responsive quote design", failures);
   assert(!/70\s*\/\s*20\s*\/\s*10/i.test(html), "demothemis-mvp.html should not present the retired permanent 70/20/10 split", failures);
-  assert(/\bSafe local preview\b/i.test(html) && /No wallet, identity proof, token, or transaction is used here/i.test(html), "demothemis-mvp.html should clearly separate the local preview from the deployed product", failures);
+  assert(!/\bSafe local preview\b/i.test(html) && !/class=["'][^"']*mvp-sim-footnote/i.test(html), "demothemis-mvp.html should remove the redundant local-preview notice", failures);
+  assert(/class=["'][^"']*mvp-button secondary[^"']*["'][^>]*href=["']https:\/\/demothemis\.netlify\.app\/app#oracle-live-panel["'][^>]*>\s*Open the deployed MVP/i.test(html), "the hero's deployed-MVP button must navigate directly to the deployed app", failures);
+  assert(!/Open the deployed product/i.test(html), "the duplicate deployed-product link must be removed from the preview heading", failures);
 
   const inlineScripts = Array.from(html.matchAll(/<script(?![^>]*\bsrc\s*=)[^>]*>([\s\S]*?)<\/script>/gi), (match) => match[1]);
   for (const [index, script] of inlineScripts.entries()) {
@@ -818,12 +820,10 @@ function checkRunThroughSurfaceSeparation(html, failures) {
   assert(Boolean(protocolRecordRenderer) && !/makeEl\(\s*["']button["']|\.addEventListener\s*\(|makeLiveActionControl/.test(protocolRecordRenderer), "protocol record nodes must not contain app controls", failures);
   assert(/setAttribute\(\s*["']data-surface["']|\.dataset\.surface\s*=/.test(html), "run-through renderer must expose the active surface with data-surface", failures);
 
-  const roleHandoffRenderer = runThroughFunctionSource(html, "renderRoleHandoff");
   const productRenderer = runThroughFunctionSource(html, "renderProductDemo");
   const liveBlockRenderer = runThroughFunctionSource(html, "renderLiveBlock");
-  assert(Boolean(roleHandoffRenderer), "run-through is missing the outer role-handoff renderer", failures);
-  assert(/root\.appendChild\(\s*renderRoleHandoff/.test(productRenderer), "role handoffs must render outside the browser frame", failures);
-  assert(!/appViewport\.appendChild\(\s*renderRoleHandoff/.test(productRenderer), "role handoffs must never render inside the production app viewport", failures);
+  assert(!/function\s+renderRoleHandoff\s*\(/.test(html), "run-through must not render the removed per-event role strip", failures);
+  assert(!/renderRoleHandoff|sim-role-handoff/.test(productRenderer), "event renderer must not insert the removed role strip", failures);
   assert(!/makeLiveContinuationControl\s*\(/.test(liveBlockRenderer), "app cards must reuse the single next-event control instead of creating duplicate continuation buttons", failures);
   assert(/if\s*\(isSequencePage\(page\)\)[\s\S]*renderProtocolSequence\(page,\s*item\)[\s\S]*root\.appendChild\(sequence\)/.test(productRenderer), "automatic system states must append the sequence canvas directly to the simulator root", failures);
 }
@@ -1670,7 +1670,7 @@ function checkCompactAppViews(html, failures) {
   const productRenderer = html.slice(productRendererStart, productRendererEnd);
   assert(/var\s+appBoundary\s*=\s*appBoundaryForPage\(page\)/.test(productRenderer), "the embedded surface must follow the resolved page ownership", failures);
   assert(/appViewport\.setAttribute\("data-app-theme",\s*appTheme\)/.test(productRenderer), "the embedded app viewport must declare its own theme independently of the run path", failures);
-  assert(/brand\.appendChild\(makeProductWordmark\(appTheme\s*===\s*"omen"\s*\?\s*"omen"\s*:\s*"demothemis",\s*"app-brand-wordmark",\s*appBrand\)\)/.test(productRenderer), "the embedded app wordmark must follow the current app boundary", failures);
+  assert(/brand\.appendChild\(makeProductWordmark\(appTheme\s*===\s*"omen"\s*\?\s*"omen"\s*:\s*"demothemis",\s*"app-brand-wordmark",\s*appBrand,\s*true\)\)/.test(productRenderer), "the embedded app wordmark must follow the current app boundary and use the live Omen wordmark", failures);
   assert(/APP_BOUNDARIES\.handoff\.frameTitle/.test(productRenderer), "the OmenMarketMaker court handoff must retain its outer integration frame", failures);
   assert(/makeEl\("span",\s*"app-nav-chip",\s*chrome\.context\)/.test(productRenderer), "the OmenMarketMaker web app must keep its normal context chip", failures);
   assert(!/app-backend-chip|backendLabel|sends court cases to the/.test(productRenderer), "DemoThemis integration copy must stay outside the web app", failures);
@@ -1848,7 +1848,7 @@ function checkRunThroughPriorityUxFixes(html, failures) {
   assert(!/Each mock screen|Product mockup for the current simulation step|The app gets one panel|opens its court app/i.test(html), "standalone explainers must not be described as app or mock screens", failures);
 
   assert(!/function\s+makeLiveContinuationControl\s*\(/.test(html), "same-app continuation controls must reuse the existing next-event button", failures);
-  assert(/function\s+renderRoleHandoff\s*\(/.test(html), "completed events must render their role handoff outside the browser", failures);
+  assert(!/function\s+renderRoleHandoff\s*\(/.test(html), "the redundant per-event role strip must stay removed", failures);
 
   const nextControlTags = openingTags(html, "button").filter((tagHtml) => tagAttributeValue(tagHtml, "id") === "runNext");
   assert(nextControlTags.length === 1, "the run-through must reuse one next-event control instead of rendering duplicate buttons", failures);
@@ -2243,6 +2243,7 @@ function checkCoachmarkTextAvoidance(html, failures) {
   });
   const chooserSource = runThroughFunctionSource(html, "chooseCoachmarkCandidate");
   assert(/connectorTextHits\s*===\s*0/.test(chooserSource), "floating coachmarks must reject every connector route that crosses visible text", failures);
+  assert(/connectorTextHits\s*===\s*0\s*&&\s*coachmarkConnectorIsUsable\(candidate\)/.test(chooserSource), "floating coachmarks must reject detached or too-short connector routes", failures);
 
   const textCollector = runThroughFunctionSource(html, "collectCoachmarkTextRects");
   const positioner = runThroughFunctionSource(html, "positionCoachmarkNow");
@@ -2522,7 +2523,7 @@ function checkActionButtonInfoLabels(html, failures) {
     failures
   );
   assert(/coach\.hidden\s*=\s*true/.test(positionerSource) && /coach\.hidden\s*=\s*false/.test(positionerSource), "off-screen coachmarks must remain hidden until they have a valid target rectangle", failures);
-  assert(/compactCoachmark[\s\S]*renderCoachmarkInline\(/.test(positionerSource), "compact product surfaces must render coachmarks inline instead of covering the app", failures);
+  assert(!/compactCoachmark/.test(positionerSource) && /if\s*\(\s*!chosen\s*\)[\s\S]*renderCoachmarkInline\(/.test(positionerSource), "compact product surfaces must try the same collision-free placement solver before falling back beside the action", failures);
   assert(
     /requestAnimationFrame\(/.test(queuePositionSource) &&
       /setTimeout\([\s\S]*positionCoachmarkNow\(\)[\s\S]*120/.test(queuePositionSource) &&
@@ -2571,7 +2572,9 @@ function checkBrandSystem(failures) {
   assert(/data-omen-rive[\s\S]*assets\/brand\/omenmarketmaker\/wordmark-poster\.png/i.test(builtRunThrough), "run-through selector must use the live OmenMarketMaker wordmark", failures);
   assert(/data-active-brand/i.test(builtRunThrough) && /activeBrandForPage/i.test(builtRunThrough), "run-through appearance must follow the active product surface", failures);
   assert(/SYSTEM_STATE_OWNERS/i.test(builtRunThrough) && /data-owner/i.test(builtRunThrough), "run-through lifecycle states must expose product ownership", failures);
-  assert(/tutorial-inline-slot/i.test(builtRunThrough) && /\.target-callout\s*\{\s*display:\s*none\s*!important/i.test(readDist("assets/run-through-brand.css")), "run-through tutorial must stay inside the simulated app frame", failures);
+  const runThroughBrand = readDist("assets/run-through-brand.css");
+  assert(!/tutorial-inline-slot|dockTutorialInsideFrame/i.test(builtRunThrough) && !/\.target-callout\s*\{[^}]*display:\s*none\s*!important/i.test(runThroughBrand), "guided action labels must remain dynamically positioned instead of being pinned above the simulated app", failures);
+  assert(/target-callout-step/i.test(builtRunThrough) && /currentActionOwner\(\)\s*===\s*["']user["']\)\s*return null/.test(builtRunThrough), "user-action progress and explainer copy must move with the dynamic button label instead of duplicating it at the top", failures);
 
   for (const [file, theme] of Object.entries(pageThemeByFile)) {
     const html = readDist(file);
@@ -2691,6 +2694,8 @@ function checkBrandSystem(failures) {
   assert(/RIVE_PLAYBACK_RATE\s*=\s*0\.5/i.test(riveLoader) && /elapsedTime\s*\*\s*RIVE_PLAYBACK_RATE/i.test(riveLoader), "Omen Rive wordmarks must play at half speed without reducing their render frame rate", failures);
   assert(/prefers-reduced-motion:\s*reduce/i.test(riveLoader), "Rive loader must respect reduced motion", failures);
   assert(/IntersectionObserver/i.test(riveLoader) && /visibilitychange/i.test(riveLoader) && /\.cleanup\(/i.test(riveLoader), "Rive loader must lazy-start, pause offscreen, and clean up", failures);
+  assert(/MutationObserver/i.test(riveLoader) && /function\s+syncShells\s*\(/i.test(riveLoader), "Rive loader must discover simulator wordmarks created after page load", failures);
+  assert(/ResizeObserver/i.test(riveLoader) && /resizeDrawingSurfaceToCanvas/i.test(riveLoader), "Rive wordmarks must resize cleanly with responsive simulator layouts", failures);
 
   const mvp = readDist("demothemis-mvp.html");
   assert(/mvp-sim-site-brand[\s\S]*assets\/brand\/demothemis\/wordmark\.png/i.test(mvp), "MVP preview header is missing the full DemoThemis wordmark", failures);
@@ -2851,6 +2856,7 @@ function checkBuiltHtml(failures) {
   assert(/data-app-theme=["']themis["'][\s\S]*?--accent:\s*var\(--dt-emission\)/i.test(runBrandCss), "DemoThemis app screens must use cyan emission states", failures);
   assert(/protocol-sequence:not\(\[data-sequence-profile=["']omen["']\]\)[\s\S]*?--protocol-bg:\s*var\(--dt-canvas\)/i.test(runBrandCss), "DemoThemis protocol sequences must remain light ivory rather than black", failures);
   assert(/\.app-brand-wordmark/i.test(runBrandCss) && /makeProductWordmark\(appTheme\s*===\s*["']omen["']/i.test(runThrough), "simulated app navigation must use the supplied full wordmarks", failures);
+  assert(/classList\.add\(["']omen-rive-shell["'],\s*["']run-rive-wordmark["']\)/i.test(runThrough) && /makeProductWordmark\(appTheme\s*===\s*["']omen["'][\s\S]{0,160},\s*true\)/i.test(runThrough), "simulator OmenMarketMaker identities must use the full Rive wordmark with a poster fallback", failures);
   assert(/data-product-mode["'],\s*selectedRunMode/i.test(runThrough) && /setAttribute\(["']data-active-brand["'],\s*activeBrand\)/i.test(runThrough), "starting-point state and active product ownership must remain separate", failures);
   assert(/\.sim-demand-frame\s*\{[^}]*border:\s*2px solid[^}]*border-radius:\s*18px/is.test(runThrough), "the OmenMarketMaker handoff browser must have a distinct integration border", failures);
   assert(/\.sim-demand-frame-tab\s*\{[^}]*color:\s*#fff[^}]*font-size:\s*\.76rem/is.test(runThrough), "the integration border must use the requested white tab title", failures);
@@ -2873,7 +2879,7 @@ function checkBuiltHtml(failures) {
   assert(/id=["']productDemo["']/i.test(runThrough), "run-through missing current walkthrough view", failures);
   assert(/tutorial-advance/i.test(runThrough), "run-through missing outer automatic-event controls", failures);
   assert(/APP_PAGES/i.test(runThrough), "run-through missing canonical staged app pages", failures);
-  assert(/sim-role-handoff/i.test(runThrough), "run-through missing outer role handoffs", failures);
+  assert(!/sim-role-handoff|data-role-handoff/i.test(runThrough), "run-through must not include the removed per-event role strip", failures);
   assert(/LUCIDE_ICONS/i.test(runThrough), "run-through missing vendored Lucide icon subset", failures);
   assert(!/id=["']runLanes["']/i.test(runThrough), "run-through should not expose the old multi-lane board", failures);
   assert(/data-feature=["']instant["']/i.test(runThrough), "run-through missing instant-market feature unlock", failures);

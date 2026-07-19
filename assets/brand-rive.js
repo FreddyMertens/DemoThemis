@@ -1,26 +1,15 @@
 (function () {
   "use strict";
 
-  var shells = Array.prototype.slice.call(document.querySelectorAll("[data-omen-rive]"));
-  if (!shells.length) return;
-
   var reducedMotion = window.matchMedia && window.matchMedia("(prefers-reduced-motion: reduce)").matches;
   if (reducedMotion || !window.rive || !window.rive.Rive) return;
 
   var RIVE_PLAYBACK_RATE = 0.5;
-
-  var records = shells.map(function (shell) {
-    return {
-      shell: shell,
-      canvas: shell.querySelector("canvas"),
-      instance: null,
-      initialized: false,
-      visible: true,
-    };
-  }).filter(function (record) {
-    return Boolean(record.canvas);
-  });
-  if (!records.length) return;
+  var records = [];
+  var observer = null;
+  var resizeObserver = null;
+  var mutationObserver = null;
+  var syncFrame = 0;
 
   function assetUrl(relativePath) {
     return new URL(relativePath, document.baseURI).href;
@@ -28,6 +17,13 @@
 
   if (window.rive.RuntimeLoader && typeof window.rive.RuntimeLoader.setWasmUrl === "function") {
     window.rive.RuntimeLoader.setWasmUrl(assetUrl("assets/vendor/rive/rive-2.38.5.wasm"));
+  }
+
+  function recordForShell(shell) {
+    for (var i = 0; i < records.length; i += 1) {
+      if (records[i].shell === shell) return records[i];
+    }
+    return null;
   }
 
   function setPlayback(record, shouldPlay) {
@@ -48,8 +44,17 @@
     };
   }
 
+  function resize(record) {
+    if (!record || !record.instance || typeof record.instance.resizeDrawingSurfaceToCanvas !== "function") return;
+    try {
+      record.instance.resizeDrawingSurfaceToCanvas();
+    } catch (error) {
+      /* The current frame and poster remain usable. */
+    }
+  }
+
   function initialize(record) {
-    if (record.initialized) return;
+    if (record.initialized || !record.shell.isConnected) return;
     record.initialized = true;
 
     try {
@@ -62,8 +67,10 @@
           alignment: window.rive.Alignment.Center,
         }),
         onLoad: function () {
-          if (record.instance && typeof record.instance.resizeDrawingSurfaceToCanvas === "function") {
-            record.instance.resizeDrawingSurfaceToCanvas();
+          resize(record);
+          if (!record.shell.isConnected) {
+            release(record);
+            return;
           }
           record.shell.classList.add("is-ready");
           setPlayback(record, record.visible && !document.hidden);
@@ -78,23 +85,77 @@
     }
   }
 
-  var observer = null;
+  function register(shell) {
+    if (!shell || recordForShell(shell)) return;
+    var canvas = shell.querySelector("canvas");
+    if (!canvas) return;
+    var record = {
+      shell: shell,
+      canvas: canvas,
+      instance: null,
+      initialized: false,
+      visible: !observer,
+    };
+    records.push(record);
+    if (observer) observer.observe(shell);
+    else initialize(record);
+    if (resizeObserver) resizeObserver.observe(shell);
+  }
+
+  function release(record) {
+    if (!record) return;
+    if (observer) observer.unobserve(record.shell);
+    if (resizeObserver) resizeObserver.unobserve(record.shell);
+    if (record.instance && typeof record.instance.cleanup === "function") {
+      try {
+        record.instance.cleanup();
+      } catch (error) {
+        /* The detached canvas is already inert. */
+      }
+    }
+    record.instance = null;
+    var index = records.indexOf(record);
+    if (index >= 0) records.splice(index, 1);
+  }
+
+  function syncShells() {
+    syncFrame = 0;
+    records.slice().forEach(function (record) {
+      if (!record.shell.isConnected) release(record);
+    });
+    Array.prototype.slice.call(document.querySelectorAll("[data-omen-rive]")).forEach(register);
+  }
+
+  function scheduleSync() {
+    if (syncFrame) return;
+    syncFrame = window.requestAnimationFrame(syncShells);
+  }
+
   if ("IntersectionObserver" in window) {
     observer = new IntersectionObserver(function (entries) {
       entries.forEach(function (entry) {
-        records.forEach(function (record) {
-          if (record.shell !== entry.target) return;
-          record.visible = entry.isIntersecting;
-          if (record.visible) initialize(record);
-          setPlayback(record, record.visible && !document.hidden);
-        });
+        var record = recordForShell(entry.target);
+        if (!record) return;
+        record.visible = entry.isIntersecting;
+        if (record.visible) initialize(record);
+        setPlayback(record, record.visible && !document.hidden);
       });
     }, { rootMargin: "240px 0px" });
-    records.forEach(function (record) {
-      observer.observe(record.shell);
+  }
+
+  if ("ResizeObserver" in window) {
+    resizeObserver = new ResizeObserver(function (entries) {
+      entries.forEach(function (entry) {
+        resize(recordForShell(entry.target));
+      });
     });
-  } else {
-    records.forEach(initialize);
+  }
+
+  syncShells();
+
+  if ("MutationObserver" in window && document.body) {
+    mutationObserver = new MutationObserver(scheduleSync);
+    mutationObserver.observe(document.body, { childList: true, subtree: true });
   }
 
   document.addEventListener("visibilitychange", function () {
@@ -105,9 +166,9 @@
 
   window.addEventListener("pagehide", function () {
     if (observer) observer.disconnect();
-    records.forEach(function (record) {
-      if (record.instance && typeof record.instance.cleanup === "function") record.instance.cleanup();
-      record.instance = null;
-    });
+    if (resizeObserver) resizeObserver.disconnect();
+    if (mutationObserver) mutationObserver.disconnect();
+    if (syncFrame) window.cancelAnimationFrame(syncFrame);
+    records.slice().forEach(release);
   }, { once: true });
 })();

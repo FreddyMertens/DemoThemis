@@ -67,13 +67,15 @@ async function main() {
   let checks = 0;
 
   try {
-    await page.goto(`${RUN_THROUGH_URL}?layoutAudit=1`, { waitUntil: "load" });
+    await page.goto(`${RUN_THROUGH_URL}?layoutAudit=1&coachmarkAudit=1`, { waitUntil: "load" });
     const stages = await page.evaluate(() => window.__layoutAudit.stages());
+    const coachmarkModes = { floating: 0, inline: 0, none: 0 };
 
     for (const viewport of VIEWPORTS) {
       await page.setViewportSize({ width: viewport.width, height: viewport.height });
-      const viewportResults = await page.evaluate((stageList) => {
+      const viewportAudit = await page.evaluate((stageList) => {
         const results = [];
+        const coachmarks = { floating: 0, inline: 0, none: 0 };
         const auditCurrentState = () => {
             const visible = (element) => {
               const style = getComputedStyle(element);
@@ -87,6 +89,57 @@ async function main() {
             const root = document.getElementById("productDemo");
             const surface = root && root.querySelector(".sim-surface-frame");
             const output = [];
+
+            const target = root && root.querySelector(".guided-target:not(:disabled)");
+            const activeTarget = target || (() => {
+              const continuation = document.getElementById("runNext");
+              return continuation && continuation.classList.contains("guided-target") && !continuation.hidden && !continuation.disabled ? continuation : null;
+            })();
+            if (activeTarget && window.__coachmarkAudit) {
+              activeTarget.scrollIntoView({ block: "center", inline: "nearest" });
+              const snapshot = window.__coachmarkAudit.recompute();
+              const coach = document.getElementById("guidedCoachmark");
+              const latest = snapshot && snapshot.latest;
+              const mode = snapshot && snapshot.mode || "none";
+              coachmarks[mode] = (coachmarks[mode] || 0) + 1;
+              if (!coach || !visible(coach)) {
+                output.push("active action is missing its visible dynamic label");
+              } else {
+                const actionLabel = (activeTarget.getAttribute("data-action-label") || "").trim();
+                const actionInfo = (activeTarget.getAttribute("data-action-info") || "").trim();
+                const coachText = (coach.textContent || "").replace(/\s+/g, " ").trim();
+                if (actionLabel && !coachText.includes(actionLabel)) output.push(`dynamic label lost action text: ${actionLabel}`);
+                if (actionInfo && !coachText.includes(actionInfo)) output.push(`dynamic label lost explainer text: ${actionInfo.slice(0, 54)}`);
+                if (!coach.querySelector(".target-callout-step")) output.push("dynamic label lost its step progress");
+                const coachRect = coach.getBoundingClientRect();
+                const targetRect = activeTarget.getBoundingClientRect();
+                const overlapX = Math.min(coachRect.right, targetRect.right) - Math.max(coachRect.left, targetRect.left);
+                const overlapY = Math.min(coachRect.bottom, targetRect.bottom) - Math.max(coachRect.top, targetRect.top);
+                if (overlapX > .5 && overlapY > .5) output.push("dynamic label overlaps its action button");
+                if (mode === "floating") {
+                  if (coachRect.left < -1 || coachRect.top < -1 || coachRect.right > innerWidth + 1 || coachRect.bottom > innerHeight + 1) {
+                    output.push(`floating action label outside viewport ${Math.round(coachRect.left)},${Math.round(coachRect.top)}..${Math.round(coachRect.right)},${Math.round(coachRect.bottom)}`);
+                  }
+                  if (!latest || latest.textOverlaps !== 0) output.push(`floating action label crosses ${latest ? latest.textOverlaps : "unknown"} text rows`);
+                  if (!latest || latest.connectorTextOverlaps !== 0) output.push(`action connector crosses ${latest ? latest.connectorTextOverlaps : "unknown"} text rows`);
+                  const connector = document.querySelector(".coachmark-connector");
+                  const path = connector && connector.querySelector("[data-coachmark-path]");
+                  const endpoint = connector && connector.querySelector("[data-coachmark-endpoint]");
+                  if (!latest || !latest.connectorVisible || !connector || connector.hidden || !path || !path.getAttribute("d") || !endpoint || endpoint.hasAttribute("hidden")) {
+                    output.push("floating action label is missing its validated button connector");
+                  }
+                } else if (mode === "inline") {
+                  const slot = coach.closest(".coachmark-inline-slot");
+                  const connector = document.querySelector(".coachmark-connector:not([hidden])");
+                  if (!slot || !slot.parentElement || !slot.parentElement.contains(activeTarget)) output.push("inline fallback is not positioned beside its action button");
+                  if (connector) output.push("inline fallback retained a stale connector");
+                } else {
+                  output.push("active action label has no resolved placement mode");
+                }
+              }
+            } else if (!activeTarget) {
+              coachmarks.none += 1;
+            }
 
             if (document.documentElement.scrollWidth > document.documentElement.clientWidth + 1) {
               output.push(`page horizontal overflow ${document.documentElement.scrollWidth}/${document.documentElement.clientWidth}`);
@@ -196,10 +249,13 @@ async function main() {
             });
           }
         });
-        return results;
+        return { results, coachmarks };
       }, stages);
       checks += stages.reduce((total, current) => total + current.steps + 1, 0);
-      viewportResults.forEach(({ current, step, issue }) => {
+      Object.keys(coachmarkModes).forEach((mode) => {
+        coachmarkModes[mode] += viewportAudit.coachmarks[mode] || 0;
+      });
+      viewportAudit.results.forEach(({ current, step, issue }) => {
         failures.push(`${viewport.label} event ${String(current.index + 1).padStart(2, "0")} step ${step}/${current.steps} (${current.title}): ${issue}`);
       });
     }
@@ -241,6 +297,7 @@ async function main() {
     }
 
     console.log(`Audited ${checks} rendered run-through states across ${VIEWPORTS.length} viewport sizes.`);
+    console.log(`Action-label placements: ${coachmarkModes.floating} floating, ${coachmarkModes.inline} inline fallback, ${coachmarkModes.none} states without an active action.`);
     if (failures.length) {
       console.error(`${failures.length} layout issue(s):`);
       unique(failures).forEach((failure) => console.error(`- ${failure}`));

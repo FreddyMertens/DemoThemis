@@ -178,6 +178,7 @@
   .step-svg .chip-card.hot { fill: var(--accent-soft); stroke: var(--accent); }
   .product-demo { min-height: 0; display: grid; grid-template-columns: minmax(0, 1fr); gap: .72rem; width: 100%; max-width: 100%; min-width: 0; padding: 0; box-sizing: border-box; container: run-stage / inline-size; font-family: var(--sans); color: var(--ink); overflow: visible; overflow-wrap: anywhere; }
   .sim-step-guide { display: grid; grid-template-columns: auto minmax(0, .92fr) minmax(21rem, .78fr); gap: .62rem; align-items: stretch; border: 1px solid color-mix(in srgb, var(--accent) 26%, var(--line)); border-radius: 14px; background: color-mix(in srgb, var(--surface) 94%, #fff); padding: .62rem; min-width: 0; }
+  .sim-step-guide.has-floating-action-label { grid-template-columns: auto minmax(0, 1fr); }
   .sim-step-badge { display: grid; align-content: center; justify-items: center; width: 3.35rem; min-height: 3.35rem; border-radius: 11px; background: color-mix(in srgb, var(--accent) 12%, var(--accent-soft)); color: var(--accent); border: 1px solid color-mix(in srgb, var(--accent) 24%, var(--line)); font-weight: 950; }
   .sim-step-badge span { font-size: .56rem; line-height: 1.1; letter-spacing: .1em; text-transform: uppercase; color: var(--faint); }
   .sim-step-badge b { font-size: 1.12rem; line-height: 1; }
@@ -187,13 +188,6 @@
   .sim-step-copy span { color: var(--muted); font-size: .72rem; line-height: 1.3; }
   .sim-step-copy .sim-step-summary { color: var(--ink-soft); }
   .sim-step-controls { display: grid; gap: .42rem; align-content: stretch; min-width: 0; justify-items: stretch; }
-  .sim-role-handoff { display: flex; align-items: center; flex-wrap: wrap; gap: .55rem; min-width: 0; border: 1px solid color-mix(in srgb, var(--accent) 34%, var(--line)); border-radius: 12px; background: color-mix(in srgb, var(--accent-soft) 38%, var(--surface)); color: var(--ink); padding: .48rem .62rem; box-shadow: 0 8px 18px color-mix(in srgb, var(--accent) 8%, transparent); }
-  .sim-role-mark { display: grid; place-items: center; width: 2rem; height: 2rem; flex: 0 0 auto; border-radius: 9px; background: var(--accent); color: #fff; }
-  .sim-role-mark svg { width: 1.05rem; height: 1.05rem; }
-  .sim-role-copy { display: grid; flex: 1 1 12rem; gap: .08rem; min-width: 0; }
-  .sim-role-copy strong { color: var(--accent-ink); font-size: .62rem; line-height: 1.1; letter-spacing: .08em; text-transform: uppercase; }
-  .sim-role-copy span { color: var(--ink); font-size: .78rem; line-height: 1.2; font-weight: 800; overflow-wrap: anywhere; }
-  .sim-role-owner { margin-left: auto; border: 1px solid color-mix(in srgb, var(--accent) 34%, var(--line)); border-radius: 999px; background: var(--surface); color: var(--muted); padding: .24rem .5rem; font-size: .64rem; line-height: 1; font-weight: 850; white-space: nowrap; }
   .sim-live-preview {
     --browser-chrome-bg: #e8edf1;
     --browser-chrome-surface: #f9fbfc;
@@ -486,6 +480,7 @@
   .guided-target:hover::before,
   .guided-target:focus-visible::before { animation-duration: 1.7s; opacity: .9; }
   .target-callout { box-sizing: border-box; position: fixed; left: var(--coach-left, 1rem); top: var(--coach-top, 1rem); bottom: auto; z-index: 9998; display: grid; gap: .15rem; width: var(--coach-width, min(18rem, calc(100vw - 2rem))); min-width: 0; max-width: calc(100vw - 1rem); max-height: var(--coach-max-height, calc(100vh - 1rem)); overflow: auto; overscroll-behavior: contain; border: 1px solid color-mix(in srgb, var(--good) 42%, var(--line)); border-radius: 14px; background: color-mix(in srgb, var(--ink) 94%, #111); color: #fff; padding: .58rem .68rem; font-family: var(--sans); font-size: .72rem; line-height: 1.24; font-weight: 800; text-align: left; white-space: normal; box-shadow: 0 18px 36px rgba(31, 36, 48, .24); pointer-events: none; transform: none; isolation: isolate; contain: layout style; animation: none; transition: opacity 0.15s ease, visibility 0.15s ease; }
+  .target-callout-step { color: rgba(255, 255, 255, .58); font-size: .58rem; line-height: 1.1; font-weight: 900; letter-spacing: .08em; text-transform: uppercase; }
   .target-callout b { display: flex; align-items: center; gap: .34rem; color: #fff; font-size: .68rem; line-height: 1.12; font-weight: 950; letter-spacing: .06em; text-transform: uppercase; }
   .target-callout b::before { content: ""; width: .46rem; height: .46rem; border-radius: 50%; background: var(--good); box-shadow: 0 0 0 4px color-mix(in srgb, var(--good) 22%, transparent); flex: 0 0 auto; }
   .target-callout span { color: rgba(255, 255, 255, .78); font-size: .72rem; line-height: 1.28; font-weight: 750; }
@@ -2009,7 +2004,6 @@
   .product-mode-panel[data-product-mode] .run-control-panel :where(*),
   .product-mode-panel[data-product-mode] .stage-rail :where(*),
   .product-mode-panel[data-product-mode] .product-demo .sim-step-guide :where(*),
-  .product-mode-panel[data-product-mode] .product-demo .sim-role-handoff :where(*),
   .product-mode-panel[data-product-mode] .product-demo .sim-app-viewport :where(*) {
     letter-spacing: 0;
   }
@@ -2084,17 +2078,6 @@
     font-weight: var(--product-weight-control);
   }
   .product-mode-panel[data-product-mode] .product-demo .sim-step-guide :where(.tutorial-dock) { gap: .5rem; }
-  .product-mode-panel[data-product-mode] .product-demo .sim-role-handoff :where(.sim-role-copy strong, .sim-role-owner) {
-    font-size: var(--product-text-caption);
-    line-height: var(--product-leading-ui);
-    font-weight: var(--product-weight-meta);
-  }
-  .product-mode-panel[data-product-mode] .product-demo .sim-role-handoff :where(.sim-role-copy span) {
-    font-size: var(--product-text-meta);
-    line-height: var(--product-leading-ui);
-    font-weight: var(--product-weight-title);
-  }
-
   .product-mode-panel[data-product-mode] .product-demo .sim-live-preview :where(
     .fake-screen-name, .fake-mini, .fake-field .k,
     .app-eyebrow, .app-metric span, .app-panel .mini, .app-receipt strong, .sim-help,
@@ -3788,7 +3771,7 @@
     return stageIndex >= 6 ? "demothemis" : "omen";
   }
 
-  function makeProductWordmark(brand, className, accessibleName) {
+  function makeProductWordmark(brand, className, accessibleName, animateOmen) {
     var mark = makeEl("span", className || "product-wordmark");
     var image = document.createElement("img");
     image.width = brand === "omen" ? 1000 : 1766;
@@ -3796,10 +3779,25 @@
     image.src = brand === "omen"
       ? "assets/brand/omenmarketmaker/wordmark-poster.png"
       : "assets/brand/demothemis/wordmark.png";
-    image.alt = accessibleName || "";
-    if (!accessibleName) image.setAttribute("aria-hidden", "true");
+    image.alt = brand === "omen" && animateOmen ? "" : (accessibleName || "");
+    if (!accessibleName || (brand === "omen" && animateOmen)) image.setAttribute("aria-hidden", "true");
     mark.setAttribute("data-brand-mark", brand);
     mark.appendChild(image);
+    if (brand === "omen" && animateOmen) {
+      mark.classList.add("omen-rive-shell", "run-rive-wordmark");
+      mark.setAttribute("data-omen-rive", "");
+      if (accessibleName) {
+        mark.setAttribute("role", "img");
+        mark.setAttribute("aria-label", accessibleName);
+      } else {
+        mark.setAttribute("aria-hidden", "true");
+      }
+      var canvas = document.createElement("canvas");
+      canvas.width = 1000;
+      canvas.height = 300;
+      canvas.setAttribute("aria-hidden", "true");
+      mark.appendChild(canvas);
+    }
     return mark;
   }
 
@@ -6522,9 +6520,12 @@
     var owner = cleanTip(target && target.getAttribute("data-action-owner")) || currentActionOwner();
     var label = cleanTip(target && target.getAttribute("data-action-label")) || stepActionLabel(step);
     var info = cleanTip(target && target.getAttribute("data-action-info")) || stepCoachText(step);
-    var copyKey = [stage, activeEventStep, owner, label, info].join("|");
+    var total = Math.max(1, (currentFlow().steps || []).length);
+    var progress = step ? "Step " + Math.min(activeEventStep + 1, total) + " of " + total : "Event complete";
+    var copyKey = [stage, activeEventStep, owner, label, info, progress].join("|");
     if (callout.getAttribute("data-copy-key") === copyKey) return;
     callout.replaceChildren();
+    callout.appendChild(makeEl("small", "target-callout-step", progress));
     callout.appendChild(makeEl("b", "", (owner === "user" ? "Tap " : "Play ") + label));
     callout.appendChild(makeEl("span", "", info));
     callout.setAttribute("data-copy-key", copyKey);
@@ -6974,9 +6975,14 @@
     copy.appendChild(makeEl("span", "", guide.look));
     guideEl.appendChild(copy);
 
-    var controls = makeEl("div", "sim-step-controls");
-    controls.appendChild(renderTutorialDock(item, guide, page));
-    guideEl.appendChild(controls);
+    var tutorialDock = renderTutorialDock(item, guide, page);
+    if (tutorialDock) {
+      var controls = makeEl("div", "sim-step-controls");
+      controls.appendChild(tutorialDock);
+      guideEl.appendChild(controls);
+    } else {
+      guideEl.classList.add("has-floating-action-label");
+    }
 
     return guideEl;
   }
@@ -6987,6 +6993,7 @@
     var step = currentTutorialStep();
     var completedStep = activeEventStep > 0 ? steps[Math.min(activeEventStep - 1, steps.length - 1)] : null;
     var continuation = currentContinuation();
+    if (step && currentActionOwner() === "user") return null;
     var dock = makeEl("div", "tutorial-dock");
     var top = makeEl("div", "tutorial-top");
     var total = steps.length || 1;
@@ -7626,7 +7633,7 @@
 
     var header = makeEl("header", "protocol-sequence-header");
     var mark = makeEl("span", "protocol-sequence-mark protocol-brand-mark");
-    mark.appendChild(makeProductWordmark(profile.key === "omen" ? "omen" : "demothemis", "protocol-brand-wordmark", ""));
+    mark.appendChild(makeProductWordmark(profile.key === "omen" ? "omen" : "demothemis", "protocol-brand-wordmark", "", true));
     header.appendChild(mark);
     var identity = makeEl("div", "protocol-sequence-identity");
     identity.appendChild(makeEl("span", "protocol-sequence-kicker", "System explainer"));
@@ -7708,44 +7715,6 @@
     return sequence;
   }
 
-  function surfaceLabel(surface, view, sequenceProfile) {
-    if (view === "sequence" && sequenceProfile === "omen") return "OmenMarketMaker automatic execution";
-    if (surface === "themis") return "DemoThemis";
-    if (surface === "protocol") return "DemoThemis on-chain sequence";
-    return "OmenMarketMaker";
-  }
-
-  function renderRoleHandoff(page) {
-    var meta = currentSurfaceMeta();
-    var completedStep = lastTutorialStep();
-    var handoffText = completedStep && (completedStep.roleHandoff || completedStep.handoff);
-    var enteringFromPreviousEvent = activeEventStep === 0 && stage > runStartStage ? EVENT_CONTINUATIONS[stage - 1] : null;
-    if (!handoffText && enteringFromPreviousEvent) handoffText = enteringFromPreviousEvent.from + " → " + enteringFromPreviousEvent.to;
-    var handoff = makeEl("div", "sim-role-handoff");
-    handoff.setAttribute("data-role-handoff", handoffText ? "changed" : "current");
-    handoff.setAttribute("data-surface", meta.surface);
-    var activeBrand = activeBrandForPage(page);
-    var crossProduct = (stage === 8 && activeEventStep === 0) || (stage === 12 && activeEventStep > 0 && activeBrand === "omen");
-    handoff.setAttribute("data-active-brand", activeBrand);
-    handoff.setAttribute("data-cross-product", crossProduct ? "true" : "false");
-    if (crossProduct) {
-      var sourceBrand = activeBrand === "omen" ? "demothemis" : "omen";
-      handoff.appendChild(makeProductWordmark(sourceBrand, "sim-role-brand sim-role-brand--source", ""));
-      var connector = makeEl("span", "sim-role-connector");
-      connector.setAttribute("aria-hidden", "true");
-      handoff.appendChild(connector);
-      handoff.appendChild(makeProductWordmark(activeBrand, "sim-role-brand sim-role-brand--destination", ""));
-    } else {
-      handoff.appendChild(makeProductWordmark(activeBrand, "sim-role-brand sim-role-brand--current", ""));
-    }
-    var copy = makeEl("div", "sim-role-copy");
-    copy.appendChild(makeEl("strong", "", handoffText ? "Role handoff" : (meta.actionOwner === "protocol" ? "System explainer" : "Production view")));
-    copy.appendChild(makeEl("span", "", handoffText ? handoffText.replace(/\s+to\s+/i, " → ") : surfaceLabel(meta.surface, meta.view, meta.sequenceProfile) + " · " + meta.actor));
-    handoff.appendChild(copy);
-    handoff.appendChild(makeEl("span", "sim-role-owner", meta.actionOwner === "protocol" ? "Read-only" : (meta.actionOwner === "simulator" ? "Result" : "User action")));
-    return handoff;
-  }
-
   function prepareSimulatorTransition(restoreFocus) {
     if (restoreFocus) restoreSimulatorFocusOnRender = true;
     announceRunStatusOnRender = true;
@@ -7810,18 +7779,6 @@
     }, 24);
   }
 
-  function dockTutorialInsideFrame(frame, dock, beforeNode) {
-    if (!frame || !dock) return;
-    var guide = dock.closest(".sim-step-guide");
-    var controls = dock.parentElement;
-    if (guide) guide.classList.add("has-inframe-tutorial");
-    if (controls) controls.classList.add("is-empty");
-    var slot = makeEl("div", "tutorial-inline-slot");
-    slot.appendChild(dock);
-    frame.classList.add("has-inline-coachmark");
-    frame.insertBefore(slot, beforeNode || null);
-  }
-
   function renderProductDemo(item, focus) {
     var root = document.getElementById("productDemo");
     if (!root) return;
@@ -7861,14 +7818,12 @@
 
     var guideEl = renderStepGuide(item, guide, page);
     root.appendChild(guideEl);
-    root.appendChild(renderRoleHandoff(page));
     var guideDock = guideEl.querySelector(".tutorial-dock");
 
     if (isSequencePage(page)) {
       var sequence = renderProtocolSequence(page, item);
       root.appendChild(sequence);
       placeNextEventControl(page, null, null, guideDock);
-      dockTutorialInsideFrame(sequence, guideDock, sequence.querySelector(".protocol-sequence-scroll"));
     } else {
       var appBoundary = appBoundaryForPage(page) || APP_BOUNDARIES.omen;
       var appTheme = appBoundary.appTheme;
@@ -7902,7 +7857,7 @@
       var brand = makeEl("div", "app-brand");
       var tabs = makeEl("div", "app-tabs");
       var navTools = makeEl("div", "app-nav-tools");
-      brand.appendChild(makeProductWordmark(appTheme === "omen" ? "omen" : "demothemis", "app-brand-wordmark", appBrand));
+      brand.appendChild(makeProductWordmark(appTheme === "omen" ? "omen" : "demothemis", "app-brand-wordmark", appBrand, true));
       var activeTab = page.activeTab || (page.tabs && page.tabs[0]);
       tabs.setAttribute("aria-label", "Current app section");
       if (activeTab) {
@@ -7923,7 +7878,6 @@
       preview.appendChild(browserBar);
       preview.appendChild(appViewport);
       renderStepConfirmation(preview, appTheme);
-      dockTutorialInsideFrame(preview, guideDock, appViewport);
       if (frameTitle) {
         var demandFrame = makeEl("div", "sim-demand-frame");
         var demandFrameTab = makeEl("div", "sim-demand-frame-tab", frameTitle);
@@ -8306,7 +8260,7 @@
     if (!candidate || !candidate.valid || !candidate.zeroTextOverlap || !targetRect || !boundary || !Array.isArray(textRects)) return false;
     candidate.connectorRouteTried = true;
     coachmarkConnectorGeometry(candidate, targetRect);
-    if (candidate.connectorTextHits === 0) return true;
+    if (candidate.connectorTextHits === 0 && coachmarkConnectorIsUsable(candidate)) return true;
     var start = candidate.connectorStart;
     var end = candidate.connectorEnd;
     var verticalFirst = candidate.placement === "top" || candidate.placement === "bottom";
@@ -8346,7 +8300,7 @@
       candidate.connectorTextHits = 0;
       candidate.connectorRouted = true;
       if (candidate.score) candidate.score[4] = 0;
-      return true;
+      if (coachmarkConnectorIsUsable(candidate)) return true;
     }
 
     var axisStart = verticalFirst ? start.y : start.x;
@@ -8399,7 +8353,7 @@
           candidate.connectorTextHits = 0;
           candidate.connectorRouted = true;
           if (candidate.score) candidate.score[4] = 0;
-          return true;
+          if (coachmarkConnectorIsUsable(candidate)) return true;
         }
       }
     }
@@ -8597,13 +8551,13 @@
 
   function chooseCoachmarkCandidate(candidates, targetKey, targetRect, boundary, textRects) {
     var bubbleClear = candidates.filter(function (candidate) { return candidate.valid && candidate.zeroTextOverlap; });
-    var clearPaths = bubbleClear.filter(function (candidate) { return candidate.connectorTextHits === 0; });
+    var clearPaths = bubbleClear.filter(function (candidate) { return candidate.connectorTextHits === 0 && coachmarkConnectorIsUsable(candidate); });
     if (!clearPaths.length && targetRect && boundary && Array.isArray(textRects)) {
       bubbleClear.slice().sort(compareCoachmarkScores).slice(0, 24).some(function (candidate) {
         if (!candidate.connectorRouteTried) routeCoachmarkConnector(candidate, targetRect, boundary, textRects);
-        return candidate.connectorTextHits === 0;
+        return candidate.connectorTextHits === 0 && coachmarkConnectorIsUsable(candidate);
       });
-      clearPaths = bubbleClear.filter(function (candidate) { return candidate.connectorTextHits === 0; });
+      clearPaths = bubbleClear.filter(function (candidate) { return candidate.connectorTextHits === 0 && coachmarkConnectorIsUsable(candidate); });
     }
     if (!clearPaths.length) return null;
     clearPaths.sort(compareCoachmarkScores);
@@ -8769,29 +8723,6 @@
     coach.style.removeProperty("opacity");
     coach.style.removeProperty("visibility");
     coach.style.removeProperty("pointer-events");
-    var demoSurface = document.getElementById("productDemo");
-    var compactCoachmark = demoSurface && demoSurface.getBoundingClientRect().width <= 760;
-    if (compactCoachmark) {
-      var compactAudit = {
-        startedAt: startedAt,
-        stage: stage,
-        step: activeEventStep,
-        targetKey: targetKey,
-        reason: coachmarkInvalidationReason,
-        cacheHit: false,
-        textMapComplete: true,
-        textRectCount: 0,
-        candidateCount: 0,
-        vacancyCandidateCount: 0,
-        zeroTextCandidateCount: 0,
-        clearConnectorCandidateCount: 0
-      };
-      renderCoachmarkInline(coach, target, targetKey, compactAudit);
-      recordCoachmarkAudit(coach, compactAudit);
-      coachmarkTargetKey = targetKey;
-      coachmarkInvalidationReason = "positioned";
-      return;
-    }
     var obstacleResult = collectCoachmarkTextRects(target, boundary, targetKey);
     var measurements = measureCoachmarkWidths(coach, boundary);
     targetRect = coachmarkClippedTargetRect(target, boundary);
@@ -8929,6 +8860,7 @@
         var coach = document.getElementById("guidedCoachmark");
         var target = activeCoachmarkTarget();
         return {
+          enabled: coachmarkAuditEnabled,
           latest: coachmarkAuditHistory.length ? coachmarkAuditHistory[coachmarkAuditHistory.length - 1] : null,
           coachRect: coach ? coach.getBoundingClientRect().toJSON ? coach.getBoundingClientRect().toJSON() : coach && coach.getBoundingClientRect() : null,
           targetRect: target ? target.getBoundingClientRect().toJSON ? target.getBoundingClientRect().toJSON() : target && target.getBoundingClientRect() : null,

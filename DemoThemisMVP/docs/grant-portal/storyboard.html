@@ -4,140 +4,67 @@
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width,initial-scale=1">
   <meta name="color-scheme" content="light">
-  <title>DemoThemis — demo video storyboard</title>
+  <title>DemoThemis — complete video storyboard</title>
   <style>
     :root{
-      --paper:#f2eee8;
-      --surface:#fffdf9;
-      --surface-2:#f8f5ef;
-      --ink:#23202b;
-      --muted:#6e6877;
-      --line:#d9d2ca;
-      --violet:#5c48df;
-      --violet-soft:#ebe7ff;
-      --mint:#28b892;
-      --mint-soft:#ddf6ed;
-      --amber:#b06a12;
-      --amber-soft:#fff0d8;
-      --blue:#2d7196;
-      --blue-soft:#e1f1f8;
-      --night:#171429;
-      --night-2:#2b2351;
-      --shadow:0 18px 48px rgba(31,26,44,.12);
+      --paper:#f2eee8;--surface:#fffdf9;--surface-2:#f8f5ef;--ink:#24212c;--muted:#6f6978;
+      --line:#d9d2ca;--violet:#5d49df;--violet-soft:#ece8ff;--mint:#21a982;--mint-soft:#ddf6ed;
+      --amber:#a96512;--amber-soft:#fff0d7;--night:#171429;--night-2:#2e2558;
       --serif:"Iowan Old Style","Palatino Linotype",Palatino,Georgia,serif;
       --sans:Inter,ui-sans-serif,-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;
       --mono:"SFMono-Regular",Consolas,"Liberation Mono",monospace;
+      --shadow:0 18px 50px rgba(31,26,44,.13)
     }
     *{box-sizing:border-box}
     html,body{height:100%;margin:0}
-    body{overflow:hidden;background:var(--paper);color:var(--ink);font-family:var(--sans);font-size:15px}
-    button,a{font:inherit}
-    button{color:inherit}
-    a{color:inherit}
+    body{overflow:hidden;background:var(--paper);color:var(--ink);font:15px/1.45 var(--sans)}
+    button,a{font:inherit;color:inherit}button{cursor:pointer}
     .app{height:100%;display:grid;grid-template-rows:auto auto minmax(0,1fr);isolation:isolate}
-    .topbar{position:relative;z-index:5;display:flex;align-items:center;gap:18px;min-height:66px;padding:10px 22px;background:rgba(255,253,249,.94);border-bottom:1px solid var(--line);backdrop-filter:blur(18px)}
-    .brand{display:flex;align-items:center;gap:11px;min-width:250px}
-    .brand-mark{display:grid;place-items:center;width:34px;height:34px;border-radius:50%;background:linear-gradient(145deg,var(--night),var(--violet));color:#fff;font-family:var(--serif);font-size:19px;box-shadow:inset 0 0 0 1px rgba(255,255,255,.24)}
-    .brand strong{display:block;font-family:var(--serif);font-size:17px;line-height:1}
-    .brand small{display:block;margin-top:4px;color:var(--muted);font-size:10px;font-weight:750;letter-spacing:.12em;text-transform:uppercase}
-    .runtime{display:flex;align-items:center;gap:8px;margin-left:auto;color:var(--muted);font-family:var(--mono);font-size:11px;white-space:nowrap}
-    .scope-key{display:flex;align-items:center;gap:6px}
-    .key{display:inline-flex;align-items:center;gap:6px;border:1px solid var(--line);border-radius:999px;padding:5px 8px;background:#fff;font-size:10px;font-weight:800;letter-spacing:.06em;text-transform:uppercase}
-    .key:before{content:"";width:7px;height:7px;border-radius:50%;background:var(--mint)}
-    .key.design:before{background:var(--violet)}
-    .controls{display:flex;align-items:center;gap:7px}
-    .icon-btn,.play-btn{min-height:36px;border:1px solid var(--line);border-radius:10px;background:#fff;cursor:pointer;transition:transform .16s ease,border-color .16s ease,background .16s ease}
-    .icon-btn{display:grid;place-items:center;width:38px;font-size:18px}
-    .play-btn{display:flex;align-items:center;gap:8px;padding:0 13px;background:var(--night);border-color:var(--night);color:#fff;font-size:12px;font-weight:800}
-    .icon-btn:hover,.play-btn:hover{transform:translateY(-1px);border-color:var(--violet)}
-    .icon-btn:focus-visible,.play-btn:focus-visible,.chapter:focus-visible,.shot-dot:focus-visible{outline:3px solid rgba(92,72,223,.25);outline-offset:2px}
-    .chapterbar{position:relative;z-index:4;display:grid;grid-template-columns:auto minmax(0,1fr) auto;align-items:center;gap:14px;padding:8px 22px;background:var(--surface);border-bottom:1px solid var(--line)}
-    .chapter-label{font-size:10px;font-weight:850;letter-spacing:.13em;text-transform:uppercase;color:var(--muted)}
-    .chapters{display:flex;gap:6px;min-width:0;overflow-x:auto;scrollbar-width:none}
-    .chapters::-webkit-scrollbar{display:none}
-    .chapter{flex:none;display:flex;align-items:center;gap:6px;border:0;border-radius:9px;padding:7px 9px;background:transparent;color:var(--muted);cursor:pointer;font-size:11px;font-weight:700;white-space:nowrap}
-    .chapter span{font-family:var(--mono);font-size:9px;color:#9a92a5}
-    .chapter.active{background:var(--violet-soft);color:#4635b7}
-    .chapter.visited{color:var(--ink)}
-    .capture-note{color:var(--muted);font-size:10px;white-space:nowrap}
+    .topbar{z-index:5;display:flex;align-items:center;gap:18px;min-height:66px;padding:10px 22px;background:rgba(255,253,249,.95);border-bottom:1px solid var(--line);backdrop-filter:blur(18px)}
+    .brand{display:flex;align-items:center;gap:11px;min-width:235px}
+    .brand-mark{display:grid;place-items:center;width:34px;height:34px;border-radius:50%;background:linear-gradient(145deg,var(--night),var(--violet));color:#fff;font:19px var(--serif);box-shadow:inset 0 0 0 1px rgba(255,255,255,.25)}
+    .brand strong{display:block;font:700 17px/1 var(--serif)}.brand small{display:block;margin-top:4px;color:var(--muted);font-size:9px;font-weight:800;letter-spacing:.13em;text-transform:uppercase}
+    .scope-key{display:flex;gap:6px}.key{display:inline-flex;align-items:center;gap:6px;border:1px solid var(--line);border-radius:999px;padding:5px 8px;background:#fff;font-size:9px;font-weight:850;letter-spacing:.06em;text-transform:uppercase}.key:before{content:"";width:7px;height:7px;border-radius:50%;background:var(--mint)}.key.design:before{background:var(--violet)}
+    .runtime{margin-left:auto;color:var(--muted);font:11px var(--mono);white-space:nowrap}
+    .controls{display:flex;gap:7px}.icon-btn,.play-btn{min-height:36px;border:1px solid var(--line);border-radius:10px;background:#fff;transition:.16s ease}.icon-btn{display:grid;place-items:center;width:38px;font-size:18px}.play-btn{display:flex;align-items:center;gap:8px;padding:0 13px;background:var(--night);border-color:var(--night);color:#fff;font-size:12px;font-weight:850}.icon-btn:hover,.play-btn:hover{transform:translateY(-1px);border-color:var(--violet)}
+    .icon-btn:focus-visible,.play-btn:focus-visible,.step:focus-visible,.dot:focus-visible{outline:3px solid rgba(93,73,223,.25);outline-offset:2px}
+    .structure{z-index:4;display:grid;grid-template-columns:auto minmax(0,1fr) auto;align-items:center;gap:14px;padding:8px 22px;background:var(--surface);border-bottom:1px solid var(--line)}
+    .structure-label{color:var(--muted);font-size:9px;font-weight:900;letter-spacing:.13em;text-transform:uppercase;white-space:nowrap}.steps{display:flex;gap:6px;min-width:0;overflow-x:auto;scrollbar-width:none}.steps::-webkit-scrollbar{display:none}
+    .step{flex:none;display:flex;align-items:center;gap:6px;border:0;border-radius:9px;padding:7px 9px;background:transparent;color:var(--muted);font-size:11px;font-weight:750;white-space:nowrap}.step span{color:#9a92a5;font:9px var(--mono)}.step.active{background:var(--violet-soft);color:#4635b7}.step.visited{color:var(--ink)}
+    .capture-date{color:var(--muted);font-size:9px;white-space:nowrap}
     .deck{position:relative;min-height:0;padding:14px 18px 18px}
-    .scene{position:absolute;inset:14px 18px 18px;display:grid;grid-template-columns:minmax(0,1.65fr) minmax(330px,.75fr);gap:14px;opacity:0;pointer-events:none;transform:translateX(22px);transition:opacity .28s ease,transform .28s ease}
+    .scene{position:absolute;inset:14px 18px 18px;display:flex;flex-direction:column;gap:14px;overflow-y:auto;opacity:0;pointer-events:none;transform:translateX(22px);scrollbar-width:thin;transition:opacity .25s ease,transform .25s ease}
     .scene.active{opacity:1;pointer-events:auto;transform:none}
-    .visual{position:relative;min-width:0;min-height:0;overflow:hidden;border:1px solid rgba(255,255,255,.1);border-radius:18px;background:var(--night);box-shadow:var(--shadow)}
-    .visual:before{content:"";position:absolute;inset:0;background:radial-gradient(circle at 82% 10%,rgba(95,72,223,.34),transparent 36%),radial-gradient(circle at 15% 90%,rgba(44,190,166,.18),transparent 34%);pointer-events:none;z-index:0}
-    .browser-frame{position:absolute;inset:14px;display:grid;grid-template-rows:34px minmax(0,1fr);overflow:hidden;border-radius:12px;background:#fff;box-shadow:0 16px 36px rgba(0,0,0,.24);z-index:1}
-    .browser-bar{display:grid;grid-template-columns:72px minmax(0,1fr) 72px;align-items:center;gap:8px;padding:0 10px;background:#ece8e2;border-bottom:1px solid #d3cdc6}
-    .browser-dots{display:flex;gap:5px}
-    .browser-dots i{width:8px;height:8px;border-radius:50%;background:#c6beb5}.browser-dots i:nth-child(1){background:#ef7b72}.browser-dots i:nth-child(2){background:#efbd5f}.browser-dots i:nth-child(3){background:#68bd7d}
-    .browser-url{overflow:hidden;border:1px solid #d6d0ca;border-radius:6px;padding:5px 9px;background:#faf9f7;color:#716a73;font-family:var(--mono);font-size:9px;text-overflow:ellipsis;white-space:nowrap}
-    .browser-tag{justify-self:end;color:#817a84;font-size:9px;font-weight:800;text-transform:uppercase}
-    .screen{position:relative;min-height:0;overflow:hidden;background:#ebe8e2}
-    .screen img{display:block;width:100%;height:100%;object-fit:cover;object-position:center top}
-    .screen.contain img{object-fit:contain;background:#ebe8e2}
-    .screen.pos-center img{object-position:center center}
-    .focus-ring{position:absolute;border:3px solid #fff;border-radius:13px;box-shadow:0 0 0 5px rgba(92,72,223,.8),0 8px 26px rgba(23,20,41,.25);pointer-events:none}
-    .focus-ring span{position:absolute;top:-18px;left:-5px;border-radius:999px;padding:5px 8px;background:var(--violet);color:#fff;font-size:9px;font-weight:850;letter-spacing:.05em;text-transform:uppercase;white-space:nowrap}
-    .frame-caption{position:absolute;left:28px;bottom:26px;z-index:3;max-width:min(64%,520px);border:1px solid rgba(255,255,255,.22);border-radius:10px;padding:9px 11px;background:rgba(23,20,41,.88);color:#fff;box-shadow:0 10px 24px rgba(0,0,0,.2);backdrop-filter:blur(10px)}
-    .frame-caption b{display:block;font-size:11px}.frame-caption span{display:block;margin-top:2px;color:#d5d0e8;font-size:10px;line-height:1.35}
-    .phone-stage{display:grid;place-items:center;padding:18px;background:linear-gradient(145deg,#15132a,#302762)}
-    .phone-stage:after{content:"";position:absolute;inset:0;background-image:linear-gradient(rgba(255,255,255,.025) 1px,transparent 1px),linear-gradient(90deg,rgba(255,255,255,.025) 1px,transparent 1px);background-size:28px 28px}
-    .phone{position:relative;z-index:1;height:calc(100% - 18px);aspect-ratio:430/860;padding:7px;border:1px solid rgba(255,255,255,.3);border-radius:30px;background:#11101a;box-shadow:0 24px 50px rgba(0,0,0,.4)}
-    .phone img{width:100%;height:100%;object-fit:cover;object-position:top;border-radius:23px}
-    .phone:before{content:"";position:absolute;top:12px;left:50%;z-index:2;width:29%;height:16px;border-radius:99px;background:#11101a;transform:translateX(-50%)}
-    .camera-cue{position:absolute;right:30px;top:28px;z-index:4;max-width:250px;border:1px solid rgba(255,255,255,.28);border-radius:13px;padding:11px 13px;background:rgba(255,253,249,.93);color:var(--ink);box-shadow:0 10px 30px rgba(0,0,0,.18)}
-    .camera-cue small{display:block;color:var(--violet);font-size:9px;font-weight:900;letter-spacing:.11em;text-transform:uppercase}.camera-cue b{display:block;margin-top:4px;font-family:var(--serif);font-size:16px}.camera-cue span{display:block;margin-top:4px;color:var(--muted);font-size:10px;line-height:1.4}
-    .split{position:absolute;inset:14px;display:grid;grid-template-columns:1fr 1fr;gap:10px;z-index:1}
-    .split figure{position:relative;min-width:0;min-height:0;margin:0;overflow:hidden;border-radius:12px;background:#fff;box-shadow:0 12px 28px rgba(0,0,0,.25)}
-    .split img{width:100%;height:100%;object-fit:cover;object-position:center top}
-    .split figcaption{position:absolute;left:10px;top:10px;border-radius:999px;padding:5px 8px;background:rgba(23,20,41,.9);color:#fff;font-size:9px;font-weight:850;letter-spacing:.06em;text-transform:uppercase}
-    .capture-board{position:absolute;inset:14px;z-index:1;display:grid;grid-template-columns:minmax(0,1fr) 280px;gap:12px;overflow:hidden;border-radius:13px;background:#f7f3ed;box-shadow:0 16px 36px rgba(0,0,0,.24)}
-    .capture-image{position:relative;overflow:hidden;background:#ece8e2}
-    .capture-image img{width:100%;height:100%;object-fit:cover;object-position:center top;filter:saturate(.72) brightness(.62)}
-    .capture-image:after{content:"";position:absolute;inset:0;background:linear-gradient(90deg,rgba(23,20,41,.25),rgba(23,20,41,.05))}
-    .capture-copy{display:flex;flex-direction:column;justify-content:center;padding:22px;background:linear-gradient(160deg,#fffdf9,#eee8ff)}
-    .capture-copy .cap{display:inline-flex;align-self:flex-start;border-radius:999px;padding:5px 8px;background:var(--amber-soft);color:#85500f;font-size:9px;font-weight:900;letter-spacing:.08em;text-transform:uppercase}
-    .capture-copy h3{margin:12px 0 7px;font-family:var(--serif);font-size:27px;line-height:1.02}.capture-copy p{margin:0;color:var(--muted);font-size:12px;line-height:1.55}
-    .capture-route{margin-top:14px;padding-top:12px;border-top:1px solid var(--line);font-family:var(--mono);font-size:10px;color:#4b407a}
-    .capture-steps{display:grid;gap:8px;margin-top:15px}
-    .capture-steps div{display:flex;gap:9px;align-items:flex-start}.capture-steps b{display:grid;place-items:center;flex:none;width:21px;height:21px;border-radius:50%;background:var(--night);color:#fff;font-family:var(--mono);font-size:9px}.capture-steps span{font-size:11px;line-height:1.35}
-    .evidence-board{position:absolute;inset:14px;z-index:1;display:grid;grid-template-columns:1.05fr .95fr;gap:10px;padding:20px;border-radius:13px;background:linear-gradient(145deg,#f8f5ef,#e9e4ff);box-shadow:0 16px 36px rgba(0,0,0,.24)}
-    .evidence-lead{display:flex;flex-direction:column;justify-content:center;padding:18px}.evidence-lead .eyebrow{color:var(--violet);font-size:10px;font-weight:900;letter-spacing:.11em;text-transform:uppercase}.evidence-lead h3{margin:8px 0;font-family:var(--serif);font-size:36px;line-height:1}.evidence-lead p{max-width:540px;margin:0;color:var(--muted);line-height:1.55}.evidence-grid{display:grid;grid-template-columns:1fr 1fr;gap:9px}.evidence-card{display:flex;flex-direction:column;justify-content:space-between;border:1px solid var(--line);border-radius:12px;padding:13px;background:rgba(255,255,255,.88)}.evidence-card b{font-size:12px}.evidence-card span{color:var(--muted);font-size:10px;line-height:1.4}.evidence-card code{margin-top:12px;color:#4e3fb3;font-size:9px}
-    .mosaic{position:absolute;inset:14px;z-index:1;display:grid;grid-template-columns:1.25fr .75fr .75fr;grid-template-rows:1fr 1fr;gap:8px}
-    .mosaic figure{position:relative;margin:0;overflow:hidden;border-radius:10px;background:#fff;box-shadow:0 9px 24px rgba(0,0,0,.24)}
-    .mosaic figure:first-child{grid-row:1/3}.mosaic img{width:100%;height:100%;object-fit:cover;object-position:center top}.mosaic figcaption{position:absolute;left:8px;bottom:8px;border-radius:7px;padding:5px 7px;background:rgba(23,20,41,.88);color:#fff;font-size:9px;font-weight:800}
-    .mosaic-note{position:absolute;right:28px;bottom:26px;z-index:3;border-radius:9px;padding:8px 10px;background:#fff;color:var(--ink);box-shadow:0 8px 22px rgba(0,0,0,.18);font-size:9px;font-weight:800}
-    .notes{position:relative;display:flex;min-width:0;min-height:0;flex-direction:column;overflow:hidden;border:1px solid var(--line);border-radius:18px;background:var(--surface);box-shadow:0 12px 34px rgba(31,26,44,.08)}
-    .notes-head{padding:18px 18px 14px;border-bottom:1px solid var(--line);background:linear-gradient(160deg,#fffdf9,#f7f2ff)}
-    .meta-row{display:flex;align-items:center;gap:8px;flex-wrap:wrap}
-    .scene-no{font-family:var(--mono);font-size:11px;color:var(--violet);font-weight:900}.timecode{font-family:var(--mono);font-size:10px;color:var(--muted)}
-    .status{margin-left:auto;border-radius:999px;padding:5px 7px;font-size:9px;font-weight:900;letter-spacing:.07em;text-transform:uppercase}.status.live{background:var(--mint-soft);color:#15765e}.status.phone{background:var(--blue-soft);color:#245f7f}.status.capture{background:var(--amber-soft);color:#89530d}.status.design{background:var(--violet-soft);color:#4c3ac1}.status.docs{background:#ebe8e3;color:#5f5964}.status.hybrid{background:linear-gradient(90deg,var(--mint-soft),var(--violet-soft));color:#3f3760}
-    .notes h2{margin:10px 0 6px;font-family:var(--serif);font-size:30px;line-height:1}.speaker{color:var(--muted);font-size:11px}.speaker b{color:var(--ink)}
-    .notes-body{min-height:0;overflow:auto;padding:14px 18px 16px;scrollbar-width:thin}
-    .direction{display:grid;grid-template-columns:72px 1fr;gap:10px;padding:10px 0;border-bottom:1px solid #ebe6e0}.direction:first-child{padding-top:0}.direction label{color:var(--violet);font-size:9px;font-weight:900;letter-spacing:.09em;text-transform:uppercase}.direction p{margin:0;color:#514b58;font-size:11px;line-height:1.45}
-    .say{margin:14px 0 0;border-left:3px solid var(--violet);padding:2px 0 2px 12px;color:#302a38;font-family:var(--serif);font-size:16px;line-height:1.47}.say b{color:#2d2491}
-    .proof-note{display:flex;gap:8px;margin-top:13px;border:1px solid #e6dfd7;border-radius:10px;padding:9px;background:var(--surface-2);color:var(--muted);font-size:10px;line-height:1.4}.proof-note:before{content:"i";display:grid;place-items:center;flex:none;width:18px;height:18px;border-radius:50%;background:var(--night);color:#fff;font-family:var(--serif);font-weight:900}
-    .live-link{display:flex;align-items:center;justify-content:space-between;gap:10px;margin-top:12px;border:1px solid var(--line);border-radius:9px;padding:9px 10px;background:#fff;text-decoration:none;font-size:10px;font-weight:800}.live-link code{overflow:hidden;color:var(--muted);font-size:9px;text-overflow:ellipsis;white-space:nowrap}.live-link:hover{border-color:var(--violet);color:var(--violet)}
-    .shotbar{display:grid;grid-template-columns:auto minmax(0,1fr) auto;align-items:center;gap:10px;padding:10px 18px;border-top:1px solid var(--line);background:#faf7f2}
-    .shotbar small{color:var(--muted);font-size:9px;font-weight:800;text-transform:uppercase}.dots{display:flex;gap:4px;min-width:0;overflow-x:auto;scrollbar-width:none}.dots::-webkit-scrollbar{display:none}.shot-dot{flex:1;min-width:18px;height:6px;border:0;border-radius:99px;background:#ddd6cf;cursor:pointer}.shot-dot.active{background:var(--violet)}.shot-dot.past{background:#9588ea}.word-count{font-family:var(--mono);font-size:9px;color:var(--muted);white-space:nowrap}
-    .sr-only{position:absolute!important;width:1px;height:1px;padding:0;margin:-1px;overflow:hidden;clip:rect(0,0,0,0);white-space:nowrap;border:0}
-    @media (max-width:1100px){
-      body{overflow:auto;overflow-x:hidden}.app{min-height:100%;height:auto}.topbar{position:sticky;top:0}.scope-key,.capture-note{display:none}.scene{position:relative;inset:auto;display:none;grid-template-columns:1fr;min-height:auto;scroll-margin-top:124px}.scene.active{display:grid}.deck{min-height:auto}.visual{aspect-ratio:16/10;min-height:0}.notes{min-height:420px}.notes-body{overflow:visible}.runtime{margin-left:auto}.chapterbar{position:sticky;top:66px}.phone-stage{aspect-ratio:16/10}.phone{height:94%}
+    .visual{position:relative;flex:0 0 clamp(390px,58vh,720px);min-width:0;overflow:hidden;border-radius:18px;background:var(--night);box-shadow:var(--shadow)}
+    .visual:before{content:"";position:absolute;inset:0;z-index:0;background:radial-gradient(circle at 82% 10%,rgba(93,73,223,.36),transparent 36%),radial-gradient(circle at 15% 90%,rgba(33,169,130,.19),transparent 34%);pointer-events:none}
+    .browser-frame{position:absolute;inset:14px;z-index:1;display:grid;grid-template-rows:34px minmax(0,1fr);overflow:hidden;border-radius:12px;background:#fff;box-shadow:0 16px 38px rgba(0,0,0,.27)}
+    .browser-bar{display:grid;grid-template-columns:72px minmax(0,1fr) 72px;align-items:center;gap:8px;padding:0 10px;background:#ece8e2;border-bottom:1px solid #d3cdc6}.browser-dots{display:flex;gap:5px}.browser-dots i{width:8px;height:8px;border-radius:50%;background:#c6beb5}.browser-dots i:nth-child(1){background:#ef7b72}.browser-dots i:nth-child(2){background:#efbd5f}.browser-dots i:nth-child(3){background:#68bd7d}.browser-url{overflow:hidden;border:1px solid #d6d0ca;border-radius:6px;padding:5px 9px;background:#faf9f7;color:#716a73;font:9px var(--mono);text-overflow:ellipsis;white-space:nowrap}.browser-tag{justify-self:end;color:#817a84;font-size:9px;font-weight:850;text-transform:uppercase}
+    .screen{min-height:0;overflow:hidden;background:#ebe8e2}.screen img{display:block;width:100%;height:100%;object-fit:cover;object-position:center top}.screen.contain img{object-fit:contain;background:#e9e5de}
+    .caption{position:absolute;left:28px;bottom:26px;z-index:3;max-width:min(70%,560px);border:1px solid rgba(255,255,255,.2);border-radius:11px;padding:10px 12px;background:rgba(23,20,41,.9);color:#fff;box-shadow:0 10px 26px rgba(0,0,0,.22);backdrop-filter:blur(10px)}.caption b{display:block;font-size:11px}.caption span{display:block;margin-top:2px;color:#d7d2ea;font-size:10px;line-height:1.4}
+    .intro-visual{display:flex;align-items:flex-end;padding:clamp(30px,5vw,74px);background:linear-gradient(145deg,#141126 0%,#2d235c 60%,#245f59 130%)}
+    .intro-visual:after{content:"D";position:absolute;right:-2%;top:-18%;color:rgba(255,255,255,.055);font:700 min(60vw,720px)/1 var(--serif)}
+    .intro-copy{position:relative;z-index:2;max-width:820px;color:#fff}.intro-copy .eyebrow{display:inline-flex;border:1px solid rgba(255,255,255,.24);border-radius:999px;padding:6px 9px;color:#b9ffe8;font-size:10px;font-weight:900;letter-spacing:.12em;text-transform:uppercase}.intro-copy h1{max-width:780px;margin:20px 0 14px;font:700 clamp(44px,6vw,86px)/.92 var(--serif);letter-spacing:-.045em}.intro-copy p{max-width:650px;margin:0;color:#d9d4e6;font-size:clamp(14px,1.3vw,19px);line-height:1.5}.intro-proof{display:inline-flex;margin-top:24px;border-radius:10px;padding:10px 12px;background:rgba(255,255,255,.1);font-size:11px;font-weight:800}
+    .capture-overlay{position:absolute;inset:auto 28px 26px auto;z-index:3;width:min(420px,48%);border:1px solid rgba(255,255,255,.3);border-radius:14px;padding:16px 18px;background:rgba(255,253,249,.95);color:var(--ink);box-shadow:0 16px 34px rgba(0,0,0,.22);backdrop-filter:blur(12px)}.capture-overlay span{display:inline-flex;border-radius:999px;padding:5px 8px;background:var(--amber-soft);color:#85500f;font-size:9px;font-weight:900;letter-spacing:.08em;text-transform:uppercase}.capture-overlay h3{margin:11px 0 6px;font:700 25px/1.05 var(--serif)}.capture-overlay p{margin:0;color:var(--muted);font-size:11px;line-height:1.45}
+    .notes{display:flex;flex:none;min-width:0;flex-direction:column;overflow:hidden;border:1px solid var(--line);border-radius:18px;background:var(--surface);box-shadow:0 12px 34px rgba(31,26,44,.08)}
+    .notes-head{padding:18px 18px 14px;border-bottom:1px solid var(--line);background:linear-gradient(160deg,#fffdf9,#f7f2ff)}.meta{display:flex;align-items:center;gap:8px;flex-wrap:wrap}.shot-no{color:var(--violet);font:900 10px var(--mono)}.timecode{color:var(--muted);font:10px var(--mono)}.status{margin-left:auto;border-radius:999px;padding:5px 7px;font-size:9px;font-weight:900;letter-spacing:.07em;text-transform:uppercase}.status.live{background:var(--mint-soft);color:#15765e}.status.design{background:var(--violet-soft);color:#4c3ac1}.status.docs{background:#ebe8e3;color:#5f5964}.status.camera{background:var(--amber-soft);color:#89530d}.status.hybrid{background:linear-gradient(90deg,var(--mint-soft),var(--violet-soft));color:#3f3760}.notes h2{margin:10px 0 6px;font:700 30px/1 var(--serif)}.speaker{color:var(--muted);font-size:11px}.speaker b{color:var(--ink)}
+    .notes-body{display:grid;grid-template-columns:1fr 1fr;gap:0 18px;padding:14px 18px 16px}.direction{display:grid;grid-template-columns:72px 1fr;gap:10px;padding:10px 0;border-bottom:1px solid #ebe6e0}.direction:first-child{padding-top:0}.direction label{color:var(--violet);font-size:9px;font-weight:900;letter-spacing:.09em;text-transform:uppercase}.direction p{margin:0;color:#514b58;font-size:11px;line-height:1.5}.say{grid-column:1/-1;margin:14px 0 0;border-left:3px solid var(--violet);padding:2px 0 2px 12px;color:#302a38;font:16px/1.48 var(--serif)}.proof-note{grid-column:1/-1;display:flex;gap:8px;margin-top:13px;border:1px solid #e6dfd7;border-radius:10px;padding:9px;background:var(--surface-2);color:var(--muted);font-size:10px;line-height:1.4}.proof-note:before{content:"i";display:grid;place-items:center;flex:none;width:18px;height:18px;border-radius:50%;background:var(--night);color:#fff;font:900 12px var(--serif)}.live-link{grid-column:1/-1;display:flex;align-items:center;justify-content:space-between;gap:10px;margin-top:12px;border:1px solid var(--line);border-radius:9px;padding:9px 10px;background:#fff;text-decoration:none;font-size:10px;font-weight:850}.live-link code{overflow:hidden;color:var(--muted);font-size:9px;text-overflow:ellipsis;white-space:nowrap}.live-link:hover{border-color:var(--violet);color:var(--violet)}
+    .shotbar{display:grid;grid-template-columns:auto minmax(0,1fr) auto;align-items:center;gap:10px;padding:10px 18px;border-top:1px solid var(--line);background:#faf7f2}.shotbar small{color:var(--muted);font-size:9px;font-weight:850;text-transform:uppercase}.dots{display:flex;gap:5px}.dot{flex:1;height:6px;border:0;border-radius:99px;background:#ddd6cf}.dot.active{background:var(--violet)}.dot.past{background:#9588ea}.word-count{color:var(--muted);font:9px var(--mono);white-space:nowrap}.sr-only{position:absolute!important;width:1px;height:1px;padding:0;margin:-1px;overflow:hidden;clip:rect(0,0,0,0);white-space:nowrap;border:0}
+    @media(max-width:1080px){
+      body{overflow:auto;overflow-x:hidden}.app{height:auto;min-height:100%}.topbar{position:sticky;top:0}.scope-key,.capture-date{display:none}.structure{position:sticky;top:66px}.deck{min-height:0}.scene{position:relative;inset:auto;display:none;gap:9px;overflow:visible;scroll-margin-top:122px}.scene.active{display:flex}.visual{flex-basis:min(58vh,620px);aspect-ratio:16/10}.notes{min-height:0}
     }
-    @media (max-width:660px){
-      .topbar{gap:8px;min-height:54px;padding:8px 10px}.brand{min-width:0}.brand small{display:none}.brand strong{font-size:15px}.runtime{display:none}.play-btn{padding:0 10px}.play-btn span:last-child{display:none}.chapterbar{top:54px;grid-template-columns:1fr;padding:7px 10px}.chapter-label,.capture-note{display:none}.deck{padding:8px}.scene{gap:8px}.visual{border-radius:12px}.visual:has(.capture-board),.visual:has(.evidence-board){aspect-ratio:auto;min-height:340px}.browser-frame{inset:7px}.browser-bar{grid-template-columns:46px minmax(0,1fr) 34px;height:30px}.browser-tag{display:none}.screen img{object-fit:cover}.frame-caption{left:16px;bottom:14px;max-width:78%}.focus-ring{display:none}.phone-stage{aspect-ratio:4/5}.camera-cue{display:none}.split{inset:7px;display:flex;overflow-x:auto;scroll-snap-type:x mandatory}.split figure{flex:0 0 88%;scroll-snap-align:center}.capture-board,.evidence-board{inset:7px;grid-template-columns:1fr;overflow:auto}.capture-image{display:none}.capture-copy{padding:18px}.evidence-grid{grid-template-columns:1fr 1fr}.evidence-lead h3{font-size:28px}.mosaic{inset:7px;grid-template-columns:1fr 1fr;grid-template-rows:1fr 1fr 1fr}.mosaic figure:first-child{grid-row:1/2;grid-column:1/3}.mosaic-note{display:none}.notes{border-radius:12px}.notes-head{padding:15px}.notes h2{font-size:27px}.notes-body{padding:13px 15px}.direction{grid-template-columns:1fr;gap:5px}.say{font-size:15px}.shotbar{padding:9px 15px}
+    @media(max-width:660px){
+      .topbar{gap:8px;min-height:54px;padding:8px 10px}.brand{min-width:0}.brand small{display:none}.brand strong{font-size:15px}.runtime{display:none}.controls{gap:5px}.icon-btn,.play-btn{width:34px;min-height:34px}.play-btn{justify-content:center;padding:0}.play-btn span:last-child{display:none}.structure{top:54px;grid-template-columns:1fr;padding:7px 10px}.structure-label{display:none}.deck{padding:8px}.scene{gap:8px;scroll-margin-top:102px}.visual{flex-basis:auto;min-height:260px}.visual,.notes{border-radius:12px}.browser-frame{inset:7px}.browser-bar{grid-template-columns:46px minmax(0,1fr) 34px;height:30px}.browser-tag{display:none}.caption{left:16px;bottom:14px;max-width:82%}.capture-overlay{right:14px;bottom:14px;width:calc(100% - 28px);padding:13px 14px}.capture-overlay h3{font-size:21px}.intro-visual{min-height:420px;aspect-ratio:4/5;padding:28px 22px}.intro-copy h1{font-size:46px}.notes-head{padding:15px}.notes h2{font-size:27px}.notes-body{grid-template-columns:1fr;padding:13px 15px}.direction{grid-template-columns:1fr;gap:5px}.say,.proof-note,.live-link{grid-column:1}.say{font-size:15px}.shotbar{padding:9px 15px}
     }
-    @media (max-width:420px){
-      .topbar{padding:6px}.brand{flex:1}.brand strong{display:none}.brand-mark{width:32px;height:32px}.controls{gap:5px}.icon-btn,.play-btn{width:34px;min-height:34px}.play-btn{justify-content:center;padding:0}
-    }
-    @media (prefers-reduced-motion:reduce){*,*:before,*:after{scroll-behavior:auto!important;transition:none!important}}
+    @media(max-width:420px){.brand{flex:1}.brand strong{display:none}.brand-mark{width:32px;height:32px}}
+    @media(prefers-reduced-motion:reduce){*,*:before,*:after{scroll-behavior:auto!important;transition:none!important}}
   </style>
 </head>
 <body>
 <div class="app">
   <header class="topbar">
-    <div class="brand"><span class="brand-mark">D</span><span><strong>DemoThemis</strong><small>video storyboard</small></span></div>
+    <div class="brand"><span class="brand-mark">D</span><span><strong>DemoThemis</strong><small>complete video storyboard</small></span></div>
     <div class="scope-key" aria-label="Scope legend"><span class="key">Live MVP</span><span class="key design">Scaled design</span></div>
-    <div class="runtime" id="runtime">13 shots · 3:58</div>
+    <div class="runtime" id="runtime">12 shots</div>
     <div class="controls">
       <button class="icon-btn" id="prev" type="button" aria-label="Previous shot">←</button>
       <button class="play-btn" id="play" type="button"><span id="playIcon">▶</span><span id="playText">Preview sequence</span></button>
@@ -146,190 +73,260 @@
     </div>
   </header>
 
-  <nav class="chapterbar" aria-label="Document site coverage">
-    <span class="chapter-label">Whole proposal</span>
-    <div class="chapters" id="chapters">
-      <button class="chapter" type="button" data-chapter="home"><span>00</span> Home</button>
-      <button class="chapter" type="button" data-chapter="run"><span>01</span> Run-through</button>
-      <button class="chapter" type="button" data-chapter="demothemis"><span>02</span> DemoThemis</button>
-      <button class="chapter" type="button" data-chapter="break"><span>03</span> Break the court</button>
-      <button class="chapter" type="button" data-chapter="omen"><span>04</span> OmenMarketMaker</button>
-      <button class="chapter" type="button" data-chapter="bootstrap"><span>05</span> Bootstrap loop</button>
-      <button class="chapter" type="button" data-chapter="governance"><span>06</span> Governance</button>
-      <button class="chapter" type="button" data-chapter="mvp"><span>LIVE</span> Demo MVP</button>
+  <nav class="structure" aria-label="Video structure">
+    <span class="structure-label">Full video</span>
+    <div class="steps" id="steps">
+      <button class="step" type="button" data-index="0"><span>01</span> Who we are</button>
+      <button class="step" type="button" data-index="1"><span>02</span> Project overview</button>
+      <button class="step" type="button" data-index="2"><span>03</span> Document tour</button>
+      <button class="step" type="button" data-index="3"><span>04</span> Run-through</button>
+      <button class="step" type="button" data-index="4"><span>05</span> Break the Court</button>
+      <button class="step" type="button" data-index="5"><span>06</span> Question</button>
+      <button class="step" type="button" data-index="6"><span>07</span> Submit</button>
+      <button class="step" type="button" data-index="7"><span>08</span> Join jury</button>
+      <button class="step" type="button" data-index="8"><span>09</span> Panel</button>
+      <button class="step" type="button" data-index="9"><span>10</span> Seal</button>
+      <button class="step" type="button" data-index="10"><span>11</span> Reveal</button>
+      <button class="step" type="button" data-index="11"><span>12</span> Receipt</button>
     </div>
-    <span class="capture-note">Actual UI captured 19 Jul 2026</span>
+    <span class="capture-date">Narration sits below every visual</span>
   </nav>
 
-  <main class="deck" id="deck">
-    <section class="scene active" id="shot-1" data-title="The job" data-duration="10" data-chapter="mvp">
-      <div class="visual">
-        <div class="browser-frame"><div class="browser-bar"><span class="browser-dots"><i></i><i></i><i></i></span><span class="browser-url">demothemis.netlify.app/app</span><span class="browser-tag">Live</span></div><div class="screen"><img src="storyboard-assets/01-live-mvp-hero.png" alt="Current DemoThemis live MVP hero and public question"></div></div>
-        <div class="camera-cue"><small>Opening cut</small><b>Founders on camera</b><span>2–3 seconds together, then cut directly to this live screen.</span></div>
-        <div class="frame-caption"><b>Open with the product, not a diagram.</b><span>The viewer sees the live question in the first ten seconds.</span></div>
+  <main class="deck">
+    <section class="scene active" id="shot-1" data-title="Who we are" data-duration="18">
+      <div class="visual intro-visual">
+        <div class="intro-copy">
+          <span class="eyebrow">The team</span>
+          <h1>Two co-founders.<br>One public court.</h1>
+          <p>One founder shipped the live MVP in about a month. Both co-founders deliver the production court together.</p>
+          <span class="intro-proof">Open source · live on World Chain · built before funding</span>
+        </div>
       </div>
       <article class="notes">
-        <header class="notes-head"><div class="meta-row"><span class="scene-no">SHOT 01</span><span class="timecode"></span><span class="status live">Live UI</span></div><h2>The job</h2><div class="speaker"><b>Speaker:</b> Founder 1</div></header>
-        <div class="notes-body"><div class="direction"><label>On screen</label><p>Both founders for one sentence, then the current `/app` hero.</p></div><div class="direction"><label>Action</label><p>Cut on “well-defined case.” Let the headline settle before scrolling.</p></div><blockquote class="say">DemoThemis is a reusable court for any well-defined case. Anyone can fund a jury; independent verified humans decide; an on-chain ruling returns to the requester.</blockquote><div class="proof-note">Lead with the general court. Escrow is optional execution, not the product definition.</div><a class="live-link" href="https://demothemis.netlify.app/app" target="_blank" rel="noopener"><code>/app</code><span>Open live screen ↗</span></a></div>
+        <header class="notes-head"><div class="meta"><span class="shot-no">SHOT 01</span><span class="timecode"></span><span class="status camera">Founders on camera</span></div><h2>Who we are</h2><div class="speaker"><b>Speaker:</b> Both founders</div></header>
+        <div class="notes-body">
+          <div class="direction"><label>On screen</label><p>Both founders, then this title card with names and roles added before recording.</p></div>
+          <div class="direction"><label>Action</label><p>Keep the introduction personal and under twenty seconds. Do not begin with mechanism design.</p></div>
+          <blockquote class="say">Hi, we are the two co-founders of DemoThemis. One of us shipped the live MVP in about a month; together we are taking that proof into a production-ready public court. We believe verified humans should be able to settle well-defined cases without wealthy parties buying the verdict.</blockquote>
+          <div class="proof-note">Add the founders’ final names and roles here once the grant application placeholders are complete.</div>
+          <a class="live-link" href="https://github.com/FreddyMertens/DemoThemis" target="_blank" rel="noopener"><code>FreddyMertens/DemoThemis</code><span>Open public repository ↗</span></a>
+        </div>
         <footer class="shotbar"><small>Shot map</small><div class="dots"></div><span class="word-count"></span></footer>
       </article>
     </section>
 
-    <section class="scene" id="shot-2" data-title="One precise public question" data-duration="15" data-chapter="mvp">
+    <section class="scene" id="shot-2" data-title="Project overview" data-duration="30">
       <div class="visual">
-        <div class="browser-frame"><div class="browser-bar"><span class="browser-dots"><i></i><i></i><i></i></span><span class="browser-url">demothemis.netlify.app/app#oracle-live-panel</span><span class="browser-tag">Live</span></div><div class="screen"><img src="storyboard-assets/02-live-case.png" alt="Current live case with exact question, YES rule, time and three jury seats"><div class="focus-ring" style="left:2%;top:2%;width:69%;height:56%"><span>Fixed before voting</span></div></div></div>
-        <div class="frame-caption"><b>One question. One exact rule. One time.</b><span>No selected evidence pack; jurors research independently.</span></div>
+        <div class="browser-frame"><div class="browser-bar"><span class="browser-dots"><i></i><i></i><i></i></span><span class="browser-url">demothemis.netlify.app/app</span><span class="browser-tag">Live UI</span></div><div class="screen"><img src="storyboard-assets/01-live-mvp-hero.png" alt="Current DemoThemis live MVP interface"></div></div>
+        <div class="caption"><b>A reusable verified-human court.</b><span>Cases in. Independent ruling out. Optional escrow only when needed.</span></div>
       </div>
       <article class="notes">
-        <header class="notes-head"><div class="meta-row"><span class="scene-no">SHOT 02</span><span class="timecode"></span><span class="status live">Live UI</span></div><h2>One precise public question</h2><div class="speaker"><b>Speaker:</b> Founder 1</div></header>
-        <div class="notes-body"><div class="direction"><label>On screen</label><p>The DART question, exact YES condition, judged-as-of time, independent-research note, and empty seats.</p></div><div class="direction"><label>Action</label><p>Scroll just enough to keep the question and three-seat panel in one frame.</p></div><blockquote class="say">The MVP starts with one precise public question. Its wording, exact YES rule, and judgment time are fixed before anyone votes. Jurors receive no preferred source; they research the public facts independently.</blockquote><div class="proof-note">This is the deployed MVP’s present state: the official question waits for exactly three verified jurors.</div><a class="live-link" href="https://demothemis.netlify.app/app#oracle-live-panel" target="_blank" rel="noopener"><code>/app#oracle-live-panel</code><span>Open live screen ↗</span></a></div>
+        <header class="notes-head"><div class="meta"><span class="shot-no">SHOT 02</span><span class="timecode"></span><span class="status hybrid">Project overview</span></div><h2>What DemoThemis is</h2><div class="speaker"><b>Speaker:</b> Founder 1</div></header>
+        <div class="notes-body">
+          <div class="direction"><label>On screen</label><p>The current app hero while the explanation moves from requester to jury to ruling.</p></div>
+          <div class="direction"><label>Action</label><p>Point to the live question and three verified-human seats. Keep the scope distinction visible.</p></div>
+          <blockquote class="say">DemoThemis is a general-purpose court. A requester defines a case and pays the jurors. World ID helps ensure each seat belongs to a distinct person; the protocol draws the panel; private voting and appeals protect the decision; and a signed ruling returns on-chain. Optional escrow can act on the result, but it is not required.</blockquote>
+          <div class="proof-note">The live MVP proves the three-seat core. Private ballots, scalable panels, and full appeals remain funded production work.</div>
+          <a class="live-link" href="https://demothemis.netlify.app/app" target="_blank" rel="noopener"><code>/app</code><span>Open current MVP ↗</span></a>
+        </div>
         <footer class="shotbar"><small>Shot map</small><div class="dots"></div><span class="word-count"></span></footer>
       </article>
     </section>
 
-    <section class="scene" id="shot-3" data-title="How cases enter" data-duration="13" data-chapter="mvp">
+    <section class="scene" id="shot-3" data-title="Document tour" data-duration="24">
       <div class="visual">
-        <div class="browser-frame"><div class="browser-bar"><span class="browser-dots"><i></i><i></i><i></i></span><span class="browser-url">demothemis.netlify.app/app?tab=submit</span><span class="browser-tag">Live</span></div><div class="screen"><img src="storyboard-assets/04-submit-case.png" alt="Current case submission form and visible fee split"><div class="focus-ring" style="left:1.5%;top:4%;width:71%;height:62%"><span>Requester defines the case</span></div></div></div>
-        <div class="frame-caption"><b>A clear filing, not an operator’s judgment.</b><span>The preview is editable and sends nothing during the demo.</span></div>
+        <div class="browser-frame"><div class="browser-bar"><span class="browser-dots"><i></i><i></i><i></i></span><span class="browser-url">demothemis.netlify.app/proposal-home.html</span><span class="browser-tag">Documents</span></div><div class="screen"><img src="storyboard-assets/10-doc-home.png" alt="DemoThemis proposal home and document map"></div></div>
+        <div class="caption"><b>One document map. One brief explanation.</b><span>The detailed chapters remain available for reviewers who want them.</span></div>
       </div>
       <article class="notes">
-        <header class="notes-head"><div class="meta-row"><span class="scene-no">SHOT 03</span><span class="timecode"></span><span class="status live">Live UI</span></div><h2>How cases enter</h2><div class="speaker"><b>Speaker:</b> Founder 2</div></header>
-        <div class="notes-body"><div class="direction"><label>On screen</label><p>Submit-a-case tab: question, YES rule, date, fixed 2 MUSD demo fee, and 70/20/10 split.</p></div><div class="direction"><label>Action</label><p>Open the tab, pause on the three fields, then point to the fee distribution.</p></div><blockquote class="say">A requester defines the case and funds the work. This preview makes the payload explicit: the question, decision rule, deadline, and fee. DemoThemis supplies the independent ruling—not the underlying dispute.</blockquote><div class="proof-note">The current screen is a prepared submission preview; it does not transmit or file anything.</div><a class="live-link" href="https://demothemis.netlify.app/app?tab=submit#oracle-submit-panel" target="_blank" rel="noopener"><code>/app?tab=submit</code><span>Open live screen ↗</span></a></div>
+        <header class="notes-head"><div class="meta"><span class="shot-no">SHOT 03</span><span class="timecode"></span><span class="status docs">Document tour</span></div><h2>The rest of the proposal</h2><div class="speaker"><b>Speaker:</b> Founder 2</div></header>
+        <div class="notes-body">
+          <div class="direction"><label>On screen</label><p>Only the proposal home. Move the pointer across its chapter links; do not tile five pages.</p></div>
+          <div class="direction"><label>Action</label><p>Mention each supporting chapter once, then move directly into the interactive Run-through.</p></div>
+          <blockquote class="say">The document site holds the full argument in one place. Home maps the system; DemoThemis contains the court design; the bootstrap chapter explains demand and juror evidence; Governance separates business control from truth; and OmenMarketMaker appears only as an independent example customer outside this grant. The remaining slides show the parts worth seeing in motion.</blockquote>
+          <div class="proof-note">This is the only general document-tour shot. Run-through, Break the Court, and Live MVP each receive their own slide.</div>
+          <a class="live-link" href="https://demothemis.netlify.app/proposal-home.html" target="_blank" rel="noopener"><code>/proposal-home.html</code><span>Open document map ↗</span></a>
+        </div>
         <footer class="shotbar"><small>Shot map</small><div class="dots"></div><span class="word-count"></span></footer>
       </article>
     </section>
 
-    <section class="scene" id="shot-4" data-title="Three verified humans" data-duration="22" data-chapter="mvp">
-      <div class="visual phone-stage">
-        <div class="phone"><img src="storyboard-assets/03-join-jury-mobile.png" alt="Current mobile join-jury screen in World App"></div>
-        <div class="camera-cue"><small>Phone capture</small><b>Record inside World App</b><span>Use the actual World ID sheet and sponsored transaction during the capstone.</span></div>
-        <div class="frame-caption"><b>One World ID → one juror seat.</b><span>Joining stays voluntary; a juror can leave when not serving.</span></div>
+    <section class="scene" id="shot-4" data-title="Run-through" data-duration="32">
+      <div class="visual">
+        <div class="browser-frame"><div class="browser-bar"><span class="browser-dots"><i></i><i></i><i></i></span><span class="browser-url">demothemis.netlify.app/run-through#system-run</span><span class="browser-tag">Scaled design</span></div><div class="screen"><img src="storyboard-assets/07-run-through-court.png" alt="Run-through showing the court-backed case sequence"></div></div>
+        <div class="caption"><b>Follow one case from challenge to finality.</b><span>Use the live event navigator; one full-size interface stays on screen.</span></div>
       </div>
       <article class="notes">
-        <header class="notes-head"><div class="meta-row"><span class="scene-no">SHOT 04</span><span class="timecode"></span><span class="status phone">Phone capture</span></div><h2>Three verified humans</h2><div class="speaker"><b>Speaker:</b> Founder 2</div></header>
-        <div class="notes-body"><div class="direction"><label>On screen</label><p>Current `/onboard` screen, then a tight montage of the three real World App registrations.</p></div><div class="direction"><label>Action</label><p>Open World App, verify, post the valueless 5 MUSD demo bond, and show the Worldscan confirmation. Repeat as a quick 3-person montage.</p></div><blockquote class="say">Each seat belongs to one World ID-verified person, bound to the wallet they use. The juror posts a small valueless demo bond and joins the pool in World App. A second wallet cannot turn the same person into a second juror.</blockquote><div class="proof-note">Capture the real World ID prompt and transaction here. Never substitute the old hand-built phone mockup.</div><a class="live-link" href="https://demothemis.netlify.app/onboard" target="_blank" rel="noopener"><code>/onboard</code><span>Open current screen ↗</span></a></div>
+        <header class="notes-head"><div class="meta"><span class="shot-no">SHOT 04</span><span class="timecode"></span><span class="status design">Scaled design</span></div><h2>Run-through</h2><div class="speaker"><b>Speaker:</b> Founder 1</div></header>
+        <div class="notes-body">
+          <div class="direction"><label>On screen</label><p>Select “Court-backed run,” then advance Events 07–13 on the same interface.</p></div>
+          <div class="direction"><label>Action</label><p>Pause on the challenge, case-bound draw, private ballot, widening appeal, and final ruling.</p></div>
+          <blockquote class="say">Run-through connects the pieces. A bonded answer can be challenged; the case is committed before a panel is drawn; verified jurors vote privately; an appeal widens the panel; and finality returns the ruling to the requesting application. This is the completed funded design, not a claim that every step is already live.</blockquote>
+          <div class="proof-note">Keep the “Scaled design” badge visible throughout this section.</div>
+          <a class="live-link" href="https://demothemis.netlify.app/run-through#system-run" target="_blank" rel="noopener"><code>/run-through · Court-backed run</code><span>Open Run-through ↗</span></a>
+        </div>
         <footer class="shotbar"><small>Shot map</small><div class="dots"></div><span class="word-count"></span></footer>
       </article>
     </section>
 
-    <section class="scene" id="shot-5" data-title="One case, three seats" data-duration="14" data-chapter="mvp">
+    <section class="scene" id="shot-5" data-title="Break the Court" data-duration="30">
       <div class="visual">
-        <div class="capture-board"><div class="capture-image"><img src="storyboard-assets/02-live-case.png" alt="Current live case before the capstone jury fills"></div><div class="capture-copy"><span class="cap">Capture after capstone</span><h3>Replace 0 of 3 with the live 3 of 3 state.</h3><p>Use the same current interface—no reconstructed panel. Keep the question fingerprint and World Chain badge visible.</p><div class="capture-route">/app#oracle-live-panel</div><div class="capture-steps"><div><b>1</b><span>Three verified addresses seated</span></div><div><b>2</b><span>Question fingerprint confirmed</span></div><div><b>3</b><span>Seal window begins</span></div></div></div></div>
+        <div class="browser-frame"><div class="browser-bar"><span class="browser-dots"><i></i><i></i><i></i></span><span class="browser-url">demothemis.netlify.app/break-the-court</span><span class="browser-tag">Scaled model</span></div><div class="screen"><img src="storyboard-assets/09-break-court-defense-off.png" alt="Break the Court showing a breakpoint after private ballots are disabled"></div></div>
+        <div class="caption"><b>Remove one defense. Reveal the danger line.</b><span>Start protected, create the breakpoint, then restore the baseline.</span></div>
       </div>
       <article class="notes">
-        <header class="notes-head"><div class="meta-row"><span class="scene-no">SHOT 05</span><span class="timecode"></span><span class="status capture">Capture after capstone</span></div><h2>One case, three seats</h2><div class="speaker"><b>Speaker:</b> Founder 1</div></header>
-        <div class="notes-body"><div class="direction"><label>On screen</label><p>The current live-case panel after all three verified registrations complete.</p></div><div class="direction"><label>Action</label><p>Refresh once, then hold on the three seated addresses and confirmed question fingerprint.</p></div><blockquote class="say">When the third juror joins, the official question opens and the contract seats all three. The interface reads that state from World Chain; an operator does not choose the panel or edit the question.</blockquote><div class="proof-note">Amber means the UI exists, but this exact live state must be recorded after the capstone transaction.</div><a class="live-link" href="https://demothemis.netlify.app/app#oracle-live-panel" target="_blank" rel="noopener"><code>/app#oracle-live-panel</code><span>Open live screen ↗</span></a></div>
+        <header class="notes-head"><div class="meta"><span class="shot-no">SHOT 05</span><span class="timecode"></span><span class="status design">Scaled model</span></div><h2>Break the Court</h2><div class="speaker"><b>Speaker:</b> Founder 2</div></header>
+        <div class="notes-body">
+          <div class="direction"><label>On screen</label><p>Begin at 6/6 defenses holding, raise attacker pressure, turn off Private ballot, then reset.</p></div>
+          <div class="direction"><label>Action</label><p>Keep one full-size attack lab on screen. Let the breakpoint banner provide the visual change.</p></div>
+          <blockquote class="say">Break the Court turns our security claims into something testable. Start from the protected baseline, change the attacker coalition, then disable one defense—for example the private ballot. The model exposes the closest breakpoint and the cost of attack. Restore the defense and the system recovers. It is a scaled design model, not live chain data.</blockquote>
+          <div class="proof-note">The six tests cover coalitions, bribes, rentals, lazy voting, appeal delay, and crowd-following.</div>
+          <a class="live-link" href="https://demothemis.netlify.app/break-the-court" target="_blank" rel="noopener"><code>/break-the-court</code><span>Open attack lab ↗</span></a>
+        </div>
         <footer class="shotbar"><small>Shot map</small><div class="dots"></div><span class="word-count"></span></footer>
       </article>
     </section>
 
-    <section class="scene" id="shot-6" data-title="Seal, reveal, majority" data-duration="24" data-chapter="mvp">
+    <section class="scene" id="shot-6" data-title="Exact case terms" data-duration="16">
       <div class="visual">
-        <div class="capture-board"><div class="capture-image"><img src="storyboard-assets/01-live-mvp-hero.png" alt="Current MVP visual language behind a capstone capture plan"></div><div class="capture-copy"><span class="cap">Capture after capstone</span><h3>Three short phone beats. One live counter.</h3><p>Record only the current ballot component and live panel counts. Do not expose a salt or invent a completed receipt.</p><div class="capture-route">/case/[live id]</div><div class="capture-steps"><div><b>1</b><span>Juror seals YES or NO</span></div><div><b>2</b><span>Live screen reaches 3/3 sealed</span></div><div><b>3</b><span>Reveal reaches 3/3; contract can resolve</span></div></div></div></div>
+        <div class="browser-frame"><div class="browser-bar"><span class="browser-dots"><i></i><i></i><i></i></span><span class="browser-url">demothemis.netlify.app/app#oracle-live-panel</span><span class="browser-tag">Live MVP</span></div><div class="screen"><img src="storyboard-assets/02-live-case.png" alt="Current live case showing its question, exact YES rule and judgment time"></div></div>
+        <div class="caption"><b>Stage 1 · Read the case.</b><span>One question, one exact decision rule, and one judgment time.</span></div>
       </div>
       <article class="notes">
-        <header class="notes-head"><div class="meta-row"><span class="scene-no">SHOT 06</span><span class="timecode"></span><span class="status capture">Capture after capstone</span></div><h2>Seal, reveal, majority</h2><div class="speaker"><b>Speaker:</b> Founder 2</div></header>
-        <div class="notes-body"><div class="direction"><label>On screen</label><p>Three phone cuts: seal, 3/3 sealed, reveal; intercut with the live case counter.</p></div><div class="direction"><label>Action</label><p>Keep every wallet and salt private. End on “Ready for the ruling,” then resolve from the public screen.</p></div><blockquote class="say">Each juror researches independently, then seals a YES or NO answer before anyone reveals. After all three commitments are locked, they reveal. The contract checks each commitment, counts one person once, and records the majority with no administrator deciding the result.</blockquote><div class="proof-note">The live MVP uses commit/reveal. Receipt-free private voting belongs to the funded design and is not described as live here.</div><a class="live-link" href="https://demothemis.netlify.app/app" target="_blank" rel="noopener"><code>/case/[live id]</code><span>Start from the live case ↗</span></a></div>
+        <header class="notes-head"><div class="meta"><span class="shot-no">SHOT 06</span><span class="timecode"></span><span class="status live">Live MVP</span></div><h2>Start with exact case terms</h2><div class="speaker"><b>Speaker:</b> Founder 1</div></header>
+        <div class="notes-body">
+          <div class="direction"><label>On screen</label><p>The live question, exact YES condition, judged-as-of time, and independent-research instruction.</p></div>
+          <div class="direction"><label>Action</label><p>Scroll only enough to keep the full case terms and the three empty jury seats together.</p></div>
+          <blockquote class="say">The live demo begins with case terms that jurors can actually apply. The question, exact YES rule, and judgment time are fixed before voting. Jurors receive no preferred evidence pack; they research the public facts independently.</blockquote>
+          <div class="proof-note">This is the official public question currently displayed by the deployed MVP.</div>
+          <a class="live-link" href="https://demothemis.netlify.app/app#oracle-live-panel" target="_blank" rel="noopener"><code>/app#oracle-live-panel</code><span>Open live case ↗</span></a>
+        </div>
         <footer class="shotbar"><small>Shot map</small><div class="dots"></div><span class="word-count"></span></footer>
       </article>
     </section>
 
-    <section class="scene" id="shot-7" data-title="A permanent result" data-duration="20" data-chapter="mvp">
+    <section class="scene" id="shot-7" data-title="Submission preview" data-duration="14">
       <div class="visual">
-        <div class="capture-board"><div class="capture-image"><img src="storyboard-assets/15-built-now-funded-next.png" alt="Current MVP interface behind a planned receipt capture"></div><div class="capture-copy"><span class="cap">Capture after capstone</span><h3>Hold on the real case receipt.</h3><p>Show the ruling, panel, fee distribution, payouts, and direct Worldscan links from the current `/case/[id]` page.</p><div class="capture-route">/case/[resolved id]</div><div class="capture-steps"><div><b>1</b><span>Majority answer recorded</span></div><div><b>2</b><span>70 / 20 / 10 distribution visible</span></div><div><b>3</b><span>Permanent transaction links open</span></div></div></div></div>
+        <div class="browser-frame"><div class="browser-bar"><span class="browser-dots"><i></i><i></i><i></i></span><span class="browser-url">demothemis.netlify.app/app?tab=submit</span><span class="browser-tag">Live preview</span></div><div class="screen"><img src="storyboard-assets/04-submit-case.png" alt="Current submit-a-case preview showing case fields and demo fee"></div></div>
+        <div class="caption"><b>Stage 2 · Define the case.</b><span>The requester supplies the question, rule, time, and juror fee.</span></div>
       </div>
       <article class="notes">
-        <header class="notes-head"><div class="meta-row"><span class="scene-no">SHOT 07</span><span class="timecode"></span><span class="status capture">Capture after capstone</span></div><h2>A permanent result</h2><div class="speaker"><b>Speaker:</b> Founder 1</div></header>
-        <div class="notes-body"><div class="direction"><label>On screen</label><p>The actual resolved case page: answer, progress, three jurors, payouts, fee split, and chain links.</p></div><div class="direction"><label>Action</label><p>Scroll once from “The jury answered…” into the permanent receipt. Open one Worldscan link in a new tab.</p></div><blockquote class="say">The majority becomes a permanent case receipt. The same rules distribute the demo fee to jurors, the reward pool, and protocol operations. Every transition and payout is inspectable, while no operator can rewrite the answer.</blockquote><div class="proof-note">Use only the real resolved case ID created by the capstone. Do not pre-fill a fictional hash.</div><a class="live-link" href="https://demothemis.netlify.app/app" target="_blank" rel="noopener"><code>/case/[resolved id]</code><span>Start from the live case ↗</span></a></div>
+        <header class="notes-head"><div class="meta"><span class="shot-no">SHOT 07</span><span class="timecode"></span><span class="status live">Live preview</span></div><h2>Preview a case submission</h2><div class="speaker"><b>Speaker:</b> Founder 2</div></header>
+        <div class="notes-body">
+          <div class="direction"><label>On screen</label><p>The question, YES rule, date, fixed 2 MUSD demo fee, and visible 70/20/10 distribution.</p></div>
+          <div class="direction"><label>Action</label><p>Edit one field, then point to the fee distribution. Do not imply the preview transmits a case.</p></div>
+          <blockquote class="say">A requester defines the case and funds the work. This preview makes the payload explicit: the question, decision rule, deadline, and fee. The current demo screen is intentionally non-submitting, so nothing is sent while we walk through it.</blockquote>
+          <div class="proof-note">This is a live UI preview, not a working public filing transaction.</div>
+          <a class="live-link" href="https://demothemis.netlify.app/app?tab=submit#oracle-submit-panel" target="_blank" rel="noopener"><code>/app?tab=submit</code><span>Open submission preview ↗</span></a>
+        </div>
         <footer class="shotbar"><small>Shot map</small><div class="dots"></div><span class="word-count"></span></footer>
       </article>
     </section>
 
-    <section class="scene" id="shot-8" data-title="Proof behind the proof" data-duration="14" data-chapter="mvp">
+    <section class="scene" id="shot-8" data-title="Join the jury" data-duration="18">
       <div class="visual">
-        <div class="evidence-board"><div class="evidence-lead"><span class="eyebrow">Capture after capstone</span><h3>Show the receipts, not a reconstructed explorer.</h3><p>Use the live app’s transaction links and the source-verified contracts. One quick cut proves personhood enforcement, duplicate rejection, the ruling, and payout.</p></div><div class="evidence-grid"><div class="evidence-card"><b>World ID gate</b><span>Wallet-bound proof and nullifier check</span><code>real tx ↗</code></div><div class="evidence-card"><b>Duplicate rejected</b><span>The same human cannot take another seat</span><code>real revert ↗</code></div><div class="evidence-card"><b>Ruling recorded</b><span>Majority outcome on World Chain</span><code>real tx ↗</code></div><div class="evidence-card"><b>Fee distributed</b><span>Jurors, reward pool, protocol</span><code>real tx ↗</code></div></div></div>
+        <div class="browser-frame"><div class="browser-bar"><span class="browser-dots"><i></i><i></i><i></i></span><span class="browser-url">demothemis.netlify.app/onboard</span><span class="browser-tag">World App</span></div><div class="screen contain"><img src="storyboard-assets/03-join-jury-mobile.png" alt="Current mobile jury onboarding screen in World App"></div></div>
+        <div class="caption"><b>Stage 3 · Join once as a verified human.</b><span>World ID uniqueness binds one person to one juror registration.</span></div>
       </div>
       <article class="notes">
-        <header class="notes-head"><div class="meta-row"><span class="scene-no">SHOT 08</span><span class="timecode"></span><span class="status capture">Capture after capstone</span></div><h2>Proof behind the proof</h2><div class="speaker"><b>Speaker:</b> Founder 2</div></header>
-        <div class="notes-body"><div class="direction"><label>On screen</label><p>Worldscan opened from the live case receipt, then the verified contract page and the documented duplicate-proof rejection.</p></div><div class="direction"><label>Action</label><p>Use two fast cuts. Zoom only the status, method, contract, and event—not a wall of hexadecimal text.</p></div><blockquote class="say">The interface is the readable layer; World Chain is the proof. The registration, duplicate protection, sealed answers, ruling, and distribution all have receipts, and the contracts are source-verified for independent inspection.</blockquote><div class="proof-note">This replaces the old illustrative Worldscan reconstruction with real post-capstone evidence.</div><a class="live-link" href="https://demothemis.netlify.app/app" target="_blank" rel="noopener"><code>Worldscan links inside the live receipt</code><span>Open app ↗</span></a></div>
+        <header class="notes-head"><div class="meta"><span class="shot-no">SHOT 08</span><span class="timecode"></span><span class="status live">Phone capture</span></div><h2>Join the jury pool</h2><div class="speaker"><b>Speaker:</b> Founder 1</div></header>
+        <div class="notes-body">
+          <div class="direction"><label>On screen</label><p>Open `/onboard` inside World App, verify, post the valueless 5 MUSD demo bond, and show the confirmation.</p></div>
+          <div class="direction"><label>Action</label><p>Record all three real registrations as short consecutive cuts. Keep wallet and private proof details hidden.</p></div>
+          <blockquote class="say">Each jury seat belongs to one World ID-verified person, bound to the wallet they use. The juror posts a small valueless demo bond and joins voluntarily. A second wallet cannot turn the same person into a second juror.</blockquote>
+          <div class="proof-note">Use the real World ID sheet and sponsored transaction during the capstone recording.</div>
+          <a class="live-link" href="https://demothemis.netlify.app/onboard" target="_blank" rel="noopener"><code>/onboard</code><span>Open jury onboarding ↗</span></a>
+        </div>
         <footer class="shotbar"><small>Shot map</small><div class="dots"></div><span class="word-count"></span></footer>
       </article>
     </section>
 
-    <section class="scene" id="shot-9" data-title="Follow the full system" data-duration="32" data-chapter="run">
+    <section class="scene" id="shot-9" data-title="Panel seated" data-duration="14">
       <div class="visual">
-        <div class="split"><figure><img src="storyboard-assets/06-run-through-start.png" alt="Run-through starting-point selector"><figcaption>Choose court-backed run</figcaption></figure><figure><img src="storyboard-assets/07-run-through-court.png" alt="Run-through Event 07 court-backed product screen"><figcaption>Advance 07 → 13</figcaption></figure></div>
-        <div class="frame-caption"><b>Chapter 01 · Run-through</b><span>Show the court-backed route from bonded answer to finality.</span></div>
+        <div class="browser-frame"><div class="browser-bar"><span class="browser-dots"><i></i><i></i><i></i></span><span class="browser-url">demothemis.netlify.app/app#oracle-live-panel</span><span class="browser-tag">Live MVP</span></div><div class="screen"><img src="storyboard-assets/02-live-case.png" alt="Current live case before the capstone jury fills"></div></div>
+        <div class="capture-overlay"><span>Capture after capstone</span><h3>Replace 0 of 3 with the real 3 of 3 panel.</h3><p>Keep the three seated addresses, question fingerprint, World Chain badge, and opening seal window visible.</p></div>
       </div>
       <article class="notes">
-        <header class="notes-head"><div class="meta-row"><span class="scene-no">SHOT 09</span><span class="timecode"></span><span class="status design">Scaled design</span></div><h2>Follow the full system</h2><div class="speaker"><b>Speaker:</b> Founder 1</div></header>
-        <div class="notes-body"><div class="direction"><label>On screen</label><p>Run-through chapter. Select “Court-backed run,” then advance Events 07–13: proposal, challenge, draw, ballot, verdict, appeal, finality.</p></div><div class="direction"><label>Action</label><p>Let each event title land; skip internal copy. Pause on the bound draw, private ballot, widening appeal, and final release.</p></div><blockquote class="say">The live MVP proves the three-seat core. The Run-through chapter shows how the completed protocol serves a product end to end: a bonded answer is challenged, one case-bound jury is drawn, ballots lock, an appeal widens the panel, and finality releases funds. This is the scaled design the grant finishes—not a claim about what is already deployed.</blockquote><div class="proof-note">Full-featured appeals, presence checks, receipt-free ballots, and larger panels stay labeled as funded design.</div><a class="live-link" href="https://demothemis.netlify.app/run-through#system-run" target="_blank" rel="noopener"><code>/run-through · Court-backed run</code><span>Open chapter ↗</span></a></div>
+        <header class="notes-head"><div class="meta"><span class="shot-no">SHOT 09</span><span class="timecode"></span><span class="status camera">Capture after capstone</span></div><h2>The contract seats the panel</h2><div class="speaker"><b>Speaker:</b> Founder 2</div></header>
+        <div class="notes-body">
+          <div class="direction"><label>On screen</label><p>The live case immediately after the third verified registration completes.</p></div>
+          <div class="direction"><label>Action</label><p>Refresh once and hold on 3/3 seats plus the confirmed question fingerprint.</p></div>
+          <blockquote class="say">When the third verified juror joins, the official question opens and the contract seats all three. The interface reads that state from World Chain. An operator does not choose the panel or edit the case after seeing who was selected.</blockquote>
+          <div class="proof-note">Replace this capture instruction with the real seated state; do not reconstruct it.</div>
+          <a class="live-link" href="https://demothemis.netlify.app/app#oracle-live-panel" target="_blank" rel="noopener"><code>/app#oracle-live-panel</code><span>Open live panel ↗</span></a>
+        </div>
         <footer class="shotbar"><small>Shot map</small><div class="dots"></div><span class="word-count"></span></footer>
       </article>
     </section>
 
-    <section class="scene" id="shot-10" data-title="The complete court design" data-duration="13" data-chapter="demothemis">
+    <section class="scene" id="shot-10" data-title="Seal answers" data-duration="16">
       <div class="visual">
-        <div class="browser-frame"><div class="browser-bar"><span class="browser-dots"><i></i><i></i><i></i></span><span class="browser-url">demothemis.netlify.app/demothemis</span><span class="browser-tag">Chapter 02</span></div><div class="screen"><img src="storyboard-assets/11-doc-demothemis.png" alt="DemoThemis design chapter simple version"></div></div>
-        <div class="frame-caption"><b>General-purpose court.</b><span>Anyone can define a case, fund jurors, and receive a ruling.</span></div>
+        <div class="browser-frame"><div class="browser-bar"><span class="browser-dots"><i></i><i></i><i></i></span><span class="browser-url">demothemis.netlify.app/case/0</span><span class="browser-tag">Live MVP</span></div><div class="screen"><img src="storyboard-assets/02-live-case.png" alt="Current live case interface behind the planned sealed-vote capture"></div></div>
+        <div class="capture-overlay"><span>Capture after capstone</span><h3>Show one ballot, then the public counter at 3/3 sealed.</h3><p>Never reveal a salt, private wallet detail, or another juror’s choice.</p></div>
       </div>
       <article class="notes">
-        <header class="notes-head"><div class="meta-row"><span class="scene-no">SHOT 10</span><span class="timecode"></span><span class="status design">Scaled design</span></div><h2>The complete court design</h2><div class="speaker"><b>Speaker:</b> Founder 2</div></header>
-        <div class="notes-body"><div class="direction"><label>On screen</label><p>DemoThemis chapter hero and “simple version.” Briefly reveal the under-the-hood section list.</p></div><div class="direction"><label>Action</label><p>Say the lifecycle in one breath; do not scroll the 20-minute reference.</p></div><blockquote class="say">The main DemoThemis chapter explains the full court: open access for well-defined cases, verified-human draws, private ballots, widening appeals, and quality evidence that makes careful jurors more valuable over time.</blockquote><div class="proof-note">Optional escrow may execute a ruling, but DemoThemis itself is not an escrow-only court.</div><a class="live-link" href="https://demothemis.netlify.app/demothemis" target="_blank" rel="noopener"><code>/demothemis</code><span>Open chapter ↗</span></a></div>
+        <header class="notes-head"><div class="meta"><span class="shot-no">SHOT 10</span><span class="timecode"></span><span class="status camera">Capture after capstone</span></div><h2>Jurors seal their answers</h2><div class="speaker"><b>Speaker:</b> Founder 1</div></header>
+        <div class="notes-body">
+          <div class="direction"><label>On screen</label><p>One juror chooses YES or NO in World App, followed by the public case counter reaching 3/3 sealed.</p></div>
+          <div class="direction"><label>Action</label><p>Use three quick phone cuts. Show the counter, not the contents of anyone else’s commitment.</p></div>
+          <blockquote class="say">Each juror researches independently, chooses YES or NO, and seals that answer before anyone reveals. The contract records the commitment without exposing the vote, so later jurors cannot simply copy an answer that is already winning.</blockquote>
+          <div class="proof-note">The live MVP uses commit and reveal. Receipt-free private ballots belong to the funded design.</div>
+          <a class="live-link" href="https://demothemis.netlify.app/app" target="_blank" rel="noopener"><code>/case/[live id]</code><span>Start from the live case ↗</span></a>
+        </div>
         <footer class="shotbar"><small>Shot map</small><div class="dots"></div><span class="word-count"></span></footer>
       </article>
     </section>
 
-    <section class="scene" id="shot-11" data-title="Try to break it" data-duration="26" data-chapter="break">
+    <section class="scene" id="shot-11" data-title="Reveal answers" data-duration="14">
       <div class="visual">
-        <div class="split"><figure><img src="storyboard-assets/08-break-court-baseline.png" alt="Break the Court robust scaled baseline"><figcaption>Baseline · 6/6 hold</figcaption></figure><figure><img src="storyboard-assets/09-break-court-defense-off.png" alt="Break the Court showing a breakpoint after private ballots are disabled"><figcaption>Defense off · breakpoint found</figcaption></figure></div>
-        <div class="frame-caption"><b>Chapter 03 · Break the Court</b><span>Change pressure, remove one rail, see the exact danger line, then reset.</span></div>
+        <div class="browser-frame"><div class="browser-bar"><span class="browser-dots"><i></i><i></i><i></i></span><span class="browser-url">demothemis.netlify.app/case/0</span><span class="browser-tag">Live MVP</span></div><div class="screen"><img src="storyboard-assets/02-live-case.png" alt="Current live case interface behind the planned reveal capture"></div></div>
+        <div class="capture-overlay"><span>Capture after capstone</span><h3>Reveal all three commitments, then resolve.</h3><p>Show 0/3 → 3/3 revealed and the transition to a majority result.</p></div>
       </div>
       <article class="notes">
-        <header class="notes-head"><div class="meta-row"><span class="scene-no">SHOT 11</span><span class="timecode"></span><span class="status design">Scaled design</span></div><h2>Try to break it</h2><div class="speaker"><b>Speaker:</b> Founder 1</div></header>
-        <div class="notes-body"><div class="direction"><label>On screen</label><p>Scaled baseline → 1,000-person coalition → turn off Private ballot → breakpoint → restore baseline.</p></div><div class="direction"><label>Action</label><p>Keep the top verdict banner and closest challenge visible. End by switching the defense back on.</p></div><blockquote class="say">Break the Court makes the security thesis falsifiable. The baseline names the closest danger and its margin. We can increase the attacker coalition, disable the private ballot, and immediately expose a provable-bribe breakpoint. Restore the defense and the model recovers. The six tests cover coalitions, bribes, rentals, lazy voting, appeal delay, and crowd-following.</blockquote><div class="proof-note">This is an interactive scaled-protocol model, not live chain data. The label stays visible throughout the shot.</div><a class="live-link" href="https://demothemis.netlify.app/break-the-court" target="_blank" rel="noopener"><code>/break-the-court</code><span>Open attack lab ↗</span></a></div>
+        <header class="notes-head"><div class="meta"><span class="shot-no">SHOT 11</span><span class="timecode"></span><span class="status camera">Capture after capstone</span></div><h2>Jurors reveal and the contract counts</h2><div class="speaker"><b>Speaker:</b> Founder 2</div></header>
+        <div class="notes-body">
+          <div class="direction"><label>On screen</label><p>The reveal action on each phone, the live counter reaching 3/3, and the resolve control becoming available.</p></div>
+          <div class="direction"><label>Action</label><p>Cut rapidly between phones and the public screen. End on the recorded majority.</p></div>
+          <blockquote class="say">After every commitment is locked, the jurors reveal. The contract verifies each commitment, counts each verified person once, and records the majority. No administrator decides which answer wins or changes the tally.</blockquote>
+          <div class="proof-note">Keep every commitment secret until the reveal stage actually begins.</div>
+          <a class="live-link" href="https://demothemis.netlify.app/app" target="_blank" rel="noopener"><code>/case/[live id]</code><span>Start from the live case ↗</span></a>
+        </div>
         <footer class="shotbar"><small>Shot map</small><div class="dots"></div><span class="word-count"></span></footer>
       </article>
     </section>
 
-    <section class="scene" id="shot-12" data-title="Everything in the proposal" data-duration="20" data-chapter="home">
+    <section class="scene" id="shot-12" data-title="Ruling and receipt" data-duration="20">
       <div class="visual">
-        <div class="mosaic"><figure><img src="storyboard-assets/10-doc-home.png" alt="Proposal home map"><figcaption>Home · system map</figcaption></figure><figure><img src="storyboard-assets/11-doc-demothemis.png" alt="DemoThemis chapter"><figcaption>DemoThemis</figcaption></figure><figure><img src="storyboard-assets/12-doc-omenmarketmaker.png" alt="OmenMarketMaker example customer chapter"><figcaption>Example customer</figcaption></figure><figure><img src="storyboard-assets/13-doc-bootstrap-loop.png" alt="Bootstrap loop chapter"><figcaption>Bootstrap loop</figcaption></figure><figure><img src="storyboard-assets/14-doc-governance.png" alt="Governance chapter"><figcaption>Governance</figcaption></figure></div>
-        <div class="mosaic-note">Run-through · Break the Court · Live MVP already shown</div>
+        <div class="browser-frame"><div class="browser-bar"><span class="browser-dots"><i></i><i></i><i></i></span><span class="browser-url">demothemis.netlify.app/case/0</span><span class="browser-tag">Permanent result</span></div><div class="screen"><img src="storyboard-assets/02-live-case.png" alt="Current live case interface behind the planned permanent receipt capture"></div></div>
+        <div class="capture-overlay"><span>Capture after capstone</span><h3>Finish on the real ruling and receipt.</h3><p>Show the majority answer, jurors, fee distribution, payouts, and direct Worldscan links.</p></div>
       </div>
       <article class="notes">
-        <header class="notes-head"><div class="meta-row"><span class="scene-no">SHOT 12</span><span class="timecode"></span><span class="status docs">Documentation</span></div><h2>Everything in the proposal</h2><div class="speaker"><b>Speaker:</b> Founder 2</div></header>
-        <div class="notes-body"><div class="direction"><label>On screen</label><p>Five-card mosaic; the permanent chapter ribbon keeps all eight public destinations visible.</p></div><div class="direction"><label>Action</label><p>Move across the mosaic left-to-right in five short cuts. Do not enter any long chapter.</p></div><blockquote class="say">The document site keeps the whole argument inspectable: Home maps it; Run-through plays it; DemoThemis specifies the court; Break the Court attacks it. OmenMarketMaker is only an independent example customer outside this grant. The bootstrap loop explains demand and juror evidence; Governance separates business control from truth; and Live MVP anchors every claim in what exists today.</blockquote><div class="proof-note">This sentence explicitly covers Home, all six canonical chapters, and the Live Demo MVP without turning the video into a catalogue.</div><a class="live-link" href="https://demothemis.netlify.app/proposal-home.html" target="_blank" rel="noopener"><code>8 public destinations</code><span>Open proposal map ↗</span></a></div>
+        <header class="notes-head"><div class="meta"><span class="shot-no">SHOT 12</span><span class="timecode"></span><span class="status camera">Capture after capstone</span></div><h2>The ruling becomes a permanent receipt</h2><div class="speaker"><b>Speaker:</b> Both founders</div></header>
+        <div class="notes-body">
+          <div class="direction"><label>On screen</label><p>The resolved `/case/[id]` page, 70/20/10 fee distribution, payouts, and one Worldscan transaction.</p></div>
+          <div class="direction"><label>Action</label><p>Scroll once through the receipt, open one chain link, then cut back to both founders for the final sentence.</p></div>
+          <blockquote class="say">The majority becomes a permanent case receipt. The contract distributes the demo fee and exposes every transition and payout for inspection. That working core is already live. This grant takes it from a three-person proof into a production-ready public court.</blockquote>
+          <div class="proof-note">Use only the real resolved case and transaction links created by the capstone.</div>
+          <a class="live-link" href="https://demothemis.netlify.app/app" target="_blank" rel="noopener"><code>/case/[resolved id]</code><span>Start from the live app ↗</span></a>
+        </div>
         <footer class="shotbar"><small>Shot map</small><div class="dots"></div><span class="word-count"></span></footer>
       </article>
     </section>
 
-    <section class="scene" id="shot-13" data-title="What the grant completes" data-duration="15" data-chapter="mvp">
-      <div class="visual">
-        <div class="browser-frame"><div class="browser-bar"><span class="browser-dots"><i></i><i></i><i></i></span><span class="browser-url">demothemis.netlify.app/app#oracle-roadmap-title</span><span class="browser-tag">Scope</span></div><div class="screen"><img src="storyboard-assets/15-built-now-funded-next.png" alt="Current Built now, Funded next scope table"><div class="focus-ring" style="left:15%;top:19%;width:69%;height:57%"><span>Honest scope boundary</span></div></div></div>
-        <div class="camera-cue"><small>Closing cut</small><b>Both founders on camera</b><span>End with the build plan, then one direct invitation.</span></div>
-        <div class="frame-caption"><b>Built now. Funded next.</b><span>The grant closes named production gaps in the reusable court.</span></div>
-      </div>
-      <article class="notes">
-        <header class="notes-head"><div class="meta-row"><span class="scene-no">SHOT 13</span><span class="timecode"></span><span class="status hybrid">Live / funded</span></div><h2>What the grant completes</h2><div class="speaker"><b>Speaker:</b> Both founders</div></header>
-        <div class="notes-body"><div class="direction"><label>On screen</label><p>“Built now. Funded next.” table, then both founders for the final line.</p></div><div class="direction"><label>Action</label><p>Point once from deployed MVP to funded roadmap. Cut to founders on “production-ready.”</p></div><blockquote class="say">What exists now proves the core mechanism. This grant completes the production path: verifiable randomness, receipt-free ballots, stronger panel security, cheaper settlement, a reusable integration, independent review, and real juror testing. We are ready to turn the live proof into a production-ready public court.</blockquote><div class="proof-note">Finish on DemoThemis alone. Do not describe any downstream product as part of the funding request.</div><a class="live-link" href="https://demothemis.netlify.app/app#oracle-roadmap-title" target="_blank" rel="noopener"><code>/app · Built now. Funded next.</code><span>Open scope table ↗</span></a></div>
-        <footer class="shotbar"><small>Shot map</small><div class="dots"></div><span class="word-count"></span></footer>
-      </article>
-    </section>
     <div class="sr-only" id="announce" aria-live="polite"></div>
   </main>
 </div>
+
 <script>
 (() => {
   const scenes = Array.from(document.querySelectorAll('.scene'));
-  const chapterButtons = Array.from(document.querySelectorAll('.chapter'));
+  const steps = Array.from(document.querySelectorAll('.step'));
   const prev = document.getElementById('prev');
   const next = document.getElementById('next');
   const play = document.getElementById('play');
   const playIcon = document.getElementById('playIcon');
   const playText = document.getElementById('playText');
   const announce = document.getElementById('announce');
-  const runtime = document.getElementById('runtime');
   let current = 0;
   let timer = null;
   let playing = false;
@@ -337,46 +334,35 @@
   const fmt = value => `${Math.floor(value / 60)}:${String(value % 60).padStart(2, '0')}`;
   let elapsed = 0;
   let totalWords = 0;
-  scenes.forEach((scene, index) => {
+
+  scenes.forEach((scene, sceneIndex) => {
     const duration = Number(scene.dataset.duration || 0);
     scene.querySelector('.timecode').textContent = `${fmt(elapsed)} – ${fmt(elapsed + duration)}`;
     elapsed += duration;
     const words = (scene.querySelector('.say')?.textContent.trim().match(/\b[\w’'-]+\b/g) || []).length;
     totalWords += words;
     scene.querySelector('.word-count').textContent = `${words} spoken words`;
-    const dotWrap = scene.querySelector('.dots');
+    const dots = scene.querySelector('.dots');
     scenes.forEach((item, dotIndex) => {
       const dot = document.createElement('button');
       dot.type = 'button';
-      dot.className = 'shot-dot';
+      dot.className = 'dot';
       dot.setAttribute('aria-label', `Go to shot ${dotIndex + 1}: ${item.dataset.title}`);
-      dot.addEventListener('click', () => go(dotIndex));
-      dotWrap.appendChild(dot);
+      dot.addEventListener('click', () => { stop(); go(dotIndex); });
+      dots.appendChild(dot);
     });
   });
-  runtime.textContent = `${scenes.length} shots · ${fmt(elapsed)} · ${totalWords} words`;
+  document.getElementById('runtime').textContent = `${scenes.length} shots · ${fmt(elapsed)} · ${totalWords} words`;
 
-  function syncDots(){
-    scenes.forEach((scene, sceneIndex) => {
-      scene.querySelectorAll('.shot-dot').forEach((dot, dotIndex) => {
-        dot.classList.toggle('active', dotIndex === current);
-        dot.classList.toggle('past', dotIndex < current);
-        dot.setAttribute('aria-current', dotIndex === current ? 'step' : 'false');
-      });
+  function syncSteps(){
+    steps.forEach((step, index) => {
+      step.classList.toggle('active', index === current);
+      step.classList.toggle('visited', index < current);
+      step.setAttribute('aria-current', index === current ? 'step' : 'false');
     });
-  }
-
-  function syncChapters(chapterOverride = null){
-    const chapter = chapterOverride || scenes[current].dataset.chapter;
-    const currentChapterIndex = chapterButtons.findIndex(button => button.dataset.chapter === chapter);
-    chapterButtons.forEach((button, index) => {
-      button.classList.toggle('active', button.dataset.chapter === chapter);
-      button.classList.toggle('visited', currentChapterIndex >= 0 && index < currentChapterIndex);
-      button.setAttribute('aria-current', button.dataset.chapter === chapter ? 'page' : 'false');
-    });
-    const active = chapterButtons.find(button => button.dataset.chapter === chapter);
-    if (active) {
-      const strip = active.parentElement;
+    const active = steps[current];
+    const strip = active?.parentElement;
+    if (active && strip) {
       const itemBox = active.getBoundingClientRect();
       const stripBox = strip.getBoundingClientRect();
       if (itemBox.left < stripBox.left + 8) strip.scrollLeft += itemBox.left - stripBox.left - 8;
@@ -384,36 +370,40 @@
     }
   }
 
-  function go(index, fromPlay = false, chapterOverride = null){
+  function syncDots(){
+    scenes.forEach(scene => scene.querySelectorAll('.dot').forEach((dot, index) => {
+      dot.classList.toggle('active', index === current);
+      dot.classList.toggle('past', index < current);
+      dot.setAttribute('aria-current', index === current ? 'step' : 'false');
+    }));
+  }
+
+  function go(index, fromPlay = false){
     current = Math.max(0, Math.min(scenes.length - 1, index));
-    scenes.forEach((scene, i) => {
-      const isCurrent = i === current;
-      scene.classList.toggle('active', isCurrent);
-      scene.setAttribute('aria-hidden', String(!isCurrent));
-      scene.inert = !isCurrent;
+    scenes.forEach((scene, sceneIndex) => {
+      const active = sceneIndex === current;
+      scene.classList.toggle('active', active);
+      scene.setAttribute('aria-hidden', String(!active));
+      scene.inert = !active;
     });
     prev.disabled = current === 0;
     next.disabled = current === scenes.length - 1;
+    syncSteps();
     syncDots();
-    syncChapters(chapterOverride);
     history.replaceState(null, '', `#shot-${current + 1}`);
     announce.textContent = `Shot ${current + 1} of ${scenes.length}: ${scenes[current].dataset.title}`;
-    if (matchMedia('(max-width:1100px)').matches) {
-      requestAnimationFrame(() => scenes[current].scrollIntoView({block:'start'}));
-    }
+    if (matchMedia('(max-width:1080px)').matches) requestAnimationFrame(() => scenes[current].scrollIntoView({block:'start',inline:'nearest'}));
     if (fromPlay && current === scenes.length - 1) stop();
   }
 
   function schedule(){
     if (!playing) return;
-    const duration = Number(scenes[current].dataset.duration || 10);
     timer = setTimeout(() => {
       if (current >= scenes.length - 1) return stop();
       go(current + 1, true);
       schedule();
-    }, Math.max(2200, duration * 105));
+    }, Math.max(1900, Number(scenes[current].dataset.duration || 10) * 75));
   }
-
   function start(){
     if (current === scenes.length - 1) go(0);
     playing = true;
@@ -421,7 +411,6 @@
     playText.textContent = 'Pause preview';
     schedule();
   }
-
   function stop(){
     playing = false;
     clearTimeout(timer);
@@ -434,25 +423,20 @@
   next.addEventListener('click', () => { stop(); go(current + 1); });
   play.addEventListener('click', () => playing ? stop() : start());
   document.getElementById('full').addEventListener('click', async () => {
-    try {
-      if (!document.fullscreenElement) await document.documentElement.requestFullscreen();
-      else await document.exitFullscreen();
-    } catch (_) {}
+    try { if (!document.fullscreenElement) await document.documentElement.requestFullscreen(); else await document.exitFullscreen(); } catch (_) {}
   });
-  chapterButtons.forEach(button => button.addEventListener('click', () => {
-    stop();
-    const chapter = button.dataset.chapter;
-    const index = scenes.findIndex(scene => scene.dataset.chapter === chapter);
-    if (index >= 0) go(index);
-    else go(11, false, chapter);
-  }));
+  steps.forEach(step => step.addEventListener('click', () => { stop(); go(Number(step.dataset.index)); }));
   addEventListener('keydown', event => {
     if (event.defaultPrevented || event.altKey || event.ctrlKey || event.metaKey) return;
-    const tag = event.target?.tagName;
-    if (tag === 'BUTTON' || tag === 'A' || tag === 'INPUT' || tag === 'TEXTAREA' || tag === 'SELECT') return;
+    if (['BUTTON','A','INPUT','TEXTAREA','SELECT'].includes(event.target?.tagName)) return;
     if (event.key === 'ArrowRight') { stop(); go(current + 1); }
     if (event.key === 'ArrowLeft') { stop(); go(current - 1); }
   });
+  addEventListener('hashchange', () => {
+    const match = location.hash.match(/^#shot-(\d+)$/);
+    if (match) go(Number(match[1]) - 1);
+  });
+
   const match = location.hash.match(/^#shot-(\d+)$/);
   go(match ? Number(match[1]) - 1 : 0);
 })();

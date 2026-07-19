@@ -116,8 +116,28 @@ body[data-page-brand="neutral"] .product-tab-brand canvas {
   object-fit: contain;
 }
 
-body[data-page-brand="neutral"] .product-tab-brand--omen img {
+body[data-page-brand="neutral"] .product-tab-brand--omen:not(.is-ready) img {
   opacity: 1 !important;
+}
+
+/* Simulator wordmarks use the live Rive file without inheriting hero-sized chrome. */
+body[data-page-brand="neutral"] .run-rive-wordmark.omen-rive-shell {
+  position: relative;
+  min-height: 0;
+  margin: 0;
+  overflow: visible;
+  border: 0;
+  border-radius: 0;
+  background: transparent;
+}
+
+body[data-page-brand="neutral"] .run-rive-wordmark.omen-rive-shell :is(img, canvas) {
+  position: absolute;
+  inset: 0;
+  display: block;
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
 }
 
 body[data-page-brand="neutral"] .product-tab-copy {
@@ -382,14 +402,6 @@ body[data-page-brand="neutral"] .product-mode-panel[data-active-brand] :is(.run-
   box-shadow: 0 0 0 1px color-mix(in srgb, var(--accent) 6%, transparent), 0 12px 26px color-mix(in srgb, var(--accent) 6%, transparent);
 }
 
-body[data-page-brand="neutral"] .sim-step-guide.has-inframe-tutorial {
-  grid-template-columns: auto minmax(0, 1fr);
-}
-
-body[data-page-brand="neutral"] .sim-step-guide.has-inframe-tutorial .sim-step-controls.is-empty {
-  display: none;
-}
-
 body[data-page-brand="neutral"] .product-mode-panel[data-active-brand="demothemis"] :is(.run-control-panel, .sim-step-guide, .simulator-island) {
   background: linear-gradient(180deg, var(--dt-surface), var(--dt-canvas));
   box-shadow: 0 0 0 1px rgba(var(--dt-emission-rgb), .04), 0 0 16px rgba(var(--dt-emission-rgb), .05);
@@ -607,7 +619,7 @@ body[data-page-brand="neutral"] .app-brand-wordmark {
   line-height: 0;
 }
 
-body[data-page-brand="neutral"] .app-brand-wordmark img {
+body[data-page-brand="neutral"] .app-brand-wordmark :is(img, canvas) {
   display: block;
   width: 100%;
   height: 100%;
@@ -788,8 +800,13 @@ body[data-page-brand="neutral"] .protocol-sequence-mark.protocol-brand-mark {
   box-shadow: none;
 }
 
-body[data-page-brand="neutral"] .protocol-brand-wordmark,
-body[data-page-brand="neutral"] .protocol-brand-wordmark img {
+body[data-page-brand="neutral"] .protocol-brand-wordmark {
+  display: block;
+  width: 100%;
+  height: 100%;
+}
+
+body[data-page-brand="neutral"] .protocol-brand-wordmark :is(img, canvas) {
   display: block;
   width: 100%;
   height: 100%;
@@ -797,40 +814,9 @@ body[data-page-brand="neutral"] .protocol-brand-wordmark img {
   object-position: left center;
 }
 
-/* The tutorial belongs inside the simulated frame. */
-body[data-page-brand="neutral"] .coachmark-connector {
-  display: none !important;
-}
-
-body[data-page-brand="neutral"] .target-callout {
-  display: none !important;
-}
-
-body[data-page-brand="neutral"] :is(.coachmark-inline-slot, .tutorial-inline-slot) {
+body[data-page-brand="neutral"] .coachmark-inline-slot {
   padding: .42rem;
   background: inherit;
-}
-
-body[data-page-brand="neutral"] :is(.sim-live-preview, .protocol-sequence).has-inline-coachmark > .tutorial-inline-slot {
-  grid-row: 2;
-  order: 0;
-}
-
-body[data-page-brand="neutral"] .sim-live-preview.has-inline-coachmark > .sim-app-viewport,
-body[data-page-brand="neutral"] .protocol-sequence.has-inline-coachmark > .protocol-sequence-scroll {
-  grid-row: 3;
-}
-
-body[data-page-brand="neutral"] .sim-live-preview[data-surface="omen"] .tutorial-inline-slot,
-body[data-page-brand="neutral"] .protocol-sequence[data-sequence-profile="omen"] .tutorial-inline-slot {
-  border-bottom: 1px solid rgba(4, 226, 109, .32);
-  background: var(--omm-black);
-}
-
-body[data-page-brand="neutral"] .sim-live-preview[data-surface="themis"] .tutorial-inline-slot,
-body[data-page-brand="neutral"] .protocol-sequence:not([data-sequence-profile="omen"]) .tutorial-inline-slot {
-  border-bottom: 1px solid rgba(var(--dt-emission-rgb), .28);
-  background: var(--dt-canvas);
 }
 
 body[data-page-brand="neutral"] .tutorial-dock {
@@ -894,91 +880,6 @@ body[data-page-brand="neutral"] .sim-toast-layer[data-app-theme="themis"] {
   --good: #28765a;
   --good-soft: #e2f2ea;
   color-scheme: light;
-}
-
-/* Role strip: one owner normally, two unmistakable owners at product boundaries. */
-body[data-page-brand="neutral"] .sim-role-handoff {
-  border-radius: 10px;
-  box-shadow: none;
-}
-
-body[data-page-brand="neutral"] .sim-role-brand {
-  display: block;
-  width: clamp(8.5rem, 20vw, 12rem);
-  height: 2.75rem;
-  flex: 0 0 auto;
-}
-
-body[data-page-brand="neutral"] .sim-role-brand img {
-  display: block;
-  width: 100%;
-  height: 100%;
-  object-fit: contain;
-}
-
-body[data-page-brand="neutral"] .sim-role-brand[data-brand-mark="omen"] img {
-  object-position: left center;
-}
-
-body[data-page-brand="neutral"] .sim-role-brand[data-brand-mark="demothemis"] img {
-  object-position: center;
-}
-
-body[data-page-brand="neutral"] .sim-role-handoff[data-cross-product="true"] {
-  display: grid;
-  grid-template-columns: auto minmax(2.5rem, .45fr) auto minmax(10rem, 1fr) auto;
-  border-color: color-mix(in srgb, var(--dt-emission) 42%, var(--omm-green));
-  background: linear-gradient(90deg, rgba(4, 226, 109, .08), rgba(var(--dt-emission-rgb), .07));
-}
-
-body[data-page-brand="neutral"] .sim-role-connector {
-  position: relative;
-  display: block;
-  height: 2px;
-  background: linear-gradient(90deg, var(--omm-green), var(--dt-emission));
-}
-
-body[data-page-brand="neutral"] .sim-role-connector::after {
-  position: absolute;
-  top: 50%;
-  right: 0;
-  width: .42rem;
-  height: .42rem;
-  border-top: 2px solid var(--dt-emission);
-  border-right: 2px solid var(--dt-emission);
-  content: "";
-  transform: translateY(-50%) rotate(45deg);
-}
-
-body[data-page-brand="neutral"] .sim-role-handoff[data-active-brand="omen"] .sim-role-connector {
-  background: linear-gradient(90deg, var(--dt-emission), var(--omm-green));
-}
-
-body[data-page-brand="neutral"] .sim-role-handoff[data-active-brand="omen"] .sim-role-connector::after {
-  border-color: var(--omm-green);
-}
-
-body[data-page-brand="neutral"] .product-demo:is(.sim-compact, .sim-tight, .sim-ultra) .sim-role-handoff:not([data-cross-product="true"]) {
-  display: grid;
-  grid-template-columns: minmax(0, 1fr) auto;
-  align-items: center;
-  gap: .42rem .6rem;
-}
-
-body[data-page-brand="neutral"] .product-demo:is(.sim-compact, .sim-tight, .sim-ultra) .sim-role-handoff:not([data-cross-product="true"]) .sim-role-brand {
-  grid-column: 1 / -1;
-  width: min(100%, 13.75rem);
-  height: 3.25rem;
-  border-bottom: 1px solid color-mix(in srgb, var(--accent) 34%, var(--line));
-  padding-bottom: .48rem;
-}
-
-body[data-page-brand="neutral"] .product-demo:is(.sim-compact, .sim-tight, .sim-ultra) .sim-role-handoff:not([data-cross-product="true"]) .sim-role-copy {
-  grid-column: 1;
-}
-
-body[data-page-brand="neutral"] .product-demo:is(.sim-compact, .sim-tight, .sim-ultra) .sim-role-handoff:not([data-cross-product="true"]) .sim-role-owner {
-  grid-column: 2;
 }
 
 /* Product-owned unlocks. Locked items stay neutral. */
@@ -1153,19 +1054,6 @@ body[data-page-brand="neutral"] .machine-route-button[data-machine-route="all"][
     min-height: 10.5rem;
   }
 
-  body[data-page-brand="neutral"] .sim-role-handoff[data-cross-product="true"] {
-    grid-template-columns: minmax(5rem, auto) minmax(2rem, 1fr) minmax(5rem, auto);
-  }
-
-  body[data-page-brand="neutral"] .sim-role-handoff[data-cross-product="true"] .sim-role-copy {
-    grid-column: 1 / -1;
-  }
-
-  body[data-page-brand="neutral"] .sim-role-handoff[data-cross-product="true"] .sim-role-owner {
-    grid-column: 1 / -1;
-    justify-self: start;
-    margin-left: 0;
-  }
 }
 
 @media (max-width: 420px) {
@@ -1205,23 +1093,6 @@ body[data-page-brand="neutral"] .machine-route-button[data-machine-route="all"][
   }
 }
 
-@media (max-width: 320px) {
-  body[data-page-brand="neutral"] .sim-role-handoff[data-cross-product="true"] {
-    grid-template-columns: minmax(0, 1fr) 1.35rem minmax(0, 1fr);
-    gap: .25rem;
-    padding: .4rem;
-  }
-
-  body[data-page-brand="neutral"] .sim-role-handoff[data-cross-product="true"] .sim-role-brand {
-    width: 100%;
-    max-width: 5rem;
-  }
-
-  body[data-page-brand="neutral"] .sim-role-handoff[data-cross-product="true"] .sim-role-brand--destination {
-    justify-self: end;
-  }
-}
-
 @media (prefers-reduced-motion: reduce) {
   body[data-page-brand="neutral"] .product-tab[data-product-mode="omen"]::before,
   body[data-page-brand="neutral"] .sim-app-viewport[data-app-theme="omen"] .app-window::before {
@@ -1230,7 +1101,7 @@ body[data-page-brand="neutral"] .machine-route-button[data-machine-route="all"][
 }
 
 @media (forced-colors: active) {
-  body[data-page-brand="neutral"] :is(.product-tab, .machine-state, .tutorial-dock, .sim-role-handoff) {
+  body[data-page-brand="neutral"] :is(.product-tab, .machine-state, .tutorial-dock) {
     box-shadow: none !important;
   }
 }
