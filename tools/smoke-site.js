@@ -227,6 +227,11 @@ function checkChapterSequence(failures) {
   const courtProductAt = home.indexOf('<article class="product court">');
   const marketProductAt = home.indexOf('<article class="product market">');
   assert(courtProductAt >= 0 && marketProductAt > courtProductAt, "Home must present the arbitration service as Product one before OmenMarketMaker as Product two", failures);
+  assert(
+    home.includes("DemoThemis and OmenMarketMaker are entirely separate products but both require the other to exist, DemoThemis needs OmenMarketMaker to bootstrap its existence and create demand and OmenMarketMaker needs DemoThemis' superior arbitration to create a superior product to existing markets."),
+    "Home must preserve the requested DemoThemis and OmenMarketMaker dependency statement exactly",
+    failures
+  );
   assert(Boolean(homeMarketFeatures), "Home is missing the OmenMarketMaker feature summary", failures);
   assert(Boolean(chapterMarketFeatures), "omenmarketmaker.html is missing the shared feature summary", failures);
   if (homeMarketFeatures && chapterMarketFeatures) {
@@ -305,8 +310,25 @@ function checkChapterSequence(failures) {
 
   const runThrough = readDist("run-through.html");
   const demoThemis = readDist("demothemis.html");
+  const demoThemisHero = (demoThemis.match(/<header\b[^>]*class=["'][^"']*\bhero\b[^"']*["'][^>]*>([\s\S]*?)<\/header>/i) || ["", ""])[1];
+  const simpleDemoThemis = (demoThemis.match(/<section\b[^>]*id=["']simple-version["'][^>]*>([\s\S]*?)<\/section>/i) || ["", ""])[1];
   assert(/<span\s+class=["']pill["']>Start here<\/span>/i.test(runThrough), "Run-through must carry the Start here marker", failures);
   assert(!/<span\s+class=["']pill["']>Start here<\/span>/i.test(demoThemis), "DemoThemis must no longer carry the Start here marker", failures);
+  assert(!demoThemisHero.includes("DemoThemis is a bullet proof, unbuyable court for any well-defined case."), "DemoThemis must keep the deleted general-purpose-court paragraph out of the page header", failures);
+  assert(
+    simpleDemoThemis.includes("DemoThemis is a bullet proof, unbuyable court for any well-defined case. Anyone can fund the jurors and receive a ruling; when money is involved, optional protocol escrow can execute it automatically."),
+    "DemoThemis simple version must preserve the requested replacement paragraph exactly",
+    failures
+  );
+  assert(!simpleDemoThemis.includes("The short version is this:"), "DemoThemis simple version must remove the superseded second paragraph", failures);
+  assert(demoThemis.includes("The requester submits the question, evidence rules, and juror fee before anyone is drawn. If assets are involved, they may also enter protocol escrow."), "DemoThemis case lifecycle must use the requested submission wording", failures);
+  assert(!demoThemis.includes("The requester fixes the question, evidence rules, and juror fee before anyone is drawn."), "DemoThemis case lifecycle must remove the superseded fixes wording", failures);
+  assert(!/watched (?:resolution|assertion) window|Most cases settle|A quiet case pays/i.test(demoThemis), "DemoThemis chapter must not claim ownership of optional app-layer resolution windows", failures);
+  assert(/Case and fee lock[\s\S]*Jurors are drawn[\s\S]*Presence is checked[\s\S]*Votes stay private[\s\S]*Appeals widen[\s\S]*The ruling returns/i.test(demoThemis), "DemoThemis case lifecycle must remain coherent after removing the app-layer settlement step", failures);
+  assert(demoThemis.includes("Every funded case that reaches DemoThemis faces every lock below at once."), "DemoThemis attack model must begin at the funded court boundary", failures);
+  const courtLifecycle = (demoThemis.match(/<section\b[^>]*id=["']case-lifecycle["'][^>]*>([\s\S]*?)<\/section>/i) || ["", ""])[1];
+  assert((courtLifecycle.match(/<li\s+class=["']simple-step["']/g) || []).length === 6, "DemoThemis lifecycle must contain exactly six court-owned steps", failures);
+  assert(!/\.simple-step:last-child\s*\{[^}]*grid-column/i.test(demoThemis), "DemoThemis six-step lifecycle must not leave an unbalanced spanning row", failures);
 }
 
 function checkProposalHomeLinks(file, html, failures) {

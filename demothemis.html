@@ -33,7 +33,6 @@
   .simple-step-icon { display: grid; width: 2.1rem; height: 2.1rem; place-items: center; }
   .simple-step-icon svg { width: 2rem; height: 2rem; fill: none; stroke: currentColor; stroke-width: 1.8; stroke-linecap: round; stroke-linejoin: round; }
   .simple-step p { grid-area: copy; max-width: 52ch; margin: 0; color: var(--muted); font-size: .86rem; line-height: 1.5; }
-  .simple-step:last-child { grid-column: 1 / -1; }
   .simple-list { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: .7rem 1rem; margin: 1.1rem 0 1.3rem; font-family: var(--sans); }
   .simple-list div { border-top: 1px solid var(--line); padding-top: .75rem; }
   .simple-list b { display: block; font-size: .9rem; margin-bottom: .25rem; color: var(--ink); }
@@ -60,9 +59,9 @@
   .toc-grouped details li a { color: var(--faint); font-size: .8rem; padding: .24rem .7rem; }
   .toc-grouped details li a:hover { color: var(--ink); }
   @container lifecycle (min-width: 54rem) { .simple-loop { grid-template-columns: repeat(3, minmax(0, 1fr)); } }
-  @container lifecycle (max-width: 38rem) { .simple-loop { grid-template-columns: 1fr; } .simple-step:last-child { grid-column: auto; } }
+  @container lifecycle (max-width: 38rem) { .simple-loop { grid-template-columns: 1fr; } }
   @media (max-width: 880px) { .simple-grid, .simple-grid.two, .simple-grid.four, .simple-list, .underhood-map { grid-template-columns: 1fr; } }
-  @media (max-width: 640px) { .simple-loop { grid-template-columns: 1fr; } .simple-step:last-child { grid-column: auto; } }
+  @media (max-width: 640px) { .simple-loop { grid-template-columns: 1fr; } }
 
 .vhub { display: flex; align-items: center; justify-content: center; gap: .8rem; flex-wrap: wrap; }
   .vhub .apps { display: grid; gap: .45rem; }
@@ -218,7 +217,6 @@ body.theme-solve { --accent: #2f62cf; --accent-soft: #e6edfa; --accent-ink: #214
     <span class="title-product">DemoThemis</span>
     <span class="title-claim">The most ambitious human infrastructure ever made</span>
   </h1>
-  <p class="dek">DemoThemis is a bullet proof, unbuyable court for any well-defined case. Anyone can fund the jurors and receive a ruling; when money is involved, optional protocol escrow can execute it automatically. This chapter starts with the plain version, then keeps the full design detail: verified human juries, one sealed draw, private ballots, appeal ladders, and the scoring system that makes careful jurors more valuable over time.</p>
   <div class="meta">
     <span class="pill">Court mechanics</span>
     <span>Simple version: 4 min</span>
@@ -264,8 +262,7 @@ body.theme-solve { --accent: #2f62cf; --accent-soft: #e6edfa; --accent-ink: #214
   <section class="reveal" id="simple-version">
     <p class="sec-label">4 min overview</p>
     <h2>The simple version</h2>
-    <p class="lead">DemoThemis is the bullet proof, unbuyable court anyone can pay to use. It gives people and apps a neutral ruling without letting the requester, the biggest wallet, or the loudest party decide who was right. Optional escrow can enforce that ruling when money or assets are involved.</p>
-    <p>The short version is this: the case rules and juror funding lock before anyone is drawn; most cases settle without a trial; disputed cases go to randomly drawn verified humans; votes are private enough that they cannot be sold; appeals widen the jury when the stakes demand it; and every settled case teaches the system which jurors are careful.</p>
+    <p class="lead">DemoThemis is a bullet proof, unbuyable court for any well-defined case. Anyone can fund the jurors and receive a ruling; when money is involved, optional protocol escrow can execute it automatically.</p>
   </section>
 
   <section class="reveal" id="why-it-exists">
@@ -283,15 +280,14 @@ body.theme-solve { --accent: #2f62cf; --accent-soft: #e6edfa; --accent-ink: #214
     <p class="sec-label">Case lifecycle</p>
     <h2>What happens from filing to final ruling</h2>
     <ol class="simple-loop" aria-label="Case lifecycle from filing to final ruling">
-      <li class="simple-step"><span class="simple-step-marker" aria-hidden="true"><span class="simple-step-icon"><svg viewBox="0 0 24 24"><rect x="5" y="10" width="14" height="10" rx="2"/><path d="M8 10V7a4 4 0 0 1 8 0v3"/><path d="M12 14v2"/></svg></span></span><h3>Case and fee lock</h3><p>The requester fixes the question, evidence rules, and juror fee before anyone is drawn. If assets are involved, they may also enter protocol escrow.</p></li>
-      <li class="simple-step"><span class="simple-step-marker" aria-hidden="true"><span class="simple-step-icon"><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><path d="m8 12 2.5 2.5L16 9"/></svg></span></span><h3>Most cases settle</h3><p>Markets and simple disputes use watched resolution windows so obvious answers do not waste jury time.</p></li>
+      <li class="simple-step"><span class="simple-step-marker" aria-hidden="true"><span class="simple-step-icon"><svg viewBox="0 0 24 24"><rect x="5" y="10" width="14" height="10" rx="2"/><path d="M8 10V7a4 4 0 0 1 8 0v3"/><path d="M12 14v2"/></svg></span></span><h3>Case and fee lock</h3><p>The requester submits the question, evidence rules, and juror fee before anyone is drawn. If assets are involved, they may also enter protocol escrow.</p></li>
       <li class="simple-step"><span class="simple-step-marker" aria-hidden="true"><span class="simple-step-icon"><svg viewBox="0 0 24 24"><circle cx="9" cy="8" r="3"/><path d="M3 20c0-4 2.5-6 6-6s6 2 6 6"/><path d="M16 5h5l-2-2"/><path d="M21 5l-2 2"/></svg></span></span><h3>Jurors are drawn</h3><p>World-ID humans enter the pool. A public randomness beacon draws one panel, bound to the case. Anyone who does not assess themselves as capable of judging it can decline, and the next standby takes the seat.</p></li>
       <li class="simple-step"><span class="simple-step-marker" aria-hidden="true"><span class="simple-step-icon"><svg viewBox="0 0 24 24"><path d="M4 8V5a1 1 0 0 1 1-1h3M16 4h3a1 1 0 0 1 1 1v3M20 16v3a1 1 0 0 1-1 1h-3M8 20H5a1 1 0 0 1-1-1v-3"/><circle cx="12" cy="10" r="2"/><path d="M8.5 16c.8-1.7 2-2.5 3.5-2.5s2.7.8 3.5 2.5"/></svg></span></span><h3>Presence is checked</h3><p>A draw-bound face check confirms the enrolled human is present now, without giving DemoThemis a face database.</p></li>
       <li class="simple-step"><span class="simple-step-marker" aria-hidden="true"><span class="simple-step-icon"><svg viewBox="0 0 24 24"><path d="M12 3 5 6v5c0 4.8 2.8 8 7 10 4.2-2 7-5.2 7-10V6l-7-3Z"/><rect x="9" y="10" width="6" height="5" rx="1"/><path d="M10.5 10V8.8a1.5 1.5 0 0 1 3 0V10"/></svg></span></span><h3>Votes stay private</h3><p>Receipt-free encrypted ballots let the court count the result without revealing or proving any single vote.</p></li>
       <li class="simple-step"><span class="simple-step-marker" aria-hidden="true"><span class="simple-step-icon"><svg viewBox="0 0 24 24"><path d="m4 7 8-4 8 4-8 4-8-4Z"/><path d="m4 12 8 4 8-4"/><path d="m4 17 8 4 8-4"/></svg></span></span><h3>Appeals widen</h3><p>A loser can climb to a larger panel by paying a bond or gathering a real loser-side petition.</p></li>
       <li class="simple-step"><span class="simple-step-marker" aria-hidden="true"><span class="simple-step-icon"><svg viewBox="0 0 24 24"><path d="m14 4 6 6"/><path d="m12 6 6 6"/><path d="m7 11 6 6"/><path d="m5 13 6 6"/><path d="m11 7-6 6M18 12l-6 6"/><path d="M4 21h12"/></svg></span></span><h3>The ruling returns</h3><p>DemoThemis returns a final signed ruling. Connected escrow, if any, releases or refunds by rule; collusion audits can continue afterward.</p></li>
     </ol>
-    <p>A quiet case pays only its small processing and bounded operations costs. If a jury is needed, DemoThemis locks the full work-based quote before anyone is drawn.</p>
+    <p>DemoThemis locks the full work-based quote before anyone is drawn, so the selected panel is fully funded before the case begins.</p>
   </section>
 
   <section class="reveal" id="attack-model">
@@ -396,7 +392,7 @@ body.theme-solve { --accent: #2f62cf; --accent-soft: #e6edfa; --accent-ink: #214
     <p class="lead">Token courts sell the gavel to the deepest pocket. This court seats verified humans instead: a live reserve priced by workload, a die nobody can re-roll, a face check that proves a real person is voting, and a ballot that cannot prove how it voted. Buying it means buying people, one at a time, in the dark.</p>
     <p>In a token court, voting weight follows the wallet, so a majority has a market price. Disputed Polymarket resolutions show the problem in practice; the evidence is in the <a href="omenmarketmaker.html#exploited-arbiter">OmenMarketMaker chapter</a>.</p>
     <p>That is not merely a bad implementation. If stake is voting power, the protocol works as written when the largest holder wins. An attacker reads the rule as a price list: acquire enough tokens and buy the verdict.</p>
-    <p>DemoThemis swaps the foundation to <b>one human, one vote</b>. Every seat is backed by a World ID that no wallet can mint twice or exchange can sell in bulk. An attacker must recruit people separately, keep them present, land them in a sealed draw, and somehow enforce their private votes. Roughly 95% of questions settle through a watched assertion window; the contested few face every lock below at once.</p>
+    <p>DemoThemis swaps the foundation to <b>one human, one vote</b>. Every seat is backed by a World ID that no wallet can mint twice or exchange can sell in bulk. An attacker must recruit people separately, keep them present, land them in a sealed draw, and somehow enforce their private votes. Every funded case that reaches DemoThemis faces every lock below at once.</p>
   </section>
 
   <section class="reveal">

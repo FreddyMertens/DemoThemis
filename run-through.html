@@ -2564,6 +2564,34 @@
     }
   }
 
+  /* Records with a compact grid span need their own two-line summary even
+     when the surrounding app is desktop-wide. */
+  .live-card.block-record:is(.live-span-3, .live-span-4, .live-span-5) > summary {
+    grid-template-columns: auto minmax(0, 1fr) auto;
+    gap: .42rem;
+    padding: .52rem;
+  }
+  .live-card.block-record:is(.live-span-3, .live-span-4, .live-span-5) > summary .record-mark {
+    grid-column: 1;
+    grid-row: 1 / span 2;
+    align-self: center;
+  }
+  .live-card.block-record:is(.live-span-3, .live-span-4, .live-span-5) > summary .record-copy {
+    grid-column: 2;
+    grid-row: 1;
+  }
+  .live-card.block-record:is(.live-span-3, .live-span-4, .live-span-5) > summary .record-value {
+    grid-column: 2;
+    grid-row: 2;
+    max-width: none;
+    text-align: left;
+  }
+  .live-card.block-record:is(.live-span-3, .live-span-4, .live-span-5) > summary .record-chevron {
+    grid-column: 3;
+    grid-row: 1 / span 2;
+    align-self: center;
+  }
+
   @media (max-width: 720px) {
     .product-switch-label {
       grid-template-columns: minmax(0, 1fr);
@@ -9430,6 +9458,26 @@
       allowAutoRevealTarget = false;
       if (shouldRender) render();
     }
+    window.__layoutAudit = {
+      stages: function () {
+        return STAGES.map(function (item, index) {
+          return { index: index, title: item.title, steps: auditStepCount(index) };
+        });
+      },
+      goTo: function (stageIndex, stepIndex) {
+        stage = Math.max(0, Math.min(STAGES.length - 1, Number(stageIndex) || 0));
+        var auditMode = productModeForStage(stage);
+        selectedRunMode = auditMode;
+        runStartStage = PRODUCT_MODES[auditMode].start;
+        maxReachedByMode[auditMode] = Math.max(maxReachedByMode[auditMode], stage);
+        activeEventStep = Math.max(0, Math.min(auditStepCount(stage), Number(stepIndex) || 0));
+        activeAction = activeEventStep > 0 ? activeEventStep - 1 : -1;
+        openStageGroup = -1;
+        allowAutoRevealTarget = false;
+        render();
+        return { stage: stage, step: activeEventStep, steps: auditStepCount(stage) };
+      }
+    };
     applyAuditLocation(false);
     window.addEventListener("hashchange", function () {
       applyAuditLocation(true);
