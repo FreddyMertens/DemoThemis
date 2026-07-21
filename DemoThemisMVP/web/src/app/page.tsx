@@ -70,8 +70,8 @@ const mvpRoadmapRows = [
     liveTitle: 'Atomic settlement by rule',
     liveBody: 'The majority closes the case; the 70/20/10 split and slashes settle with no admin override.',
     milestone: 'M3a–M6',
-    roadmapTitle: 'Cheaper settlement, reusable court',
-    roadmapBody: 'An optimistic fast path, cyclic reward payout, resolution SDK, first pilot, independent review, and moderated juror testing.',
+    roadmapTitle: 'Demand-priced, reusable court',
+    roadmapBody: 'Work-based quotes, cyclic reward payout, a resolution SDK, first pilot, independent review, and moderated juror testing.',
   },
 ] as const;
 

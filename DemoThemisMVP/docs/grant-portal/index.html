@@ -202,7 +202,7 @@
     <div class="search"><input id="search" type="text" placeholder="Search sections…  ( / )" autocomplete="off" spellcheck="false" /></div>
     <nav id="nav"></nav>
     <div class="sb-foot">
-      <span id="genstamp">built 2026-07-20</span>
+      <span id="genstamp">built 2026-07-21</span>
       <span>jurorCount() = 0</span>
     </div>
   </aside>
@@ -380,7 +380,7 @@ capstone is the last step), built solo at the founder's expense. One honesty rul
 | **Wallet-bound** proof (a stolen proof reverts) | Appeals, parallel panels, Invalid/void, and presence/decline/replacement — M3b |
 | Random two-step panel draw, **after** the question (exhaustive at the 3/3 demo size) | Juror reputation / Wilson gate — M3b |
 | Commit/reveal voting *(receipt-ful — see §7)* | Reward-pool cyclic payout — M3a |
-| 70/20/10 fee split + 2% escrow fee; **slash-to-pool, never to winners** | Optimistic fast path for uncontested cases — M3a |
+| 70/20/10 fee split + 2% escrow fee; **slash-to-pool, never to winners** | Work-based quote engine + private reward-pool distribution — M3a |
 | **Atomic** escrow settlement | Stable resolution SDK + neutral reference integration — M4 |
 | **No admin override**: no upgrade, no pause, no fund-extraction path, no override of any in-flight case | Independent security review — M5 |
 | 6 source-verified contracts · 77 Foundry tests · **97.2% line / 93.7% statement coverage** (measured) · invariants + fuzz | |
@@ -492,8 +492,8 @@ both co-founders in parallel (§9, §11) — to a standard meant to survive scru
 ## 9. Milestones, timeline & budget
 
 This request funds every remaining milestone required to turn the honest single-panel MVP into a
-**production-ready DemoThemis v1**: verifiable randomness, receipt-free ballots, the optimistic
-path and reward distribution, private reputation, expanding appeals, parallel panels, an
+**production-ready DemoThemis v1**: verifiable randomness, receipt-free ballots, work-based
+quotes and reward distribution, private reputation, expanding appeals, parallel panels, an
 Invalid/void outcome, a stable integration SDK, an independent review of the completed protocol,
 and real verified-human testing with per-draw presence and decline/replacement flows. No core
 security, finality, juror-safety, or integration milestone depends on a hypothetical follow-on
@@ -511,7 +511,7 @@ real juror loop on their own phones.
 |---|---|---|---|
 | M1 | VRF/drand randomness + correctness hardening + Production-verifier forged-proof pre-check | verified randomness contract + draw trace; expanded tests; the forged-proof revert trace | $4,000 |
 | M2 | Receipt-free ballots | unlinkable end-to-end ballot and consequence-accounting trace; threat model; tests | $8,000 |
-| M3a | Optimistic fast path + private reward-pool distribution | uncontested settlement and private aggregate-payout traces | $4,000 |
+| M3a | Work-based quote engine + private reward-pool distribution | locked quote-input and private aggregate-payout traces | $4,000 |
 | M3b | Private reputation + appeals + parallel panels + Invalid/void + juror liveness | source-verified contracts and traces for each path | $6,000 |
 | M4 | Stable resolution SDK + neutral reference integration | published SDK/docs and traced mainnet question + escrow integrations | $5,000 |
 | M5 | Independent review of the completed funded protocol | published report; every critical/high finding resolved | $10,000 |
@@ -541,7 +541,7 @@ case flow to test juror reliability, show earnings, and build public history.
 The grant deliverable is entirely DemoThemis: the court, juror system, open SDK, documented API,
 source-verified settlement paths, stable lifecycle events, and explorer-traced outcomes. The
 reference integration exists only to prove that an independent consumer can open a case, follow
-its challenge and appeal lifecycle, receive YES, NO, or INVALID finality, and execute an optional
+its draw, ballot, and appeal lifecycle, receive YES, NO, or INVALID finality, and execute an optional
 escrow ruling. The same interface can serve marketplaces, DAOs, service-level disputes,
 community decisions, and any World App that needs a credibly neutral result.
 
@@ -637,7 +637,7 @@ real humans complete the juror loop is what decides if the court works at all.
 >
 > **Grant requested: US$50,000** for milestones **M1–M6**, delivering the complete
 > production-ready DemoThemis v1 in approximately **three months**: verifiable randomness,
-> receipt-free ballots, optimistic settlement, private rewards and reputation, expanding
+> receipt-free ballots, work-based quotes, private rewards and reputation, expanding
 > appeals, parallel panels, an Invalid/void outcome, a stable resolution SDK, an independent
 > review of the completed protocol, per-draw presence and juror replacement, and moderated
 > verified-human testing.
@@ -688,7 +688,7 @@ real humans complete the juror loop is what decides if the court works at all.
 |---|---|---|---|---|
 | **M1** — VRF/drand randomness + core hardening | 1.5 pw | $3,300 | $700 | **$4,000** |
 | **M2** — Receipt-free ballots (MACI-library integration + bonded-coordinator wrapper) | 3.5 pw | $7,700 | $300 | **$8,000** |
-| **M3a** — Optimistic fast path + reward-pool cyclic payout | 1.5 pw | $3,300 | $700 | **$4,000** |
+| **M3a** — Work-based quote engine + reward-pool cyclic payout | 1.5 pw | $3,300 | $700 | **$4,000** |
 | **M3b** — Reputation + appeals + panels + Invalid/void + juror liveness | 2.5 pw | $5,500 | $500 | **$6,000** |
 | **M4** — Stable resolution SDK + neutral reference integration | 2.0 pw | $4,400 | $600 | **$5,000** |
 | **M5** — Independent review of the completed funded protocol | — | — | $10,000 | **$10,000** |
@@ -786,15 +786,15 @@ completed ballot and private-accounting surface is included in M5's independent 
 
 **Cost.** 3.5 person-weeks ($7,700) + $300 (MACI tooling and integration infrastructure).
 
-### M3a — Optimistic fast path + reward-pool cyclic payout — **$4,000** (Months 2–3)
+### M3a — Work-based quote engine + reward-pool cyclic payout — **$4,000** (Months 2–3)
 
-**Deliverable.** A bonded-assertion **optimistic fast path** that resolves uncontested cases
-without convening a jury, and the **reward-pool gated cyclic payout** (recency-weighted private
-distribution to active jurors, with only the aggregate and its correctness proof public),
-turning today's passive sink into a working juror incentive.
+**Deliverable.** A **work-based quote engine** that locks processing, expected panel work,
+reserve top-up, and capped operations into each accepted case price, plus the **reward-pool
+gated cyclic payout** (recency-weighted private distribution to active jurors, with only the
+aggregate and its correctness proof public), turning today's passive sink into a working juror incentive.
 
 **Acceptance criteria.** Each feature deployed and source-verified, each with an explorer trace
-(an optimistic settle that never reaches a jury; a proved aggregate reward-pool distribution that does not expose an individual juror's amount).
+(a quote whose locked inputs and cap reproduce its charged total; a proved aggregate reward-pool distribution that does not expose an individual juror's amount).
 
 **Cost.** 1.5 person-weeks ($3,300) + $700 gas/infra.
 
@@ -822,7 +822,7 @@ behavior are reconciled.
 ### M4 — Stable resolution SDK + neutral reference integration — **$5,000** (Months 2–3)
 
 **Deliverable.** A versioned TypeScript **resolution SDK** and documented API so any World App
-can open a well-defined question or disputed deal, follow assertion, challenge and appeal
+can open a well-defined question or disputed deal, follow draw, ballot, and appeal
 states, receive YES, NO, or INVALID finality, and optionally execute an escrow ruling. A neutral
 reference integration proves the full path on mainnet. The SDK includes stable events,
 idempotent reads, error handling, integration examples, and a migration policy so an external
@@ -831,7 +831,7 @@ application can build against DemoThemis without depending on unfinished court w
 **Acceptance criteria.** Published versioned SDK (npm + docs) and a reference integration that
 resolves at least one personhood-resolved question and one disputed deal through DemoThemis on
 mainnet, with transaction and finality traces on the explorer. Contract tests cover YES, NO,
-INVALID, challenge, appeal, timeout, replacement, and idempotent status reads.
+INVALID, appeal, timeout, replacement, and idempotent status reads.
 
 **Cost.** 2.0 person-weeks ($4,400) + $600 (infra / integration).
 
@@ -839,7 +839,7 @@ INVALID, challenge, appeal, timeout, replacement, and idempotent status reads.
 
 **Deliverable.** A third-party security review of the complete funded on-chain court after
 M1–M3b freeze its security surface: the five core contracts, World ID gate, verifiable
-randomness, receipt-free ballot adapter, private consequence accounting, optimistic path,
+randomness, receipt-free ballot adapter, private consequence accounting, work-based quote engine,
 reward distribution, reputation, appeals, parallel panels, INVALID finality, per-draw presence,
 decline/replacement, and the SDK-facing contract interface. The MVP **claims no audit anywhere**; this funds the independent review of
 the version that will actually serve verified humans and external applications.
@@ -1028,7 +1028,7 @@ The full mechanism lives in the pitch site (`reference/demothemis-site/`, chapte
 | Random panel drawn **after** the question | Parallel pᴺ panels above a value line — milestone #3 |
 | Commit / reveal voting | Juror reputation / Wilson gate — milestone #3 |
 | 70/20/10 fee split + 2% escrow fee; **slash-to-pool, never to winners** | Reward-pool cyclic payout — milestone #3 |
-| **Atomic** escrow settlement (`resolve → escrow.settle`) | Optimistic fast path (~95% settle free) — milestone #3 |
+| **Atomic** escrow settlement (`resolve → escrow.settle`) | Work-based quote engine + reusable resolution SDK — milestones #3–4 |
 | **No admin override** (wire-once + phase clock are the entire admin surface) | (external security review — milestone #5) |
 | 77 Foundry tests (invariants + fuzz), >90% coverage, all sources verified | |
 
@@ -1044,17 +1044,16 @@ The full mechanism lives in the pitch site (`reference/demothemis-site/`, chapte
 | Reward-pool payout | The pool **pays active, high-quality jurors privately** through a gated cyclic distribution (Wilson-gated, recency-weighted); only the aggregate and its proof are public. It **rewards jurors, never compensates victims**. | **Passive sink on-chain.** `RewardPool` receives the 20% cut + every slash + rounding dust and exposes only `balance()`. It has **no payout/distribute function at all**. | The private gated distribution is funded-milestone #3 and is shown only in the sandbox. The MUSD-conservation invariant treats the pool as a terminal balance, so adding an on-chain payout would break it (and is flagged as scope creep in the plan, §11). |
 | Wrong-side slashing | A private margin-scaled debit is settled **post-appeal** and privately reversed if vindicated; the public sees only proved aggregate accounting | **Deferred.** Minority voters are not slashed on-chain; only no-shows are penalized (a public liveness forfeit → reward pool). | First-round coherence slashing is the conformity machine the reference warns against — it needs the appeal ladder to be fair. Private slash-to-truth + ladder + vindication returns in milestone #3. |
 | Draw randomness | drand / VRF | **`blockhash`-based** two-step draw (records `drawBlock = block.number + 1`, anyone cranks once it exists). Kills panel precompute, but is sequencer-influenceable in principle. | drand/VRF is funded-milestone #1. Documented limitation. |
-| Optimistic fast path | Bonded assertion + challenge window settles ~95% of cases free, off the jury | **Not built as contracts.** Demo cases go straight to the jury on purpose (the court is the novel claim). | Established art (UMA); funded milestone. Represented in the sandbox funnel and as a grayed-out step in the Mini App timeline. |
 | Dispute ladder + parallel panels | Panels 7 → 15 → 31 (three-floor rung bond, *not* a flat ×2), near-tie discount, two clocks; **above a value line, N independent panels (1/3/5) that must all agree**, so capture odds multiply `pᴺ` and attack cost rises with the pot past the 31-seat ceiling | **Single panel**, one automatic redraw on quorum miss, then status quo. No ladder, no parallel panels on-chain; the mainnet 3-seat panel is a deliberate demo size and security scales with pool width. | All panel-scaling structure is sandbox-only; the parallel-panels "pricing a takeover above the ceiling" is a centerpiece of the attack demo. |
-| Reputation / watchers | Private baseline-credited reputation commitments, Wilson 0.70 suspension gate, and privately proved draw bands **capped at 3× a newcomer**; exact scores and case histories are never public | **None on-chain** — the MVP draws uniformly at random, so there is no reputation weighting to cap. | Sandbox-only; private commitments and proofs return in milestone #3. |
-| Economic parameters | Endogenous — each value a function of its driver (`toupdate.md` part 2) | **Fixed**: $5 bond, 2 MUSD question fee, 2% escrow fee, 7/14 (cohort) or 3/3 (mainnet) panels. | MVP uses shipped constants; endogenous economics is a design-track item, not an MVP one; mainnet capture-resistance scales with the funded pool/panel width, not this demo size. |
+| Juror reputation | Private baseline-credited reputation commitments, Wilson 0.70 suspension gate, and privately proved draw bands **capped at 3× a newcomer**; exact scores and case histories are never public | **None on-chain** — the MVP draws uniformly at random, so there is no reputation weighting to cap. | Sandbox-only; private commitments and proofs return in milestone #3. |
+| Economic parameters | Work-based quotes price processing, expected panel work, reserve top-up, and capped operations from locked case inputs. | **Fixed**: $5 bond, 2 MUSD question fee, 2% escrow fee, 7/14 (cohort) or 3/3 (mainnet) panels. | MVP uses shipped constants; the work-based quote engine is a design-track item, not an MVP one; mainnet capture-resistance scales with the funded pool/panel width, not this demo size. |
 | Withdrawal | — | A withdrawn juror's **nullifier stays spent** (one seat per human); they `postBond()` to rejoin rather than re-verifying. | Keeps the sybil gate strict and simple. |
 | Token | USDC / WLD | **MockUSD**, a valueless 6-decimal token with a public faucet, on every instance. | Production token choice is a funded-milestone decision; no real money is at stake anywhere. |
 | Tie / no-quorum | — | Tie → status quo (question NO / escrow refunds payer). Fewer than ⌈panel/2⌉+1 reveals → one free redraw, then status quo. | One juror must never decide a deal alone; cases must never brick. An explicit **Invalid/void outcome** for genuinely ambiguous questions (flagged when parallel panels split) is funded-milestone #3; today ambiguity defaults to status-quo-NO. |
 
 ## Simulated in the sandbox only (clearly labeled)
 
-The case funnel (optimistic step + ~95% free settlement), the full dispute ladder, juror reputation (Wilson-interval gate), watchers / loser-side petitions, private invite rooms, and populations of simulated jurors. All generated data, badged as simulation.
+The full dispute ladder, juror reputation (Wilson-interval gate), private invite rooms, and populations of simulated jurors. All generated data, badged as simulation. Every accepted case in the simulator uses the verified-human court path.
 
 ## Out of the MVP entirely
 
@@ -1064,7 +1063,7 @@ Governance (both tokens, voting, the constitutional firewall); the prediction ma
 
 1. drand/VRF draw randomness + mainnet deployment of the core court.
 2. Receipt-free ballots (MACI-style, bonded coordinator v1) — hides juror addresses and votes.
-3. Optimistic assertion fast path + juror reputation + dispute ladder on-chain + the reward-pool gated cyclic payout (Wilson-gated, recency-weighted distribution to active jurors).
+3. Work-based quote engine + juror reputation + dispute ladder on-chain + the reward-pool gated cyclic payout (Wilson-gated, recency-weighted distribution to active jurors).
 4. Resolution / oracle SDK + first prediction-market integration (escrow/marketplace a later consumer of the same SDK).
 5. Security review. (No external audit is claimed anywhere in the MVP.)
 6. Juror UX hardening + moderated user-testing — the final step and the roadmap's largest line; AI makes the build cheap, so the weight goes to getting real verified humans through the juror loop.
@@ -1105,8 +1104,8 @@ from the on-chain core, are recorded here.
 - **Everything in `/sandbox` is simulated.** Simulated juror populations, simulated
   per-juror accuracies, simulated cases. The route carries a fixed simulation badge and
   every widget carries a "simulated" tag. No sandbox number is presented as real usage.
-  The "~95% settle free" optimistic-funnel figure is attributed to the roadmap, never to
-  MVP behavior. The seeded PRNG (mulberry32, fixed default seed) is for reproducibility of
+  Every accepted case follows the verified-human court path. The seeded PRNG (mulberry32,
+  fixed default seed) is for reproducibility of
   the curves and the "run 100 cases" sweep, not a randomness-security claim.
 
 ## Step 3.5 — on-chain World ID 4.0 (the IDKit → `WorldIDVerifier.verify` mapping)
@@ -1455,7 +1454,7 @@ for the clickable explorer traces.
 | Random panel drawn **after** the question | Parallel pᴺ panels above a value line — milestone #3 |
 | Commit / reveal voting | Juror reputation / Wilson gate — milestone #3 |
 | 70/20/10 fee split + 2% escrow fee; **slash-to-pool, never to winners** | Reward-pool cyclic payout — milestone #3 |
-| **Atomic** escrow settlement (`resolve → escrow.settle`) | Optimistic fast path (~95% settle free) — milestone #3 |
+| **Atomic** escrow settlement (`resolve → escrow.settle`) | Work-based quote engine + reusable resolution SDK — milestones #3–4 |
 | **No admin override** (wire-once + phase clock are the entire admin surface) | (external security review — milestone #5) |
 | 77 Foundry tests (invariants + fuzz), >90% coverage, all sources verified | |
 
@@ -1476,7 +1475,7 @@ for the clickable explorer traces.
 Three surfaces, one Next.js app:
 
 - **`/sandbox`** — a pure-browser simulation of the full mechanism (ladder,
-  reputation, reward-pool payout, watchers) and the flagship token-court-vs-human-court
+  reputation, reward-pool payout) and the flagship token-court-vs-human-court
   attack demo. No wallet needed. Everything here is labeled **simulated**.
 - **`/` + the Mini App** (`/onboard`, `/home`, `/case/[id]`, `/dispute`, `/about`) —
   the World App Mini App. Read-only in a desktop browser; the capstone juror flow

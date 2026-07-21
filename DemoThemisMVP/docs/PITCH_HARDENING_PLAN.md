@@ -39,7 +39,7 @@ Create these three blocks first; every workstream just *places* them. Keep wordi
 | Random panel drawn **after** the question | Parallel pᴺ panels above a value line — milestone #3 |
 | Commit / reveal voting | Juror reputation / Wilson gate — milestone #3 |
 | 70/20/10 fee split + 2% escrow fee; **slash-to-pool, never to winners** | Reward-pool cyclic payout — milestone #3 |
-| **Atomic** escrow settlement (`resolve → escrow.settle`) | Optimistic fast path (~95% settle free) — milestone #3 |
+| **Atomic** escrow settlement (`resolve → escrow.settle`) | Work-based quote engine + reusable resolution SDK — milestones #3–4 |
 | **No admin override** (wire-once + phase clock are the entire admin surface) | (external security review — milestone #5) |
 | 77 Foundry tests (invariants + fuzz), >90% coverage, all sources verified | |
 ```

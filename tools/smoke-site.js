@@ -490,6 +490,7 @@ function checkMvpPage(html, failures) {
   assert(/\bAll completed jurors receive the work payment locked for this case\b/i.test(html) && /\b5\.00 MUSD\b/i.test(html), "demothemis-mvp.html ruling receipt should pay completed work rather than only the majority", failures);
   assert(/\bNo permanent fee split\b/i.test(html) && /\bCurrent demand\b/i.test(html) && /\bReward-reserve top-up\b/i.test(html) && /\bCapped operations\b/i.test(html), "demothemis-mvp.html should show the current demand-responsive quote design", failures);
   assert(!/70\s*\/\s*20\s*\/\s*10/i.test(html), "demothemis-mvp.html should not present the retired permanent 70/20/10 split", failures);
+  assert(!/optimistic(?: fast)? path|bonded[- ]assertion|settle(?:s|d)? free|jury is the (?:rare )?backstop/i.test(html), "demothemis-mvp.html must not restore the retired pre-jury settlement path", failures);
   assert(!/\bSafe local preview\b/i.test(html) && !/class=["'][^"']*mvp-sim-footnote/i.test(html), "demothemis-mvp.html should remove the redundant local-preview notice", failures);
   assert(/class=["'][^"']*mvp-button secondary[^"']*["'][^>]*href=["']https:\/\/demothemis\.netlify\.app\/app#oracle-live-panel["'][^>]*>\s*Open the deployed MVP/i.test(html), "the hero's deployed-MVP button must navigate directly to the deployed app", failures);
   assert(!/Open the deployed product/i.test(html), "the duplicate deployed-product link must be removed from the preview heading", failures);
@@ -2720,6 +2721,8 @@ function checkBrandSystem(failures) {
   const appLayout = fs.readFileSync(path.join(appRoot, "app", "layout.tsx"), "utf8");
   const appManifest = fs.readFileSync(path.join(appRoot, "app", "manifest.ts"), "utf8");
   const appPage = fs.readFileSync(path.join(appRoot, "app", "page.tsx"), "utf8");
+  const sandboxPage = fs.readFileSync(path.join(appRoot, "app", "sandbox", "page.tsx"), "utf8");
+  const simIndex = fs.readFileSync(path.join(appRoot, "lib", "sim", "index.ts"), "utf8");
   const siteChrome = fs.readFileSync(path.join(appRoot, "components", "SiteChrome", "index.tsx"), "utf8");
   const appStyles = fs.readFileSync(path.join(appRoot, "app", "globals.css"), "utf8");
   const sandboxStyles = fs.readFileSync(path.join(appRoot, "app", "sandbox", "sandbox.css"), "utf8");
@@ -2729,6 +2732,9 @@ function checkBrandSystem(failures) {
   assert(/wordmark\.png/i.test(siteChrome) && /site-brand-wordmark/i.test(siteChrome), "live MVP chrome is missing the full DemoThemis wordmark", failures);
   assert(!/mark-32\.png|site-brand-word["']/i.test(siteChrome), "live MVP chrome must not rebuild DemoThemis from the favicon and live text", failures);
   assert(/wordmark\.png/i.test(appPage) && /oracle-brand-lockup/i.test(appPage), "live MVP hero is missing its DemoThemis wordmark lockup", failures);
+  assert(!/optimistic(?: fast)? path|bonded[- ]assertion|settle(?:s|d)? free|jury is the (?:rare )?backstop/i.test(appPage), "live MVP roadmap must not restore the retired pre-jury settlement path", failures);
+  assert(/Every accepted case shown here uses the verified-human court path/i.test(sandboxPage), "sandbox must state that every accepted case uses the court", failures);
+  assert(!/FunnelReadout|WatchersDemo|optimistic funnel|WidgetBoundary name=["']watchers/i.test(sandboxPage) && !/export \* from ["']\.\/funnel["']/i.test(simIndex), "sandbox must not retain retired funnel or post-finality watcher modules", failures);
   assert(/#f6f3f2|#f2efec|#e9e8e5/i.test(appHeroRule) && !/#292522|#1d1a18|#1d1b2a/i.test(appHeroRule), "live MVP hero must use DemoThemis ivory and stone rather than a dark brand background", failures);
   assert(/background:\s*transparent/i.test(appBrandLockupRule) && /border:\s*0/i.test(appBrandLockupRule) && /box-shadow:\s*none/i.test(appBrandLockupRule), "live MVP wordmark must sit directly on the ivory hero without a decorative rectangle", failures);
   assert(!/invert\s*\(/i.test(appBrandImageRule), "live MVP wordmark must preserve the supplied raster colors rather than invert them", failures);

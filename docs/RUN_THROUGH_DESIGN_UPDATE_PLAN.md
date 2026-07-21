@@ -156,8 +156,7 @@ The role-handoff strip is the only deliberately dual-branded surface.
 
 Add an additive `owner` field to each `SYSTEM_STATE`:
 
-- `omen` for market creation, pricing, trading, answer assertion, watcher window,
-  and the permanent market record;
+- `omen` for market creation, pricing, trading, and the permanent market record;
 - `demothemis` for case intake, draw, presence, ballot, verdict, appeal,
   accountability, and juror-quality learning;
 - `shared` for the challenge handoff, final release rule, cross-product invoice,
@@ -343,7 +342,7 @@ language, and they cannot reflow cleanly on mobile.
 - Shared states: neutral stone surface with a split green/cyan ownership rule.
 - Current guided state uses the owning product's rim rather than a universal
   purple outline.
-- `Fast settlement` uses Omen green because it never enters the court.
+- Every resolved market follows the disputed-market route through the DemoThemis court; there is no court-bypass route.
 - `Disputed market` uses a green-to-cyan-to-green route trace.
 - `Whole map` stays neutral and shows all ownership labels.
 - Route controls use underlines and equal focus rims, not filled purple pills.

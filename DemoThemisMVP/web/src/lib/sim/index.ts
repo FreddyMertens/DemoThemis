@@ -9,7 +9,6 @@ export * from './prng';
 export * from './court-math';
 export * from './attack';
 export * from './court-sim';
-export * from './funnel';
 export * from './ladder';
 export * from './reputation';
 export * from './cases';

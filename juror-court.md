@@ -6,15 +6,13 @@ I have used these systems, and I think the core idea is right. The part that bot
 
 So here is the change I want to make. Keep the Schelling-point vote. Replace the part that decides who gets to vote. Instead of one token one vote, use one human one vote, where each human is verified once through World ID.
 
-The mechanism has four parts.
+The mechanism has three parts.
 
-First, an optimistic layer for the easy cases. Anyone can assert an answer and post a bond. If nobody challenges within two hours, the answer settles and the bond returns. Most questions are not controversial, so most never reach a jury, and the system stays cheap.
+First, random selection over verified humans. Every accepted question goes to a jury drawn at random from the people who hold a World ID and have opted in as jurors. Jurors do not choose their cases, but they may decline one they do not assess themselves as capable of judging; the next standby takes the seat. You cannot volunteer for the one market you want to swing.
 
-Second, random selection over verified humans. When someone does challenge, the question goes to a jury drawn at random from the people who hold a World ID and have opted in as jurors. Jurors do not choose their cases, but they may decline one they do not assess themselves as capable of judging; the next standby takes the seat. You cannot volunteer for the one market you want to swing.
+Second, private votes that open together. Each juror submits a hash of their vote, then reveals it after the commit window closes. No juror sees another answer before committing, so there is nothing to copy and no bandwagon to join.
 
-Third, private votes that open together. Each juror submits a hash of their vote, then reveals it after the commit window closes. No juror sees another answer before committing, so there is nothing to copy and no bandwagon to join.
-
-Fourth, coherence rewards and a refundable bond. This is the piece proof of personhood does not hand you for free. World ID shows you are a unique human. It says nothing about whether you will read the case. So each juror posts a small bond, say 20 dollars, refundable. Vote with the final majority and you get a fee and your bond back. Vote against it and you forfeit part of the bond to the jurors who were coherent. Now even a one-vote juror has money on the line.
+Third, coherence rewards and a refundable bond. This is the piece proof of personhood does not hand you for free. World ID shows you are a unique human. It says nothing about whether you will read the case. So each juror posts a small bond, say 20 dollars, refundable. Vote with the final majority and you get a fee and your bond back. Vote against it and you forfeit part of the bond to the jurors who were coherent. Now even a one-vote juror has money on the line.
 
 Why does this resist capture better than a token vote? Because you cannot buy more humans. Suppose 10,000 people have opted in and each case draws a panel of 13. To bend one case you need a majority of a panel you cannot see coming, pulled from a pool where every identity costs an in-person iris scan, not a token purchase. Buy half of a governance token and you own half the votes, on every case, forever. Buying 5,000 verified humans is far more expensive and far more visible, and even then you only touch the cases your bought jurors happen to land on.
 

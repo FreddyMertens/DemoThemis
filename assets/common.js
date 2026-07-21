@@ -313,9 +313,7 @@
       syntheticTests: "Independently graded aptitude-test seats added each month, alongside eligible resolved-case tests.",
       bloc: "The recruited human coalition before qualification, availability, and coordination limits determine how many attackers become drawable.",
       rented: "Rented human accounts attackers try to place in the drawable pool before live face-check filtering.",
-      rerolls: "Retryable jury-draw attempts available only when the one-public-draw safeguard is off. With it on, the model fixes attempts at one.",
-      watchCost: "The dollar cost for an independent watcher to monitor one settlement window.",
-      falseRate: "The percentage of settlements where someone attempts to slip through a false assertion."
+      rerolls: "Retryable jury-draw attempts available only when the one-public-draw safeguard is off. With it on, the model fixes attempts at one."
     };
 
     let allAssumptions = [];

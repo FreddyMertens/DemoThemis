@@ -20,7 +20,7 @@ What I am still working out.
 
 Liquidity splits across tokens. Every market mints its own YES and NO, so a thousand markets is two thousand shallow pools. Shared collateral and a router that mints sets on demand help, but getting early liquidity going is hard.
 
-Resolution is slower than a centralized call. An optimistic window plus a possible jury runs in hours or days, not seconds. For questions that settle slowly that is fine. For very short-dated markets it is not, and I would rather say so than hide it.
+Resolution is slower than a centralized call. Every market entering DemoThemis funds a verified-human panel, waits for private ballots, and leaves time for any funded appeal, so finality runs in hours or days rather than seconds. For questions that settle slowly that is fine. For very short-dated markets it is not, and I would rather say so than hide it.
 
 Then the obvious one. A market anyone can enter with no account is exactly what regulators ask about. I would rather design openly for that conversation than ship something that quietly leans on a gatekeeper while claiming it has none.
 

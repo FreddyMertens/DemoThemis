@@ -94,7 +94,7 @@ capstone is the last step), built solo at the founder's expense. One honesty rul
 | **Wallet-bound** proof (a stolen proof reverts) | Appeals, parallel panels, Invalid/void, and presence/decline/replacement — M3b |
 | Random two-step panel draw, **after** the question (exhaustive at the 3/3 demo size) | Juror reputation / Wilson gate — M3b |
 | Commit/reveal voting *(receipt-ful — see §7)* | Reward-pool cyclic payout — M3a |
-| 70/20/10 fee split + 2% escrow fee; **slash-to-pool, never to winners** | Optimistic fast path for uncontested cases — M3a |
+| 70/20/10 fee split + 2% escrow fee; **slash-to-pool, never to winners** | Work-based quote engine + private reward-pool distribution — M3a |
 | **Atomic** escrow settlement | Stable resolution SDK + neutral reference integration — M4 |
 | **No admin override**: no upgrade, no pause, no fund-extraction path, no override of any in-flight case | Independent security review — M5 |
 | 6 source-verified contracts · 77 Foundry tests · **97.2% line / 93.7% statement coverage** (measured) · invariants + fuzz | |
@@ -206,8 +206,8 @@ both co-founders in parallel (§9, §11) — to a standard meant to survive scru
 ## 9. Milestones, timeline & budget
 
 This request funds every remaining milestone required to turn the honest single-panel MVP into a
-**production-ready DemoThemis v1**: verifiable randomness, receipt-free ballots, the optimistic
-path and reward distribution, private reputation, expanding appeals, parallel panels, an
+**production-ready DemoThemis v1**: verifiable randomness, receipt-free ballots, work-based
+quotes and reward distribution, private reputation, expanding appeals, parallel panels, an
 Invalid/void outcome, a stable integration SDK, an independent review of the completed protocol,
 and real verified-human testing with per-draw presence and decline/replacement flows. No core
 security, finality, juror-safety, or integration milestone depends on a hypothetical follow-on
@@ -225,7 +225,7 @@ real juror loop on their own phones.
 |---|---|---|---|
 | M1 | VRF/drand randomness + correctness hardening + Production-verifier forged-proof pre-check | verified randomness contract + draw trace; expanded tests; the forged-proof revert trace | $4,000 |
 | M2 | Receipt-free ballots | unlinkable end-to-end ballot and consequence-accounting trace; threat model; tests | $8,000 |
-| M3a | Optimistic fast path + private reward-pool distribution | uncontested settlement and private aggregate-payout traces | $4,000 |
+| M3a | Work-based quote engine + private reward-pool distribution | locked quote-input and private aggregate-payout traces | $4,000 |
 | M3b | Private reputation + appeals + parallel panels + Invalid/void + juror liveness | source-verified contracts and traces for each path | $6,000 |
 | M4 | Stable resolution SDK + neutral reference integration | published SDK/docs and traced mainnet question + escrow integrations | $5,000 |
 | M5 | Independent review of the completed funded protocol | published report; every critical/high finding resolved | $10,000 |
@@ -255,7 +255,7 @@ case flow to test juror reliability, show earnings, and build public history.
 The grant deliverable is entirely DemoThemis: the court, juror system, open SDK, documented API,
 source-verified settlement paths, stable lifecycle events, and explorer-traced outcomes. The
 reference integration exists only to prove that an independent consumer can open a case, follow
-its challenge and appeal lifecycle, receive YES, NO, or INVALID finality, and execute an optional
+its draw, ballot, and appeal lifecycle, receive YES, NO, or INVALID finality, and execute an optional
 escrow ruling. The same interface can serve marketplaces, DAOs, service-level disputes,
 community decisions, and any World App that needs a credibly neutral result.
 

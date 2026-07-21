@@ -6,12 +6,10 @@ import { MissionProgress } from '@/components/MissionProgress';
 import { DEFAULT_SEED } from '@/lib/sim';
 import { Skeleton, useMounted, WidgetBoundary } from './components/primitives';
 import { AttackDemo } from './components/AttackDemo';
-import { FunnelReadout } from './components/FunnelReadout';
 import { CoreCourt } from './components/CoreCourt';
 import { LadderDemo } from './components/LadderDemo';
 import { ReputationDemo } from './components/ReputationDemo';
 import { RewardPayoutDemo } from './components/RewardPayoutDemo';
-import { WatchersDemo } from './components/WatchersDemo';
 import { CaseBrowser } from './components/CaseBrowser';
 
 export default function SandboxPage() {
@@ -85,24 +83,22 @@ export default function SandboxPage() {
               <strong>Expert lab</strong>
               <span className="sbx-simtag">Optional · roadmap</span>
             </span>
-            <small>Funnel, full court runs, appeals, reputation, payouts, watchers, and example cases</small>
+            <small>Full court runs, appeals, reputation, payouts, and example cases</small>
           </span>
         </summary>
         <div className="sbx-advanced-body">
           <p className="sbx-prose">
-            These controls preserve the original research simulator. Roadmap mechanics remain clearly labeled and do
-            not describe features already shipped in the live MVP.
+            These controls preserve the current court research simulator. Roadmap mechanics remain clearly labeled and do
+            not describe features already shipped in the live MVP. Every accepted case shown here uses the verified-human court path.
           </p>
           {!mounted ? (
             <LoadingSkeletons />
           ) : (
             <>
-              <WidgetBoundary name="optimistic funnel"><FunnelReadout /></WidgetBoundary>
               <WidgetBoundary name="core court"><CoreCourt seed={seed} /></WidgetBoundary>
               <WidgetBoundary name="dispute ladder"><LadderDemo /></WidgetBoundary>
               <WidgetBoundary name="reputation gate"><ReputationDemo /></WidgetBoundary>
               <WidgetBoundary name="reward-pool payout"><RewardPayoutDemo seed={seed} /></WidgetBoundary>
-              <WidgetBoundary name="watchers"><WatchersDemo /></WidgetBoundary>
               <WidgetBoundary name="case browser"><CaseBrowser seed={seed} /></WidgetBoundary>
             </>
           )}

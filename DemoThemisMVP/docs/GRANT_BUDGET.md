@@ -12,7 +12,7 @@ real humans complete the juror loop is what decides if the court works at all.
 >
 > **Grant requested: US$50,000** for milestones **M1–M6**, delivering the complete
 > production-ready DemoThemis v1 in approximately **three months**: verifiable randomness,
-> receipt-free ballots, optimistic settlement, private rewards and reputation, expanding
+> receipt-free ballots, work-based quotes, private rewards and reputation, expanding
 > appeals, parallel panels, an Invalid/void outcome, a stable resolution SDK, an independent
 > review of the completed protocol, per-draw presence and juror replacement, and moderated
 > verified-human testing.
@@ -63,7 +63,7 @@ real humans complete the juror loop is what decides if the court works at all.
 |---|---|---|---|---|
 | **M1** — VRF/drand randomness + core hardening | 1.5 pw | $3,300 | $700 | **$4,000** |
 | **M2** — Receipt-free ballots (MACI-library integration + bonded-coordinator wrapper) | 3.5 pw | $7,700 | $300 | **$8,000** |
-| **M3a** — Optimistic fast path + reward-pool cyclic payout | 1.5 pw | $3,300 | $700 | **$4,000** |
+| **M3a** — Work-based quote engine + reward-pool cyclic payout | 1.5 pw | $3,300 | $700 | **$4,000** |
 | **M3b** — Reputation + appeals + panels + Invalid/void + juror liveness | 2.5 pw | $5,500 | $500 | **$6,000** |
 | **M4** — Stable resolution SDK + neutral reference integration | 2.0 pw | $4,400 | $600 | **$5,000** |
 | **M5** — Independent review of the completed funded protocol | — | — | $10,000 | **$10,000** |
@@ -161,15 +161,15 @@ completed ballot and private-accounting surface is included in M5's independent 
 
 **Cost.** 3.5 person-weeks ($7,700) + $300 (MACI tooling and integration infrastructure).
 
-### M3a — Optimistic fast path + reward-pool cyclic payout — **$4,000** (Months 2–3)
+### M3a — Work-based quote engine + reward-pool cyclic payout — **$4,000** (Months 2–3)
 
-**Deliverable.** A bonded-assertion **optimistic fast path** that resolves uncontested cases
-without convening a jury, and the **reward-pool gated cyclic payout** (recency-weighted private
-distribution to active jurors, with only the aggregate and its correctness proof public),
-turning today's passive sink into a working juror incentive.
+**Deliverable.** A **work-based quote engine** that locks processing, expected panel work,
+reserve top-up, and capped operations into each accepted case price, plus the **reward-pool
+gated cyclic payout** (recency-weighted private distribution to active jurors, with only the
+aggregate and its correctness proof public), turning today's passive sink into a working juror incentive.
 
 **Acceptance criteria.** Each feature deployed and source-verified, each with an explorer trace
-(an optimistic settle that never reaches a jury; a proved aggregate reward-pool distribution that does not expose an individual juror's amount).
+(a quote whose locked inputs and cap reproduce its charged total; a proved aggregate reward-pool distribution that does not expose an individual juror's amount).
 
 **Cost.** 1.5 person-weeks ($3,300) + $700 gas/infra.
 
@@ -197,7 +197,7 @@ behavior are reconciled.
 ### M4 — Stable resolution SDK + neutral reference integration — **$5,000** (Months 2–3)
 
 **Deliverable.** A versioned TypeScript **resolution SDK** and documented API so any World App
-can open a well-defined question or disputed deal, follow assertion, challenge and appeal
+can open a well-defined question or disputed deal, follow draw, ballot, and appeal
 states, receive YES, NO, or INVALID finality, and optionally execute an escrow ruling. A neutral
 reference integration proves the full path on mainnet. The SDK includes stable events,
 idempotent reads, error handling, integration examples, and a migration policy so an external
@@ -206,7 +206,7 @@ application can build against DemoThemis without depending on unfinished court w
 **Acceptance criteria.** Published versioned SDK (npm + docs) and a reference integration that
 resolves at least one personhood-resolved question and one disputed deal through DemoThemis on
 mainnet, with transaction and finality traces on the explorer. Contract tests cover YES, NO,
-INVALID, challenge, appeal, timeout, replacement, and idempotent status reads.
+INVALID, appeal, timeout, replacement, and idempotent status reads.
 
 **Cost.** 2.0 person-weeks ($4,400) + $600 (infra / integration).
 
@@ -214,7 +214,7 @@ INVALID, challenge, appeal, timeout, replacement, and idempotent status reads.
 
 **Deliverable.** A third-party security review of the complete funded on-chain court after
 M1–M3b freeze its security surface: the five core contracts, World ID gate, verifiable
-randomness, receipt-free ballot adapter, private consequence accounting, optimistic path,
+randomness, receipt-free ballot adapter, private consequence accounting, work-based quote engine,
 reward distribution, reputation, appeals, parallel panels, INVALID finality, per-draw presence,
 decline/replacement, and the SDK-facing contract interface. The MVP **claims no audit anywhere**; this funds the independent review of
 the version that will actually serve verified humans and external applications.

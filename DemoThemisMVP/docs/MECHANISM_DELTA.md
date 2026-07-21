@@ -12,7 +12,7 @@ The full mechanism lives in the pitch site (`reference/demothemis-site/`, chapte
 | Random panel drawn **after** the question | Parallel pᴺ panels above a value line — milestone #3 |
 | Commit / reveal voting | Juror reputation / Wilson gate — milestone #3 |
 | 70/20/10 fee split + 2% escrow fee; **slash-to-pool, never to winners** | Reward-pool cyclic payout — milestone #3 |
-| **Atomic** escrow settlement (`resolve → escrow.settle`) | Optimistic fast path (~95% settle free) — milestone #3 |
+| **Atomic** escrow settlement (`resolve → escrow.settle`) | Work-based quote engine + reusable resolution SDK — milestones #3–4 |
 | **No admin override** (wire-once + phase clock are the entire admin surface) | (external security review — milestone #5) |
 | 77 Foundry tests (invariants + fuzz), >90% coverage, all sources verified | |
 
@@ -28,17 +28,16 @@ The full mechanism lives in the pitch site (`reference/demothemis-site/`, chapte
 | Reward-pool payout | The pool **pays active, high-quality jurors privately** through a gated cyclic distribution (Wilson-gated, recency-weighted); only the aggregate and its proof are public. It **rewards jurors, never compensates victims**. | **Passive sink on-chain.** `RewardPool` receives the 20% cut + every slash + rounding dust and exposes only `balance()`. It has **no payout/distribute function at all**. | The private gated distribution is funded-milestone #3 and is shown only in the sandbox. The MUSD-conservation invariant treats the pool as a terminal balance, so adding an on-chain payout would break it (and is flagged as scope creep in the plan, §11). |
 | Wrong-side slashing | A private margin-scaled debit is settled **post-appeal** and privately reversed if vindicated; the public sees only proved aggregate accounting | **Deferred.** Minority voters are not slashed on-chain; only no-shows are penalized (a public liveness forfeit → reward pool). | First-round coherence slashing is the conformity machine the reference warns against — it needs the appeal ladder to be fair. Private slash-to-truth + ladder + vindication returns in milestone #3. |
 | Draw randomness | drand / VRF | **`blockhash`-based** two-step draw (records `drawBlock = block.number + 1`, anyone cranks once it exists). Kills panel precompute, but is sequencer-influenceable in principle. | drand/VRF is funded-milestone #1. Documented limitation. |
-| Optimistic fast path | Bonded assertion + challenge window settles ~95% of cases free, off the jury | **Not built as contracts.** Demo cases go straight to the jury on purpose (the court is the novel claim). | Established art (UMA); funded milestone. Represented in the sandbox funnel and as a grayed-out step in the Mini App timeline. |
 | Dispute ladder + parallel panels | Panels 7 → 15 → 31 (three-floor rung bond, *not* a flat ×2), near-tie discount, two clocks; **above a value line, N independent panels (1/3/5) that must all agree**, so capture odds multiply `pᴺ` and attack cost rises with the pot past the 31-seat ceiling | **Single panel**, one automatic redraw on quorum miss, then status quo. No ladder, no parallel panels on-chain; the mainnet 3-seat panel is a deliberate demo size and security scales with pool width. | All panel-scaling structure is sandbox-only; the parallel-panels "pricing a takeover above the ceiling" is a centerpiece of the attack demo. |
-| Reputation / watchers | Private baseline-credited reputation commitments, Wilson 0.70 suspension gate, and privately proved draw bands **capped at 3× a newcomer**; exact scores and case histories are never public | **None on-chain** — the MVP draws uniformly at random, so there is no reputation weighting to cap. | Sandbox-only; private commitments and proofs return in milestone #3. |
-| Economic parameters | Endogenous — each value a function of its driver (`toupdate.md` part 2) | **Fixed**: $5 bond, 2 MUSD question fee, 2% escrow fee, 7/14 (cohort) or 3/3 (mainnet) panels. | MVP uses shipped constants; endogenous economics is a design-track item, not an MVP one; mainnet capture-resistance scales with the funded pool/panel width, not this demo size. |
+| Juror reputation | Private baseline-credited reputation commitments, Wilson 0.70 suspension gate, and privately proved draw bands **capped at 3× a newcomer**; exact scores and case histories are never public | **None on-chain** — the MVP draws uniformly at random, so there is no reputation weighting to cap. | Sandbox-only; private commitments and proofs return in milestone #3. |
+| Economic parameters | Work-based quotes price processing, expected panel work, reserve top-up, and capped operations from locked case inputs. | **Fixed**: $5 bond, 2 MUSD question fee, 2% escrow fee, 7/14 (cohort) or 3/3 (mainnet) panels. | MVP uses shipped constants; the work-based quote engine is a design-track item, not an MVP one; mainnet capture-resistance scales with the funded pool/panel width, not this demo size. |
 | Withdrawal | — | A withdrawn juror's **nullifier stays spent** (one seat per human); they `postBond()` to rejoin rather than re-verifying. | Keeps the sybil gate strict and simple. |
 | Token | USDC / WLD | **MockUSD**, a valueless 6-decimal token with a public faucet, on every instance. | Production token choice is a funded-milestone decision; no real money is at stake anywhere. |
 | Tie / no-quorum | — | Tie → status quo (question NO / escrow refunds payer). Fewer than ⌈panel/2⌉+1 reveals → one free redraw, then status quo. | One juror must never decide a deal alone; cases must never brick. An explicit **Invalid/void outcome** for genuinely ambiguous questions (flagged when parallel panels split) is funded-milestone #3; today ambiguity defaults to status-quo-NO. |
 
 ## Simulated in the sandbox only (clearly labeled)
 
-The case funnel (optimistic step + ~95% free settlement), the full dispute ladder, juror reputation (Wilson-interval gate), watchers / loser-side petitions, private invite rooms, and populations of simulated jurors. All generated data, badged as simulation.
+The full dispute ladder, juror reputation (Wilson-interval gate), private invite rooms, and populations of simulated jurors. All generated data, badged as simulation. Every accepted case in the simulator uses the verified-human court path.
 
 ## Out of the MVP entirely
 
@@ -48,7 +47,7 @@ Governance (both tokens, voting, the constitutional firewall); the prediction ma
 
 1. drand/VRF draw randomness + mainnet deployment of the core court.
 2. Receipt-free ballots (MACI-style, bonded coordinator v1) — hides juror addresses and votes.
-3. Optimistic assertion fast path + juror reputation + dispute ladder on-chain + the reward-pool gated cyclic payout (Wilson-gated, recency-weighted distribution to active jurors).
+3. Work-based quote engine + juror reputation + dispute ladder on-chain + the reward-pool gated cyclic payout (Wilson-gated, recency-weighted distribution to active jurors).
 4. Resolution / oracle SDK + first prediction-market integration (escrow/marketplace a later consumer of the same SDK).
 5. Security review. (No external audit is claimed anywhere in the MVP.)
 6. Juror UX hardening + moderated user-testing — the final step and the roadmap's largest line; AI makes the build cheap, so the weight goes to getting real verified humans through the juror loop.
@@ -89,8 +88,8 @@ from the on-chain core, are recorded here.
 - **Everything in `/sandbox` is simulated.** Simulated juror populations, simulated
   per-juror accuracies, simulated cases. The route carries a fixed simulation badge and
   every widget carries a "simulated" tag. No sandbox number is presented as real usage.
-  The "~95% settle free" optimistic-funnel figure is attributed to the roadmap, never to
-  MVP behavior. The seeded PRNG (mulberry32, fixed default seed) is for reproducibility of
+  Every accepted case follows the verified-human court path. The seeded PRNG (mulberry32,
+  fixed default seed) is for reproducibility of
   the curves and the "run 100 cases" sweep, not a randomness-security claim.
 
 ## Step 3.5 — on-chain World ID 4.0 (the IDKit → `WorldIDVerifier.verify` mapping)
