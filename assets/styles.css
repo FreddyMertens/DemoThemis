@@ -1782,7 +1782,16 @@ body[data-page-brand]:not([data-page-brand="omen"]) .sitenav :is(.brand, .nav-li
 
 @media (max-width: 1040px) {
   body[data-page-brand]:not([data-page-brand="omen"]) .sitenav .nav-links a::after {
+    right: auto;
+    width: 30%;
+    transform: none;
     transform-origin: left center;
+    transition: width 180ms ease, opacity 140ms ease, box-shadow 140ms ease;
+  }
+
+  body[data-page-brand]:not([data-page-brand="omen"]) .sitenav .nav-links a:is(:hover, :focus-visible, .active)::after {
+    width: calc(100% - .92rem);
+    transform: none;
   }
 }
 
