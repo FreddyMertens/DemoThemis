@@ -70,7 +70,7 @@ const defaultBrandMetadata = {
   icon: "assets/brand/demothemis/favicon.ico",
   icon32: "assets/brand/demothemis/mark-32.png",
   appleIcon: "assets/brand/demothemis/mark-180.png",
-  themeColor: "#f6f3f2"
+  themeColor: "#f5eee8"
 };
 
 const pageBrandMetadata = {
@@ -114,6 +114,7 @@ const pageBrandMetadata = {
   },
   "demothemis-mvp.html": {
     ...defaultBrandMetadata,
+    themeColor: "#f6f3f2",
     image: "assets/brand/social/mvp-1200x630.jpg",
     imageAlt: "DemoThemis Live Demo MVP"
   }
@@ -414,7 +415,7 @@ function buildRedirects() {
 }
 
 function build404() {
-  return `<!DOCTYPE html>\n<html lang="en">\n<head>\n<meta charset="UTF-8">\n<meta name="viewport" content="width=device-width, initial-scale=1.0">\n<title>DemoThemis: page not found</title>\n<meta name="robots" content="noindex">\n<meta name="theme-color" content="#f6f3f2">\n<link rel="icon" href="assets/brand/demothemis/favicon.ico">\n<link rel="stylesheet" href="assets/styles.css">\n</head>\n<body data-page-brand="demothemis">\n<main class="content wrap" style="padding-top:4rem">\n  <img class="brand-mark" src="assets/brand/demothemis/mark-192.png" width="72" height="72" alt="">\n  <p class="sec-label">404</p>\n  <h1>Page not found</h1>\n  <p>The public site only serves the published DemoThemis chapters and assets.</p>\n  <p><a href="/">Return home</a></p>\n</main>\n</body>\n</html>\n`;
+  return `<!DOCTYPE html>\n<html lang="en">\n<head>\n<meta charset="UTF-8">\n<meta name="viewport" content="width=device-width, initial-scale=1.0">\n<title>DemoThemis: page not found</title>\n<meta name="robots" content="noindex">\n<meta name="theme-color" content="#f5eee8">\n<link rel="icon" href="assets/brand/demothemis/favicon.ico">\n<link rel="stylesheet" href="assets/styles.css">\n</head>\n<body data-page-brand="demothemis">\n<main class="content wrap" style="padding-top:4rem">\n  <img class="brand-mark" src="assets/brand/demothemis/mark-192.png" width="72" height="72" alt="">\n  <p class="sec-label">404</p>\n  <h1>Page not found</h1>\n  <p>The public site only serves the published DemoThemis chapters and assets.</p>\n  <p><a href="/">Return home</a></p>\n</main>\n</body>\n</html>\n`;
 }
 
 ensureInsideRoot(outDir);

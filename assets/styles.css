@@ -36,11 +36,45 @@
   --half-maxw: 22rem;
 
   /* Canonical product palettes sampled from the approved brand artwork. */
-  --dt-canvas: #f6f3f2;
-  --dt-surface: #fffdf9;
-  --dt-soft: #e9e8e5;
-  --dt-emboss: #ccc3bc;
-  --dt-border: #ab9e94;
+  --dt-canvas: #f5eee8;
+  --dt-surface: #fff9f2;
+  /* Ivory-to-stone material sampled from the approved full DemoThemis wordmark. */
+  --dt-brand-gradient-core: linear-gradient(
+    104deg,
+    #fff9f2 0%,
+    #fcf5ee 28%,
+    #f5eee8 58%,
+    #eaded5 100%
+  );
+  --dt-brand-gradient:
+    radial-gradient(90% 120% at 100% 100%, rgba(255, 249, 242, .42), transparent 62%),
+    var(--dt-brand-gradient-core);
+  --dt-brand-gradient-soft: linear-gradient(
+    112deg,
+    #fff9f2 0%,
+    #faf2ea 44%,
+    #efe4dc 100%
+  );
+  --dt-brand-gradient-glass: linear-gradient(
+    104deg,
+    rgba(255, 249, 242, .92) 0%,
+    rgba(245, 238, 232, .84) 58%,
+    rgba(234, 222, 213, .78) 100%
+  );
+  /* Category materials keep the DemoThemis ivory substrate while making
+     adjacent conceptual routes immediately distinguishable. */
+  --dt-category-problem-surface:
+    radial-gradient(120% 145% at 0% 0%, rgba(80, 177, 148, .26), transparent 60%),
+    var(--dt-brand-gradient-soft);
+  --dt-category-resistance-surface:
+    radial-gradient(120% 145% at 0% 0%, rgba(126, 108, 196, .24), transparent 60%),
+    var(--dt-brand-gradient-soft);
+  --dt-category-quality-surface:
+    radial-gradient(120% 145% at 0% 0%, rgba(210, 158, 74, .26), transparent 60%),
+    var(--dt-brand-gradient-soft);
+  --dt-soft: #e8ded6;
+  --dt-emboss: #ccbbaf;
+  --dt-border: #ad998a;
   --dt-accent: #786a5e;
   --dt-accent-strong: #6a5b50;
   --dt-ink: #292522;
@@ -96,19 +130,57 @@ body.theme-market {
 /* Product themes are opt-in so the excluded run-through retains its baseline. */
 body[data-page-brand="demothemis"] {
   --canvas: var(--dt-canvas);
-  --bg: #f2efec;
+  --bg: #f1e8e1;
   --surface: var(--dt-surface);
   --ink: var(--dt-ink);
   --ink-soft: #433c37;
   --muted: #6f655e;
   --faint: #948981;
-  --line: #e5ded8;
-  --line-strong: #d4cac2;
+  --line: #e6d9cf;
+  --line-strong: #d4c3b7;
   --accent: var(--dt-accent);
-  --accent-soft: #ece7e3;
+  --accent-soft: #eee4dc;
   --accent-ink: var(--dt-accent-strong);
   --shadow: 0 1px 2px rgba(41, 37, 34, .05), 0 14px 32px -18px rgba(106, 91, 80, .25);
   --shadow-lg: 0 2px 6px rgba(41, 37, 34, .07), 0 28px 56px -28px rgba(106, 91, 80, .34);
+}
+
+/* The Live MVP keeps the original cooler ivory palette while the editorial
+   DemoThemis theme uses the warmer reading surface. */
+body[data-page-brand="demothemis"][data-dt-palette="original"] {
+  --dt-canvas: #f6f3f2;
+  --dt-surface: #fffdf9;
+  --dt-brand-gradient-core: linear-gradient(
+    104deg,
+    #fffdf9 0%,
+    #fdfbf8 28%,
+    #f6f3f2 58%,
+    #eee9e5 100%
+  );
+  --dt-brand-gradient:
+    radial-gradient(90% 120% at 100% 100%, rgba(255, 253, 249, .42), transparent 62%),
+    var(--dt-brand-gradient-core);
+  --dt-brand-gradient-soft: linear-gradient(
+    112deg,
+    #fffdf9 0%,
+    #faf8f5 44%,
+    #f2eeeb 100%
+  );
+  --dt-brand-gradient-glass: linear-gradient(
+    104deg,
+    rgba(255, 253, 249, .92) 0%,
+    rgba(246, 243, 242, .84) 58%,
+    rgba(238, 233, 229, .78) 100%
+  );
+  --dt-soft: #e9e8e5;
+  --dt-emboss: #ccc3bc;
+  --dt-border: #ab9e94;
+  --canvas: var(--dt-canvas);
+  --bg: #f2efec;
+  --surface: var(--dt-surface);
+  --line: #e5ded8;
+  --line-strong: #d4cac2;
+  --accent-soft: #ece7e3;
 }
 
 body[data-page-brand="omen"] {
@@ -1041,7 +1113,7 @@ body .diagram-inner .exhaust > .e:nth-of-type(3) {
 .brand-panel[data-brand="demothemis"] {
   background:
     radial-gradient(circle at 100% 0, rgba(204, 195, 188, .34), transparent 13rem),
-    var(--dt-surface);
+    var(--dt-brand-gradient);
 }
 .brand-panel[data-brand="omen"] {
   background:
@@ -1065,7 +1137,7 @@ body .diagram-inner .exhaust > .e:nth-of-type(3) {
   border-color: var(--dt-border);
   background:
     radial-gradient(circle at 94% 4%, rgba(204, 195, 188, .34), transparent 17rem),
-    linear-gradient(145deg, var(--dt-surface), var(--dt-canvas));
+    var(--dt-brand-gradient);
 }
 .product-pair .product[data-brand="omen"] {
   --product-color: var(--omm-green);
@@ -1159,7 +1231,7 @@ body[data-page-brand="omen"] .hero.brand-hero .pill {
   color: var(--omm-mint);
 }
 
-/* DemoThemis reading controls stay distinct while sharing one stone palette. */
+/* DemoThemis reading controls share one material but preserve category colour. */
 body[data-page-brand="demothemis"] .reader-tabs {
   border-color: var(--dt-border);
   background: color-mix(in srgb, var(--dt-surface) 90%, transparent);
@@ -1170,24 +1242,75 @@ body[data-page-brand="demothemis"] .reader-tab[aria-selected="true"] {
   color: var(--dt-surface);
   box-shadow: 0 8px 20px rgba(106, 91, 80, .25);
 }
-body[data-page-brand="demothemis"] .reading-category[data-reader-category="problem"] .simple-category-heading,
-body[data-page-brand="demothemis"] .underhood-map > a:nth-child(1) {
-  border-color: color-mix(in srgb, var(--dt-border) 58%, var(--line));
-  background: color-mix(in srgb, var(--dt-soft) 48%, var(--dt-surface));
+body[data-page-brand="demothemis"] :is(
+  .reading-category[data-reader-category="problem"],
+  .underhood-map > a:nth-child(1)
+) {
+  --dt-category-accent: #3d9279;
+  --dt-category-border: #94c9b9;
+  --dt-category-ink: #246d58;
+  --dt-category-surface: var(--dt-category-problem-surface);
 }
-body[data-page-brand="demothemis"] .reading-category[data-reader-category="resistance"] .simple-category-heading,
-body[data-page-brand="demothemis"] .underhood-map > a:nth-child(2) {
-  border-color: color-mix(in srgb, var(--dt-accent) 45%, var(--line));
-  background: color-mix(in srgb, var(--dt-emboss) 24%, var(--dt-surface));
+body[data-page-brand="demothemis"] :is(
+  .reading-category[data-reader-category="resistance"],
+  .underhood-map > a:nth-child(2)
+) {
+  --dt-category-accent: #7562b7;
+  --dt-category-border: #b9afe0;
+  --dt-category-ink: #58489a;
+  --dt-category-surface: var(--dt-category-resistance-surface);
 }
-body[data-page-brand="demothemis"] .reading-category[data-reader-category="quality"] .simple-category-heading,
-body[data-page-brand="demothemis"] .underhood-map > a:nth-child(3) {
-  border-color: color-mix(in srgb, var(--dt-accent-strong) 38%, var(--line));
-  background: color-mix(in srgb, var(--dt-border) 18%, var(--dt-surface));
+body[data-page-brand="demothemis"] :is(
+  .reading-category[data-reader-category="quality"],
+  .underhood-map > a:nth-child(3)
+) {
+  --dt-category-accent: #b77c26;
+  --dt-category-border: #dfc18e;
+  --dt-category-ink: #8a5a18;
+  --dt-category-surface: var(--dt-category-quality-surface);
 }
-body[data-page-brand="demothemis"] .simple-category-heading .sec-label,
-body[data-page-brand="demothemis"] .underhood-map .eyebrow {
-  color: var(--dt-accent-strong) !important;
+body[data-page-brand="demothemis"] .reading-category .simple-category-heading,
+body[data-page-brand="demothemis"] .underhood-map > a {
+  border-color: var(--dt-category-border);
+  background-color: var(--dt-canvas);
+  background-image: var(--dt-category-surface);
+}
+body[data-page-brand="demothemis"] .underhood-map > a:not(:hover):not(:focus-visible) {
+  border-color: var(--dt-category-border);
+  box-shadow: 0 0 0 1px color-mix(in srgb, var(--dt-category-accent) 10%, transparent), var(--shadow);
+}
+body[data-page-brand="demothemis"] .reading-category .simple-category-heading .sec-label,
+body[data-page-brand="demothemis"] .underhood-map > a .eyebrow {
+  color: var(--dt-category-ink) !important;
+}
+body[data-page-brand="demothemis"] .underhood-map > a {
+  overflow: hidden;
+}
+body[data-page-brand="demothemis"] .underhood-map > a::before {
+  position: absolute;
+  top: 0;
+  right: 1rem;
+  left: 1rem;
+  height: 2px;
+  border-radius: 999px;
+  background: linear-gradient(90deg, transparent, var(--dt-category-accent) 22% 78%, transparent);
+  content: "";
+  opacity: .68;
+  pointer-events: none;
+}
+body[data-page-brand="demothemis"] .underhood-map > a .link-cue span {
+  border: 1px solid color-mix(in srgb, var(--dt-category-accent) 24%, transparent);
+  background: color-mix(in srgb, var(--dt-category-accent) 9%, rgba(255, 255, 255, .9));
+  color: var(--dt-category-ink);
+}
+
+@media (hover: hover) and (pointer: fine) {
+  body[data-page-brand="demothemis"] .underhood-map > a:hover .link-cue span {
+    border-color: rgba(var(--dt-emission-rgb), .72);
+    background: color-mix(in srgb, var(--dt-emission) 10%, var(--dt-surface));
+    color: var(--dt-emission-ink);
+    box-shadow: 0 0 8px rgba(var(--dt-emission-rgb), .22);
+  }
 }
 
 /* Omen uses dark structure and electric accents without turning long copy neon. */
@@ -2397,6 +2520,126 @@ body[data-page-brand="neutral"] .map-card[data-brand]:active {
   transform: translateY(-1px) scale(.995);
   box-shadow: var(--shadow);
   transition-duration: 55ms;
+}
+
+/* ===== DemoThemis ivory material surfaces =====
+   Large paper surfaces borrow the full wordmark's warm left-to-right gradient.
+   Inputs and semantic status fills stay flat so interaction and meaning remain clear. */
+body[data-page-brand="demothemis"] :is(
+  .simple-card,
+  .simple-step,
+  .diagram-inner,
+  .widget,
+  .compare-col,
+  .product,
+  .series-nav a,
+  .pair-link,
+  .toc,
+  .panel-card,
+  .board,
+  .score,
+  .attack,
+  .story-card,
+  .dependency-card,
+  .insight-panel,
+  .stress-hero,
+  .stress-row,
+  .lab-tabs
+) {
+  background-color: var(--dt-canvas);
+  background-image: var(--dt-brand-gradient-soft);
+}
+
+body[data-page-brand="demothemis"] :is(
+  .reader-tabs,
+  .mvp-button.secondary,
+  .mvp-sim-site-chrome,
+  .mvp-tutorial-hud,
+  .mvp-tab-list,
+  .mvp-comparison-row.mvp-comparison-header,
+  .mvp-sim-app .oracle-tabs
+) {
+  background-color: rgba(245, 238, 232, .88);
+  background-image: var(--dt-brand-gradient-glass);
+}
+
+body[data-page-brand="demothemis"] :is(
+  .mvp-case-card,
+  .mvp-submit-card,
+  .mvp-product-footer,
+  .mvp-comparison-shell,
+  .mvp-sim-app .oracle-case-card,
+  .mvp-sim-app .oracle-jury-card,
+  .mvp-sim-app .oracle-ballot,
+  .mvp-sim-app .oracle-submit-form,
+  .mvp-sim-app .oracle-submit-steps,
+  .mvp-sim-app .oracle-fee-card,
+  .mvp-sim-settlement,
+  .mvp-preview-onboard-topbar,
+  .mvp-preview-disclosure,
+  .mvp-preview-onboard-side
+) {
+  background-color: var(--dt-canvas);
+  background-image: var(--dt-brand-gradient);
+}
+
+body[data-page-brand="demothemis"] .mvp-comparison-cell.is-live {
+  background-color: rgba(245, 238, 232, .76);
+  background-image: var(--dt-brand-gradient-glass);
+}
+
+body[data-page-brand="demothemis"] .mvp-comparison-label {
+  background-color: var(--dt-canvas);
+  background-image: var(--dt-brand-gradient-soft);
+}
+
+/* Repeated teaching cards inherit their section colour, then vary only the
+   placement and strength of that wash. This separates peers without implying
+   unrelated success, warning, or product states. */
+body[data-page-brand="demothemis"] .reading-category :is(.simple-card, .simple-step) {
+  --dt-peer-wash: color-mix(in srgb, var(--dt-category-accent) 10%, transparent);
+  --dt-peer-origin: 0% 0%;
+  background-color: var(--dt-canvas);
+  background-image:
+    radial-gradient(125% 145% at var(--dt-peer-origin), var(--dt-peer-wash), transparent 58%),
+    var(--dt-brand-gradient-soft);
+}
+
+body[data-page-brand="demothemis"] .reading-category :is(.simple-card, .simple-step):nth-child(3n + 2) {
+  --dt-peer-wash: color-mix(in srgb, var(--dt-category-accent) 7%, transparent);
+  --dt-peer-origin: 100% 0%;
+}
+
+body[data-page-brand="demothemis"] .reading-category :is(.simple-card, .simple-step):nth-child(3n) {
+  --dt-peer-wash: color-mix(in srgb, var(--dt-category-accent) 13%, transparent);
+  --dt-peer-origin: 50% 100%;
+}
+
+body[data-page-brand="demothemis"] .reading-category :is(.simple-card, .simple-step):not(:hover) {
+  border-color: color-mix(in srgb, var(--dt-category-accent) 25%, var(--line));
+}
+
+body[data-page-brand="demothemis"] .reading-category :is(.simple-card .num, .simple-step-marker) {
+  border-color: color-mix(in srgb, var(--dt-category-accent) 42%, var(--line));
+  background: color-mix(in srgb, var(--dt-category-accent) 11%, var(--dt-surface));
+  color: var(--dt-category-ink);
+  box-shadow: 0 0 7px color-mix(in srgb, var(--dt-category-accent) 12%, transparent);
+}
+
+body[data-page-brand="neutral"] :is(
+  .brand-panel[data-brand="demothemis"],
+  .product-pair .product[data-brand="demothemis"],
+  .houses .house--demothemis,
+  .amp .node[data-brand="demothemis"]
+) {
+  background-color: var(--dt-canvas);
+  background-image: var(--dt-brand-gradient);
+}
+
+body[data-page-brand="neutral"] .map-card[data-brand="demothemis"] {
+  background:
+    var(--dt-brand-gradient-core) padding-box,
+    var(--chapter-rim) border-box;
 }
 
 @media (prefers-reduced-motion: reduce) {

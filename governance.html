@@ -11,7 +11,7 @@
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@500;700&family=Newsreader:opsz,wght@6..72,200..700&display=swap" rel="stylesheet">
-<link rel="stylesheet" href="assets/styles.css?v=20260719-emission-11">
+<link rel="stylesheet" href="assets/styles.css?v=20260721-warm-ivory-1">
 <style>
   .seg { display: inline-flex; gap: .3rem; flex-wrap: wrap; }
   .seg button { font-family: var(--sans); font-weight: 600; font-size: .85rem; padding: .35rem .75rem; border-radius: 8px; border: 1px solid var(--line-strong); background: var(--bg); color: var(--muted); cursor: pointer; transition: background .12s ease, color .12s ease; }
@@ -260,7 +260,7 @@
           <tr><td>Per-person cap</td><td><span class="param">0.5%</span> of the court house</td><td>Change needs a crowd.</td></tr>
           <tr><td>Token lock</td><td>30 days before counting; snapshot at proposal (both tokens)</td><td>No rented votes, no buying after the question is asked.</td></tr>
           <tr><td>Quorum / timelock</td><td>4% of active weight / 7 days (both houses)</td><td>Allows participation, exit, and challenge.</td></tr>
-          <tr><td>Court parameter ranges</td><td>juror base pay and complexity bands; reward-reserve target; public operations budget and cap; jury-fee ceiling <span class="param">0.5&ndash;3%</span>; resolved-case tests 5&ndash;20% of the score window; ladder rail &times;1.5&ndash;&times;3; challenge window 2&ndash;14 days; appeal window 2&ndash;8 weeks</td><td>Pricing changes by epoch inside hard bounds; no vote can restore a permanent fee split or alter an active quote.</td></tr>
+          <tr><td>Court parameter ranges</td><td>juror base pay and complexity bands; reward-reserve target; public operations budget and cap; jury-fee ceiling <span class="param">0.5&ndash;3%</span>; resolved-case tests 5&ndash;20% of the score window; ladder rail &times;1.5&ndash;&times;3; appeal window 2&ndash;8 weeks</td><td>Pricing changes by epoch inside hard bounds; no vote can restore a permanent fee split or alter an active quote.</td></tr>
           <tr><td>Ballots</td><td>Court: the locked box. Market: ordinary on-chain token vote</td><td>Court votes must be unsellable; market votes are capital, and capital may speak as itself.</td></tr>
           <tr><td>Constitution</td><td>No dial exists</td><td>Independent pricing and treasuries, personal sublinear weight, finality, and neutral slash routing are permanent.</td></tr>
         </tbody>
@@ -277,11 +277,11 @@
         <thead><tr><th>Token</th><th>Genesis allocation</th><th>After genesis</th><th>Economic role</th></tr></thead>
         <tbody>
           <tr data-brand="omen"><td>OmenMarketMaker</td><td>1B: 30% community airdrop and usage; 25% vested investors; 25% treasury; 20% team over four years with a one-year cliff</td><td>10% year-one growth emissions, tapering to 0% over ten years</td><td>Funds market incentives, integrations, referrals, and liquidity; seeks profit.</td></tr>
-          <tr data-brand="demothemis"><td>DemoThemis court</td><td>Fixed 1B: 50% streamed over eight years by decayed service score; 20% to first-year case sponsors and jurors; 20% treasury; 10% builders</td><td>No inflation; trades freely because voting weight, not transfer restrictions, supplies the defense</td><td>Fees pay jurors and reward pools; forfeited assertion bonds pay successful catchers.</td></tr>
+          <tr data-brand="demothemis"><td>DemoThemis court</td><td>Fixed 1B: 50% streamed over eight years by decayed service score; 20% to first-year case sponsors and jurors; 20% treasury; 10% builders</td><td>No inflation; trades freely because voting weight, not transfer restrictions, supplies the defense</td><td>Fees pay jurors and reward pools; failed appeal bonds fund the reward pool.</td></tr>
         </tbody>
       </table>
     </div>
-    <p>OmenMarketMaker's emissions fuel its own demand. DemoThemis's fixed supply is earned for court service but never pays salaries: DemoThemis fees pay jurors and reward pools, while a successful catcher receives the false asserter's bond. Each token serves only its own product: one governs a commercial market, the other governs neutral arbitration.</p>
+    <p>OmenMarketMaker's emissions fuel its own demand. DemoThemis's fixed supply is earned for court service but never pays salaries: DemoThemis fees pay jurors and reward pools, while a failed appeal bond funds the reward pool for the wider panel. Each token serves only its own product: one governs a commercial market, the other governs neutral arbitration.</p>
     <p>Public vesting, treasury, service-distribution, and voter-concentration reports keep the electorate legible. Broad participation completes the same anti-capture design enforced by the root, service multiplier, and per-person cap.</p>
   </section>
 

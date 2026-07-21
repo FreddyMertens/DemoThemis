@@ -5,6 +5,29 @@
   --foreground: #292522;
   --surface: #fffdf9;
   --surface-soft: #f2efec;
+  /* Canonical ivory material sampled from the approved full DemoThemis wordmark. */
+  --dt-brand-gradient-core: linear-gradient(
+    104deg,
+    #fffdf9 0%,
+    #fdfbf8 28%,
+    #f6f3f2 58%,
+    #eee9e5 100%
+  );
+  --dt-brand-gradient:
+    radial-gradient(90% 120% at 100% 100%, rgba(255, 253, 249, 0.42), transparent 62%),
+    var(--dt-brand-gradient-core);
+  --dt-brand-gradient-soft: linear-gradient(
+    112deg,
+    #fffdf9 0%,
+    #faf8f5 44%,
+    #f2eeeb 100%
+  );
+  --dt-brand-gradient-glass: linear-gradient(
+    104deg,
+    rgba(255, 253, 249, 0.92) 0%,
+    rgba(246, 243, 242, 0.84) 58%,
+    rgba(238, 233, 229, 0.78) 100%
+  );
   --ink: #292522;
   --ink-soft: #433c37;
   --muted: #6f655e;
@@ -5382,6 +5405,62 @@ a.text-slate-950 {
   outline: 2px solid var(--dt-emission-ink);
   outline-offset: 2px;
   box-shadow: 0 0 0 4px rgba(var(--dt-emission-rgb), .17), 0 0 9px rgba(var(--dt-emission-rgb), .2);
+}
+
+/* Large court surfaces use the wordmark's ivory-to-stone material.
+   Form fields and semantic success/warning/error fills remain flat. */
+:is(
+  .app-mechanism-card,
+  .app-mechanism-step,
+  .app-concept-card:not(.is-inversion),
+  .app-scope-card,
+  .app-enforcement,
+  .app-technical-disclosure,
+  .app-evidence-card,
+  .app-resolver,
+  .app-home-drawer,
+  .mission-progress,
+  .court-instance,
+  .court-disclosure,
+  .court-case-preview,
+  .court-about-links > a,
+  .oracle-case-card,
+  .oracle-jury-card,
+  .oracle-ballot,
+  .oracle-submit-form,
+  .oracle-fee-card,
+  .oracle-receipt-history,
+  .oracle-submit-steps,
+  .oracle-roadmap-shell
+) {
+  background-color: var(--background);
+  background-image: var(--dt-brand-gradient);
+}
+
+:is(
+  .site-menu-button,
+  .app-button:not(.is-primary):not(.is-quiet),
+  .oracle-hero-actions a,
+  .oracle-tabs,
+  .oracle-secondary-action
+) {
+  background-color: rgba(246, 243, 242, 0.88);
+  background-image: var(--dt-brand-gradient-glass);
+}
+
+.court-page :is(section, article, div, a).bg-white {
+  background-color: var(--background) !important;
+  background-image: var(--dt-brand-gradient-soft) !important;
+}
+
+.oracle-roadmap-label {
+  background-color: var(--background);
+  background-image: var(--dt-brand-gradient-soft);
+}
+
+.oracle-roadmap-cell.is-live {
+  background-color: rgba(246, 243, 242, .78);
+  background-image: var(--dt-brand-gradient-glass);
 }
 
 @media (prefers-reduced-motion: reduce) {

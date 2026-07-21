@@ -413,7 +413,7 @@ function checkChapterSequence(failures) {
   assert(!/Continue for the mechanics|explained once simply and then under the hood/i.test(demoThemis), "DemoThemis must not describe the two reader modes as sequential content", failures);
   assert(demoThemis.includes("Different evidence, one quality record") && demoThemis.includes("No case type is excluded"), "DemoThemis must use one juror-quality record across every case type", failures);
   assert(!/Two courts, one constitution|separate rubric court|kept separate from the objective|only the promised standard and grader change/i.test(demoThemis), "DemoThemis must remove the split objective-versus-rubric accuracy system", failures);
-  assert(runThrough.includes("What evidence defines the case?") && runThrough.includes("Every final case contributes difficulty-adjusted agreement"), "Run-through must show one quality system for every final case", failures);
+  assert(runThrough.includes("Every case updates juror quality") && runThrough.includes("All well-defined cases contribute to sustainable consensus"), "Run-through must show one quality system for every final case", failures);
   assert(!/Objective or rubric court\?|grade jurors differently|Only clean, checkable outcomes grade jurors|without influencing future juror scores/i.test(runThrough), "Run-through must not exclude non-objective cases from juror-quality scoring", failures);
   assert(bootstrapLoop.includes("Every completed case strengthens scoring") && bootstrapLoop.includes("every final case contributes"), "Bootstrap loop must explain that every final case contributes to juror quality", failures);
   assert(!/Rubric courts handle subjective questions|Every aptitude test passes a quality gate|eligible market outcomes steadily supply independently verified, curated aptitude tests/i.test(bootstrapLoop), "Bootstrap loop must remove the objective-only accuracy model", failures);
@@ -516,7 +516,7 @@ function checkStateMachineData(html, failures) {
   }
 
   const start = html.indexOf("var SYSTEM_PHASES =");
-  const end = html.indexOf("var MACHINE_ROUTE_COPY =");
+  const end = html.indexOf("var MACHINE_FOCUS_COPY =");
   assert(start >= 0 && end > start, "run-through state-machine data block is missing or malformed", failures);
   if (start < 0 || end <= start) return;
 
@@ -539,7 +539,7 @@ function checkStateMachineData(html, failures) {
   assert(idSet.size === ids.length, "state machine contains duplicate state IDs", failures);
   assert(data.states.every((state) => phaseIds.has(state.phase)), "state machine contains a lifecycle state with an invalid phase", failures);
 
-  const allowedRoutes = new Set(["quiet", "dispute"]);
+  const allowedRoutes = new Set(["dispute"]);
   assert(allStates.every((state) => (state.routes || []).every((route) => allowedRoutes.has(route))), "state machine contains an unknown route tag", failures);
   const mappedStages = Array.from(new Set(data.states.flatMap((state) => state.sim || []))).sort((a, b) => a - b);
   assert(JSON.stringify(mappedStages) === JSON.stringify(Array.from({ length: 13 }, (_, index) => index)), "state machine must map every simulator event from 0 through 12", failures);
@@ -554,12 +554,14 @@ function checkStateMachineData(html, failures) {
   }
   assert(hasEdge("private-room", "event-close", "skip"), "private rooms must bypass public graduation", failures);
   assert(hasEdge("pooled-claims", "event-close", "skip"), "pooled claims must bypass the optional parlay", failures);
-  assert(hasEdge("quiet-result", "release-rule", "merge"), "quiet settlement must bypass court and merge at release", failures);
-  assert(hasEdge("larger-panel", "panel-drawn", "loop"), "a funded appeal must loop to a fresh panel draw", failures);
+  assert(hasEdge("event-close", "resolution-requested", "forward") && hasEdge("resolution-requested", "court-quote-funded", "forward") && hasEdge("court-quote-funded", "case-locked", "forward"), "every closed market must fund and lock the independent court handoff", failures);
+  assert(hasEdge("larger-panel", "panel-plan", "loop"), "a funded appeal must loop to a fresh wider panel plan", failures);
   const seatCheck = data.states.find((state) => state.id === "seat-checked");
   assert(seatCheck && /deterministic standby/i.test(seatCheck.detail || ""), "seat checks must explain deterministic standby continuity", failures);
-  assert(hasEdge("curation-gate", "record-only", "branch") && hasEdge("curation-gate", "quality-update", "branch"), "quality evidence must branch on whether later independent confirmation exists", failures);
-  assert(hasEdge("closed-record", "collusion-clock", "parallel") && hasEdge("closed-record", "bootstrap-loop", "parallel"), "post-finality accountability and growth must run in parallel", failures);
+  assert(hasEdge("panel-consensus", "provisional-verdict", "branch") && hasEdge("panel-consensus", "invalid-verdict", "branch"), "parallel panels must explicitly support consensus or an INVALID result", failures);
+  assert(hasEdge("court-final", "signed-ruling", "forward") && hasEdge("signed-ruling", "ruling-handoff", "forward") && hasEdge("ruling-handoff", "omen-release-rule", "forward") && hasEdge("omen-release-rule", "settle-funds", "forward") && hasEdge("settle-funds", "market-record", "forward"), "the signed DemoThemis ruling must return to OmenMarketMaker before market payout", failures);
+  assert(hasEdge("signed-ruling", "quality-update", "parallel") && hasEdge("quality-update", "external-evidence", "parallel") && hasEdge("signed-ruling", "collusion-clock", "parallel"), "juror learning, optional later evidence, and accountability must remain post-finality rails", failures);
+  assert(hasEdge("market-record", "bootstrap-loop", "parallel"), "the market-demand loop must begin from a completed OmenMarketMaker record", failures);
 
   function routeReaches(route, startId, targetId) {
     const allowed = new Set(allStates.filter((state) => (state.routes || []).includes(route)).map((state) => state.id));
@@ -576,8 +578,7 @@ function checkStateMachineData(html, failures) {
     }
     return false;
   }
-  assert(routeReaches("quiet", "rules-fixed", "closed-record"), "quiet route is not continuous from question to closed record", failures);
-  assert(routeReaches("dispute", "rules-fixed", "closed-record"), "disputed route is not continuous from question through court to closed record", failures);
+  assert(routeReaches("dispute", "rules-fixed", "market-record"), "default disputed route is not continuous from question through court to the closed market record", failures);
   assert(!/SYSTEM_EXCEPTIONS|kind:\s*["']exception["']/i.test(html), "run-through must stay focused on successful product routes", failures);
   assert(/function\s+initSystemStateMachine\s*\(/.test(html) && /initSystemStateMachine\s*\(\s*\)\s*;/.test(html), "state machine initialization is missing", failures);
 }
@@ -973,41 +974,43 @@ function checkCompactAppViews(html, failures) {
     failures
   );
 
-  const resultStart = demoSnapshot(7, "start");
-  const postTicket = demoBlock(resultStart, (block) => block.type === "ticket" && rowValue(block, "Result"));
+  const resolutionStart = demoSnapshot(7, "start");
+  const resolutionRequest = demoBlock(resolutionStart, (block) => block.type === "record" && block.title === "Resolution request");
+  const resolutionOdds = demoBlock(resolutionStart, (block) => block.type === "odds" && block.title === "Secondary trading live");
   assert(
-    rowValue(postTicket, "Result") === "YES" && rowValue(postTicket, "Challenge period") === "One week" && postTicket.summaryValue === "$250" && !demoBlock(resultStart, (block) => block.type === "scoreboard"),
-    "Event 07 must present a production confirmation with the result, challenge period, and exact bond",
+    resolutionStart && resolutionStart.page.route === "/markets/england-euro-final/resolution" && rowValue(resolutionRequest, "Provider") === "DemoThemis" && /stays here/i.test(rowValue(resolutionRequest, "Market escrow") || "") && resolutionOdds && resolutionOdds.yes === 91 && resolutionOdds.no === 9,
+    "Event 07 must fund DemoThemis from a production resolution page while OmenMarketMaker keeps the market escrow",
     failures
   );
-  const proposalRecord = demoBlock(demoSnapshot(7, "after-1"), (block) => block.type === "record" && block.title === "Proposal details");
+  assert(!/bond|challenge period|asserted/i.test(JSON.stringify(resolutionStart.page)), "Event 07 must not restore the removed assertion and watcher path", failures);
+  const fundedResolution = demoSnapshot(7, "after-1");
+  const fundedRecord = demoBlock(fundedResolution, (block) => block.type === "record" && block.title === "Funded resolution");
   assert(
-    proposalRecord && Array.isArray(proposalRecord.details) && /\$250 locked/i.test(rowValue(proposalRecord, "Bond") || "") && /UTC/i.test(rowValue(proposalRecord, "Challenge ends") || "") && /^0x/i.test(rowValue(proposalRecord, "Transaction") || ""),
-    "Event 07 must keep bond, deadline, and transaction details on the published result page",
+    fundedRecord && fundedResolution.page.route === "/markets/england-euro-final/resolution/funded" && rowValue(fundedRecord, "DemoThemis quote") === "Funded separately" && /stays here/i.test(rowValue(fundedRecord, "Market escrow") || "") && /^0x/i.test(rowValue(fundedRecord, "Transaction") || ""),
+    "Event 07 must finish on a durable funded-resolution record with separate custody",
     failures
   );
 
-  const challengeStart = demoSnapshot(8, "start");
-  const challengeTicket = demoBlock(challengeStart, (block) => block.type === "ticket" && rowValue(block, "Proposed result"));
-  const challengeStartOdds = demoBlock(challengeStart, (block) => block.type === "odds" && block.title === "Current market odds");
+  const handoffStart = demoSnapshot(8, "start");
+  const handoffRecord = demoBlock(handoffStart, (block) => block.type === "record" && block.title === "Funded handoff");
+  const handoffBoundary = demoBlock(handoffStart, (block) => block.type === "table" && block.title === "Product boundary");
+  const handoffStartOdds = demoBlock(handoffStart, (block) => block.type === "odds" && block.title === "Current market odds");
   assert(
-    rowValue(challengeTicket, "Proposed result") === "YES" && rowValue(challengeTicket, "Your challenge") === "NO" &&
-      rowValue(challengeTicket, "If final result is YES") === "Bond forfeited" && rowValue(challengeTicket, "If final result is NO") === "Bond returned + reward",
-    "Event 08 must state the proposed result, opposing challenge, and unambiguous bond outcomes",
+    handoffStart && handoffStart.page.route === "/markets/england-euro-final/court-handoff" && /Move to DemoThemis/i.test(rowValue(handoffRecord, "Case and evidence rules") || "") && /stays at OmenMarketMaker/i.test(rowValue(handoffRecord, "Market escrow") || "") && rowValue(handoffBoundary, "OmenMarketMaker") === "Holds market escrow",
+    "Event 08 must make the case-only product handoff and separate custody immediately understandable",
     failures
   );
-  assert(!rowValue(challengeTicket, "Evidence"), "Event 08 must not submit evidence for jurors to inherit", failures);
-  assert(challengeStartOdds && challengeStartOdds.yes === 91 && challengeStartOdds.no === 9, "Event 08 must show the unchanged 91/9 market before the challenge is submitted", failures);
-  const challengeEnd = demoSnapshot(8, "after-1");
-  const challengeRecord = demoBlock(challengeEnd, (block) => block.type === "record" && block.title === "Court intake");
-  const challengeEndOdds = demoBlock(challengeEnd, (block) => block.type === "odds" && block.title === "Secondary trading live");
+  assert(handoffStartOdds && handoffStartOdds.yes === 91 && handoffStartOdds.no === 9, "Event 08 must keep the unchanged 91/9 secondary-market price through the handoff", failures);
+  const handoffEnd = demoSnapshot(8, "after-1");
+  const courtRecord = demoBlock(handoffEnd, (block) => block.type === "record" && block.title === "Court intake");
+  const custodyTable = demoBlock(handoffEnd, (block) => block.type === "table" && block.title === "Separate custody");
+  const handoffEndOdds = demoBlock(handoffEnd, (block) => block.type === "odds" && block.title === "Secondary trading live");
   assert(
-    challengeRecord && challengeEnd.page.route === "/cases/1182" && /Case #1182/i.test(challengeRecord.value || "") && rowValue(challengeRecord, "Rules") === "Locked" && rowValue(challengeRecord, "Panel") === "15 seats" && rowValue(challengeRecord, "Court quote") === "Funded" &&
-      !(challengeEnd.page.blocks || []).some((block) => block.type === "handoff"),
-    "Event 08 must open the real case page with permanent activity instead of a receipt interstitial",
+    courtRecord && handoffEnd.page.route === "/markets/england-euro-final/court-case" && /Case #1182/i.test(courtRecord.value || "") && rowValue(courtRecord, "Rules") === "Locked" && rowValue(courtRecord, "Panel") === "15 seats" && rowValue(courtRecord, "Court quote") === "Funded" && rowValue(custodyTable, "Omen escrow") === "$118,000" && /locked here/i.test(JSON.stringify(custodyTable || {})),
+    "Event 08 must open a draw-ready court intake record without moving OmenMarketMaker escrow",
     failures
   );
-  assert(challengeEndOdds && challengeEndOdds.yes === 44 && challengeEndOdds.no === 56, "Event 08 must reprice to 44/56 only after the challenge is submitted", failures);
+  assert(handoffEndOdds && handoffEndOdds.yes === 91 && handoffEndOdds.no === 9, "Event 08 must not fabricate a price jump during the administrative handoff", failures);
 
   const ballotStart = demoSnapshot(10, "start");
   const ballotBlock = demoBlock(ballotStart, (block) => block.type === "ballot");
@@ -1348,8 +1351,8 @@ function checkCompactAppViews(html, failures) {
     "View claim eligibility",
     "Create private room",
     "Build a parlay",
-    "Go to result posting",
-    "Open challenge ticket"
+    "Open court resolution",
+    "Review product handoff"
   ];
   assert(
     expectedInAppContinuationLabels.every((label, index) => continuations[index] && continuations[index].action === label),
@@ -1357,9 +1360,9 @@ function checkCompactAppViews(html, failures) {
     failures
   );
   assert(continuations.every((continuation) => continuation && continuation.dock !== "card"), "event continuations must use the destination page or product boundary instead of a receipt card", failures);
-  assert(continuations[6] && continuations[6].targetTitle === "Challenge period", "Event 07 challenge navigation must attach to the open challenge period", failures);
+  assert(continuations[6] && continuations[6].targetTitle === "Funded resolution", "Event 07 handoff navigation must attach to the funded resolution record", failures);
   assert(continuations[9] && continuations[9].action === "View aggregate tally" && continuations[10] && continuations[10].action === "Review appeal bond" && continuations[11] && continuations[11].action === "View final proof relay", "court-path continuation labels must describe the next visible state", failures);
-  assert(flows[6] && flows[7] && flows[6].start.account !== flows[7].start.account, "the result submitter and challenger must use different production accounts", failures);
+  assert(flows[6] && flows[7] && flows[6].start.account === "Protocol" && flows[7].start.account === "Protocol", "the mandatory resolution and handoff screens must present protocol-owned actions rather than fictional user accounts", failures);
 
   const oddTicketCssRule = Array.from(html.matchAll(/([^{}]+)\{([^{}]*)\}/g)).some((match) =>
     /trade-ticket[\s>+~]+[^,{]*:nth-child/i.test(match[1]) &&
@@ -1419,7 +1422,7 @@ function checkCompactAppViews(html, failures) {
     const appBoundary = page && page.surface === "themis" ? appBoundaries.themis : appBoundaries.omen;
     const appBrand = visibleScalar(appBoundary && appBoundary.appBrand || page && page.product);
     const sourceContext = visibleScalar(page && page.context || chrome[0]);
-    const frameTitle = event === 8 && page && page.route === "/cases/1182" ? visibleScalar(appBoundaries.handoff && appBoundaries.handoff.frameTitle) : "";
+    const frameTitle = event === 8 ? visibleScalar(appBoundaries.handoff && appBoundaries.handoff.frameTitle) : "";
     return frameTitle + appBrand +
       ["section", "title", "subtitle", "status", "primary"]
       .map((key) => visibleScalar(page && page[key]))
@@ -1702,8 +1705,8 @@ function checkCompactAppViews(html, failures) {
       }
       assert([0, 1, 2, 3, 4, 5, 6, 7].every((index) => /^app\.omenmarketmaker\.com\//.test(simulatedUrls[index])), "Events 01-08 must remain on the OmenMarketMaker app origin", failures);
       assert([9, 11].every((index) => /^court\.demothemis\.com\//.test(simulatedUrls[index])), "participant court events must use the DemoThemis app origin", failures);
-      assert(simulatedUrls[7] === "app.omenmarketmaker.com/markets/england-euro-final/challenge", `Event 08 challenge must use its production OmenMarketMaker route (found ${simulatedUrls[7]})`, failures);
-      assert(simulatedUrls[6] === "app.omenmarketmaker.com/markets/england-euro-final/result", `Event 07 result proposal must use its production OmenMarketMaker route (found ${simulatedUrls[6]})`, failures);
+      assert(simulatedUrls[7] === "app.omenmarketmaker.com/markets/england-euro-final/court-handoff", `Event 08 handoff must use its production OmenMarketMaker route (found ${simulatedUrls[7]})`, failures);
+      assert(simulatedUrls[6] === "app.omenmarketmaker.com/markets/england-euro-final/resolution", `Event 07 court request must use its production OmenMarketMaker route (found ${simulatedUrls[6]})`, failures);
       assert(simulatedUrls[5] === "app.omenmarketmaker.com/parlays/new", "Event 06 must open on the production parlay-builder route", failures);
       assert(!/explorer\.demothemis\.com/i.test(html), "protocol explainers must not expose a fake explorer URL", failures);
     } catch (error) {
@@ -1794,7 +1797,7 @@ function checkProductFontAssets(html, failures) {
   assert(/\.live-kpis\s*>\s*\.live-kpi:nth-child\(n\)[\s\S]{0,220}background:\s*var\(--surface\)/i.test(html), "app metrics must use neutral structure instead of decorative category colors", failures);
   const scanHierarchyStart = html.indexOf("/* Scan-first app hierarchy");
   const scanHierarchyCss = scanHierarchyStart >= 0 ? html.slice(scanHierarchyStart, html.indexOf("</style>", scanHierarchyStart)) : "";
-  for (const template of ["create-market", "live-market", "order-book", "wallet-unlock", "private-room", "parlay-slip", "resolution-dashboard", "dispute-handoff", "jury-draw", "juror-workspace", "verdict-page", "appeal-checkout", "final-receipt"]) {
+  for (const template of ["create-market", "live-market", "order-book", "wallet-unlock", "private-room", "parlay-slip", "resolution-request", "court-handoff", "jury-draw", "juror-workspace", "verdict-page", "appeal-checkout", "final-receipt"]) {
     assert(scanHierarchyCss.includes(`.page-${template}`), `scan-first hierarchy is missing the ${template} app view`, failures);
   }
   assert(!/#b83c32|#f7f2e8|#fffdf8/i.test(html), "OmenMarketMaker must not retain the red or near-white palette", failures);
@@ -2587,8 +2590,8 @@ function checkBrandSystem(failures) {
 
   const styles = readDist("assets/styles.css");
   const requiredTokens = [
-    ["dt-canvas", "#f6f3f2"],
-    ["dt-emboss", "#ccc3bc"],
+    ["dt-canvas", "#f5eee8"],
+    ["dt-emboss", "#ccbbaf"],
     ["dt-accent", "#786a5e"],
     ["dt-ink", "#292522"],
     ["dt-emission", "#00e5ff"],
@@ -2904,11 +2907,16 @@ function checkBuiltHtml(failures) {
   assert(/id=["']system-state-machine["']/i.test(runThrough), "run-through missing complete state-machine section", failures);
   assert(/id=["']machinePhaseGrid["']/i.test(runThrough), "run-through state machine missing lifecycle phase map", failures);
   assert(/id=["']machineTextFlow["']/i.test(runThrough), "run-through state machine missing text alternative", failures);
-  assert(/data-machine-route=["']quiet["']/i.test(runThrough), "run-through state machine missing quiet-settlement route", failures);
-  assert(/data-machine-route=["']dispute["']/i.test(runThrough), "run-through state machine missing disputed-case route", failures);
+  assert(["all", "omen", "demothemis"].every((focus) => new RegExp(`data-machine-focus=["']${focus}["']`, "i").test(runThrough)), "run-through state machine must offer whole-system, OmenMarketMaker-only, and DemoThemis-only views", failures);
+  assert(/role=["']radiogroup["'][^>]*aria-label=["']Choose which product to show["']/i.test(runThrough) && /setMachineFocus\(["']demothemis["'],\s*false\)/i.test(runThrough), "state-map product views must be one mutually exclusive selector with DemoThemis visible by default", failures);
+  assert(/data-machine-focus=["']demothemis["'][^>]*aria-checked=["']true["'][^>]*>DemoThemis<[^]*data-machine-focus=["']all["'][^]*data-machine-focus=["']omen["']/i.test(runThrough), "DemoThemis must be the first and initially selected state-map tab", failures);
+  assert(/function\s+makeProductFavicon\s*\(/i.test(runThrough) && /assets\/brand\/omenmarketmaker\/mark-32\.png/i.test(runThrough) && /assets\/brand\/demothemis\/mark-32\.png/i.test(runThrough) && /machine-owner-icons--shared/i.test(runThrough), "state cards must use product favicons, including both favicons on shared handoffs", failures);
+  assert(/className\s*\|\|\s*["']product-favicon["']/i.test(runThrough) && !/makeProductWordmark\(state\.owner,\s*["']machine-owner-mark/i.test(runThrough), "state cards must not retain full static wordmarks", failures);
+  assert(/MACHINE_PHASE_BRANDS/i.test(runThrough) && /machine-phase-brand/i.test(runThrough) && /makeProductWordmark\(brand,\s*["']machine-phase-wordmark["']/i.test(runThrough), "phase headings must carry the full static product wordmarks", failures);
+  assert(!/data-machine-route=["']quiet["']|Fast settlement|bonded assertion|watcher window/i.test(runThrough), "run-through must not restore the removed fast-settlement path", failures);
   assert(/SYSTEM_STATES/i.test(runThrough), "run-through state machine missing canonical lifecycle data", failures);
   assert(!/machineExceptionGrid|data-machine-route=["']exceptions["']|SYSTEM_EXCEPTIONS|Pre-written rule still needed|What can go wrong\?/i.test(runThrough), "run-through must not restore the removed failure rail", failures);
-  assert(/Fast settlement/i.test(runThrough) && /Disputed market/i.test(runThrough), "run-through state map must foreground both successful settlement routes", failures);
+  assert(!/>\s*Disputed market\s*</i.test(runThrough) && !/>\s*Whole map\s*</i.test(runThrough), "state-map controls must not retain the redundant disputed-market and whole-map route toggle", failures);
   assert(runThrough.indexOf('id="system-state-machine"') > runThrough.indexOf('id="productDemo"'), "state machine should appear below the simulator", failures);
 }
 

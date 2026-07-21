@@ -258,6 +258,51 @@ async function main() {
       viewportAudit.results.forEach(({ current, step, issue }) => {
         failures.push(`${viewport.label} event ${String(current.index + 1).padStart(2, "0")} step ${step}/${current.steps} (${current.title}): ${issue}`);
       });
+
+      const productViewIssues = await page.evaluate(() => {
+        const issues = [];
+        const visible = (element) => {
+          const style = getComputedStyle(element);
+          const rect = element.getBoundingClientRect();
+          return !element.hidden && style.display !== "none" && style.visibility !== "hidden" && rect.width > 0 && rect.height > 0;
+        };
+        ["all", "omen", "demothemis"].forEach((focus) => {
+          const root = document.getElementById("systemStateMachine");
+          const focusButton = root.querySelector(`[data-machine-focus="${focus}"]`);
+          if (focusButton) focusButton.click();
+          const states = Array.from(root.querySelectorAll(".machine-state"));
+          const visibleStates = states.filter(visible);
+          const selected = root.querySelector(`[data-machine-focus="${focus}"][aria-checked="true"]`);
+          if (!selected) issues.push(`${focus}: selected product radio is missing`);
+          if (!visibleStates.length) issues.push(`${focus}: product view contains no visible states`);
+          if (focus !== "all" && visibleStates.some((state) => ![focus, "shared"].includes(state.dataset.owner))) {
+            issues.push(`${focus}: another product remains visible`);
+          }
+          if (focus !== "all" && !visibleStates.some((state) => state.dataset.owner === "shared")) {
+            issues.push(`${focus}: shared handoffs disappeared`);
+          }
+          if (root.scrollWidth > root.clientWidth + 1) {
+            const rootRect = root.getBoundingClientRect();
+            const culprits = Array.from(root.querySelectorAll("*")).filter(visible).map((element) => {
+              const rect = element.getBoundingClientRect();
+              const escapes = rect.left < rootRect.left - 1 || rect.right > rootRect.right + 1;
+              const scrolls = element.scrollWidth > element.clientWidth + 1;
+              if (!escapes && !scrolls) return null;
+              return `${element.tagName.toLowerCase()}.${Array.from(element.classList).join(".")}[${Math.round(rect.width)}:${element.scrollWidth}/${element.clientWidth}]`;
+            }).filter(Boolean).slice(0, 4);
+            issues.push(`${focus}: state map horizontal overflow ${root.scrollWidth}/${root.clientWidth}${culprits.length ? ` via ${culprits.join(", ")}` : ""}`);
+          }
+          root.querySelectorAll("button:not([hidden])").forEach((button) => {
+            const rect = button.getBoundingClientRect();
+            if (rect.left < -1 || rect.right > innerWidth + 1) issues.push(`${focus}: visible map button outside viewport`);
+          });
+        });
+        const allButton = document.querySelector('[data-machine-focus="all"]');
+        if (allButton) allButton.click();
+        return Array.from(new Set(issues));
+      });
+      checks += 3;
+      productViewIssues.forEach((issue) => failures.push(`${viewport.label} product filter: ${issue}`));
     }
 
     if (process.env.RUN_THROUGH_LAYOUT_PROOF === "1") {

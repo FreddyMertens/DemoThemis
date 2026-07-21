@@ -143,7 +143,7 @@ function outputVector(model) {
 }
 
 const assumptionAffectFields = {
-  pricing: ["quotedCaseFee", "requiredCaseFee", "quietCaseFee", "feeRevenue", "requiredFunding", "processingPool", "operationsPool", "panelCompensation", "rewardTopUp", "supportGap", "effectiveFeeRate"],
+  pricing: ["quotedCaseFee", "requiredCaseFee", "fixedOverheadPerCase", "feeRevenue", "requiredFunding", "processingPool", "operationsPool", "panelCompensation", "rewardTopUp", "supportGap", "effectiveFeeRate"],
   reserve: ["reserve", "reserveUnit", "reservePerPricedVote", "reserveVotes", "reserveBurden", "lazyLoss", "bribeCost", "retentionIncome"],
   lazy: ["lazyIncome", "lazyLoss", "lazyMargin", "lazyRatio", "benchmark.lazy.ratio", "risk.lazy", "clear.lazy"],
   supply: ["effectiveJurors", "drawJurors", "supplyLoss", "retention", "reserveRetention"],
@@ -439,7 +439,7 @@ function validateAdaptivePricing(labModel) {
   }
 
   const base = labModel.compute(stateFor(labModel, "base"));
-  if (base.quietCaseFee >= base.requiredCaseFee) fail("A quiet settlement must cost less than a jury case");
+  if (base.fixedOverheadPerCase >= base.requiredCaseFee) fail("Fixed processing and operations overhead must remain below the full jury quote");
   if (base.operationsPerCase > defaultAssumptions.operationsCaseCap + 1e-9) fail("Operations charge exceeds its per-case cap");
 
   const underpricedState = stateFor(labModel, "base", (state) => {
@@ -634,6 +634,8 @@ if (/window\.ASSUMPTIONS\s*=\s*\[/.test(html)) {
   "watcher EV",
   "watch cost",
   "challenge rate",
+  "quiet settlement",
+  "quietCase",
   "curated outcomes",
   "public outcomes"
 ].forEach((term) => {

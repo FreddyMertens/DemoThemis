@@ -11,7 +11,7 @@
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@500;700&family=Newsreader:opsz,wght@6..72,200..700&display=swap" rel="stylesheet">
-<link rel="stylesheet" href="assets/styles.css">
+<link rel="stylesheet" href="assets/styles.css?v=20260721-warm-ivory-1">
 <link rel="stylesheet" href="assets/fonts/product-app-fonts.css">
 <style>
   button, input[type="button"], input[type="submit"], [role="button"] { cursor: pointer; user-select: none; -webkit-user-select: none; }
@@ -245,14 +245,14 @@
     margin: -1.52rem 0 .08rem .62rem;
     border: 2px solid color-mix(in srgb, var(--accent) 78%, var(--line-strong));
     border-radius: 10px 10px 5px 5px;
-    background: var(--surface);
+    background: var(--dt-emission-ink);
     color: #fff;
     padding: .38rem .66rem;
     font-family: var(--product-ui-font);
     font-size: .76rem;
     line-height: 1.22;
     font-weight: var(--product-weight-control);
-    box-shadow: 0 0 0 4px var(--bg);
+    box-shadow: 0 0 0 4px var(--bg), 0 0 12px rgba(var(--dt-emission-rgb), .24);
   }
   .sim-demand-frame-tab::before {
     content: "";
@@ -1258,7 +1258,7 @@
   .machine-route-controls { display: flex; flex-wrap: wrap; gap: .38rem; }
   .machine-route-button { min-height: 2.75rem; border: 1px solid var(--line-strong); border-radius: 999px; background: var(--surface); color: var(--ink-soft); padding: .5rem .78rem; font: 850 .76rem/1 var(--sans); box-shadow: none; transition: color .16s ease, background .16s ease, border-color .16s ease, transform .16s ease, box-shadow .16s ease; }
   .machine-route-button:hover { transform: translateY(-1px); border-color: color-mix(in srgb, var(--accent) 42%, var(--line)); color: var(--accent-ink); box-shadow: 0 7px 16px rgba(54, 46, 116, .08); }
-  .machine-route-button[aria-pressed="true"] { border-color: var(--accent); background: var(--accent); color: #fff; box-shadow: 0 7px 16px rgba(74, 60, 178, .18); }
+  .machine-route-button[aria-checked="true"] { border-color: var(--accent); background: var(--accent); color: #fff; box-shadow: 0 7px 16px rgba(74, 60, 178, .18); }
   .machine-route-summary { min-width: 0; margin: 0; color: var(--muted); font-size: .8rem; line-height: 1.42; }
   .machine-route-summary strong { color: var(--ink); }
   .machine-legend { display: flex; flex-wrap: wrap; gap: .55rem 1rem; align-items: center; border-bottom: 1px solid color-mix(in srgb, var(--line) 82%, transparent); padding: .62rem .9rem; color: var(--muted); font-size: .7rem; line-height: 1.3; }
@@ -1268,7 +1268,6 @@
   .machine-legend-swatch.is-current { width: .68rem; height: .68rem; border: 2px solid var(--machine-court); border-radius: 999px; background: var(--surface); }
   .machine-trade-rail { display: grid; grid-template-columns: auto minmax(0, 1fr); gap: .62rem; align-items: center; margin: .85rem .85rem 0; border: 1px solid color-mix(in srgb, var(--machine-market) 28%, var(--line)); border-radius: 13px; background: linear-gradient(90deg, color-mix(in srgb, var(--machine-market-soft) 70%, var(--surface)), color-mix(in srgb, var(--machine-court-soft) 52%, var(--surface))); padding: .58rem .72rem; color: var(--ink-soft); font-size: .76rem; line-height: 1.4; transition: opacity .18s ease, filter .18s ease; }
   .machine-trade-rail strong { color: var(--machine-market); font-size: .67rem; letter-spacing: .08em; text-transform: uppercase; white-space: nowrap; }
-  .machine-shell[data-route="quiet"] .machine-trade-rail { opacity: 1; filter: grayscale(.9) saturate(.25); border-color: var(--line); background: color-mix(in srgb, var(--bg) 72%, var(--surface)); }
   .machine-phase-grid { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: .7rem; padding: .85rem; }
   .machine-phase { --phase-color: var(--machine-court); --phase-soft: var(--machine-court-soft); position: relative; min-width: 0; border: 1px solid color-mix(in srgb, var(--phase-color) 18%, var(--line)); border-radius: 17px; background: linear-gradient(180deg, color-mix(in srgb, var(--phase-soft) 36%, var(--surface)) 0, color-mix(in srgb, var(--surface) 96%, #fff) 7.5rem); padding: .66rem; transition: opacity .18s ease, filter .18s ease; }
   .machine-phase[data-phase="build"] { --phase-color: var(--machine-market); --phase-soft: var(--machine-market-soft); }
@@ -1285,9 +1284,10 @@
   .machine-phase:nth-child(3)::before { right: auto; left: -.88rem; border-right: .38rem solid color-mix(in srgb, var(--phase-color) 56%, var(--line-strong)); border-left: 0; }
   .machine-phase-head { min-height: 5.55rem; border-bottom: 1px solid color-mix(in srgb, var(--phase-color) 18%, var(--line)); padding: .18rem .16rem .62rem; }
   .machine-phase-kicker { display: block; color: var(--phase-color); font-family: var(--mono); font-size: .65rem; font-weight: 950; letter-spacing: .08em; text-transform: uppercase; }
-  .machine-phase-head h3 { margin: .2rem 0 .18rem; color: var(--ink); font-size: .98rem; line-height: 1.12; }
+  .machine-phase-title-row { display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: .32rem .6rem; margin: .2rem 0 .18rem; }
+  .machine-phase-head h3 { margin: 0; color: var(--ink); font-size: .98rem; line-height: 1.12; }
   .machine-phase-head p { margin: 0; color: var(--muted); font-size: .72rem; line-height: 1.35; }
-  .machine-phase-transition { display: inline-flex; align-items: center; width: fit-content; margin-top: .34rem; border-radius: 999px; background: color-mix(in srgb, var(--phase-soft) 72%, var(--surface)); color: color-mix(in srgb, var(--phase-color) 88%, var(--ink)); padding: .18rem .4rem; font-size: .68rem; font-weight: 950; line-height: 1.15; letter-spacing: .02em; text-transform: uppercase; }
+  .machine-phase-transition { display: inline-flex; align-items: center; width: fit-content; max-width: 100%; margin-top: .34rem; border-radius: 999px; background: color-mix(in srgb, var(--phase-soft) 72%, var(--surface)); color: color-mix(in srgb, var(--phase-color) 88%, var(--ink)); padding: .18rem .4rem; font-size: .68rem; font-weight: 950; line-height: 1.15; letter-spacing: .02em; overflow-wrap: anywhere; text-transform: uppercase; }
   .machine-phase-flow { display: grid; gap: .9rem; margin: 0; padding: .72rem 0 0; list-style: none; }
   .machine-step { position: relative; min-width: 0; }
   .machine-step:not(:last-child)::after { content: ""; position: absolute; left: 50%; bottom: -.9rem; width: 2px; height: .9rem; transform: translateX(-50%); border-radius: 999px; background: color-mix(in srgb, var(--line-strong) 90%, transparent); transition: background .18s ease, box-shadow .18s ease; }
@@ -1317,12 +1317,19 @@
   .machine-state-detail b { color: var(--ink); font-weight: 950; }
   .machine-state-facts { display: grid; gap: .16rem; color: var(--muted); }
   .machine-state-next { color: color-mix(in srgb, var(--phase-color) 88%, var(--ink)); }
-  .machine-shell.is-filtered .machine-state.is-dimmed { opacity: 1; filter: grayscale(.9) saturate(.28); border-color: var(--line); background: color-mix(in srgb, var(--bg) 72%, var(--surface)); box-shadow: none; }
-  .machine-shell.is-filtered .machine-state.is-dimmed:hover,
-  .machine-shell.is-filtered .machine-state.is-dimmed:focus-visible { opacity: 1; filter: grayscale(.2) saturate(.82); }
-  .machine-phase.is-dimmed-phase { opacity: 1; filter: grayscale(.72) saturate(.45); }
-  .machine-shell[data-route="quiet"] .machine-phase[data-phase="check"]::after,
-  .machine-shell[data-route="quiet"] .machine-phase[data-phase="check"]::before { opacity: .18; }
+  .machine-state[hidden],
+  .machine-step[hidden],
+  .machine-phase[hidden],
+  .machine-text-content section[hidden],
+  .machine-text-content li[hidden],
+  [data-machine-owner][hidden] { display: none !important; }
+  .machine-state-row.is-single { grid-template-columns: 1fr; }
+  .machine-step.is-last-visible::after,
+  .machine-step.is-last-visible::before { display: none; }
+  .machine-shell.is-product-filtered .machine-phase-grid { grid-template-columns: repeat(3, minmax(0, 1fr)); }
+  .machine-shell.is-product-filtered .machine-phase:not([hidden]) { grid-column: auto; grid-row: auto; }
+  .machine-shell.is-product-filtered .machine-phase:not([hidden])::after,
+  .machine-shell.is-product-filtered .machine-phase:not([hidden])::before { display: none; }
   .machine-state.is-sim-current { box-shadow: 0 0 0 2px color-mix(in srgb, var(--machine-court) 24%, transparent), 0 9px 20px rgba(74, 60, 178, .12); }
   .machine-state.is-sim-current .machine-sim-chip { display: inline-flex; background: var(--machine-court); color: #fff; }
   .machine-sim-chip { display: none; }
@@ -1350,6 +1357,7 @@
 
   @media (max-width: 920px) {
     .machine-phase-grid { grid-template-columns: 1fr; }
+    .machine-shell.is-product-filtered .machine-phase-grid { grid-template-columns: 1fr; }
     .machine-phase:nth-child(3),
     .machine-phase:nth-child(4) { grid-column: auto; grid-row: auto; }
     .machine-phase:not(:last-child)::after { top: auto; right: auto; bottom: -.74rem; left: 50%; width: 0; height: .74rem; border-top: 0; border-left: 2px solid color-mix(in srgb, var(--phase-color) 44%, var(--line)); }
@@ -1364,7 +1372,7 @@
   @media (max-width: 560px) {
     .state-machine { padding-top: 2.4rem; }
     .machine-shell { border-radius: 18px; }
-    .machine-route-controls { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); }
+    .machine-route-controls { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); }
     .machine-route-button { width: 100%; min-height: 2.8rem; padding-inline: .45rem; }
     .machine-legend { align-items: flex-start; }
     .machine-trade-rail { grid-template-columns: 1fr; }
@@ -2322,8 +2330,8 @@
     .page-wallet-unlock :is(.block-checklist, .block-tokens),
     .page-private-room .block-participants,
     .page-parlay-slip .block-legs,
-    .page-resolution-dashboard .block-scoreboard,
-    .page-dispute-handoff .block-ticket,
+    .page-resolution-request .block-record,
+    .page-court-handoff .block-record,
     .page-jury-draw .block-beacon,
     .page-juror-workspace .block-evidence,
     .page-verdict-page .block-proof,
@@ -2339,8 +2347,8 @@
     .page-wallet-unlock :is(.block-checklist, .block-tokens),
     .page-private-room .block-participants,
     .page-parlay-slip .block-legs,
-    .page-resolution-dashboard .block-scoreboard,
-    .page-dispute-handoff .block-ticket,
+    .page-resolution-request .block-record,
+    .page-court-handoff .block-record,
     .page-jury-draw .block-beacon,
     .page-juror-workspace .block-evidence,
     .page-verdict-page .block-proof,
@@ -2779,7 +2787,7 @@
 <header class="hero run-hero reveal">
   <p class="kicker">End-to-end run-through</p>
   <h1>Play the whole system from first stake to an unbuyable final verdict.</h1>
-  <p class="dek">Create a market, grow liquidity, unlock self-custody claims, trade through a dispute, route the case into bullet proof human arbitration, and climb the appeal ladder to finality.</p>
+  <p class="dek">Create a market, grow liquidity, unlock self-custody claims, trade through resolution, fund bullet proof human arbitration, and climb the appeal ladder to finality.</p>
   <div class="meta">
     <span class="pill">Start here</span>
     <span>Chapter 1 of 6</span>
@@ -2857,7 +2865,7 @@
                   <div class="unlock" data-feature="fixed"><b>Fixed odds <span class="tag">locked</span></b><small>Post a side at named odds; later bettors fill the locked price first.</small></div>
                   <div class="unlock" data-feature="tokens"><b>Self-custody tokens <span class="tag">locked</span></b><small>Liquid markets become ERC-20 YES and NO claims in user wallets.</small></div>
                   <div class="unlock" data-feature="private"><b>Private markets <span class="tag">locked</span></b><small>Invite-only rooms get neutral escrow and third-party arbitration.</small></div>
-                  <div class="unlock" data-feature="trade"><b>Trading during disputes <span class="tag">locked</span></b><small>Tokenized claims keep moving while assertion, challenge, and appeal run.</small></div>
+                  <div class="unlock" data-feature="trade"><b>Trading during resolution <span class="tag">locked</span></b><small>Tokenized claims keep moving while the jury and any funded appeal run.</small></div>
                   <div class="unlock" data-feature="parlay"><b>Peer-to-peer parlays <span class="tag">locked</span></b><small>Market-token routing gives parlays without turning the protocol into a bookie.</small></div>
                 </div>
               </div>
@@ -2866,7 +2874,7 @@
                 <h3>Resolution and court components</h3>
                 <div class="unlock-grid" id="componentGrid">
                   <div class="unlock" data-component="escrow"><b>Protocol escrow <span class="tag">locked</span></b><small>Funds are locked before anyone knows who will judge.</small></div>
-                  <div class="unlock" data-component="watcher"><b>Omen watcher window <span class="tag">locked</span></b><small>False assertions fund whoever catches them before a court case opens.</small></div>
+                  <div class="unlock" data-component="handoff"><b>Funded court handoff <span class="tag">locked</span></b><small>OmenMarketMaker keeps market escrow while a separate DemoThemis quote locks the case.</small></div>
                   <div class="unlock" data-component="draw"><b>Random draw <span class="tag">locked</span></b><small>A public beacon draws one panel; no re-roll grinding.</small></div>
                   <div class="unlock" data-component="personhood"><b>Face check <span class="tag">locked</span></b><small>The drawn World-ID-backed human must be present for this case.</small></div>
                   <div class="unlock" data-component="ballot"><b>Private ballot <span class="tag">locked</span></b><small>Encrypted ballots and re-keying make vote receipts worthless.</small></div>
@@ -2884,19 +2892,19 @@
   </section>
 
   <section class="state-machine" id="system-state-machine" aria-labelledby="state-machine-title">
-    <p class="sec-label">The complete state map</p>
-    <h2 id="state-machine-title">Every route through one market</h2>
-    <p class="state-machine-intro">The guided run follows one disputed appeal. This map shows the complete product, including fast settlement and every market format.</p>
-    <p class="machine-primer"><span class="machine-primer-mark" aria-hidden="true">&#8594;</span><span><b>See the whole product at a glance.</b> Choose a route to trace it, or select any state to see who acts, where the money sits, and what moves the system forward.</span></p>
+    <p class="sec-label">The complete product state map</p>
+    <h2 id="state-machine-title">One market across two products</h2>
+    <p class="state-machine-intro">See the complete court-backed market, or isolate either product to understand exactly where its responsibility begins and ends.</p>
+    <p class="machine-primer"><span class="machine-primer-mark" aria-hidden="true">&#8594;</span><span><b>Choose one product view.</b> Shared handoffs stay visible when either product is isolated, and every state can be opened to show who acts, where the money sits, and what moves next.</span></p>
 
-    <div class="machine-shell" id="systemStateMachine" data-route="all">
+    <div class="machine-shell" id="systemStateMachine" data-focus="demothemis">
       <div class="machine-toolbar">
-        <div class="machine-route-controls" role="group" aria-label="Highlight a route through the system">
-          <button class="machine-route-button" type="button" data-machine-route="all" aria-pressed="true">Whole map</button>
-          <button class="machine-route-button" type="button" data-machine-route="quiet" aria-pressed="false">Fast settlement</button>
-          <button class="machine-route-button" type="button" data-machine-route="dispute" aria-pressed="false">Disputed market</button>
+        <div class="machine-route-controls" role="radiogroup" aria-label="Choose which product to show">
+          <button class="machine-route-button" type="button" role="radio" data-machine-focus="demothemis" aria-checked="true">DemoThemis</button>
+          <button class="machine-route-button" type="button" role="radio" data-machine-focus="all" aria-checked="false">Whole system</button>
+          <button class="machine-route-button" type="button" role="radio" data-machine-focus="omen" aria-checked="false">OmenMarketMaker</button>
         </div>
-        <p class="machine-route-summary" id="machineRouteSummary" aria-live="polite"><strong>Whole map.</strong> Public and private markets, fast settlement, unbuyable arbitration, appeals, finality, and the strengthening loop are all visible.</p>
+        <p class="machine-route-summary" id="machineRouteSummary" aria-live="polite"><strong>DemoThemis only.</strong> Case intake, verified-human adjudication, appeals, finality, and juror learning remain visible. Shared handoffs show where OmenMarketMaker connects.</p>
       </div>
 
       <div class="machine-legend" aria-label="State map legend">
@@ -2905,9 +2913,9 @@
         <span class="machine-legend-item"><span class="machine-legend-swatch is-current" aria-hidden="true"></span> Current guided event</span>
       </div>
 
-      <aside class="machine-trade-rail" data-machine-routes="dispute" aria-label="Trading can continue during resolution">
+      <aside class="machine-trade-rail" data-machine-owner="omen" aria-label="Trading can continue during resolution">
         <strong>Runs beside the clock</strong>
-        <span>Once claims graduate into wallet tokens, YES and NO keep trading throughout the answer, challenge, jury, and appeal windows. Price discovery continues beside the court clock.</span>
+        <span>Once claims graduate into wallet tokens, YES and NO keep trading throughout the jury and appeal windows. Price discovery continues beside the court clock.</span>
       </aside>
 
       <div class="machine-phase-grid" id="machinePhaseGrid" aria-label="Complete market lifecycle"></div>
@@ -2915,12 +2923,12 @@
       <section class="machine-foundation" aria-labelledby="machine-foundation-title">
         <div class="machine-subhead">
           <h3 id="machine-foundation-title">Rules underneath every state</h3>
-          <p>Three permanent rails keep every route neutral and fully collateralized.</p>
+          <p>Three permanent rails keep every product view neutral and fully collateralized.</p>
         </div>
         <div class="machine-foundation-grid">
-          <div class="machine-foundation-item"><b>Custody and proof</b>Funds lock before an unknown panel exists. One bound random draw, live presence checks, private ballots, and an aggregate tally protect each disputed case.</div>
-          <div class="machine-foundation-item"><b>Independent governance</b>OmenMarketMaker may tune its own market fee and product settings. DemoThemis may tune its own service pricing and court settings. Neither token reaches across the product boundary or judges an active case.</div>
-          <div class="machine-foundation-item"><b>Commercial boundary</b>When OmenMarketMaker selects DemoThemis, it pays the quoted resolution fee as a client. Fees, treasuries, and token economics otherwise remain separate; final money never reopens.</div>
+          <div class="machine-foundation-item" data-machine-owner="demothemis"><b>Custody and proof</b>Funds lock before an unknown panel exists. One bound random draw, live presence checks, private ballots, and an aggregate tally protect every court case.</div>
+          <div class="machine-foundation-item" data-machine-owner="shared"><b>Independent governance</b>OmenMarketMaker may tune its own market fee and product settings. DemoThemis may tune its own service pricing and court settings. Neither token reaches across the product boundary or judges an active case.</div>
+          <div class="machine-foundation-item" data-machine-owner="shared"><b>Commercial boundary</b>OmenMarketMaker pays DemoThemis's quoted resolution fee as a client. Fees, treasuries, and token economics otherwise remain separate; final money never reopens.</div>
         </div>
       </section>
 
@@ -2930,7 +2938,7 @@
       </details>
 
       <noscript>
-        <p class="machine-primer"><b>The complete route:</b> define the question; open public or private escrow; price the market; keep pooled claims or graduate them to wallet tokens; accept a bonded answer; settle immediately when uncontested; otherwise draw verified jurors, collect private ballots, allow a funded larger-panel appeal, then pay and strengthen the next case.</p>
+        <p class="machine-primer"><b>The complete route:</b> define the question; open public or private escrow; price the market; keep pooled claims or graduate them to wallet tokens; fund the independent court quote; draw verified jurors; collect private ballots; allow a funded larger-panel appeal; return the signed ruling; then pay and strengthen the next case.</p>
       </noscript>
       <div class="sr-only" id="machineAnnouncement" aria-live="polite"></div>
     </div>
@@ -3057,7 +3065,7 @@
       claims: "Private YES/NO bet",
       trade: "only invited people see it",
       court: "No dispute yet",
-      panel: "same court if challenged",
+      panel: "DemoThemis at close",
       keys: 0,
       fees: 1040,
       loop: ["cases", "fees"],
@@ -3086,55 +3094,55 @@
       actions: ["Place $100 parlay", "Accept $128 cashout"]
     },
     {
-      title: "Return to the public market",
-      sub: "Resolution begins.",
-      mission: "Assert the outcome",
-      text: "The game ends on the field. Anyone can post the answer with a bond. A watcher window opens, and because tokenized claims keep trading, the court does not have to rush the window closed.",
-      nodes: ["tokens", "parlay", "trade", "assert"],
+      title: "The market needs a ruling",
+      sub: "Court-backed resolution begins.",
+      mission: "Fund the independent ruling",
+      text: "The game ends on the field. OmenMarketMaker keeps the market collateral locked, packages the written question and evidence rules, and funds DemoThemis's separate work-based quote. Tokenized claims keep trading while the court works.",
+      nodes: ["tokens", "parlay", "trade", "request"],
       features: ["instant", "fixed", "tokens", "private", "trade", "parlay"],
-      components: ["escrow", "watcher"],
-      tokens: ["Assertion bond", "Tradeable YES", "Tradeable NO"],
+      components: ["escrow", "handoff"],
+      tokens: ["Funded court quote", "Tradeable YES", "Tradeable NO"],
       pot: 118000,
       yes: .91,
       claims: "Wallet tokens still trade",
       trade: "secondary token trading stays live",
-      court: "Proposed answer posted",
-      panel: "review window",
+      court: "Resolution requested",
+      panel: "quote awaiting lock",
       keys: 0,
       fees: 2360,
       loop: ["cases", "fees", "jurors"],
-      log: "Resolution starts as an optimistic assertion, not as a committee meeting.",
-      actions: ["Confirm and post YES"]
+      log: "Resolution starts by funding an independent ruling while OmenMarketMaker retains custody of the market.",
+      actions: ["Fund DemoThemis quote"]
     },
     {
-      title: "Watcher catches a lie",
-      sub: "The court lane opens.",
-      mission: "Challenge the assertion",
-      text: "The assertion was wrong. A watcher challenges it and routes the case to DemoThemis. OmenMarketMaker keeps the market escrow locked while a separate court quote is funded; YES and NO tokens can still trade.",
-      nodes: ["trade", "assert", "challenge"],
+      title: "The case crosses the boundary",
+      sub: "Funds stay separate.",
+      mission: "Lock the case and quote",
+      text: "OmenMarketMaker sends only the locked case and funded work quote to DemoThemis. The $118,000 market escrow remains at OmenMarketMaker, YES and NO continue trading, and DemoThemis accepts the case before any panel is known.",
+      nodes: ["trade", "request", "handoff"],
       features: ["instant", "fixed", "tokens", "private", "trade", "parlay"],
-      components: ["escrow", "watcher"],
-      tokens: ["Challenge bond", "Dispute risk"],
+      components: ["escrow", "handoff"],
+      tokens: ["Locked case", "Separate court quote"],
       pot: 118000,
-      yes: .44,
-      claims: "Tokens price the dispute",
+      yes: .91,
+      claims: "Tokens price the court process",
       trade: "claims keep moving",
-      court: "Case sent to DemoThemis",
+      court: "Case accepted by DemoThemis",
       panel: "waiting for random jury",
       keys: 0,
       fees: 2360,
       loop: ["cases", "fees", "jurors"],
-      log: "The wrong answer funded the night shift by putting a bounty on its own correction.",
-      actions: ["Submit NO challenge · $250"]
+      log: "The product boundary is explicit: a case and invoice cross it, while the market collateral does not.",
+      actions: ["Lock case and quote"]
     },
     {
       title: "Jury is drawn",
       sub: "Random humans, not tokens.",
       mission: "Roll the sealed die",
       text: "A public randomness beacon draws a panel from verified humans. The app cannot cancel and re-roll when it dislikes the panel, because the draw is bound to the locked case.",
-      nodes: ["challenge", "draw"],
+      nodes: ["handoff", "draw"],
       features: ["instant", "fixed", "tokens", "private", "trade", "parlay"],
-      components: ["escrow", "watcher", "draw", "personhood"],
+      components: ["escrow", "handoff", "draw", "personhood"],
       tokens: ["15 drawn seats", "Face proofs"],
       pot: 118000,
       yes: .46,
@@ -3155,7 +3163,7 @@
       text: "Each juror clears the live face check, then casts an encrypted ballot. Silent re-keying means a screenshot or encrypted receipt proves nothing to a briber.",
       nodes: ["draw", "ballot"],
       features: ["instant", "fixed", "tokens", "private", "trade", "parlay"],
-      components: ["escrow", "watcher", "draw", "personhood", "ballot", "reserve"],
+      components: ["escrow", "handoff", "draw", "personhood", "ballot", "reserve"],
       tokens: ["Encrypted ballots", "Live reserves"],
       pot: 118000,
       yes: .51,
@@ -3176,7 +3184,7 @@
       text: "The tally opens only as an aggregate proof. Private reserve updates are computed and proved, but nothing is debited until the last appeal outcome.",
       nodes: ["ballot", "verdict"],
       features: ["instant", "fixed", "tokens", "private", "trade", "parlay"],
-      components: ["escrow", "watcher", "draw", "personhood", "ballot", "reserve"],
+      components: ["escrow", "handoff", "draw", "personhood", "ballot", "reserve"],
       tokens: ["Verdict proof", "Pending private updates"],
       pot: 118000,
       yes: .28,
@@ -3197,7 +3205,7 @@
       text: "The losing side stakes an appeal. The rung price is the highest of three floors: pay the next panel, beat attack value, and pay for delay. The next panel is larger and the ladder ends.",
       nodes: ["verdict", "appeal", "trade"],
       features: ["instant", "fixed", "tokens", "private", "trade", "parlay"],
-      components: ["escrow", "watcher", "draw", "personhood", "ballot", "reserve", "appeal"],
+      components: ["escrow", "handoff", "draw", "personhood", "ballot", "reserve", "appeal"],
       tokens: ["Loser-side petition", "31-seat appeal"],
       pot: 118000,
       yes: .37,
@@ -3218,7 +3226,7 @@
       text: "DemoThemis publishes the final appeal proof to OmenMarketMaker. Settlement releases once, juror updates settle privately, and the completed case adds quality evidence.",
       nodes: ["appeal", "final", "keys"],
       features: ["instant", "fixed", "tokens", "private", "trade", "parlay"],
-      components: ["escrow", "watcher", "draw", "personhood", "ballot", "reserve", "appeal", "finality", "keys"],
+      components: ["escrow", "handoff", "draw", "personhood", "ballot", "reserve", "appeal", "finality", "keys"],
       tokens: ["Finality proof", "Quality evidence", "Private juror updates"],
       pot: 118000,
       yes: .02,
@@ -3291,29 +3299,29 @@
       body: "As a second side path, permissionless solvers quote a parlay across tokenized markets and lock its maximum payout before execution.",
       change: "Fully backed receipt",
       why: "Solver competition creates familiar betting UX without protocol balance-sheet risk.",
-      next: "Bonded assertion",
+      next: "Funded court request",
       tone: "claim",
       results: ["The best solver locks the full payout and mints one tradeable receipt.", "Cash-out runs a new auction for that receipt."]
     },
     {
       lane: "Arbitration",
-      title: "Bonded assertion",
-      body: "The real-world event has happened. Anyone can propose the answer with a bond, and a review window opens before the market can finalize.",
-      change: "Assertion window",
-      why: "Most cases can resolve optimistically unless someone finds a lie.",
-      next: "Watcher challenge",
+      title: "Funded court request",
+      body: "The real-world event has happened. OmenMarketMaker locks the written case, keeps the market collateral in place, and funds DemoThemis's independent work quote.",
+      change: "Resolution funded",
+      why: "Every market receives the same independent court path instead of relying on a provisional answer.",
+      next: "Product handoff",
       tone: "court",
-      results: ["A bonded YES assertion opens public review while claims keep trading."]
+      results: ["The question and evidence rules freeze while the market claims keep trading.", "The independent court quote is funded before any panel exists."]
     },
     {
       lane: "Arbitration",
-      title: "Challenge",
-      body: "A watcher disagrees with the assertion and stakes a challenge. The dispute moves from optimistic settlement into the DemoThemis court flow.",
-      change: "Court lane opens",
-      why: "Both sides put value behind their claim before a jury decides.",
+      title: "Product handoff",
+      body: "OmenMarketMaker sends the locked case and funded quote to DemoThemis while retaining the market escrow. DemoThemis accepts the case before the draw.",
+      change: "Case accepted",
+      why: "The visible handoff keeps custody, pricing, and responsibility clear between the two products.",
       next: "Jury draw",
       tone: "court",
-      results: ["The watcher stakes the opposing answer; the case and a separate court quote enter DemoThemis while OmenMarketMaker keeps the market escrow locked."]
+      results: ["Only the case and service payment cross the boundary.", "The $118,000 market escrow stays at OmenMarketMaker until the signed ruling returns."]
     },
     {
       lane: "Arbitration",
@@ -3411,18 +3419,18 @@
       notice: "The user chooses the quote; a solver supplies and escrows the payout rather than the protocol acting as bookie."
     },
     {
-      label: "Result proposal",
-      headline: "Confirm the outcome and bond.",
-      look: "The production screen shows the result, exact bond, one-week challenge period, and live secondary token trading.",
-      use: "Confirm and post YES.",
-      notice: "The published result page keeps the locked bond, deadline, and transaction available together."
+      label: "Court request",
+      headline: "Fund the independent ruling.",
+      look: "The production screen keeps the locked market funds, written resolution rule, separate DemoThemis quote, and live secondary trading visible together.",
+      use: "Fund the DemoThemis quote and follow the request.",
+      notice: "The market collateral stays at OmenMarketMaker; only the case and independently priced service request move forward."
     },
     {
-      label: "Challenge",
-      headline: "Turn a disputed answer into a court case.",
-      look: "The production screen shows the proposed result, NO challenge, and exact bond outcomes.",
-      use: "Submit the NO challenge and $250 bond.",
-      notice: "The destination is the real case page, with the bond and transaction available as permanent details."
+      label: "Court handoff",
+      headline: "Lock the case before the draw.",
+      look: "The handoff screen shows what crosses into DemoThemis and what remains inside OmenMarketMaker.",
+      use: "Lock the case and quote once.",
+      notice: "DemoThemis accepts fixed rules and a funded panel plan without taking custody of the market pot."
     },
     {
       label: "Human draw",
@@ -3500,23 +3508,23 @@
       dock: "page"
     },
     {
-      action: "Go to result posting",
+      action: "Open court resolution",
       from: "Original public market",
-      to: "Result poster",
+      to: "OmenMarketMaker resolution",
       targetTitle: "Closed position",
-      note: "The run returns to the original public market after the event happens.",
+      note: "The run returns to the original market after the event and opens its mandatory court-backed resolution.",
       dock: "page"
     },
     {
-      action: "Open challenge ticket",
-      from: "Result poster",
-      to: "Watcher / challenger",
-      targetTitle: "Challenge period",
-      note: "A watcher who sees a wrong answer can open the dispute path."
+      action: "Review product handoff",
+      from: "OmenMarketMaker resolution",
+      to: "Court intake",
+      targetTitle: "Funded resolution",
+      note: "The funded request shows exactly what moves to DemoThemis and what stays in OmenMarketMaker."
     },
     {
       action: "View protocol draw",
-      from: "Watcher / challenger",
+      from: "Court intake",
       to: "DemoThemis network",
       targetTitle: "Court intake",
       note: "The funded case and quote are locked before the bound draw begins."
@@ -3608,8 +3616,8 @@
     { surface: "omen", actor: "Token holder", actionOwner: "user" },
     { surface: "omen", actor: "Alice", actionOwner: "user" },
     { surface: "omen", actor: "Parlay bettor", actionOwner: "user" },
-    { surface: "omen", actor: "Result submitter", actionOwner: "user" },
-    { surface: "omen", actor: "Challenger", actionOwner: "user" },
+    { surface: "omen", actor: "OmenMarketMaker", actionOwner: "user" },
+    { surface: "omen", actor: "Court intake", actionOwner: "user" },
     { surface: "protocol", actor: "Network", actionOwner: "protocol" },
     { surface: "themis", actor: "Juror", actionOwner: "user" },
     { surface: "protocol", actor: "Network", actionOwner: "protocol" },
@@ -3718,6 +3726,8 @@
     var stageMode = productModeForStage(stage);
     var stageConfig = PRODUCT_MODES[stageMode];
     var selectedConfig = PRODUCT_MODES[selectedRunMode];
+    var stageGroup = STAGE_GROUPS.find(function (group) { return stage >= group.start && stage <= group.end; });
+    var stageLabel = stageGroup ? stageGroup.label : stageConfig.label;
     productTabs.forEach(function (tab) {
       var selected = tab.getAttribute("data-product-mode") === selectedRunMode;
       tab.setAttribute("aria-pressed", selected ? "true" : "false");
@@ -3728,9 +3738,9 @@
       productModePanel.setAttribute("data-product-mode", selectedRunMode);
       productModePanel.setAttribute("data-current-section", stageMode);
     }
-    if (rail) rail.setAttribute("aria-label", "All event groups; chosen run: " + selectedConfig.label + "; current section: " + stageConfig.label);
+    if (rail) rail.setAttribute("aria-label", "All event groups; chosen run: " + selectedConfig.label + "; current section: " + stageLabel);
     var focusScene = document.getElementById("focusScene");
-    if (focusScene) focusScene.setAttribute("aria-label", selectedConfig.label + " workspace; current section: " + stageConfig.label);
+    if (focusScene) focusScene.setAttribute("aria-label", selectedConfig.label + " workspace; current section: " + stageLabel);
   }
 
   function saveProductProgress() {
@@ -3804,310 +3814,313 @@
     return mark;
   }
 
+  function makeProductFavicon(brand, className) {
+    var mark = makeEl("span", className || "product-favicon");
+    var image = document.createElement("img");
+    image.width = 32;
+    image.height = 32;
+    image.src = brand === "omen"
+      ? "assets/brand/omenmarketmaker/mark-32.png"
+      : "assets/brand/demothemis/mark-32.png";
+    image.alt = "";
+    image.setAttribute("aria-hidden", "true");
+    mark.setAttribute("data-brand-mark", brand);
+    mark.setAttribute("aria-hidden", "true");
+    mark.appendChild(image);
+    return mark;
+  }
+
   var SYSTEM_PHASES = [
-    { id: "build", number: "01", title: "Build the market", note: "Choose public or private escrow. Only a robust public pool graduates into wallet tokens.", transition: "All forms → answer check" },
-    { id: "check", number: "02", title: "Check the answer", note: "Wait for a bonded answer. Most markets finish here without ever needing a jury.", transition: "Challenge only → court" },
-    { id: "judge", number: "03", title: "Decide a dispute", note: "Lock the case, draw verified humans, vote privately, and widen the panel only when an appeal is funded.", transition: "Final result → pay" },
-    { id: "finish", number: "04", title: "Pay and learn", note: "Release money once, close permanently, then let learning, accountability, and growth continue in parallel.", transition: "Payout ends · learning continues" }
+    { id: "build", number: "01", title: "Build the market", note: "Choose the market format. A robust public pool can graduate into wallet-held claims.", transition: "Market closes → fund resolution" },
+    { id: "check", number: "02", title: "Fund the resolution", note: "OmenMarketMaker keeps market collateral while it funds a separate DemoThemis work quote.", transition: "Locked case → verified court" },
+    { id: "judge", number: "03", title: "Decide the case", note: "Draw verified humans, keep ballots private, and widen the jury only when an appeal is funded.", transition: "Signed ruling → OmenMarketMaker" },
+    { id: "finish", number: "04", title: "Pay and learn", note: "Apply the signed ruling once, close permanently, then improve juror quality without reopening settlement.", transition: "Payout ends · learning continues" }
   ];
 
   var SYSTEM_STATES = [
     {
       id: "rules-fixed", phase: "build", order: 1, title: "Question and rules fixed",
-      short: "The answer choices, close time, and evidence source are written before money arrives.",
-      routes: ["quiet", "dispute"], sim: [],
-      detail: "The market must say what counts as YES, NO, or another permitted result before anyone can bet. Clear rules make later evidence checkable.",
+      short: "The answer choices, close time, and evidence source are written before money arrives.", routes: ["dispute"], sim: [],
+      detail: "The market states what counts as YES, NO, or another permitted result before anyone can trade. Those fixed terms become the court case if a ruling is later required.",
       actor: "Market creator; protocol validates the format", money: "No outcome money has moved yet", condition: "Before the first stake", next: "Open a public pool or fund a private room"
     },
     {
-      id: "public-pool", phase: "build", order: 2, group: "market-entry", branch: "Public · continue", afterNote: "Public continues ↓ · Private skips to Phase 02 →", title: "First stake opens a public pool",
-      short: "Any amount can create the market and enter protocol escrow.",
-      routes: ["quiet", "dispute"], sim: [0],
-      detail: "There is no listing committee or minimum launch size. The first stake creates the public market and locks its funds in the protocol.",
-      actor: "First trader", money: "First stake is locked in escrow", condition: "A valid question exists", next: "More pool bets and fixed offers"
+      id: "public-pool", phase: "build", order: 2, group: "market-entry", branch: "Public · continue", afterNote: "Public continues ↓ · Private rejoins at close →", title: "First stake opens a public pool",
+      short: "Any amount can create the market and enter protocol escrow.", routes: ["dispute"], sim: [0],
+      detail: "There is no listing committee or minimum launch size. The first stake creates the public market and locks its funds in OmenMarketMaker escrow.",
+      actor: "First trader", money: "First stake locks in market escrow", condition: "A valid question exists", next: "More pool bets and fixed offers"
     },
     {
-      id: "private-room", phase: "build", order: 2, group: "market-entry", branch: "Private · Phase 02", title: "Private room is funded",
-      short: "Invited people accept named odds with neutral escrow and the same court.",
-      routes: ["quiet", "dispute"], sim: [4],
-      detail: "A private market is an alternative entry, not a later stage of every public market. Only matched money is at risk; unmatched money has a defined return path.",
-      actor: "Invited counterparties", money: "Matched stakes lock; unmatched offers wait", condition: "An invited party accepts the terms", next: "Trade until close, or return unmatched money"
+      id: "private-room", phase: "build", order: 2, group: "market-entry", branch: "Private · alternate", title: "Private room is funded",
+      short: "Invited people accept named odds with neutral escrow and the same final court path.", routes: [], sim: [4],
+      detail: "A private room is an alternate market format. Only matched stakes lock; unmatched offers keep their written return path, and the matched room still uses DemoThemis for final resolution.",
+      actor: "Invited counterparties", money: "Matched stakes lock; unmatched offers wait", condition: "An invited party accepts the terms", next: "Trade until the written close"
     },
     {
       id: "price-formation", phase: "build", order: 3, title: "Public pool prices and offers",
-      short: "Crowd odds move with both sides; better fixed prices fill before overflow joins the pool.",
-      routes: ["quiet", "dispute"], sim: [1, 2],
-      detail: "Two pricing tools coexist. Crowd stakes move the pool price, while standing fixed-odds offers promise a named price to later traders.",
+      short: "Crowd odds move with both sides; better fixed prices fill before overflow joins the pool.", routes: ["dispute"], sim: [1, 2],
+      detail: "Crowd stakes move the pool price while standing fixed-odds offers promise a named price to later traders.",
       actor: "Traders", money: "Filled stakes remain in escrow", condition: "The market is open", next: "Test whether the market is robust enough to graduate"
     },
     {
       id: "robustness-gate", phase: "build", order: 4, kind: "decision", title: "Is the public pool robust?",
-      short: "Disagreement, maker depth, and enough time must all clear the graduation gate.",
-      routes: ["quiet", "dispute"], sim: [],
-      detail: "Graduation combines a disagreement floor, usable depth, and a time lock, so wallet claims open only after the market demonstrates durable price discovery.",
-      actor: "Protocol checks objective thresholds", money: "Still fully backed in escrow", condition: "The checks are evaluated while the market is live", next: "Stay pooled, or mint transferable YES and NO claims"
+      short: "Disagreement, maker depth, and enough time must all clear the graduation gate.", routes: ["dispute"], sim: [],
+      detail: "Graduation combines a disagreement floor, usable depth, and a time lock so wallet claims open only after durable price discovery.",
+      actor: "Protocol checks objective thresholds", money: "Still fully backed in escrow", condition: "While the market is live", next: "Stay pooled or mint transferable YES and NO claims"
     },
     {
-      id: "pooled-claims", phase: "build", order: 5, group: "claim-form", branch: "Pool · Phase 02", afterNote: "Pooled claims go to Phase 02 → · Tokenized claims may take the optional parlay ↓", title: "Claims stay inside the pool",
-      short: "A smaller market can keep running without wallet tokens.",
-      routes: ["quiet", "dispute"], sim: [],
-      detail: "Smaller markets keep their positions as simple internal claims and settle directly from the final answer.",
-      actor: "Protocol pool", money: "One escrowed pool", condition: "A graduation check has not passed", next: "Event or close time"
+      id: "pooled-claims", phase: "build", order: 5, group: "claim-form", branch: "Pool · alternate", afterNote: "Both claim forms rejoin at market close →", title: "Claims stay inside the pool",
+      short: "A smaller market can keep running without wallet tokens.", routes: [], sim: [],
+      detail: "Smaller markets keep positions as simple internal claims while remaining fully backed by the same escrow.",
+      actor: "OmenMarketMaker pool", money: "One escrowed pool", condition: "A graduation check has not passed", next: "Event or close time"
     },
     {
-      id: "tokenized-claims", phase: "build", order: 5, group: "claim-form", branch: "Token · optional", title: "Wallet claims go live",
-      short: "Fully backed YES and NO claims become transferable in user wallets.",
-      routes: ["quiet", "dispute"], sim: [3],
-      detail: "Graduation preserves full backing while changing the product form. Exact conservation, mint, burn, and dust rules turn each YES or NO token into a transferable claim on locked collateral.",
-      actor: "Protocol mints; users self-custody", money: "Collateral stays locked behind the claims", condition: "Every robustness check passes", next: "Order-book trading, optional parlays, then resolution"
+      id: "tokenized-claims", phase: "build", order: 5, group: "claim-form", branch: "Token · main", title: "Wallet claims go live",
+      short: "Fully backed YES and NO claims become transferable in user wallets.", routes: ["dispute"], sim: [3],
+      detail: "Graduation changes the product form, not the backing. Mint, burn, conservation, and dust rules make each token a transferable claim on locked collateral.",
+      actor: "Protocol mints; users self-custody", money: "Collateral stays locked behind the claims", condition: "Every robustness check passes", next: "Order-book trading, optional parlays, then close"
     },
     {
-      id: "parlay-route", phase: "build", order: 6, kind: "optional", branch: "Token route only", title: "Optional solver parlay",
-      short: "Competing solvers quote the bundle and the winner locks its full maximum payout.",
-      routes: [], sim: [5],
-      detail: "A parlay branches across robust tokenized markets. It is not the next stage of every market: permissionless solvers compete on a fixed quote, the winner escrows the maximum return, and the user receives one tradeable receipt. Cashout runs a new auction for that receipt.",
-      actor: "Trader, solver network, and protocol", money: "The winning solver locks the full maximum payout before execution", condition: "A fully funded solver quote is available", next: "One tradeable receipt, or no execution"
+      id: "parlay-route", phase: "build", order: 6, kind: "optional", branch: "Optional side route", title: "Solver quotes a parlay",
+      short: "Competing solvers quote the bundle; the winner must back its maximum payout.", routes: [], sim: [5],
+      detail: "A parlay branches from robust tokenized markets rather than becoming the next state of each leg.",
+      actor: "Trader and solver network", money: "No parlay executes before full backing", condition: "A fully funded quote wins", next: "Mint one tradeable parlay receipt"
+    },
+    {
+      id: "parlay-position", phase: "build", order: 7, kind: "optional", title: "Tradeable parlay receipt",
+      short: "The winning solver locks the maximum payout and the trader receives one receipt.", routes: [], sim: [5],
+      detail: "The receipt represents the funded bundle without changing the resolution route of its underlying markets.",
+      actor: "Protocol and winning solver", money: "Maximum payout remains locked", condition: "The solver-backed order executes", next: "Hold to resolution or request cashout"
+    },
+    {
+      id: "parlay-cashout", phase: "build", order: 8, kind: "terminal", title: "Optional receipt cashout",
+      short: "A fresh solver auction can buy the entire receipt before the legs settle.", routes: [], sim: [5],
+      detail: "Cashout transfers the receipt to the winning bidder. It is an exit from the side product, not a shortcut around market resolution.",
+      actor: "Receipt holder and solver network", money: "Winning cashout bid returns to the holder", condition: "A funded bid is accepted", next: "Parlay side route ends"
     },
 
     {
       id: "event-close", phase: "check", order: 1, title: "Event or close time arrives",
-      short: "New betting ends according to the market's written clock.",
-      routes: ["quiet", "dispute"], sim: [],
-      detail: "The real-world event finishes, or the market reaches its scheduled close. The system now needs a usable outcome rather than another price.",
-      actor: "Protocol clock and real-world evidence", money: "Still locked; no winner is paid", condition: "Close rule is reached", next: "Await a bonded answer"
+      short: "New betting ends under the market's written clock.", routes: ["dispute"], sim: [6], simSteps: [0],
+      detail: "The event finishes or the close rule triggers. Market collateral stays locked until an independent final ruling returns.",
+      actor: "OmenMarketMaker clock", money: "Market escrow remains locked", condition: "The written close rule is reached", next: "Create the court-resolution request"
     },
     {
-      id: "awaiting-answer", phase: "check", order: 2, title: "Awaiting a bonded answer",
-      short: "Someone must put money behind a claimed outcome.",
-      routes: ["quiet", "dispute"], sim: [6], simSteps: [0],
-      detail: "The optimistic layer begins only when an asserter names the result and posts a bond. The bond makes a careless or dishonest answer costly.",
-      actor: "Any eligible asserter", money: "Market escrow waits; no payout yet", condition: "The event is ready to resolve", next: "Post the bonded answer"
+      id: "resolution-requested", phase: "check", order: 2, title: "Resolution request prepared",
+      short: "OmenMarketMaker submits the fixed question, evidence rules, and value at stake.", routes: ["dispute"], sim: [6],
+      detail: "The request is a service handoff, not a proposed answer. OmenMarketMaker retains custody of every market dollar.",
+      actor: "OmenMarketMaker", money: "Market escrow stays at OmenMarketMaker", condition: "The market has closed", next: "Fund DemoThemis's separate work quote"
     },
     {
-      id: "assertion-posted", phase: "check", order: 3, title: "Answer and bond are posted",
-      short: "One claimed result becomes the answer to inspect.",
-      routes: ["quiet", "dispute"], sim: [6], simSteps: [1],
-      detail: "The asserted result is public and its bond is locked. This is provisional truth, not final truth.",
-      actor: "Asserter", money: "Assertion bond joins the still-locked market escrow", condition: "A valid assertion is submitted", next: "Paid watcher window"
-    },
-    {
-      id: "watch-window", phase: "check", order: 4, title: "One-week watcher window",
-      short: "Anyone can check the claim for one week; catching a false answer earns its bond.",
-      routes: ["quiet", "dispute"], sim: [6], simSteps: [1],
-      detail: "The design pays for vigilance instead of hoping for volunteers. A correct assertion should pass quietly; a false one gives watchers a reason to challenge.",
-      actor: "Independent watchers", money: "Assertion bond is exposed to a successful challenger", condition: "The one-week review window is open", next: "Quiet result or funded dispute"
-    },
-    {
-      id: "challenge-gate", phase: "check", order: 5, kind: "decision", title: "Was it challenged in time?",
-      short: "This one decision splits the common path from the court path.",
-      routes: ["quiet", "dispute"], sim: [7], simSteps: [0],
-      detail: "No timely challenge lets the optimistic answer harden. A valid challenge with stake locks a real case for DemoThemis.",
-      actor: "Watcher or other challenger", money: "Challenge stake locks beside the assertion bond", condition: "Before the configured window closes", next: "Quiet finality if no; court intake if yes"
-    },
-    {
-      id: "quiet-result", phase: "check", order: 6, group: "challenge-outcome", branch: "No · Phase 04", kind: "terminal", title: "Quiet result hardens",
-      short: "Roughly 95% of markets finish efficiently without calling a jury.",
-      routes: ["quiet"], sim: [],
-      detail: "When nobody disputes the bonded answer before the deadline, it becomes the final release rule and the market moves directly to payout.",
-      actor: "Protocol clock", money: "Ready for one final release", condition: "Watch window expires cleanly", next: "Pay winners and close"
-    },
-    {
-      id: "dispute-open", phase: "check", order: 6, group: "challenge-outcome", branch: "Yes · Phase 03", title: "Dispute case opens",
-      short: "The case enters the court path while OmenMarketMaker keeps the market funds locked.",
-      routes: ["dispute"], sim: [7], simSteps: [1],
-      detail: "A funded challenge stops optimistic settlement and creates a case. Trading can continue for tokenized claims, but the escrow cannot pay until the court path finishes.",
-      actor: "OmenMarketMaker handoff and DemoThemis intake", money: "Market escrow stays at OmenMarketMaker; the DemoThemis quote is funded separately", condition: "A valid funded challenge arrives", next: "Lock the case and quote before any panel is known"
+      id: "court-quote-funded", phase: "check", order: 3, title: "Independent court quote funded",
+      short: "A separate work-based quote pays for the required verified-human ruling.", routes: ["dispute"], sim: [6, 7],
+      detail: "Only the locked case and its funded service quote cross the product boundary. The market pot does not move to DemoThemis.",
+      actor: "OmenMarketMaker funds; DemoThemis receives", money: "Court quote is separate from market escrow", condition: "Before any juror is drawn", next: "Accept and lock the case"
     },
 
     {
-      id: "case-locked", phase: "judge", order: 1, title: "Case and escrow lock",
-      short: "Evidence, value at stake, and dispute contents freeze before the draw.",
-      routes: ["dispute"], sim: [8], simSteps: [0],
-      detail: "Locking first prevents parties from changing the case after seeing who will judge it. It also fixes the complexity class, work-based quote, panel size, and appeal-cost inputs before selection.",
-      actor: "DemoThemis intake", money: "The work quote is funded; market escrow remains separately locked", condition: "The challenge and court quote are funded", next: "Choose the correct court route"
+      id: "case-locked", phase: "judge", order: 1, title: "Case and quote lock",
+      short: "Question, evidence rules, value, complexity, and funding freeze before selection.", routes: ["dispute"], sim: [7, 8],
+      detail: "Locking first prevents either product or party from changing the case after seeing who will judge it.",
+      actor: "DemoThemis intake", money: "Court quote funded; market escrow remains separate", condition: "Before the randomness beacon is used", next: "Build the value-appropriate panel plan"
     },
     {
-      id: "court-route", phase: "judge", order: 2, kind: "decision", title: "What evidence defines the case?",
-      short: "Every case uses the same court; written criteria and available evidence define what jurors assess.",
-      routes: ["dispute"], sim: [],
-      detail: "All cases share the draw, privacy, appeals, and one juror-quality system. Every final case contributes difficulty-adjusted agreement, criteria consistency, appeal survival, and later independent evidence when available.",
-      actor: "Pre-written case criteria", money: "Unchanged in escrow", condition: "The question and judging criteria are fixed before judgment", next: "Build the panel plan"
+      id: "panel-plan", phase: "judge", order: 2, kind: "decision", title: "Panel plan fixed by value",
+      short: "Use one 7, 15, or 31-person panel—or several non-overlapping 31-person panels for the largest cases.", routes: ["dispute"], sim: [7, 8],
+      detail: "The value at stake selects a plan before the draw. Parallel top-tier panels must independently agree; a split can produce an INVALID result instead of false certainty.",
+      actor: "Published DemoThemis rules", money: "Required panel budget is reserved", condition: "Case value and appeal rung are fixed", next: "One public, replayable draw"
     },
     {
-      id: "panel-drawn", phase: "judge", order: 3, title: "Panel plan and one bound draw",
-      short: "Stakes choose 7, 15, or 31 seats; the beacon chooses people once, with no re-roll.",
-      routes: ["dispute"], sim: [8], simSteps: [1],
-      detail: "Panel size grows with value. A 31-seat draw uses jurors with long case histories, and the largest cases may use several non-overlapping 31-seat panels in parallel. Every seat still comes from a public, replayable draw.",
-      actor: "Public randomness beacon and deterministic rules", money: "Juror budget is reserved; case escrow stays locked", condition: "Case value and rung are fixed", next: "Conflict and live-presence checks"
+      id: "panel-drawn", phase: "judge", order: 3, title: "Panel drawn once",
+      short: "The committed case and a public beacon select the required seats with no app-controlled reroll.", routes: ["dispute"], sim: [8], simSteps: [1],
+      detail: "Anyone can replay the draw. Deterministic standbys replace conflicts or missed check-ins without letting the app shop for a friendlier jury.",
+      actor: "Public randomness beacon and deterministic rules", money: "Juror budget reserved; market escrow untouched", condition: "Case and panel plan are already locked", next: "Conflict and live-presence checks"
     },
     {
       id: "seat-checked", phase: "judge", order: 4, title: "Conflicts removed; humans check in",
-      short: "Wallet conflicts are replaced, and the drawn person proves live presence for this case.",
-      routes: ["dispute"], sim: [8], simSteps: [2],
-      detail: "A juror holding the disputed market position is skipped for the next deterministic standby. A juror who does not assess themselves as capable of judging the case may decline, and the next standby takes the seat. A missed presence grace period activates the same standby order and records a reliability ding rather than a verdict-linked slash.",
-      actor: "Drawn jurors, World App proof, deterministic standby list", money: "Still locked; no vote-dependent payment", condition: "Before a ballot unlocks", next: "Evidence review and private ballot"
+      short: "Conflicted holders are replaced and every seated juror proves live presence.", routes: ["dispute"], sim: [8], simSteps: [2],
+      detail: "A juror may decline a case they cannot judge. The next deterministic standby fills the seat; missed presence affects reliability, not the verdict.",
+      actor: "Drawn jurors, World App proof, standby list", money: "No vote-dependent payment", condition: "Before ballots unlock", next: "Evidence review and private ballot"
     },
     {
-      id: "private-ballot", phase: "judge", order: 5, title: "Evidence and private ballot",
-      short: "Jurors review the same record and may silently re-key until the deadline.",
-      routes: ["dispute"], sim: [9],
-      detail: "The court reveals only the aggregate result. Hidden individual ballots and re-keying make a photographed or promised vote a weak receipt for a briber.",
-      actor: "Verified seated jurors", money: "Juror reserve stays pending", condition: "Ballot window is open", next: "Aggregate tally proof"
+      id: "private-ballot", phase: "judge", order: 5, title: "Evidence and private ballots",
+      short: "Jurors review the same record and may silently replace an encrypted ballot until the deadline.", routes: ["dispute"], sim: [9],
+      detail: "Only the aggregate tally becomes public. Hidden, replaceable individual ballots make a promised vote a poor receipt for a briber.",
+      actor: "Verified seated jurors", money: "Juror reserve remains pending", condition: "Ballot window is open", next: "Aggregate each panel"
     },
     {
-      id: "provisional-verdict", phase: "judge", order: 6, title: "Aggregate verdict lands",
-      short: "A tally is public, but individual votes stay closed and money is not final yet.",
-      routes: ["dispute"], sim: [10], simSteps: [1, 2],
-      detail: "The first panel's result is provisional during the appeal window. Juror quality, slashes, and rewards wait for the last outcome so a later correction protects honest dissent.",
-      actor: "Threshold tally process", money: "Escrow and juror reserves remain pending", condition: "Enough valid private ballots are tallied", next: "Configured appeal window"
+      id: "panel-consensus", phase: "judge", order: 6, kind: "decision", title: "Required panels agree?",
+      short: "One panel yields its tally; parallel top-tier panels must reach the same answer.", routes: ["dispute"], sim: [10],
+      detail: "The court publishes panel-level aggregate proofs without revealing individual votes. Parallel-panel disagreement is handled explicitly.",
+      actor: "Threshold tally process", money: "All funds remain pending", condition: "Every required panel has a valid tally", next: "Provisional ruling or INVALID"
     },
     {
-      id: "appeal-gate", phase: "judge", order: 7, kind: "decision", title: "Was a valid appeal funded?",
-      short: "A solo bond or a verified losing-side petition can pay for the next rung.",
-      routes: ["dispute"], sim: [11], simSteps: [0],
-      detail: "The next rung costs the highest of panel pay, attack-risk pricing, and delay rent. Governance selects the deadline within the constitutional 2-to-8-week range, and the case records that value before voting begins.",
-      actor: "Losing party or at least 5% of losing-side verified people", money: "Appeal bond or petition stakes lock", condition: "Before the configured appeal deadline", next: "Final result, or a larger new panel"
+      id: "provisional-verdict", phase: "judge", order: 7, group: "panel-outcome", branch: "Agreement", title: "Provisional ruling",
+      short: "The aggregate answer is public while the appeal window remains open.", routes: ["dispute"], sim: [10], simSteps: [1, 2],
+      detail: "The ruling is checkable but not payable yet. Juror rewards and quality updates wait for finality so an appeal can correct the first result.",
+      actor: "DemoThemis tally process", money: "Market escrow and juror reserves remain pending", condition: "Required panel consensus is reached", next: "Configured appeal window"
     },
     {
-      id: "court-final", phase: "judge", order: 8, group: "appeal-outcome", branch: "No/top · Phase 04", kind: "terminal", title: "Court result hardens",
-      short: "No timely appeal—or the maximum rung—ends the settlement clock.",
-      routes: ["dispute"], sim: [11], simSteps: [2],
-      detail: "Finality is deliberate. Once the configured window closes or the 31-seat top rung finishes, no later evidence can reopen the settled money.",
-      actor: "Protocol clock and appeal ladder", money: "Ready for final release", condition: "No valid appeal remains", next: "Pay winners and close"
+      id: "invalid-verdict", phase: "judge", order: 7, group: "panel-outcome", branch: "Parallel split", title: "Provisional INVALID ruling",
+      short: "If required parallel panels disagree, the system reports disagreement instead of inventing certainty.", routes: ["dispute"], sim: [],
+      detail: "INVALID is a permitted answer under the written market rules and can still be appealed through the same ladder.",
+      actor: "DemoThemis tally process", money: "Market escrow remains pending", condition: "Required parallel panels split", next: "Configured appeal window"
     },
     {
-      id: "larger-panel", phase: "judge", order: 8, group: "appeal-outcome", branch: "Funded · loop ↺", title: "Larger fresh panel",
-      short: "The case loops through 7 → 15 → 31, never the same panel size twice.",
-      routes: ["dispute"], sim: [11], simSteps: [1],
-      detail: "A new, wider, non-overlapping panel re-hears the locked case. A failed appeal bond feeds the reward pool; a vindicated appellant is refunded with a bonus.",
-      actor: "New randomly drawn panel", money: "Appeal funding pays the rung; case escrow stays locked", condition: "A valid appeal exists and another rung remains", next: "Loop to draw, presence, ballot, and verdict"
+      id: "appeal-gate", phase: "judge", order: 8, kind: "decision", title: "Was a valid appeal funded?",
+      short: "A solo bond or a verified losing-side petition can fund the next wider rung.", routes: ["dispute"], sim: [11], simSteps: [0],
+      detail: "The next rung prices panel work, attack risk, and delay. Its deadline and cost are known before voting begins.",
+      actor: "Losing party or qualifying losing-side petition", money: "Appeal funding locks separately", condition: "Before the configured appeal deadline", next: "Final ruling or fresh wider panel"
+    },
+    {
+      id: "court-final", phase: "judge", order: 9, group: "appeal-outcome", branch: "No appeal / top rung", kind: "terminal", title: "Court ruling becomes final",
+      short: "No timely appeal—or completion of the maximum rung—ends adjudication.", routes: ["dispute"], sim: [11], simSteps: [2],
+      detail: "Finality is deliberate. Later evidence may affect juror quality or accountability, but it cannot reopen settled money.",
+      actor: "DemoThemis appeal ladder", money: "Ready for signed handoff", condition: "No valid appeal remains", next: "Sign the final ruling"
+    },
+    {
+      id: "larger-panel", phase: "judge", order: 9, group: "appeal-outcome", branch: "Funded · loop ↺", title: "Fresh wider panel",
+      short: "The case advances through 7 → 15 → 31 seats without reusing the earlier panel.", routes: ["dispute"], sim: [11], simSteps: [1],
+      detail: "A failed appeal funds the reward pool; a successful appellant is refunded with a bonus. The locked case itself does not change.",
+      actor: "New randomly drawn jurors", money: "Appeal funding pays this rung", condition: "A valid appeal exists and another rung remains", next: "Rebuild the panel plan and draw"
     },
 
     {
-      id: "release-rule", phase: "finish", order: 1, kind: "terminal", title: "One final release rule",
-      short: "Quiet result and final court verdict converge on the same irreversible answer.",
-      routes: ["quiet", "dispute"], sim: [12], simSteps: [0],
-      detail: "The system has exactly one authoritative outcome for payment. Convergence prevents the optimistic path and court path from paying different answers.",
-      actor: "Settlement contract", money: "All escrow is still locked for the last instant", condition: "A result has become final", next: "Settle each product form"
+      id: "signed-ruling", phase: "finish", order: 1, title: "DemoThemis signs the final ruling",
+      short: "The court emits one final answer and proof for the locked case.", routes: ["dispute"], sim: [12], simSteps: [0],
+      detail: "The signed ruling is the service result OmenMarketMaker paid for. It contains no custody of the market pot.",
+      actor: "DemoThemis", money: "Market escrow still at OmenMarketMaker", condition: "The appeal ladder is final", next: "Return the signed ruling"
     },
     {
-      id: "settle-funds", phase: "finish", order: 2, title: "Settle funds and route the invoice",
-      short: "One final operation pays public escrow and routes fees; jury cases also prove shielded juror updates in aggregate.",
-      routes: ["quiet", "dispute"], sim: [12], simSteps: [1],
-      detail: "Settlement is atomic, not two clocks. Pool winners split the pot, tokens redeem, and the selected resolution provider receives its independent service fee. A DemoThemis jury quote covers processing, required panel compensation, any reserve top-up, and capped operations; a quiet result omits the jury cost. Juror updates settle inside shielded commitments; batched proofs expose only balanced totals, never a wallet-level consequence.",
-      actor: "Settlement contracts plus private-account proofs", money: "Public escrow routes normally; individual juror amounts remain shielded", condition: "The final release rule is available", next: "Permanent closed record"
+      id: "ruling-handoff", phase: "finish", order: 2, title: "Ruling crosses back to the market",
+      short: "OmenMarketMaker verifies the signed DemoThemis result against the locked case.", routes: ["dispute"], sim: [12],
+      detail: "The same narrow boundary is used in reverse: a ruling crosses, not the court treasury or market custody.",
+      actor: "DemoThemis → OmenMarketMaker", money: "No market funds cross the product boundary", condition: "Signature and case ID verify", next: "Select the written market release rule"
     },
     {
-      id: "closed-record", phase: "finish", order: 4, title: "Market closes permanently",
-      short: "A signed record remains; public cases are public, private arbitration stays private by default.",
-      routes: ["quiet", "dispute"], sim: [12], simSteps: [1],
-      detail: "The payment state is immutable. If a jury was used, its record can also support quality updates and later collusion investigation.",
-      actor: "Protocol record layer", money: "Already settled and cannot reopen", condition: "Settlement transaction completes", next: "End, or jury-only quality and accountability rails"
+      id: "omen-release-rule", phase: "finish", order: 3, title: "OmenMarketMaker applies the result",
+      short: "The verified answer selects the market's pre-written payout rule.", routes: ["dispute"], sim: [12],
+      detail: "OmenMarketMaker remains responsible for redemption, fees, and the final market record.",
+      actor: "OmenMarketMaker settlement contract", money: "All market collateral is ready to route", condition: "Signed ruling verified", next: "Redeem claims and route fees"
     },
     {
-      id: "curation-gate", phase: "finish", order: 5, kind: "decision", title: "Is later independent evidence available?",
-      short: "Every completed jury case updates juror quality; a checkable outside result can add another accuracy signal.",
-      routes: ["dispute"], sim: [12], simSteps: [1],
-      detail: "Difficulty-adjusted agreement, written-criteria consistency, and appeal survival already count. Reliable later evidence is verified and added without deciding whether the case qualifies for scoring.",
-      actor: "Quality engine and evidence checks", money: "No settlement money changes", condition: "After finality", next: "Shared quality update"
+      id: "settle-funds", phase: "finish", order: 4, title: "Claims redeem and fees route",
+      short: "Pool winners split the pot or tokens redeem; the market fee and separate court invoice remain distinct.", routes: ["dispute"], sim: [12], simSteps: [1],
+      detail: "Settlement is one market operation. DemoThemis's work quote has already funded the court; individual juror updates remain shielded behind aggregate proofs.",
+      actor: "OmenMarketMaker settlement contracts", money: "Winning claims paid; Omen fee routed", condition: "The release rule is selected", next: "Write the permanent market record"
     },
     {
-      id: "record-only", phase: "finish", order: 6, group: "curation-outcome", branch: "No outside result", afterNote: "Meanwhile, accountability and the next-cycle loop run independently ↓", title: "Case evidence updates quality",
-      short: "The completed case updates jurors from difficulty, criteria consistency, and appeal evidence.",
-      routes: ["dispute"], sim: [],
-      detail: "A missing external answer does not exclude the case. Its reliable internal and appeal signals update the same shared juror-quality record.",
-      actor: "Quality engine", money: "Future pay and selection may change; past settlement does not", condition: "No later independent result is available", next: "Keep the record and improve future selection"
+      id: "market-record", phase: "finish", order: 5, title: "Market closes permanently",
+      short: "A signed payout record remains; a private market stays private by default.", routes: ["dispute"], sim: [12], simSteps: [1],
+      detail: "The payment state is immutable. Learning and accountability may continue without changing the final ruling or payout.",
+      actor: "OmenMarketMaker record layer", money: "Already settled and cannot reopen", condition: "Settlement transaction completes", next: "End; post-case rails continue in parallel"
     },
     {
-      id: "quality-update", phase: "finish", order: 6, group: "curation-outcome", branch: "Outside result", title: "Juror quality gains another check",
-      short: "The external result joins the case's peer, criteria, and appeal evidence in one shared record.",
-      routes: ["dispute"], sim: [12], simSteps: [1],
-      detail: "Reliable later evidence can confirm or correct the signal from the final panel. It strengthens the same update every completed case receives without changing the closed case.",
-      actor: "Quality engine", money: "Future pay and rewards may change; past payout does not", condition: "A reliable later result exists", next: "A wider, better measured juror pool"
+      id: "quality-update", phase: "finish", order: 6, kind: "parallel", title: "Every case updates juror quality",
+      short: "Difficulty-adjusted agreement, written-criteria consistency, and appeal survival update one shared history.", routes: ["dispute"], sim: [12],
+      detail: "All well-defined cases contribute to sustainable consensus. The scoring system does not exclude judgment-based cases from accuracy learning.",
+      actor: "DemoThemis quality engine", money: "Future selection odds change; settled money does not", condition: "After finality", next: "Better future juror selection"
     },
     {
-      id: "collusion-clock", phase: "finish", order: 7, group: "aftercare-rails", branch: "Justice · stays open", title: "Accountability stays open",
-      short: "A later collusion report may slash and ban proven actors, but never reopens payment.",
-      routes: ["dispute"], sim: [],
-      detail: "Settlement has a closing clock; justice does not. Correlation evidence can be investigated years later while everyone can still rely on final escrow.",
-      actor: "Any reporter and the collusion audit", money: "Only offender bonds and future eligibility are at risk", condition: "Any time after a suspicious pattern appears", next: "Punishment if proved; final payout remains untouched"
+      id: "external-evidence", phase: "finish", order: 7, kind: "optional", title: "Later evidence can add a signal",
+      short: "A trustworthy later result can sharpen the completed case's quality record.", routes: [], sim: [],
+      detail: "External evidence is optional extra information, never a gate that decides whether the case counts for juror quality.",
+      actor: "DemoThemis evidence checks", money: "No settlement money changes", condition: "Reliable later evidence becomes available", next: "Append to the same quality history"
     },
     {
-      id: "bootstrap-loop", phase: "finish", order: 7, group: "aftercare-rails", branch: "Next market ↺ Phase 01", title: "The next market gets a stronger court",
-      short: "More markets create more evidence, more paid jurors, and eventually support outside escrow disputes.",
-      routes: ["dispute"], sim: [12], simSteps: [1],
-      detail: "This bootstrap loop lets OmenMarketMaker seed DemoThemis with demand: it pays an independent service fee for each court case, completed cases strengthen the court, and a stronger court can win more integrations.",
-      actor: "Independent products connected by a service agreement", money: "DemoThemis earns fees only from cases sent to it", condition: "Repeated settled use", next: "New markets and, later, outside escrow cases"
+      id: "collusion-clock", phase: "finish", order: 8, kind: "parallel", title: "Accountability clock keeps running",
+      short: "Later collusion reports may punish proven offenders without reopening the ruling.", routes: ["dispute"], sim: [],
+      detail: "Delayed conspiracy proof affects juror standing or penalties, never the already-final market payout.",
+      actor: "Reporters and DemoThemis governance", money: "Only later penalties or reporter rewards", condition: "After a jury ruling", next: "No effect on the closed market"
+    },
+    {
+      id: "bootstrap-loop", phase: "finish", order: 9, kind: "parallel", title: "Demand strengthens the next cycle",
+      short: "Market demand funds cases; completed cases improve juror records and court credibility.", routes: ["dispute"], sim: [12],
+      detail: "OmenMarketMaker can seed DemoThemis with demand while both products retain separate fees, treasuries, governance, and contracts.",
+      actor: "Independent OmenMarketMaker and DemoThemis systems", money: "Separate market fee and court invoice", condition: "A court-backed market settles", next: "More useful markets and a stronger juror pool"
     }
   ];
 
+  var SYSTEM_TRANSITIONS = [
+    { from: "rules-fixed", to: "public-pool", when: "public market", kind: "branch" },
+    { from: "rules-fixed", to: "private-room", when: "private room", kind: "branch" },
+    { from: "public-pool", to: "price-formation", when: "orders arrive", kind: "forward" },
+    { from: "private-room", to: "event-close", when: "written close", kind: "skip" },
+    { from: "price-formation", to: "robustness-gate", when: "graduation check", kind: "forward" },
+    { from: "robustness-gate", to: "pooled-claims", when: "a check fails", kind: "branch" },
+    { from: "robustness-gate", to: "tokenized-claims", when: "every check passes", kind: "branch" },
+    { from: "pooled-claims", to: "event-close", when: "written close", kind: "skip" },
+    { from: "tokenized-claims", to: "event-close", when: "written close", kind: "skip" },
+    { from: "tokenized-claims", to: "parlay-route", when: "optional bundle", kind: "branch" },
+    { from: "parlay-route", to: "parlay-position", when: "funded quote wins", kind: "forward" },
+    { from: "parlay-position", to: "parlay-cashout", when: "optional funded cashout", kind: "branch" },
+
+    { from: "event-close", to: "resolution-requested", when: "market needs its final answer", kind: "forward" },
+    { from: "resolution-requested", to: "court-quote-funded", when: "work quote is funded", kind: "forward" },
+    { from: "court-quote-funded", to: "case-locked", when: "DemoThemis accepts the fixed case", kind: "forward" },
+
+    { from: "case-locked", to: "panel-plan", when: "value selects the plan", kind: "forward" },
+    { from: "panel-plan", to: "panel-drawn", when: "plan is fixed", kind: "forward" },
+    { from: "panel-drawn", to: "seat-checked", when: "bound draw completes", kind: "forward" },
+    { from: "seat-checked", to: "private-ballot", when: "all required seats are ready", kind: "forward" },
+    { from: "private-ballot", to: "panel-consensus", when: "aggregate proofs arrive", kind: "forward" },
+    { from: "panel-consensus", to: "provisional-verdict", when: "required panels agree", kind: "branch" },
+    { from: "panel-consensus", to: "invalid-verdict", when: "required parallel panels split", kind: "branch" },
+    { from: "provisional-verdict", to: "appeal-gate", when: "appeal window opens", kind: "forward" },
+    { from: "invalid-verdict", to: "appeal-gate", when: "appeal window opens", kind: "forward" },
+    { from: "appeal-gate", to: "court-final", when: "no valid appeal or top rung", kind: "branch" },
+    { from: "appeal-gate", to: "larger-panel", when: "appeal is funded", kind: "branch" },
+    { from: "larger-panel", to: "panel-plan", when: "fresh wider plan", kind: "loop" },
+
+    { from: "court-final", to: "signed-ruling", when: "final answer is signed", kind: "forward" },
+    { from: "signed-ruling", to: "ruling-handoff", when: "proof is ready", kind: "forward" },
+    { from: "ruling-handoff", to: "omen-release-rule", when: "OmenMarketMaker verifies", kind: "forward" },
+    { from: "omen-release-rule", to: "settle-funds", when: "written payout rule selected", kind: "forward" },
+    { from: "settle-funds", to: "market-record", when: "settlement succeeds", kind: "forward" },
+    { from: "signed-ruling", to: "quality-update", when: "every completed case", kind: "parallel" },
+    { from: "quality-update", to: "external-evidence", when: "later evidence is available", kind: "parallel" },
+    { from: "signed-ruling", to: "collusion-clock", when: "accountability continues", kind: "parallel" },
+    { from: "market-record", to: "bootstrap-loop", when: "court-backed market settles", kind: "parallel" },
+    { from: "bootstrap-loop", to: "rules-fixed", when: "new market", kind: "loop" }
+  ];
+
   var SYSTEM_STATE_OWNERS = {
-    "rules-fixed": "omen", "public-pool": "omen", "private-room": "omen",
-    "price-formation": "omen", "robustness-gate": "omen", "pooled-claims": "omen",
-    "tokenized-claims": "omen", "parlay-route": "omen", "event-close": "omen",
-    "awaiting-answer": "omen", "assertion-posted": "omen", "watch-window": "omen",
-    "challenge-gate": "shared", "quiet-result": "omen", "dispute-open": "shared",
-    "case-locked": "demothemis", "court-route": "demothemis", "panel-drawn": "demothemis",
-    "seat-checked": "demothemis", "private-ballot": "demothemis", "provisional-verdict": "demothemis",
-    "appeal-gate": "demothemis", "court-final": "demothemis", "larger-panel": "demothemis",
-    "release-rule": "shared", "settle-funds": "shared", "closed-record": "omen",
-    "curation-gate": "demothemis", "record-only": "demothemis", "quality-update": "demothemis",
-    "collusion-clock": "demothemis", "bootstrap-loop": "shared"
+    "rules-fixed": "omen", "public-pool": "omen", "private-room": "omen", "price-formation": "omen",
+    "robustness-gate": "omen", "pooled-claims": "omen", "tokenized-claims": "omen", "parlay-route": "omen",
+    "parlay-position": "omen", "parlay-cashout": "omen", "event-close": "omen", "resolution-requested": "omen",
+    "court-quote-funded": "shared", "case-locked": "demothemis", "panel-plan": "demothemis", "panel-drawn": "demothemis",
+    "seat-checked": "demothemis", "private-ballot": "demothemis", "panel-consensus": "demothemis", "provisional-verdict": "demothemis",
+    "invalid-verdict": "demothemis", "appeal-gate": "demothemis", "court-final": "demothemis", "larger-panel": "demothemis",
+    "signed-ruling": "demothemis", "ruling-handoff": "shared", "omen-release-rule": "omen", "settle-funds": "omen",
+    "market-record": "omen", "quality-update": "demothemis", "external-evidence": "demothemis", "collusion-clock": "demothemis",
+    "bootstrap-loop": "shared"
   };
+
   SYSTEM_STATES.forEach(function (state) {
     state.owner = SYSTEM_STATE_OWNERS[state.id] || "shared";
   });
 
-  /* Canonical topology. The visual layout projects the product's branch, merge, loop, and parallel edges. */
-  var SYSTEM_TRANSITIONS = [
-    { from: "rules-fixed", to: "public-pool", when: "public market", kind: "branch" },
-    { from: "rules-fixed", to: "private-room", when: "private room", kind: "branch" },
-    { from: "public-pool", to: "price-formation", when: "more orders arrive", kind: "forward" },
-    { from: "private-room", to: "event-close", when: "matched room", kind: "skip" },
-    { from: "price-formation", to: "robustness-gate", when: "graduation check", kind: "forward" },
-    { from: "robustness-gate", to: "pooled-claims", when: "one or more checks fail", kind: "branch" },
-    { from: "robustness-gate", to: "tokenized-claims", when: "every check passes", kind: "branch" },
-    { from: "pooled-claims", to: "event-close", when: "event or close time", kind: "skip" },
-    { from: "tokenized-claims", to: "event-close", when: "event or close time", kind: "skip" },
-    { from: "tokenized-claims", to: "parlay-route", when: "optional combined order", kind: "branch" },
-    { from: "parlay-route", to: "event-close", when: "every leg fills", kind: "forward" },
-
-    { from: "event-close", to: "awaiting-answer", when: "outcome is usable", kind: "forward" },
-    { from: "awaiting-answer", to: "assertion-posted", when: "valid bonded answer", kind: "forward" },
-    { from: "assertion-posted", to: "watch-window", when: "one valid answer", kind: "forward" },
-    { from: "watch-window", to: "challenge-gate", when: "configured window ends or challenge arrives", kind: "forward" },
-    { from: "challenge-gate", to: "quiet-result", when: "no timely challenge", kind: "branch" },
-    { from: "challenge-gate", to: "dispute-open", when: "valid funded challenge", kind: "branch" },
-    { from: "quiet-result", to: "release-rule", when: "optimistic result hardens", kind: "merge" },
-    { from: "dispute-open", to: "case-locked", when: "court accepts case", kind: "forward" },
-
-    { from: "case-locked", to: "court-route", when: "answer type is classified", kind: "forward" },
-    { from: "court-route", to: "panel-drawn", when: "panel plan is fixed", kind: "forward" },
-    { from: "panel-drawn", to: "seat-checked", when: "bound draw succeeds", kind: "forward" },
-    { from: "seat-checked", to: "private-ballot", when: "required panel is seated", kind: "forward" },
-    { from: "private-ballot", to: "provisional-verdict", when: "valid aggregate tally", kind: "forward" },
-    { from: "provisional-verdict", to: "appeal-gate", when: "appeal window opens", kind: "forward" },
-    { from: "appeal-gate", to: "court-final", when: "no valid appeal or top rung", kind: "branch" },
-    { from: "appeal-gate", to: "larger-panel", when: "appeal is funded and a rung remains", kind: "branch" },
-    { from: "larger-panel", to: "panel-drawn", when: "fresh wider draw", kind: "loop" },
-    { from: "court-final", to: "release-rule", when: "court result hardens", kind: "merge" },
-
-    { from: "release-rule", to: "settle-funds", when: "one final answer", kind: "forward" },
-    { from: "settle-funds", to: "closed-record", when: "atomic settlement succeeds", kind: "forward" },
-    { from: "closed-record", to: "curation-gate", when: "a jury case was used", kind: "parallel" },
-    { from: "curation-gate", to: "record-only", when: "no later outside result", kind: "branch" },
-    { from: "curation-gate", to: "quality-update", when: "later outside result is verified", kind: "branch" },
-    { from: "closed-record", to: "collusion-clock", when: "a jury case was used", kind: "parallel" },
-    { from: "closed-record", to: "bootstrap-loop", when: "a DemoThemis case was funded", kind: "parallel" },
-    { from: "bootstrap-loop", to: "rules-fixed", when: "new market", kind: "loop" }
-  ];
-
-  var MACHINE_ROUTE_COPY = {
-    all: ["Whole map.", "Public and private markets, fast settlement, unbuyable arbitration, appeals, finality, and the strengthening loop are all visible."],
-    quiet: ["Fast settlement.", "Question -> escrow -> bonded answer -> paid watcher window -> automatic payout. Roughly 95% of markets finish here."],
-    dispute: ["Disputed market.", "Challenge -> locked case -> verified jury -> private verdict -> optional larger-panel appeal -> final payout."]
+  var MACHINE_FOCUS_COPY = {
+    all: ["Whole system.", "OmenMarketMaker states, DemoThemis states, and the shared product handoffs are all visible."],
+    omen: ["OmenMarketMaker only.", "Market creation, trading, custody, resolution funding, ruling verification, and payout remain visible. Shared handoffs show where DemoThemis connects."],
+    demothemis: ["DemoThemis only.", "Case intake, verified-human adjudication, appeals, finality, and juror learning remain visible. Shared handoffs show where OmenMarketMaker connects."]
   };
-
+  var MACHINE_PHASE_FOCUS_COPY = {
+    omen: {
+      check: { title: "Fund the ruling", note: "OmenMarketMaker keeps market collateral while funding the separate DemoThemis work quote.", transition: "Funded quote → shared handoff" },
+      finish: { title: "Settle the market", note: "Verify the returned ruling, apply the written release rule, redeem claims, and close the record.", transition: "Signed ruling → final payout" }
+    },
+    demothemis: {
+      check: { title: "Accept the funded case", note: "The funded quote and locked case enter DemoThemis while market collateral remains with OmenMarketMaker.", transition: "Locked case → verified court" },
+      finish: { title: "Finalize and learn", note: "Sign the final ruling, return its proof, and improve juror quality without reopening settlement.", transition: "Ruling returns → learning continues" }
+    }
+  };
+  var MACHINE_PHASE_BRANDS = {
+    build: ["omen"],
+    check: ["omen", "demothemis"],
+    judge: ["demothemis"],
+    finish: ["demothemis", "omen"]
+  };
   var machineRouteTimer = 0;
 
   function machineStateById(id) {
@@ -4125,9 +4138,9 @@
     if (!button) return;
     var root = document.getElementById("systemStateMachine");
     var baseLabel = button.getAttribute("data-machine-base-label") || "System state.";
-    var route = root ? root.getAttribute("data-route") : "all";
+    var focus = root ? root.getAttribute("data-focus") : "all";
     var label = baseLabel;
-    if (route !== "all") label += button.classList.contains("is-dimmed") ? " Not on the highlighted route." : " On the highlighted route.";
+    if (focus !== "all") label += " Included in the " + (focus === "omen" ? "OmenMarketMaker" : "DemoThemis") + " product view.";
     if (button.classList.contains("is-sim-current")) {
       var chip = button.querySelector(".machine-sim-chip");
       label += " Current guided " + (chip ? chip.textContent.toLowerCase() : "event") + ".";
@@ -4168,13 +4181,15 @@
     labels.appendChild(makeEl("span", "machine-state-kind", machineKindLabel(state)));
     if (state.branch) labels.appendChild(makeEl("span", "machine-state-branch", state.branch));
     top.appendChild(labels);
+    var ownerIcons = makeEl("span", "machine-owner-icons" + (state.owner === "shared" ? " machine-owner-icons--shared" : ""));
+    ownerIcons.setAttribute("aria-hidden", "true");
     if (state.owner === "shared") {
-      var sharedMark = makeEl("span", "machine-owner-mark machine-owner-mark--shared", "Handoff");
-      sharedMark.setAttribute("aria-label", "Shared product boundary");
-      top.appendChild(sharedMark);
+      ownerIcons.appendChild(makeProductFavicon("omen", "machine-owner-icon"));
+      ownerIcons.appendChild(makeProductFavicon("demothemis", "machine-owner-icon"));
     } else {
-      top.appendChild(makeProductWordmark(state.owner, "machine-owner-mark", ""));
+      ownerIcons.appendChild(makeProductFavicon(state.owner, "machine-owner-icon"));
     }
+    top.appendChild(ownerIcons);
     top.appendChild(makeEl("span", "machine-sim-chip", "Current event"));
     button.appendChild(top);
     button.appendChild(makeEl("strong", "machine-state-title", state.title));
@@ -4240,10 +4255,12 @@
     root.replaceChildren();
     SYSTEM_PHASES.forEach(function (phase) {
       var section = makeEl("section");
+      section.setAttribute("data-phase", phase.id);
       section.appendChild(makeEl("h4", "", phase.number + " · " + phase.title));
       var list = makeEl("ol");
       SYSTEM_STATES.filter(function (state) { return state.phase === phase.id; }).sort(function (a, b) { return a.order - b.order; }).forEach(function (state) {
         var item = makeEl("li");
+        item.setAttribute("data-owner", state.owner || "shared");
         item.appendChild(makeEl("b", "", state.title + ". "));
         item.appendChild(document.createTextNode(state.short));
         var transitions = machineTransitionText(state.id);
@@ -4266,10 +4283,15 @@
       phaseEl.setAttribute("aria-labelledby", "machine-phase-" + phase.id);
       var head = makeEl("header", "machine-phase-head");
       head.appendChild(makeEl("span", "machine-phase-kicker", "Phase " + phase.number));
-      var title = makeEl("h3", "", phase.title);
+      var titleRow = makeEl("div", "machine-phase-title-row");
+      var title = makeEl("h3", "machine-phase-title", phase.title);
       title.id = "machine-phase-" + phase.id;
-      head.appendChild(title);
-      head.appendChild(makeEl("p", "", phase.note));
+      titleRow.appendChild(title);
+      var phaseBrand = makeEl("span", "machine-phase-brand");
+      phaseBrand.setAttribute("aria-label", "Products active in this phase");
+      titleRow.appendChild(phaseBrand);
+      head.appendChild(titleRow);
+      head.appendChild(makeEl("p", "machine-phase-note", phase.note));
       if (phase.transition) head.appendChild(makeEl("span", "machine-phase-transition", phase.transition));
       phaseEl.appendChild(head);
 
@@ -4296,42 +4318,102 @@
     renderMachineTextFlow();
   }
 
-  function setMachineRouteSummary(route) {
+  function setMachineFocusSummary(focus) {
     var root = document.getElementById("machineRouteSummary");
-    var copy = MACHINE_ROUTE_COPY[route] || MACHINE_ROUTE_COPY.all;
+    var copy = MACHINE_FOCUS_COPY[focus] || MACHINE_FOCUS_COPY.all;
     if (!root) return;
     root.replaceChildren();
     root.appendChild(makeEl("strong", "", copy[0] + " "));
     root.appendChild(document.createTextNode(copy[1]));
   }
 
-  function setMachineRoute(route, animate) {
+  function setMachinePhaseCopy(focus) {
+    var overrides = MACHINE_PHASE_FOCUS_COPY[focus] || {};
+    SYSTEM_PHASES.forEach(function (phase) {
+      var copy = overrides[phase.id] || phase;
+      var phaseRoot = document.querySelector('.machine-phase[data-phase="' + phase.id + '"]');
+      if (phaseRoot) {
+        var title = phaseRoot.querySelector(".machine-phase-title");
+        var note = phaseRoot.querySelector(".machine-phase-note");
+        var transition = phaseRoot.querySelector(".machine-phase-transition");
+        if (title) title.textContent = copy.title;
+        if (note) note.textContent = copy.note;
+        if (transition) transition.textContent = copy.transition || phase.transition;
+        var phaseBrand = phaseRoot.querySelector(".machine-phase-brand");
+        if (phaseBrand) {
+          phaseBrand.replaceChildren();
+          var brands = focus === "all" ? (MACHINE_PHASE_BRANDS[phase.id] || []) : [focus];
+          brands.forEach(function (brand) {
+            phaseBrand.appendChild(makeProductWordmark(brand, "machine-phase-wordmark", brand === "omen" ? "OmenMarketMaker" : "DemoThemis", false));
+          });
+        }
+      }
+      var textTitle = document.querySelector('.machine-text-content section[data-phase="' + phase.id + '"] h4');
+      if (textTitle) textTitle.textContent = phase.number + " · " + copy.title;
+    });
+  }
+
+  function setMachineFocus(focus, animate) {
     var root = document.getElementById("systemStateMachine");
     if (!root) return;
-    var filtered = route !== "all";
-    root.setAttribute("data-route", route);
-    root.classList.toggle("is-filtered", filtered);
-    document.querySelectorAll("[data-machine-route]").forEach(function (button) {
-      button.setAttribute("aria-pressed", button.getAttribute("data-machine-route") === route ? "true" : "false");
+    var filtered = focus !== "all";
+    root.setAttribute("data-focus", focus);
+    root.classList.toggle("is-product-filtered", filtered);
+    document.querySelectorAll("[data-machine-focus]").forEach(function (button) {
+      var selected = button.getAttribute("data-machine-focus") === focus;
+      button.setAttribute("aria-checked", selected ? "true" : "false");
+      button.tabIndex = selected ? 0 : -1;
     });
 
     var active = [];
     root.querySelectorAll(".machine-state").forEach(function (button) {
-      var routes = (button.getAttribute("data-machine-routes") || "").split(/\s+/).filter(Boolean);
-      var matches = !filtered || routes.indexOf(route) >= 0;
-      button.classList.toggle("is-dimmed", !matches);
+      var owner = button.getAttribute("data-owner") || "shared";
+      var matches = !filtered || owner === focus || owner === "shared";
+      button.hidden = !matches;
       button.classList.toggle("is-route-active", matches);
       button.classList.remove("is-route-tracing");
+      if (!matches && button.getAttribute("aria-expanded") === "true") {
+        button.setAttribute("aria-expanded", "false");
+        button.removeAttribute("aria-describedby");
+        button.classList.remove("is-selected");
+        var detail = button.querySelector(".machine-state-detail");
+        if (detail) detail.hidden = true;
+      }
       updateMachineStateAria(button);
       if (matches) active.push(button);
     });
-    root.querySelectorAll(".machine-step").forEach(function (step) {
-      step.classList.toggle("is-route-active", !!step.querySelector(".machine-state.is-route-active:not(.is-dimmed)"));
+    root.querySelectorAll(".machine-state-row").forEach(function (row) {
+      var visibleStates = Array.from(row.querySelectorAll(".machine-state")).filter(function (button) { return !button.hidden; });
+      row.hidden = visibleStates.length === 0;
+      row.classList.toggle("is-single", visibleStates.length === 1);
+    });
+    root.querySelectorAll(".machine-phase-flow").forEach(function (flow) {
+      var visibleSteps = [];
+      flow.querySelectorAll(".machine-step").forEach(function (step) {
+        var matches = !!step.querySelector(".machine-state:not([hidden])");
+        step.hidden = !matches;
+        step.classList.toggle("is-route-active", matches);
+        step.classList.remove("is-last-visible");
+        if (matches) visibleSteps.push(step);
+      });
+      if (visibleSteps.length) visibleSteps[visibleSteps.length - 1].classList.add("is-last-visible");
     });
     root.querySelectorAll(".machine-phase").forEach(function (phase) {
-      phase.classList.toggle("is-dimmed-phase", filtered && !phase.querySelector(".machine-state.is-route-active:not(.is-dimmed)"));
+      phase.hidden = !phase.querySelector(".machine-state:not([hidden])");
     });
-    setMachineRouteSummary(route);
+    root.querySelectorAll("[data-machine-owner]").forEach(function (item) {
+      var owner = item.getAttribute("data-machine-owner") || "shared";
+      item.hidden = filtered && owner !== focus && owner !== "shared";
+    });
+    root.querySelectorAll(".machine-text-content li[data-owner]").forEach(function (item) {
+      var owner = item.getAttribute("data-owner") || "shared";
+      item.hidden = filtered && owner !== focus && owner !== "shared";
+    });
+    root.querySelectorAll(".machine-text-content section").forEach(function (section) {
+      section.hidden = !section.querySelector("li:not([hidden])");
+    });
+    setMachineFocusSummary(focus);
+    setMachinePhaseCopy(focus);
 
     if (machineRouteTimer) window.clearTimeout(machineRouteTimer);
     if (animate && !window.matchMedia("(prefers-reduced-motion: reduce)").matches) {
@@ -4363,12 +4445,22 @@
   function initSystemStateMachine() {
     if (!document.getElementById("systemStateMachine")) return;
     renderSystemStateMachine();
-    document.querySelectorAll("[data-machine-route]").forEach(function (button) {
+    var focusButtons = Array.from(document.querySelectorAll("[data-machine-focus]"));
+    focusButtons.forEach(function (button) {
       button.addEventListener("click", function () {
-        setMachineRoute(button.getAttribute("data-machine-route"), true);
+        setMachineFocus(button.getAttribute("data-machine-focus"), true);
+      });
+      button.addEventListener("keydown", function (event) {
+        var direction = event.key === "ArrowRight" || event.key === "ArrowDown" ? 1 : event.key === "ArrowLeft" || event.key === "ArrowUp" ? -1 : 0;
+        var targetIndex = event.key === "Home" ? 0 : event.key === "End" ? focusButtons.length - 1 : direction ? (focusButtons.indexOf(button) + direction + focusButtons.length) % focusButtons.length : -1;
+        if (targetIndex < 0) return;
+        event.preventDefault();
+        var target = focusButtons[targetIndex];
+        setMachineFocus(target.getAttribute("data-machine-focus"), true);
+        target.focus();
       });
     });
-    setMachineRoute("all", false);
+    setMachineFocus("demothemis", false);
     syncSystemMachineStage();
   }
 
@@ -4446,10 +4538,10 @@
     if (/resolve condition/i.test(name)) return "The exact rule and source used to decide YES or NO. It is fixed before funds are committed so settlement cannot change later.";
     if (/^question$/i.test(name)) return "The claim traders evaluate. It should be answerable as YES or NO under the written resolve condition.";
     if (/close time/i.test(name)) return "The last time normal market trading is allowed before the result and review process begins.";
-    if (/outcome|answer/i.test(name)) return "The proposed YES or NO result that this " + screen + " will submit or challenge.";
+    if (/outcome|answer/i.test(name)) return "The YES, NO, or permitted INVALID result that this " + screen + " records under the market's fixed rules.";
     if (/odds|price|limit/i.test(name)) return "The locked price for this order. A matching trade fills this price before using the next available liquidity.";
     if (/stake|bond|amount|cost/i.test(name)) return "The funds committed by this " + screen + ". The preview shows what is locked, spent, or placed at risk.";
-    if (/source|evidence/i.test(name)) return "The material used to support the proposed result and later reviewed if the answer is challenged.";
+    if (/source|evidence/i.test(name)) return "The material the verified jury reviews against the market's fixed resolution rules.";
     if (/return|shares|payout/i.test(name)) return "The estimated position or payout produced if this ticket fills under the displayed terms.";
     if (/fill/i.test(name)) return "The order-routing rule that decides which available liquidity is consumed first.";
     if (/^buy$/i.test(name)) return "The outcome claim and size this ticket will purchase when submitted.";
@@ -4719,15 +4811,15 @@
     },
     {
       actor: { title: "Result happens", sub: "the real event is over", icon: "clock", tone: "accent", mark: "NOW" },
-      core: { title: "Bonded assertion", sub: "answer posted with stake", icon: "assertion", tone: "accent", mark: "BOND" },
-      result: { title: "Review window", sub: "challenge period opens", icon: "watcher", tone: "good", mark: "REVIEW" },
-      chips: [["Optimistic first", "accent"], ["Bond at risk", "bad"], ["Trading continues", "good"]]
+      core: { title: "Court request", sub: "rules + quote lock", icon: "court", tone: "accent", mark: "FUND" },
+      result: { title: "Resolution funded", sub: "claims keep trading", icon: "vault", tone: "good", mark: "READY" },
+      chips: [["Rules fixed", "accent"], ["Quote separate", "accent"], ["Trading continues", "good"]]
     },
     {
-      actor: { title: "False answer", sub: "bad assertion spotted", icon: "assertion", tone: "bad", mark: "BAD" },
-      core: { title: "Challenge staked", sub: "bond funds the catcher", icon: "challenge", tone: "good", mark: "HIT" },
-      result: { title: "Court lane", sub: "case + quote funded", icon: "court", tone: "accent", mark: "CASE" },
-      chips: [["Lie detected", "bad"], ["Challenge bond", "good"], ["Human court", "accent"]]
+      actor: { title: "Omen escrow", sub: "$118k remains locked", icon: "vault", tone: "good", mark: "OMEN" },
+      core: { title: "Product handoff", sub: "case + quote only", icon: "handoff", tone: "accent", mark: "SEND" },
+      result: { title: "DemoThemis intake", sub: "draw-ready case", icon: "court", tone: "accent", mark: "CASE" },
+      chips: [["Custody stays", "good"], ["Quote funded", "accent"], ["Case locked", "accent"]]
     },
     {
       actor: { title: "Beacon", sub: "public randomness", icon: "beacon", tone: "accent", mark: "RAND" },
@@ -4864,38 +4956,41 @@
       ]
     },
     {
-      template: "resolution-dashboard",
+      template: "resolution-request",
       product: "OmenMarketMaker",
-      tabs: ["Result", "Review", "Market"],
-      activeTab: "Result",
-      route: "/markets/england-euro-final/result",
-      account: "0x51...9b",
-      section: "Review proposal",
-      title: "Submit YES as the result?",
-      subtitle: "A $250 bond will be locked during the challenge period.",
-      status: "Ready to submit",
-      kpis: [["Answer", "YES"], ["Bond", "$250"]],
+      tabs: ["Resolution", "Market", "Funds"],
+      activeTab: "Resolution",
+      route: "/markets/england-euro-final/resolution",
+      account: "Protocol",
+      actor: "OmenMarketMaker",
+      section: "Court-backed resolution",
+      title: "Fund the independent ruling",
+      subtitle: "The event has closed. OmenMarketMaker will keep the market escrow and fund DemoThemis separately.",
+      status: "Ready to fund",
+      kpis: [["Market escrow", "$118k locked"], ["Court quote", "Separate"]],
       blocks: [
-        { type: "ticket", title: "Proposal summary", hot: 0, rows: [["Result", "YES"], ["Challenge period", "One week"]], summaryLabel: "Bond to lock", summaryValue: "$250" },
+        { type: "record", title: "Resolution request", hot: 0, value: "EURO-FINAL · Ready", caption: "Locked market terms", details: [["Question", "Did England win the UEFA Euro 2024 final?"], ["Rules", "Fixed before trading"], ["Provider", "DemoThemis"], ["Market escrow", "$118,000 · remains at OmenMarketMaker"]] },
+        { type: "table", title: "Independent funding", rows: [["OmenMarketMaker fee", "2% at settlement", "separate"], ["DemoThemis quote", "Work based", "fund now"], ["Market collateral", "$118,000", "locked"]] },
         { type: "odds", title: "Secondary trading live", yes: 91, no: 9 }
       ]
     },
     {
-      template: "dispute-handoff",
+      template: "court-handoff",
       product: "OmenMarketMaker",
-      tabs: ["Challenge", "Case", "Market"],
-      activeTab: "Challenge",
-      account: "0x88...fe",
-      actor: "Challenger",
-      route: "/markets/england-euro-final/challenge",
-      section: "Challenge",
-      title: "Challenge the proposed YES answer",
-      subtitle: "Lock a $250 bond and submit NO to open a DemoThemis case.",
-      status: "Challenge ready",
+      tabs: ["Handoff", "Case", "Market"],
+      activeTab: "Handoff",
+      account: "Protocol",
+      actor: "Court intake",
+      route: "/markets/england-euro-final/court-handoff",
+      section: "Product handoff",
+      title: "Lock the case before the draw",
+      subtitle: "Only the fixed case and funded quote move to DemoThemis. Market collateral remains at OmenMarketMaker.",
+      status: "Handoff ready",
       statusTone: "neutral",
-      kpis: [["Proposed result", "YES"], ["Your challenge", "NO"], ["Bond", "$250"]],
+      kpis: [["Case", "Prepared"], ["Court quote", "Funded"], ["Escrow", "Stays at Omen"]],
       blocks: [
-        { type: "ticket", title: "Challenge ticket", hot: 0, rows: [["Proposed result", "YES"], ["Your challenge", "NO"], ["If final result is YES", "Bond forfeited"], ["If final result is NO", "Bond returned + reward"]], summaryLabel: "Bond to lock", summaryValue: "$250" },
+        { type: "record", title: "Funded handoff", hot: 0, value: "Case #1182 · Ready", caption: "Two products, separate custody", details: [["Case and evidence rules", "Move to DemoThemis"], ["Court quote", "Funded separately"], ["Market escrow", "$118,000 · stays at OmenMarketMaker"], ["Return path", "Signed final ruling"]] },
+        { type: "table", title: "Product boundary", rows: [["OmenMarketMaker", "Holds market escrow", "unchanged"], ["DemoThemis", "Receives case + quote", "draw next"], ["Governance", "Independent", "both products"]] },
         { type: "odds", title: "Current market odds", hot: 0, yes: 91, no: 9 }
       ]
     },
@@ -5157,7 +5252,7 @@
             blocks: [
               { type: "participants", title: "Counterparties", people: [["Alice", "Signed YES"], ["Bob", "Signed NO"]] },
               { type: "record", title: "Escrow record", value: "$20,000 locked", caption: "Permanent agreement record", details: [["Alice", "$10,000 · YES"], ["Bob", "$10,000 · NO"], ["Status", "Both signed"], ["Room", "PM-ROOM-204"]] },
-              { type: "checklist", title: "Dispute resolution", rows: [["Provider", "DemoThemis"], ["Status", "Available if challenged"]] }
+              { type: "checklist", title: "Final resolution", rows: [["Provider", "DemoThemis"], ["Status", "Required at close"]] }
             ]
           }
         }
@@ -5301,42 +5396,43 @@
     },
     {
       start: {
-        route: "/markets/england-euro-final/result",
-        section: "Review proposal",
-        title: "Submit YES as the result?",
-        subtitle: "A $250 bond will be locked during the challenge period.",
-        status: "Ready to submit",
-        activeTab: "Result",
-        account: "0x51...9b",
-        actor: "Result submitter",
-        kpis: [["Answer", "YES"], ["Bond", "$250"]],
+        route: "/markets/england-euro-final/resolution",
+        section: "Resolution",
+        title: "Fund the independent ruling",
+        subtitle: "Keep collateral here; fund DemoThemis separately.",
+        status: "Ready to fund",
+        activeTab: "Resolution",
+        account: "Protocol",
+        actor: "OmenMarketMaker",
+        kpis: [["Market escrow", "$118k locked"], ["Court quote", "Separate"], ["Trading", "Live"]],
         blocks: [
-          { type: "ticket", title: "Proposal summary", rows: [["Result", "YES"], ["Challenge period", "One week"]], summaryLabel: "Bond to lock", summaryValue: "$250" },
+          { type: "record", title: "Resolution request", value: "EURO-FINAL · Ready", caption: "Locked terms", details: [["Question", "England won the UEFA Euro 2024 final?"], ["Rules", "Fixed before trading"], ["Provider", "DemoThemis"], ["Market escrow", "$118,000 · stays here"]] },
+          { type: "table", title: "Independent funding", rows: [["DemoThemis quote", "Work based", "fund now"], ["Market collateral", "$118,000", "locked"]] },
           { type: "odds", title: "Secondary trading live", yes: 91, no: 9 }
         ]
       },
       steps: [
         {
-          cue: "Tap Confirm and post YES",
+          cue: "Tap Fund DemoThemis quote",
           target: "block",
-          targetTitle: "Proposal summary",
-          result: "Bonded YES posted for review",
-          toast: { title: "YES result posted", body: "$250 bond locked", detail: "The one-week challenge window is open" },
+          targetTitle: "Resolution request",
+          result: "Independent ruling funded",
+          toast: { title: "Court quote funded", body: "Case #1182 prepared", detail: "Market escrow stays at OmenMarketMaker" },
           after: {
-            route: "/markets/england-euro-final/result",
-            section: "Published result",
-            title: "YES result posted",
-            subtitle: "YES is open to challenge until the review period ends.",
-            status: "Challenge period open",
+            route: "/markets/england-euro-final/resolution/funded",
+            section: "Resolution",
+            title: "Independent ruling funded",
+            subtitle: "Only the case and quote cross; collateral stays here.",
+            status: "Handoff ready",
             statusTone: "neutral",
-            activeTab: "Review",
-            account: "0x51...9b",
-            actor: "Result submitter",
-            kpis: [["Result", "YES"], ["Bond", "$250 locked"], ["Time left", "6d 23h"]],
+            activeTab: "Resolution",
+            account: "Protocol",
+            actor: "OmenMarketMaker",
+            kpis: [["Market escrow", "$118k locked"], ["Court quote", "Funded"], ["Trading", "Live"]],
             blocks: [
-              { type: "countdown", title: "Challenge period", value: "6d 23h", note: "Time left" },
-              { type: "odds", title: "Secondary trading live", yes: 91, no: 9 },
-              { type: "record", title: "Proposal details", value: "YES · Pending", caption: "Permanent result record", details: [["Bond", "$250 locked"], ["Challenge ends", "21 Jul 2024, 22:30 UTC"], ["Transaction", "0x31ab…90f2"]] }
+              { type: "record", title: "Funded resolution", value: "Case #1182 · Prepared", caption: "Independent service funded", details: [["Question and rules", "Locked"], ["DemoThemis quote", "Funded separately"], ["Market escrow", "$118,000 · stays here"], ["Transaction", "0x31ab…90f2"]] },
+              { type: "table", title: "Product boundary", rows: [["Crosses next", "Case + funded quote", "ready"], ["Does not cross", "Market collateral", "stays at Omen"]] },
+              { type: "odds", title: "Secondary trading live", yes: 91, no: 9 }
             ]
           }
         }
@@ -5344,43 +5440,45 @@
     },
     {
       start: {
-        route: "/markets/england-euro-final/challenge",
-        title: "Challenge the proposed YES answer",
-        subtitle: "Lock a $250 bond and submit NO to open a DemoThemis case.",
-        status: "Challenge ready",
+        route: "/markets/england-euro-final/court-handoff",
+        section: "Handoff",
+        title: "Lock the case before the draw",
+        subtitle: "Case + quote move; collateral stays.",
+        status: "Handoff ready",
         statusTone: "neutral",
-        activeTab: "Challenge",
-        account: "0x88...fe",
-        actor: "Challenger",
-        kpis: [["Proposed result", "YES"], ["Your challenge", "NO"], ["Bond", "$250"]],
+        activeTab: "Handoff",
+        account: "Protocol",
+        actor: "Court intake",
+        kpis: [["Case", "Prepared"], ["Court quote", "Funded"], ["Escrow", "Stays at Omen"]],
         blocks: [
-          { type: "ticket", title: "Challenge ticket", rows: [["Proposed result", "YES"], ["Your challenge", "NO"], ["If final result is YES", "Bond forfeited"], ["If final result is NO", "Bond returned + reward"]], summaryLabel: "Bond to lock", summaryValue: "$250" },
+          { type: "record", title: "Funded handoff", value: "Case #1182 · Ready", caption: "Two products, separate custody", details: [["Case and evidence rules", "Move to DemoThemis"], ["Court quote", "Funded separately"], ["Market escrow", "$118,000 · stays at OmenMarketMaker"], ["Return path", "Signed final ruling"]] },
+          { type: "table", title: "Product boundary", rows: [["OmenMarketMaker", "Holds market escrow", "unchanged"], ["DemoThemis", "Receives case + quote", "draw next"]] },
           { type: "odds", title: "Current market odds", yes: 91, no: 9 }
         ]
       },
       steps: [
         {
-          cue: "Tap Submit NO challenge · $250",
+          cue: "Tap Lock case and quote",
           target: "block",
-          targetTitle: "Challenge ticket",
-          result: "Court case opened",
-          toast: { title: "Case opened", body: "NO challenge accepted", detail: "Case #1182 · $250 bond locked" },
+          targetTitle: "Funded handoff",
+          result: "DemoThemis case accepted",
+          toast: { title: "Case accepted", body: "Case #1182 · quote locked", detail: "Market escrow stays at OmenMarketMaker" },
           after: {
-            route: "/cases/1182",
+            route: "/markets/england-euro-final/court-case",
             context: "Case #1182",
-            section: "Case #1182",
-            title: "Independent review funded",
-            subtitle: "The case and separate court quote are locked before the draw.",
-            status: "Court intake complete",
+            section: "Intake",
+            title: "DemoThemis case accepted",
+            subtitle: "Case and quote locked before the draw.",
+            status: "Draw ready",
             statusTone: "neutral",
             activeTab: "Case",
-            account: "0x88...fe",
-            actor: "Challenger",
-            kpis: [["Case", "#1182"], ["Panel plan", "15 seats"], ["Court quote", "Funded"]],
+            account: "Protocol",
+            actor: "Court intake",
+            kpis: [["Case", "#1182"], ["Panel plan", "15 seats"], ["Market escrow", "At Omen"]],
             blocks: [
               { type: "record", title: "Court intake", value: "Case #1182 · Draw ready", caption: "Permanent case record", details: [["Rules", "Locked"], ["Value", "$118,000"], ["Panel", "15 seats"], ["Court quote", "Funded"]] },
-              { type: "table", title: "Separate funds", rows: [["Omen escrow", "$118,000", "locked"], ["Challenge bond", "$250", "locked"], ["Court quote", "Funded", "DemoThemis"]] },
-              { type: "odds", title: "Secondary trading live", yes: 44, no: 56 }
+              { type: "table", title: "Separate custody", rows: [["Omen escrow", "$118,000", "locked here"], ["DemoThemis quote", "Funded separately", "court work"], ["Final ruling", "Returns to Omen", "after appeals"]] },
+              { type: "odds", title: "Secondary trading live", yes: 91, no: 9 }
             ]
           }
         }
@@ -5630,14 +5728,14 @@
             route: "/markets/england-euro-final/payout",
             section: "Settlement",
             title: "Settlement complete",
-            subtitle: "Claims, bonds, fees, and the court invoice are settled.",
+            subtitle: "Claims, fees, the failed appeal bond, and court invoice are settled.",
             status: "Paid",
             activeTab: "Payout",
             account: "0x7c...42",
             kpis: [["Result", "NO"], ["Net payout", "$206.29"], ["Market", "Closed"]],
             blocks: [
               { type: "settlement", title: "Market payout", label: "Net payout received", value: "$206.29", delta: "$210.50 gross − $4.21 Omen fee", status: "Paid", open: true, details: [["Destination", "0x7c...42"], ["Gross redemption", "$210.50"], ["OmenMarketMaker fee (2%)", "$4.21"], ["Transaction", "0xf190…c42a"], ["Final result", "NO"], ["Market", "Closed"]] },
-              { type: "table", title: "Bonds and court funding", rows: [["Successful challenger 0x88...fe", "$250 returned + $250 reward", "paid"], ["Failed YES appeal", "$31,000 to juror reward pool", "routed"], ["DemoThemis work quote", "Paid separately by OmenMarketMaker", "settled"]] }
+              { type: "table", title: "Court and market finality", rows: [["DemoThemis signed ruling", "NO · verified", "applied"], ["Failed YES appeal", "$31,000 to juror reward pool", "routed"], ["DemoThemis work quote", "Paid separately by OmenMarketMaker", "settled"]] }
             ]
           }
         }
@@ -5657,8 +5755,8 @@
     "Complete solver-backed placement": "Show the winning solver locking $336 before one tradeable receipt is minted.",
     "Accept $128 cashout": "Accept the best live solver bid for the single parlay receipt.",
     "Complete receipt cashout": "Transfer the receipt to the winning solver before $128 returns to the wallet.",
-    "Confirm and post YES": "Confirm YES and lock the $250 bond for the one-week challenge period.",
-    "Submit NO challenge · $250": "Lock the $250 challenge bond and submit NO for independent review.",
+    "Fund DemoThemis quote": "Fund the independent work quote while the market escrow remains at OmenMarketMaker.",
+    "Lock case and quote": "Lock the fixed case and funded quote before DemoThemis draws any juror.",
     "Bound draw": "Show the public seed selecting one bound 15-seat panel for this case.",
     "Presence checks": "Show conflicts, capability, standbys, and live presence resolving for every seat.",
     "Seal ballot": "Submit an encrypted ballot that remains silently replaceable until the deadline.",
@@ -5894,26 +5992,23 @@
       svg += flow(536, 238, 434, 191, "accent", hot1);
       svg += chip(316, 246, "fill-or-kill", "accent", hot0);
     } else if (index === 6) {
-      svg += node(52, 102, 130, 88, "Event", "result exists", "soft", hot0);
-      svg += person(256, 137, "asserter", "accent", hot0);
-      svg += node(356, 93, 140, 96, "Bonded claim", "YES posted", "accent", hot0);
-      svg += node(546, 83, 116, 116, "Review window", "inspect", "good", hot0);
-      svg += node(286, 230, 176, 50, "Trading stays open", "price keeps moving", "soft", hot1);
-      svg += flow(182, 146, 235, 138, "accent", hot0);
-      svg += flow(279, 138, 356, 140, "accent", hot0);
-      svg += flow(496, 141, 546, 140, "good", hot0);
-      svg += flow(382, 190, 374, 230, "good", hot1);
-      svg += chip(389, 208, "bond", "accent", hot0);
+      svg += node(48, 102, 130, 88, "Event closes", "result needed", "soft", hot0);
+      svg += node(242, 88, 154, 112, "Omen escrow", "$118k stays locked", "good", hot0);
+      svg += node(470, 88, 158, 112, "Court request", "rules + quote", "accent", hot0);
+      svg += node(278, 230, 188, 50, "Trading stays open", "price keeps moving", "soft", hot1);
+      svg += flow(178, 146, 242, 144, "accent", hot0);
+      svg += flow(396, 144, 470, 144, "accent", hot0);
+      svg += flow(350, 200, 366, 230, "good", hot1);
+      svg += chip(493, 220, "funded separately", "accent", hot0);
     } else if (index === 7) {
-      svg += node(58, 90, 142, 96, "Bad assertion", "wrong answer", "bad", hot0);
-      svg += person(290, 136, "watcher", "good", hot0);
-      svg += node(386, 92, 136, 92, "Challenge", "bond staked", "good", hot0);
-      svg += node(576, 102, 102, 74, "Court", "case opens", "accent", hot1);
-      svg += flow(200, 138, 267, 138, "bad", hot0);
-      svg += flow(314, 138, 386, 138, "good", hot0);
-      svg += flow(522, 138, 576, 138, "accent", hot1);
-      svg += chip(91, 216, "false", "bad", hot0);
-      svg += chip(412, 216, "bounty", "good", hot0);
+      svg += node(46, 92, 150, 96, "OmenMarketMaker", "market custody", "good", hot0);
+      svg += node(270, 88, 168, 104, "Funded handoff", "case + quote only", "accent", hot0);
+      svg += node(516, 92, 150, 96, "DemoThemis", "case accepted", "accent", hot1);
+      svg += flow(196, 140, 270, 140, "good", hot0);
+      svg += flow(438, 140, 516, 140, "accent", hot1);
+      svg += node(84, 230, 166, 50, "Market escrow", "stays at Omen", "soft", hot0);
+      svg += node(462, 230, 166, 50, "Draw next", "unknown panel", "soft", hot1);
+      svg += chip(296, 224, "boundary", "accent", hot0);
     } else if (index === 8) {
       svg += node(54, 104, 126, 84, "Beacon", "public random", "accent", hot0);
       svg += node(268, 90, 140, 112, "Draw wheel", "one roll", "soft", hot0);
@@ -6857,8 +6952,8 @@
     "parlay-slip": { context: "Parlay builder", user: "0x7c...42" },
     "parlay-position": { context: "Active parlay", user: "0x7c...42" },
     "parlay-receipt": { context: "Cashout receipt", user: "0x7c...42" },
-    "resolution-dashboard": { context: "Settlement", user: "0x7c...42" },
-    "dispute-handoff": { context: "Challenge", user: "0x7c...42" },
+    "resolution-request": { context: "Court resolution", user: "Protocol" },
+    "court-handoff": { context: "Product handoff", user: "Protocol" },
     "jury-draw": { context: "Case #1182", user: "0x7c...42" },
     "juror-workspace": { context: "Private ballot", user: "Juror 04" },
     "verdict-page": { context: "Case #1182", user: "0x7c...42" },
@@ -7139,11 +7234,13 @@
   }
 
   function renderActivityRecord(block, span) {
+    var isCurrentTarget = blockIsCurrentTarget(block);
     var card = document.createElement("details");
     card.className = "live-card block-record activity-record live-span-" + (span || 4) + (block.tone ? " " + block.tone : "");
     card.setAttribute("data-block-title", block.title || "Activity details");
     if (block.wide) card.classList.add("wide");
-    if (block.open) card.open = true;
+    if (block.open || isCurrentTarget) card.open = true;
+    if (isCurrentTarget) card.classList.add("awaiting-action");
 
     var summary = document.createElement("summary");
     var mark = makeEl("span", "record-mark");
@@ -7163,6 +7260,8 @@
     appendReceiptDetails(panel, block.details);
     if (block.note) panel.appendChild(makeEl("p", "app-note", block.note));
     card.appendChild(panel);
+    var actionControl = makeLiveActionControl(block);
+    if (actionControl) card.appendChild(actionControl);
     return card;
   }
 
@@ -7840,7 +7939,7 @@
       var appBoundary = appBoundaryForPage(page) || APP_BOUNDARIES.omen;
       var appTheme = appBoundary.appTheme;
       var appBrand = appBoundary.appBrand || page.product;
-      var frameTitle = page.surface === "omen" && stage === 7 && activeEventStep > 0 ? APP_BOUNDARIES.handoff.frameTitle : appBoundary.frameTitle;
+      var frameTitle = page.surface === "omen" && stage === 7 ? APP_BOUNDARIES.handoff.frameTitle : appBoundary.frameTitle;
       var chrome = pageChrome(page, item);
       var preview = makeEl("section", "sim-live-preview sim-surface-frame");
       preview.setAttribute("data-surface", page.surface);

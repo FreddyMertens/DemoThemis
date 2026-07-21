@@ -11,7 +11,7 @@
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=JetBrains+Mono:wght@500;700&family=Newsreader:opsz,wght@6..72,200..700&display=swap" rel="stylesheet">
-<link rel="stylesheet" href="assets/styles.css?v=20260719-emission-11">
+<link rel="stylesheet" href="assets/styles.css?v=20260721-warm-ivory-1">
 <style>
   body { --maxw: 54rem; --half-maxw: 27rem; --good: #087354; --bad: #a33b2b; --faint: #6b7280; }
   .lab-hero { max-width: 60rem; }
@@ -703,7 +703,6 @@
       flow: parseInt(p.flow, 10),
       stake: span(p.stake, 100, 5000000),
       lag: p.lag,
-      challenge: 1,
       fee: p.fee / 1000,
       caseHours: p.caseHours / 4,
       complexity: p.complexity / 100,
@@ -883,7 +882,6 @@
     v.assumptions = readAssumptions();
     v.flow = parseInt(byId("flow").value, 10);
     v.stake = span(v.stake, 100, 5000000);
-    v.challenge = 1; // Pure court: 100% of cases go to court
     v.fee = v.fee / 1000;
     v.caseHours = v.caseHours / 4;
     v.complexity = v.complexity / 100;
@@ -900,7 +898,6 @@
     var a = v.assumptions || defaultAssumptions();
     var totalCases = v.flow / Math.max(1, v.stake);
     var courtCases = totalCases;
-    var quietCases = 0;
     var panel = panelFor(v.stake);
     var majority = Math.floor(panel / 2) + 1;
     var seatVotes = courtCases * panel;
@@ -914,7 +911,7 @@
     var operationsPerCase = 0;
     var requiredCaseFee = 0;
     var quotedCaseFee = 0;
-    var quietCaseFee = 0;
+    var fixedOverheadPerCase = 0;
     var feeCeilingPerCase = 0;
     var supportGapPerCase = 0;
     var feeRevenue = 0;
@@ -936,8 +933,8 @@
       processingPerCase = a.processingCostPerCase;
       reserveTopUpPerCase = panelCompensation * reserveGap;
       operationsPerCase = Math.min(a.operationsCaseCap, a.operationsMonthlyBudget / Math.max(EPSILON, courtCases));
-      quietCaseFee = processingPerCase + operationsPerCase;
-      requiredCaseFee = quietCaseFee + panelCompensation + reserveTopUpPerCase;
+      fixedOverheadPerCase = processingPerCase + operationsPerCase;
+      requiredCaseFee = fixedOverheadPerCase + panelCompensation + reserveTopUpPerCase;
       feeCeilingPerCase = v.stake * v.fee;
       quotedCaseFee = Math.min(requiredCaseFee, feeCeilingPerCase);
       supportGapPerCase = Math.max(0, requiredCaseFee - feeCeilingPerCase);
@@ -1083,7 +1080,6 @@
     return {
       totalCases: totalCases,
       courtCases: courtCases,
-      quietCases: quietCases,
       panel: panel,
       majority: majority,
       seatVotes: seatVotes,
@@ -1095,7 +1091,7 @@
       requiredFunding: requiredFunding,
       quotedCaseFee: quotedCaseFee,
       requiredCaseFee: requiredCaseFee,
-      quietCaseFee: quietCaseFee,
+      fixedOverheadPerCase: fixedOverheadPerCase,
       feeCeilingPerCase: feeCeilingPerCase,
       effectiveFeeRate: quotedCaseFee / Math.max(1, v.stake),
       supportGapPerCase: supportGapPerCase,

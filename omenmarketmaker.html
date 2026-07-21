@@ -4,14 +4,14 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>OmenMarketMaker: Open markets with unbuyable arbitration</title>
-<meta name="description" content="OmenMarketMaker opens markets with pocket change, turns liquid positions into self-custodied tokens, and can route disputes to the independently operated DemoThemis court.">
+<meta name="description" content="OmenMarketMaker opens markets with pocket change, turns liquid positions into self-custodied tokens, and uses independently operated DemoThemis rulings for final settlement.">
 <link rel="icon" href="assets/brand/omenmarketmaker/favicon.ico">
 <link rel="icon" type="image/png" sizes="32x32" href="assets/brand/omenmarketmaker/mark-32.png">
 <link rel="apple-touch-icon" sizes="180x180" href="assets/brand/omenmarketmaker/mark-180.png">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@500;700&family=Newsreader:opsz,wght@6..72,200..700&display=swap" rel="stylesheet">
-<link rel="stylesheet" href="assets/styles.css?v=20260719-emission-11">
+<link rel="stylesheet" href="assets/styles.css?v=20260721-warm-ivory-1">
 <style>
   /* parimutuel demo */
   .pmsplit { display: flex; height: 44px; border-radius: 12px; overflow: hidden; border: 1px solid var(--line); font-family: var(--sans); font-weight: 700; color: #fff; margin-bottom: .9rem; }
@@ -23,18 +23,29 @@
   .pmbtns .btn.ghost { background: var(--faint); }
   .pmnarr { font-family: var(--sans); font-size: .9rem; color: var(--ink-soft); background: var(--bg); border: 1px solid var(--line-strong); border-radius: 10px; padding: .75rem 1rem; margin-bottom: 1rem; min-height: 3.4rem; }
 
-  /* settlement funnel */
-  .funnel { display: grid; gap: .8rem; font-family: var(--sans); }
-  .funnel .fk { font-size: .84rem; color: var(--muted); margin-bottom: .3rem; display: flex; justify-content: space-between; gap: .8rem; }
-  .funnel .fk b { color: var(--ink-soft); white-space: nowrap; }
-  .funnel .fbar { height: 28px; border-radius: 8px; min-width: 1.6rem; }
-  .funnel .f-all { width: 100%; background: var(--accent); }
-  .funnel .f-quiet { width: 95%; background: var(--good); }
-  .funnel .f-court { width: 5%; background: var(--bad); }
-  .funnel > div { border: 1px solid var(--line); border-radius: 12px; padding: .8rem; }
-  .funnel > div:nth-child(1) { border-color: var(--triad-mint-border); background: var(--triad-mint); }
-  .funnel > div:nth-child(2) { border-color: var(--triad-lavender-border); background: var(--triad-lavender); }
-  .funnel > div:nth-child(3) { border-color: var(--triad-amber-border); background: var(--triad-amber); }
+  /* mandatory resolution handoff */
+  .resolution-bridge { display: grid; grid-template-columns: minmax(0, 1fr) minmax(5.5rem, .55fr) minmax(0, 1fr) minmax(5.5rem, .55fr) minmax(0, 1fr); align-items: stretch; gap: .75rem; font-family: var(--sans); }
+  .resolution-step { position: relative; min-width: 0; padding: 1rem; border: 1px solid color-mix(in srgb, var(--line-strong) 82%, transparent); border-radius: 16px; background: color-mix(in srgb, var(--surface) 94%, transparent); box-shadow: inset 0 0 0 1px rgba(255,255,255,.55), 0 16px 32px -28px rgba(0,0,0,.5); overflow: hidden; }
+  .resolution-step::after { content: ""; position: absolute; inset: auto 12% 0; height: 2px; border-radius: 999px; opacity: .72; }
+  .resolution-step[data-brand="omen"] { border-color: color-mix(in srgb, #00f078 52%, var(--line)); background: linear-gradient(145deg, rgba(0,240,120,.09), rgba(255,255,255,.78)); }
+  .resolution-step[data-brand="omen"]::after { background: #00d96c; box-shadow: 0 0 12px rgba(0,240,120,.58); }
+  .resolution-step[data-brand="demothemis"] { border-color: color-mix(in srgb, #00e5ff 58%, var(--line)); background: linear-gradient(145deg, rgba(0,229,255,.1), rgba(255,255,255,.8)); }
+  .resolution-step[data-brand="demothemis"]::after { background: #00e5ff; box-shadow: 0 0 13px rgba(0,229,255,.62); }
+  .resolution-step .bridge-kicker { display: block; margin-bottom: .45rem; color: var(--muted); font: 700 .66rem/1 var(--mono); letter-spacing: .09em; text-transform: uppercase; }
+  .resolution-step strong { display: block; color: var(--ink); font-size: 1rem; line-height: 1.2; }
+  .resolution-step p { margin: .45rem 0 0; color: var(--muted); font-size: .82rem; line-height: 1.45; }
+  .resolution-chip { display: inline-flex; margin-top: .75rem; padding: .28rem .52rem; border: 1px solid color-mix(in srgb, currentColor 32%, transparent); border-radius: 999px; color: var(--ink-soft); background: rgba(255,255,255,.56); font: 700 .68rem/1 var(--mono); }
+  .resolution-connector { display: flex; flex-direction: column; align-items: center; justify-content: center; gap: .45rem; min-width: 0; text-align: center; color: var(--muted); font: 700 .62rem/1.35 var(--mono); letter-spacing: .04em; text-transform: uppercase; }
+  .resolution-connector .bridge-line { position: relative; width: 100%; height: 2px; border-radius: 999px; background: linear-gradient(90deg, #00d96c, #00e5ff, #00d96c); background-size: 200% 100%; box-shadow: 0 0 9px rgba(0,229,255,.34); animation: resolution-flow 5.5s linear infinite; }
+  .resolution-connector .bridge-line::after { content: ""; position: absolute; top: 50%; right: -1px; width: 7px; height: 7px; border-top: 2px solid #00e5ff; border-right: 2px solid #00e5ff; transform: translateY(-50%) rotate(45deg); }
+  @keyframes resolution-flow { to { background-position: -200% 0; } }
+  @media (max-width: 760px) {
+    .resolution-bridge { grid-template-columns: 1fr; gap: .55rem; }
+    .resolution-connector { min-height: 3.2rem; }
+    .resolution-connector .bridge-line { width: 2px; height: 2.1rem; background: linear-gradient(180deg, #00d96c, #00e5ff); }
+    .resolution-connector .bridge-line::after { top: auto; right: 50%; bottom: -1px; transform: translateX(50%) rotate(135deg); }
+  }
+  @media (prefers-reduced-motion: reduce) { .resolution-connector .bridge-line { animation: none; } }
 
   .robustness-cards { display: grid; gap: .8rem; margin-bottom: 1rem; font-family: var(--sans); }
   .robustness-card { border: 1px solid var(--line-strong); border-radius: 10px; padding: 1rem; }
@@ -98,7 +109,7 @@
     <canvas id="omen-brand-canvas" width="1000" height="300" aria-hidden="true"></canvas>
   </div>
   <h1>Open markets with unbuyable arbitration</h1>
-  <p class="dek">This chapter follows six OmenMarketMaker features: bullet proof arbitration that capital cannot buy, creation from the first bet, self-custody YES and NO tokens, tradeable claims during disputes, fully collateralized parlays without a central bookmaker, and private markets with neutral escrow.</p>
+  <p class="dek">This chapter follows six OmenMarketMaker features: bullet proof arbitration that capital cannot buy, creation from the first bet, self-custody YES and NO tokens, tradeable claims during resolution, fully collateralized parlays without a central bookmaker, and private markets with neutral escrow.</p>
   <div class="meta">
     <span class="pill">Prediction markets</span>
     <span>10 min read</span>
@@ -114,12 +125,12 @@
       <span class="pk">Product one</span>
       <h3>OmenMarketMaker: six market features</h3>
       <ol class="product-jumps">
-        <li><a href="#exploited-arbiter">Outcomes cannot be bought and arbitration &amp; appeals are robust &amp; reliable: Challenged outcomes go to independent verified-human arbitration instead of a token-weighted court.</a></li>
+        <li><a href="#exploited-arbiter">Outcomes cannot be bought and arbitration &amp; appeals are robust &amp; reliable: Every final outcome comes from independent verified-human arbitration instead of a token-weighted court.</a></li>
         <li><a href="#start-market">Start a new prediction market instantly, on any topic, with any liquidity, even with less than a dollar.</a></li>
         <li><a href="#self-custody-tokens">Liquid markets become self-custodied ERC-20 YES and NO tokens for liquidity, collateral, and leverage.</a></li>
-        <li><a href="#tradeable-disputes">Claims remain tradeable through dispute windows, so holders can exit whenever liquidity exists.</a></li>
+        <li><a href="#tradeable-disputes">Claims remain tradeable through resolution and appeal windows, so holders can exit whenever liquidity exists.</a></li>
         <li><a href="#peer-to-peer-parlays">Bookmaker-style parlays, cashouts, and leveraged YES/NO token trading, with every payout fully backed.</a></li>
-        <li><a href="#private-markets">Private invite-only markets offer fixed odds with third-party escrow and dispute resolution.</a></li>
+        <li><a href="#private-markets">Private invite-only markets offer fixed odds with third-party escrow and neutral resolution.</a></li>
       </ol>
     </div>
   </div>
@@ -128,7 +139,7 @@
     <p class="sec-label">Value prop 1</p>
     <h2>1. Bullet proof arbitration that whales cannot buy</h2>
     <p class="lead">Prediction markets do not fail when traders disagree. They fail when everyone has to stop trading the event and start trading whoever gets to define the event. UMA showed one version plainly: token-weighted truth turns a disputed outcome into a governance market with a whale chart attached.</p>
-    <p>Even an ambiguous dispute exposes the structural failure: whale weight, voter conflicts, and after-the-fact rule fights become part of price discovery. Four episodes show why OmenMarketMaker can select independent, unbuyable arbitration instead of a token-weighted court.</p>
+    <p>Even an ambiguous dispute exposes the structural failure: whale weight, voter conflicts, and after-the-fact rule fights become part of price discovery. Four episodes show why OmenMarketMaker uses independent, unbuyable arbitration instead of a token-weighted court.</p>
 
     <div class="oracle-case-grid">
       <div class="oracle-case hot">
@@ -181,58 +192,73 @@
     </div>
 
     <p class="oracle-note"><b>The conclusion:</b> a prediction market needs an unbuyable arbiter. UMA shows the whale failure; Kalshi's Khamenei dispute shows the house failure. OmenMarketMaker removes both from direct control of the final verdict.</p>
-    <p>Easy markets clear efficiently through bonded assertions. Contested markets go to randomly drawn verified humans voting privately, with one person counted once, so neither the venue nor the biggest wallet can buy the verdict.</p>
+    <p>Every market closes into a separately funded DemoThemis ruling from randomly drawn verified humans voting privately, with one person counted once. Neither the venue nor the biggest wallet can buy the verdict, and OmenMarketMaker never gives up custody of the market pot.</p>
 
     <h3>How a market ends with an unbuyable judge</h3>
-    <p><b>The event happens:</b> Now somebody has to say so, and this is where most markets quietly hand the job back to a trusted operator. Here the job is open to anyone, and it runs in three moves.</p>
+    <p><b>The event happens:</b> OmenMarketMaker stops new betting under the written close rule, keeps the market collateral locked, and begins one consistent four-step resolution path.</p>
 
     <ol class="stepper reveal">
       <li>
         <span class="step-n">1</span>
         <div class="step-body">
-          <h3>Anyone asserts the outcome</h3>
-          <p>Whoever saw the result posts it along with a bond. No oracle company, no resolution committee, no waiting for an operator to wake up. The bond is the assertion's skin in the game.</p>
+          <h3>The market closes under fixed rules</h3>
+          <p>The question, permitted answers, evidence rules, and close time were locked before trading. No operator can rewrite the case after seeing the money or likely outcome.</p>
         </div>
       </li>
       <li>
         <span class="step-n">2</span>
         <div class="step-body">
-          <h3>A one-week window, watched for profit</h3>
-          <p>A false assertion forfeits its bond to whoever catches it, so <b>watching the windows is a paid job</b>, not a civic hobby. The night shift is staffed by bounty hunters, and a lie asserted into a sleeping market is a bounty on the liar's own head. A full week of window means the lie has to survive every timezone awake, day after day. On tokenized markets, section 4 explains why that longer window does not freeze traders.</p>
+          <h3>OmenMarketMaker funds the ruling</h3>
+          <p>OmenMarketMaker keeps the entire market pot and pays a separate work-based DemoThemis quote. Only the locked case and funded quote cross the product boundary.</p>
         </div>
       </li>
       <li>
         <span class="step-n">3</span>
         <div class="step-body">
-          <h3>Payout, or the court</h3>
-          <p>If the window closes quietly, the pool pays out pro-rata and the market is history. If someone challenges, the locked pot crosses into the court lane, and the final verdict releases it by rule.</p>
+          <h3>Verified humans decide</h3>
+          <p>DemoThemis locks the case before a public draw, seats verified humans, aggregates private ballots, and runs the appeal ladder when a valid appeal is funded.</p>
+        </div>
+      </li>
+      <li>
+        <span class="step-n">4</span>
+        <div class="step-body">
+          <h3>The signed ruling returns</h3>
+          <p>OmenMarketMaker verifies the final DemoThemis ruling, applies the market's written release rule, redeems claims, routes its fee, and closes the record.</p>
         </div>
       </li>
     </ol>
 
-    <p>Roughly 95% of markets end at step two: one assertion, one quiet window, payout. The funnel below is the whole resolution story at a glance.</p>
+    <p>The service boundary stays deliberately narrow: a case and funded quote go in; a signed ruling comes back. Market custody, fees, and settlement remain with OmenMarketMaker.</p>
 
     <figure class="diagram reveal">
       <div class="diagram-inner">
-        <div class="funnel">
-          <div>
-            <div class="fk"><span>Markets that reach resolution</span><b>100</b></div>
-            <div class="fbar f-all"></div>
-          </div>
-          <div>
-            <div class="fk"><span>Settle quietly: asserted, watched, unchallenged</span><b>~95</b></div>
-            <div class="fbar f-quiet"></div>
-          </div>
-          <div>
-            <div class="fk"><span>Challenged, decided by the court</span><b>~5</b></div>
-            <div class="fbar f-court"></div>
-          </div>
+        <div class="resolution-bridge" aria-label="OmenMarketMaker keeps escrow, funds a DemoThemis ruling, and settles from the signed result">
+          <article class="resolution-step" data-brand="omen">
+            <span class="bridge-kicker">01 · OmenMarketMaker</span>
+            <strong>Market closes</strong>
+            <p>The fixed case is prepared while all collateral remains in market escrow.</p>
+            <span class="resolution-chip">Escrow stays here</span>
+          </article>
+          <div class="resolution-connector" aria-hidden="true"><span>Case + funded quote</span><i class="bridge-line"></i></div>
+          <article class="resolution-step" data-brand="demothemis">
+            <span class="bridge-kicker">02 · DemoThemis</span>
+            <strong>Verified court rules</strong>
+            <p>Bound draw, private ballots, panel consensus, and the appeal ladder.</p>
+            <span class="resolution-chip">Signed final ruling</span>
+          </article>
+          <div class="resolution-connector" aria-hidden="true"><span>Ruling + proof</span><i class="bridge-line"></i></div>
+          <article class="resolution-step" data-brand="omen">
+            <span class="bridge-kicker">03 · OmenMarketMaker</span>
+            <strong>Market settles</strong>
+            <p>The written release rule pays claims, routes the fee, and closes the record.</p>
+            <span class="resolution-chip">One final payout</span>
+          </article>
         </div>
       </div>
-      <figcaption>One hundred markets, one ending each. <b>Roughly ninety five settle without a juror lifting a finger, and the court exists for the rest.</b></figcaption>
+      <figcaption>Two independent products, one narrow handoff. <b>Market money never enters DemoThemis custody.</b></figcaption>
     </figure>
 
-    <p>The contested few cross into <a href="demothemis.html#capture-resistance">the court</a>: a panel of verified humans, drawn by a public beacon, voting in encrypted ballots, with a dispute ladder above them for the truly stubborn. The money is already inside protocol escrow, so the verdict is not advice; it is the release rule. Every completed court case contributes to the shared juror-quality record, and independently checkable outcomes can add later confirmation. <a href="bootstrap-loop.html">The loop chapter</a> explains how that evidence compounds.</p>
+    <p>Every market uses <a href="demothemis.html#capture-resistance">the court</a>: verified humans drawn by a public beacon, voting in encrypted ballots, with an appeal ladder above them when the stakes justify another panel. The market money is already inside OmenMarketMaker escrow, so the returned ruling is not advice; it selects the pre-written release rule. Every completed court case contributes to the shared juror-quality record, and independently checkable outcomes can add later confirmation. <a href="bootstrap-loop.html">The loop chapter</a> explains how that evidence compounds.</p>
   </section>
 
   <section id="start-market" class="reveal">
@@ -482,8 +508,8 @@
   <section id="tradeable-disputes" class="reveal">
     <p class="sec-label">Value prop 4</p>
     <h2>4. Markets keep trading while resolution runs</h2>
-    <p>This is where the token layer described in section 3 pays off. If a market has tokenized, YES and NO stay transferable through assertion windows, challenges, and court review. Anyone who wants out can sell to someone willing to hold resolution risk; final redemption waits, but price discovery does not.</p>
-    <p>That means the court does not have to rush. Longer challenge windows and retroactive fixes become possible because users are not trapped inside a frozen platform balance while the answer is checked.</p>
+    <p>This is where the token layer described in section 3 pays off. If a market has tokenized, YES and NO stay transferable while the verified jury and any funded appeals run. Anyone who wants out can sell to someone willing to hold resolution risk; final redemption waits, but price discovery does not.</p>
+    <p>That means the court does not have to rush. Careful jury and appeal windows remain practical because users are not trapped inside a frozen platform balance while the answer is decided.</p>
   </section>
 
   <section id="peer-to-peer-parlays" class="reveal">
@@ -514,13 +540,13 @@
     <p class="sec-label">Value prop 6</p>
     <h2>6. Private markets with neutral escrow</h2>
     <p>This is the feature existing prediction markets mostly skip: a private, invite-only market with real third-party escrow. Set the odds yourself, share the link, and those odds never move.</p>
-    <p>It is a handshake bet with the escrow built in. Post your side at any odds you name, say $700 on YES at 70 cents, and send the link to whoever you want on the other side. Accepting means depositing the matching $300 of NO, and from that moment the odds are locked at exactly what you posted. No crowd, no drift. More invitees can join either side at the same fixed price for as long as the two sides stay matched, and unmatched money walks home at close. Resolution is the machinery you already know: an asserted outcome, a challenge window, the court for anything contested.</p>
+    <p>It is a handshake bet with the escrow built in. Post your side at any odds you name, say $700 on YES at 70 cents, and send the link to whoever you want on the other side. Accepting means depositing the matching $300 of NO, and from that moment the odds are locked at exactly what you posted. No crowd, no drift. More invitees can join either side at the same fixed price for as long as the two sides stay matched, and unmatched money walks home at close. Resolution is the same machinery you already know: fixed rules, a separately funded DemoThemis ruling, then settlement from the signed result.</p>
     <p>Two things make the room more than a convenience. It is protocol escrow in its simplest clothes: two parties, a disagreement with money locked in the middle, and an arbiter already attached, which is the exact shape of the deals apps will route here later. And a settled private market gives the court something no public market can: a real question with a verified answer that never appeared on any public page. With the participants' consent it becomes a blind test for jurors, one that cannot be looked up, and <a href="bootstrap-loop.html">the loop chapter</a> puts those tests to work.</p>
   </section>
   <section class="reveal">
     <p class="sec-label">The economics</p>
     <h2>Independent product economics</h2>
-    <p>OmenMarketMaker currently models a 2% market fee at settlement. That fee belongs to OmenMarketMaker's economics and is governed without reference to DemoThemis. When selected, DemoThemis separately locks a work-based resolution quote before any jury is drawn; neither fee is a percentage of the other, and neither product controls the other's revenue.</p>
+    <p>OmenMarketMaker currently models a 2% market fee at settlement. That fee belongs to OmenMarketMaker's economics and is governed without reference to DemoThemis. For each market resolution, DemoThemis separately locks a work-based quote before any jury is drawn; neither fee is a percentage of the other, and neither product controls the other's revenue.</p>
 
     <figure class="diagram reveal">
       <div class="diagram-inner">
@@ -529,7 +555,7 @@
             <thead><tr><th>Product</th><th>Its own charge</th><th>Controlled by</th></tr></thead>
             <tbody>
               <tr data-brand="omen"><td>OmenMarketMaker</td><td>Market fee: 2% in the current model</td><td>OmenMarketMaker governance and treasury</td></tr>
-              <tr data-brand="demothemis"><td>DemoThemis</td><td>Independent work-based quote; quiet cases cost less</td><td>DemoThemis governance and treasury</td></tr>
+              <tr data-brand="demothemis"><td>DemoThemis</td><td>Independent work-based quote for every final ruling</td><td>DemoThemis governance and treasury</td></tr>
             </tbody>
           </table>
         </div>
@@ -537,7 +563,7 @@
       <figcaption>An integration can create a service payment between the products. <b>It never merges their fees, margins, treasuries, or governance.</b></figcaption>
     </figure>
 
-    <p>That is OmenMarketMaker: unbuyable arbitration, dime-sized market starts, self-held claims, tradeable disputes, fully collateralized parlays without a central bookmaker, and neutral private escrow. The next chapter shows how choosing DemoThemis can supply paid resolution cases and independently checkable outcomes without joining the products' economics.</p>
+    <p>That is OmenMarketMaker: unbuyable arbitration, dime-sized market starts, self-held claims, tradeable resolution, fully collateralized parlays without a central bookmaker, and neutral private escrow. The next chapter shows how DemoThemis supplies paid rulings and independently checkable outcomes without joining the products' economics.</p>
   </section>
 
   <footer class="endnote reveal">
