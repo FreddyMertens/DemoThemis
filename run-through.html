@@ -5,6 +5,9 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Run-through: from first stake to an unbuyable verdict</title>
 <meta name="description" content="An interactive end-to-end run-through of market creation, claims, disputes, bullet proof human arbitration, appeals, and finality.">
+<link rel="icon" href="assets/brand/demothemis/favicon.ico">
+<link rel="icon" type="image/png" sizes="32x32" href="assets/brand/demothemis/mark-32.png">
+<link rel="apple-touch-icon" sizes="180x180" href="assets/brand/demothemis/mark-180.png">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@500;700&family=Newsreader:opsz,wght@6..72,200..700&display=swap" rel="stylesheet">
@@ -2802,7 +2805,7 @@
           <div class="product-tabs" role="group" aria-label="Choose where to start">
             <button class="product-tab" id="productTabOmen" type="button" aria-pressed="false" data-product-mode="omen" aria-label="Start the full OmenMarketMaker run at Event 01">
               <span class="product-tab-brand product-tab-brand--omen omen-rive-shell" data-omen-rive role="img" aria-label="OmenMarketMaker">
-                <img src="assets/brand/omenmarketmaker/wordmark-poster.png" width="1000" height="300" alt="" aria-hidden="true">
+                <img src="assets/brand/omenmarketmaker/wordmark-poster.png" width="1582" height="408" alt="" aria-hidden="true">
                 <canvas width="1000" height="300" aria-hidden="true"></canvas>
               </span>
               <span class="product-tab-copy"><strong>Full market run</strong><small>OmenMarketMaker from creation</small></span>
@@ -3774,8 +3777,8 @@
   function makeProductWordmark(brand, className, accessibleName, animateOmen) {
     var mark = makeEl("span", className || "product-wordmark");
     var image = document.createElement("img");
-    image.width = brand === "omen" ? 1000 : 1766;
-    image.height = brand === "omen" ? 300 : 216;
+    image.width = brand === "omen" ? 1582 : 1766;
+    image.height = brand === "omen" ? 408 : 216;
     image.src = brand === "omen"
       ? "assets/brand/omenmarketmaker/wordmark-poster.png"
       : "assets/brand/demothemis/wordmark.png";
