@@ -811,7 +811,7 @@ function checkRunThroughSurfaceSeparation(html, failures) {
   const sequenceProfile = runThroughFunctionSource(html, "sequenceProfileForPage");
   assert(Boolean(protocolRenderer), "run-through is missing the read-only protocol sequence renderer", failures);
   assert(/page\.view\s*===\s*["']sequence["']/.test(sequencePredicate), "sequence rendering must be independent from product ownership", failures);
-  assert(/OmenMarketMaker automatic execution/.test(sequenceProfile) && /DemoThemis on-chain sequence/.test(sequenceProfile), "one sequence renderer must carry distinct OmenMarketMaker and DemoThemis profiles", failures);
+  assert(/OmenMarketMaker (?:automatic|solver) execution/.test(sequenceProfile) && /DemoThemis on-chain sequence/.test(sequenceProfile), "one sequence renderer must carry distinct OmenMarketMaker and DemoThemis profiles", failures);
   if (protocolRenderer) {
     assert(!/makeEl\(\s*["']button["']|\.addEventListener\s*\(|makeLiveActionControl|renderLivePage/.test(protocolRenderer), "the protocol sequence canvas must remain read-only and independent of app-page rendering", failures);
     assert(!/sim-live-preview|sim-browser-bar|sim-url|sim-app-viewport|app-window|app-nav/.test(protocolRenderer), "the protocol sequence renderer must not contain browser or app structure", failures);
@@ -955,7 +955,7 @@ function checkCompactAppViews(html, failures) {
   );
   assert(
     parlayPosition && parlayPosition.page.view === "application" && parlayPosition.page.route === "/parlays/PM-4821" &&
-      (parlayPosition.page.blocks || []).some((block) => block.type === "record" && block.title === "Parlay transaction" && Array.isArray(block.details) && block.details.length >= 4) &&
+      (parlayPosition.page.blocks || []).some((block) => block.type === "record" && block.title === "Parlay receipt" && /\$336 locked/i.test(rowValue(block, "Maximum payout escrow") || "") && Array.isArray(block.details) && block.details.length >= 4) &&
       !(parlayPosition.page.blocks || []).some((block) => block.type === "route"),
     "Event 06 must return to a real parlay position with permanent expandable transaction details",
     failures
@@ -976,7 +976,7 @@ function checkCompactAppViews(html, failures) {
   const resultStart = demoSnapshot(7, "start");
   const postTicket = demoBlock(resultStart, (block) => block.type === "ticket" && rowValue(block, "Result"));
   assert(
-    rowValue(postTicket, "Result") === "YES" && rowValue(postTicket, "Challenge period") === "24 hours" && postTicket.summaryValue === "$250" && !demoBlock(resultStart, (block) => block.type === "scoreboard"),
+    rowValue(postTicket, "Result") === "YES" && rowValue(postTicket, "Challenge period") === "One week" && postTicket.summaryValue === "$250" && !demoBlock(resultStart, (block) => block.type === "scoreboard"),
     "Event 07 must present a production confirmation with the result, challenge period, and exact bond",
     failures
   );
@@ -999,10 +999,10 @@ function checkCompactAppViews(html, failures) {
   assert(!rowValue(challengeTicket, "Evidence"), "Event 08 must not submit evidence for jurors to inherit", failures);
   assert(challengeStartOdds && challengeStartOdds.yes === 91 && challengeStartOdds.no === 9, "Event 08 must show the unchanged 91/9 market before the challenge is submitted", failures);
   const challengeEnd = demoSnapshot(8, "after-1");
-  const challengeRecord = demoBlock(challengeEnd, (block) => block.type === "record" && block.title === "Case activity");
-  const challengeEndOdds = demoBlock(challengeEnd, (block) => block.type === "odds" && block.title === "Live market odds");
+  const challengeRecord = demoBlock(challengeEnd, (block) => block.type === "record" && block.title === "Court intake");
+  const challengeEndOdds = demoBlock(challengeEnd, (block) => block.type === "odds" && block.title === "Secondary trading live");
   assert(
-    challengeRecord && challengeEnd.page.route === "/cases/1182" && /NO challenge accepted/i.test(challengeRecord.value || "") && rowValue(challengeRecord, "Case") === "#1182" && rowValue(challengeRecord, "Status") === "Awaiting panel selection" &&
+    challengeRecord && challengeEnd.page.route === "/cases/1182" && /Case #1182/i.test(challengeRecord.value || "") && rowValue(challengeRecord, "Rules") === "Locked" && rowValue(challengeRecord, "Panel") === "15 seats" && rowValue(challengeRecord, "Court quote") === "Funded" &&
       !(challengeEnd.page.blocks || []).some((block) => block.type === "handoff"),
     "Event 08 must open the real case page with permanent activity instead of a receipt interstitial",
     failures
@@ -1028,8 +1028,8 @@ function checkCompactAppViews(html, failures) {
   const ballotRecord = demoBlock(demoSnapshot(10, "after-1"), (block) => block.type === "record" && block.title === "Submission details");
   const ballotRecordCopy = JSON.stringify(ballotRecord || {});
   assert(
-    ballotRecord && rowValue(ballotRecord, "Ballot contents") === "Hidden" && /^0x/i.test(rowValue(ballotRecord, "Submission ID") || "") && /pending finality/i.test(rowValue(ballotRecord, "Juror fee") || "") && !/\b(?:YES|NO)\b/.test(ballotRecordCopy),
-    "Event 10 must lock the ballot workspace and retain submission details without revealing the selected outcome",
+    ballotRecord && rowValue(ballotRecord, "Ballot") === "Hidden" && /open until deadline/i.test(rowValue(ballotRecord, "Re-keying") || "") && /pending/i.test(rowValue(ballotRecord, "Fee") || "") && !/\b(?:YES|NO)\b/.test(ballotRecordCopy),
+    "Event 10 must keep the ballot replaceable and retain submission details without revealing the selected outcome",
     failures
   );
 
@@ -1059,8 +1059,8 @@ function checkCompactAppViews(html, failures) {
 
   const jurySeats = seatBlocksFor(9);
   const appealSeats = seatBlocksFor(12);
-  assert(jurySeats.length > 0 && jurySeats.every((block) => block.count === 3), "Event 09 must render exactly the demo's three jury seats", failures);
-  assert(jurySeats.every((block) => block.on === 0 || block.on === 3), "Event 09 active-seat count must be either 0 or 3", failures);
+  assert(jurySeats.length > 0 && jurySeats.every((block) => block.count === 15), "Event 09 must render the production 15-seat jury for the $118,000 case", failures);
+  assert(jurySeats.every((block) => block.on === 0 || block.on === 15), "Event 09 active-seat count must be either 0 or 15", failures);
   assert(appealSeats.length > 0 && appealSeats.every((block) => block.count === 31), "Event 12 must render exactly 31 appeal seats", failures);
   assert(appealSeats.every((block) => block.on === 0 || block.on === 31), "Event 12 active-seat count must be either 0 or 31", failures);
 
@@ -1505,12 +1505,12 @@ function checkCompactAppViews(html, failures) {
 
   const eventOne = pages[0];
   const marketForm = (eventOne.blocks || []).find((block) => block.title === "Market form");
-  const startingPosition = (eventOne.blocks || []).find((block) => block.title === "Starting position");
+  const startingPosition = (eventOne.blocks || []).find((block) => block.title === "First stake");
   assert(marketForm && !(marketForm.rows || []).some((row) => /^category$/i.test(row[0])), "Event 01 market form must omit demo-only category metadata", failures);
   const resolveCondition = marketForm && (marketForm.rows || []).find((row) => /^resolve condition$/i.test(row[0]));
   assert(marketForm && marketForm.editable && resolveCondition && resolveCondition[2] === "textarea", "Event 01 must provide an editable resolve-condition textarea", failures);
   const openingOffers = startingPosition && startingPosition.offers || [];
-  assert(startingPosition && startingPosition.type === "liquidity" && openingOffers.some((offer) => offer[0] === "YES" && offer[1] === "yes") && openingOffers.some((offer) => offer[0] === "NO" && offer[1] === "no"), "Event 01 must provide independent YES and NO opening-liquidity controls", failures);
+  assert(startingPosition && startingPosition.type === "liquidity" && openingOffers.some((offer) => offer[0] === "YES" && offer[1] === "yes") && openingOffers.some((offer) => offer[0] === "NO" && offer[1] === "no"), "Event 01 must let the first trader stake on YES, NO, or both", failures);
   assert(!(startingPosition && startingPosition.options), "Event 01 must not embed the opening amount inside a side label", failures);
   assert(!eventOne.intent && (eventOne.kpis || []).length === 0, "Event 01 must open without explanatory or summary strips", failures);
 
@@ -1536,10 +1536,10 @@ function checkCompactAppViews(html, failures) {
   const event5Funded = snapshots.find((snapshot) => snapshot.event === 5 && snapshot.state === "after-2");
   const snapshotCopy = (snapshot) => JSON.stringify(snapshot && snapshot.page || {});
   assert(event1Published && event1Published.page.route === "/m/england-euro-final" && /Market details/.test(snapshotCopy(event1Published)) && !/\/receipt/.test(event1Published.page.route), "Event 01 must publish directly to the actual public market page", failures);
-  assert(/\$690/.test(snapshotCopy(event2AfterYes)) && /80\.6 YES/.test(snapshotCopy(event2AfterYes)), "Event 02 YES fill must spend $50 from $740 and hold 80.6 YES", failures);
-  assert(/\$610/.test(snapshotCopy(event2AfterNo)) && /80\.6 YES/.test(snapshotCopy(event2AfterNo)) && /210\.5 NO/.test(snapshotCopy(event2AfterNo)), "Event 02 NO fill must immediately reconcile both holdings and the $610 balance", failures);
+  assert(/\$690/.test(snapshotCopy(event2AfterYes)) && /YES stake/.test(snapshotCopy(event2AfterYes)) && /\$50/.test(snapshotCopy(event2AfterYes)) && /1\.08x/.test(snapshotCopy(event2AfterYes)), "Event 02 YES action must spend $50 from $740 and show its early pool weight", failures);
+  assert(/\$610/.test(snapshotCopy(event2AfterNo)) && /YES stake/.test(snapshotCopy(event2AfterNo)) && /NO stake/.test(snapshotCopy(event2AfterNo)) && /1\.08x/.test(snapshotCopy(event2AfterNo)) && /1\.03x/.test(snapshotCopy(event2AfterNo)), "Event 02 NO action must reconcile both weighted pool stakes and the $610 balance", failures);
   assert(/Estimated fill/.test(snapshotCopy(event3Estimate)) && /Estimated average/.test(snapshotCopy(event3Estimate)) && /Estimated cost/.test(snapshotCopy(event3Estimate)) && !/Fill status/.test(snapshotCopy(event3Estimate)), "Event 03 must present a customer-facing estimated fill instead of matching-engine steps", failures);
-  assert(/740 YES/.test(snapshotCopy(event3Fill)) && /\$525\.20/.test(snapshotCopy(event3Fill)) && /\$84\.80/.test(snapshotCopy(event3Fill)) && /Fill details/.test(snapshotCopy(event3Fill)) && /\$0\.00/.test(snapshotCopy(event3Fill)), "Event 03 fill must reconcile the order on the updated book with permanent exact-fee details", failures);
+  assert(/740 YES/.test(snapshotCopy(event3Fill)) && /\$438\.80/.test(snapshotCopy(event3Fill)) && /\$171\.20/.test(snapshotCopy(event3Fill)) && /58c \+ 240 @ 62c pool/.test(snapshotCopy(event3Fill)) && /Fill details/.test(snapshotCopy(event3Fill)) && /\$0\.00/.test(snapshotCopy(event3Fill)), "Event 03 fill must use the better standing offer before pool overflow and retain exact-fee details", failures);
   assert(/Eligible to claim/.test(snapshotCopy(event4ClaimReady)) && /Your position/.test(snapshotCopy(event4ClaimReady)) && /Why eligible/.test(snapshotCopy(event4ClaimReady)) && /820\.6 YES/.test(snapshotCopy(event4ClaimReady)) && /210\.5 NO/.test(snapshotCopy(event4ClaimReady)), "Event 04 must attach claiming to the position and demote graduation checks to read-only eligibility details", failures);
   assert(/Claim transaction/.test(snapshotCopy(event4Claimed)) && /World Chain/.test(snapshotCopy(event4Claimed)) && /Transaction/.test(snapshotCopy(event4Claimed)), "Event 04 must retain permanent wallet transaction details", failures);
   assert(/Wallet assets/.test(snapshotCopy(event4Claimed)) && /\"title\":\"Order book\"/.test(snapshotCopy(event4Claimed)), "Event 04 must combine the claimed assets and destination order book after one tap", failures);
@@ -2608,7 +2608,9 @@ function checkBrandSystem(failures) {
   assert(/\[data-brand=["'](?:demothemis|omen|neutral|shared)["']\]/i.test(styles), "ownership-level brand primitives are missing", failures);
   assert(/forced-colors:\s*active/i.test(styles) && /prefers-reduced-motion:\s*reduce/i.test(styles) && /@media\s+print/i.test(styles), "brand system is missing accessibility or print fallbacks", failures);
 
-  const staticEmission = styles.split("/* ===== DemoThemis emission system: underline, equal rim, illustration ===== */")[1] || "";
+  const emissionTail = styles.split("/* ===== DemoThemis emission system: underline, equal rim, illustration ===== */")[1] || "";
+  const staticEmission = emissionTail.split("/* ===== homepage chapter buttons: product-colour emission rims ===== */")[0];
+  const chapterRims = emissionTail.split("/* ===== homepage chapter buttons: product-colour emission rims ===== */")[1] || "";
   assert(Boolean(staticEmission), "shared styles are missing the DemoThemis cyan interaction system", failures);
   assert(/body\[data-page-brand=["']demothemis["']\]/i.test(staticEmission) && /:not\(\[data-page-brand=["']omen["']\]\)/i.test(staticEmission), "cyan interactions must be scoped to DemoThemis and exclude OmenMarketMaker", failures);
   assert(/\.sitenav\s+:is\(\.brand,\s*\.nav-links a\)::after/i.test(staticEmission) && /background:\s*transparent[\s\S]*?box-shadow:\s*none/i.test(staticEmission), "DemoThemis navigation must use emitted underlines rather than glowing boxes", failures);
@@ -2648,6 +2650,14 @@ function checkBrandSystem(failures) {
   const home = readDist("index.html");
   const homeDemoProduct = (home.match(/<article\b[^>]*data-brand=["']demothemis["'][^>]*>([\s\S]*?)<\/article>/i) || ["", ""])[1];
   const homeOmenProduct = (home.match(/<article\b[^>]*data-brand=["']omen["'][^>]*>([\s\S]*?)<\/article>/i) || ["", ""])[1];
+  assert(/class=["']map-card["'][^>]*href=["']run-through\.html["'][^>]*data-brand=["']shared["']/i.test(home), "the end-to-end run-through chapter must use the mixed product rim", failures);
+  assert((home.match(/class=["']map-card["'][^>]*data-brand=/gi) || []).length === 6, "every homepage chapter button must declare its product-rim ownership", failures);
+  assert(/\.map-card\[data-brand=["']demothemis["']\][^{]*\{[^}]*--chapter-rim:\s*linear-gradient\([^}]*var\(--dt-emission\)/i.test(chapterRims), "DemoThemis chapter buttons must use a full cyan emission rim", failures);
+  assert(/\.map-card\[data-brand=["']omen["']\][^{]*\{[^}]*--chapter-rim:\s*linear-gradient\([^}]*var\(--omm-green\)/i.test(chapterRims), "OmenMarketMaker chapter buttons must use a full green emission rim", failures);
+  assert(/\.map-card\[data-brand=["']shared["']\][^{]*\{[^}]*--chapter-rim:\s*conic-gradient\([^}]*var\(--dt-emission\)[\s\S]*?var\(--omm-green\)[\s\S]*?animation:\s*chapter-rim-orbit\s+8s\s+linear\s+infinite/i.test(chapterRims), "mixed chapter buttons must use the rotating half-cyan, half-green rim", failures);
+  assert(/\.map-card\[data-brand\]::before\s*\{[^}]*inset:\s*-1px;[^}]*background:\s*var\(--chapter-rim\)[^}]*filter:\s*blur\(var\(--chapter-glow-blur\)\)/i.test(chapterRims), "chapter glow must follow an equal full-card rim rather than a side stripe", failures);
+  assert(/:hover\s*\{[^}]*--chapter-glow-opacity:\s*\.78/i.test(chapterRims) && /:focus-visible\s*\{[^}]*--chapter-glow-opacity:\s*\.88/i.test(chapterRims) && /:active\s*\{[^}]*--chapter-glow-opacity:\s*\.54/i.test(chapterRims), "chapter rims need distinct hover, keyboard-focus, and pressed emission states", failures);
+  assert(/prefers-reduced-motion:\s*reduce[\s\S]*?animation:\s*none/i.test(chapterRims) && /forced-colors:\s*active[\s\S]*?\.map-card\[data-brand\][\s\S]*?border:\s*1px solid ButtonText/i.test(chapterRims), "animated mixed chapter rims need reduced-motion and forced-colors fallbacks", failures);
   assert(/product-logo-lockup--demothemis[\s\S]*assets\/brand\/demothemis\/wordmark\.png/i.test(homeDemoProduct), "homepage DemoThemis card must use the full supplied wordmark", failures);
   assert(/product-logo-lockup--demothemis[\s\S]*dt-wordmark-emission[\s\S]*wordmark\.png/i.test(homeDemoProduct), "homepage DemoThemis wordmark is missing its canonical underline wrapper", failures);
   assert(/<h3\b[^>]*class=["'][^"']*\bsr-only\b[^"']*["'][^>]*>DemoThemis<\/h3>/i.test(homeDemoProduct), "homepage DemoThemis logo must replace the visible typed title while preserving the article heading", failures);

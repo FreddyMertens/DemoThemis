@@ -62,7 +62,7 @@ for (const d of MANIFEST) {
 // Standalone HTML pages embedded via iframe (copied into the portal dir so the server serves them as siblings).
 const HTML_ASSETS = [
   { id:'storyboard', title:'Demo video storyboard', group:'The live build', file:'storyboard.html',
-    src:join(docs,'storyboard.html'), desc:'A complete recording plan with team and project context, one brief document tour, Run-through, Break the Court, and a slide-by-slide live MVP walkthrough.' },
+    src:join(docs,'storyboard.html'), desc:'A complete recording plan with the team, Run-through, one document tour including Break the Court, an honest live-versus-funded scope slide, a seven-stage MVP walkthrough, and the two closing challenges.' },
 ];
 const htmlMeta = [];
 for (const a of HTML_ASSETS) {

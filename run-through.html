@@ -2790,7 +2790,7 @@
   <section class="reveal" id="system-run">
     <p class="sec-label">Playable run</p>
     <h2>Run the whole system</h2>
-    <p>Tap through one market from first bet to final appeal. Each view shows what changed.</p>
+    <p>Follow one public market from first stake to final appeal, with two short optional-format previews along the way.</p>
 
     <div class="run-game reveal">
         <nav class="product-mode-nav is-awaiting-selection" aria-label="Run-through starting point">
@@ -2860,14 +2860,14 @@
               </div>
 
               <div>
-                <h3>Arbitration components online</h3>
+                <h3>Resolution and court components</h3>
                 <div class="unlock-grid" id="componentGrid">
                   <div class="unlock" data-component="escrow"><b>Protocol escrow <span class="tag">locked</span></b><small>Funds are locked before anyone knows who will judge.</small></div>
-                  <div class="unlock" data-component="watcher"><b>Paid watcher window <span class="tag">locked</span></b><small>False assertions fund whoever catches them.</small></div>
+                  <div class="unlock" data-component="watcher"><b>Omen watcher window <span class="tag">locked</span></b><small>False assertions fund whoever catches them before a court case opens.</small></div>
                   <div class="unlock" data-component="draw"><b>Random draw <span class="tag">locked</span></b><small>A public beacon draws one panel; no re-roll grinding.</small></div>
                   <div class="unlock" data-component="personhood"><b>Face check <span class="tag">locked</span></b><small>The drawn World-ID-backed human must be present for this case.</small></div>
                   <div class="unlock" data-component="ballot"><b>Private ballot <span class="tag">locked</span></b><small>Encrypted ballots and re-keying make vote receipts worthless.</small></div>
-                  <div class="unlock" data-component="reserve"><b>Live reserve <span class="tag">locked</span></b><small>Final private debits fund a proved aggregate reward transfer.</small></div>
+                  <div class="unlock" data-component="reserve"><b>Live reserve <span class="tag">locked</span></b><small>The protocol fronts it; final private debits fund a proved aggregate reward transfer.</small></div>
                   <div class="unlock" data-component="appeal"><b>Appeal floors <span class="tag">locked</span></b><small>Rungs price the next panel, attack risk, and delay rent.</small></div>
                   <div class="unlock" data-component="finality"><b>Finality plus reports <span class="tag">locked</span></b><small>Escrow ends; collusion reports never expire.</small></div>
                   <div class="unlock" data-component="keys"><b>Quality evidence <span class="tag">locked</span></b><small>Every completed case strengthens the shared juror-quality record.</small></div>
@@ -3001,23 +3001,23 @@
     {
       title: "Fixed odds appear",
       sub: "A maker posts a real price.",
-      mission: "Nail an offer to the board",
-      text: "Someone offers YES at 70 cents with real money behind it. The next YES buyer fills that locked price first, then extra size uses the next-best liquidity. Private-room markets use the same fixed-odds primitive.",
+      mission: "Take the better fixed offer",
+      text: "A maker escrows YES at 58 cents while the live pool is 62 cents. The buyer gets that better offer first, then extra size routes into the pool. Private-room markets use the same fixed-odds primitive.",
       nodes: ["open", "pool", "fixed"],
       features: ["instant", "fixed"],
       components: ["escrow"],
-      tokens: ["70c YES offer", "Extra liquidity"],
+      tokens: ["58c YES offer", "Pool overflow"],
       pot: 7600,
       yes: .68,
       claims: "Named-price offer",
-      trade: "best posted price fills first",
+      trade: "best price across offer and pool",
       court: "No dispute yet",
       panel: "no dispute yet",
       keys: 0,
       fees: 152,
       loop: ["cases", "fees"],
       log: "A posted offer becomes the first piece of market structure.",
-      actions: ["Take 70c offer"]
+      actions: ["Take 58c offer"]
     },
     {
       title: "The market graduates",
@@ -3041,10 +3041,10 @@
       actions: ["Claim wallet tokens"]
     },
     {
-      title: "Private room opens",
-      sub: "Invite-only, still escrowed.",
+      title: "Optional private room",
+      sub: "A separate market path.",
       mission: "Create a private wager",
-      text: "Two friends open a private room on the same outcome at fixed odds. It is not public order flow, but the funds still sit in neutral escrow and the same court can settle it.",
+      text: "The run briefly previews a separate invite-only market. Two friends set fixed odds; the funds still sit in neutral escrow and the same court can settle it.",
       nodes: ["open", "pool", "fixed", "private", "tokens"],
       features: ["instant", "fixed", "tokens", "private"],
       components: ["escrow"],
@@ -3062,28 +3062,28 @@
       actions: ["Invite Bob", "Accept & fund room"]
     },
     {
-      title: "Parlay routed",
-      sub: "No bookie balance sheet.",
-      mission: "Bundle two live markets",
-      text: "A bettor buys a parlay token. Under the hood, market-token routing creates the combined claim and fills the needed legs from live books. If the liquidity is not there, the transaction reverts.",
+      title: "Optional parlay",
+      sub: "A separate multi-market path.",
+      mission: "Choose a solver quote",
+      text: "The run briefly previews a parlay across two tokenized markets. Solvers compete on a fixed quote and lock the full maximum payout before one tradeable receipt is minted.",
       nodes: ["open", "pool", "fixed", "robust", "tokens", "parlay"],
       features: ["instant", "fixed", "tokens", "private", "parlay"],
       components: ["escrow"],
-      tokens: ["YES A + YES B", "Fill-or-kill route"],
+      tokens: ["One parlay receipt", "Full payout escrow"],
       pot: 81000,
       yes: .54,
       claims: "One parlay claim",
-      trade: "bundle fills or fails as one",
+      trade: "solver quote fills or fails as one",
       court: "No dispute yet",
       panel: "no dispute yet",
       keys: 0,
       fees: 1620,
       loop: ["cases", "fees"],
-      log: "The protocol gives familiar parlay UX without becoming the house.",
+      log: "Solvers provide familiar parlay UX without turning the protocol into the house.",
       actions: ["Place $100 parlay", "Accept $128 cashout"]
     },
     {
-      title: "Event happens",
+      title: "Return to the public market",
       sub: "Resolution begins.",
       mission: "Assert the outcome",
       text: "The game ends on the field. Anyone can post the answer with a bond. A watcher window opens, and because tokenized claims keep trading, the court does not have to rush the window closed.",
@@ -3094,7 +3094,7 @@
       pot: 118000,
       yes: .91,
       claims: "Wallet tokens still trade",
-      trade: "market stays open while answer is checked",
+      trade: "secondary token trading stays live",
       court: "Proposed answer posted",
       panel: "review window",
       keys: 0,
@@ -3107,7 +3107,7 @@
       title: "Watcher catches a lie",
       sub: "The court lane opens.",
       mission: "Challenge the assertion",
-      text: "The assertion was wrong. A watcher challenges it, takes aim at the bond, and routes the locked pot to DemoThemis. The market still trades because the claims are self-custodied.",
+      text: "The assertion was wrong. A watcher challenges it and routes the case to DemoThemis. OmenMarketMaker keeps the market escrow locked while a separate court quote is funded; YES and NO tokens can still trade.",
       nodes: ["trade", "assert", "challenge"],
       features: ["instant", "fixed", "tokens", "private", "trade", "parlay"],
       components: ["escrow", "watcher"],
@@ -3132,13 +3132,13 @@
       nodes: ["challenge", "draw"],
       features: ["instant", "fixed", "tokens", "private", "trade", "parlay"],
       components: ["escrow", "watcher", "draw", "personhood"],
-      tokens: ["3 drawn seats", "Face proofs"],
+      tokens: ["15 drawn seats", "Face proofs"],
       pot: 118000,
       yes: .46,
       claims: "Tokens still live",
-      trade: "open through court",
+      trade: "secondary trading live",
       court: "Random human jury",
-      panel: "3 verified people",
+      panel: "15 verified people",
       keys: 0,
       fees: 2360,
       loop: ["cases", "fees", "jurors"],
@@ -3157,9 +3157,9 @@
       pot: 118000,
       yes: .51,
       claims: "Tokens still live",
-      trade: "open through court",
+      trade: "secondary trading live",
       court: "Private voting",
-      panel: "3 encrypted ballots",
+      panel: "15 encrypted ballots",
       keys: 0,
       fees: 2360,
       loop: ["cases", "fees", "jurors"],
@@ -3180,7 +3180,7 @@
       claims: "Tokens repriced",
       trade: "verdict becomes public proof",
       court: "First verdict",
-      panel: "3-person result",
+      panel: "15-person result",
       keys: 0,
       fees: 2360,
       loop: ["cases", "fees", "jurors"],
@@ -3205,7 +3205,7 @@
       keys: 0,
       fees: 2360,
       loop: ["cases", "fees", "jurors"],
-      log: "Appeals are allowed, but every retry gets bigger, pricier, and finite.",
+      log: "Appeals are allowed, but every retry is larger, fully funded, and finite.",
       actions: ["Pay $31,000 appeal bond"]
     },
     {
@@ -3235,7 +3235,7 @@
     {
       lane: "Market",
       title: "Question opens",
-      body: "A written resolve condition and at least one funded opening offer create the market. The protocol does not need a listing committee or minimum launch size.",
+      body: "A written resolve condition and at least one funded opening stake create the market. The protocol does not need a listing committee or minimum launch size.",
       change: "Market exists",
       why: "Even ten cents of creator-funded liquidity is enough to make the question live.",
       next: "Crowd prices it",
@@ -3255,12 +3255,12 @@
     {
       lane: "Market",
       title: "Fixed odds offer",
-      body: "A maker posts YES at a locked price. The next matching buyer fills that offer first, then any extra size uses next-best liquidity.",
-      change: "70c YES offer",
-      why: "Named odds make early liquidity easier to understand and take.",
+      body: "A maker posts YES at 58c, better than the live 62c pool price. The buyer fills the better offer first, then any extra size enters the pool.",
+      change: "58c YES offer",
+      why: "The app compares standing offers with the pool and uses the better price.",
       next: "Robustness lock",
       tone: "market",
-      results: ["The posted 70c price fills first; any extra size routes automatically to the next-best liquidity."]
+      results: ["The posted 58c price fills first; any extra size routes automatically into the pool."]
     },
     {
       lane: "Claims",
@@ -3274,8 +3274,8 @@
     },
     {
       lane: "Market",
-      title: "Private room",
-      body: "Two counterparties open an invite-only wager on the same outcome. It is private order flow, but settlement still uses neutral protocol escrow.",
+      title: "Optional private room",
+      body: "As a short side path, two counterparties open an invite-only wager. It is separate from the public market, but settlement still uses neutral protocol escrow.",
       change: "Invite-only escrow",
       why: "Private bets get the same arbitration path as public markets.",
       next: "Parlay route",
@@ -3284,13 +3284,13 @@
     },
     {
       lane: "Claims",
-      title: "Parlay route",
-      body: "A parlay routes through live market liquidity. The transaction only lands if the needed legs can fill, so the protocol does not become the house.",
-      change: "Fill-or-kill bundle",
-      why: "Composability creates familiar betting UX without balance-sheet risk.",
+      title: "Optional parlay",
+      body: "As a second side path, permissionless solvers quote a parlay across tokenized markets and lock its maximum payout before execution.",
+      change: "Fully backed receipt",
+      why: "Solver competition creates familiar betting UX without protocol balance-sheet risk.",
       next: "Bonded assertion",
       tone: "claim",
-      results: ["The router bundles the legs only if every required fill is available.", "Cash-out routes the unwanted legs back through live liquidity."]
+      results: ["The best solver locks the full payout and mints one tradeable receipt.", "Cash-out runs a new auction for that receipt."]
     },
     {
       lane: "Arbitration",
@@ -3310,13 +3310,13 @@
       why: "Both sides put value behind their claim before a jury decides.",
       next: "Jury draw",
       tone: "court",
-      results: ["The watcher stakes the opposing answer and the disputed pot routes into DemoThemis."]
+      results: ["The watcher stakes the opposing answer; the case and a separate court quote enter DemoThemis while OmenMarketMaker keeps the market escrow locked."]
     },
     {
       lane: "Arbitration",
       title: "Sealed jury draw",
       body: "A public randomness beacon draws verified humans for this case. The app cannot keep re-rolling until it likes the panel.",
-      change: "3 verified jurors",
+      change: "15 verified jurors",
       why: "One bound draw prevents panel shopping.",
       next: "Private ballots",
       tone: "court",
@@ -3330,7 +3330,7 @@
       why: "A bribed juror can take money and still vote honestly.",
       next: "Verdict proof",
       tone: "court",
-      results: ["Encrypted ballots enter the box without revealing usable receipts.", "Lazy or suspicious votes put live reserve at risk."]
+      results: ["Encrypted ballots enter the box and may be silently replaced until the deadline.", "Careless wrong-side votes can reduce pending juror pay after finality."]
     },
     {
       lane: "Finality loop",
@@ -3347,7 +3347,7 @@
       title: "Appeal ladder",
       body: "The losing side can climb to a larger panel, but the rung price must cover juror pay, attack risk, and delay.",
       change: "31-seat appeal",
-      why: "Retrying the case gets bigger, pricier, and finite.",
+      why: "Retrying the case gets larger, fully funded, and finite.",
       next: "Final proof",
       tone: "final",
       results: ["The appeal only opens after the losing side pays the rung floor.", "The next panel is larger, which raises the attack cost."]
@@ -3368,9 +3368,9 @@
     {
       label: "Market start",
       headline: "Write the rule and seed the market.",
-      look: "The form pairs an exact resolve condition with separate YES and NO opening-liquidity controls.",
+      look: "The form pairs an exact resolve condition with a first stake on YES, NO, or both.",
       use: "Publish once; the live market page opens immediately.",
-      notice: "Publishing locks the written rule and every funded opening offer into escrow."
+      notice: "Publishing locks the written rule and first stake into protocol escrow."
     },
     {
       label: "Live pricing",
@@ -3381,10 +3381,10 @@
     },
     {
       label: "Posted price",
-      headline: "Take a fixed 70c offer first.",
-      look: "The order book row is the key object; it is a real posted price with money behind it.",
-      use: "Take the 70c offer; any remaining size routes automatically.",
-      notice: "The named price fills first, then the route uses the next-best liquidity."
+      headline: "Take the better fixed offer first.",
+      look: "The standing offer is 58c while the pool is 62c, so the comparison is visible before you act.",
+      use: "Take the 58c offer; any remaining size routes into the pool.",
+      notice: "Standing offers are escrowed before tokenization; the wallet order book opens after graduation."
     },
     {
       label: "Wallet claims",
@@ -3395,22 +3395,22 @@
     },
     {
       label: "Private wager",
-      headline: "Open an invite-only room with the same court path.",
+      headline: "Preview an optional invite-only market.",
       look: "The room shows counterparties, editable terms, and the written resolve condition before escrow locks.",
       use: "Invite Bob, then accept and fund the room.",
       notice: "Privacy changes who can see the wager, not the need to fix its outcome rule before funding."
     },
     {
       label: "Parlay route",
-      headline: "Build a parlay without making the protocol the bookie.",
-      look: "The app shows a familiar two-leg slip; automatic execution is shown separately after each order.",
+      headline: "Preview a fully backed solver parlay.",
+      look: "The app shows a two-leg slip; automatic execution shows solver selection, full payout escrow, and one receipt.",
       use: "Place the $100 parlay, watch routing complete automatically, then accept the $128 cashout.",
-      notice: "The user makes the decisions; automatic execution shows the all-or-none route without adding fake controls."
+      notice: "The user chooses the quote; a solver supplies and escrows the payout rather than the protocol acting as bookie."
     },
     {
       label: "Result proposal",
       headline: "Confirm the outcome and bond.",
-      look: "The production screen shows the result, exact bond, 24-hour challenge period, and open market.",
+      look: "The production screen shows the result, exact bond, one-week challenge period, and live secondary token trading.",
       use: "Confirm and post YES.",
       notice: "The published result page keeps the locked bond, deadline, and transaction available together."
     },
@@ -3425,7 +3425,7 @@
       label: "Human draw",
       headline: "Draw one bound panel of verified humans.",
       look: "The sequence shows the public beacon, bound draw, and independent presence checks.",
-      use: "Play the draw once; the three presence checks complete automatically.",
+      use: "Play the draw; all 15 presence checks complete automatically.",
       notice: "One panel is bound to this case; the protocol cannot reroll for a friendlier jury."
     },
     {
@@ -3433,12 +3433,12 @@
       headline: "Cast an encrypted ballot privately.",
       look: "The juror workspace shows the case rule, research instruction, and private ballot.",
       use: "Choose YES or NO, then seal the ballot.",
-      notice: "The ballot workspace locks after submission and keeps the submission record without exposing the vote."
+      notice: "The encrypted ballot may be silently replaced until the deadline, so its submission record never proves the final vote."
     },
     {
       label: "Verdict proof",
       headline: "Publish the aggregate result.",
-      look: "The sequence canvas shows three sealed ballots reaching threshold before the aggregate proof.",
+      look: "The sequence canvas shows all 15 sealed ballots reaching threshold before the aggregate proof.",
       use: "Play publication once; verification follows automatically.",
       notice: "Individual votes stay private while the aggregate verdict becomes public."
     },
@@ -3447,7 +3447,7 @@
       headline: "Review the 31-juror appeal bond.",
       look: "The checkout identifies each minimum, the applied $31,000 bond, wallet balance, and deadline.",
       use: "Pay the bond once; the 31-person panel vote then completes automatically.",
-      notice: "Appeals remain possible, but retrying gets larger, pricier, and finite."
+      notice: "Appeals remain possible, but retrying gets larger, fully funded, and finite."
     },
     {
       label: "Final proof",
@@ -3485,23 +3485,23 @@
       from: "Token holder",
       to: "Room creator",
       targetTitle: "Order book",
-      note: "The same market can now support an invite-only wager.",
+      note: "The run branches briefly to a separate invite-only market.",
       dock: "page"
     },
     {
       action: "Build a parlay",
-      from: "Room participant",
+      from: "Optional format preview",
       to: "Parlay bettor",
       targetTitle: "Escrow record",
-      note: "The bettor switches from one wager to a combined bet slip.",
+      note: "The run previews a separate multi-market solver product.",
       dock: "page"
     },
     {
       action: "Go to result posting",
-      from: "Parlay bettor",
+      from: "Original public market",
       to: "Result poster",
       targetTitle: "Closed position",
-      note: "After the event happens, someone posts a bonded answer.",
+      note: "The run returns to the original public market after the event happens.",
       dock: "page"
     },
     {
@@ -3515,8 +3515,8 @@
       action: "View protocol draw",
       from: "Watcher / challenger",
       to: "DemoThemis network",
-      targetTitle: "Case activity",
-      note: "DemoThemis receives the case; its on-chain sequence begins."
+      targetTitle: "Court intake",
+      note: "The funded case and quote are locked before the bound draw begins."
     },
     {
       action: "Open juror workspace",
@@ -3550,7 +3550,7 @@
       action: "Start a new walkthrough",
       from: "Token holder",
       to: "Market creator",
-      targetTitle: "Settlement complete",
+      targetTitle: "Market payout",
       note: "The market is settled; restart at a fresh question.",
       restart: true
     }
@@ -3558,8 +3558,8 @@
 
   var STAGE_GROUPS = [
     { label: "Market setup", start: 0, end: 3, mode: "omen" },
-    { label: "Bet types", start: 4, end: 5, mode: "omen" },
-    { label: "Resolution", start: 6, end: 7, mode: "themis" },
+    { label: "Optional formats", start: 4, end: 5, mode: "omen" },
+    { label: "Resolution handoff", start: 6, end: 7, mode: "themis" },
     { label: "Jury process", start: 8, end: 10, mode: "themis" },
     { label: "Appeal + loop", start: 11, end: 12, mode: "themis" }
   ];
@@ -3859,11 +3859,11 @@
       actor: "Protocol mints; users self-custody", money: "Collateral stays locked behind the claims", condition: "Every robustness check passes", next: "Order-book trading, optional parlays, then resolution"
     },
     {
-      id: "parlay-route", phase: "build", order: 6, kind: "optional", branch: "Token route only", title: "Optional atomic parlay",
-      short: "Every liquid leg fills together, or the whole transaction changes nothing.",
+      id: "parlay-route", phase: "build", order: 6, kind: "optional", branch: "Token route only", title: "Optional solver parlay",
+      short: "Competing solvers quote the bundle and the winner locks its full maximum payout.",
       routes: [], sim: [5],
-      detail: "A parlay branches from liquid token markets. It is not the next stage of every market: all legs must fill in one transaction or the transaction reverts.",
-      actor: "Trader and routing contract", money: "Moves only if every leg fills", condition: "All selected legs have enough liquidity", next: "Combined claim, or a clean revert"
+      detail: "A parlay branches across robust tokenized markets. It is not the next stage of every market: permissionless solvers compete on a fixed quote, the winner escrows the maximum return, and the user receives one tradeable receipt. Cashout runs a new auction for that receipt.",
+      actor: "Trader, solver network, and protocol", money: "The winning solver locks the full maximum payout before execution", condition: "A fully funded solver quote is available", next: "One tradeable receipt, or no execution"
     },
 
     {
@@ -3888,11 +3888,11 @@
       actor: "Asserter", money: "Assertion bond joins the still-locked market escrow", condition: "A valid assertion is submitted", next: "Paid watcher window"
     },
     {
-      id: "watch-window", phase: "check", order: 4, title: "Paid watcher window",
-      short: "Anyone can check the claim; catching a false answer earns its bond.",
+      id: "watch-window", phase: "check", order: 4, title: "One-week watcher window",
+      short: "Anyone can check the claim for one week; catching a false answer earns its bond.",
       routes: ["quiet", "dispute"], sim: [6], simSteps: [1],
       detail: "The design pays for vigilance instead of hoping for volunteers. A correct assertion should pass quietly; a false one gives watchers a reason to challenge.",
-      actor: "Independent watchers", money: "Assertion bond is exposed to a successful challenger", condition: "The configured review window is open", next: "Quiet result or funded dispute"
+      actor: "Independent watchers", money: "Assertion bond is exposed to a successful challenger", condition: "The one-week review window is open", next: "Quiet result or funded dispute"
     },
     {
       id: "challenge-gate", phase: "check", order: 5, kind: "decision", title: "Was it challenged in time?",
@@ -3910,10 +3910,10 @@
     },
     {
       id: "dispute-open", phase: "check", order: 6, group: "challenge-outcome", branch: "Yes · Phase 03", title: "Dispute case opens",
-      short: "The claim, evidence, stakes, and funds move into the court path.",
+      short: "The case enters the court path while OmenMarketMaker keeps the market funds locked.",
       routes: ["dispute"], sim: [7], simSteps: [1],
       detail: "A funded challenge stops optimistic settlement and creates a case. Trading can continue for tokenized claims, but the escrow cannot pay until the court path finishes.",
-      actor: "Protocol court intake", money: "Market, assertion, and challenge funds remain locked", condition: "A valid funded challenge arrives", next: "Lock the case before any panel is known"
+      actor: "OmenMarketMaker handoff and DemoThemis intake", money: "Market escrow stays at OmenMarketMaker; the DemoThemis quote is funded separately", condition: "A valid funded challenge arrives", next: "Lock the case and quote before any panel is known"
     },
 
     {
@@ -3921,7 +3921,7 @@
       short: "Evidence, value at stake, and dispute contents freeze before the draw.",
       routes: ["dispute"], sim: [8], simSteps: [0],
       detail: "Locking first prevents parties from changing the case after seeing who will judge it. It also fixes the complexity class, work-based quote, panel size, and appeal-cost inputs before selection.",
-      actor: "DemoThemis intake", money: "All relevant funds remain in escrow", condition: "The challenge is accepted", next: "Choose the correct court route"
+      actor: "DemoThemis intake", money: "The work quote is funded; market escrow remains separately locked", condition: "The challenge and court quote are funded", next: "Choose the correct court route"
     },
     {
       id: "court-route", phase: "judge", order: 2, kind: "decision", title: "What evidence defines the case?",
@@ -3989,7 +3989,7 @@
     },
     {
       id: "settle-funds", phase: "finish", order: 2, title: "Settle funds and route the invoice",
-      short: "One final operation pays public escrow, routes fees, and proves shielded juror updates in aggregate.",
+      short: "One final operation pays public escrow and routes fees; jury cases also prove shielded juror updates in aggregate.",
       routes: ["quiet", "dispute"], sim: [12], simSteps: [1],
       detail: "Settlement is atomic, not two clocks. Pool winners split the pot, tokens redeem, and the selected resolution provider receives its independent service fee. A DemoThemis jury quote covers processing, required panel compensation, any reserve top-up, and capped operations; a quiet result omits the jury cost. Juror updates settle inside shielded commitments; batched proofs expose only balanced totals, never a wallet-level consequence.",
       actor: "Settlement contracts plus private-account proofs", money: "Public escrow routes normally; individual juror amounts remain shielded", condition: "The final release rule is available", next: "Permanent closed record"
@@ -3998,42 +3998,42 @@
       id: "closed-record", phase: "finish", order: 4, title: "Market closes permanently",
       short: "A signed record remains; public cases are public, private arbitration stays private by default.",
       routes: ["quiet", "dispute"], sim: [12], simSteps: [1],
-      detail: "The payment state is immutable, but an auditable record can still support curation, reputation, and later collusion investigation.",
-      actor: "Protocol record layer", money: "Already settled and cannot reopen", condition: "Settlement transaction completes", next: "Curation and long-term accountability"
+      detail: "The payment state is immutable. If a jury was used, its record can also support quality updates and later collusion investigation.",
+      actor: "Protocol record layer", money: "Already settled and cannot reopen", condition: "Settlement transaction completes", next: "End, or jury-only quality and accountability rails"
     },
     {
       id: "curation-gate", phase: "finish", order: 5, kind: "decision", title: "Is later independent evidence available?",
       short: "Every completed jury case updates juror quality; a checkable outside result can add another accuracy signal.",
-      routes: ["quiet", "dispute"], sim: [12], simSteps: [1],
+      routes: ["dispute"], sim: [12], simSteps: [1],
       detail: "Difficulty-adjusted agreement, written-criteria consistency, and appeal survival already count. Reliable later evidence is verified and added without deciding whether the case qualifies for scoring.",
       actor: "Quality engine and evidence checks", money: "No settlement money changes", condition: "After finality", next: "Shared quality update"
     },
     {
       id: "record-only", phase: "finish", order: 6, group: "curation-outcome", branch: "No outside result", afterNote: "Meanwhile, accountability and the next-cycle loop run independently ↓", title: "Case evidence updates quality",
       short: "The completed case updates jurors from difficulty, criteria consistency, and appeal evidence.",
-      routes: ["quiet", "dispute"], sim: [],
+      routes: ["dispute"], sim: [],
       detail: "A missing external answer does not exclude the case. Its reliable internal and appeal signals update the same shared juror-quality record.",
       actor: "Quality engine", money: "Future pay and selection may change; past settlement does not", condition: "No later independent result is available", next: "Keep the record and improve future selection"
     },
     {
       id: "quality-update", phase: "finish", order: 6, group: "curation-outcome", branch: "Outside result", title: "Juror quality gains another check",
       short: "The external result joins the case's peer, criteria, and appeal evidence in one shared record.",
-      routes: ["quiet", "dispute"], sim: [12], simSteps: [1],
+      routes: ["dispute"], sim: [12], simSteps: [1],
       detail: "Reliable later evidence can confirm or correct the signal from the final panel. It strengthens the same update every completed case receives without changing the closed case.",
       actor: "Quality engine", money: "Future pay and rewards may change; past payout does not", condition: "A reliable later result exists", next: "A wider, better measured juror pool"
     },
     {
       id: "collusion-clock", phase: "finish", order: 7, group: "aftercare-rails", branch: "Justice · stays open", title: "Accountability stays open",
       short: "A later collusion report may slash and ban proven actors, but never reopens payment.",
-      routes: ["quiet", "dispute"], sim: [],
+      routes: ["dispute"], sim: [],
       detail: "Settlement has a closing clock; justice does not. Correlation evidence can be investigated years later while everyone can still rely on final escrow.",
       actor: "Any reporter and the collusion audit", money: "Only offender bonds and future eligibility are at risk", condition: "Any time after a suspicious pattern appears", next: "Punishment if proved; final payout remains untouched"
     },
     {
       id: "bootstrap-loop", phase: "finish", order: 7, group: "aftercare-rails", branch: "Next market ↺ Phase 01", title: "The next market gets a stronger court",
       short: "More markets create more evidence, more paid jurors, and eventually support outside escrow disputes.",
-      routes: ["quiet", "dispute"], sim: [12], simSteps: [1],
-      detail: "This is the optional bootstrap loop: clients that choose DemoThemis pay its independent service fee; completed cases strengthen the court; a stronger court can win more integrations.",
+      routes: ["dispute"], sim: [12], simSteps: [1],
+      detail: "This bootstrap loop lets OmenMarketMaker seed DemoThemis with demand: it pays an independent service fee for each court case, completed cases strengthen the court, and a stronger court can win more integrations.",
       actor: "Independent products connected by a service agreement", money: "DemoThemis earns fees only from cases sent to it", condition: "Repeated settled use", next: "New markets and, later, outside escrow cases"
     }
   ];
@@ -4091,11 +4091,11 @@
 
     { from: "release-rule", to: "settle-funds", when: "one final answer", kind: "forward" },
     { from: "settle-funds", to: "closed-record", when: "atomic settlement succeeds", kind: "forward" },
-    { from: "closed-record", to: "curation-gate", when: "learning rail", kind: "parallel" },
+    { from: "closed-record", to: "curation-gate", when: "a jury case was used", kind: "parallel" },
     { from: "curation-gate", to: "record-only", when: "no later outside result", kind: "branch" },
     { from: "curation-gate", to: "quality-update", when: "later outside result is verified", kind: "branch" },
-    { from: "closed-record", to: "collusion-clock", when: "accountability rail", kind: "parallel" },
-    { from: "closed-record", to: "bootstrap-loop", when: "next-cycle rail", kind: "parallel" },
+    { from: "closed-record", to: "collusion-clock", when: "a jury case was used", kind: "parallel" },
+    { from: "closed-record", to: "bootstrap-loop", when: "a DemoThemis case was funded", kind: "parallel" },
     { from: "bootstrap-loop", to: "rules-fixed", when: "new market", kind: "loop" }
   ];
 
@@ -4671,7 +4671,7 @@
     for (var i = 0; i < count; i += 1) {
       var cx = x + (i % 8) * 22;
       var cy = y + Math.floor(i / 8) * 24;
-      out.push("<circle class=\"seat " + (hot && i < 3 ? "on" : "") + "\" cx=\"" + cx + "\" cy=\"" + cy + "\" r=\"8\"></circle>");
+      out.push("<circle class=\"seat " + (hot ? "on" : "") + "\" cx=\"" + cx + "\" cy=\"" + cy + "\" r=\"8\"></circle>");
     }
     out.push("</g>");
     return out.join("");
@@ -4691,9 +4691,9 @@
       chips: [["YES pushes up", "good"], ["NO pushes back", "bad"], ["Odds become legible", "accent"]]
     },
     {
-      actor: { title: "Posted offer", sub: "names a price", icon: "person", tone: "accent", mark: "70C" },
-      core: { title: "Fixed offer", sub: "YES locked at 70c", icon: "ticket", tone: "accent", mark: "FIX" },
-      result: { title: "Best fill first", sub: "remainder fills next", icon: "pool", tone: "good", mark: "FILL" },
+      actor: { title: "Posted offer", sub: "beats the pool", icon: "person", tone: "accent", mark: "58C" },
+      core: { title: "Fixed offer", sub: "YES locked at 58c", icon: "ticket", tone: "accent", mark: "FIX" },
+      result: { title: "Best fill first", sub: "remainder enters pool", icon: "pool", tone: "good", mark: "FILL" },
       chips: [["Posted odds", "accent"], ["Real backing", "accent"], ["Remainder protected", "good"]]
     },
     {
@@ -4709,10 +4709,10 @@
       chips: [["Invite only", "accent"], ["Fixed odds", "accent"], ["Same settlement", "good"]]
     },
     {
-      actor: { title: "Live legs", sub: "market A plus market B", icon: "tokens", tone: "good", mark: "A+B" },
-      core: { title: "Parlay router", sub: "all legs or revert", icon: "router", tone: "accent", mark: "ROUTE" },
-      result: { title: "Parlay claim", sub: "all-or-none bundle", icon: "ticket", tone: "good", mark: "PAR" },
-      chips: [["Fill-or-kill", "accent"], ["No bookie float", "good"], ["Cash out path", "good"]]
+      actor: { title: "Solver auction", sub: "competing fixed quotes", icon: "tokens", tone: "good", mark: "BID" },
+      core: { title: "Payout escrow", sub: "full maximum return locked", icon: "vault", tone: "accent", mark: "$336" },
+      result: { title: "Parlay receipt", sub: "one tradeable claim", icon: "ticket", tone: "good", mark: "PAR" },
+      chips: [["Best quote", "accent"], ["Fully backed", "good"], ["Receipt cashout", "good"]]
     },
     {
       actor: { title: "Result happens", sub: "the real event is over", icon: "clock", tone: "accent", mark: "NOW" },
@@ -4723,14 +4723,14 @@
     {
       actor: { title: "False answer", sub: "bad assertion spotted", icon: "assertion", tone: "bad", mark: "BAD" },
       core: { title: "Challenge staked", sub: "bond funds the catcher", icon: "challenge", tone: "good", mark: "HIT" },
-      result: { title: "Court lane", sub: "DemoThemis gets case", icon: "court", tone: "accent", mark: "CASE" },
+      result: { title: "Court lane", sub: "case + quote funded", icon: "court", tone: "accent", mark: "CASE" },
       chips: [["Lie detected", "bad"], ["Challenge bond", "good"], ["Human court", "accent"]]
     },
     {
       actor: { title: "Beacon", sub: "public randomness", icon: "beacon", tone: "accent", mark: "RAND" },
       core: { title: "One jury draw", sub: "no panel shopping", icon: "jury", tone: "accent", mark: "DRAW" },
-      result: { title: "Verified seats", sub: "humans must appear", icon: "crowd", tone: "good", mark: "3" },
-      chips: [["One roll", "accent"], ["3 seats", "good"], ["Face proofs", "good"]]
+      result: { title: "Verified seats", sub: "humans must appear", icon: "crowd", tone: "good", mark: "15" },
+      chips: [["One roll", "accent"], ["15 seats", "good"], ["Face proofs", "good"]]
     },
     {
       actor: { title: "Drawn juror", sub: "live person check", icon: "person", tone: "good", mark: "ID" },
@@ -4765,14 +4765,15 @@
       product: "OmenMarketMaker",
       tabs: ["Create", "Explore", "Portfolio"],
       activeTab: "Create",
+      account: "0xA1...ce",
       section: "Create market",
       title: "Will England win the UEFA Euro 2024 final?",
-      subtitle: "Define the outcome rule and fund the market's opening sides.",
+      subtitle: "Define the outcome rule and place the first stake.",
       status: "Ready to publish",
       kpis: [],
       blocks: [
         { type: "fields", title: "Market form", hot: 0, editable: true, rows: [["Question", "Will England win the UEFA Euro 2024 final?", "input"], ["Close time", "14 July 2024 19:00 UTC", "input"], ["Resolve condition", "YES only if UEFA records England as the winner of the 14 July 2024 final; otherwise NO.", "textarea"]] },
-        { type: "liquidity", title: "Starting position", hot: 0, offers: [["YES", "yes", "good"], ["NO", "no", "bad"]], note: "Enter an amount beside either side. Every funded offer is locked when the market is published." }
+        { type: "liquidity", title: "First stake", hot: 0, offers: [["YES", "yes", "good"], ["NO", "no", "bad"]], note: "Stake any amount on YES, NO, or both. The first funded stake opens the public pool." }
       ]
     },
     {
@@ -4780,6 +4781,7 @@
       product: "OmenMarketMaker",
       tabs: ["Market", "Order", "Portfolio"],
       activeTab: "Market",
+      account: "0x7c...42",
       route: "/m/england-euro-final",
       section: "Live market",
       title: "England wins the Euro 2024 final?",
@@ -4788,24 +4790,24 @@
       kpis: [["Balance", "$740"], ["YES", "62%"], ["NO", "38%"]],
       blocks: [
         { type: "odds", title: "Current odds", hot: [0, 1, 2], yes: 62, no: 38 },
-        { type: "ticket", title: "Trade ticket", hot: [0, 1], rows: [["Buy", "YES"], ["Amount", "$50"], ["Est. average", "62c"], ["Est. shares", "80.6 YES"]], summaryLabel: "Max spend", summaryValue: "$50.00" },
-        { type: "table", title: "Recent trades", hot: 2, rows: [["YES buy", "+$120", "62c"], ["NO buy", "+$80", "38c"], ["YES buy", "+$42", "61c"]] }
+        { type: "ticket", title: "Trade ticket", hot: [0, 1], rows: [["Stake", "YES"], ["Amount", "$50"], ["Pool price", "62c"], ["Early weight", "1.08x"]], summaryLabel: "Max spend", summaryValue: "$50.00" },
+        { type: "table", title: "Recent pool stakes", hot: 2, rows: [["YES stake", "+$120", "62c"], ["NO stake", "+$80", "38c"], ["YES stake", "+$42", "61c"]] }
       ]
     },
     {
       template: "order-book",
       product: "OmenMarketMaker",
-      tabs: ["Book", "Ticket", "Liquidity"],
-      activeTab: "Book",
-      route: "/m/england-euro-final/book",
+      tabs: ["Offers", "Ticket", "Pool"],
+      activeTab: "Offers",
+      route: "/m/england-euro-final/offers",
       section: "Fixed odds",
-      title: "Posted offer: YES at 70c",
-      subtitle: "Take the best available price across the order book.",
+      title: "Standing offer: YES at 58c",
+      subtitle: "The app compares the escrowed offer with the live 62c pool price.",
       status: "Offer live",
-      kpis: [["Best YES", "70c"], ["Amount", "740 YES"], ["Est. spend", "$525.20"]],
+      kpis: [["Offer", "58c"], ["Pool", "62c"], ["Est. spend", "$438.80"]],
       blocks: [
-        { type: "table", title: "Order book", hot: 0, rows: [["YES 70c", "500 shares", "maker"], ["YES 73c", "240 shares", "maker"], ["Liquidity", "available", "best next"]] },
-        { type: "ticket", title: "Estimated fill", hot: 0, rows: [["Quantity", "740 YES"], ["Best available", "500 at 70c"], ["Next available", "240 at 73c"], ["Estimated average", "70.97c"], ["Estimated fee", "$0.00"]], summaryLabel: "Estimated cost", summaryValue: "$525.20" }
+        { type: "table", title: "Standing offers", hot: 0, rows: [["YES 58c", "500 shares", "maker"], ["Live pool", "62c", "next"], ["YES 64c", "240 shares", "worse"]] },
+        { type: "ticket", title: "Estimated fill", hot: 0, rows: [["Quantity", "740 YES"], ["Standing offer", "500 at 58c"], ["Pool overflow", "240 at 62c"], ["Estimated average", "59.30c"], ["Estimated fee", "$0.00"]], summaryLabel: "Estimated cost", summaryValue: "$438.80" }
       ]
     },
     {
@@ -4830,7 +4832,7 @@
       tabs: ["Room", "Terms", "Escrow"],
       activeTab: "Room",
       route: "/rooms/new",
-      section: "Private wager",
+      section: "Optional format · Private wager",
       title: "England final private room",
       subtitle: "Invite Bob to accept the answer rule and a $10,000 stake.",
       status: "Draft room",
@@ -4846,15 +4848,16 @@
       tabs: ["Slip", "Markets", "Cashout"],
       activeTab: "Slip",
       route: "/parlays/new",
-      section: "Parlay builder",
+      section: "Optional format · Parlay builder",
       title: "England wins + Rain tomorrow",
-      subtitle: "2 selections · Both must fill or no funds move.",
+      subtitle: "2 selections · The best solver must lock the full payout.",
       status: "Ready to place",
       user: "0x7c...42",
       actor: "Parlay bettor",
       kpis: [["Legs", "2"], ["Stake", "$100"], ["Max return", "$336"]],
       blocks: [
-        { type: "legs", title: "Bet slip", hot: 0, legs: [["England wins", "YES 62c"], ["Rain tomorrow", "YES 48c"]], payout: "$100 stake · Max return $336 (3.36x)" }
+        { type: "legs", title: "Bet slip", hot: 0, legs: [["England wins", "YES 62c"], ["Rain tomorrow", "YES 48c"]], payout: "$100 stake · Max return $336 (3.36x)" },
+        { type: "table", title: "Solver quote", rows: [["Competing solvers", "3", "live"], ["Full payout escrow", "$336", "required"], ["Receipt", "One tradeable claim", "on fill"]] }
       ]
     },
     {
@@ -4870,8 +4873,8 @@
       status: "Ready to submit",
       kpis: [["Answer", "YES"], ["Bond", "$250"]],
       blocks: [
-        { type: "ticket", title: "Proposal summary", hot: 0, rows: [["Result", "YES"], ["Challenge period", "24 hours"]], summaryLabel: "Bond to lock", summaryValue: "$250" },
-        { type: "odds", title: "Market still open", yes: 91, no: 9 }
+        { type: "ticket", title: "Proposal summary", hot: 0, rows: [["Result", "YES"], ["Challenge period", "One week"]], summaryLabel: "Bond to lock", summaryValue: "$250" },
+        { type: "odds", title: "Secondary trading live", yes: 91, no: 9 }
       ]
     },
     {
@@ -4879,6 +4882,8 @@
       product: "OmenMarketMaker",
       tabs: ["Challenge", "Case", "Market"],
       activeTab: "Challenge",
+      account: "0x88...fe",
+      actor: "Challenger",
       route: "/markets/england-euro-final/challenge",
       section: "Challenge",
       title: "Challenge the proposed YES answer",
@@ -4898,12 +4903,12 @@
       activeTab: "Activity",
       section: "On-chain sequence",
       title: "Bound panel selection",
-      subtitle: "Public events show how one case seed selects three verified humans.",
+      subtitle: "A public seed selects 15 seats for this $118,000 case.",
       status: "Awaiting draw event",
-      kpis: [["Draws", "Pending"], ["Seats", "3"], ["Reroll", "No"]],
+      kpis: [["Draws", "Pending"], ["Seats", "15"], ["Reroll", "No"]],
       blocks: [
         { type: "beacon", title: "Randomness beacon", hot: 0, code: "0x8fd9...c41a + case #1182", note: "One public seed binds this panel." },
-        { type: "seats", title: "Panel slots", hot: 0, count: 3, on: 0 }
+        { type: "seats", title: "Panel slots", hot: 0, count: 15, on: 0 }
       ]
     },
     {
@@ -4917,7 +4922,7 @@
       title: "Case #1182",
       subtitle: "Research, then vote privately.",
       status: "Ready to vote",
-      kpis: [["Juror fee", "$92"], ["Panel", "3"]],
+      kpis: [["Juror fee", "$92"], ["Panel", "15"]],
       blocks: [
         { type: "evidence", title: "Case file", hot: 0, rows: [["Question", "Did England win the UEFA Euro 2024 final on 14 July 2024?"], ["Answer rule", "YES if UEFA records England as winner; otherwise NO."], ["Sources", "None supplied"], ["Research", "Check independent public sources."]] },
         { type: "ballot", title: "Encrypted ballot", hot: 0, options: [["YES", "good"], ["NO", "bad"]] }
@@ -4929,20 +4934,20 @@
       tabs: ["Activity", "Threshold", "Proof"],
       activeTab: "Activity",
       section: "On-chain sequence",
-      title: "Waiting for 3 ballots",
+      title: "Waiting for 15 ballots",
       subtitle: "The proof waits for every drawn seat.",
-      status: "Ballots 1/3",
-      kpis: [["Ballots", "1/3"], ["Privacy", "Kept"]],
+      status: "Ballots 1/15",
+      kpis: [["Ballots", "1/15"], ["Privacy", "Kept"]],
       blocks: [
-        { type: "route", title: "Ballot arrivals", hot: 0, steps: [["04", "Ballot", "received"], ["09", "Ballot", "pending"], ["12", "Ballot", "pending"]] },
-        { type: "proof", title: "Tally", hot: 1, result: "Locked", note: "Opens at 3/3.", verified: false }
+        { type: "route", title: "Ballot arrivals", hot: 0, steps: [["04", "Ballot", "received"], ["09", "Ballot", "pending"], ["+13", "Other seats", "pending"]] },
+        { type: "proof", title: "Tally", hot: 1, result: "Locked", note: "Opens at 15/15.", verified: false }
       ]
     },
     {
       template: "appeal-checkout",
       product: "DemoThemis",
       activeTab: "Checkout",
-      account: "0x7c...42",
+      account: "0x51...9b",
       route: "/cases/1182/appeal",
       tabs: ["Checkout", "Panel", "Deadline"],
       section: "Appeal",
@@ -4952,7 +4957,7 @@
       kpis: [["Bond due", "$31,000"], ["Time left", "14 days"], ["Wallet", "$44,200"]],
       blocks: [
         { type: "checkout", title: "Required bond", hot: 0, rows: [["31-juror minimum", "$12,400"], ["Security minimum", "$31,000"], ["Delay minimum", "$8,200"], ["Required bond", "$31,000"]], winner: "Highest minimum applied" },
-        { type: "record", title: "Case status", hot: 0, value: "NO 2–1 · Provisional", caption: "Permanent case record", details: [["Appeal window", "Open"], ["Deadline", "29 Jul 2024, 22:30 UTC"]] }
+        { type: "record", title: "Case status", hot: 0, value: "NO 9–6 · Provisional", caption: "Permanent case record", details: [["Losing side", "YES"], ["Appeal window", "Open"], ["Deadline", "29 Jul 2024, 22:30 UTC"]] }
       ]
     },
     {
@@ -4974,7 +4979,7 @@
 
   var APP_FLOWS = [
     {
-      start: { activeTab: "Create" },
+      start: { activeTab: "Create", account: "0xA1...ce", actor: "Market creator" },
       steps: [
         {
           cue: "Tap Publish market",
@@ -4989,31 +4994,32 @@
             subtitle: "The market is open, shareable, and ready for traders.",
             status: "Trading open",
             activeTab: "Explore",
+            account: "0xA1...ce",
             kpis: [],
             blocks: [
               { type: "odds", title: "Opening odds", yes: 100, no: 0 },
-              { type: "record", title: "Market details", value: "PM-EURO-24 · Trading open", caption: "Permanent market record", details: [["Opening liquidity", "$0.10 YES"], ["Closes", "14 July 2024 19:00 UTC"], ["Resolve rule", "YES only if UEFA records England as the winner; otherwise NO."]] }
+              { type: "record", title: "Market details", value: "PM-EURO-24 · Trading open", caption: "Permanent market record", details: [["Creator", "0xA1...ce"], ["First stake", "$0.10 YES into protocol escrow"], ["Closes", "14 July 2024 19:00 UTC"], ["Resolve rule", "YES only if UEFA records England as the winner; otherwise NO."]] }
             ]
           }
         }
       ]
     },
     {
-      start: { activeTab: "Market" },
+      start: { activeTab: "Market", account: "0x7c...42", actor: "Trader" },
       steps: [
         {
           cue: "Tap Buy YES",
           target: "block",
           targetTitle: "Trade ticket",
-          result: "YES trade filled",
+          result: "YES pool stake added",
           after: {
             status: "YES filled",
             activeTab: "Market",
-            kpis: [["Balance", "$690"], ["YES price", "67%"], ["Holding", "80.6 YES"]],
+            kpis: [["Balance", "$690"], ["YES price", "67%"], ["YES stake", "$50"]],
             blocks: [
               { type: "odds", title: "Current odds", yes: 67, no: 33 },
-              { type: "ticket", title: "Trade ticket", rows: [["Buy", "NO"], ["Amount", "$80"], ["Average price", "38c"], ["Est. shares", "210.5 NO"]], summaryLabel: "Max spend", summaryValue: "$80.00" },
-              { type: "table", title: "Recent trades", rows: [["Your YES buy", "+80.6 YES", "62c avg"], ["YES buy", "+$120", "62c"], ["NO buy", "+$80", "38c"]] }
+              { type: "ticket", title: "Trade ticket", rows: [["Stake", "NO"], ["Amount", "$80"], ["Pool price", "38c"], ["Early weight", "1.03x"]], summaryLabel: "Max spend", summaryValue: "$80.00" },
+              { type: "table", title: "Recent pool stakes", rows: [["Your YES stake", "+$50", "1.08x"], ["YES stake", "+$120", "62c"], ["NO stake", "+$80", "38c"]] }
             ]
           }
         },
@@ -5021,39 +5027,39 @@
           cue: "Tap Buy NO",
           target: "block",
           targetTitle: "Trade ticket",
-          result: "NO order filled",
-          toast: { title: "Position updated", body: "210.5 NO added at 38¢", detail: "Both sides are now visible in your position" },
+          result: "NO pool stake added",
+          toast: { title: "Position updated", body: "$80 NO stake added", detail: "Both pool sides are now visible in your position" },
           after: {
             status: "Position updated",
             activeTab: "Market",
             kpis: [["Balance", "$610"], ["YES", "62%"], ["NO", "38%"]],
             blocks: [
               { type: "odds", title: "Current odds", yes: 62, no: 38 },
-              { type: "tokens", title: "Your position", tokens: [["YES holding", "80.6 YES", "good"], ["NO holding", "210.5 NO", "bad"]] },
-              { type: "record", title: "Order details", value: "210.5 NO · $80.00", caption: "Permanent trade record", details: [["Average price", "38c"], ["Fees", "Included"], ["Order", "PM-NO-210"], ["Available balance", "$610.00"]] }
+              { type: "tokens", title: "Your pool position", tokens: [["YES stake", "$50 · 1.08x", "good"], ["NO stake", "$80 · 1.03x", "bad"]] },
+              { type: "record", title: "Stake details", value: "$80 NO pool stake", caption: "Permanent pool record", details: [["Pool price", "38c"], ["Early weight", "1.03x"], ["Fees", "At settlement"], ["Available balance", "$610.00"]] }
             ]
           }
         }
       ]
     },
     {
-      start: { activeTab: "Book" },
+      start: { activeTab: "Offers", account: "0x7c...42", actor: "Trader" },
       steps: [
         {
-          cue: "Tap Take 70c offer",
+          cue: "Tap Take 58c offer",
           target: "block",
           targetTitle: "Estimated fill",
           result: "Best prices filled in order",
-          toast: { title: "Order filled", body: "740 YES · 70.97¢ average", detail: "Best available prices were used in order" },
+          toast: { title: "Order filled", body: "740 YES · 59.30¢ average", detail: "The better offer filled before pool overflow" },
           after: {
             title: "740 YES shares filled",
-            subtitle: "Your order filled at the two best available prices.",
+            subtitle: "The standing offer filled first; the rest entered the live pool.",
             status: "Order filled",
-            activeTab: "Book",
-            kpis: [["Shares", "740"], ["Avg. price", "70.97c"], ["Balance", "$84.80"]],
+            activeTab: "Offers",
+            kpis: [["Shares", "740"], ["Avg. price", "59.30c"], ["Balance", "$171.20"]],
             blocks: [
-              { type: "table", title: "Order book", rows: [["YES 70c", "500 filled", "done"], ["YES 73c", "240 filled", "done"], ["Next YES", "75c", "live"]] },
-              { type: "record", title: "Fill details", value: "740 YES · $525.20", caption: "Permanent trade record", details: [["Price detail", "500 @ 70c + 240 @ 73c"], ["Average price", "70.97c"], ["Fee", "$0.00"], ["Order", "PM-YES-740"]] }
+              { type: "table", title: "Best execution", rows: [["YES 58c offer", "500 filled", "done"], ["Live pool 62c", "240 filled", "done"], ["YES 64c offer", "untouched", "worse"]] },
+              { type: "record", title: "Fill details", value: "740 YES · $438.80", caption: "Permanent trade record", details: [["Price detail", "500 @ 58c + 240 @ 62c pool"], ["Average price", "59.30c"], ["Fee", "$0.00"], ["Order", "PM-YES-740"]] }
             ]
           }
         }
@@ -5159,7 +5165,7 @@
       steps: [
         {
           cue: "Tap Place $100 parlay",
-          roleHandoff: "Parlay bettor to OmenMarketMaker router",
+          roleHandoff: "Parlay bettor to solver auction",
           target: "block",
           targetTitle: "Bet slip",
           result: "Parlay order submitted",
@@ -5168,38 +5174,38 @@
             sequenceProfile: "omen",
             sequenceProgress: 1,
             surface: "omen",
-            actor: "OmenMarketMaker router",
+            actor: "Solver network",
             actionOwner: "protocol",
             template: "parlay-execution",
             route: "",
-            product: "OmenMarketMaker automatic execution",
-            title: "Creating the parlay atomically",
-            subtitle: "Both market legs fill in one transaction or the $100 order changes nothing.",
-            status: "Routing live",
+            product: "OmenMarketMaker solver execution",
+            title: "Selecting and backing the parlay",
+            subtitle: "The winning solver must lock the full $336 maximum payout before the order can execute.",
+            status: "Solver auction live",
             user: "",
-            kpis: [["Order", "$100"], ["Legs", "2"], ["Rule", "All or none"]],
+            kpis: [["Order", "$100"], ["Max escrow", "$336"], ["Solvers", "3"]],
             sequenceSteps: [
-              { actionLabel: "Reserve $100", ownerLabel: "Router" },
-              { actionLabel: "Fill both market legs", ownerLabel: "Router" },
-              { actionLabel: "Mint parlay claim", ownerLabel: "Router" }
+              { actionLabel: "Collect solver quotes", ownerLabel: "Auction" },
+              { actionLabel: "Lock $336 maximum payout", ownerLabel: "Winning solver" },
+              { actionLabel: "Mint one parlay receipt", ownerLabel: "Protocol" }
             ],
             blocks: [
-              { type: "table", title: "Atomic placement", rows: [["England YES", "62c", "ready"], ["Rain YES", "48c", "ready"]] },
-              { type: "table", title: "Execution guarantee", rows: [["Rule", "All legs or none", "atomic"], ["Reserved", "$100", "PM-4821"]] }
+              { type: "table", title: "Solver auction", rows: [["Solver A", "3.18x", "outbid"], ["Solver B", "3.36x", "winner"], ["Solver C", "3.24x", "outbid"]] },
+              { type: "table", title: "Execution guarantee", rows: [["Maximum payout", "$336", "locked"], ["Receipt", "PM-4821", "minting"]] }
             ]
           }
         },
         {
-          cue: "Route both legs atomically",
-          actionLabel: "Route both legs atomically",
-          roleHandoff: "OmenMarketMaker router to Parlay bettor",
+          cue: "Complete solver-backed placement",
+          actionLabel: "Complete solver-backed placement",
+          roleHandoff: "Winning solver to Parlay bettor",
           actionOwner: "protocol",
           autoAdvance: true,
           autoDelay: 1700,
           target: "block",
-          targetTitle: "Atomic placement",
+          targetTitle: "Solver auction",
           result: "Parlay confirmed",
-          toast: { title: "Parlay placed", body: "$100 across 2 legs", detail: "All-or-none execution completed" },
+          toast: { title: "Parlay placed", body: "$336 maximum payout locked", detail: "One tradeable receipt minted" },
           after: {
             view: "application",
             sequenceProfile: "",
@@ -5209,61 +5215,61 @@
             template: "parlay-position",
             route: "/parlays/PM-4821",
             product: "OmenMarketMaker Parlays",
-            section: "Open parlay",
+            section: "Optional format · Open parlay",
             title: "Parlay placed",
-            subtitle: "Your parlay is active. Cashout quotes update with live prices.",
+            subtitle: "Your fully backed receipt is active. Solver cashout bids update with live prices.",
             status: "Confirmed",
             activeTab: "Cashout",
             user: "0x7c...42",
             kpis: [["Stake", "$100"], ["Max return", "$336"], ["Status", "Active"]],
             blocks: [
               { type: "legs", title: "Your parlay", legs: [["England wins", "YES 62c"], ["Rain tomorrow", "YES 48c"]], payout: "Max return $336" },
-              { type: "ticket", title: "Cashout quote", rows: [["Receive", "$128"], ["Profit", "+$28"], ["Quote expires", "00:15"]], summaryLabel: "Cashout amount", summaryValue: "$128" },
-              { type: "record", title: "Parlay transaction", value: "$100 · 2 legs", caption: "Permanent order record", details: [["Order", "PM-4821"], ["Wallet", "0x7c...42"], ["Status", "Confirmed"], ["Transaction", "0xa81f...9c2e"], ["Time", "14 Jul 2024 · 18:42 UTC"]] }
+              { type: "ticket", title: "Best cashout bid", rows: [["Winning solver bid", "$128"], ["Profit", "+$28"], ["Quote expires", "00:15"]], summaryLabel: "Cashout amount", summaryValue: "$128" },
+              { type: "record", title: "Parlay receipt", value: "PM-4821 · Tradeable", caption: "Permanent receipt record", details: [["Maximum payout escrow", "$336 locked"], ["Wallet", "0x7c...42"], ["Status", "Confirmed"], ["Transaction", "0xa81f...9c2e"], ["Time", "14 Jul 2024 · 18:42 UTC"]] }
             ]
           }
         },
         {
           cue: "Tap Accept $128 cashout",
-          roleHandoff: "Parlay bettor to OmenMarketMaker router",
+          roleHandoff: "Parlay bettor to solver cashout auction",
           target: "block",
-          targetTitle: "Cashout quote",
+          targetTitle: "Best cashout bid",
           result: "Cashout order submitted",
           after: {
             view: "sequence",
             sequenceProfile: "omen",
             sequenceProgress: 1,
             surface: "omen",
-            actor: "OmenMarketMaker router",
+            actor: "Solver network",
             actionOwner: "protocol",
             template: "cashout-execution",
             route: "",
-            product: "OmenMarketMaker automatic execution",
-            title: "Closing the parlay atomically",
-            subtitle: "Both claim legs sell together before $128 returns to the connected wallet.",
-            status: "Cashout routing",
+            product: "OmenMarketMaker solver execution",
+            title: "Auctioning the parlay receipt",
+            subtitle: "Competing solvers bid for the single receipt before $128 returns to the wallet.",
+            status: "Cashout auction",
             user: "",
-            kpis: [["Quote", "$128"], ["Legs", "2"], ["Rule", "All or none"]],
+            kpis: [["Best bid", "$128"], ["Bids", "4"], ["Receipt", "1"]],
             sequenceSteps: [
-              { actionLabel: "Lock the $128 quote", ownerLabel: "Router" },
-              { actionLabel: "Sell both claim legs", ownerLabel: "Router" },
-              { actionLabel: "Return $128", ownerLabel: "Router" }
+              { actionLabel: "Collect cashout bids", ownerLabel: "Auction" },
+              { actionLabel: "Transfer the receipt", ownerLabel: "Protocol" },
+              { actionLabel: "Return $128", ownerLabel: "Winning solver" }
             ],
             blocks: [
-              { type: "table", title: "Atomic cashout", rows: [["England leg", "Sell", "ready"], ["Rain leg", "Sell", "ready"]] },
-              { type: "table", title: "Cashout guarantee", rows: [["Quote", "$128", "locked"], ["Rule", "Both legs or none", "atomic"]] }
+              { type: "table", title: "Cashout auction", rows: [["Solver D", "$124", "outbid"], ["Solver B", "$128", "winner"], ["Solver A", "$126", "outbid"]] },
+              { type: "table", title: "Cashout guarantee", rows: [["Receipt", "PM-4821", "transferred"], ["Winning bid", "$128", "locked"]] }
             ]
           }
         },
         {
-          cue: "Complete atomic cashout",
-          actionLabel: "Complete atomic cashout",
-          roleHandoff: "OmenMarketMaker router to Parlay bettor",
+          cue: "Complete receipt cashout",
+          actionLabel: "Complete receipt cashout",
+          roleHandoff: "Winning solver to Parlay bettor",
           actionOwner: "protocol",
           autoAdvance: true,
           autoDelay: 1700,
           target: "block",
-          targetTitle: "Atomic cashout",
+          targetTitle: "Cashout auction",
           result: "$128 payment confirmed",
           toast: { title: "Cashout complete", body: "$128 received", detail: "$28 profit · Position closed" },
           after: {
@@ -5275,7 +5281,7 @@
             template: "parlay-position",
             route: "/parlays/PM-4821/cashout",
             product: "OmenMarketMaker Parlays",
-            section: "Closed parlay",
+            section: "Optional format · Closed parlay",
             title: "Cashout complete",
             subtitle: "$128 was sent to the connected wallet.",
             status: "Confirmed",
@@ -5302,8 +5308,8 @@
         actor: "Result submitter",
         kpis: [["Answer", "YES"], ["Bond", "$250"]],
         blocks: [
-          { type: "ticket", title: "Proposal summary", rows: [["Result", "YES"], ["Challenge period", "24 hours"]], summaryLabel: "Bond to lock", summaryValue: "$250" },
-          { type: "odds", title: "Market still open", yes: 91, no: 9 }
+          { type: "ticket", title: "Proposal summary", rows: [["Result", "YES"], ["Challenge period", "One week"]], summaryLabel: "Bond to lock", summaryValue: "$250" },
+          { type: "odds", title: "Secondary trading live", yes: 91, no: 9 }
         ]
       },
       steps: [
@@ -5312,7 +5318,7 @@
           target: "block",
           targetTitle: "Proposal summary",
           result: "Bonded YES posted for review",
-          toast: { title: "YES result posted", body: "$250 bond locked", detail: "The 24-hour challenge window is open" },
+          toast: { title: "YES result posted", body: "$250 bond locked", detail: "The one-week challenge window is open" },
           after: {
             route: "/markets/england-euro-final/result",
             section: "Published result",
@@ -5323,11 +5329,11 @@
             activeTab: "Review",
             account: "0x51...9b",
             actor: "Result submitter",
-            kpis: [["Result", "YES"], ["Bond", "$250 locked"], ["Time left", "23:58"]],
+            kpis: [["Result", "YES"], ["Bond", "$250 locked"], ["Time left", "6d 23h"]],
             blocks: [
-              { type: "countdown", title: "Challenge period", value: "23:58", note: "Time left" },
-              { type: "odds", title: "Market still open", yes: 91, no: 9 },
-              { type: "record", title: "Proposal details", value: "YES · Pending", caption: "Permanent result record", details: [["Bond", "$250 locked"], ["Challenge ends", "15 Jul 2024, 22:30 UTC"], ["Transaction", "0x31ab…90f2"]] }
+              { type: "countdown", title: "Challenge period", value: "6d 23h", note: "Time left" },
+              { type: "odds", title: "Secondary trading live", yes: 91, no: 9 },
+              { type: "record", title: "Proposal details", value: "YES · Pending", caption: "Permanent result record", details: [["Bond", "$250 locked"], ["Challenge ends", "21 Jul 2024, 22:30 UTC"], ["Transaction", "0x31ab…90f2"]] }
             ]
           }
         }
@@ -5341,7 +5347,7 @@
         status: "Challenge ready",
         statusTone: "neutral",
         activeTab: "Challenge",
-        account: "0x7c...42",
+        account: "0x88...fe",
         actor: "Challenger",
         kpis: [["Proposed result", "YES"], ["Your challenge", "NO"], ["Bond", "$250"]],
         blocks: [
@@ -5360,17 +5366,18 @@
             route: "/cases/1182",
             context: "Case #1182",
             section: "Case #1182",
-            title: "Independent review opened",
-            subtitle: "DemoThemis is selecting an independent panel.",
-            status: "Awaiting panel selection",
+            title: "Independent review funded",
+            subtitle: "The case and separate court quote are locked before the draw.",
+            status: "Court intake complete",
             statusTone: "neutral",
             activeTab: "Case",
-            account: "0x7c...42",
+            account: "0x88...fe",
             actor: "Challenger",
-            kpis: [["Case", "#1182"], ["Challenge", "NO"], ["Bond", "$250 locked"]],
+            kpis: [["Case", "#1182"], ["Panel plan", "15 seats"], ["Court quote", "Funded"]],
             blocks: [
-              { type: "record", title: "Case activity", value: "NO challenge accepted", caption: "Permanent case record", details: [["Case", "#1182"], ["Bond", "$250 locked"], ["Status", "Awaiting panel selection"], ["Transaction", "0xa842…1182"]] },
-              { type: "odds", title: "Live market odds", yes: 44, no: 56 }
+              { type: "record", title: "Court intake", value: "Case #1182 · Draw ready", caption: "Permanent case record", details: [["Rules", "Locked"], ["Value", "$118,000"], ["Panel", "15 seats"], ["Court quote", "Funded"]] },
+              { type: "table", title: "Separate funds", rows: [["Omen escrow", "$118,000", "locked"], ["Challenge bond", "$250", "locked"], ["Court quote", "Funded", "DemoThemis"]] },
+              { type: "odds", title: "Secondary trading live", yes: 44, no: 56 }
             ]
           }
         }
@@ -5383,10 +5390,10 @@
         actionOwner: "protocol",
         status: "Awaiting draw event",
         activeTab: "Activity",
-        kpis: [["Draws", "Pending"], ["Seats", "3"], ["Reroll", "No"]],
+        kpis: [["Draws", "Pending"], ["Seats", "15"], ["Reroll", "No"]],
         blocks: [
           { type: "beacon", title: "Randomness beacon", code: "0x8fd9...c41a + case #1182", note: "One public seed binds this panel." },
-          { type: "seats", title: "Panel slots", count: 3, on: 0 }
+          { type: "seats", title: "Panel slots", count: 15, on: 0 }
         ]
       },
       steps: [
@@ -5396,20 +5403,20 @@
           actionOwner: "protocol",
           target: "block",
           targetTitle: "Randomness beacon",
-          result: "3 jurors drawn",
+          result: "15 jurors drawn",
           after: {
-            title: "Three jurors drawn",
-            subtitle: "One public seed selected the complete panel for this case.",
+            title: "Fifteen jurors drawn",
+            subtitle: "One public seed selected all 15 seats.",
             status: "Panel selected",
             activeTab: "Activity",
             surface: "protocol",
             actor: "Network",
             actionOwner: "protocol",
-            kpis: [["Draws", "1"], ["Seats", "3"], ["Reroll", "No"]],
+            kpis: [["Draws", "1"], ["Seats", "15"], ["Reroll", "No"]],
             blocks: [
               { type: "beacon", title: "Randomness beacon", code: "0x8fd9...c41a + case #1182", note: "One roll is bound to this case." },
-              { type: "seats", title: "Drawn seats", count: 3, on: 3 },
-              { type: "faceChecks", title: "Presence checks", rows: [["Juror 04", "Ready"], ["Juror 09", "Ready"], ["Juror 12", "Pending"]] }
+              { type: "seats", title: "Drawn seats", count: 15, on: 15 },
+              { type: "faceChecks", title: "Eligibility and presence", rows: [["Juror 04", "Ready"], ["Juror 09", "Ready"], ["13 other seats", "Checking"]] }
             ]
           }
         },
@@ -5420,20 +5427,20 @@
           autoAdvance: true,
           autoDelay: 1500,
           target: "block",
-          targetTitle: "Presence checks",
-          result: "3 jurors present",
+          targetTitle: "Eligibility and presence",
+          result: "15 jurors present",
           after: {
-            title: "Three jurors verified",
-            subtitle: "Every drawn person passed a live presence check.",
+            title: "Fifteen jurors verified",
+            subtitle: "Conflict, standby, and presence checks passed.",
             status: "Presence checked",
             activeTab: "Presence",
             surface: "protocol",
             actor: "Network",
             actionOwner: "protocol",
-            kpis: [["Present", "3/3"], ["Draws", "1"], ["Reroll", "No"]],
+            kpis: [["Present", "15/15"], ["Draws", "1"], ["Reroll", "No"]],
             blocks: [
-              { type: "faceChecks", title: "Presence checks", rows: [["Juror 04", "Present"], ["Juror 09", "Present"], ["Juror 12", "Present"]] },
-              { type: "proof", title: "Bound panel", stamp: "3 of 3 present", result: "Three verified humans", note: "Seats are people, not token weight." }
+              { type: "faceChecks", title: "Presence checks", rows: [["Juror 04", "Present"], ["Juror 09", "Present"], ["13 other seats", "Present"]] },
+              { type: "proof", title: "Bound panel", stamp: "15 of 15 present", result: "15 verified humans", note: "Conflicted holders were deterministically replaced." }
             ]
           }
         }
@@ -5448,19 +5455,19 @@
           target: "block",
           targetTitle: "Encrypted ballot",
           result: "Encrypted ballot sealed",
-          toast: { title: "Ballot sealed", body: "Encrypted and submitted", detail: "Your selected outcome stays private" },
+          toast: { title: "Ballot sealed", body: "Encrypted and submitted", detail: "You may silently replace it until the deadline" },
           after: {
             route: "/cases/1182/ballot",
             section: "Private ballot",
             title: "Ballot sealed",
-            subtitle: "The workspace is locked; your selected outcome remains hidden.",
-            status: "Encrypted & submitted",
+            subtitle: "Hidden and replaceable until the deadline.",
+            status: "Encrypted & replaceable",
             activeTab: "Ballot",
             account: "Juror 04",
             kpis: [["Juror fee", "$92 pending"], ["Case", "#1182"], ["Ballot", "Submitted"]],
             blocks: [
-              { type: "proof", title: "Ballot box", stamp: "Encrypted & recorded", result: "Submission accepted", note: "The selected outcome is intentionally hidden." },
-              { type: "record", title: "Submission details", value: "Case #1182 · Confirmed", caption: "Permanent private record", details: [["Ballot contents", "Hidden"], ["Submission ID", "0x7d90…c118"], ["Juror fee", "$92 pending finality"], ["Reserve", "Locked until finality"]], note: "This record proves submission, never the vote choice." }
+              { type: "proof", title: "Ballot box", stamp: "Encrypted & recorded", result: "Accepted", note: "Replaceable until deadline." },
+              { type: "record", title: "Submission details", value: "Case #1182 · Confirmed", caption: "Private record", details: [["Ballot", "Hidden"], ["Re-keying", "Open until deadline"], ["Fee", "$92 pending"], ["Live reserve", "Protocol-fronted"]], note: "Proves participation, not the final vote." }
             ]
           }
         }
@@ -5471,14 +5478,14 @@
         surface: "protocol",
         actor: "Network",
         actionOwner: "protocol",
-        title: "Waiting for 3 ballots",
+        title: "Waiting for 15 ballots",
         subtitle: "The proof waits for every drawn seat.",
-        status: "Ballots 1/3",
+        status: "Ballots 1/15",
         activeTab: "Activity",
-        kpis: [["Ballots", "1/3"], ["Privacy", "Kept"]],
+        kpis: [["Ballots", "1/15"], ["Privacy", "Kept"]],
         blocks: [
-          { type: "route", title: "Ballot arrivals", steps: [["04", "Ballot", "received"], ["09", "Ballot", "pending"], ["12", "Ballot", "pending"]] },
-          { type: "proof", title: "Tally", result: "Locked", note: "Opens at 3/3.", verified: false }
+          { type: "route", title: "Ballot arrivals", steps: [["04", "Ballot", "received"], ["09", "Ballot", "pending"], ["+13", "Other seats", "pending"]] },
+          { type: "proof", title: "Tally", result: "Locked", note: "Opens at 15/15.", verified: false }
         ]
       },
       steps: [
@@ -5488,19 +5495,19 @@
           actionOwner: "protocol",
           target: "block",
           targetTitle: "Ballot arrivals",
-          result: "3/3 ballots received; aggregate proof posted",
+          result: "15/15 ballots received; aggregate proof posted",
           after: {
             title: "Aggregate proof posted",
-            subtitle: "3/3 ballots arrived; only the tally is public.",
+            subtitle: "15/15 ballots arrived; only the tally is public.",
             status: "Proof posted",
             activeTab: "Proof",
             surface: "protocol",
             actor: "Network",
             actionOwner: "protocol",
-            kpis: [["Ballots", "3/3"], ["Verdict", "NO"], ["Privacy", "Kept"]],
+            kpis: [["Ballots", "15/15"], ["Verdict", "NO"], ["Privacy", "Kept"]],
             blocks: [
-              { type: "proof", title: "Aggregate tally", result: "NO wins 2-1", note: "Ready to verify.", verified: false },
-              { type: "route", title: "Ballot arrivals", steps: [["04", "Ballot", "received"], ["09", "Ballot", "received"], ["12", "Ballot", "received"]] }
+              { type: "proof", title: "Aggregate tally", result: "NO wins 9-6", note: "Ready to verify.", verified: false },
+              { type: "route", title: "Ballot arrivals", steps: [["04", "Ballot", "received"], ["09", "Ballot", "received"], ["+13", "Other seats", "received"]] }
             ]
           }
         },
@@ -5515,7 +5522,7 @@
           result: "Aggregate proof verified",
           after: {
             title: "Proof verified",
-            subtitle: "NO 2-1 is valid; each ballot stays private.",
+            subtitle: "NO 9-6 is valid; each ballot stays private.",
             status: "Proof valid",
             activeTab: "Proof",
             surface: "protocol",
@@ -5523,15 +5530,15 @@
             actionOwner: "protocol",
             kpis: [["Verdict", "NO"], ["Proof", "Valid"], ["Privacy", "Kept"]],
             blocks: [
-              { type: "proof", title: "Verified verdict", stamp: "Proof verified", result: "NO wins 2-1", note: "Individual ballots remain private." },
-              { type: "table", title: "Case status", rows: [["Appeal window", "Open", "next"], ["Settlement", "Pending", "not paid"], ["Privacy", "Kept", "3 ballots"]] }
+              { type: "proof", title: "Verified verdict", stamp: "Proof verified", result: "NO wins 9-6", note: "Individual ballots remain private." },
+              { type: "table", title: "Case status", rows: [["Losing side", "YES", "may appeal"], ["Appeal window", "Open", "next"], ["Settlement", "Pending", "not paid"], ["Privacy", "Kept", "15 ballots"]] }
             ]
           }
         }
       ]
     },
     {
-      start: { surface: "themis", actor: "Appellant", actionOwner: "user", activeTab: "Checkout", account: "0x7c...42" },
+      start: { surface: "themis", actor: "Losing YES appellant", actionOwner: "user", activeTab: "Checkout", account: "0x51...9b" },
       steps: [
         {
           cue: "Tap Pay $31,000 appeal bond",
@@ -5548,14 +5555,14 @@
             product: "DemoThemis on-chain sequence",
             tabs: ["Activity", "Panel", "Proof"],
             title: "Appeal panel activity",
-            subtitle: "The payment opened a fresh 31-person panel; its independent ballots now arrive.",
+            subtitle: "Fresh draw passed eligibility and presence.",
             status: "Panel voting",
             activeTab: "Activity",
             user: "",
             kpis: [["Bond", "$31,000"], ["Panel", "31"], ["Status", "Voting"]],
             blocks: [
               { type: "seats", title: "Appeal panel", count: 31, on: 31 },
-              { type: "table", title: "Appeal bond", rows: [["Amount", "$31,000", "locked"], ["Case", "#1182", "open"], ["Transaction", "0xc31a…1182", "confirmed"]] }
+              { type: "table", title: "Appeal bond", rows: [["Payer", "0x51...9b", "losing YES side"], ["Amount", "$31,000", "locked"], ["Panel checks", "Fresh · conflict-free · 31/31", "passed"]] }
             ]
           }
         },
@@ -5580,7 +5587,8 @@
             kpis: [["Verdict", "NO 18-13"], ["Panel", "31"], ["Appeals", "Closed"]],
             blocks: [
               { type: "seats", title: "Appeal panel", count: 31, on: 31 },
-              { type: "proof", title: "Appeal proof", stamp: "Appeals closed", result: "NO wins 18-13", note: "The final proof is ready for settlement." }
+              { type: "proof", title: "Appeal proof", stamp: "Appeals closed", result: "NO wins 18-13", note: "The final proof is ready for settlement." },
+              { type: "table", title: "Failed appeal bond", rows: [["$31,000", "Juror reward pool", "routed"], ["YES appellant", "Not refunded", "appeal failed"]] }
             ]
           }
         }
@@ -5608,7 +5616,7 @@
           target: "block",
           targetTitle: "Final verdict",
           result: "Final proof verified by OmenMarketMaker",
-          toast: { title: "Settlement complete", body: "$210.50 payout received", detail: "Final result NO · Proof verified" },
+          toast: { title: "Settlement complete", body: "$206.29 market payout received", detail: "Final result NO · Bonds and fees routed" },
           after: {
             surface: "omen",
             actor: "Token holder",
@@ -5619,13 +5627,14 @@
             route: "/markets/england-euro-final/payout",
             section: "Settlement",
             title: "Settlement complete",
-            subtitle: "Your winning NO claims were paid after final settlement.",
+            subtitle: "Claims, bonds, fees, and the court invoice are settled.",
             status: "Paid",
             activeTab: "Payout",
             account: "0x7c...42",
-            kpis: [["Result", "NO"], ["Payout", "$210.50"], ["Market", "Closed"]],
+            kpis: [["Result", "NO"], ["Net payout", "$206.29"], ["Market", "Closed"]],
             blocks: [
-              { type: "settlement", title: "Settlement complete", label: "Payout received", value: "$210.50", delta: "210.5 winning NO claims", status: "Paid", open: true, details: [["Destination", "0x7c...42"], ["Transaction", "0xf190…c42a"], ["Final result", "NO"], ["Case", "#1182"], ["Proof", "0x9b31…18ff"], ["Market", "Closed"]] }
+              { type: "settlement", title: "Market payout", label: "Net payout received", value: "$206.29", delta: "$210.50 gross − $4.21 Omen fee", status: "Paid", open: true, details: [["Destination", "0x7c...42"], ["Gross redemption", "$210.50"], ["OmenMarketMaker fee (2%)", "$4.21"], ["Transaction", "0xf190…c42a"], ["Final result", "NO"], ["Market", "Closed"]] },
+              { type: "table", title: "Bonds and court funding", rows: [["Successful challenger 0x88...fe", "$250 returned + $250 reward", "paid"], ["Failed YES appeal", "$31,000 to juror reward pool", "routed"], ["DemoThemis work quote", "Paid separately by OmenMarketMaker", "settled"]] }
             ]
           }
         }
@@ -5634,23 +5643,23 @@
   ];
 
   var CONTROL_COACH_COPY = {
-    "Publish market": "Lock the resolve condition and funded opening offers, then publish the market page.",
-    "Buy YES": "Fill a YES trade from the ticket. More YES demand pushes the price up.",
-    "Buy NO": "Switch sides and buy NO. Opposing flow pulls the price back.",
-    "Take 70c offer": "Take the maker's posted price before any next-best liquidity is used.",
+    "Publish market": "Lock the resolve condition and first stake, then publish the market page.",
+    "Buy YES": "Add a YES pool stake. More YES demand pushes the price up and earns an early-weight bonus.",
+    "Buy NO": "Add a NO pool stake. Opposing flow pulls the shared-pool price back.",
+    "Take 58c offer": "Take the better standing offer before the remaining size enters the pool.",
     "Claim wallet tokens": "Move eligible YES and NO balances into wallet-held claims.",
     "Invite Bob": "Send the room invite before either side locks funds.",
     "Accept & fund room": "Accept the fixed terms and lock both sides' stakes in neutral escrow.",
-    "Place $100 parlay": "Submit the two-leg order; the automatic route fills every leg or changes nothing.",
-    "Route both legs atomically": "Show the router filling both legs together and minting one parlay claim.",
-    "Accept $128 cashout": "Accept the live quote; both legs sell atomically or neither does.",
-    "Complete atomic cashout": "Show both legs selling together before $128 returns to the connected wallet.",
-    "Confirm and post YES": "Confirm YES and lock the $250 bond for the 24-hour challenge period.",
+    "Place $100 parlay": "Submit the parlay for competing solver quotes and full maximum-payout backing.",
+    "Complete solver-backed placement": "Show the winning solver locking $336 before one tradeable receipt is minted.",
+    "Accept $128 cashout": "Accept the best live solver bid for the single parlay receipt.",
+    "Complete receipt cashout": "Transfer the receipt to the winning solver before $128 returns to the wallet.",
+    "Confirm and post YES": "Confirm YES and lock the $250 bond for the one-week challenge period.",
     "Submit NO challenge · $250": "Lock the $250 challenge bond and submit NO for independent review.",
-    "Bound draw": "Show the public seed selecting one bound panel for this case.",
-    "Presence checks": "Show each drawn person's independent live-presence verification.",
-    "Seal ballot": "Submit an encrypted ballot without creating a transferable receipt.",
-    "Aggregate proof publication": "Wait for all three encrypted ballots, then publish only the aggregate tally.",
+    "Bound draw": "Show the public seed selecting one bound 15-seat panel for this case.",
+    "Presence checks": "Show conflicts, capability, standbys, and live presence resolving for every seat.",
+    "Seal ballot": "Submit an encrypted ballot that remains silently replaceable until the deadline.",
+    "Aggregate proof publication": "Wait for all 15 encrypted ballots, then publish only the aggregate tally.",
     "Aggregate proof verification": "Verify the public aggregate without exposing individual ballots.",
     "Pay $31,000 appeal bond": "Pay the required bond to open the 31-juror appeal.",
     "31-juror vote": "Show the larger panel reaching its independent aggregate verdict.",
@@ -5835,13 +5844,13 @@
       svg += gauge(520, 282, 140, "NO share", 1 - item.yes, "no-fill", hot1);
     } else if (index === 2) {
       svg += person(78, 130, "maker", "accent", hot0);
-      svg += node(174, 91, 150, 94, "70c offer", "locked price", "accent", hot0);
+      svg += node(174, 91, 150, 94, "58c offer", "beats 62c pool", "accent", hot0);
       svg += person(395, 130, "buyer", "good", hot0);
-      svg += node(528, 91, 132, 94, "Liquidity", "best next", "soft", hot1);
+      svg += node(528, 91, 132, 94, "Live pool", "62c overflow", "soft", hot1);
       svg += flow(104, 130, 174, 134, "accent", hot0);
       svg += flow(324, 134, 374, 132, "good", hot0);
       svg += flow(421, 132, 528, 134, "accent", hot1);
-      svg += chip(207, 218, "YES 70c", "accent", hot0);
+      svg += chip(207, 218, "YES 58c", "accent", hot0);
       svg += chip(535, 218, "leftover", "soft", hot1);
     } else if (index === 3) {
       svg += node(58, 96, 126, 96, "Market", "alive + deep", "accent", hot0);
@@ -5906,7 +5915,7 @@
       svg += node(54, 104, 126, 84, "Beacon", "public random", "accent", hot0);
       svg += node(268, 90, 140, 112, "Draw wheel", "one roll", "soft", hot0);
       svg += flow(180, 145, 268, 146, "accent", hot0);
-      svg += seats(500, 94, 16, hot1 || hot0);
+      svg += seats(500, 94, 15, hot1 || hot0);
       svg += flow(408, 146, 500, 145, "good", hot0);
       svg += node(470, 220, 188, 52, "Face proofs", "drawn humans present", "good", hot1);
       svg += flow(575, 188, 575, 220, "good", hot1);
@@ -5934,7 +5943,7 @@
       svg += person(82, 142, "losing side", "bad", hot0);
       svg += node(190, 96, 136, 92, "Appeal floor", "pay rung", "bad", hot0);
       svg += node(386, 74, 112, 140, "Ladder", "finite climb", "accent", hot0);
-      svg += seats(560, 90, 32, hot1);
+      svg += seats(560, 90, 31, hot1);
       svg += flow(108, 142, 190, 142, "bad", hot0);
       svg += flow(326, 142, 386, 143, "accent", hot0);
       svg += flow(498, 143, 560, 143, "good", hot1);
@@ -6839,7 +6848,7 @@
   var PAGE_CHROME = {
     "create-market": { context: "Public market", user: "0x7c...42" },
     "live-market": { context: "EURO-FINAL", user: "0x7c...42" },
-    "order-book": { context: "Order book", user: "0x7c...42" },
+    "order-book": { context: "Standing offers", user: "0x7c...42" },
     "wallet-unlock": { context: "Portfolio", user: "0x7c...42" },
     "private-room": { context: "Private room", user: "0x7c...42" },
     "parlay-slip": { context: "Parlay builder", user: "0x7c...42" },
@@ -7528,14 +7537,14 @@
       return {
         key: "omen",
         icon: "route",
-        title: "OmenMarketMaker automatic execution",
+        title: "OmenMarketMaker solver execution",
         stateLabel: "Execution state",
         factsLabel: "Current execution facts",
         recordsLabel: "Execution records",
-        traceLabel: "Automatic execution sequence",
-        ownerLabel: "Router",
-        badges: [["", "Automatic"], ["receipts", "All or none"]],
-        legend: [["", "Execution step"], ["receipt", "Record"], ["pending", "Queued state"]]
+        traceLabel: "Solver execution sequence",
+        ownerLabel: "Solver network",
+        badges: [["", "Competitive bids"], ["receipts", "Fully backed"]],
+        legend: [["", "Solver step"], ["receipt", "Receipt"], ["pending", "Queued state"]]
       };
     }
     return {
