@@ -795,6 +795,48 @@
   .block-checkout .checkout-row.winner { box-shadow: inset 3px 0 0 var(--accent); }
   .block-closed .live-card-title span,
   .block-proof .live-card-title span { color: var(--good); }
+  .block-fill { overflow: hidden; border-color: color-mix(in srgb, var(--good) 34%, var(--line)); background: linear-gradient(145deg, color-mix(in srgb, var(--good-soft) 30%, var(--surface)), var(--surface) 64%); }
+  .best-fill { display: grid; gap: .56rem; min-width: 0; }
+  .fill-request { display: flex; align-items: center; justify-content: space-between; gap: .75rem; border: 1px solid color-mix(in srgb, var(--accent) 34%, var(--line)); border-radius: 12px; background: var(--accent-soft); padding: .58rem .64rem; }
+  .fill-request span { color: var(--muted); font-size: .66rem; font-weight: 850; letter-spacing: .07em; text-transform: uppercase; }
+  .fill-request b { color: var(--accent-ink); font-size: 1rem; line-height: 1.05; text-align: right; }
+  .fill-source-list { display: grid; gap: .34rem; }
+  .fill-source { display: grid; grid-template-columns: auto minmax(0, 1fr) auto; align-items: center; gap: .52rem; border: 1px solid var(--line); border-radius: 11px; background: var(--bg); padding: .48rem .54rem; min-width: 0; }
+  .fill-source.is-order { border-color: color-mix(in srgb, var(--good) 48%, var(--line)); background: color-mix(in srgb, var(--good-soft) 58%, var(--bg)); }
+  .fill-source.is-pool { border-color: color-mix(in srgb, var(--accent) 42%, var(--line)); background: color-mix(in srgb, var(--accent-soft) 56%, var(--bg)); }
+  .fill-source.is-unused { opacity: .6; }
+  .fill-rank { display: grid; place-items: center; width: 1.55rem; height: 1.55rem; border-radius: 50%; background: var(--surface); color: var(--muted); font-size: .68rem; font-weight: 950; box-shadow: inset 0 0 0 1px var(--line); }
+  .fill-source.is-order .fill-rank { background: var(--good); color: #fff; box-shadow: 0 0 0 3px color-mix(in srgb, var(--good) 14%, transparent); }
+  .fill-source-copy { display: grid; gap: .08rem; min-width: 0; }
+  .fill-source-copy b { color: var(--ink); font-size: .76rem; line-height: 1.12; }
+  .fill-source-copy span { color: var(--muted); font-size: .64rem; line-height: 1.2; }
+  .fill-source-price { display: grid; justify-items: end; gap: .06rem; color: var(--ink); text-align: right; }
+  .fill-source-price b { font-size: .9rem; }
+  .fill-source-price span { color: var(--muted); font-size: .6rem; font-weight: 800; }
+  .fill-route { display: flex; min-height: 1.35rem; overflow: hidden; border: 1px solid var(--line); border-radius: 999px; background: var(--bg); }
+  .fill-segment { display: flex; align-items: center; justify-content: center; min-width: 0; padding: .22rem .35rem; color: #fff; font-size: .62rem; font-weight: 950; white-space: nowrap; }
+  .fill-segment.is-order { background: var(--good); }
+  .fill-segment.is-pool { background: var(--accent); }
+  .fill-math { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: .34rem; }
+  .fill-math-item { display: flex; align-items: baseline; justify-content: space-between; gap: .45rem; border-top: 1px solid var(--line); padding-top: .34rem; color: var(--muted); font-size: .65rem; }
+  .fill-math-item b { color: var(--ink); font-size: .72rem; text-align: right; }
+  .fill-total { display: flex; align-items: baseline; justify-content: space-between; gap: .7rem; border-top: 1px solid color-mix(in srgb, var(--good) 42%, var(--line)); padding-top: .48rem; color: var(--muted); font-size: .72rem; font-weight: 800; }
+  .fill-total b { color: var(--ink); font-size: 1rem; }
+  .block-utilities { border-color: color-mix(in srgb, var(--accent) 30%, var(--line)); background: linear-gradient(145deg, color-mix(in srgb, var(--accent-soft) 25%, var(--surface)), var(--surface)); }
+  .token-utility-grid { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: .4rem; }
+  .token-utility { display: grid; align-content: start; gap: .18rem; min-width: 0; border: 1px solid var(--line); border-radius: 11px; background: var(--bg); padding: .52rem; }
+  .token-utility.is-interest { border-color: color-mix(in srgb, var(--good) 42%, var(--line)); background: color-mix(in srgb, var(--good-soft) 46%, var(--bg)); }
+  .token-utility strong { color: var(--ink); font-size: .73rem; line-height: 1.15; }
+  .token-utility span { color: var(--muted); font-size: .64rem; line-height: 1.28; }
+  .utility-eyebrow { color: var(--faint); font-size: .56rem; font-weight: 900; letter-spacing: .07em; text-transform: uppercase; }
+  .capital-layer-grid { display: grid; gap: .38rem; }
+  .capital-layer { display: grid; grid-template-columns: minmax(7.5rem, .78fr) minmax(0, 1.22fr); gap: .52rem; border: 1px solid var(--line); border-radius: 11px; background: var(--bg); padding: .5rem .54rem; }
+  .capital-layer.is-protected { border-color: color-mix(in srgb, var(--good) 40%, var(--line)); background: color-mix(in srgb, var(--good-soft) 44%, var(--bg)); }
+  .capital-layer.is-risk { border-color: color-mix(in srgb, var(--bad) 28%, var(--line)); background: color-mix(in srgb, var(--bad-soft) 32%, var(--bg)); }
+  .capital-role { display: grid; align-content: start; gap: .12rem; }
+  .capital-role span { color: var(--faint); font-size: .56rem; font-weight: 900; letter-spacing: .07em; text-transform: uppercase; }
+  .capital-role b { color: var(--ink); font-size: .72rem; line-height: 1.16; }
+  .capital-detail { color: var(--muted); font-size: .64rem; line-height: 1.3; }
   .token-wallet { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: .46rem; }
   .wallet-token { border: 1px solid var(--line); border-radius: 13px; background: var(--bg); padding: .64rem; min-width: 0; }
   .wallet-token.good { background: var(--good-soft); border-color: color-mix(in srgb, var(--good) 36%, var(--line)); }
@@ -903,6 +945,7 @@
   .product-demo.sim-tight .big-odds,
   .product-demo.sim-tight .side-picker,
   .product-demo.sim-tight .app-ballot { grid-template-columns: 1fr; }
+  .product-demo.sim-tight .capital-layer { grid-template-columns: 1fr; gap: .18rem; }
   .product-demo.sim-tight .live-card,
   .product-demo.sim-tight .live-head,
   .product-demo.sim-tight .trade-ticket,
@@ -1019,6 +1062,11 @@
   .product-demo.sim-ultra .app-row { display: flex; gap: .28rem; padding-top: .24rem; font-size: .62rem; }
   .product-demo.sim-ultra .app-row b { text-align: right; font-size: .66rem; }
   .product-demo.sim-ultra .app-note { font-size: .64rem; line-height: 1.2; }
+  .product-demo.sim-ultra .fill-source { grid-template-columns: auto minmax(0, 1fr); }
+  .product-demo.sim-ultra .fill-source-price { grid-column: 2; justify-items: start; text-align: left; }
+  .product-demo.sim-ultra .fill-math,
+  .product-demo.sim-ultra .token-utility-grid { grid-template-columns: 1fr; }
+  .product-demo.sim-ultra .capital-layer { grid-template-columns: 1fr; gap: .16rem; }
   .product-demo.sim-ultra .app-value { font-size: .82rem; }
   .product-demo.sim-ultra .app-route-step { grid-template-columns: 1.05rem minmax(0, 1fr) auto; gap: .24rem; font-size: .62rem; }
   .product-demo.sim-ultra .app-route-step i { width: 1.05rem; height: 1.05rem; font-size: .54rem; }
@@ -2325,7 +2373,7 @@
   .product-mode-panel[data-product-mode] .product-demo :is(
     .page-create-market .block-fields,
     .page-live-market .block-odds,
-    .page-order-book .block-table,
+    .page-order-book .block-fill,
     .page-wallet-unlock :is(.block-checklist, .block-tokens),
     .page-private-room .block-participants,
     .page-parlay-slip .block-legs,
@@ -2342,7 +2390,7 @@
   .product-mode-panel[data-product-mode] .product-demo :is(
     .page-create-market .block-fields,
     .page-live-market .block-odds,
-    .page-order-book .block-table,
+    .page-order-book .block-fill,
     .page-wallet-unlock :is(.block-checklist, .block-tokens),
     .page-private-room .block-participants,
     .page-parlay-slip .block-legs,
@@ -2861,11 +2909,11 @@
                 <h3>Market features unlocked</h3>
                 <div class="unlock-grid" id="featureGrid">
                   <div class="unlock" data-feature="instant"><b>Instant market <span class="tag">locked</span></b><small>Open a valid question with funded YES, NO, or two-sided liquidity.</small></div>
-                  <div class="unlock" data-feature="fixed"><b>Fixed odds <span class="tag">locked</span></b><small>Post a side at named odds; later bettors fill the locked price first.</small></div>
-                  <div class="unlock" data-feature="tokens"><b>Self-custody tokens <span class="tag">locked</span></b><small>Liquid markets become ERC-20 YES and NO claims in user wallets.</small></div>
+                  <div class="unlock" data-feature="fixed"><b>Posted orders <span class="tag">locked</span></b><small>Lock a quantity at a named price; the contract compares it with the pool and fills the cheapest liquidity first.</small></div>
+                  <div class="unlock" data-feature="tokens"><b>Self-custody tokens <span class="tag">locked</span></b><small>Wallet-held YES and NO can be held, sold, lent for interest, or used as collateral.</small></div>
                   <div class="unlock" data-feature="private"><b>Private markets <span class="tag">locked</span></b><small>Invite-only rooms get neutral escrow and third-party arbitration.</small></div>
                   <div class="unlock" data-feature="trade"><b>Trading during resolution <span class="tag">locked</span></b><small>Tokenized claims keep moving while the jury and any funded appeal run.</small></div>
-                  <div class="unlock" data-feature="parlay"><b>Peer-to-peer parlays <span class="tag">locked</span></b><small>Market-token routing gives parlays without turning the protocol into a bookie.</small></div>
+                  <div class="unlock" data-feature="parlay"><b>Peer-to-peer parlays <span class="tag">locked</span></b><small>Protected lenders, junior risk capital, and competing solvers create fully backed parlays without a house.</small></div>
                 </div>
               </div>
 
@@ -3009,31 +3057,31 @@
       actions: ["Buy YES", "Buy NO"]
     },
     {
-      title: "Fixed odds appear",
-      sub: "A maker posts a real price.",
-      mission: "Take the better fixed offer",
-      text: "A maker escrows YES at 58 cents while the live pool is 62 cents. The buyer gets that better offer first, then extra size routes into the pool. Private-room markets use the same fixed-odds primitive.",
+      title: "The best price fills first",
+      sub: "One order can use two liquidity sources.",
+      mission: "Buy at the best available prices",
+      text: "A trader has posted 500 YES at 58 cents, backed by locked claims. Your 740-YES order takes all 500 at that cheaper price, then buys the remaining 240 from the live pool at 62 cents. A higher 64-cent order is not used.",
       nodes: ["open", "pool", "fixed"],
       features: ["instant", "fixed"],
       components: ["escrow"],
-      tokens: ["58c YES offer", "Pool overflow"],
+      tokens: ["500 YES at 58c", "240 YES from the pool"],
       pot: 7600,
       yes: .68,
-      claims: "Named-price offer",
-      trade: "best price across offer and pool",
+      claims: "Locked posted order",
+      trade: "cheapest available liquidity first",
       court: "No dispute yet",
       panel: "no dispute yet",
       keys: 0,
       fees: 152,
       loop: ["cases", "fees"],
-      log: "A posted offer becomes the first piece of market structure.",
-      actions: ["Take 58c offer"]
+      log: "The contract compares posted orders with the pool and fills the cheapest available liquidity first.",
+      actions: ["Buy 740 YES at best prices"]
     },
     {
       title: "The market graduates",
       sub: "Claims become ERC-20s.",
-      mission: "Pass the robustness lock",
-      text: "The market has real disagreement, a standing maker, and enough time alive. It graduates into plain ERC-20 YES and NO tokens held by users, not by the website.",
+      mission: "Move the new tokens into your wallet",
+      text: "The market has real disagreement, enough posted-order depth, and enough time active. It graduates into plain ERC-20 YES and NO tokens held by users, not by the website.",
       nodes: ["open", "pool", "fixed", "robust", "tokens"],
       features: ["instant", "fixed", "tokens"],
       components: ["escrow"],
@@ -3041,14 +3089,14 @@
       pot: 42000,
       yes: .57,
       claims: "Wallet YES/NO tokens",
-      trade: "move, sell, lend, or collateralize",
+      trade: "hold, sell, lend for interest, or use as collateral",
       court: "No dispute yet",
       panel: "no dispute yet",
       keys: 0,
       fees: 840,
       loop: ["cases", "fees"],
-      log: "The claim becomes something a user can move, lend, route, or post as collateral.",
-      actions: ["Claim wallet tokens"]
+      log: "The claim becomes a wallet asset the user can hold, sell, lend for borrowing interest, or use as collateral.",
+      actions: ["Move claims to my wallet"]
     },
     {
       title: "Optional private room",
@@ -3075,7 +3123,7 @@
       title: "Optional parlay",
       sub: "A separate multi-market path.",
       mission: "Choose a solver quote",
-      text: "The run briefly previews a parlay across two tokenized markets. Solvers compete on a fixed quote and lock the full maximum payout before one tradeable receipt is minted.",
+      text: "The run briefly previews a parlay across two tokenized markets. Solvers compete on a fixed quote and lock the full maximum payout before one tradeable receipt is minted. Protected token lenders earn borrowing interest; separate junior vault capital earns the parlay spread while accepting correlation risk.",
       nodes: ["open", "pool", "fixed", "robust", "tokens", "parlay"],
       features: ["instant", "fixed", "tokens", "private", "parlay"],
       components: ["escrow"],
@@ -3258,29 +3306,29 @@
       body: "Both sides add money to a shared pool. The YES and NO ratio becomes the visible price, so the market recruits its own opposition as the odds move.",
       change: "Odds become visible",
       why: "The pot is now large enough to show a real YES/NO split.",
-      next: "Fixed odds offer",
+      next: "Best-price routing",
       tone: "market",
       results: ["YES flow pushes the price dial upward and makes NO cheaper.", "NO flow pushes back, which is how the pool finds opposition.", "The current odds become the simplest public summary of disagreement."]
     },
     {
       lane: "Market",
-      title: "Fixed odds offer",
-      body: "A maker posts YES at 58c, better than the live 62c pool price. The buyer fills the better offer first, then any extra size enters the pool.",
-      change: "58c YES offer",
-      why: "The app compares standing offers with the pool and uses the better price.",
+      title: "Best-price routing",
+      body: "A trader posts a sell order for 500 YES at 58c. A 740-YES purchase fills that cheaper order first, then buys the remaining 240 from the live 62c pool. A 64c order is skipped.",
+      change: "740 YES across two sources",
+      why: "The contract compares posted orders with the pool and automatically uses the cheapest available liquidity.",
       next: "Robustness lock",
       tone: "market",
-      results: ["The posted 58c price fills first; any extra size routes automatically into the pool."]
+      results: ["500 YES fill from the posted 58c sell order.", "The remaining 240 YES come from the 62c pool.", "The 64c order remains untouched because it is more expensive."]
     },
     {
       lane: "Claims",
       title: "YES/NO ERC-20s",
-      body: "The market has enough disagreement, maker depth, and time alive to graduate. Claims become plain wallet-held YES and NO tokens.",
+      body: "The market has enough disagreement, posted-order depth, and time active to graduate. Claims become plain wallet-held YES and NO tokens.",
       change: "Self-custody claims",
       why: "The website no longer needs to hold the user's position.",
       next: "Private room",
       tone: "claim",
-      results: ["The robustness gates light up and mint wallet-held YES/NO tokens.", "The order book opens because claims can now move outside the page."]
+      results: ["The robustness gates light up and mint wallet-held YES/NO tokens.", "The user can hold, sell, lend for borrowing interest, or use the tokens as collateral.", "Posting a sell order remains separate from lending for interest."]
     },
     {
       lane: "Market",
@@ -3295,12 +3343,12 @@
     {
       lane: "Claims",
       title: "Optional parlay",
-      body: "As a second side path, permissionless solvers quote a parlay across tokenized markets and lock its maximum payout before execution.",
+      body: "As a second side path, protected token lenders earn borrowing interest, junior vaults earn the parlay spread while accepting correlation risk, and permissionless solvers compete to quote the bundle.",
       change: "Fully backed receipt",
       why: "Solver competition creates familiar betting UX without protocol balance-sheet risk.",
       next: "Funded court request",
       tone: "claim",
-      results: ["The best solver locks the full payout and mints one tradeable receipt.", "Cash-out runs a new auction for that receipt."]
+      results: ["Protected token lending remains separate from junior parlay risk capital.", "The best solver locks the full payout and mints one tradeable receipt.", "Cash-out runs a new auction for that receipt."]
     },
     {
       lane: "Arbitration",
@@ -3390,18 +3438,18 @@
       notice: "The ratio of money on each side becomes the public price; there is no house quote."
     },
     {
-      label: "Posted price",
-      headline: "Take the better fixed offer first.",
-      look: "The standing offer is 58c while the pool is 62c, so the comparison is visible before you act.",
-      use: "Take the 58c offer; any remaining size routes into the pool.",
-      notice: "Standing offers are escrowed before tokenization; the wallet order book opens after graduation."
+      label: "Best-price routing",
+      headline: "See exactly where every YES comes from.",
+      look: "Your 740-YES order is split visibly: 500 at the posted 58c price, then 240 from the 62c pool. The higher 64c order is skipped.",
+      use: "Buy 740 YES at the best available prices.",
+      notice: "The seller locks claims to guarantee the posted price. Locking an order does not earn interest."
     },
     {
       label: "Wallet claims",
       headline: "See the market graduate into tokens.",
       look: "This is now a wallet view: the robustness checks passed and YES/NO assets exist.",
-      use: "Claim once; the wallet order book opens with the assets ready.",
-      notice: "The user holds portable claims instead of a website-only balance."
+      use: "Move the claims once, then compare holding, selling, lending, and collateral.",
+      notice: "Lending can earn borrowing interest; posting a sell order cannot."
     },
     {
       label: "Private wager",
@@ -3856,14 +3904,14 @@
       actor: "Invited counterparties", money: "Matched stakes lock; unmatched offers wait", condition: "An invited party accepts the terms", next: "Trade until the written close"
     },
     {
-      id: "price-formation", phase: "build", order: 3, title: "Public pool prices and offers",
-      short: "Crowd odds move with both sides; better fixed prices fill before overflow joins the pool.", routes: ["dispute"], sim: [1, 2],
-      detail: "Crowd stakes move the pool price while standing fixed-odds offers promise a named price to later traders.",
+      id: "price-formation", phase: "build", order: 3, title: "Public pool and posted orders find the price",
+      short: "Crowd odds move with both sides; cheaper posted orders fill before the pool supplies any remainder.", routes: ["dispute"], sim: [1, 2],
+      detail: "Crowd stakes move the pool price while locked posted orders guarantee a named price and quantity. The contract uses the cheapest available source first.",
       actor: "Traders", money: "Filled stakes remain in escrow", condition: "The market is open", next: "Test whether the market is robust enough to graduate"
     },
     {
       id: "robustness-gate", phase: "build", order: 4, kind: "decision", title: "Is the public pool robust?",
-      short: "Disagreement, maker depth, and enough time must all clear the graduation gate.", routes: ["dispute"], sim: [],
+      short: "Disagreement, posted-order depth, and enough time must all clear the graduation gate.", routes: ["dispute"], sim: [],
       detail: "Graduation combines a disagreement floor, usable depth, and a time lock so wallet claims open only after durable price discovery.",
       actor: "Protocol checks objective thresholds", money: "Still fully backed in escrow", condition: "While the market is live", next: "Stay pooled or mint transferable YES and NO claims"
     },
@@ -3876,14 +3924,14 @@
     {
       id: "tokenized-claims", phase: "build", order: 5, group: "claim-form", branch: "Token · main", title: "Wallet claims go live",
       short: "Fully backed YES and NO claims become transferable in user wallets.", routes: ["dispute"], sim: [3],
-      detail: "Graduation changes the product form, not the backing. Mint, burn, conservation, and dust rules make each token a transferable claim on locked collateral.",
-      actor: "Protocol mints; users self-custody", money: "Collateral stays locked behind the claims", condition: "Every robustness check passes", next: "Order-book trading, optional parlays, then close"
+      detail: "Graduation changes the product form, not the backing. Each token becomes a transferable claim that can be held, sold, lent for interest, or used as collateral.",
+      actor: "Protocol mints; users self-custody", money: "Collateral stays locked behind the claims", condition: "Every robustness check passes", next: "Trading, optional lending, optional parlays, then close"
     },
     {
       id: "parlay-route", phase: "build", order: 6, kind: "optional", branch: "Optional side route", title: "Solver quotes a parlay",
       short: "Competing solvers quote the bundle; the winner must back its maximum payout.", routes: [], sim: [5],
-      detail: "A parlay branches from robust tokenized markets rather than becoming the next state of each leg.",
-      actor: "Trader and solver network", money: "No parlay executes before full backing", condition: "A fully funded quote wins", next: "Mint one tradeable parlay receipt"
+      detail: "A parlay branches from robust tokenized markets. Protected lenders earn borrowing interest, separate junior vaults earn spread for accepting correlation risk, and solvers compete to price the bundle.",
+      actor: "Trader, protected lenders, junior vaults, and solver network", money: "Lending protection and junior risk stay separate; no parlay executes before full backing", condition: "A fully funded quote wins", next: "Mint one tradeable parlay receipt"
     },
     {
       id: "parlay-position", phase: "build", order: 7, kind: "optional", title: "Tradeable parlay receipt",
@@ -4785,16 +4833,16 @@
       chips: [["YES pushes up", "good"], ["NO pushes back", "bad"], ["Odds become legible", "accent"]]
     },
     {
-      actor: { title: "Posted offer", sub: "beats the pool", icon: "person", tone: "accent", mark: "58C" },
-      core: { title: "Fixed offer", sub: "YES locked at 58c", icon: "ticket", tone: "accent", mark: "FIX" },
-      result: { title: "Best fill first", sub: "remainder enters pool", icon: "pool", tone: "good", mark: "FILL" },
-      chips: [["Posted odds", "accent"], ["Real backing", "accent"], ["Remainder protected", "good"]]
+      actor: { title: "Posted sell order", sub: "500 YES at 58c", icon: "person", tone: "accent", mark: "58C" },
+      core: { title: "Best-price routing", sub: "cheapest liquidity first", icon: "ticket", tone: "accent", mark: "BEST" },
+      result: { title: "740 YES filled", sub: "500 order + 240 pool", icon: "pool", tone: "good", mark: "FILL" },
+      chips: [["Order locked", "accent"], ["Pool second", "accent"], ["64c untouched", "good"]]
     },
     {
       actor: { title: "Robust market", sub: "depth + time + disagreement", icon: "market", tone: "good", mark: "PASS" },
       core: { title: "Token mint", sub: "claims leave the website", icon: "tokens", tone: "accent", mark: "ERC" },
       result: { title: "Wallet market", sub: "YES/NO move anywhere", icon: "book", tone: "good", mark: "BOOK" },
-      chips: [["Self custody", "accent"], ["Portable claims", "good"], ["Order book", "good"]]
+      chips: [["Self custody", "accent"], ["Lend for interest", "good"], ["Use as collateral", "good"]]
     },
     {
       actor: { title: "Invite", sub: "private counterparties", icon: "room", tone: "accent", mark: "ROOM" },
@@ -4806,7 +4854,7 @@
       actor: { title: "Solver auction", sub: "competing fixed quotes", icon: "tokens", tone: "good", mark: "BID" },
       core: { title: "Payout escrow", sub: "full maximum return locked", icon: "vault", tone: "accent", mark: "$336" },
       result: { title: "Parlay receipt", sub: "one tradeable claim", icon: "ticket", tone: "good", mark: "PAR" },
-      chips: [["Best quote", "accent"], ["Fully backed", "good"], ["Receipt cashout", "good"]]
+      chips: [["Best quote", "accent"], ["Protected lending", "good"], ["Junior risk spread", "bad"]]
     },
     {
       actor: { title: "Result happens", sub: "the real event is over", icon: "clock", tone: "accent", mark: "NOW" },
@@ -4894,14 +4942,13 @@
       tabs: ["Offers", "Ticket", "Pool"],
       activeTab: "Offers",
       route: "/m/england-euro-final/offers",
-      section: "Fixed odds",
-      title: "Standing offer: YES at 58c",
-      subtitle: "The app compares the escrowed offer with the live 62c pool price.",
-      status: "Offer live",
-      kpis: [["Offer", "58c"], ["Pool", "62c"], ["Est. spend", "$438.80"]],
+      section: "Best-price routing",
+      title: "Buy 740 YES at the best available prices",
+      subtitle: "The cheaper posted order fills first; the live pool supplies only the remainder.",
+      status: "Ready to buy",
+      kpis: [["Quantity", "740 YES"], ["Average", "59.30c"], ["Total", "$438.80"]],
       blocks: [
-        { type: "table", title: "Standing offers", hot: 0, rows: [["YES 58c", "500 shares", "maker"], ["Live pool", "62c", "next"], ["YES 64c", "240 shares", "worse"]] },
-        { type: "ticket", title: "Estimated fill", hot: 0, rows: [["Quantity", "740 YES"], ["Standing offer", "500 at 58c"], ["Pool overflow", "240 at 62c"], ["Estimated average", "59.30c"], ["Estimated fee", "$0.00"]], summaryLabel: "Estimated cost", summaryValue: "$438.80" }
+        { type: "fill", title: "How your order will fill", hot: 0, help: "The contract compares every available posted order with the live pool and uses the cheapest prices first.", requestLabel: "Your order", request: "Buy 740 YES", sources: [["Posted sell order", "500 YES available", "58\u00a2", "order", "Fills first because it is cheapest", "The seller locked 500 YES claims so this posted price is guaranteed while the order remains available. Locking an order does not earn interest."], ["Live pool", "240 YES needed", "62\u00a2", "pool", "Supplies the remaining amount", "After the cheaper posted order is exhausted, the contract buys the remaining 240 YES from the pool."], ["Higher posted order", "Not used", "64\u00a2", "unused", "Skipped because it costs more", "The contract does not use this order because the live pool offers the required remainder for less."]], segments: [["500 at 58\u00a2", 67.57, "order"], ["240 at 62\u00a2", 32.43, "pool"]], routeLabel: "500 YES from the posted order followed by 240 YES from the pool", math: [["Posted order", "500 x 58\u00a2 = $290.00"], ["Pool remainder", "240 x 62\u00a2 = $148.80"], ["Average price", "59.30\u00a2 per YES"], ["Trading fee", "$0.00"]], totalLabel: "Estimated total", totalValue: "$438.80", note: "One tap, two liquidity sources. Price priority is automatic." }
       ]
     },
     {
@@ -4911,13 +4958,13 @@
       activeTab: "Assets",
       route: "/portfolio/assets",
       section: "Wallet assets",
-      title: "Eligible to claim",
-      subtitle: "Move your YES and NO position to the connected wallet.",
+      title: "Ready for your wallet",
+      subtitle: "Move your YES and NO claims into self-custody, then choose how to use them.",
       status: "Eligible to claim",
       kpis: [["Wallet", "0x7c...42"], ["YES", "820.6"], ["NO", "210.5"]],
       blocks: [
         { type: "tokens", title: "Your position", hot: 0, tokens: [["YES claim", "820.6 YES", "good"], ["NO claim", "210.5 NO", "bad"]] },
-        { type: "table", title: "Why eligible", rows: [["Disagreement floor", "Met", "✓"], ["Maker depth", "Met", "✓"], ["24-hour lock", "Complete", "✓"]] }
+        { type: "table", title: "Why eligible", rows: [["Real disagreement", "Met", "✓"], ["Posted-order depth", "Met", "✓"], ["Time active", "Complete", "✓"]] }
       ]
     },
     {
@@ -4951,7 +4998,7 @@
       kpis: [["Legs", "2"], ["Stake", "$100"], ["Max return", "$336"]],
       blocks: [
         { type: "legs", title: "Bet slip", hot: 0, legs: [["England wins", "YES 62c"], ["Rain tomorrow", "YES 48c"]], payout: "$100 stake · Max return $336 (3.36x)" },
-        { type: "table", title: "Solver quote", rows: [["Competing solvers", "3", "live"], ["Full payout escrow", "$336", "required"], ["Receipt", "One tradeable claim", "on fill"]] }
+        { type: "capital", title: "Who supplies capital and what they earn", help: "Token lending, junior risk capital, and solver quoting are separate roles.", items: [["Protected lending", "YES/NO token lenders", "Earn borrowing interest while maximum-value collateral protects the token's original outcome payoff.", "protected", "This is the yield-bearing token feature. It is separate from posting a sell order in the market."], ["Risk capital", "Junior vault depositors", "Earn the parlay spread and knowingly absorb correlation risk between the selected outcomes.", "risk", "Junior capital earns directly from parlay activity because it accepts the risk protected lenders do not."], ["Price competition", "Solvers", "Compete to quote the whole parlay. The winner must lock the full $336 maximum payout before execution.", "", "Solvers price and execute the bundle; they are not described as market makers."]], note: "No role is silently treated as a market maker, and no payout can execute without full backing." }
       ]
     },
     {
@@ -5143,20 +5190,20 @@
       start: { activeTab: "Offers", account: "0x7c...42", actor: "Trader" },
       steps: [
         {
-          cue: "Tap Take 58c offer",
+          cue: "Tap Buy 740 YES at best prices",
           target: "block",
-          targetTitle: "Estimated fill",
-          result: "Best prices filled in order",
-          toast: { title: "Order filled", body: "740 YES · 59.30¢ average", detail: "The better offer filled before pool overflow" },
+          targetTitle: "How your order will fill",
+          result: "Cheapest available liquidity filled first",
+          toast: { title: "740 YES purchased", body: "500 at 58¢ + 240 at 62¢", detail: "Average price 59.30¢ · Total $438.80" },
           after: {
-            title: "740 YES shares filled",
-            subtitle: "The standing offer filled first; the rest entered the live pool.",
+            title: "740 YES purchased at the best available prices",
+            subtitle: "The cheaper posted order filled first; the pool supplied the remaining 240 YES.",
             status: "Order filled",
             activeTab: "Offers",
             kpis: [["Shares", "740"], ["Avg. price", "59.30c"], ["Balance", "$171.20"]],
             blocks: [
-              { type: "table", title: "Best execution", rows: [["YES 58c offer", "500 filled", "done"], ["Live pool 62c", "240 filled", "done"], ["YES 64c offer", "untouched", "worse"]] },
-              { type: "record", title: "Fill details", value: "740 YES · $438.80", caption: "Permanent trade record", details: [["Price detail", "500 @ 58c + 240 @ 62c pool"], ["Average price", "59.30c"], ["Fee", "$0.00"], ["Order", "PM-YES-740"]] }
+              { type: "fill", title: "Best-price fill complete", requestLabel: "Purchased", request: "740 YES", sources: [["Posted sell order", "500 YES purchased", "58¢", "order", "$290.00 · filled first", "The seller's locked claims guaranteed this price. Posting the order did not earn interest."], ["Live pool", "240 YES purchased", "62¢", "pool", "$148.80 · filled second", "The pool supplied only the amount left after the cheaper posted order was exhausted."], ["Higher posted order", "Not used", "64¢", "unused", "Skipped because it cost more", "The 64-cent order remained untouched because the pool supplied the remainder for 62 cents."]], segments: [["500 at 58¢", 67.57, "order"], ["240 at 62¢", 32.43, "pool"]], routeLabel: "Completed fill: 500 YES from the posted order and 240 YES from the pool", math: [["Posted order", "500 x 58¢ = $290.00"], ["Pool remainder", "240 x 62¢ = $148.80"], ["Average price", "59.30¢ per YES"], ["Trading fee", "$0.00"]], totalLabel: "Total paid", totalValue: "$438.80", note: "The 64¢ order was not used because a cheaper source was available." },
+              { type: "record", title: "Trade record", value: "PM-YES-740", caption: "Transaction and proof details", details: [["Quantity", "740 YES"], ["Average price", "59.30c"], ["Total", "$438.80"], ["Fee", "$0.00"]] }
             ]
           }
         }
@@ -5165,34 +5212,33 @@
     {
       start: {
         route: "/portfolio/claims",
-        title: "Eligible to claim",
-        subtitle: "Claim 820.6 YES and 210.5 NO to your connected wallet.",
+        title: "Ready for your wallet",
+        subtitle: "Move 820.6 YES and 210.5 NO into self-custody.",
         status: "Eligible to claim",
         activeTab: "Assets",
         kpis: [["Wallet", "0x7c...42"], ["YES", "820.6"], ["NO", "210.5"]],
         blocks: [
           { type: "tokens", title: "Your position", tokens: [["YES claim", "820.6 YES", "good"], ["NO claim", "210.5 NO", "bad"]] },
-          { type: "table", title: "Why eligible", rows: [["Disagreement floor", "Met", "✓"], ["Maker depth", "Met", "✓"], ["24-hour lock", "Complete", "✓"]] }
+          { type: "table", title: "Why eligible", rows: [["Real disagreement", "Met", "✓"], ["Posted-order depth", "Met", "✓"], ["Time active", "Complete", "✓"]] }
         ]
       },
       steps: [
         {
-          cue: "Tap Claim wallet tokens",
+          cue: "Tap Move claims to my wallet",
           target: "block",
           targetTitle: "Your position",
-          result: "Wallet tokens claimed",
-          toast: { title: "Claims moved to wallet", body: "820.6 YES + 210.5 NO", detail: "Self-custody is live on World Chain" },
+          result: "YES and NO tokens moved into self-custody",
+          toast: { title: "Tokens are in your wallet", body: "820.6 YES + 210.5 NO", detail: "Hold, sell, lend, or use them as collateral" },
           after: {
-            route: "/portfolio/book",
-            title: "Wallet order book",
-            subtitle: "Your claimed assets are ready to trade from the connected wallet.",
+            route: "/portfolio/assets",
+            title: "Your YES and NO tokens are in your wallet",
+            subtitle: "Holding, selling, lending, and collateral are separate choices.",
             status: "Self-custody live",
-            activeTab: "Book",
-            kpis: [["Wallet", "0x7c...42"], ["Book", "Open"], ["Custody", "Self-held"]],
+            activeTab: "Assets",
+            kpis: [["Wallet", "0x7c...42"], ["Tokens", "2"], ["Custody", "Self-held"]],
             blocks: [
               { type: "tokens", title: "Wallet assets", tokens: [["YES token", "820.6 YES", "good"], ["NO token", "210.5 NO", "bad"]] },
-              { type: "table", title: "Order book", rows: [["Sell YES", "61c", "8,400 YES"], ["Buy NO", "39c", "6,100 NO"], ["Sell NO", "41c", "2,250 NO"]] },
-              { type: "record", title: "Claim transaction", value: "Confirmed · World Chain", caption: "Permanent wallet record", details: [["Assets", "820.6 YES · 210.5 NO"], ["To", "0x7c...42"], ["Transaction", "0x8f...c1"], ["Confirmed", "14 Jul 2024 · 20:43 UTC"]] }
+              { type: "utilities", title: "What these tokens can do", help: "Each action is optional and uses a different mechanism.", items: [["Hold", "Wait for resolution", "A winning token redeems under the market's final ruling.", "", "Holding does not place an order or lend the token."], ["Trade", "Sell through the order book", "Exit whenever a buyer is available at a price you accept.", "", "A sell order locks the amount offered so the posted price can be honoured. It does not earn interest."], ["Earn interest", "Lend YES or NO", "Borrowers post maximum-value collateral; the interest rate varies with borrowing demand.", "interest", "This is the yield-bearing token feature. Lending is separate from posting a market order."], ["Collateral", "Borrow against the token", "Lock the token behind a separate loan or strategy without selling the outcome claim.", "", "Collateral use has its own terms and risks; it is not part of best-price order routing."]], note: "Posting a sell order does not earn interest. Lending is a separate, optional use of wallet tokens." }
             ]
           }
         }
@@ -5746,8 +5792,8 @@
     "Publish market": "Lock the resolve condition and first stake, then publish the market page.",
     "Buy YES": "Add a YES pool stake. More YES demand pushes the price up and earns an early-weight bonus.",
     "Buy NO": "Add a NO pool stake. Opposing flow pulls the shared-pool price back.",
-    "Take 58c offer": "Take the better standing offer before the remaining size enters the pool.",
-    "Claim wallet tokens": "Move eligible YES and NO balances into wallet-held claims.",
+    "Buy 740 YES at best prices": "Buy 500 YES from the cheaper posted sell order, then buy the remaining 240 from the live pool.",
+    "Move claims to my wallet": "Move eligible YES and NO claims into self-custody, where they can be held, sold, lent, or used as collateral.",
     "Invite Bob": "Send the room invite before either side locks funds.",
     "Accept & fund room": "Accept the fixed terms and lock both sides' stakes in neutral escrow.",
     "Place $100 parlay": "Submit the parlay for competing solver quotes and full maximum-payout backing.",
@@ -5941,19 +5987,19 @@
       svg += gauge(520, 246, 140, "YES share", item.yes, "yes-fill", hot0 || hot2);
       svg += gauge(520, 282, 140, "NO share", 1 - item.yes, "no-fill", hot1);
     } else if (index === 2) {
-      svg += person(78, 130, "maker", "accent", hot0);
-      svg += node(174, 91, 150, 94, "58c offer", "beats 62c pool", "accent", hot0);
+      svg += person(78, 130, "seller", "accent", hot0);
+      svg += node(174, 91, 150, 94, "500 @ 58c", "posted sell order", "accent", hot0);
       svg += person(395, 130, "buyer", "good", hot0);
-      svg += node(528, 91, 132, 94, "Live pool", "62c overflow", "soft", hot1);
+      svg += node(528, 91, 132, 94, "Live pool", "240 YES at 62c", "soft", hot1);
       svg += flow(104, 130, 174, 134, "accent", hot0);
       svg += flow(324, 134, 374, 132, "good", hot0);
       svg += flow(421, 132, 528, 134, "accent", hot1);
       svg += chip(207, 218, "YES 58c", "accent", hot0);
-      svg += chip(535, 218, "leftover", "soft", hot1);
+      svg += chip(535, 218, "remainder", "soft", hot1);
     } else if (index === 3) {
       svg += node(58, 96, 126, 96, "Market", "alive + deep", "accent", hot0);
       svg += node(236, 70, 120, 54, "Disagree", "both sides", "good", hot0);
-      svg += node(236, 138, 120, 54, "Maker depth", "standing bid", "good", hot0);
+      svg += node(236, 138, 120, 54, "Order depth", "posted liquidity", "good", hot0);
       svg += node(236, 206, 120, 54, "Time alive", "not a flash", "good", hot0);
       svg += node(438, 82, 112, 72, "YES token", "wallet held", "good", hot0 || hot1);
       svg += node(438, 176, 112, 72, "NO token", "wallet held", "bad", hot0 || hot1);
@@ -6943,7 +6989,7 @@
   var PAGE_CHROME = {
     "create-market": { context: "Public market", user: "0x7c...42" },
     "live-market": { context: "EURO-FINAL", user: "0x7c...42" },
-    "order-book": { context: "Standing offers", user: "0x7c...42" },
+    "order-book": { context: "Best-price routing", user: "0x7c...42" },
     "wallet-unlock": { context: "Portfolio", user: "0x7c...42" },
     "private-room": { context: "Private room", user: "0x7c...42" },
     "parlay-slip": { context: "Parlay builder", user: "0x7c...42" },
@@ -6969,6 +7015,9 @@
     settlement: "Settlement",
     odds: "Market",
     ticket: "Ticket",
+    fill: "Best-price fill",
+    utilities: "Token uses",
+    capital: "Capital layers",
     table: "List",
     route: "Route",
     tokens: "Wallet",
@@ -7001,6 +7050,9 @@
     settlement: "wallet-cards",
     odds: "chart-no-axes-combined",
     ticket: "ticket",
+    fill: "route",
+    utilities: "wallet-cards",
+    capital: "waypoints",
     table: "list-checks",
     route: "route",
     tokens: "wallet-cards",
@@ -7175,6 +7227,9 @@
     odds: 5,
     table: 7,
     ticket: 7,
+    fill: 9,
+    utilities: 7,
+    capital: 7,
     route: 6,
     checklist: 7,
     tokens: 6,
@@ -7414,6 +7469,86 @@
       odds.appendChild(yes);
       odds.appendChild(no);
       card.appendChild(odds);
+    } else if (type === "fill") {
+      var fill = makeEl("div", "best-fill");
+      var fillRequest = makeEl("div", "fill-request");
+      fillRequest.appendChild(makeEl("span", "", block.requestLabel || "Your order"));
+      fillRequest.appendChild(makeEl("b", "", block.request || ""));
+      fill.appendChild(fillRequest);
+
+      var sourceList = makeEl("div", "fill-source-list");
+      (block.sources || []).forEach(function (source, sourceIndex) {
+        var tone = source[3] || "";
+        var sourceRow = makeEl("div", "fill-source" + (tone ? " is-" + tone : ""));
+        sourceRow.appendChild(makeEl("span", "fill-rank", tone === "unused" ? "\u2014" : String(sourceIndex + 1)));
+        var sourceCopy = makeEl("div", "fill-source-copy");
+        sourceCopy.appendChild(makeEl("b", "", source[0]));
+        sourceCopy.appendChild(makeEl("span", "", source[4] || ""));
+        sourceRow.appendChild(sourceCopy);
+        var sourcePrice = makeEl("div", "fill-source-price");
+        sourcePrice.appendChild(makeEl("b", "", source[2]));
+        sourcePrice.appendChild(makeEl("span", "", source[1]));
+        sourceRow.appendChild(sourcePrice);
+        if (source[5]) tagInfo(sourceRow, source[5], true);
+        sourceList.appendChild(sourceRow);
+      });
+      fill.appendChild(sourceList);
+
+      if ((block.segments || []).length) {
+        var fillRoute = makeEl("div", "fill-route");
+        fillRoute.setAttribute("aria-label", block.routeLabel || "Order allocation");
+        (block.segments || []).forEach(function (segment) {
+          var fillSegment = makeEl("span", "fill-segment is-" + (segment[2] || "order"), segment[0]);
+          fillSegment.style.flexBasis = String(segment[1] || 0) + "%";
+          fillRoute.appendChild(fillSegment);
+        });
+        fill.appendChild(fillRoute);
+      }
+
+      if ((block.math || []).length) {
+        var fillMath = makeEl("div", "fill-math");
+        (block.math || []).forEach(function (calculation) {
+          var mathItem = makeEl("div", "fill-math-item");
+          mathItem.appendChild(makeEl("span", "", calculation[0]));
+          mathItem.appendChild(makeEl("b", "", calculation[1]));
+          fillMath.appendChild(mathItem);
+        });
+        fill.appendChild(fillMath);
+      }
+      if (block.totalLabel && block.totalValue) {
+        var fillTotal = makeEl("div", "fill-total");
+        fillTotal.appendChild(makeEl("span", "", block.totalLabel));
+        fillTotal.appendChild(makeEl("b", "", block.totalValue));
+        fill.appendChild(fillTotal);
+      }
+      if (block.note) fill.appendChild(makeEl("div", "app-note", block.note));
+      card.appendChild(fill);
+    } else if (type === "utilities") {
+      var utilityGrid = makeEl("div", "token-utility-grid");
+      (block.items || []).forEach(function (utility) {
+        var utilityItem = makeEl("div", "token-utility" + (utility[3] ? " is-" + utility[3] : ""));
+        utilityItem.appendChild(makeEl("span", "utility-eyebrow", utility[0]));
+        utilityItem.appendChild(makeEl("strong", "", utility[1]));
+        utilityItem.appendChild(makeEl("span", "", utility[2]));
+        if (utility[4]) tagInfo(utilityItem, utility[4], true);
+        utilityGrid.appendChild(utilityItem);
+      });
+      card.appendChild(utilityGrid);
+      if (block.note) card.appendChild(makeEl("div", "app-note", block.note));
+    } else if (type === "capital") {
+      var capitalGrid = makeEl("div", "capital-layer-grid");
+      (block.items || []).forEach(function (layer) {
+        var capitalItem = makeEl("div", "capital-layer" + (layer[3] ? " is-" + layer[3] : ""));
+        var capitalRole = makeEl("div", "capital-role");
+        capitalRole.appendChild(makeEl("span", "", layer[0]));
+        capitalRole.appendChild(makeEl("b", "", layer[1]));
+        capitalItem.appendChild(capitalRole);
+        capitalItem.appendChild(makeEl("div", "capital-detail", layer[2]));
+        if (layer[4]) tagInfo(capitalItem, layer[4], true);
+        capitalGrid.appendChild(capitalItem);
+      });
+      card.appendChild(capitalGrid);
+      if (block.note) card.appendChild(makeEl("div", "app-note", block.note));
     } else if (type === "ticket") {
       var ticket = makeEl("div", "trade-ticket");
       appendLiveRows(ticket, block.rows, block.title || "ticket");

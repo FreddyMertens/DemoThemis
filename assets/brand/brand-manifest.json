@@ -45,7 +45,7 @@
     },
     "OmenMarketMakerButtonIdle.png": {
       "sha256": "c121b68bf3d74f5319deac9854a2be642bd5c8acbe3518071155aa820e32574a",
-      "production_use": "Static Omen wordmark poster source only"
+      "production_use": "Legacy static poster fallback only"
     }
   }
 }

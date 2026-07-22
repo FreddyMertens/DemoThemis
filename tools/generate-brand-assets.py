@@ -136,9 +136,45 @@ def draw_omen_grid(draw: ImageDraw.ImageDraw, box: tuple[int, int, int, int], st
         draw.line((x0, y, x1, y), fill=(4, 226, 109, 52), width=2)
 
 
+def draw_dt_underline(card: Image.Image, box: tuple[int, int, int, int]) -> None:
+    """Rasterize the canonical tapered DemoThemis emission underline."""
+    x0, y0, x1, y1 = box
+    width = max(1, x1 - x0)
+    height = max(1, y1 - y0)
+    glow = Image.new("RGBA", (width, height), (0, 0, 0, 0))
+    glow_pixels = glow.load()
+    center_x = (width - 1) / 2
+    center_y = (height - 1) / 2
+
+    for x in range(width):
+        edge_fade = max(0.0, 1.0 - abs(x - center_x) / max(1.0, center_x))
+        edge_fade = edge_fade ** 0.62
+        tapered_half_height = 1.0 + edge_fade * (height * 0.34)
+        for y in range(height):
+            distance = abs(y - center_y)
+            if distance > tapered_half_height:
+                continue
+            vertical_fade = max(0.0, 1.0 - distance / max(1.0, tapered_half_height))
+            alpha = round(96 * edge_fade * vertical_fade)
+            glow_pixels[x, y] = (0, 229, 255, alpha)
+
+    glow = glow.filter(ImageFilter.GaussianBlur(radius=2.2))
+    card.alpha_composite(glow, (x0, y0))
+
+    core = Image.new("RGBA", (width, 2), (0, 0, 0, 0))
+    core_pixels = core.load()
+    for x in range(width):
+        edge_fade = max(0.0, 1.0 - abs(x - center_x) / max(1.0, center_x))
+        alpha = round(235 * (edge_fade ** 0.58))
+        for y in range(2):
+            core_pixels[x, y] = (0, 229, 255, alpha)
+    card.alpha_composite(core, (x0, round((y0 + y1 - 2) / 2)))
+
+
 def social_demo(wordmark: Image.Image) -> Image.Image:
     card = Image.new("RGBA", (1200, 630), DT["canvas"])
     paste_contained(card, wordmark, (120, 190, 1080, 440))
+    draw_dt_underline(card, (120, 405, 1080, 423))
     return card
 
 
@@ -155,10 +191,11 @@ def social_shared(wordmark: Image.Image, poster: Image.Image) -> Image.Image:
     card = Image.new("RGBA", (1200, 630), DT["canvas"])
     draw = ImageDraw.Draw(card, "RGBA")
     draw.rectangle((600, 0, 1200, 630), fill=OMM["black"])
-    draw_omen_grid(draw, (760, 0, 1200, 630), 48)
+    draw_omen_grid(draw, (600, 0, 1200, 630), 48)
     draw.rectangle((593, 0, 607, 630), fill=OMM["green"])
     paste_contained(card, wordmark, (70, 205, 545, 420))
-    paste_contained(card, poster, (660, 190, 1140, 430))
+    draw_dt_underline(card, (70, 356, 545, 370))
+    paste_contained(card, poster, (625, 190, 1175, 430))
     return card
 
 
@@ -189,8 +226,14 @@ def build(source: Path) -> None:
     save_icon_family(dt_icon_source, dt_dir, DT["canvas"])
     save_icon_family(omm_icon_source, omm_dir, OMM["black"])
 
-    poster = omen_poster(omm_button_source)
-    poster.save(omm_dir / "wordmark-poster.png", optimize=True)
+    poster_path = omm_dir / "wordmark-poster.png"
+    if poster_path.is_file():
+        # The committed poster is the approved latest static fallback for the Rive wordmark.
+        # Preserve it instead of recreating the retired button-era lockup.
+        poster = Image.open(poster_path).convert("RGBA").copy()
+    else:
+        poster = omen_poster(omm_button_source)
+        poster.save(poster_path, optimize=True)
 
     wordmark = Image.open(dt_wordmark_source).convert("RGBA")
     social_demo(wordmark).convert("RGB").save(social_dir / "demothemis-1200x630.jpg", quality=88, optimize=True)
@@ -209,7 +252,7 @@ def build(source: Path) -> None:
             "DemoThemisFavicon.png": "DemoThemis icon master",
             "OmenMarketMakerLogo.riv": "OmenMarketMaker animated wordmark",
             "OmenMarketMakerFavicon.png": "OmenMarketMaker icon master",
-            "OmenMarketMakerButtonIdle.png": "Static Omen wordmark poster source only",
+            "OmenMarketMakerButtonIdle.png": "Legacy static poster fallback only",
         }.items()
     }
     manifest = {
@@ -219,7 +262,9 @@ def build(source: Path) -> None:
         "palette": {"demothemis": DT, "omenmarketmaker": OMM},
         "masters": approved,
     }
-    (OUTPUT / "brand-manifest.json").write_text(json.dumps(manifest, indent=2) + "\n", encoding="utf-8")
+    manifest_path = OUTPUT / "brand-manifest.json"
+    with manifest_path.open("w", encoding="utf-8", newline="\n") as handle:
+        handle.write(json.dumps(manifest, indent=2) + "\n")
 
 
 def main() -> None:

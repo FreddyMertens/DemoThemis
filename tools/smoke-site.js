@@ -2790,6 +2790,9 @@ function checkBrandSystem(failures) {
   assert(/Image\.new\([^\n]*DT\["canvas"\]/i.test(socialDemo) && !/Image\.new\([^\n]*DT\["ink"\]/i.test(socialDemo), "DemoThemis social card generator must begin on ivory", failures);
   assert(!/rounded_rectangle/i.test(socialDemo), "DemoThemis social card must not wrap the full wordmark in a decorative rectangle", failures);
   assert(/Image\.new\([^\n]*DT\["canvas"\]/i.test(socialShared) && /OMM\["black"\]/i.test(socialShared), "shared social card must keep the DemoThemis half ivory and the Omen half black", failures);
+  assert(/draw_dt_underline\(card,\s*\(70,\s*356,\s*545,\s*370\)\)/i.test(socialShared), "shared social card must include the canonical DemoThemis cyan underline", failures);
+  assert(/draw_omen_grid\(draw,\s*\(600,\s*0,\s*1200,\s*630\)/i.test(socialShared), "shared social card must carry the OmenMarketMaker mesh across its entire half", failures);
+  assert(/poster_path\.is_file\(\)[\s\S]*?retired button-era lockup[\s\S]*?Image\.open\(poster_path\)/i.test(generator), "brand generation must preserve the approved current static OmenMarketMaker wordmark instead of rebuilding the legacy button crop", failures);
 
   const previewServer = fs.readFileSync(path.join(root, "tools", "preview-mvp.js"), "utf8");
   assert(/relative\s*\|\|\s*["']index\.html["']/i.test(previewServer), "local preview server must resolve its root to the proposal homepage", failures);
