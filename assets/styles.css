@@ -457,6 +457,15 @@ figcaption b { color: var(--muted); font-weight: 600; }
 @media (max-width: 640px) { .products { grid-template-columns: 1fr; } }
 
 /* homepage product comparison */
+.home-intro .dek {
+  margin-bottom: .5rem;
+}
+.content > section.home-products {
+  margin-top: 0;
+}
+.home-products .product-pair {
+  margin-top: .75rem;
+}
 .product-pair {
   width: min(58rem, calc(100vw - 3rem));
   margin: 2rem 50%;
@@ -2302,6 +2311,16 @@ body[data-page-brand="demothemis"] :is(
 }
 
 /* The homepage DemoThemis product panel is a teaching surface, not a giant button. */
+@property --dt-card-rim-angle {
+  syntax: "<angle>";
+  inherits: false;
+  initial-value: 0deg;
+}
+
+@keyframes dt-card-rim-orbit {
+  to { --dt-card-rim-angle: 360deg; }
+}
+
 body[data-page-brand="neutral"] .product-pair .product[data-brand="demothemis"] {
   border: 1px solid rgba(var(--dt-emission-rgb), .34);
   box-shadow: 0 0 0 1px rgba(var(--dt-emission-rgb), .08), 0 0 4px rgba(var(--dt-emission-rgb), .035);
@@ -2310,6 +2329,44 @@ body[data-page-brand="neutral"] .product-pair .product[data-brand="demothemis"] 
 
 body[data-page-brand="neutral"] .product-pair .product[data-brand="demothemis"]::before {
   display: none;
+}
+
+body[data-page-brand="neutral"] .product-pair .product[data-brand="demothemis"]::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  z-index: 4;
+  padding: 1.5px;
+  border-radius: inherit;
+  background: conic-gradient(
+    from var(--dt-card-rim-angle),
+    transparent 0deg 112deg,
+    rgba(var(--dt-emission-rgb), .04) 126deg,
+    rgba(var(--dt-emission-rgb), .28) 146deg,
+    rgba(var(--dt-emission-rgb), .9) 166deg,
+    rgba(224, 252, 255, .98) 171deg,
+    rgba(var(--dt-emission-rgb), .18) 178deg,
+    transparent 180deg 292deg,
+    rgba(var(--dt-emission-rgb), .04) 306deg,
+    rgba(var(--dt-emission-rgb), .28) 326deg,
+    rgba(var(--dt-emission-rgb), .9) 346deg,
+    rgba(224, 252, 255, .98) 351deg,
+    rgba(var(--dt-emission-rgb), .18) 358deg,
+    transparent 360deg
+  );
+  -webkit-mask:
+    linear-gradient(#000 0 0) content-box,
+    linear-gradient(#000 0 0);
+  -webkit-mask-composite: xor;
+  mask:
+    linear-gradient(#000 0 0) content-box,
+    linear-gradient(#000 0 0);
+  mask-composite: exclude;
+  opacity: .72;
+  filter: drop-shadow(0 0 3px rgba(var(--dt-emission-rgb), .42));
+  pointer-events: none;
+  animation: dt-card-rim-orbit 7.5s linear infinite;
+  transition: opacity 180ms ease, filter 180ms ease;
 }
 
 body[data-page-brand="neutral"] .product-pair .product[data-brand="demothemis"] .pk {
@@ -2343,6 +2400,11 @@ body[data-page-brand="neutral"] .product-pair .product[data-brand="demothemis"] 
     box-shadow: 0 0 0 1px rgba(var(--dt-emission-rgb), .68), 0 0 12px rgba(var(--dt-emission-rgb), .25);
   }
 
+  body[data-page-brand="neutral"] .product-pair .product[data-brand="demothemis"]:hover::after {
+    opacity: 1;
+    filter: drop-shadow(0 0 5px rgba(var(--dt-emission-rgb), .72));
+  }
+
   body[data-page-brand="neutral"] .product-pair .product[data-brand="demothemis"] .product-summary-label:hover {
     text-decoration-color: var(--dt-emission);
     text-decoration-thickness: 2px;
@@ -2370,6 +2432,11 @@ body[data-page-brand="neutral"] .product-pair .product[data-brand="demothemis"] 
   body[data-page-brand="neutral"] .product-pair .product[data-brand="demothemis"],
   body[data-page-brand="neutral"] .product-pair .product[data-brand="demothemis"] :is(.product-summary-label, .product-logo-lockup img) {
     transition: none;
+  }
+
+  body[data-page-brand="neutral"] .product-pair .product[data-brand="demothemis"]::after {
+    animation: none;
+    opacity: .48;
   }
 
   body[data-page-brand="demothemis"] :is(button, summary, a, label.lock):active {
@@ -2483,6 +2550,202 @@ body[data-page-brand="neutral"] .map-card[data-brand="omen"]::after {
 body[data-page-brand="neutral"] .map-card[data-brand] > * {
   position: relative;
   z-index: 2;
+}
+
+body[data-page-brand="neutral"] .map-card[data-brand] :is(.stage, h3) {
+  padding-right: 2.8rem;
+}
+
+body[data-page-brand="neutral"] .map-card[data-brand] > .chapter-owner-coin {
+  --chapter-owner-rim: rgba(var(--dt-emission-rgb), .66);
+  --chapter-owner-glow: rgba(var(--dt-emission-rgb), .16);
+  position: absolute;
+  top: 1rem;
+  right: 1rem;
+  display: grid;
+  place-items: center;
+  box-sizing: border-box;
+  width: 2rem;
+  height: 2rem;
+  padding: 2px;
+  overflow: hidden;
+  border: 1px solid var(--chapter-owner-rim);
+  border-radius: 50%;
+  background: var(--dt-canvas);
+  box-shadow: 0 0 0 1px rgba(255, 255, 255, .2) inset, 0 0 6px var(--chapter-owner-glow);
+  transition: border-color 160ms ease, box-shadow 160ms ease, transform 160ms ease;
+}
+
+body[data-page-brand="neutral"] .map-card[data-brand="omen"] .chapter-owner-coin {
+  --chapter-owner-rim: rgba(4, 226, 109, .68);
+  --chapter-owner-glow: rgba(4, 226, 109, .18);
+  background: var(--omm-black);
+}
+
+body[data-page-brand="neutral"] .chapter-owner-coin img {
+  display: block;
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+  filter: none;
+}
+
+body[data-page-brand="neutral"] .chapter-owner-coin--shared {
+  --chapter-owner-coin-delay: 0s;
+  padding: 2px;
+  overflow: visible;
+  border: 1px solid transparent;
+  background:
+    linear-gradient(var(--surface), var(--surface)) padding-box,
+    conic-gradient(from 35deg, var(--omm-green) 0 48%, var(--dt-emission) 52% 98%, var(--omm-green) 100%) border-box;
+  box-shadow:
+    0 0 0 1px rgba(255, 255, 255, .24) inset,
+    0 0 7px rgba(4, 226, 109, .12),
+    0 0 7px rgba(var(--dt-emission-rgb), .12);
+  filter: none;
+  perspective: 10rem;
+  perspective-origin: 50% 46%;
+  transition: box-shadow 180ms ease, transform 180ms ease;
+}
+
+body[data-page-brand="neutral"] .map-card[href="bootstrap-loop.html"] .chapter-owner-coin--shared {
+  --chapter-owner-coin-delay: -3.33s;
+}
+
+body[data-page-brand="neutral"] .map-card[href="governance.html"] .chapter-owner-coin--shared {
+  --chapter-owner-coin-delay: -6.67s;
+}
+
+body[data-page-brand="neutral"] .chapter-owner-rotor {
+  position: relative;
+  display: block;
+  width: 100%;
+  height: 100%;
+  transform-style: preserve-3d;
+  transform-origin: 50% 50%;
+  will-change: transform;
+  animation: chapter-owner-coin-turn 10s linear infinite;
+  animation-delay: var(--chapter-owner-coin-delay);
+}
+
+body[data-page-brand="neutral"] .chapter-owner-rotor::before,
+body[data-page-brand="neutral"] .chapter-owner-rotor::after {
+  content: "";
+  position: absolute;
+  pointer-events: none;
+}
+
+body[data-page-brand="neutral"] .chapter-owner-rotor::before {
+  top: 2px;
+  bottom: 2px;
+  left: 50%;
+  width: 3px;
+  border: 1px solid rgba(230, 255, 249, .72);
+  border-radius: 999px;
+  background: linear-gradient(90deg, var(--omm-green), rgba(236, 255, 251, .98) 48%, var(--dt-emission));
+  box-shadow: -1px 0 3px rgba(4, 226, 109, .38), 1px 0 3px rgba(var(--dt-emission-rgb), .38);
+  opacity: .08;
+  transform: translateX(-50%) rotateY(90deg);
+  animation: chapter-owner-coin-edge 10s linear infinite;
+  animation-delay: var(--chapter-owner-coin-delay);
+}
+
+body[data-page-brand="neutral"] .chapter-owner-rotor::after {
+  inset: 1px;
+  border: 1px solid rgba(226, 255, 246, .46);
+  border-radius: 50%;
+  background:
+    linear-gradient(90deg, rgba(4, 226, 109, .78), rgba(218, 255, 247, .9) 32%, rgba(123, 151, 143, .88) 51%, rgba(var(--dt-emission-rgb), .8));
+  box-shadow: 0 0 3px rgba(4, 226, 109, .18), 0 0 3px rgba(var(--dt-emission-rgb), .18);
+  transform: translateZ(0);
+}
+
+body[data-page-brand="neutral"] .chapter-owner-coin--shared .chapter-owner-face {
+  --chapter-owner-rim: rgba(4, 226, 109, .72);
+  --chapter-owner-glow: rgba(4, 226, 109, .18);
+  position: absolute;
+  inset: 0;
+  display: grid;
+  place-items: center;
+  box-sizing: border-box;
+  width: 100%;
+  height: 100%;
+  padding: 1px;
+  overflow: hidden;
+  border: 1px solid var(--chapter-owner-rim);
+  border-radius: 50%;
+  background: var(--omm-black);
+  box-shadow:
+    0 0 0 1px rgba(255, 255, 255, .2) inset,
+    0 1px 2px rgba(255, 255, 255, .12) inset,
+    0 0 5px var(--chapter-owner-glow);
+  transform: translateZ(1.45px);
+  visibility: visible;
+  backface-visibility: hidden;
+  animation: chapter-owner-coin-front-face 10s linear infinite;
+  animation-delay: var(--chapter-owner-coin-delay);
+  transition: border-color 160ms ease, box-shadow 160ms ease;
+}
+
+body[data-page-brand="neutral"] .chapter-owner-coin--shared .chapter-owner-face::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  border-radius: inherit;
+  background: linear-gradient(112deg, rgba(255, 255, 255, .24), transparent 34% 68%, rgba(255, 255, 255, .08));
+  pointer-events: none;
+}
+
+body[data-page-brand="neutral"] .chapter-owner-coin--shared .chapter-owner-face + .chapter-owner-face {
+  --chapter-owner-rim: rgba(var(--dt-emission-rgb), .72);
+  --chapter-owner-glow: rgba(var(--dt-emission-rgb), .18);
+  background: var(--dt-canvas);
+  transform: rotateY(180deg) translateZ(1.45px);
+  visibility: hidden;
+  animation-name: chapter-owner-coin-back-face;
+}
+
+@keyframes chapter-owner-coin-turn {
+  from { transform: rotateY(0deg); }
+  to { transform: rotateY(360deg); }
+}
+
+@keyframes chapter-owner-coin-edge {
+  0%, 15%, 35%, 65%, 85%, 100% { opacity: .08; }
+  22%, 28%, 72%, 78% { opacity: 1; }
+}
+
+@keyframes chapter-owner-coin-front-face {
+  0%, 24.99% { visibility: visible; }
+  25%, 74.99% { visibility: hidden; }
+  75%, 100% { visibility: visible; }
+}
+
+@keyframes chapter-owner-coin-back-face {
+  0%, 24.99% { visibility: hidden; }
+  25%, 74.99% { visibility: visible; }
+  75%, 100% { visibility: hidden; }
+}
+
+@media (hover: hover) and (pointer: fine) {
+  body[data-page-brand="neutral"] .map-card[data-brand]:hover .chapter-owner-coin:not(.chapter-owner-coin--shared) {
+    border-color: color-mix(in srgb, var(--chapter-owner-rim) 82%, #fff);
+    box-shadow: 0 0 0 1px rgba(255, 255, 255, .24) inset, 0 0 10px var(--chapter-owner-glow);
+    transform: translateY(-1px) scale(1.05);
+  }
+
+  body[data-page-brand="neutral"] .map-card[data-brand]:hover .chapter-owner-face {
+    border-color: color-mix(in srgb, var(--chapter-owner-rim) 82%, #fff);
+    box-shadow: 0 0 0 1px rgba(255, 255, 255, .24) inset, 0 0 10px var(--chapter-owner-glow);
+  }
+
+  body[data-page-brand="neutral"] .map-card[data-brand]:hover .chapter-owner-coin--shared {
+    box-shadow:
+      0 0 0 1px rgba(255, 255, 255, .3) inset,
+      0 0 10px rgba(4, 226, 109, .2),
+      0 0 10px rgba(var(--dt-emission-rgb), .2);
+    transform: translateY(-1px) scale(1.03);
+  }
 }
 
 body[data-page-brand="neutral"] .map-card[data-brand="demothemis"] .stage {
@@ -2647,6 +2910,32 @@ body[data-page-brand="neutral"] .map-card[data-brand="demothemis"] {
     --chapter-rim-angle: 35deg;
     animation: none;
   }
+
+  body[data-page-brand="neutral"] .chapter-owner-coin--shared {
+    transform: none;
+  }
+
+  body[data-page-brand="neutral"] .chapter-owner-rotor,
+  body[data-page-brand="neutral"] .chapter-owner-rotor::before,
+  body[data-page-brand="neutral"] .chapter-owner-coin--shared .chapter-owner-face {
+    animation: none;
+  }
+
+  body[data-page-brand="neutral"] .chapter-owner-rotor::before {
+    opacity: 0;
+  }
+
+  body[data-page-brand="neutral"] .chapter-owner-rotor {
+    transform: rotateY(-10deg);
+  }
+
+  body[data-page-brand="neutral"] .chapter-owner-coin--shared .chapter-owner-face {
+    visibility: visible;
+  }
+
+  body[data-page-brand="neutral"] .chapter-owner-coin--shared .chapter-owner-face + .chapter-owner-face {
+    visibility: hidden;
+  }
 }
 
 @media (forced-colors: active) {
@@ -2660,7 +2949,8 @@ body[data-page-brand="neutral"] .map-card[data-brand="demothemis"] {
   }
 
   body[data-page-brand="neutral"] .map-card[data-brand]::before,
-  body[data-page-brand="neutral"] .map-card[data-brand]::after {
+  body[data-page-brand="neutral"] .map-card[data-brand]::after,
+  body[data-page-brand="neutral"] .chapter-owner-coin {
     display: none;
   }
 }
@@ -2675,7 +2965,8 @@ body[data-page-brand="neutral"] .map-card[data-brand="demothemis"] {
   }
 
   body[data-page-brand="neutral"] .map-card[data-brand]::before,
-  body[data-page-brand="neutral"] .map-card[data-brand]::after {
+  body[data-page-brand="neutral"] .map-card[data-brand]::after,
+  body[data-page-brand="neutral"] .chapter-owner-coin {
     display: none;
   }
 }

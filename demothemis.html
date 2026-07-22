@@ -5,8 +5,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>DemoThemis: the most ambitious human infrastructure ever made</title>
 <meta name="description" content="The simple explanation and full mechanics of DemoThemis: a bullet proof, unbuyable verified-human court for any well-defined case, with optional protocol escrow.">
-<link rel="icon" href="assets/brand/demothemis/favicon.ico">
-<link rel="icon" type="image/png" sizes="32x32" href="assets/brand/demothemis/mark-32.png">
+<link rel="icon" type="image/png" sizes="32x32" href="assets/brand/demothemis/mark-32.png?v=20260721-dt2">
 <link rel="apple-touch-icon" sizes="180x180" href="assets/brand/demothemis/mark-180.png">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -21,12 +20,16 @@
   .demothemis-title .title-claim { max-width: 27ch; color: var(--accent-ink); font-family: var(--sans); font-size: .46em; font-weight: 650; line-height: 1.22; }
 
   .part-marker { border-top: 1px solid var(--line); padding-top: 2rem; }
-  .reader-switch { position: relative; z-index: 12; display: none; justify-content: center; margin: 1.8rem 0 2.7rem; }
+  .reader-switch { position: sticky; top: 4rem; z-index: 35; display: none; justify-content: center; margin: 1.8rem 0 2.7rem; }
   .reader-tabs-enabled .reader-switch { display: flex; }
-  .reader-tabs { display: grid; width: min(100%, 35rem); grid-template-columns: repeat(2, minmax(0, 1fr)); gap: .4rem; border: 1px solid var(--line-strong); border-radius: 16px; background: color-mix(in srgb, var(--surface) 90%, transparent); box-shadow: var(--shadow); padding: .4rem; backdrop-filter: blur(14px); }
-  .reader-tab { display: flex; min-width: 0; align-items: center; justify-content: space-between; gap: .8rem; border: 1px solid transparent; border-radius: 12px; background: transparent; padding: .78rem .9rem; color: var(--muted); font-family: var(--sans); text-align: left; cursor: pointer; transition: background .18s ease, border-color .18s ease, color .18s ease, box-shadow .18s ease, transform .18s ease; }
-  .reader-tab span { display: block; font-size: .92rem; font-weight: 750; line-height: 1.2; }
-  .reader-tab small { display: block; color: inherit; font-family: var(--mono); font-size: .65rem; font-weight: 700; line-height: 1.25; opacity: .72; }
+  .reader-tabs { display: grid; width: min(100%, 35rem); grid-template-columns: repeat(2, minmax(0, 1fr)); gap: .4rem; border: 1px solid var(--line-strong); border-radius: 16px; background: color-mix(in srgb, var(--surface) 90%, transparent); box-shadow: var(--shadow); padding: .4rem; backdrop-filter: blur(14px); transition: width .2s ease, padding .2s ease, border-radius .2s ease, box-shadow .2s ease; }
+  .reader-tab { display: flex; min-width: 0; align-items: center; justify-content: space-between; gap: .8rem; border: 1px solid transparent; border-radius: 12px; background: transparent; padding: .78rem .9rem; color: var(--muted); font-family: var(--sans); text-align: left; cursor: pointer; transition: background .18s ease, border-color .18s ease, color .18s ease, box-shadow .18s ease, transform .18s ease, padding .2s ease; }
+  .reader-tab span { display: block; font-size: .92rem; font-weight: 750; line-height: 1.2; transition: font-size .2s ease; }
+  .reader-tab small { display: block; color: inherit; font-family: var(--mono); font-size: .65rem; font-weight: 700; line-height: 1.25; opacity: .72; transition: font-size .2s ease; }
+  .reader-switch.is-stuck .reader-tabs { width: min(calc(100% - .75rem), 32rem); border-radius: 14px; padding: .28rem; box-shadow: 0 8px 22px rgba(73, 61, 52, .14); }
+  .reader-switch.is-stuck .reader-tab { padding: .58rem .72rem; }
+  .reader-switch.is-stuck .reader-tab span { font-size: .85rem; }
+  .reader-switch.is-stuck .reader-tab small { font-size: .59rem; }
   .reader-tab:hover { border-color: var(--line-strong); color: var(--ink); }
   .reader-tab:active { transform: scale(.985); }
   .reader-tab[aria-selected="true"] { border-color: var(--ink); background: var(--ink); color: #fff; box-shadow: 0 7px 18px rgba(16, 24, 40, .2); }
@@ -34,7 +37,7 @@
   .reader-tabs-enabled .reading-pane:not(.is-active) { display: none; }
   .reader-tabs-enabled .toc-mode-block:not(.is-active) { display: none; }
   .reading-pane > section, .reading-category > section { margin: 3.2rem 0; }
-  .reading-category { scroll-margin-top: 6.5rem; }
+  .reading-pane section[id], .reading-category[id] { scroll-margin-top: 10rem; }
   .simple-category-heading { margin: 3.8rem 0 2rem; border: 1px solid var(--line-strong); border-radius: 16px; padding: 1rem 1.1rem; background: var(--surface); box-shadow: var(--shadow); }
   .simple-category-heading .sec-label { margin: 0 0 .35rem; }
   .simple-category-heading h2 { margin: 0; font-size: clamp(1.35rem, 3vw, 1.8rem); }
@@ -86,10 +89,6 @@
   .toc-grouped .toc-category-links li a:hover, .toc-grouped .toc-category-links li a.active { color: var(--ink); }
   @container lifecycle (min-width: 54rem) { .simple-loop { grid-template-columns: repeat(3, minmax(0, 1fr)); } }
   @container lifecycle (max-width: 38rem) { .simple-loop { grid-template-columns: 1fr; } }
-  @media (min-width: 1120px) {
-    .reader-switch { position: sticky; top: 4.65rem; }
-    .reading-pane section[id], .reading-category[id] { scroll-margin-top: 10rem; }
-  }
   @media (max-width: 880px) { .simple-grid, .simple-grid.two, .simple-grid.four, .simple-list, .underhood-map { grid-template-columns: 1fr; } }
   @media (max-width: 640px) {
     .reader-switch { margin: 1.15rem 0 2rem; }
@@ -97,7 +96,7 @@
     .reader-tab { align-items: flex-start; flex-direction: column; gap: .18rem; padding: .72rem .7rem; }
     .simple-loop { grid-template-columns: 1fr; }
   }
-  @media (prefers-reduced-motion: reduce) { .reader-tab, .underhood-map a, .underhood-map .link-cue span { transition: none; } }
+  @media (prefers-reduced-motion: reduce) { .reader-tabs, .reader-tab, .reader-tab span, .reader-tab small, .underhood-map a, .underhood-map .link-cue span { transition: none; } }
 
 .vhub { display: flex; align-items: center; justify-content: center; gap: .8rem; flex-wrap: wrap; }
   .vhub .apps { display: grid; gap: .45rem; }
@@ -289,7 +288,7 @@ body.theme-solve { --accent: #2f62cf; --accent-soft: #e6edfa; --accent-ink: #214
     </div>
   </aside>
 
-  <div class="reader-switch reveal">
+  <div class="reader-switch">
     <div class="reader-tabs" role="tablist" aria-label="Choose reading depth">
       <button class="reader-tab" id="reader-tab-simple" type="button" role="tab" aria-selected="true" aria-controls="reader-panel-simple" tabindex="0" data-reader-mode="simple"><span>Simple overview</span><small>4 min read</small></button>
       <button class="reader-tab" id="reader-tab-deep" type="button" role="tab" aria-selected="false" aria-controls="reader-panel-deep" tabindex="-1" data-reader-mode="deep"><span>Deep dive</span><small>20 min reference</small></button>
@@ -904,6 +903,7 @@ body.theme-solve { --accent: #2f62cf; --accent-soft: #e6edfa; --accent-ink: #214
   var panes = Array.prototype.slice.call(document.querySelectorAll("[data-reader-pane]"));
   var tocBlocks = Array.prototype.slice.call(document.querySelectorAll("[data-reader-toc]"));
   var status = document.getElementById("reader-mode-status");
+  var readerSwitch = document.querySelector(".reader-switch");
   if (tabs.length !== 2 || panes.length !== 2) return;
 
   var roots = { simple: "simple-version", deep: "deep-dive" };
@@ -913,6 +913,12 @@ body.theme-solve { --accent: #2f62cf; --accent-soft: #e6edfa; --accent-ink: #214
   };
   var activeMode = "simple";
   var reduceMotion = window.matchMedia && window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+
+  function syncReaderSwitchState() {
+    if (!readerSwitch) return;
+    var stickyTop = parseFloat(window.getComputedStyle(readerSwitch).top) || 0;
+    readerSwitch.classList.toggle("is-stuck", readerSwitch.getBoundingClientRect().top <= stickyTop + 1);
+  }
 
   function decodedHash() {
     var raw = location.hash ? location.hash.slice(1) : "";
@@ -1034,12 +1040,15 @@ body.theme-solve { --accent: #2f62cf; --accent-soft: #e6edfa; --accent-ink: #214
     scrollTicking = true;
     window.requestAnimationFrame(function () {
       updateToc(viewportCategory());
+      syncReaderSwitchState();
       scrollTicking = false;
     });
   }, { passive: true });
+  window.addEventListener("resize", syncReaderSwitchState);
   window.addEventListener("hashchange", syncFromHash);
 
   syncFromHash();
+  window.requestAnimationFrame(syncReaderSwitchState);
 })();
 </script>
 <script src="assets/common.js"></script>

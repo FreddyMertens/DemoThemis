@@ -36,9 +36,8 @@ export const metadata: Metadata = {
   manifest: '/manifest.webmanifest',
   icons: {
     icon: [
-      { url: '/assets/brand/demothemis/favicon.ico' },
-      { url: '/assets/brand/demothemis/mark-32.png', type: 'image/png', sizes: '32x32' },
-      { url: '/assets/brand/demothemis/mark-192.png', type: 'image/png', sizes: '192x192' },
+      { url: '/assets/brand/demothemis/mark-32.png?v=20260721-dt2', type: 'image/png', sizes: '32x32' },
+      { url: '/assets/brand/demothemis/mark-192.png?v=20260721-dt2', type: 'image/png', sizes: '192x192' },
     ],
     apple: [{ url: '/assets/brand/demothemis/mark-180.png', sizes: '180x180' }],
   },

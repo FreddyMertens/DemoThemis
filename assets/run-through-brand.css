@@ -1212,8 +1212,9 @@ body[data-page-brand="neutral"] .machine-owner-icon {
   width: 1.55rem;
   height: 1.55rem;
   border-radius: 999px;
-  filter: saturate(.92);
-  transition: filter 150ms ease, transform 150ms ease;
+  box-shadow: 0 0 0 1px transparent, 0 0 0 transparent;
+  filter: none;
+  transition: box-shadow 150ms ease, transform 150ms ease;
 }
 
 body[data-page-brand="neutral"] .machine-owner-icon img {
@@ -1223,17 +1224,105 @@ body[data-page-brand="neutral"] .machine-owner-icon img {
   object-fit: contain;
 }
 
+body[data-page-brand="neutral"] .machine-owner-icons--shared {
+  position: relative;
+  display: block;
+  width: 1.65rem;
+  height: 1.65rem;
+  min-width: 1.65rem;
+  transform-style: preserve-3d;
+  transform-origin: 50% 50%;
+  filter: none;
+  animation: machine-owner-coin-turn 6.4s ease-in-out infinite;
+}
+
+body[data-page-brand="neutral"] .machine-owner-icons--shared::after {
+  content: "";
+  position: absolute;
+  top: 2px;
+  bottom: 2px;
+  left: 50%;
+  width: 2px;
+  border-radius: 999px;
+  background: linear-gradient(180deg, var(--omm-green) 0 50%, var(--dt-emission) 50% 100%);
+  box-shadow: 0 0 5px rgba(4, 226, 109, .24), 0 0 5px rgba(var(--dt-emission-rgb), .2);
+  opacity: .78;
+  pointer-events: none;
+  transform: translateX(-50%) rotateY(90deg);
+  transform-style: preserve-3d;
+  transition: box-shadow 160ms ease, opacity 160ms ease;
+}
+
+body[data-page-brand="neutral"] .machine-owner-icons--shared .machine-owner-icon {
+  --coin-rim: rgba(4, 226, 109, .78);
+  --coin-glow: rgba(4, 226, 109, .24);
+  position: absolute;
+  inset: 0;
+  box-sizing: border-box;
+  width: 100%;
+  height: 100%;
+  margin: 0;
+  padding: 1px;
+  overflow: hidden;
+  border: 1px solid var(--coin-rim);
+  background: var(--omm-black);
+  box-shadow: inset 0 0 0 1px rgba(255, 255, 255, .16), 0 0 6px var(--coin-glow);
+  filter: none;
+  backface-visibility: hidden;
+  -webkit-backface-visibility: hidden;
+  transform-origin: 50% 50%;
+  transform: rotateY(0deg);
+  visibility: visible;
+  animation: machine-owner-coin-front-face 6.4s linear infinite;
+  transition: border-color 160ms ease, box-shadow 160ms ease;
+}
+
+body[data-page-brand="neutral"] .machine-owner-icons--shared .machine-owner-icon img {
+  filter: none;
+}
+
 body[data-page-brand="neutral"] .machine-owner-icons--shared .machine-owner-icon + .machine-owner-icon {
-  margin-left: -.38rem;
+  --coin-rim: rgba(var(--dt-emission-rgb), .78);
+  --coin-glow: rgba(var(--dt-emission-rgb), .22);
+  background: var(--dt-canvas);
+  transform: rotateY(180deg);
+  visibility: hidden;
+  animation-name: machine-owner-coin-back-face;
 }
 
-body[data-page-brand="neutral"] .machine-owner-icons--shared .machine-owner-icon:first-child {
-  z-index: 1;
+@keyframes machine-owner-coin-turn {
+  0%, 18% { transform: rotateY(0deg); }
+  48%, 68% { transform: rotateY(180deg); }
+  100% { transform: rotateY(360deg); }
 }
 
-body[data-page-brand="neutral"] .machine-state:is(:hover, :focus-visible, .is-selected) .machine-owner-icon {
-  filter: saturate(1.08) drop-shadow(0 0 5px color-mix(in srgb, var(--phase-color) 44%, transparent));
+@keyframes machine-owner-coin-front-face {
+  0%, 32.9% { visibility: visible; }
+  33%, 83.9% { visibility: hidden; }
+  84%, 100% { visibility: visible; }
+}
+
+@keyframes machine-owner-coin-back-face {
+  0%, 32.9% { visibility: hidden; }
+  33%, 83.9% { visibility: visible; }
+  84%, 100% { visibility: hidden; }
+}
+
+body[data-page-brand="neutral"] .machine-state:is(:hover, :focus-visible, .is-selected) .machine-owner-icons:not(.machine-owner-icons--shared) .machine-owner-icon {
+  box-shadow:
+    0 0 0 1px color-mix(in srgb, var(--phase-color) 46%, transparent),
+    0 0 7px color-mix(in srgb, var(--phase-color) 34%, transparent);
   transform: translateY(-1px) scale(1.04);
+}
+
+body[data-page-brand="neutral"] .machine-state:is(:hover, :focus-visible, .is-selected) .machine-owner-icons--shared .machine-owner-icon {
+  border-color: color-mix(in srgb, var(--coin-rim) 82%, #fff);
+  box-shadow: inset 0 0 0 1px rgba(255, 255, 255, .24), 0 0 9px var(--coin-glow);
+}
+
+body[data-page-brand="neutral"] .machine-state:is(:hover, :focus-visible, .is-selected) .machine-owner-icons--shared::after {
+  box-shadow: 0 0 8px rgba(4, 226, 109, .42), 0 0 8px rgba(var(--dt-emission-rgb), .36);
+  opacity: 1;
 }
 
 body[data-page-brand="neutral"] .machine-phase-brand {
@@ -1522,6 +1611,20 @@ body[data-page-brand="neutral"] .machine-shell[data-focus="demothemis"] .machine
   body[data-page-brand="neutral"] .product-tab[data-product-mode="omen"]::before,
   body[data-page-brand="neutral"] .sim-app-viewport[data-app-theme="omen"] .app-window::before {
     animation: none;
+  }
+
+  body[data-page-brand="neutral"] .machine-owner-icons--shared {
+    animation: none;
+    transform: rotateY(-18deg);
+  }
+
+  body[data-page-brand="neutral"] .machine-owner-icons--shared .machine-owner-icon {
+    animation: none;
+    visibility: visible;
+  }
+
+  body[data-page-brand="neutral"] .machine-owner-icons--shared .machine-owner-icon + .machine-owner-icon {
+    visibility: hidden;
   }
 }
 

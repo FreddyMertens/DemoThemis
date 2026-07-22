@@ -201,7 +201,7 @@ function checkMetadata(file, html, failures) {
     const expectedImageUrl = `${siteUrl}/${image}`.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
     assert(new RegExp(`<meta\\s+[^>]*property=["']og:image["'][^>]*content=["']${expectedImageUrl}["']`, "i").test(html), `${file} missing route-specific og:image`, failures);
     assert(new RegExp(`<meta\\s+[^>]*name=["']twitter:image["'][^>]*content=["']${expectedImageUrl}["']`, "i").test(html), `${file} missing route-specific twitter:image`, failures);
-    assert(/<link\s+[^>]*rel=["']icon["'][^>]*href=["'][^"']*assets\/brand/i.test(html), `${file} missing branded favicon`, failures);
+    assert(/<link\s+[^>]*rel=["']icon["'][^>]*type=["']image\/png["'][^>]*sizes=["']32x32["'][^>]*href=["'][^"']*assets\/brand/i.test(html), `${file} missing branded PNG favicon`, failures);
     assert(/<link\s+[^>]*rel=["']apple-touch-icon["']/i.test(html), `${file} missing apple touch icon`, failures);
     assert(/<meta\s+[^>]*name=["']theme-color["']/i.test(html), `${file} missing theme color`, failures);
   } else {
@@ -2631,7 +2631,10 @@ function checkBrandSystem(failures) {
   assert(/:disabled/i.test(staticEmission) && /:focus-visible/i.test(staticEmission), "static DemoThemis controls need disabled and keyboard-focus states", failures);
   assert(/outline:\s*2px solid var\(--dt-emission-ink\)/i.test(staticEmission) && /0 0 0 5px rgba\(var\(--dt-emission-rgb\)/i.test(staticEmission), "DemoThemis keyboard focus needs a contrast-safe core and cyan halo", failures);
   assert(/prefers-reduced-motion:\s*reduce/i.test(staticEmission) && /forced-colors:\s*active/i.test(staticEmission), "DemoThemis interactions need reduced-motion and forced-colors fallbacks", failures);
-  assert(!/animation\s*:/i.test(staticEmission), "DemoThemis emission must be state-driven rather than a continuous decorative animation", failures);
+  const staticEmissionAnimations = Array.from(staticEmission.matchAll(/animation\s*:\s*([^;]+);/gi), (match) => match[1].trim());
+  assert(staticEmissionAnimations.every((value) => /^(?:dt-card-rim-orbit\s+7\.5s\s+linear\s+infinite|none)$/i.test(value)), "DemoThemis emission must stay state-driven apart from the intentional homepage card-rim orbit", failures);
+  assert(/@keyframes\s+dt-card-rim-orbit[\s\S]*?--dt-card-rim-angle:\s*360deg/i.test(staticEmission) && /\.product\[data-brand=["']demothemis["']\]::after\s*\{[^}]*conic-gradient\([^}]*mask-composite:\s*exclude[^}]*animation:\s*dt-card-rim-orbit\s+7\.5s\s+linear\s+infinite/i.test(staticEmission), "homepage DemoThemis card needs the intentional masked cyan comet rim", failures);
+  assert(/prefers-reduced-motion:\s*reduce[\s\S]*?\.product\[data-brand=["']demothemis["']\]::after\s*\{[^}]*animation:\s*none/i.test(staticEmission), "homepage DemoThemis card rim must stop for reduced motion", failures);
 
   const previewInteractionStyles = readDist("assets/mvp-simulator.css");
   const previewEmission = previewInteractionStyles.split("/* MVP emission: underline navigation, equal control rims, quiet illustration colour. */")[1] || "";
@@ -2656,6 +2659,12 @@ function checkBrandSystem(failures) {
   const homeOmenProduct = (home.match(/<article\b[^>]*data-brand=["']omen["'][^>]*>([\s\S]*?)<\/article>/i) || ["", ""])[1];
   assert(/class=["']map-card["'][^>]*href=["']run-through\.html["'][^>]*data-brand=["']shared["']/i.test(home), "the end-to-end run-through chapter must use the mixed product rim", failures);
   assert((home.match(/class=["']map-card["'][^>]*data-brand=/gi) || []).length === 6, "every homepage chapter button must declare its product-rim ownership", failures);
+  assert((home.match(/class=["']chapter-owner-coin(?:\s+chapter-owner-coin--shared)?["']/gi) || []).length === 6, "every homepage chapter button must carry its product ownership coin", failures);
+  assert((home.match(/chapter-owner-coin--shared[\s\S]*?chapter-owner-rotor[\s\S]*?omenmarketmaker\/mark-32\.png[\s\S]*?demothemis\/mark-32\.png/gi) || []).length === 3, "mixed homepage chapters must use the two-sided OmenMarketMaker and DemoThemis medallion", failures);
+  assert(/\.chapter-owner-coin--shared\s*\{[^}]*conic-gradient\([^}]*var\(--omm-green\)[^}]*var\(--dt-emission\)[^}]*perspective:\s*10rem/i.test(chapterRims) && /\.chapter-owner-rotor\s*\{[^}]*transform-style:\s*preserve-3d[^}]*animation:\s*chapter-owner-coin-turn\s+10s\s+linear\s+infinite/i.test(chapterRims), "homepage mixed-product medallions need a stable two-colour bezel around a dedicated continuously turning 3D rotor", failures);
+  assert(/@keyframes\s+chapter-owner-coin-turn\s*\{\s*from\s*\{\s*transform:\s*rotateY\(0deg\)[^}]*\}\s*to\s*\{\s*transform:\s*rotateY\(360deg\)/i.test(chapterRims) && /\.chapter-owner-rotor::before\s*\{[^}]*width:\s*3px[^}]*rotateY\(90deg\)[^}]*animation:\s*chapter-owner-coin-edge\s+10s\s+linear\s+infinite/i.test(chapterRims) && /@keyframes\s+chapter-owner-coin-edge[\s\S]*?22%,\s*28%,\s*72%,\s*78%\s*\{\s*opacity:\s*1/i.test(chapterRims) && /rotateY\(180deg\)\s+translateZ\(1\.45px\)/i.test(chapterRims), "homepage medallion motion must rotate continuously and keep a visible CSS side wall at both edge-on positions", failures);
+  assert(/@keyframes\s+chapter-owner-coin-back-face[\s\S]*?25%,\s*74\.99%\s*\{\s*visibility:\s*visible/i.test(chapterRims), "the continuously rotating homepage medallion must reliably reveal its DemoThemis face", failures);
+  assert(/bootstrap-loop\.html["']\] \.chapter-owner-coin--shared\s*\{[^}]*-3\.33s/i.test(chapterRims) && /governance\.html["']\] \.chapter-owner-coin--shared\s*\{[^}]*-6\.67s/i.test(chapterRims), "mixed homepage medallions must use staggered phases", failures);
   assert(/\.map-card\[data-brand=["']demothemis["']\][^{]*\{[^}]*--chapter-rim:\s*linear-gradient\([^}]*var\(--dt-emission\)/i.test(chapterRims), "DemoThemis chapter buttons must use a full cyan emission rim", failures);
   assert(/\.map-card\[data-brand=["']omen["']\][^{]*\{[^}]*--chapter-rim:\s*linear-gradient\([^}]*var\(--omm-green\)/i.test(chapterRims), "OmenMarketMaker chapter buttons must use a full green emission rim", failures);
   assert(/\.map-card\[data-brand=["']shared["']\][^{]*\{[^}]*--chapter-rim:\s*conic-gradient\([^}]*var\(--dt-emission\)[\s\S]*?var\(--omm-green\)[\s\S]*?animation:\s*chapter-rim-orbit\s+8s\s+linear\s+infinite/i.test(chapterRims), "mixed chapter buttons must use the rotating half-cyan, half-green rim", failures);
@@ -2689,6 +2698,10 @@ function checkBrandSystem(failures) {
 
   const demoChapter = readDist("demothemis.html");
   const demoHero = (demoChapter.match(/<header\b[^>]*class=["'][^"']*\bhero\b[^"']*["'][^>]*>([\s\S]*?)<\/header>/i) || ["", ""])[1];
+  assert(/\.reader-switch\s*\{[^}]*position:\s*sticky;[^}]*top:\s*4rem;[^}]*z-index:\s*35/i.test(demoChapter), "DemoThemis reading-depth tabs must remain sticky below the site navigation at every screen width", failures);
+  assert(/\.reading-pane section\[id\],\s*\.reading-category\[id\]\s*\{[^}]*scroll-margin-top:\s*10rem/i.test(demoChapter), "DemoThemis section anchors must clear both sticky navigation layers", failures);
+  assert(/\.reader-switch\.is-stuck \.reader-tabs\s*\{[^}]*width:\s*min\(calc\(100% - \.75rem\),\s*32rem\)[^}]*padding:\s*\.28rem/i.test(demoChapter) && /classList\.toggle\(["']is-stuck["'],\s*readerSwitch\.getBoundingClientRect\(\)\.top\s*<=\s*stickyTop\s*\+\s*1\)/i.test(demoChapter), "DemoThemis reading-depth tabs must compact only after reaching their sticky position", failures);
+  assert(/<div\s+class=["']reader-switch["']>/i.test(demoChapter) && !/<div\s+class=["'][^"']*reader-switch[^"']*\breveal\b/i.test(demoChapter), "sticky reading-depth navigation must render without a scroll-reveal transform", failures);
   assert(/brand-stage--demothemis/i.test(demoHero) && /class=["']sr-only["']>DemoThemis<\/span>/i.test(demoHero), "DemoThemis hero must keep one accessible product name with the full visual wordmark", failures);
   assert(/brand-stage--demothemis[\s\S]*dt-wordmark-emission[\s\S]*wordmark\.png/i.test(demoHero), "DemoThemis chapter hero wordmark is missing its canonical underline wrapper", failures);
   assert(!/title-product/i.test(demoHero), "DemoThemis hero must not repeat its wordmark as a second visible product-name title", failures);
@@ -2712,6 +2725,11 @@ function checkBrandSystem(failures) {
   assert(/ResizeObserver/i.test(riveLoader) && /resizeDrawingSurfaceToCanvas/i.test(riveLoader), "Rive wordmarks must resize cleanly with responsive simulator layouts", failures);
 
   const mvp = readDist("demothemis-mvp.html");
+  for (const file of publicHtml.filter((name) => name !== "omenmarketmaker.html")) {
+    const page = readDist(file);
+    assert(/assets\/brand\/demothemis\/mark-32\.png\?v=20260721-dt2/i.test(page), `${file} must use the cache-busted DemoThemis favicon`, failures);
+    assert(!/assets\/brand\/demothemis\/favicon\.ico/i.test(page), `${file} must not prefer the cached legacy DemoThemis ICO`, failures);
+  }
   assert(/mvp-sim-site-brand[\s\S]*assets\/brand\/demothemis\/wordmark\.png/i.test(mvp), "MVP preview header is missing the full DemoThemis wordmark", failures);
   assert(/brand-stage--demothemis[\s\S]*dt-wordmark-emission[\s\S]*wordmark\.png/i.test(mvp), "MVP page hero wordmark is missing its canonical underline wrapper", failures);
   assert(!/mvp-sim-site-brand[\s\S]{0,300}assets\/brand\/demothemis\/mark-32\.png/i.test(mvp), "MVP preview header must not use the favicon-plus-text lockup", failures);
@@ -2758,13 +2776,13 @@ function checkBrandSystem(failures) {
   assert(/\.sbx-steps li[\s\S]*?\.sbx-stat[\s\S]*?\.sbx-widget/i.test(sandboxEmission), "sandbox teaching graphics are missing their restrained illustration treatment", failures);
   assert(/prefers-reduced-motion:\s*reduce/i.test(sandboxEmission) && /forced-colors:\s*active/i.test(sandboxEmission), "sandbox emission needs accessibility fallbacks", failures);
   assert(/summary_large_image/i.test(appLayout) && /mvp-1200x630\.jpg/i.test(appLayout) && /mark-180\.png/i.test(appLayout), "live MVP metadata is missing branded social and icon assets", failures);
+  assert(/mark-32\.png\?v=20260721-dt2/i.test(appLayout) && !/favicon\.ico/i.test(appLayout), "live MVP metadata must prefer the cache-busted DemoThemis PNG favicon", failures);
   assert(/mark-192\.png/i.test(appManifest) && /mark-512\.png/i.test(appManifest) && /theme_color:\s*'#f6f3f2'/i.test(appManifest), "live MVP manifest is missing its complete DemoThemis icon set", failures);
-  const appFavicon = fs.readFileSync(path.join(appRoot, "app", "favicon.ico"));
-  const brandFavicon = fs.readFileSync(path.join(root, "assets", "brand", "demothemis", "favicon.ico"));
-  assert(appFavicon.equals(brandFavicon), "live MVP favicon does not match the generated DemoThemis favicon", failures);
+  assert(!fs.existsSync(path.join(appRoot, "app", "favicon.ico")), "live MVP must not emit a competing automatic ICO favicon", failures);
 
   const notFound = readDist("404.html");
   assert(/data-page-brand=["']demothemis["']/i.test(notFound) && /assets\/brand\/demothemis\/mark-192\.png/i.test(notFound), "404 page is missing the DemoThemis identity", failures);
+  assert(/assets\/brand\/demothemis\/mark-32\.png\?v=20260721-dt2/i.test(notFound) && !/assets\/brand\/demothemis\/favicon\.ico/i.test(notFound), "404 page must use the cache-busted DemoThemis favicon", failures);
 
   const generator = fs.readFileSync(path.join(root, "tools", "generate-brand-assets.py"), "utf8");
   const socialDemo = (generator.match(/def\s+social_demo\([^)]*\)[^:]*:\s*([\s\S]*?)\n\s*def\s+social_omen/i) || ["", ""])[1];
@@ -2917,6 +2935,11 @@ function checkBuiltHtml(failures) {
   assert(/role=["']radiogroup["'][^>]*aria-label=["']Choose which product to show["']/i.test(runThrough) && /setMachineFocus\(["']demothemis["'],\s*false\)/i.test(runThrough), "state-map product views must be one mutually exclusive selector with DemoThemis visible by default", failures);
   assert(/data-machine-focus=["']demothemis["'][^>]*aria-checked=["']true["'][^>]*>DemoThemis<[^]*data-machine-focus=["']all["'][^]*data-machine-focus=["']omen["']/i.test(runThrough), "DemoThemis must be the first and initially selected state-map tab", failures);
   assert(/function\s+makeProductFavicon\s*\(/i.test(runThrough) && /assets\/brand\/omenmarketmaker\/mark-32\.png/i.test(runThrough) && /assets\/brand\/demothemis\/mark-32\.png/i.test(runThrough) && /machine-owner-icons--shared/i.test(runThrough), "state cards must use product favicons, including both favicons on shared handoffs", failures);
+  assert(/\.machine-owner-icons--shared\s*\{[^}]*transform-style:\s*preserve-3d[^}]*animation:\s*machine-owner-coin-turn\s+6\.4s\s+ease-in-out\s+infinite/i.test(runBrandCss) && /\.machine-owner-icons--shared \.machine-owner-icon\s*\{[^}]*box-sizing:\s*border-box[^}]*backface-visibility:\s*hidden[^}]*transform:\s*rotateY\(0deg\)/i.test(runBrandCss) && /\.machine-owner-icons--shared \.machine-owner-icon \+ \.machine-owner-icon\s*\{[^}]*transform:\s*rotateY\(180deg\)/i.test(runBrandCss) && !/\.machine-owner-icons--shared \.machine-owner-icon(?: \+ \.machine-owner-icon)?\s*\{[^}]*translateZ/i.test(runBrandCss) && /@keyframes\s+machine-owner-coin-turn[\s\S]*?rotateY\(360deg\)/i.test(runBrandCss), "shared state-map ownership must combine two identically aligned favicon faces as one CSS-only rotating coin", failures);
+  assert(/\.machine-state:is\([^}]+\) \.machine-owner-icons--shared \.machine-owner-icon\s*\{[^}]*box-shadow:/i.test(runBrandCss) && !/\.machine-state:is\([^}]+\) \.machine-owner-icons--shared\s*\{[^}]*filter:/i.test(runBrandCss), "shared coin hover glow must stay on its faces instead of flattening the 3D parent", failures);
+  assert(/\.machine-owner-icon\s*\{[^}]*box-shadow:\s*0 0 0 1px transparent,\s*0 0 0 transparent[^}]*filter:\s*none[^}]*transition:\s*box-shadow/i.test(runBrandCss) && /\.machine-owner-icons:not\(\.machine-owner-icons--shared\) \.machine-owner-icon\s*\{[^}]*box-shadow:[^}]*transform:/i.test(runBrandCss), "standalone state-map favicons must use a stable rim transition instead of a first-hover image filter", failures);
+  assert(/@keyframes\s+machine-owner-coin-front-face[\s\S]*?33%,\s*83\.9%\s*\{\s*visibility:\s*hidden/i.test(runBrandCss) && /@keyframes\s+machine-owner-coin-back-face[\s\S]*?33%,\s*83\.9%\s*\{\s*visibility:\s*visible/i.test(runBrandCss), "shared coin must explicitly switch its paintable face so hover compositing cannot cover DemoThemis with Omen", failures);
+  assert(/prefers-reduced-motion:\s*reduce[\s\S]*?\.machine-owner-icons--shared\s*\{[^}]*animation:\s*none[\s\S]*?\.machine-owner-icons--shared \.machine-owner-icon\s*\{[^}]*animation:\s*none/i.test(runBrandCss), "shared state-map coin and its face switching must stop for reduced motion", failures);
   assert(/className\s*\|\|\s*["']product-favicon["']/i.test(runThrough) && !/makeProductWordmark\(state\.owner,\s*["']machine-owner-mark/i.test(runThrough), "state cards must not retain full static wordmarks", failures);
   assert(/MACHINE_PHASE_BRANDS/i.test(runThrough) && /machine-phase-brand/i.test(runThrough) && /makeProductWordmark\(brand,\s*["']machine-phase-wordmark["']/i.test(runThrough), "phase headings must carry the full static product wordmarks", failures);
   assert(!/data-machine-route=["']quiet["']|Fast settlement|bonded assertion|watcher window/i.test(runThrough), "run-through must not restore the removed fast-settlement path", failures);
