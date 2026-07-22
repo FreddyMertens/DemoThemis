@@ -129,7 +129,7 @@ contract InvariantTest is Test {
         gate = new MockSybilGate();
         registry = new JurorRegistry(musd, gate);
         rewardPool = new RewardPool(musd);
-        court = new DisputeCourt(musd, registry, address(rewardPool), protocol, 7, 14, 180, 180);
+        court = new DisputeCourt(musd, registry, address(rewardPool), protocol, 7, 14, 300, 300);
         escrow = new DealEscrow(musd, IDisputeCourt(address(court)));
         registry.setCourt(address(court));
         court.setEscrow(address(escrow));

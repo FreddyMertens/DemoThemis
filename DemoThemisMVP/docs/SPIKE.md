@@ -2,6 +2,20 @@
 
 Status: spike (a) **answered** — and it reshapes the instance architecture. (b)/(c) reframed/deferred (see below). The Foundry → World Chain toolchain is proven on World Chain Sepolia. One decision is now owed (bottom of file).
 
+> **2026-07-22 supersession note:** this file preserves the original spike decision and
+> its “3 real humans” criterion as history. The liveness review changed the operational
+> capstone: deploy a 3-seat court with `MIN_POOL >= 4` and register at least four eligible
+> Production World ID humans, so one pre-draw withdrawal still leaves a drawable panel.
+> Exact-3 remains a source-level fund-safety regression—eligible-party rejection plus a
+> bounded cancellation/refund—not the recommended live availability configuration. See
+> [LIVENESS_RECOVERY.md](LIVENESS_RECOVERY.md) and
+> [CAPSTONE_RUNBOOK.md](CAPSTONE_RUNBOOK.md).
+>
+> The original conclusion that the v4 verifier was a supported production dependency
+> is also superseded. Official documentation marks it preview. New deployments use
+> `WorldIDRouterGate` over the documented World Chain mainnet Router; every v4 address,
+> “Production” label, and instruction below is retained only as dated research history.
+
 ## Headline finding: World ID moved to 4.0, relocating on-chain verification to World Chain mainnet
 
 The Developer Portal now onboards new apps onto **World ID 4.0** (preview). Our app `app_7bdfda4db4e2f59dd4a2427cd2bd860d` (**DemoThemis**, originally created as "DemoThemis Staging") is 4.0, Managed mode, RP id `rp_1ddcf8ba2efe3f36`. World ID 4.0 changes both the on-chain interface and *where it lives*:

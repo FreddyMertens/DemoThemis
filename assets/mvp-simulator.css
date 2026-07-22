@@ -250,9 +250,9 @@
 .mvp-sim-fee-bar { display: flex; overflow: hidden; height: 1.9rem; margin: .75rem 0 .6rem; border: 3px solid rgba(255, 255, 255, .76); border-radius: 999px; background: var(--line); box-shadow: 0 4px 13px -10px rgba(52, 39, 137, .7); }
 .mvp-sim-fee-bar i { display: block; font-style: normal; }
 .mvp-sim-fee-bar i.is-processing { width: 5%; background: #d2a737; }
-.mvp-sim-fee-bar i.is-panel { width: 75%; background: #35a67c; }
-.mvp-sim-fee-bar i.is-reserve { width: 12.5%; background: #786a5e; }
-.mvp-sim-fee-bar i.is-operations { width: 7.5%; background: #4a4039; }
+.mvp-sim-fee-bar i.is-panel { width: 70%; background: #35a67c; }
+.mvp-sim-fee-bar i.is-reserve { width: 20%; background: #786a5e; }
+.mvp-sim-fee-bar i.is-operations { width: 10%; background: #4a4039; }
 .mvp-sim-fee-split dl { display: grid; margin: 0; gap: .25rem; }
 .mvp-sim-fee-split dl > div { display: flex; padding: .43rem .5rem; align-items: center; justify-content: space-between; gap: .5rem; border-radius: 8px; background: rgba(255, 255, 255, .72); }
 .mvp-sim-fee-split dt { display: flex; min-width: 0; margin: 0; align-items: center; gap: .35rem; color: var(--muted); font-size: .57rem; font-weight: 700; }

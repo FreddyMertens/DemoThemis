@@ -3,7 +3,7 @@ import { explorerTx } from '@/lib/chain';
 // The sybil-rejection demo (§6.5): the one-human-one-seat guarantee proven by the
 // NEGATIVE path — duplicate and forged registrations reverting on-chain. The
 // cohort revert is on Sepolia (reused nullifier rejected even behind the labeled
-// MockSybilGate); the mainnet reverts are real World ID 4.0 (Step 3.5).
+// MockSybilGate); the mainnet reverts are historical v4 preview evidence (Step 3.5).
 const COHORT_DUP_TX = '0x930212e9fa1281ab664f9f1a88dcb95d06d4d399f10d33682a4ab0749540afcf';
 const MAINNET_FORGED_TX = '0xd955739e1f78ec9c46c83343ff87998c0ca6f3089ac9eecf9567158afe0becf5';
 const MAINNET_DUP_TX = '0x9f9946f658d16f431922f58f052e1aaab095828d14aed57a2709c5e88b24187d';
@@ -37,7 +37,7 @@ export function SybilDemo() {
         <Row
           href={ws(MAINNET_FORGED_TX)}
           label="Mainnet · forged World ID proof → verifier revert"
-          detail="A corrupted Groth16 limb fails inside WorldIDVerifier.verify on World Chain mainnet (0x7fcdd1f4)."
+          detail="Historical preview evidence: a corrupted Groth16 limb fails inside WorldIDVerifier.verify on World Chain mainnet (0x7fcdd1f4). The replacement uses the Router."
         />
         <Row
           href={ws(MAINNET_DUP_TX)}

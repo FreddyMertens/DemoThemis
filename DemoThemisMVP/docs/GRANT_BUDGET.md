@@ -37,8 +37,10 @@ real humans complete the juror loop is what decides if the court works at all.
 - **Labor is priced in person-effort, not calendar time** — a blended **US$2,200 /
   person-week** (≈ US$55/hr), well below market senior-Solidity contractor rates
   (US$150–250/hr). The two co-founders are mission-aligned and the grant funds focused build
-  time, not agency overhead. The MVP — 6 source-verified mainnet contracts, 77 Foundry tests
-  (>90% line coverage), a full browser sandbox, and the on-chain World ID 4.0 path — was
+  time, not agency overhead. The MVP — 6 legacy source-verified mainnet contracts and a
+  100-test Foundry suite (including Router binding/rejection, exact-3/3 party-exclusion, first-draw unwind,
+  and no-show recovery regressions; the prior 95-test liveness snapshot measured 89.51% line coverage), a full browser sandbox, and the on-chain World ID
+  Router path (with the earlier v4 preview experiment preserved separately) — was
   **shipped solo by the founder in ~1 month of focused effort**, which is the capital-efficiency
   evidence behind this rate; the funded roadmap is split across **both co-founders** to deliver
   in parallel.
@@ -126,22 +128,24 @@ surface, complete M4, remediate M5 findings, and run M6 testing jointly.
 
 **Deliverable.** Replace the MVP's `blockhash`-seeded two-step draw (a documented,
 sequencer-influenceable stand-in) with a verifiable randomness source (drand beacon or
-Chainlink VRF on World Chain), and land the correctness hardening surfaced by the MVP's own
-pre-submission review:
-- a party-callable **escrow timeout/refund** so a disputed deal can never strand principal if
-  its court case can't fill a panel;
+Chainlink VRF on World Chain), and land the remaining correctness hardening surfaced by the MVP's
+own pre-submission review. The replacement-source baseline already rejects cases with too few
+eligible jurors before funds/state lock and gives every accepted case a fixed, permissionless
+first-draw unwind that refunds the unused fee and escrow principal; M1 must preserve and re-verify
+those invariants while adding:
+
 - a registry **partial-slash guard** (deactivate a juror whose bond drops below the full bond)
   so the "active juror is always fully bonded" invariant holds independent of the caller;
 - zero-address guards on the one-shot wiring functions;
-- a pre-onboard **forged-proof check against the Production World ID verifier**, captured as a
-  trace — closing the one load-bearing assumption in the MVP's `WorldIDGate` (it relies on the
-  verifier *reverting*, not returning false, on a bad proof; confirmed on Staging, to be
-  confirmed on Production).
+- a pre-onboard **forged-proof check against the documented World ID Router**, captured as a
+  trace — proving the replacement `WorldIDRouterGate` fails closed before the human run.
+  The older verifier-return assumption remains only in the archived v4 preview adapter.
 
 **Acceptance criteria.** New randomness contract deployed and **source-verified** on World
 Chain; a panel-draw trace whose seed is the published beacon/VRF output; expanded Foundry suite
-(incl. an escrow-stuck-funds test and a partial-slash test) green at >90% coverage; the
-Production-verifier forged-proof revert trace in `docs/DEMO.md`.
+(including the existing escrow preflight/unwind regressions and a new partial-slash test) green
+at >90% coverage; the
+Router forged-proof revert trace in `docs/DEMO.md`.
 
 **Cost.** 1.5 person-weeks ($3,300) + $700 (VRF subscription / mainnet gas). AI-assisted, split
 across both builders — under a calendar week.
@@ -234,7 +238,7 @@ a clear juror experience, then run moderated sessions with real World ID-verifie
 onboard → presence → accept/decline → private vote → return-to-finalize → payout. Instrument
 completion and drop-off at every step, fix the friction the sessions expose, and complete an
 accessibility pass (non-color state cues, clear phase timers, recovery and redirect handling).
-The 3-human capstone is juror-test #0; this milestone scales it into iterative production-
+The three-seat capstone with at least four eligible humans is juror-test #0; this milestone scales it into iterative production-
 readiness rounds.
 
 **Acceptance criteria.** ≥2–3 moderated rounds with verified humans; measured juror-flow
@@ -250,7 +254,7 @@ testers is the human cost AI cannot remove, and it is the most decisive spend in
 
 ## Sustainability past the grant
 
-The grant is **one-time and milestone-gated**; it does not fund operations indefinitely. The court is fee-bearing by construction — a **2% escrow fee** (retained only when a deal is disputed; refunded on a clean release) and a **flat 2 MUSD per-question case fee** — two distinct mechanisms, both split 70/20/10 (jurors / reward pool / protocol) on-chain today, in valueless test tokens. **There is no real fee revenue yet** (`jurorCount() == 0` until the capstone), and a fee with no case flow earns nothing — so the cold-start question is where the *cases* come from.
+The grant is **one-time and milestone-gated**; it does not fund operations indefinitely. The court is fee-bearing by construction — a **2% escrow fee** (retained only when a deal is disputed; refunded on a clean release) and a **flat 20 MUSD per-question case fee** — two distinct mechanisms, both split 70/20/10 (jurors / reward pool / protocol) in the replacement source, using valueless test tokens. **There is no real fee revenue yet** (`jurorCount() == 0` until the capstone), and a fee with no case flow earns nothing — so the cold-start question is where the *cases* come from.
 
 The constraint is that a juror court is **two-sided**: it needs jurors and a steady stream of
 cases. Disputes are sparse and reactive because they occur only when something goes wrong. M4
@@ -265,7 +269,7 @@ applications begin integration without waiting for another DemoThemis build phas
 
 Illustrative unit economics remain simple and grant-safe: at the **2% escrow fee** a $1,000
 disputed deal yields ~$20 across the 70/20/10 split, and each resolved question carries the
-**flat 2 MUSD case fee** on the same split. A few hundred resolved cases/month would cover a
+**flat 20 MUSD case fee** on the same split. A few dozen resolved cases/month would cover a
 maintenance person-week. **The requested grant completes the reusable court; fee volume, not a
 follow-on build grant, is the path to sustaining it.**
 

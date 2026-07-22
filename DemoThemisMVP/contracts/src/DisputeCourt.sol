@@ -12,18 +12,43 @@ import {IEscrowSettlement} from "./interfaces/IEscrowSettlement.sol";
 ///         the opener cannot precompute it), jurors commit a hashed vote then
 ///         reveal it, the majority wins, the fee pool is split among coherent
 ///         revealers, and no-show jurors lose their bond. Every time-gated
-///         transition is permissionless. PANEL_SIZE / MIN_POOL are constructor
-///         params: 7/14 on the Sepolia cohort, 3/3 on the mainnet live instance.
+///         transition is permissionless. Panel, pool, and voting-window values
+///         are immutable constructor parameters: no operator can alter a case's
+///         clocks after deployment. The recommended replacement mainnet
+///         configuration is 3 seats / minimum 4 eligible jurors.
 contract DisputeCourt {
     using SafeERC20 for IERC20;
 
     uint8 internal constant QUESTION = 0;
     uint8 internal constant ESCROW = 1;
 
-    /// @dev 2 MUSD fee to open a question case (6 decimals).
-    uint256 public constant CASE_FEE = 2 * 10 ** 6;
+    /// @dev 20 MUSD fee to open a question case (6 decimals).
+    uint256 public constant CASE_FEE = 20 * 10 ** 6;
     /// @dev blockhash() is only available for the last 256 blocks.
     uint256 internal constant BLOCKHASH_WINDOW = 256;
+
+    /// @notice Release marker used by operators to prove that the selected
+    ///         immutable court includes party-aware admission and both bounded
+    ///         liveness-recovery paths.
+    uint256 public constant LIVENESS_RECOVERY_VERSION = 2;
+
+    /// @notice Release marker proving that voting windows are immutable and
+    ///         there is no post-deployment duration setter.
+    uint256 public constant AUTOMATED_TIMING_VERSION = 1;
+
+    /// @notice Human-safe lower bound enforced once, during deployment.
+    uint64 public constant MIN_VOTING_DURATION = 5 minutes;
+
+    /// @notice Time allowed to complete the first panel draw. If the eligible
+    ///         pool falls below the configured floor before that draw, anyone
+    ///         can cancel the case and return the unused fee to the opener.
+    uint64 public constant INITIAL_DRAW_WINDOW = 1 hours;
+
+    /// @notice Time allowed to restore a drawable, fully bonded panel after the
+    ///         first quorum miss. If it expires, anyone can resolve status quo.
+    /// @dev Fixed rather than admin-controlled so a live case's escape deadline
+    ///      cannot be shortened or extended after jurors have voted.
+    uint64 public constant REDRAW_RECOVERY_WINDOW = 1 hours;
 
     // The case fee splits 70/20/10 — jurors / reward pool / protocol — the economic
     // "constitution" from the design (reference/demothemis-site, ch. 8). Protocol
@@ -49,9 +74,10 @@ contract DisputeCourt {
     uint256 public immutable PANEL_SIZE;
     uint256 public immutable MIN_POOL;
 
-    // Phase durations (mutable: deployer flips to fast demo-mode minutes).
-    uint64 public commitDuration;
-    uint64 public revealDuration;
+    // Fixed at deployment. Draws only turn these immutable durations into
+    // concrete deadlines; no administrator can change them between open/draw.
+    uint64 public immutable commitDuration;
+    uint64 public immutable revealDuration;
 
     enum Status {
         Open, // awaiting draw
@@ -91,7 +117,14 @@ contract DisputeCourt {
     mapping(uint256 => mapping(address => bool)) public isPanelist;
     mapping(uint256 => mapping(address => bool)) public hasRevealed;
     mapping(uint256 => mapping(address => bool)) public voteOf; // valid iff hasRevealed
-    mapping(uint256 => mapping(address => bool)) public excludedFromRedraw;
+
+    /// @notice Deadline for restoring the one permitted redraw after a quorum
+    ///         miss. Zero unless a case is currently waiting for that redraw.
+    mapping(uint256 => uint64) public redrawDeadline;
+
+    /// @notice Fixed deadline for the first successful panel draw. Set when the
+    ///         case opens and cleared on its first successful draw or timeout.
+    mapping(uint256 => uint64) public initialDrawDeadline;
 
     event CaseOpened(uint256 indexed caseId, uint8 caseType, address indexed opener, uint256 feePool, string uri);
     event PanelDrawn(uint256 indexed caseId, address[] panel, uint64 commitDeadline, uint64 revealDeadline);
@@ -99,12 +132,16 @@ contract DisputeCourt {
     event Committed(uint256 indexed caseId, address indexed juror);
     event Revealed(uint256 indexed caseId, address indexed juror, bool vote);
     event Redrawn(uint256 indexed caseId);
+    event InitialDrawTimedOut(uint256 indexed caseId, address indexed refundTo, uint256 feeRefunded);
+    event RedrawRecoveryStarted(uint256 indexed caseId, uint64 deadline);
+    event RedrawRecoveryTimedOut(uint256 indexed caseId);
     event NoShowSlashed(uint256 indexed caseId, address indexed juror, uint256 amount);
     event FeePaid(uint256 indexed caseId, address indexed juror, uint256 amount);
     event FeeDistributed(uint256 indexed caseId, uint256 toJurors, uint256 toReward, uint256 toProtocol);
     event Resolved(uint256 indexed caseId, bool outcome, uint256 yes, uint256 no);
 
     error OnlyDeployer();
+    error ZeroAddress();
     error OnlyEscrow();
     error EscrowAlreadySet();
     error PoolTooSmall();
@@ -120,6 +157,11 @@ contract DisputeCourt {
     error NoCommitment();
     error BadReveal();
     error RevealNotOver();
+    error InitialDrawWindowExpired();
+    error InitialDrawWindowNotExpired();
+    error RedrawWindowExpired();
+    error RedrawWindowNotExpired();
+    error DurationTooShort();
 
     constructor(
         IERC20 _token,
@@ -133,6 +175,9 @@ contract DisputeCourt {
     ) {
         require(panelSize > 0 && minPool >= panelSize, "bad params");
         require(_rewardPool != address(0) && _protocol != address(0), "zero addr");
+        if (_commitDuration < MIN_VOTING_DURATION || _revealDuration < MIN_VOTING_DURATION) {
+            revert DurationTooShort();
+        }
         token = _token;
         registry = _registry;
         rewardPool = _rewardPool;
@@ -144,18 +189,14 @@ contract DisputeCourt {
         revealDuration = _revealDuration;
     }
 
+    /// @notice One-shot deployment wiring for the mutually linked escrow and
+    ///         court. It cannot be changed after the first successful call and
+    ///         grants no authority over cases, clocks, outcomes, or funds.
     function setEscrow(address _escrow) external {
         if (msg.sender != deployer) revert OnlyDeployer();
         if (escrow != address(0)) revert EscrowAlreadySet();
+        if (_escrow == address(0)) revert ZeroAddress();
         escrow = _escrow;
-    }
-
-    /// @notice Deployer-only phase-duration switch (the only admin power; e.g.
-    ///         flip to demo-mode minutes). Affects only cases opened afterwards.
-    function setDurations(uint64 _commitDuration, uint64 _revealDuration) external {
-        if (msg.sender != deployer) revert OnlyDeployer();
-        commitDuration = _commitDuration;
-        revealDuration = _revealDuration;
     }
 
     function caseCount() external view returns (uint256) {
@@ -170,15 +211,22 @@ contract DisputeCourt {
         return _cases[caseId];
     }
 
+    /// @notice Number of active jurors eligible for a case after excluding its
+    ///         parties. The active list is unique, so this remains constant-cost.
+    function eligibleJurorCount(address party1, address party2) public view returns (uint256 count) {
+        count = registry.jurorCount();
+        if (party1 != address(0) && registry.isActive(party1)) count--;
+        if (party2 != address(0) && party2 != party1 && registry.isActive(party2)) count--;
+    }
+
     // --- opening ----------------------------------------------------------------
 
     /// @notice Open a yes/no resolution question (demo case type B). `uri` points
-    ///         to the question text + evidence. Pulls the 2 MUSD case fee.
+    ///         to the question text + evidence. Pulls the 20 MUSD case fee.
     function openQuestion(bytes32 criteriaHash, string calldata uri) external returns (uint256 caseId) {
-        if (registry.jurorCount() < MIN_POOL) revert PoolTooSmall();
-        caseId = _open(QUESTION, msg.sender, address(0), criteriaHash, uri, 0);
+        if (eligibleJurorCount(msg.sender, address(0)) < MIN_POOL) revert PoolTooSmall();
+        caseId = _open(QUESTION, msg.sender, address(0), criteriaHash, uri, 0, CASE_FEE);
         token.safeTransferFrom(msg.sender, address(this), CASE_FEE);
-        _cases[caseId].feePool = CASE_FEE;
     }
 
     /// @notice Escrow-only entry point (demo case type A). The disputed deal's 2%
@@ -192,10 +240,9 @@ contract DisputeCourt {
         uint256 feeAmount
     ) external returns (uint256 caseId) {
         if (msg.sender != escrow) revert OnlyEscrow();
-        if (registry.jurorCount() < MIN_POOL) revert PoolTooSmall();
-        caseId = _open(ESCROW, payer, payee, criteriaHash, uri, dealId);
+        if (eligibleJurorCount(payer, payee) < MIN_POOL) revert PoolTooSmall();
+        caseId = _open(ESCROW, payer, payee, criteriaHash, uri, dealId, feeAmount);
         token.safeTransferFrom(msg.sender, address(this), feeAmount);
-        _cases[caseId].feePool = feeAmount;
     }
 
     function _open(
@@ -204,7 +251,8 @@ contract DisputeCourt {
         address party2,
         bytes32 criteriaHash,
         string calldata uri,
-        uint256 dealId
+        uint256 dealId,
+        uint256 feePool
     ) internal returns (uint256 caseId) {
         caseId = _cases.length;
         Case storage c = _cases.push();
@@ -215,8 +263,10 @@ contract DisputeCourt {
         c.criteriaHash = criteriaHash;
         c.uri = uri;
         c.dealId = dealId;
+        c.feePool = feePool;
         c.drawBlock = uint64(block.number + 1);
-        emit CaseOpened(caseId, caseType, party1, 0, uri);
+        initialDrawDeadline[caseId] = uint64(block.timestamp + INITIAL_DRAW_WINDOW);
+        emit CaseOpened(caseId, caseType, party1, feePool, uri);
     }
 
     // --- draw (two-step, permissionless) ---------------------------------------
@@ -228,6 +278,10 @@ contract DisputeCourt {
         if (caseId >= _cases.length) revert NoSuchCase();
         Case storage c = _cases[caseId];
         if (c.status != Status.Open) revert NotOpen();
+        uint64 firstDrawDeadline = initialDrawDeadline[caseId];
+        if (firstDrawDeadline != 0 && block.timestamp > firstDrawDeadline) revert InitialDrawWindowExpired();
+        uint64 recoveryDeadline = redrawDeadline[caseId];
+        if (recoveryDeadline != 0 && block.timestamp > recoveryDeadline) revert RedrawWindowExpired();
         if (block.number <= c.drawBlock) revert DrawBlockNotReady();
 
         bytes32 bh = blockhash(c.drawBlock);
@@ -245,13 +299,15 @@ contract DisputeCourt {
             return;
         }
 
-        // Select PANEL_SIZE distinct jurors, excluding parties and prior no-shows.
+        // Select PANEL_SIZE distinct active jurors, excluding parties. A prior
+        // no-show was fully slashed and deactivated; they can only become active
+        // again by posting a fresh full bond, which qualifies them for the one
+        // bounded retry without permanently bricking a 3/3 court.
         uint256 maxAttempts = PANEL_SIZE * 10 + 30;
         for (uint256 k; k < maxAttempts && c.panel.length < PANEL_SIZE; k++) {
             uint256 idx = uint256(keccak256(abi.encodePacked(bh, caseId, k))) % count;
             address cand = registry.jurorAt(idx);
             if (cand == c.party1 || cand == c.party2) continue;
-            if (excludedFromRedraw[caseId][cand]) continue;
             if (isPanelist[caseId][cand]) continue;
             isPanelist[caseId][cand] = true;
             c.panel.push(cand);
@@ -270,6 +326,8 @@ contract DisputeCourt {
         }
         c.commitDeadline = uint64(block.timestamp) + commitDuration;
         c.revealDeadline = c.commitDeadline + revealDuration;
+        if (firstDrawDeadline != 0) delete initialDrawDeadline[caseId];
+        if (recoveryDeadline != 0) delete redrawDeadline[caseId];
         c.status = Status.Drawn;
         emit PanelDrawn(caseId, c.panel, c.commitDeadline, c.revealDeadline);
     }
@@ -304,7 +362,38 @@ contract DisputeCourt {
     // --- resolve (permissionless) ----------------------------------------------
 
     function resolve(uint256 caseId) external {
+        if (caseId >= _cases.length) revert NoSuchCase();
         Case storage c = _cases[caseId];
+
+        // An undrawn case can be cancelled after its fixed first-panel deadline,
+        // returning the unused fee and (for escrow) the payer's principal. A
+        // first-round quorum miss instead reopens for one bounded retry; after
+        // that deadline, anyone may close at status quo. The retry panel is
+        // empty, so the no-winner fee path routes the juror cut to the reward
+        // pool; escrow principal is released by _finalize(false).
+        if (c.status == Status.Open) {
+            uint64 firstDrawDeadline = initialDrawDeadline[caseId];
+            if (firstDrawDeadline != 0) {
+                if (block.timestamp <= firstDrawDeadline) revert InitialDrawWindowNotExpired();
+                uint256 feeRefunded = c.feePool;
+                c.feePool = 0;
+                delete initialDrawDeadline[caseId];
+                _markResolved(c, false);
+                if (feeRefunded != 0) token.safeTransfer(c.party1, feeRefunded);
+                emit InitialDrawTimedOut(caseId, c.party1, feeRefunded);
+                _settleAndEmit(caseId, c, false, 0, 0);
+                return;
+            }
+            uint64 recoveryDeadline = redrawDeadline[caseId];
+            if (c.redraws == 0 || recoveryDeadline == 0) revert NotDrawn();
+            if (block.timestamp <= recoveryDeadline) revert RedrawWindowNotExpired();
+            delete redrawDeadline[caseId];
+            emit RedrawRecoveryTimedOut(caseId);
+            _distributeFee(caseId, c, false);
+            _finalize(caseId, c, false, 0, 0);
+            return;
+        }
+
         if (c.status != Status.Drawn) revert NotDrawn();
         if (block.timestamp <= c.revealDeadline) revert RevealNotOver();
 
@@ -328,7 +417,6 @@ contract DisputeCourt {
                     registry.slash(juror, b, rewardPool);
                     emit NoShowSlashed(caseId, juror, b);
                 }
-                excludedFromRedraw[caseId][juror] = true;
             }
         }
 
@@ -341,7 +429,10 @@ contract DisputeCourt {
                 _clearPanel(c, caseId);
                 c.drawBlock = uint64(block.number + 1);
                 c.status = Status.Open;
+                uint64 deadline = uint64(block.timestamp + REDRAW_RECOVERY_WINDOW);
+                redrawDeadline[caseId] = deadline;
                 emit Redrawn(caseId);
+                emit RedrawRecoveryStarted(caseId, deadline);
                 return;
             }
             _distributeFee(caseId, c, false); // second miss → status quo
@@ -363,6 +454,7 @@ contract DisputeCourt {
     function _distributeFee(uint256 caseId, Case storage c, bool outcome) internal {
         uint256 pool = c.feePool;
         if (pool == 0) return;
+        c.feePool = 0;
         uint256 toReward = (pool * BPS_REWARD) / 10_000;
         uint256 toProtocol = (pool * BPS_PROTOCOL) / 10_000;
         uint256 jurorPot = pool - toReward - toProtocol;
@@ -396,15 +488,23 @@ contract DisputeCourt {
     }
 
     function _finalize(uint256 caseId, Case storage c, bool outcome, uint256 yes, uint256 no) internal {
+        _markResolved(c, outcome);
+        _settleAndEmit(caseId, c, outcome, yes, no);
+    }
+
+    function _markResolved(Case storage c, bool outcome) internal {
         c.status = Status.Resolved;
         c.outcome = outcome;
+    }
+
+    function _settleAndEmit(uint256 caseId, Case storage c, bool outcome, uint256 yes, uint256 no) internal {
         if (c.caseType == ESCROW) {
             IEscrowSettlement(escrow).settle(c.dealId, outcome);
         }
         emit Resolved(caseId, outcome, yes, no);
     }
 
-    /// @dev Reset per-juror flags + panel for a redraw (keeps feePool + excluded).
+    /// @dev Reset per-juror flags + panel for a clean redraw; keeps the fee pool.
     function _clearPanel(Case storage c, uint256 caseId) internal {
         uint256 len = c.panel.length;
         for (uint256 i; i < len; i++) {
@@ -432,7 +532,17 @@ contract DisputeCourt {
     function phaseOf(uint256 caseId) external view returns (Phase) {
         Case storage c = _cases[caseId];
         if (c.status == Status.Resolved) return Phase.Resolved;
-        if (c.status == Status.Open) return Phase.Open;
+        if (c.status == Status.Open) {
+            uint64 firstDrawDeadline = initialDrawDeadline[caseId];
+            if (firstDrawDeadline != 0 && block.timestamp > firstDrawDeadline) {
+                return Phase.Resolvable;
+            }
+            uint64 recoveryDeadline = redrawDeadline[caseId];
+            if (c.redraws != 0 && recoveryDeadline != 0 && block.timestamp > recoveryDeadline) {
+                return Phase.Resolvable;
+            }
+            return Phase.Open;
+        }
         if (block.timestamp <= c.commitDeadline) return Phase.Commit;
         if (block.timestamp <= c.revealDeadline) return Phase.Reveal;
         return Phase.Resolvable;

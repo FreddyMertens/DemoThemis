@@ -1,31 +1,49 @@
 # Mainnet question-queue runbook
 
-Updated: 2026-07-14
+Updated: 2026-07-22
 Canonical product: [https://demothemis.netlify.app/app](https://demothemis.netlify.app/app)
 
-This is the only activation procedure for the current Demo MVP. It runs one
-official public-research question at a time through exactly three Production
-World ID jurors. The question bank, opener, and hashes are fixed in
+This is the only activation procedure for the Demo MVP. It runs one official
+public-research question at a time through a 3-seat panel drawn from at least four
+eligible jurors verified through the supported World ID Router after the opener is excluded. Four is the recommended
+`PANEL_SIZE + 1` availability floor; the question bank, opener, and hashes are fixed in
 `web/public/cases/question-queue.json`; jurors commit and reveal in World App;
 the scheduled keeper advances the non-juror steps.
 
+> **CAPSTONE PAUSED — REDEPLOYMENT REQUIRED.** The addresses recorded below are
+> the immutable Step-5 deployment and do not contain the eligible-party preflight,
+> first-draw unwind, or quorum-miss recovery now implemented in source. Do not
+> register capstone jurors or broadcast keeper
+> transactions until a fresh recovery-enabled `WorldIDRouterGate` deployment has been source-verified,
+> recorded here, allowlisted in the World Developer Portal, and selected by the app
+> and keeper. Follow [LIVENESS_RECOVERY.md](LIVENESS_RECOVERY.md).
+
 > **Do not use** `scripts/capstone-mainnet.sh open-question` or
 > `scripts/capstone-mainnet.sh open-escrow`. Those commands belong to the former
-> capstone and create cases outside the official 21-question queue. Any unresolved
-> nonofficial case deliberately pauses the new keeper.
+> capstone and create cases outside the official 21-question queue. The keeper warns
+> about but ignores nonofficial cases for queue sequencing, so refundable outsider spam
+> cannot censor the authenticated official queue.
 
 ## Current audited state
 
-As read from World Chain mainnet and GitHub on 2026-07-14:
+As read from World Chain mainnet and the repository on 2026-07-22:
 
-- Active jurors: **0 / exactly 3 required**
+- Active jurors on the legacy instance: **0 / minimum 3 required to open**
 - Seal window: **300 seconds / ready**
 - Reveal window: **300 seconds / ready**
 - Official questions filed: **0 / 21**
 - Unresolved nonofficial cases: **none**
 - `MAINNET_QUESTION_KEEPER_PRIVATE_KEY`: **configured**
-- Mainnet question-keeper workflow: **enabled; waits safely for three jurors**
-- Developer Portal configuration: **verified in the signed-in Portal**
+- Mainnet question-keeper workflow: **configured, but must not broadcast before cutover**
+- Automated replacement: **eligible-party preflight, fixed first-draw unwind, Permit2 re-bond, bounded retry, and immutable voting windows are implemented and tested in source; not deployed**
+- Developer Portal configuration: **legacy addresses verified; replacement permissions pending**
+
+The keeper enforces this pause in code: `--execute` exits before creating a
+wallet client unless the selected deployment record attests the current source and all
+seven release capabilities: eligible-party preflight, bounded first-draw timeout,
+unused-fee refund, bounded redraw window, permissionless timeout finalizer, and Permit2
+re-bond, plus immutable voting durations. It also requires court liveness version 2,
+registry liveness version 1, and automated timing version 1.
 
 The Portal now identifies the app as **DemoThemis**, opens the Mini App at the
 Netlify `/onboard` route, keeps the public website at the Netlify root, and makes
@@ -33,20 +51,26 @@ the draft available in every supported country. A real phone still has to scan
 the preview QR before jurors are invited; Portal settings alone cannot prove the
 World App handoff.
 
-## Fixed mainnet instance
+## Legacy mainnet instance — historical evidence only
 
 | Contract | Address |
 |---|---|
 | MockUSD | `0x70ECE5DcAA68741BF41F6A4Aa0af3a8D44e4497a` |
-| WorldIDGate (Production verifier) | `0x0540f47842a31C681dce76E856b4b76fcCc53Fbe` |
+| WorldIDGate (historical v4 preview adapter) | `0x0540f47842a31C681dce76E856b4b76fcCc53Fbe` |
 | JurorRegistry | `0x226974149087b36769a54B998acfe4087eEb7F84` |
 | RewardPool | `0xAF96A65A6b9643451E33cAf96717d071eDae04A0` |
 | DisputeCourt (3 seats / minimum pool 3) | `0xCDF427D18da8C2e8CCf9a95310bC38857EEf795A` |
 | Permit2 | `0x000000000022D473030F116dDEE9F6B43aC78BA3` |
 
+These addresses remain source-verified historical evidence, but the current
+`DisputeCourt.sol` and `JurorRegistry.sol` intentionally no longer match their
+bytecode. Replace this table only after recording the old instance in deployment
+history and independently verifying the new addresses.
+
 The fixed official opener is
-`0xe8E539aa5c3E74453892DAd479Bf9feB51CF516c`. It must remain outside the juror
-pool because the court excludes a question's opener from its panel.
+`0xe8E539aa5c3E74453892DAd479Bf9feB51CF516c`. Keep it outside the juror pool as
+an operational rule. The replacement court also subtracts any active opener before
+checking `MIN_POOL`, so violating that rule cannot create an undrawable accepted case.
 
 ## 1. Verify the deployment cutover
 
@@ -60,11 +84,19 @@ In the World Developer Portal, open app
 - The preview QR is generated from this draft and must open the Netlify
   `/onboard` screen in World App during the phone smoke test.
 - Contract permissions still include MockUSD, JurorRegistry, DisputeCourt,
-  DealEscrow, WorldIDGate, RewardPool, and Permit2.
+  DealEscrow, WorldIDRouterGate, the World ID Router, RewardPool, and Permit2.
 - Permit2 token permissions include MockUSD.
 
-These settings and permissions were reloaded and verified in the signed-in
-Portal on 2026-07-14.
+Before changing Portal permissions or inviting jurors, independently verify the new
+deployment record and source matches. The selected court must report
+`LIVENESS_RECOVERY_VERSION() == 2`; the selected registry must report version 1; the
+court must report `AUTOMATED_TIMING_VERSION() == 1`; and the deployment record must mark
+all seven release capabilities true. Preserve the old
+addresses as legacy history rather than overwriting them.
+
+The legacy settings and permissions were reloaded and verified in the signed-in
+Portal on 2026-07-14. That is historical evidence only: every replacement address and
+the replacement `postBondWithPermit2()` call must be added and re-verified after cutover.
 
 Netlify must retain the server and public variables listed in the
 [unified deployment plan](../../docs/UNIFIED_DEPLOYMENT_PLAN.md). A quick
@@ -93,31 +125,34 @@ The first official URI is
 when all four identity fields match: question type, URI, exact hash, and fixed
 opener.
 
-## 3. Human-safe voting windows — complete
+## 3. Verify immutable human-safe voting windows
 
-The deployer set both windows to five minutes on 2026-07-14. The successful
+The deployer set both windows to five minutes on the legacy court on 2026-07-14. That mutable
 [World Chain transaction](https://worldscan.org/tx/0x429dfd1ad1aa5e0f628ea02c47950e440ad658b38540401d8ae045f3316866ca)
-is the permanent configuration receipt.
+is historical configuration evidence only; the replacement removes `setDurations` entirely.
 
-The following remains the only supported update command if the windows ever need
-to be deliberately changed again:
+Deploy the replacement with five-minute windows (the deployment script defaults to these values):
 
 ```bash
-bash scripts/capstone-mainnet.sh durations 300 300
+WORLD_ID_ROUTER=0x17B354dD2595411ff79041f930e491A4Df39A278 \
+  WORLD_ID_APP_ID=app_7bdfda4db4e2f59dd4a2427cd2bd860d \
+  PANEL_SIZE=3 MIN_POOL=4 COMMIT_DURATION=300 REVEAL_DURATION=300 \
+  forge script script/Deploy.s.sol --rpc-url worldchain_mainnet --broadcast
 ```
 
-Run it from `DemoThemisMVP` with the ignored local `.env` configured for the
-deployer. Five minutes is the minimum enforced by the queue keeper. Verify the
-current values with:
+The contract rejects either constructor value below 300 seconds. After selecting the
+replacement addresses, verify the immutable values and the automated-timing marker with:
 
 ```bash
 node scripts/mainnet-question-keeper.mjs
 ```
 
-The report must show at least `300s seal / 300s reveal`. The command above is a
-read-only dry run and broadcasts nothing.
+Record the replacement deployment transaction and constructor values in the evidence
+table. The report must show `AUTOMATED_TIMING_VERSION() == 1` and at least
+`300s seal / 300s reveal`. The keeper command above is a read-only dry run and
+broadcasts nothing.
 
-## 4. Register exactly three jurors
+## 4. Register at least four eligible jurors — only after the replacement gate passes
 
 Each human must:
 
@@ -125,16 +160,19 @@ Each human must:
 2. Visit `/onboard` and sign in with the wallet they will use for both voting
    stages.
 3. Tap **Verify with World ID & join**.
-4. Complete the Production World ID proof and the valueless 5 MUSD bond batch.
+4. Complete the Router-compatible Orb proof and the valueless 5 MUSD bond batch.
 5. Save the registration Worldscan link for the final evidence table.
 
-Keep all three people reachable for both voting windows. They must reveal on the
+Keep every selected panelist reachable for both voting windows. They must reveal on the
 same device/browser storage used to seal because that device holds the ballot
 secret.
 
-After each registration, run the dry report again. Stop at exactly three. The
-deployed registry has no hard maximum; if the pool exceeds three, the keeper
-pauses until an extra active juror uses **Leave jury**.
+After each registration, run the dry report again. Deploy with `PANEL_SIZE = 3` and
+`MIN_POOL >= 4`, then wait for at least four **eligible** jurors before opening. The
+contract remains fund-safe at an exact eligible count of three because its fixed
+first-draw deadline can unwind, but that setting has no one-withdrawal adjudication
+reserve. The keeper uses the court's case-specific eligible count rather than raw
+`jurorCount()`. Additional active jurors are allowed; the pool has no maximum.
 
 ## 5. Verify the scheduled keeper
 
@@ -152,7 +190,7 @@ gh secret list --repo FreddyMertens/DemoThemis
 gh run list --repo FreddyMertens/DemoThemis --workflow mainnet-question-keeper.yml --limit 10
 ```
 
-Before three jurors exist, a healthy run reports `WAITING` and exits successfully
+Before the deployed minimum pool exists, a healthy run reports `WAITING` and exits successfully
 without broadcasting. The keeper's first necessary runs after registration may
 separately claim valueless MUSD, approve
 the court, open question one, and draw its panel. This deliberate one-step limit
@@ -189,15 +227,31 @@ is preferred. Never run `--execute` before checking the dry report.
    every on-chain stage.
 8. Confirm a later keeper run opens question two—and only then.
 
-If the dry report names any unresolved nonofficial case or more than one official
-case, stop. Do not try to work around the guard. Resolve the unexpected chain
-state deliberately before continuing.
+If anyone misses reveal, do not improvise or manually alter the pool. Let the
+keeper resolve the elapsed round. A first quorum miss starts the fixed one-hour
+recovery window. Each fully slashed juror can use **Post a fresh bond & rejoin**
+without repeating World ID; the keeper draws the retry once three panel candidates
+are active. If the pool cannot recover in time, a later keeper run permissionlessly
+finalizes status quo. The recovery deadline never extends, and a second quorum
+miss also finalizes status quo.
+
+If the first panel cannot be drawn after an accepted case—for example, because a
+juror withdraws—do not repeatedly re-arm it or add funds. Its fixed one-hour
+`initialDrawDeadline` never moves. After expiry, a later keeper run permissionlessly
+unwinds the case: the entire unused case fee returns to the opener, or for escrow the
+unused fee and principal both return to the payer. Confirm the `InitialDrawTimedOut`
+beneficiary/amount and the final settlement events before advancing the queue.
+
+If the dry report names more than one unresolved **official** case, stop. A nonofficial
+case is reported as a warning and deliberately ignored by the one-active-official-case
+policy; it cannot censor the queue merely by being opened. Still review it because a
+parallel outside case can compete for juror availability at the contract layer.
 
 ## 7. Capture completion evidence
 
 Add these links to `docs/DEMO.md`:
 
-- Three Production World ID registration transactions
+- At least four Production World ID registration transactions for the recommended 3-seat / minimum-4 replacement
 - One sponsored World App transaction trace
 - Question one `CaseOpened` and `PanelDrawn` transactions
 - All three `Committed` and all three `Revealed` transactions

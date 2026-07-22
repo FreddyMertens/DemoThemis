@@ -17,7 +17,7 @@ import {
 } from 'iconoir-react';
 import { LiveBallot } from '@/components/LiveBallot';
 import { usePolledData } from '@/lib/hooks';
-import { explorerTx } from '@/lib/chain';
+import { explorerTx, SUPPORTS_LIVENESS_RECOVERY } from '@/lib/chain';
 import {
   fetchCaseContent,
   getCaseActivity,
@@ -31,6 +31,7 @@ import {
   type OracleDashboard,
   type QuestionQueueEntry,
 } from '@/lib/question-queue';
+import { fmtMusd } from '@/lib/format';
 
 type ProductTab = 'live' | 'submit';
 type ContentStatus = 'idle' | 'loading' | 'verified' | 'mismatch' | 'unavailable';
@@ -44,7 +45,7 @@ const mvpRoadmapRows = [
   {
     capability: 'Identity & draw',
     liveTitle: 'Verified personhood, limited draw',
-    liveBody: 'World ID 4.0, a nullifier sybil gate, wallet-bound proofs, and a post-question draw for this three-seat demo.',
+    liveBody: 'A World ID proof checked by the documented mainnet Router, a nullifier sybil gate, wallet binding, and a post-question draw for this three-seat demo.',
     milestone: 'M1',
     roadmapTitle: 'Verifiable production randomness',
     roadmapBody: 'VRF or drand replaces the current blockhash-based seed, with correctness and verifier hardening.',
@@ -92,6 +93,15 @@ function formatMoment(value?: string) {
     timeStyle: 'short',
     timeZone: 'UTC',
   }).format(date) + ' UTC';
+}
+
+function formatRecoveryDeadline(value: bigint) {
+  if (value === BigInt(0)) return 'the fixed recovery deadline';
+  return `${new Intl.DateTimeFormat('en-GB', {
+    dateStyle: 'medium',
+    timeStyle: 'short',
+    timeZone: 'UTC',
+  }).format(Number(value) * 1000)} UTC`;
 }
 
 function formatExactMoment(value?: string) {
@@ -230,28 +240,31 @@ function SeatStrip({
   activity: CaseActivity | null;
 }) {
   return (
-    <div className="oracle-seats" aria-label="Three verified jury seats">
+    <div className="oracle-seats" aria-label="Three seats drawn from the active juror pool">
       {[0, 1, 2].map((index) => {
         const juror = activity?.jurors[index];
-        const registered = index < Math.min(3, jurorCount);
         const seated = !!activeCase?.panel[index];
+        const poolCapacityReady = !activeCase && index < Math.min(3, jurorCount);
+        const ready = seated || poolCapacityReady;
         const status = juror?.revealed
           ? 'Revealed'
           : juror?.committed
             ? 'Sealed'
             : seated
               ? 'Seated'
-              : registered
-                ? 'Verified'
-                : 'Open seat';
+              : activeCase
+                ? 'Awaiting panel draw'
+                : poolCapacityReady
+                  ? 'Pool capacity ready'
+                  : 'Needs active juror';
         return (
-          <div key={index} className={`oracle-seat${registered ? ' is-ready' : ''}${juror?.revealed ? ' is-revealed' : juror?.committed ? ' is-sealed' : ''}`}>
+          <div key={index} className={`oracle-seat${ready ? ' is-ready' : ''}${juror?.revealed ? ' is-revealed' : juror?.committed ? ' is-sealed' : ''}`}>
             <span className="oracle-seat-number">0{index + 1}</span>
             <div>
-              <strong>{seated ? compactAddress(activeCase!.panel[index]) : `Juror ${index + 1}`}</strong>
+              <strong>{seated ? compactAddress(activeCase!.panel[index]) : `Panel seat ${index + 1}`}</strong>
               <small>{status}</small>
             </div>
-            <i aria-hidden="true">{registered ? '✓' : ''}</i>
+            <i aria-hidden="true">{ready ? '✓' : ''}</i>
           </div>
         );
       })}
@@ -259,15 +272,25 @@ function SeatStrip({
   );
 }
 
-function CaseProgress({ courtCase }: { courtCase: CaseView }) {
+function CaseProgress({ courtCase, activity }: { courtCase: CaseView; activity: CaseActivity | null }) {
+  const initialDrawUnwind = Boolean(activity?.events.initialDrawTimedOut)
+    || (courtCase.status === 0 && courtCase.redraws === 0 && courtCase.panel.length === 0 && courtCase.phase === 'Resolvable');
   const rank = phaseIndex(courtCase.phase);
-  const steps = [
-    { label: 'Filed', complete: true, current: false },
-    { label: 'Panel seated', complete: rank >= 1, current: rank === 0 },
-    { label: 'Seal window', complete: rank >= 2, current: rank === 1 },
-    { label: 'Reveal window', complete: rank >= 3, current: rank === 2 },
-    { label: 'Ruling', complete: rank === 4, current: rank === 3 },
-  ];
+  const steps = initialDrawUnwind
+    ? [
+        { label: 'Filed', complete: true, current: false },
+        { label: 'No panel', complete: false, current: false },
+        { label: 'No seals', complete: false, current: false },
+        { label: 'No reveals', complete: false, current: false },
+        { label: 'Refund', complete: courtCase.phase === 'Resolved', current: courtCase.phase === 'Resolvable' },
+      ]
+    : [
+        { label: 'Filed', complete: true, current: false },
+        { label: 'Panel seated', complete: rank >= 1, current: rank === 0 },
+        { label: 'Seal window', complete: rank >= 2, current: rank === 1 },
+        { label: 'Reveal window', complete: rank >= 3, current: rank === 2 },
+        { label: 'Ruling', complete: rank === 4, current: rank === 3 },
+      ];
 
   return (
     <ol className="oracle-progress" aria-label={`Case progress: ${phaseLabels[courtCase.phase]}`}>
@@ -314,7 +337,8 @@ function ChainProof({ caseId, activity }: { caseId: number; activity: CaseActivi
     { label: 'Panel', hashes: activity.events.panelDrawn.map((event) => event.transactionHash) },
     { label: 'Sealed', hashes: activity.events.committed.map((event) => event.transactionHash) },
     { label: 'Revealed', hashes: activity.events.revealed.map((event) => event.transactionHash) },
-    { label: 'Ruling', hashes: activity.events.resolved ? [activity.events.resolved.transactionHash] : [] },
+    { label: 'Initial draw unwind', hashes: activity.events.initialDrawTimedOut ? [activity.events.initialDrawTimedOut.transactionHash] : [] },
+    { label: activity.events.initialDrawTimedOut ? 'Terminal record' : 'Ruling', hashes: activity.events.resolved ? [activity.events.resolved.transactionHash] : [] },
     { label: 'Juror paid', hashes: activity.events.feePaid.map((event) => event.transactionHash) },
     { label: 'Fee split', hashes: activity.events.feeDistributed ? [activity.events.feeDistributed.transactionHash] : [] },
   ].filter((group) => group.hashes.length > 0);
@@ -364,7 +388,32 @@ function LiveCasePanel({
   const courtCase = dashboard?.activeCase ?? null;
   const displayedQuestion = courtCase ? activeQuestion : nextQuestion;
   const jurorCount = dashboard?.stats.jurorCount ?? 0;
+  const panelSize = dashboard?.stats.panelSize ?? 3;
+  const openingMinimum = dashboard?.stats.minPool ?? panelSize;
   const questionUnavailable = courtCase && (contentStatus === 'mismatch' || contentStatus === 'unavailable');
+  const awaitingInitialDraw = courtCase?.status === 0 && courtCase.redraws === 0 && courtCase.panel.length === 0;
+  const boundedInitialDraw = SUPPORTS_LIVENESS_RECOVERY && awaitingInitialDraw;
+  const legacyInitialDraw = !SUPPORTS_LIVENESS_RECOVERY && awaitingInitialDraw;
+  const initialDrawExpired = boundedInitialDraw && courtCase?.phase === 'Resolvable';
+  const awaitingRetry = courtCase?.status === 0 && courtCase.redraws > 0;
+  const recoveringPanel = SUPPORTS_LIVENESS_RECOVERY && awaitingRetry;
+  const legacyStalledPanel = !SUPPORTS_LIVENESS_RECOVERY && awaitingRetry;
+  const recoveryExpired = recoveringPanel && courtCase?.phase === 'Resolvable';
+  const liveStateLabel = courtCase
+    ? boundedInitialDraw
+      ? initialDrawExpired ? 'Initial draw expired · refund ready' : 'Waiting for the first panel'
+      : legacyInitialDraw
+        ? 'Legacy initial draw · no timeout protection'
+        : recoveringPanel
+          ? recoveryExpired ? 'Recovery expired · status quo ready' : 'Restoring the retry panel'
+          : legacyStalledPanel
+            ? 'Legacy redraw · no timeout protection'
+            : phaseLabels[courtCase.phase]
+    : !SUPPORTS_LIVENESS_RECOVERY
+      ? 'Replacement deployment required'
+      : (dashboard?.officialEligibleJurors ?? 0) >= openingMinimum
+        ? 'Ready to file'
+        : 'Building the active juror pool';
 
   return (
     <section id="oracle-live-panel" role="tabpanel" aria-labelledby="oracle-live-tab" className="oracle-panel" tabIndex={-1}>
@@ -375,13 +424,7 @@ function LiveCasePanel({
               <span className="oracle-eyebrow">{courtCase ? `Live case · #${courtCase.id}` : 'Next public question'}</span>
               <div className="oracle-live-state">
                 <i aria-hidden="true" />
-                {courtCase
-                  ? phaseLabels[courtCase.phase]
-                  : jurorCount === 3
-                    ? 'Ready to file'
-                    : jurorCount > 3
-                      ? 'Official pool requires exactly three jurors'
-                      : 'Forming the three-person jury'}
+                {liveStateLabel}
               </div>
             </div>
             <div className="oracle-chain-mark"><Fingerprint /><span>World Chain</span></div>
@@ -425,7 +468,59 @@ function LiveCasePanel({
 
           {courtCase ? (
             <>
-              <CaseProgress courtCase={courtCase} />
+              <CaseProgress courtCase={courtCase} activity={activity} />
+              {boundedInitialDraw && (
+                <div className="oracle-ready-block" role="status">
+                  <div>
+                    <span>{initialDrawExpired ? 'Permissionless unwind available' : 'Bounded initial draw'}</span>
+                    <strong>{initialDrawExpired ? 'No panel was seated' : 'Case parties are excluded from the draw'}</strong>
+                    <p>
+                      {initialDrawExpired
+                        ? `The first-panel deadline passed. Anyone may unwind the case; ${fmtMusd(courtCase.feePool)} MUSD returns to the payer${courtCase.caseType === 1 ? ' together with the escrow principal' : ''}, without recording a merits ruling.`
+                        : `The first panel must be seated by ${formatRecoveryDeadline(courtCase.initialDrawDeadline)}. If eligibility falls below the configured floor, the fixed deadline still guarantees a refund${courtCase.caseType === 1 ? ' and return of escrow principal' : ''}.`}
+                    </p>
+                  </div>
+                  {!initialDrawExpired && <Link href="/onboard" className="oracle-primary-link">Join the pool <ArrowRight /></Link>}
+                </div>
+              )}
+              {legacyInitialDraw && (
+                <div className="oracle-ready-block" role="alert">
+                  <div>
+                    <span>Legacy liveness issue</span>
+                    <strong>This immutable case has no initial-draw deadline</strong>
+                    <p>
+                      Party exclusions or a withdrawal can leave it without three eligible jurors. The replacement court
+                      preflights eligibility and can refund and unwind; those protections cannot be added retroactively.
+                    </p>
+                  </div>
+                </div>
+              )}
+              {recoveringPanel && (
+                <div className="oracle-ready-block" role="status">
+                  <div>
+                    <span>{recoveryExpired ? 'Permissionless finalization available' : 'Bounded panel recovery'}</span>
+                    <strong>{jurorCount} active · {panelSize} eligible needed for the retry</strong>
+                    <p>
+                      {recoveryExpired
+                        ? 'The fixed deadline passed. The keeper can now finalize this question as status quo without waiting for more jurors.'
+                        : `Fully slashed jurors may restore a fresh bond without another World ID proof. The draw must succeed by ${formatRecoveryDeadline(courtCase.recoveryDeadline)}; this deadline cannot be extended.`}
+                    </p>
+                  </div>
+                  {!recoveryExpired && <Link href="/onboard" className="oracle-primary-link">Restore or join <ArrowRight /></Link>}
+                </div>
+              )}
+              {legacyStalledPanel && (
+                <div className="oracle-ready-block" role="alert">
+                  <div>
+                    <span>Legacy liveness issue</span>
+                    <strong>This immutable case has no recovery deadline</strong>
+                    <p>
+                      It needs additional eligible humans to fill the redraw. The bounded timeout protects future cases
+                      only after the replacement court is deployed; it cannot be applied retroactively here.
+                    </p>
+                  </div>
+                </div>
+              )}
               <div className="oracle-counts" aria-label="Live ballot counts">
                 <div><span>Panel</span><strong>{courtCase.panel.length}/3</strong><small>verified jurors seated</small></div>
                 <div><span>Sealed</span><strong>{activity ? `${activity.committedCount}/3` : '—'}</strong><small>answers locked on-chain</small></div>
@@ -443,11 +538,11 @@ function LiveCasePanel({
           ) : (
             <div className="oracle-ready-block">
               <div>
-                <span>Verified jury seats</span>
-                <strong>{jurorCount === 3 ? '3 of 3 ready' : jurorCount > 3 ? `${jurorCount} registered` : `${jurorCount} of 3 ready`}</strong>
-                <p>{jurorCount > 3 ? 'The official queue pauses until the pool returns to exactly three.' : 'The question opens when the official three-person jury is ready.'}</p>
+                <span>Active juror pool</span>
+                <strong>{jurorCount} verified {jurorCount === 1 ? 'human' : 'humans'}</strong>
+                <p>{!SUPPORTS_LIVENESS_RECOVERY ? 'The official queue stays paused until upgraded addresses are configured.' : (dashboard?.officialEligibleJurors ?? 0) >= openingMinimum ? `The ${openingMinimum}-juror admission floor is met after excluding the opener; ${panelSize} seats will be drawn.` : `${openingMinimum - (dashboard?.officialEligibleJurors ?? 0)} more eligible jurors are needed after excluding the opener.`}</p>
               </div>
-              {jurorCount < 3 && <Link href="/onboard" className="oracle-primary-link">Join as a juror <ArrowRight /></Link>}
+              <Link href="/onboard" className="oracle-primary-link">{SUPPORTS_LIVENESS_RECOVERY ? 'Join the pool' : 'Review the pause'} <ArrowRight /></Link>
             </div>
           )}
         </article>
@@ -455,7 +550,7 @@ function LiveCasePanel({
         <aside className="oracle-jury-card">
           <div className="oracle-jury-head">
             <span><Group /></span>
-            <div><small>The panel</small><h3>Three verified humans</h3></div>
+            <div><small>{courtCase ? 'The current panel' : 'Per-case panel'}</small><h3>{courtCase ? 'Three verified humans' : 'Three seats drawn from the pool'}</h3></div>
           </div>
           <SeatStrip jurorCount={jurorCount} activeCase={courtCase} activity={activity} />
           <div className="oracle-jury-rule">
@@ -473,6 +568,7 @@ function LiveCasePanel({
       {courtCase && (courtCase.phase === 'Commit' || courtCase.phase === 'Reveal') && (
         <LiveBallot
           caseId={courtCase.id}
+          round={courtCase.redraws}
           panel={courtCase.panel}
           phase={courtCase.phase}
           contentVerified={contentStatus === 'verified'}
@@ -491,8 +587,11 @@ function LiveCasePanel({
           <div className="oracle-receipt-list">
             {dashboard.resolvedCases.map((receiptCase) => (
               <Link href={`/case/${receiptCase.id}`} key={receiptCase.id}>
-                <span className={receiptCase.outcome ? 'is-yes' : 'is-no'}>{receiptCase.outcome ? 'YES' : 'NO'}</span>
-                <div><strong>Case #{receiptCase.id}</strong><small>Three-person on-chain ruling</small></div>
+                <span className="is-recorded">DONE</span>
+                <div>
+                  <strong>Case #{receiptCase.id}</strong>
+                  <small>Recorded result · open receipt</small>
+                </div>
                 <ArrowRight />
               </Link>
             ))}
@@ -505,13 +604,46 @@ function LiveCasePanel({
 
 function ResolvedReceipt({ courtCase, activity }: { courtCase: CaseView; activity: CaseActivity }) {
   const rulingTx = activity.events.resolved?.transactionHash;
+  const initialDrawTimedOut = activity.events.initialDrawTimedOut;
+  const recoveryTimedOut = activity.events.recoveryTimedOut !== null;
+  const firstRoundYes = recoveryTimedOut ? activity.events.revealed.filter((event) => event.vote).length : 0;
+  const firstRoundNo = recoveryTimedOut ? activity.events.revealed.filter((event) => !event.vote).length : 0;
+  const revealed = activity.yes + activity.no;
+  const retryMissedQuorum = courtCase.redraws > 0 && revealed < 2;
+  const tied = revealed >= 2 && activity.yes === activity.no;
   return (
     <section className="oracle-final-receipt" aria-labelledby="ruling-title">
       <div className="oracle-ruling-mark"><CheckCircle /></div>
       <div className="oracle-ruling-copy">
-        <span>Ruling recorded on World Chain</span>
-        <h2 id="ruling-title">The jury answered {courtCase.outcome ? 'YES' : 'NO'}.</h2>
-        <p>{activity.yes} YES · {activity.no} NO · {activity.revealedCount}/3 answers revealed</p>
+        <span>{initialDrawTimedOut ? 'Unwind recorded on World Chain' : 'Ruling recorded on World Chain'}</span>
+        <h2 id="ruling-title">
+          {initialDrawTimedOut
+            ? 'No panel was seated. The case was unwound.'
+            : recoveryTimedOut
+            ? 'Recovery expired. Status quo was applied.'
+            : retryMissedQuorum
+              ? 'The retry missed quorum. Status quo was applied.'
+              : tied
+                ? 'The panel tied. Status quo was applied.'
+                : `The jury answered ${courtCase.outcome ? 'YES' : 'NO'}.`}
+        </h2>
+        {initialDrawTimedOut ? (
+          <p>
+            {fmtMusd(initialDrawTimedOut.feeRefunded)} MUSD returned to {compactAddress(initialDrawTimedOut.refundTo)}
+            {courtCase.caseType === 1 ? ' · escrow principal returned to the payer' : ''} · no merits ruling
+          </p>
+        ) : recoveryTimedOut ? (
+          <p>First round: {firstRoundYes} YES · {firstRoundNo} NO · quorum not met · no retry panel formed</p>
+        ) : (
+          <p>
+            {activity.yes} YES · {activity.no} NO ·{' '}
+            {retryMissedQuorum
+              ? 'retry quorum not met'
+              : tied
+                ? 'quorum met, votes tied'
+                : `${activity.revealedCount}/3 answers revealed`}
+          </p>
+        )}
       </div>
       {rulingTx && <a href={explorerTx(rulingTx)} target="_blank" rel="noreferrer">Open receipt <ArrowRight /></a>}
     </section>
@@ -595,7 +727,7 @@ function SubmitCasePanel({
             </>
           ) : (
             <div className="oracle-review-card">
-              <div className="oracle-review-head"><span>Prepared question preview</span><i>2 MUSD</i></div>
+              <div className="oracle-review-head"><span>Prepared question preview</span><i>20 MUSD</i></div>
               <h3>{question}</h3>
               <QuestionFacts question={{ question, yesRule, judgedAsOf: judgedAsOf ? new Date(judgedAsOf).toISOString() : '' }} />
               <ResearchNote />
@@ -746,7 +878,7 @@ function OracleHome() {
           <p>Follow one real question through independent research, sealed ballots, an on-chain majority ruling, and visible rewards.</p>
           <div className="oracle-hero-actions">
             <button type="button" onClick={openLivePanel}>See the live case <ArrowRight /></button>
-            <Link href="/onboard">Join the jury</Link>
+            <Link href="/onboard">{SUPPORTS_LIVENESS_RECOVERY ? 'Join the juror pool' : 'Onboarding paused'}</Link>
           </div>
         </div>
         <div className="oracle-proof-stack" aria-label="What this demo proves">
@@ -759,6 +891,17 @@ function OracleHome() {
       </section>
 
       <ProductTabs tab={tab} onChange={changeTab} />
+
+      {!SUPPORTS_LIVENESS_RECOVERY && (
+        <div className="oracle-queue-alert" role="alert">
+          <ShieldCheck />
+          <div>
+            <strong>Capstone onboarding and the official queue are paused.</strong>
+            <p>The configured contracts predate party-aware admission and bounded initial/retry recovery. Replacement addresses must be deployed and enabled before new jurors or questions proceed.</p>
+            <span><Link href="/onboard">Review onboarding status</Link></span>
+          </div>
+        </div>
+      )}
 
       {dashboard.data && dashboard.data.unofficialActiveCaseIds.length > 0 && (
         <div className="oracle-queue-alert" role="alert">

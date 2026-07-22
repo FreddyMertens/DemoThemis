@@ -1,13 +1,13 @@
 'use client';
-// Shared MiniKit write path for the capstone-ready mainnet instance. World App
-// batches the transactions and should sponsor gas for verified humans; the capstone
-// trace proves that path. We poll for the receipt to get the real transaction hash
-// for an explorer link.
+// Shared MiniKit write path for the selected mainnet addresses. World App batches
+// transactions and should sponsor gas for verified humans; deployment capability
+// flags gate calls added after the currently deployed legacy instance. We poll for
+// the receipt to get the real transaction hash for an explorer link.
 //
 // NOTE: this path only runs inside World App on World Chain mainnet (480). It
-// cannot be exercised in a desktop browser or this CI — it is verified on-device
-// at the Step-5 human capstone (the honesty rule: we don't claim it works until a
-// real phone tx proves it). The desktop/dev equivalent is the B5 page (viem).
+// cannot be exercised in a desktop browser or this CI, so each replacement
+// deployment must be smoke-tested on a real phone before capstone evidence is
+// claimed. The desktop/dev equivalent is the B5 page (viem).
 import { MiniKit } from '@worldcoin/minikit-js';
 import { useUserOperationReceipt } from '@worldcoin/minikit-react';
 import { useCallback, useState } from 'react';

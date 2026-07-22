@@ -6,7 +6,8 @@ import {MockUSD} from "../src/MockUSD.sol";
 import {JurorRegistry} from "../src/JurorRegistry.sol";
 import {WorldIDGate, IWorldIDVerifier} from "../src/sybil/WorldIDGate.sol";
 
-/// @dev Stand-in for the deployed World ID 4.0 verifier. The real verifier runs a
+/// @dev Stand-in for the preview World ID 4.0 verifier used by the historical
+///      Step-3.5/5 deployment. The real verifier runs a
 ///      Groth16 check; here we accept exactly one "good" proof[0] limb and revert
 ///      on any other, mirroring the on-chain failure a corrupted limb produces.
 ///      NOT a real verifier — the actual Groth16 verification is proven on mainnet
@@ -42,7 +43,7 @@ contract MockWorldIDVerifier is IWorldIDVerifier {
     }
 }
 
-contract WorldIDGateTest is Test {
+contract WorldIDPreviewGateTest is Test {
     MockUSD internal musd;
     MockWorldIDVerifier internal verifier;
     WorldIDGate internal gate;

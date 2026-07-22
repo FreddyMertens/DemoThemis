@@ -2,7 +2,7 @@
 // publicClient for the active instance (src/lib/chain.ts). The cohort is rendered
 // read-only; writes (register/commit/reveal/open) are the mainnet Step-5 path.
 import { keccak256, toBytes, type Address, type Hex } from 'viem';
-import { publicClient, addr, CHAIN_META } from './chain';
+import { publicClient, addr, CHAIN_META, SUPPORTS_LIVENESS_RECOVERY } from './chain';
 import { disputeCourtAbi } from '@/abi/DisputeCourt';
 import { jurorRegistryAbi } from '@/abi/JurorRegistry';
 import { dealEscrowAbi } from '@/abi/DealEscrow';
@@ -26,6 +26,10 @@ export type CaseView = {
   drawBlock: bigint;
   commitDeadline: bigint;
   revealDeadline: bigint;
+  /** Fixed cutoff for seating the first panel; zero on legacy deployments or after a successful draw. */
+  initialDrawDeadline: bigint;
+  /** Fixed first-miss recovery cutoff; zero unless a redraw is waiting. */
+  recoveryDeadline: bigint;
   outcome: boolean;
   panel: readonly Address[];
   phase: Phase;
@@ -60,6 +64,11 @@ export type ResolvedEvent = ChainEventRef & {
   yes: bigint;
   no: bigint;
 };
+export type RedrawRecoveryStartedEvent = ChainEventRef & { deadline: bigint };
+export type InitialDrawTimedOutEvent = ChainEventRef & {
+  refundTo: Address;
+  feeRefunded: bigint;
+};
 export type FeePaidEvent = ChainEventRef & { juror: Address; amount: bigint };
 export type FeeDistributedEvent = ChainEventRef & {
   toJurors: bigint;
@@ -72,6 +81,9 @@ export type CaseReceiptEvents = {
   panelDrawn: readonly PanelDrawnEvent[];
   committed: readonly CommittedEvent[];
   revealed: readonly RevealedEvent[];
+  initialDrawTimedOut: InitialDrawTimedOutEvent | null;
+  recoveryStarted: RedrawRecoveryStartedEvent | null;
+  recoveryTimedOut: ChainEventRef | null;
   resolved: ResolvedEvent | null;
   feePaid: readonly FeePaidEvent[];
   feeDistributed: FeeDistributedEvent | null;
@@ -137,6 +149,9 @@ export type CaseReceipt = {
     PanelDrawn: readonly Hex[];
     Committed: readonly Hex[];
     Revealed: readonly Hex[];
+    InitialDrawTimedOut: Hex | null;
+    RedrawRecoveryStarted: Hex | null;
+    RedrawRecoveryTimedOut: Hex | null;
     Resolved: Hex | null;
     FeePaid: readonly Hex[];
     FeeDistributed: Hex | null;
@@ -150,19 +165,49 @@ export type CaseReceiptOptions = {
 
 export type RegistryStats = {
   jurorCount: number;
+  panelSize: number;
+  minPool: number;
   bond: bigint;
   bondsHeld: bigint;
   rewardPool: bigint;
 };
 
 export async function registryStats(): Promise<RegistryStats> {
-  const [jurorCount, bond, bondsHeld, rewardPool] = await Promise.all([
+  const [jurorCount, panelSize, minPool, bond, bondsHeld, rewardPool] = await Promise.all([
     publicClient.readContract({ address: addr.registry, abi: jurorRegistryAbi, functionName: 'jurorCount' }),
+    publicClient.readContract({ address: addr.court, abi: disputeCourtAbi, functionName: 'PANEL_SIZE' }),
+    publicClient.readContract({ address: addr.court, abi: disputeCourtAbi, functionName: 'MIN_POOL' }),
     publicClient.readContract({ address: addr.registry, abi: jurorRegistryAbi, functionName: 'BOND' }),
     publicClient.readContract({ address: addr.musd, abi: mockUSDAbi, functionName: 'balanceOf', args: [addr.registry] }),
     publicClient.readContract({ address: addr.musd, abi: mockUSDAbi, functionName: 'balanceOf', args: [addr.rewardPool] }),
   ]);
-  return { jurorCount: Number(jurorCount), bond, bondsHeld, rewardPool };
+  return {
+    jurorCount: Number(jurorCount),
+    panelSize: Number(panelSize),
+    minPool: Number(minPool),
+    bond,
+    bondsHeld,
+    rewardPool,
+  };
+}
+
+/** Active jurors remaining after the court excludes both case parties. */
+export async function eligibleJurorCount(party1: Address, party2: Address): Promise<number> {
+  if (!SUPPORTS_LIVENESS_RECOVERY) {
+    const count = await publicClient.readContract({
+      address: addr.registry,
+      abi: jurorRegistryAbi,
+      functionName: 'jurorCount',
+    });
+    return Number(count);
+  }
+  const count = await publicClient.readContract({
+    address: addr.court,
+    abi: disputeCourtAbi,
+    functionName: 'eligibleJurorCount',
+    args: [party1, party2],
+  });
+  return Number(count);
 }
 
 export type JurorMembership = {
@@ -207,9 +252,20 @@ export async function caseCount(): Promise<number> {
 }
 
 export async function getCase(id: number): Promise<CaseView> {
-  const [c, phase] = await Promise.all([
+  // Calling a getter absent from legacy bytecode reverts. The explicit
+  // deployment capability keeps the current public addresses readable while
+  // allowing replacement addresses to expose both fixed recovery deadlines.
+  const initialDrawDeadlineRead = SUPPORTS_LIVENESS_RECOVERY
+    ? publicClient.readContract({ address: addr.court, abi: disputeCourtAbi, functionName: 'initialDrawDeadline', args: [BigInt(id)] })
+    : Promise.resolve(BigInt(0));
+  const recoveryDeadlineRead = SUPPORTS_LIVENESS_RECOVERY
+    ? publicClient.readContract({ address: addr.court, abi: disputeCourtAbi, functionName: 'redrawDeadline', args: [BigInt(id)] })
+    : Promise.resolve(BigInt(0));
+  const [c, phase, initialDrawDeadline, recoveryDeadline] = await Promise.all([
     publicClient.readContract({ address: addr.court, abi: disputeCourtAbi, functionName: 'getCase', args: [BigInt(id)] }),
     publicClient.readContract({ address: addr.court, abi: disputeCourtAbi, functionName: 'phaseOf', args: [BigInt(id)] }),
+    initialDrawDeadlineRead,
+    recoveryDeadlineRead,
   ]);
   return {
     id,
@@ -225,6 +281,8 @@ export async function getCase(id: number): Promise<CaseView> {
     drawBlock: c.drawBlock,
     commitDeadline: c.commitDeadline,
     revealDeadline: c.revealDeadline,
+    initialDrawDeadline,
+    recoveryDeadline,
     outcome: c.outcome,
     panel: c.panel,
     phase: PHASES[Number(phase)],
@@ -304,6 +362,9 @@ export async function getCaseReceiptEvents(
   const drawnLogs = caseLogs.filter((log) => log.eventName === 'PanelDrawn');
   const committedLogs = caseLogs.filter((log) => log.eventName === 'Committed');
   const revealedLogs = caseLogs.filter((log) => log.eventName === 'Revealed');
+  const initialDrawTimedOutLogs = caseLogs.filter((log) => log.eventName === 'InitialDrawTimedOut');
+  const recoveryStartedLogs = caseLogs.filter((log) => log.eventName === 'RedrawRecoveryStarted');
+  const recoveryTimedOutLogs = caseLogs.filter((log) => log.eventName === 'RedrawRecoveryTimedOut');
   const resolvedLogs = caseLogs.filter((log) => log.eventName === 'Resolved');
   const paidLogs = caseLogs.filter((log) => log.eventName === 'FeePaid');
   const distributedLogs = caseLogs.filter((log) => log.eventName === 'FeeDistributed');
@@ -330,6 +391,16 @@ export async function getCaseReceiptEvents(
     juror: requiredEventArg(log.args.juror, 'juror'),
     vote: requiredEventArg(log.args.vote, 'vote'),
   }));
+  const initialDrawTimedOut = initialDrawTimedOutLogs.map((log) => ({
+    ...eventRef(log),
+    refundTo: requiredEventArg(log.args.refundTo, 'refundTo'),
+    feeRefunded: requiredEventArg(log.args.feeRefunded, 'feeRefunded'),
+  }));
+  const recoveryStarted = recoveryStartedLogs.map((log) => ({
+    ...eventRef(log),
+    deadline: requiredEventArg(log.args.deadline, 'deadline'),
+  }));
+  const recoveryTimedOut = recoveryTimedOutLogs.map((log) => eventRef(log));
   const resolved = resolvedLogs.map((log) => ({
     ...eventRef(log),
     outcome: requiredEventArg(log.args.outcome, 'outcome'),
@@ -353,6 +424,9 @@ export async function getCaseReceiptEvents(
     panelDrawn,
     committed,
     revealed,
+    initialDrawTimedOut: lastOf(initialDrawTimedOut),
+    recoveryStarted: lastOf(recoveryStarted),
+    recoveryTimedOut: lastOf(recoveryTimedOut),
     resolved: lastOf(resolved),
     feePaid,
     feeDistributed: lastOf(feeDistributed),
@@ -481,6 +555,9 @@ export async function getCaseReceipt(id: number, options: CaseReceiptOptions = {
       PanelDrawn: events.panelDrawn.map((event) => event.transactionHash),
       Committed: events.committed.map((event) => event.transactionHash),
       Revealed: events.revealed.map((event) => event.transactionHash),
+      InitialDrawTimedOut: events.initialDrawTimedOut?.transactionHash ?? null,
+      RedrawRecoveryStarted: events.recoveryStarted?.transactionHash ?? null,
+      RedrawRecoveryTimedOut: events.recoveryTimedOut?.transactionHash ?? null,
       Resolved: events.resolved?.transactionHash ?? null,
       FeePaid: events.feePaid.map((event) => event.transactionHash),
       FeeDistributed: events.feeDistributed?.transactionHash ?? null,

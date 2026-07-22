@@ -1,7 +1,7 @@
 // The core court simulation — the honest machine the attack demo rests on.
 //
-// This mirrors the DEPLOYED DisputeCourt economics exactly so the sandbox and the
-// on-chain demo tell one story: a panel is drawn, jurors commit then reveal, the
+// This mirrors the recovery-enabled replacement DisputeCourt source so the sandbox
+// and the next on-chain release tell one story: a panel is drawn, jurors commit then reveal, the
 // majority wins, and the case fee splits 70/20/10 (jurors / reward pool / protocol)
 // in integer micro-USD with the rounding dust and every slash routed to the reward
 // pool — the same conservation the on-chain invariant enforces. Everything here is
@@ -15,7 +15,7 @@ import { sampleIndices } from './prng';
 // so the split and dust routing reproduce the on-chain numbers to the unit.
 export const MUSD = 1_000_000;
 export const BOND = 5 * MUSD; // $5 juror bond
-export const CASE_FEE = 2 * MUSD; // $2 question-case fee
+export const CASE_FEE = 20 * MUSD; // 20 MUSD question-case fee
 export const BPS_REWARD = 2000; // 20% reward cut
 export const BPS_PROTOCOL = 1000; // 10% protocol cut
 
@@ -56,6 +56,8 @@ export interface CaseOutcome {
   no: number;
   quorum: number;
   quorumMet: boolean;
+  /** First panel missed quorum but slashing left too few active jurors for a full retry. */
+  recoveryTimedOut: boolean;
   redrew: boolean;
   /** true = YES / payee wins; tie or second-miss => false (status quo). */
   outcome: boolean;
@@ -74,7 +76,7 @@ export interface CaseOptions {
 
 /**
  * A seeded population of jurors plus a running reward-pool balance. Runs whole
- * cases through the deployed lifecycle and accrues the reward pool so the demo can
+ * cases through the recovery-enabled replacement lifecycle and accrues the reward pool so the demo can
  * show it growing (slashes + the 20% cut + dust), exactly as the on-chain sink does.
  */
 export class CourtSim {
@@ -107,9 +109,7 @@ export class CourtSim {
     return this.jurors.filter((j) => j.active && j.bond > 0).map((j) => j.id);
   }
 
-  /** Whether enough jurors are still bonded to seat a panel of `panelSize`. Once
-   *  too many no-shows are slashed (and never re-bonded, mirroring the contract),
-   *  the pool can no longer seat a panel and the court is honestly out of jurors. */
+  /** Whether enough jurors are currently bonded to seat a full panel. */
   canSeatPanel(panelSize: number): boolean {
     return this.activeIds().length >= panelSize;
   }
@@ -129,22 +129,40 @@ export class CourtSim {
 
     let panel = draw();
     let redrew = false;
+    let recoveryTimedOut = false;
+    let slashesToReward = 0;
+    const noShows: number[] = [];
 
-    // First panel; on a quorum miss we redraw once (mirrors the contract).
+    // A first quorum miss opens one bounded recovery window. This whole-case
+    // simulator assumes nobody re-bonds during that window: if the remaining
+    // active pool can still seat a complete panel, it draws the one retry;
+    // otherwise the window expires into status quo instead of fabricating an
+    // undersized panel or throwing from sampleIndices().
     let tally = this.tallyPanel(panel, truth, revealRate);
     if (tally.revealed < quorum) {
-      this.slashNoShows(tally.noShows);
-      redrew = true;
-      panel = draw();
-      tally = this.tallyPanel(panel, truth, revealRate);
+      noShows.push(...tally.noShows);
+      slashesToReward += this.slashNoShows(tally.noShows);
+      if (this.canSeatPanel(opts.panelSize)) {
+        redrew = true;
+        panel = draw();
+        tally = this.tallyPanel(panel, truth, revealRate);
+      } else {
+        recoveryTimedOut = true;
+        panel = [];
+        tally = { votes: [], noShows: [], yes: 0, no: 0, revealed: 0 };
+      }
     }
 
-    this.slashNoShows(tally.noShows);
+    if (!recoveryTimedOut) {
+      noShows.push(...tally.noShows);
+      slashesToReward += this.slashNoShows(tally.noShows);
+    }
 
     const quorumMet = tally.revealed >= quorum;
     // majority of revealed votes; tie or sub-quorum => status quo (false)
     const outcome = quorumMet && tally.yes > tally.no;
     const payout = this.distributeFee(panel, tally, outcome);
+    payout.slashesToReward = slashesToReward;
 
     // bookkeeping for the reputation layer (sandbox-only)
     for (const v of tally.votes) {
@@ -159,11 +177,12 @@ export class CourtSim {
       panel,
       truth,
       votes: tally.votes,
-      noShows: tally.noShows,
+      noShows,
       yes: tally.yes,
       no: tally.no,
       quorum,
       quorumMet,
+      recoveryTimedOut,
       redrew,
       outcome,
       correct: outcome === truth,
@@ -195,15 +214,18 @@ export class CourtSim {
   }
 
   /** No-show bond -> reward pool, juror deactivated (mirrors registry.slash). */
-  private slashNoShows(noShows: number[]): void {
+  private slashNoShows(noShows: number[]): number {
+    let slashed = 0;
     for (const id of noShows) {
       const j = this.jurors[id];
       if (j.bond > 0) {
+        slashed += j.bond;
         this.rewardPool += j.bond;
         j.bond = 0;
         j.active = false;
       }
     }
+    return slashed;
   }
 
   /**
@@ -258,6 +280,7 @@ export interface SweepSummary {
   correct: number;
   accuracy: number;
   redraws: number;
+  recoveryTimeouts: number;
   rewardPool: number;
   protocol: number;
   /** True if the sweep stopped early because the pool could no longer seat a panel. */
@@ -267,6 +290,7 @@ export interface SweepSummary {
 export function runSweep(sim: CourtSim, count: number, opts: CaseOptions): SweepSummary {
   let correct = 0;
   let redraws = 0;
+  let recoveryTimeouts = 0;
   let ran = 0;
   for (let i = 0; i < count; i++) {
     // Never fabricate a verdict over an empty panel: stop when the pool is exhausted.
@@ -275,6 +299,7 @@ export function runSweep(sim: CourtSim, count: number, opts: CaseOptions): Sweep
     ran++;
     if (r.correct) correct++;
     if (r.redrew) redraws++;
+    if (r.recoveryTimedOut) recoveryTimeouts++;
   }
   return {
     cases: ran,
@@ -282,6 +307,7 @@ export function runSweep(sim: CourtSim, count: number, opts: CaseOptions): Sweep
     correct,
     accuracy: ran > 0 ? correct / ran : 0,
     redraws,
+    recoveryTimeouts,
     rewardPool: sim.rewardPool,
     protocol: sim.protocol,
     stoppedEarly: ran < count,

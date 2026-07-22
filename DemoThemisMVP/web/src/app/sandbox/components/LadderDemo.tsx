@@ -170,7 +170,8 @@ export function LadderDemo() {
       </p>
       <p className="sbx-note warn">
         The appeal ladder is a sandbox model of the funded-milestone design, not on-chain in the MVP.
-        The deployed court runs a single panel with one automatic redraw. See docs/MECHANISM_DELTA.md.
+        The recovery-enabled source runs one panel with one bounded retry; the recorded legacy mainnet
+        address predates its timeout finalizer. See docs/MECHANISM_DELTA.md.
       </p>
     </Widget>
   );

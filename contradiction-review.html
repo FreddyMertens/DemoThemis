@@ -1,0 +1,993 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>DemoThemis &amp; OmenMarketMaker — Contradiction Review</title>
+  <meta name="description" content="A cross-project contradiction audit of the DemoThemis and OmenMarketMaker grant repository.">
+  <style>
+    :root {
+      --ink: #171614;
+      --muted: #68645d;
+      --paper: #f6f2ea;
+      --card: #fffdf8;
+      --line: #d9d2c5;
+      --critical: #a52a2a;
+      --critical-soft: #f8e3df;
+      --high: #b75716;
+      --high-soft: #f8eadb;
+      --medium: #8a6905;
+      --medium-soft: #f4edcf;
+      --low: #356d67;
+      --low-soft: #dfeeea;
+      --good: #24634e;
+      --good-soft: #deeee6;
+      --blue: #315e8c;
+      --blue-soft: #e2ebf3;
+      --shadow: 0 18px 50px rgba(55, 42, 24, .09);
+      --sans: Inter, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+      --serif: Iowan Old Style, Palatino Linotype, Book Antiqua, Georgia, serif;
+      --mono: "SFMono-Regular", Consolas, "Liberation Mono", monospace;
+    }
+
+    * { box-sizing: border-box; }
+    html { scroll-behavior: smooth; }
+    body {
+      margin: 0;
+      color: var(--ink);
+      background:
+        radial-gradient(circle at 8% 0%, rgba(158, 85, 34, .09), transparent 29rem),
+        linear-gradient(180deg, #eee8dc 0, var(--paper) 24rem);
+      font-family: var(--sans);
+      line-height: 1.55;
+    }
+    a { color: #315c79; text-underline-offset: 3px; }
+    a:hover { color: #193f5c; }
+    code {
+      font-family: var(--mono);
+      font-size: .88em;
+      overflow-wrap: anywhere;
+    }
+    .shell { width: min(1180px, calc(100% - 36px)); margin: 0 auto; }
+    .hero {
+      padding: 70px 0 38px;
+      border-bottom: 1px solid rgba(81, 70, 53, .18);
+    }
+    .eyebrow, .label {
+      margin: 0 0 10px;
+      color: #78614b;
+      font-size: .72rem;
+      font-weight: 850;
+      letter-spacing: .14em;
+      text-transform: uppercase;
+    }
+    h1, h2, h3 { text-wrap: balance; }
+    h1 {
+      max-width: 960px;
+      margin: 0;
+      font: 700 clamp(2.7rem, 6vw, 5.5rem)/.94 var(--serif);
+      letter-spacing: -.045em;
+    }
+    .hero-dek {
+      max-width: 850px;
+      margin: 24px 0 0;
+      color: #46413b;
+      font-size: clamp(1.04rem, 2vw, 1.28rem);
+    }
+    .verdict {
+      display: grid;
+      grid-template-columns: auto 1fr;
+      gap: 16px;
+      align-items: start;
+      max-width: 900px;
+      margin-top: 30px;
+      padding: 18px 20px;
+      border: 1px solid #dfb4a7;
+      border-radius: 14px;
+      background: rgba(255, 248, 242, .82);
+      box-shadow: var(--shadow);
+    }
+    .verdict-mark {
+      display: grid;
+      width: 38px;
+      height: 38px;
+      place-items: center;
+      border-radius: 50%;
+      background: var(--critical);
+      color: white;
+      font-weight: 900;
+    }
+    .verdict strong { display: block; font-size: 1.02rem; }
+    .verdict p { margin: 4px 0 0; color: #5d4b43; }
+    .meta-row {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 9px;
+      margin-top: 25px;
+    }
+    .meta-pill {
+      padding: 7px 10px;
+      border: 1px solid var(--line);
+      border-radius: 999px;
+      background: rgba(255,255,255,.55);
+      color: #575149;
+      font-size: .78rem;
+      font-weight: 750;
+    }
+    main { padding: 38px 0 90px; }
+    section { scroll-margin-top: 20px; }
+    .section-head {
+      display: flex;
+      justify-content: space-between;
+      gap: 25px;
+      align-items: end;
+      margin: 54px 0 18px;
+    }
+    .section-head h2 {
+      margin: 0;
+      font: 700 clamp(1.8rem, 4vw, 3rem)/1 var(--serif);
+      letter-spacing: -.028em;
+    }
+    .section-head p { max-width: 630px; margin: 0; color: var(--muted); }
+    .summary-grid {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 12px;
+    }
+    .summary-card {
+      min-height: 148px;
+      padding: 18px;
+      border: 1px solid var(--line);
+      border-radius: 16px;
+      background: var(--card);
+      box-shadow: var(--shadow);
+    }
+    .summary-card .num {
+      display: block;
+      font: 750 2.8rem/1 var(--serif);
+    }
+    .summary-card strong { display: block; margin-top: 9px; }
+    .summary-card p { margin: 4px 0 0; color: var(--muted); font-size: .86rem; }
+    .summary-card.critical { border-top: 5px solid var(--critical); }
+    .summary-card.high { border-top: 5px solid var(--high); }
+    .summary-card.medium { border-top: 5px solid var(--medium); }
+    .summary-card.low { border-top: 5px solid var(--low); }
+    .truth-grid {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 14px;
+    }
+    .truth-card {
+      padding: 20px;
+      border: 1px solid var(--line);
+      border-radius: 16px;
+      background: var(--card);
+    }
+    .truth-card .top {
+      display: flex;
+      justify-content: space-between;
+      gap: 12px;
+      align-items: center;
+      margin-bottom: 13px;
+    }
+    .truth-card h3 { margin: 0; font-size: 1.05rem; }
+    .state {
+      padding: 4px 8px;
+      border-radius: 999px;
+      font-size: .68rem;
+      font-weight: 850;
+      letter-spacing: .06em;
+      text-transform: uppercase;
+    }
+    .state.live { color: var(--good); background: var(--good-soft); }
+    .state.sim { color: var(--blue); background: var(--blue-soft); }
+    .state.future { color: var(--high); background: var(--high-soft); }
+    .truth-card ul, .action-card ol, .compact-list { margin: 0; padding-left: 19px; }
+    .truth-card li + li, .action-card li + li, .compact-list li + li { margin-top: 6px; }
+    .truth-card li { font-size: .9rem; }
+    .scope {
+      display: grid;
+      grid-template-columns: 1.4fr 1fr;
+      gap: 14px;
+    }
+    .panel {
+      padding: 22px;
+      border: 1px solid var(--line);
+      border-radius: 16px;
+      background: var(--card);
+    }
+    .panel h3 { margin: 0 0 10px; font-size: 1rem; }
+    .panel p { margin: 0; color: #565149; }
+    .panel p + p { margin-top: 10px; }
+    .toolbar {
+      position: sticky;
+      top: 0;
+      z-index: 20;
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+      align-items: center;
+      margin: 46px 0 18px;
+      padding: 12px;
+      border: 1px solid rgba(133, 120, 98, .3);
+      border-radius: 14px;
+      background: rgba(246, 242, 234, .92);
+      backdrop-filter: blur(12px);
+      box-shadow: 0 8px 24px rgba(58, 47, 29, .08);
+    }
+    .toolbar strong { margin-right: 4px; font-size: .82rem; }
+    .filter {
+      appearance: none;
+      padding: 7px 10px;
+      border: 1px solid #c9c1b4;
+      border-radius: 999px;
+      background: #fffdf9;
+      color: #4d4943;
+      cursor: pointer;
+      font: 750 .76rem var(--sans);
+    }
+    .filter.is-active { color: white; background: var(--ink); border-color: var(--ink); }
+    .toolbar input {
+      flex: 1 1 240px;
+      min-width: 180px;
+      padding: 8px 11px;
+      border: 1px solid #c9c1b4;
+      border-radius: 10px;
+      background: #fffdf9;
+      font: .82rem var(--sans);
+    }
+    .findings { display: grid; gap: 14px; }
+    .finding {
+      overflow: hidden;
+      border: 1px solid var(--line);
+      border-left-width: 7px;
+      border-radius: 16px;
+      background: var(--card);
+      box-shadow: 0 8px 28px rgba(55, 42, 24, .055);
+    }
+    .finding[data-severity="critical"] { border-left-color: var(--critical); }
+    .finding[data-severity="high"] { border-left-color: var(--high); }
+    .finding[data-severity="medium"] { border-left-color: var(--medium); }
+    .finding[data-severity="low"] { border-left-color: var(--low); }
+    .finding-head {
+      display: grid;
+      grid-template-columns: auto 1fr auto;
+      gap: 12px;
+      align-items: start;
+      padding: 18px 20px 13px;
+    }
+    .finding-id {
+      min-width: 56px;
+      padding-top: 3px;
+      color: var(--muted);
+      font: 800 .73rem var(--mono);
+    }
+    .finding h3 { margin: 0; font-size: 1.08rem; line-height: 1.28; }
+    .severity {
+      padding: 5px 8px;
+      border-radius: 999px;
+      font-size: .65rem;
+      font-weight: 900;
+      letter-spacing: .08em;
+      text-transform: uppercase;
+    }
+    [data-severity="critical"] .severity { color: var(--critical); background: var(--critical-soft); }
+    [data-severity="high"] .severity { color: var(--high); background: var(--high-soft); }
+    [data-severity="medium"] .severity { color: var(--medium); background: var(--medium-soft); }
+    [data-severity="low"] .severity { color: var(--low); background: var(--low-soft); }
+    .conflict {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 1px;
+      margin: 0 20px;
+      overflow: hidden;
+      border: 1px solid var(--line);
+      border-radius: 11px;
+      background: var(--line);
+    }
+    .claim { padding: 14px; background: #fff; }
+    .claim b {
+      display: block;
+      margin-bottom: 5px;
+      color: #746b61;
+      font-size: .68rem;
+      letter-spacing: .08em;
+      text-transform: uppercase;
+    }
+    .claim p { margin: 0; font-size: .88rem; }
+    .finding-body {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 18px;
+      padding: 15px 20px 19px;
+    }
+    .finding-body h4 {
+      margin: 0 0 4px;
+      color: #746b61;
+      font-size: .68rem;
+      letter-spacing: .08em;
+      text-transform: uppercase;
+    }
+    .finding-body p { margin: 0; color: #514c45; font-size: .86rem; }
+    .evidence {
+      margin: 0 20px 17px;
+      padding: 10px 12px;
+      border-radius: 9px;
+      background: #f2eee6;
+      color: #585149;
+      font-size: .76rem;
+    }
+    .evidence b { margin-right: 5px; }
+    .finding.is-hidden { display: none; }
+    .action-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 14px; }
+    .action-card {
+      padding: 20px;
+      border: 1px solid var(--line);
+      border-radius: 16px;
+      background: var(--card);
+    }
+    .action-card .step {
+      display: inline-grid;
+      width: 30px;
+      height: 30px;
+      place-items: center;
+      border-radius: 50%;
+      background: var(--ink);
+      color: white;
+      font-weight: 850;
+    }
+    .action-card h3 { margin: 12px 0 7px; font-size: 1.05rem; }
+    .action-card li { font-size: .84rem; }
+    .not-conflict {
+      display: grid;
+      grid-template-columns: repeat(2, 1fr);
+      gap: 12px;
+    }
+    .ok-item {
+      padding: 16px;
+      border: 1px solid #bdd4c8;
+      border-radius: 13px;
+      background: var(--good-soft);
+      font-size: .87rem;
+    }
+    .ok-item strong { color: var(--good); }
+    .footnote {
+      margin-top: 45px;
+      padding: 22px 0 0;
+      border-top: 1px solid var(--line);
+      color: var(--muted);
+      font-size: .8rem;
+    }
+    .empty {
+      display: none;
+      padding: 30px;
+      border: 1px dashed var(--line);
+      border-radius: 14px;
+      color: var(--muted);
+      text-align: center;
+    }
+    .empty.show { display: block; }
+
+    @media (max-width: 860px) {
+      .summary-grid, .truth-grid, .action-grid { grid-template-columns: 1fr 1fr; }
+      .scope, .finding-body { grid-template-columns: 1fr; }
+      .section-head { display: block; }
+      .section-head p { margin-top: 10px; }
+    }
+    @media (max-width: 580px) {
+      .shell { width: min(100% - 22px, 1180px); }
+      .hero { padding-top: 40px; }
+      .summary-grid, .truth-grid, .action-grid, .not-conflict, .conflict { grid-template-columns: 1fr; }
+      .finding-head { grid-template-columns: auto 1fr; }
+      .finding-head .severity { grid-column: 2; justify-self: start; }
+      .toolbar { position: static; }
+    }
+    @media print {
+      body { background: white; font-size: 10pt; }
+      .shell { width: 100%; }
+      .hero { padding-top: 0; }
+      .toolbar { display: none; }
+      .finding { break-inside: avoid; box-shadow: none; }
+      .finding.is-hidden { display: block; }
+      a { color: inherit; text-decoration: none; }
+    }
+  </style>
+</head>
+<body>
+  <header class="hero">
+    <div class="shell">
+      <p class="eyebrow">Repository-wide consistency audit · 22 July 2026</p>
+      <h1>Contradiction review</h1>
+      <p class="hero-dek">DemoThemis, OmenMarketMaker, the grant application, the MVP, contracts, simulations, diagrams, screenshots, deployment records, and public-facing claims were checked against one another and against current chain state.</p>
+      <div class="verdict">
+        <span class="verdict-mark">!</span>
+        <div>
+          <strong>Bottom line: the project has a credible technical core, but it is not yet internally safe to present as a completed “live, unbuyable” system.</strong>
+          <p>The largest problem is status collapse: deployed code, a scripted preview, a scaled target design, and a future grant roadmap are repeatedly shown as though they are the same thing. Both 3/3 liveness paths remain present in the immutable legacy deployment; the replacement source now remediates them, but that source is not on mainnet until a verified cutover.</p>
+        </div>
+      </div>
+      <div class="meta-row">
+        <span class="meta-pill">49 consolidated findings</span>
+        <span class="meta-pill">4 critical</span>
+        <span class="meta-pill">15 high</span>
+        <span class="meta-pill">23 medium</span>
+        <span class="meta-pill">7 low</span>
+        <span class="meta-pill">Current mainnet state checked read-only</span>
+      </div>
+    </div>
+  </header>
+
+  <main class="shell">
+    <section id="summary">
+      <div class="section-head">
+        <div>
+          <p class="label">Executive view</p>
+          <h2>Where the risk sits</h2>
+        </div>
+        <p>Severity reflects likely harm to reviewer trust, grant eligibility, user funds, or the ability to complete the advertised live capstone—not merely how many files contain the wording.</p>
+      </div>
+      <div class="summary-grid">
+        <article class="summary-card critical"><span class="num">4</span><strong>Critical</strong><p>Live-state, eligibility, and fund/liveness contradictions that should block a public submission or capstone.</p></article>
+        <article class="summary-card high"><span class="num">15</span><strong>High</strong><p>Materially false or incompatible product, security, workflow, and economic claims.</p></article>
+        <article class="summary-card medium"><span class="num">23</span><strong>Medium</strong><p>Mechanism, parameter, UI, screenshot, and operational-document drift.</p></article>
+        <article class="summary-card low"><span class="num">7</span><strong>Low</strong><p>Ambiguities and stale implementation instructions that raise maintenance risk.</p></article>
+      </div>
+    </section>
+
+    <section id="baseline">
+      <div class="section-head">
+        <div>
+          <p class="label">Canonical baseline</p>
+          <h2>The four things the repository keeps blending</h2>
+        </div>
+        <p>This is the truth model used to decide whether a difference is a contradiction or an intentional design variant.</p>
+      </div>
+      <div class="truth-grid">
+        <article class="truth-card">
+          <div class="top"><h3>Deployed mainnet core</h3><span class="state live">Deployed</span></div>
+          <ul>
+            <li>Six source-verified historical contracts: five core contracts plus a v4 preview-verifier gate. The replacement source uses the documented World ID Router instead.</li>
+            <li>Legacy deployment: 3-seat panel, minimum active pool 3, fixed 2 MUSD question fee, $5 bond, 70/20/10 split. Replacement source: fixed 20 MUSD question fee and recommended minimum pool 4.</li>
+            <li>Blockhash draw; commit/reveal becomes public and receipt-ful; only no-shows are slashed.</li>
+            <li>Legacy windows are currently 300 seconds seal + 300 seconds reveal but remain mutable; replacement source makes both immutable with a five-minute minimum.</li>
+          </ul>
+        </article>
+        <article class="truth-card">
+          <div class="top"><h3>Current human/case state</h3><span class="state sim">Capstone pending</span></div>
+          <ul>
+            <li>0 active jurors in the historical v4 preview-verifier instance.</li>
+            <li>0 of 21 official questions filed; no unresolved nonofficial cases.</li>
+            <li>No completed Production three-seat panel drawn from the recommended minimum-four eligible pool, ruling, payout, or sponsored-gas trace.</li>
+            <li>The root HTML walkthrough is a local scripted preview, not a transaction surface.</li>
+          </ul>
+        </article>
+        <article class="truth-card">
+          <div class="top"><h3>Funded target design</h3><span class="state future">Roadmap</span></div>
+          <ul>
+            <li>VRF/drand randomness and receipt-free encrypted ballots.</li>
+            <li>Private reputation, liveness checks, 7→15→31 appeals, parallel panels, and INVALID/void handling.</li>
+            <li>Work-based quotes, private reward distribution, SDK, pilots, and external review.</li>
+            <li>OmenMarketMaker is a product/design narrative; its market protocol is not the deployed MVP.</li>
+          </ul>
+        </article>
+      </div>
+    </section>
+
+    <section id="scope">
+      <div class="section-head">
+        <div>
+          <p class="label">Scope &amp; method</p>
+          <h2>What was cross-checked</h2>
+        </div>
+      </div>
+      <div class="scope">
+        <div class="panel">
+          <h3>Included</h3>
+          <p>All first-party tracked writing and code with substantive claims; root proposal pages; grant and readiness documents; contract sources, tests, deployment JSON, keeper behavior, and Next app copy; rendered root pages; diagrams; SVG/canvas output; storyboard and tutorial screenshots; public case fixtures; build/deployment plans; and generated public copies where they can drift from canonical source.</p>
+          <p>Claim-bearing images were inspected visually. Duplicate brand art and byte-identical copies were hash-grouped rather than counted as independent evidence.</p>
+        </div>
+        <div class="panel">
+          <h3>Verification notes</h3>
+          <p>The project’s keeper was run read-only against the public World Chain RPC on 22 July 2026. Current official World documentation classifies the v4 on-chain verifier as preview and lists the v3-compatible Router on World Chain mainnet. The current <a href="https://world.org/grants">World Foundation grants page</a> was used for the eligibility check; the <a href="https://docs.world.org/world-id/idkit/onchain-verification">World ID on-chain guide</a> and <a href="https://docs.world.org/world-id/overview">credential overview</a> were used for external terminology.</p>
+          <p>Third-party dependencies, temporary scripts, generated <code>dist/</code> output, and the unrelated root <code>SKILL.md</code> were not treated as product claims. Generated output was still compared for drift.</p>
+        </div>
+      </div>
+    </section>
+
+    <div class="toolbar" aria-label="Finding filters">
+      <strong>Filter</strong>
+      <button class="filter is-active" type="button" data-filter="all">All 49</button>
+      <button class="filter" type="button" data-filter="critical">Critical</button>
+      <button class="filter" type="button" data-filter="high">High</button>
+      <button class="filter" type="button" data-filter="medium">Medium</button>
+      <button class="filter" type="button" data-filter="low">Low</button>
+      <input id="finding-search" type="search" placeholder="Search titles, evidence, causes, or fixes…" aria-label="Search findings">
+    </div>
+
+    <section id="findings">
+      <div class="section-head">
+        <div>
+          <p class="label">Detailed register</p>
+          <h2>All consolidated contradictions</h2>
+        </div>
+        <p>Paths and line numbers refer to the working-tree snapshot reviewed on 22 July 2026.</p>
+      </div>
+      <div class="findings">
+
+        <article class="finding" data-severity="critical" id="C01">
+          <div class="finding-head"><span class="finding-id">C-01</span><h3>The public “live MVP” claims three real jurors and a ruling while mainnet has neither</h3><span class="severity">Critical</span></div>
+          <div class="conflict">
+            <div class="claim"><b>Public claim</b><p>“Three verified humans,” “Follow the real ruling,” “All three verified seats are filled,” and “Ruling recorded on World Chain.” Storyboard Shot 01 pairs this hero with a visible “0 of 3 ready” panel.</p></div>
+            <div class="claim"><b>Verified state</b><p>The Production instance has 0 active jurors, 0/21 official questions, and no completed capstone. The deployment record and readiness docs say no human has registered.</p></div>
+          </div>
+          <div class="finding-body"><div><h4>Why it is probably there</h4><p>Capstone-ready UI and scripted future-state copy were promoted to “live” before the human run happened; screenshots were captured from a mixed placeholder state.</p></div><div><h4>Best handling</h4><p>Show both facts dynamically: “0 active of minimum 4 eligible” for the replacement pool and “0/3 seats drawn” for the panel. Show “prepared question,” never “real ruling,” until direct chain events exist, and recapture every screenshot after the capstone.</p></div></div>
+          <p class="evidence"><b>Evidence:</b> <code>demothemis-mvp.html:44-58,349,416,433-468</code>; <code>DemoThemisMVP/README.md:26-46</code>; <code>contracts/deployments/worldchain-mainnet.json:4-7</code>; <code>docs/storyboard-assets/01-live-mvp-hero.png</code>; live keeper check, 2026-07-22.</p>
+        </article>
+
+        <article class="finding" data-severity="critical" id="C02">
+          <div class="finding-head"><span class="finding-id">C-02</span><h3>The deployed 3/3 court cannot self-recover from a quorum miss and stalls after a no-show</h3><span class="severity">Critical</span></div>
+          <div class="conflict">
+            <div class="claim"><b>Promised behavior</b><p>Cases “must never brick”; a missed quorum gets one redraw and then status quo. The official queue is presented as a repeatable end-to-end court.</p></div>
+            <div class="claim"><b>Legacy deployed behavior</b><p>Non-revealers are fully slashed, deactivated, and excluded from the redraw. With only three active jurors, a quorum miss leaves at most one eligible juror, so the promised redraw cannot fill. One no-show also leaves only two active for the next case.</p></div>
+          </div>
+          <div class="finding-body"><div><h4>Why it is probably there</h4><p>Redraw tests use the 7/14 cohort buffer, while mainnet deploys pool = panel. The UI and keeper require exactly three, so test assumptions do not match deployment assumptions.</p></div><div><h4>Best handling</h4><p>Implemented in the replacement source: preserve the full slash, let the verified human post a fresh Permit2 bond, allow them back into the retry, and finalize status quo permissionlessly if the fixed recovery deadline expires. Accept pools wider than three, deploy the three-seat replacement with at least four eligible jurors for a one-withdrawal availability reserve, and retain exact-3/3 lifecycle tests. A fresh deployment is still required.</p></div></div>
+          <p class="evidence"><b>Remediation status, 22 July 2026:</b> implemented locally in court liveness version 2, registry version 1, the keeper, Mini App, and the 100-test suite with exact-3/3 regressions. The immutable Step-5 addresses remain affected and are now labeled legacy; the capstone is paused pending a recommended three-seat / minimum-four redeployment and cutover. See <code>DemoThemisMVP/docs/LIVENESS_RECOVERY.md</code>.</p>
+          <p class="evidence"><b>Original evidence:</b> <code>DisputeCourt.sol:311-349</code>; <code>JurorRegistry.sol:157-169,190-198</code>; <code>mainnet-question-keeper.mjs:362-369,463-488</code>; <code>MECHANISM_DELTA.md:31,36</code>; <code>contracts/test/DisputeCourt.t.sol:139-191</code>.</p>
+        </article>
+
+        <article class="finding" data-severity="critical" id="C03">
+          <div class="finding-head"><span class="finding-id">C-03</span><h3>Party exclusion can make a case permanently undrawable and strand escrow principal</h3><span class="severity">Critical</span></div>
+          <div class="conflict">
+            <div class="claim"><b>Promised behavior</b><p>Both case types ship; escrow settlement is atomic; re-arming prevents cases from bricking.</p></div>
+            <div class="claim"><b>Legacy deployed behavior</b><p>Opening checks raw active count, but drawing excludes the opener/payer/payee. A case can therefore be accepted with fewer than three eligible people. Once a deal is Disputed, only the court can settle it; there is no timeout, cancel, or refund path.</p></div>
+          </div>
+          <div class="finding-body"><div><h4>Why it is probably there</h4><p><code>MIN_POOL</code> was used as a proxy for eligibility, and “re-arm” was treated as recovery even when the eligible set could never become large enough.</p></div><div><h4>Best handling</h4><p>Implemented in the replacement source: compute the active eligible count after excluding distinct parties and reject before question fees or escrow state lock; give every accepted case an immutable one-hour first-draw deadline; and let anyone unwind after expiry. The whole unused fee returns to the opener/payer, while an escrow timeout also returns principal to its payer. <code>InitialDrawTimedOut</code> marks cancellation with no merits ruling—never question NO. Use <code>MIN_POOL &gt;= PANEL_SIZE + 1</code> (4 for 3 seats) for one pre-draw withdrawal of adjudication capacity; exact 3 remains fund-safe through bounded unwind. A fresh deployment is still required.</p></div></div>
+          <p class="evidence"><b>Remediation status, 22 July 2026:</b> implemented locally in court liveness version 2, the keeper, Mini App, and exact-3/3 regressions. Registry liveness remains version 1. Opening failure is atomic for both case types; failed draws cannot extend the first-draw deadline; the unwind is permissionless and idempotent. Its direct refund assumes immutable trusted MockUSD cannot pause or blacklist the payer; generalized production tokens should use pull/claim credits. The authenticated keeper ignores nonofficial cases for queue sequencing, so refundable outsider spam cannot censor the official queue. The immutable Step-5 addresses remain affected and must not receive capstone funds or jurors.</p>
+          <p class="evidence"><b>Original evidence:</b> <code>DisputeCourt.sol:175-198,241-265</code>; <code>DealEscrow.sol:109-136</code>; <code>contracts/test/CourtEdges.t.sol:75-113</code>; <code>INDEPENDENT_REVIEW.md:32-37,60-62</code>. <b>Replacement evidence:</b> <code>DisputeCourt.sol:30-40,114-124,202-270,352-371,509-516</code>; <code>contracts/test/InitialDrawLiveness.t.sol</code>; <code>docs/LIVENESS_RECOVERY.md</code>.</p>
+        </article>
+
+        <article class="finding" data-severity="critical" id="C04">
+          <div class="finding-head"><span class="finding-id">C-04</span><h3>The grant portal says U.S. builders are eligible while the current application and official terms say the opposite</h3><span class="severity">Critical</span></div>
+          <div class="conflict">
+            <div class="claim"><b>Portal/review claim</b><p>Current Mini App Grants materials are said to be open to United States builders.</p></div>
+            <div class="claim"><b>Current source</b><p>The grant application, budget, readiness memo, and current official grants disclaimer say U.S. residence/location/incorporation/registered-agent involvement is restricted and written guidance is required.</p></div>
+          </div>
+          <div class="finding-body"><div><h4>Why it is probably there</h4><p>An earlier developer announcement and a later grants-page disclaimer were merged into generated portal content without an “as of” date or supersession rule.</p></div><div><h4>Best handling</h4><p>Treat eligibility as unresolved and submission-blocking. Obtain written Foundation guidance, record the date/source, then regenerate every portal/readiness artifact from one canonical status entry.</p></div></div>
+          <p class="evidence"><b>Remediation status, 22 July 2026:</b> the local portal source and regenerated portal now match the application/readiness position: U.S. residence/location creates a written-guidance gate, and no signatory or entity workaround is asserted. Foundation guidance itself remains pending.</p>
+          <p class="evidence"><b>Evidence:</b> <code>grant-portal/index.html:264,1300</code>; <code>INDEPENDENT_REVIEW.md:106-110</code>; <code>GRANT_APPLICATION.md:289-302</code>; <code>GRANT_READINESS.md:29-30</code>; <a href="https://world.org/grants">current official grants page</a>.</p>
+        </article>
+
+        <article class="finding" data-severity="high" id="H01">
+          <div class="finding-head"><span class="finding-id">H-01</span><h3>Production-roadmap protections are repeatedly presented as deployed behavior</h3><span class="severity">High</span></div>
+          <div class="conflict">
+            <div class="claim"><b>Proposal/run-through</b><p>Present-tense face checks, receipt-free ballots, a public randomness beacon, reputation, work pricing, 7→15→31 appeals, parallel panels, and INVALID handling appear in production-like screens.</p></div>
+            <div class="claim"><b>MVP boundary</b><p>The deployed MVP uses blockhash randomness, receipt-ful commit/reveal, fixed pricing, no reputation, no appeal ladder, no parallel panels, and no INVALID outcome.</p></div>
+          </div>
+          <div class="finding-body"><div><h4>Why it is probably there</h4><p>The older target-architecture site and newer honest MVP comparison were combined without a page-level mode label.</p></div><div><h4>Best handling</h4><p>Add a persistent “target funded design—not deployed MVP” banner to every scaled page and every run-through event. Use a shared feature-status matrix and explicit badges: Deployed, Scripted preview, Simulation, Funded milestone.</p></div></div>
+          <p class="evidence"><b>Evidence:</b> <code>index.html:59,73</code>; <code>demothemis.html:368,634-715,889</code>; <code>run-through.html:3186-3267</code>; <code>demothemis-mvp.html:165-218</code>; <code>MECHANISM_DELTA.md:7-53</code>.</p>
+        </article>
+
+        <article class="finding" data-severity="high" id="H02">
+          <div class="finding-head"><span class="finding-id">H-02</span><h3>The root MVP walkthrough admits it is local while its controls and outcomes say “on-chain” and “real”</h3><span class="severity">High</span></div>
+          <div class="conflict">
+            <div class="claim"><b>Action language</b><p>“Seal my answer on-chain,” “Follow the real ruling,” “Ruling recorded on World Chain,” “Sponsored gas,” and links to a deployed receipt.</p></div>
+            <div class="claim"><b>Disclosure</b><p>The same page says the preview sends nothing and requests no wallet, identity proof, or transaction.</p></div>
+          </div>
+          <div class="finding-body"><div><h4>Why it is probably there</h4><p>A scripted product demo reuses production UI labels, while small-print local-preview caveats were added later.</p></div><div><h4>Best handling</h4><p>Place an always-visible “Scripted UI preview—no chain writes” banner inside the simulated frame. Rename actions to “Preview seal” and results to “Illustrative receipt.” Never link a fictional case to the real app.</p></div></div>
+          <p class="evidence"><b>Evidence:</b> <code>demothemis-mvp.html:349,382,423,433,460-471,466,517</code>.</p>
+        </article>
+
+        <article class="finding" data-severity="high" id="H03">
+          <div class="finding-head"><span class="finding-id">H-03</span><h3>The “current” static receipt used a 20 MUSD work quote but paid all completers instead of applying the court’s permanent winner split</h3><span class="severity">High</span></div>
+          <div class="conflict">
+            <div class="claim"><b>Original static preview</b><p>20 MUSD, 15 MUSD panel compensation, “all completed jurors receive” 5 MUSD each, and “no permanent split.”</p></div>
+            <div class="claim"><b>Court rule</b><p>The case fee has a permanent 70/20/10 split, and the 70% juror pot is paid only to revealers whose vote matches the outcome. The replacement source now fixes the question fee at 20 MUSD; the immutable legacy deployment still charges 2 MUSD.</p></div>
+          </div>
+          <div class="finding-body"><div><h4>Why it is probably there</h4><p>The funded work-based quote design was inserted into the MVP preview without carrying across the source contract’s permanent split and coherent-winner eligibility.</p></div><div><h4>Best handling</h4><p>Use one fixed 20 MUSD question-fee constant throughout the replacement source, tests, sandbox, previews, and current documentation. Apply 70/20/10 as 14 MUSD to coherent jurors, 4 MUSD to the reward pool, and 2 MUSD to protocol; with two coherent YES jurors, pay 7 MUSD each and 0 to the dissenting revealer. Preserve the legacy 2 MUSD value only in historical deployment records until a fresh deployment is cut over.</p></div></div>
+          <p class="evidence"><b>Remediation status, 22 July 2026:</b> implemented locally. Both static receipt copies, the replacement contract, tests, browser simulation, app copy, storyboard, and grant documentation now use a fixed 20 MUSD question fee and the permanent coherent-winner split. The immutable Step-5 deployment remains a 2 MUSD historical instance and requires replacement.</p>
+          <p class="evidence"><b>Evidence:</b> <code>demothemis-mvp.html:367,435-448</code>; <code>DisputeCourt.sol:23-25,440-470</code>; <code>web/src/lib/sim/court-sim.ts</code>; <code>MECHANISM_DELTA.md:33,70-76</code>.</p>
+        </article>
+
+        <article class="finding" data-severity="high" id="H04">
+          <div class="finding-head"><span class="finding-id">H-04</span><h3>The legacy duration setter could alter open-but-undrawn cases</h3><span class="severity">High</span></div>
+          <div class="conflict">
+            <div class="claim"><b>Original documentation</b><p>No admin could override an in-flight case; duration changes supposedly affected only future cases.</p></div>
+            <div class="claim"><b>Legacy code</b><p>Opening stored no duration. Deadlines were calculated only at draw from mutable global values, so the deployer could change an already-open case before its panel was drawn.</p></div>
+          </div>
+          <div class="finding-body"><div><h4>Why it is probably there</h4><p>The intended snapshot point and actual snapshot point diverged; the NatSpec and pitch followed the intent.</p></div><div><h4>Best handling</h4><p>Implemented in replacement source: remove <code>setDurations</code>, make both duration values immutable constructor parameters, reject either value below five minutes, and leave draw, timeout, and resolution permissionless. One-shot <code>setCourt</code>/<code>setEscrow</code> deployment wiring cannot change cases or clocks.</p></div></div>
+          <p class="evidence"><b>Remediation status, 22 July 2026:</b> implemented locally and covered by the 100-test suite. <code>AUTOMATED_TIMING_VERSION() == 1</code> lets the keeper fail closed unless immutable timing is present. The legacy Step-5 address still exposes its old setter, so a fresh deployment and cutover remain required.</p>
+          <p class="evidence"><b>Evidence:</b> <code>DisputeCourt.sol:34-42,76-79,167-197</code>; <code>CourtEdges.t.sol:20-31</code>; <code>mainnet-question-keeper.mjs</code>; <code>GRANT_APPLICATION.md:174-180</code>.</p>
+        </article>
+
+        <article class="finding" data-severity="high" id="H05">
+          <div class="finding-head"><span class="finding-id">H-05</span><h3>Fresh random selection is incorrectly described as forcing a fresh corruption payment per case</h3><span class="severity">High</span></div>
+          <div class="conflict">
+            <div class="claim"><b>Security claim</b><p>Every case redraws, nothing carries over, and an attacker must pay the entire corruption cost again per case.</p></div>
+            <div class="claim"><b>Implementation</b><p>The same registered humans and one $5 bond can serve unlimited concurrent and future cases. Draw excludes only case parties, prior no-shows, and duplicates within that panel—not already-corrupted or concurrently serving jurors.</p></div>
+          </div>
+          <div class="finding-body"><div><h4>Why it is probably there</h4><p>Re-randomizing a panel was conflated with resetting the attacker’s relationship with compromised people.</p></div><div><h4>Best handling</h4><p>Rewrite the model to acknowledge corruption can amortize, or implement per-case capacity/reserved bond, presence/reverification, and a mechanism that makes continuing corruption costly. Update every probability/economic model accordingly.</p></div></div>
+          <p class="evidence"><b>Evidence:</b> <code>README.md:15-23</code>; <code>GRANT_APPLICATION.md:25-39,155-165</code>; <code>JurorRegistry.sol:38-42</code>; <code>DisputeCourt.sol:248-270</code>; <code>INDEPENDENT_REVIEW.md:47-48</code>.</p>
+        </article>
+
+        <article class="finding" data-severity="high" id="H06">
+          <div class="finding-head"><span class="finding-id">H-06</span><h3>The failed appeal bond is allocated twice</h3><span class="severity">High</span></div>
+          <div class="conflict">
+            <div class="claim"><b>Funding rule</b><p>Each appeal bond funds the next larger panel and delay. The example’s $31,000 includes a $12,400 panel minimum.</p></div>
+            <div class="claim"><b>Failure waterfall</b><p>The entire $31,000 is then routed to the reward pool when the appeal fails, leaving the panel and delay cost unexplained.</p></div>
+          </div>
+          <div class="finding-body"><div><h4>Why it is probably there</h4><p>Non-refundable service funding and forfeitable security collateral were collapsed into one “bond.”</p></div><div><h4>Best handling</h4><p>Publish a conservation waterfall: panel/service charge + delay cost consumed first; only the remaining collateral is refundable/forfeitable. Prefer two named amounts and assert conservation in the simulation.</p></div></div>
+          <p class="evidence"><b>Evidence:</b> <code>demothemis.html:597,889-890</code>; <code>governance.html:283</code>; <code>run-through.html:5151-5153,5740-5787,5833</code>.</p>
+        </article>
+
+        <article class="finding" data-severity="high" id="H07">
+          <div class="finding-head"><span class="finding-id">H-07</span><h3>A ten-cent market was promised a human ruling it could not fund</h3><span class="severity">High</span></div>
+          <div class="conflict">
+            <div class="claim"><b>Previous promise</b><p>Start with $0.10; every market gets a human ruling; “nothing is subsidized.”</p></div>
+            <div class="claim"><b>Economic limit</b><p>The jury has a natural work price. Even a 100% deduction from $0.10 cannot pay a $20 ruling, so opening a market and funding its resolution cannot be the same promise.</p></div>
+          </div>
+          <div class="finding-body"><div><h4>Why it was probably there</h4><p>Permissionless creation and independent court pricing were designed as separate value propositions, but the funding gate between them was omitted.</p></div><div><h4>Implemented handling</h4><p>Every deposit contributes at the same pro-rata rate to a locked resolution reserve under a jury target and maximum rate fixed before betting. The target is a funding gate, not a collection cap: a funded reserve pays DemoThemis automatically and returns any excess to all YES/NO positions pro-rata. If it is short, the creator may top up; otherwise no jury is drawn, no market fee is charged, and every pooled YES/NO position receives its backing at its recorded purchase price.</p></div></div>
+          <p class="evidence"><b>Remediation status, 22 July 2026:</b> implemented in the market chapter, interactive reserve example, robustness/tokenization gate, full run-through state diagram, bootstrap/economics copy, and prediction-market design note. The dime now creates a market, not an unfunded promise of human work.</p>
+        </article>
+
+        <article class="finding" data-severity="high" id="H08">
+          <div class="finding-head"><span class="finding-id">H-08</span><h3>The products are described as optional, independent, mandatory, and existentially dependent</h3><span class="severity">High</span></div>
+          <div class="conflict">
+            <div class="claim"><b>Independent framing</b><p>Optional integration; one launch path, not a dependency; Omen is one example customer outside the grant.</p></div>
+            <div class="claim"><b>Dependent framing</b><p>Both products “require the other to exist”; every Omen market uses DemoThemis and there is no court-bypass route.</p></div>
+          </div>
+          <div class="finding-body"><div><h4>Why it is probably there</h4><p>A later independent-products rewrite did not replace the original mandatory-oracle/bootstrap language.</p></div><div><h4>Best handling</h4><p>Pick one architecture. The cleanest current reading is: separately governed/economic products; Omen mandates DemoThemis in its present design; DemoThemis can serve any client and uses Omen only as an optional bootstrap channel.</p></div></div>
+          <p class="evidence"><b>Evidence:</b> <code>index.html:7,40</code>; <code>demothemis.html:479</code>; <code>bootstrap-loop.html:56,72,94</code>; <code>omenmarketmaker.html:195,261</code>; <code>storyboard.html:148</code>.</p>
+        </article>
+
+        <article class="finding" data-severity="high" id="H09">
+          <div class="finding-head"><span class="finding-id">H-09</span><h3>Omen’s market-graduation rules disagree across prose, table, and two diagrams</h3><span class="severity">High</span></div>
+          <div class="conflict">
+            <div class="claim"><b>Robustness rule</b><p>Four simultaneous gates: $5,000 per side, $1,000 standing offers, a 24-hour hold, and a fully funded resolution reserve; volume alone is rejected.</p></div>
+            <div class="claim"><b>Lifecycle animation/table</b><p>Graduation occurs with $50 per side, any live offer, and an automatically passed time lock; elsewhere a volume threshold alone earns the book.</p></div>
+          </div>
+          <div class="finding-body"><div><h4>Why it is probably there</h4><p>An old toy animation survived beside the later production-parameter widget; the toy disclaimer exists only in a source comment.</p></div><div><h4>Best handling</h4><p>Drive every view from one constants object. If teaching mode compresses thresholds/time, label it visibly before interaction. Clarify that standing offers exist before graduation and become token orders afterward.</p></div></div>
+          <p class="evidence"><b>Evidence:</b> <code>omenmarketmaker.html:302,324,328-412,432-469,496,690-740</code>.</p>
+        </article>
+
+        <article class="finding" data-severity="high" id="H10">
+          <div class="finding-head"><span class="finding-id">H-10</span><h3>Sponsored gas is asserted as a fact while its only required proof is still pending</h3><span class="severity">High</span></div>
+          <div class="conflict">
+            <div class="claim"><b>Marketing claim</b><p>Verified humans pay nothing; registration is submitted through sponsored gas.</p></div>
+            <div class="claim"><b>Readiness/code</b><p>The trace is pending the capstone; code says World App “should” sponsor and the path remains unverified until a real-phone transaction.</p></div>
+          </div>
+          <div class="finding-body"><div><h4>Why it is probably there</h4><p>Expected platform behavior was promoted from configuration to demonstrated capability.</p></div><div><h4>Best handling</h4><p>Say “configured/expected to be sponsored; trace pending.” Upgrade to “users pay no gas” only after a saved transaction proves sponsor payer and unchanged user balance.</p></div></div>
+          <p class="evidence"><b>Evidence:</b> <code>index.html:59</code>; <code>README.md:31-33,73-74,165-171</code>; <code>GRANT_APPLICATION.md:74-76</code>; <code>web/src/lib/tx.ts:2-10</code>.</p>
+        </article>
+
+        <article class="finding" data-severity="high" id="H11">
+          <div class="finding-head"><span class="finding-id">H-11</span><h3>Simulator/Staging identity evidence is labeled “real identity,” and one explorer link points to the wrong chain</h3><span class="severity">High</span></div>
+          <div class="conflict">
+            <div class="claim"><b>UI/tutorial</b><p>“A real World ID identity on a different wallet is rejected” under a mainnet badge.</p></div>
+            <div class="claim"><b>Evidence record</b><p>The identities are World ID Simulator proofs against the Staging verifier. The Groth16 verification is real and on mainnet, but the human credential is not Production. The cohort link is built with the mainnet explorer helper for a Sepolia transaction.</p></div>
+          </div>
+          <div class="finding-body"><div><h4>Why it is probably there</h4><p>Chain, verifier environment, proof validity, and human provenance were compressed into one “real” label.</p></div><div><h4>Best handling</h4><p>Use the full label “World Chain mainnet · Staging verifier · Simulator identity; real on-chain proof check.” Use a fixed Sepolia explorer helper for Sepolia evidence.</p></div></div>
+          <p class="evidence"><b>Evidence:</b> <code>SybilDemo/index.tsx:1,32-46</code>; <code>docs/DEMO.md:9-20,38-47,86-93</code>; <code>GRANT_READINESS.md:24-25</code>; <code>local-testing-tutorial-assets/05-onboard-local-entry.png</code>.</p>
+        </article>
+
+        <article class="finding" data-severity="high" id="H12">
+          <div class="finding-head"><span class="finding-id">H-12</span><h3>Permissionless product claims conflict with the controlled three-juror, operator-queue MVP</h3><span class="severity">High</span></div>
+          <div class="conflict">
+            <div class="claim"><b>Public promise</b><p>Any verified human can juror; anyone can define and fund a case and receive a ruling.</p></div>
+            <div class="claim"><b>Supported product</b><p>Onboarding blocks at three; the keeper requires exactly three; the submission screen sends nothing; only a prepared operator queue opens cases. Direct external cases can pause that queue.</p></div>
+          </div>
+          <div class="finding-body"><div><h4>Why it is probably there</h4><p>Permissionless contract entry points and the general product vision were described as shipped UI/support, while the capstone intentionally uses a controlled queue.</p></div><div><h4>Best handling</h4><p>State: “contracts are permissionless; the capstone interface admits only the first three and files a prepared queue.” Either ship supported open filing/onboarding or remove those current-product claims.</p></div></div>
+          <p class="evidence"><b>Evidence:</b> <code>GRANT_APPLICATION.md:77-79</code>; <code>about/page.tsx:58-64</code>; <code>page.tsx:550-555,597-603</code>; <code>onboard/page.tsx:120-125,211-218</code>; <code>MVP_UPGRADE_PLAN.md:38-42,95-100</code>.</p>
+        </article>
+
+        <article class="finding" data-severity="high" id="H13">
+          <div class="finding-head"><span class="finding-id">H-13</span><h3>A published storyboard still shows a removed result-proposal and challenge-bond workflow</h3><span class="severity">High</span></div>
+          <div class="conflict">
+            <div class="claim"><b>Storyboard Shot 02</b><p>Event 07 is “Result proposal,” with a $250 bond and 24-hour challenge period.</p></div>
+            <div class="claim"><b>Current run-through</b><p>Event 07 checks the pre-funded depositor reserve, automatically pays DemoThemis only when the jury target is met, and hands off the locked case. The smoke test explicitly rejects restoration of the removed bond/challenge/assertion route.</p></div>
+          </div>
+          <div class="finding-body"><div><h4>Why it is probably there</h4><p>Screenshots and narration were not recaptured after the run-through redesign.</p></div><div><h4>Best handling</h4><p>Recapture Events 07–13 from the current build, rewrite narration around the resolution-reserve gate and funded court handoff, and update both the source and grant-portal copies.</p></div></div>
+          <p class="evidence"><b>Evidence:</b> <code>storyboard.html:122-130</code>; <code>storyboard-assets/07-run-through-court.png</code>; <code>run-through.html:3144-3162</code>; <code>tools/smoke-site.js:986</code>.</p>
+        </article>
+
+        <article class="finding" data-severity="high" id="H14">
+          <div class="finding-head"><span class="finding-id">H-14</span><h3>The mainnet RP-signature API has a fallback that does not match the deployed gate</h3><span class="severity">High</span></div>
+          <div class="conflict">
+            <div class="claim"><b>Deployment truth</b><p>The gate is bound to RP <code>0x1ddcf8ba2efe3f36</code>.</p></div>
+            <div class="claim"><b>Application fallback</b><p>If configuration is missing, the API silently falls back to <code>rp_e87d44dbb7b76d91</code>; the sample leaves the RP ID blank. The project’s own kickoff notes say this silently breaks proofs.</p></div>
+          </div>
+          <div class="finding-body"><div><h4>Why it is probably there</h4><p>A pre-deployment/default RP value remained after the immutable production configuration changed.</p></div><div><h4>Best handling</h4><p>Remove the fallback and fail closed. Validate the runtime RP against deployment JSON at build/startup and in a capstone preflight test.</p></div></div>
+          <p class="evidence"><b>Evidence:</b> <code>worldchain-mainnet.json:12-15</code>; <code>api/rp-signature/route.ts:6-8</code>; <code>web/.env.sample:9-10</code>; <code>STEP_3.5_KICKOFF.md:35-40</code>.</p>
+        </article>
+
+        <article class="finding" data-severity="high" id="H15">
+          <div class="finding-head"><span class="finding-id">H-15</span><h3>The project called a preview World ID 4.0 verifier a production dependency</h3><span class="severity">High</span></div>
+          <div class="conflict">
+            <div class="claim"><b>Project claim</b><p>The deployment script, app, grant documents, and historical deployment record called <code>WorldIDVerifier</code> the Production mainnet verifier and required the replacement to keep using it.</p></div>
+            <div class="claim"><b>Current official status</b><p>World’s on-chain verification guide marks the World ID 4.0 verifier preview and says it is not yet deployed to mainnet as a generally available integration. The guide separately lists the v3-compatible World ID Router on World Chain mainnet.</p></div>
+          </div>
+          <div class="finding-body"><div><h4>Why it was there</h4><p>“Production” was the proof environment name attached to an accessible contract address; the project treated that environment label as a product-release guarantee.</p></div><div><h4>Best handling</h4><p>Use the documented mainnet Router for the production gate now, with a wallet signal and app/action external nullifier. Keep the v4 adapter and its traces labeled historical preview evidence. When v4 becomes generally available, migrate through a separately deployed, audited immutable gate rather than silently swapping an address.</p></div></div>
+          <p class="evidence"><b>Remediation status, 22 July 2026:</b> implemented locally. <code>Deploy.s.sol</code> now accepts <code>WORLD_ID_ROUTER</code> and cannot select the preview verifier; <code>WorldIDRouterGate</code> verifies the v3-compatible proof on-chain; the World App onboard requests <code>orbLegacy</code> with wallet binding; deployment metadata and current docs distinguish the immutable historical preview instance from the replacement. A fresh deployment and live Orb proof remain required.</p>
+          <p class="evidence"><b>Evidence:</b> <code>contracts/src/sybil/WorldIDRouterGate.sol</code>; <code>contracts/script/Deploy.s.sol</code>; <code>web/src/lib/worldid.ts</code>; <code>contracts/deployments/worldchain-mainnet.json</code>; <a href="https://docs.world.org/world-id/idkit/onchain-verification">official World ID on-chain verification guide</a>.</p>
+        </article>
+
+        <article class="finding" data-severity="medium" id="M01">
+          <div class="finding-head"><span class="finding-id">M-01</span><h3>“One human, one vote” conflicts with reputation-dependent vote weight</h3><span class="severity">Medium</span></div>
+          <div class="conflict"><div class="claim"><b>Slogan</b><p>Every verified human has one vote.</p></div><div class="claim"><b>Mechanism</b><p>“Full vote weight” is earned only after a reputation interval clears 0.70, implying lower-weight seated humans.</p></div></div>
+          <div class="finding-body"><div><h4>Why</h4><p>Reputation controls were added after the equal-vote framing.</p></div><div><h4>Handle</h4><p>Keep ballot weight at 1 and apply reputation only to eligibility, draw rate, and pay; otherwise say “one human, one identity/seat” and specify weighted tallying.</p></div></div>
+          <p class="evidence"><b>Evidence:</b> <code>index.html:59</code>; <code>demothemis.html:551,848</code>.</p>
+        </article>
+
+        <article class="finding" data-severity="medium" id="M02">
+          <div class="finding-head"><span class="finding-id">M-02</span><h3>The appeal widget promises three floors and the next rung but computes two floors for the current tier</h3><span class="severity">Medium</span></div>
+          <div class="conflict"><div class="claim"><b>Prose/UI label</b><p>Next-panel pay, capture/re-roll resistance, and delay rent; the ladder ends at 31.</p></div><div class="claim"><b>Calculator</b><p><code>max(panelCost, capFloor)</code>; no delay term; <code>panelFor(stake)</code> returns the current value tier and still quotes an “appeal” at 31.</p></div></div>
+          <div class="finding-body"><div><h4>Why</h4><p>An older two-floor calculator was retained after the mechanism prose changed.</p></div><div><h4>Handle</h4><p>Add current-rung state, a real <code>nextPanel()</code>, delay-rent math, and “no further appeal” at 31—or explicitly label delay as an uncomputed roadmap refinement everywhere.</p></div></div>
+          <p class="evidence"><b>Evidence:</b> <code>demothemis.html:889,923-940,1642-1727</code>; <code>court-math.ts:152-195</code>; <code>LadderDemo.tsx:32-36,85-105</code>; <code>MECHANISM_DELTA.md:61-68</code>.</p>
+        </article>
+
+        <article class="finding" data-severity="medium" id="M03">
+          <div class="finding-head"><span class="finding-id">M-03</span><h3>Parallel-panel thresholds drift across the design and stress model</h3><span class="severity">Medium</span></div>
+          <div class="conflict"><div class="claim"><b>Design rule</b><p>Parallel panels are multiple non-overlapping 31-seat panels above the largest-panel value line.</p></div><div class="claim"><b>Stress model</b><p>$250k–$999,999 cases use 15 seats but automatically receive three panels; the result is applied to capture probability.</p></div></div>
+          <div class="finding-body"><div><h4>Why</h4><p>Duplicated tier constants drifted between the architecture page and attack model.</p></div><div><h4>Handle</h4><p>Publish one table mapping value → seats → parallel panels → appeal path and drive all widgets from it.</p></div></div>
+          <p class="evidence"><b>Evidence:</b> <code>demothemis.html:707-721</code>; <code>run-through.html:3975-3978</code>; <code>break-the-court.html:680-682,997-1014</code>; <code>court-math.ts:152-154,202-218</code>.</p>
+        </article>
+
+        <article class="finding" data-severity="medium" id="M04">
+          <div class="finding-head"><span class="finding-id">M-04</span><h3>Parallel-panel disagreement is an alarm in one place and an INVALID ruling in another, without a market payout rule</h3><span class="severity">Medium</span></div>
+          <div class="conflict"><div class="claim"><b>Court page</b><p>A split raises an alarm/escalates rather than printing a verdict.</p></div><div class="claim"><b>Run-through</b><p>The split creates provisional INVALID, but the market was created as YES/otherwise NO with no INVALID refund, fee, or settlement rule.</p></div></div>
+          <div class="finding-body"><div><h4>Why</h4><p>A useful failure state was added to the lifecycle without updating binary-market terms.</p></div><div><h4>Handle</h4><p>If INVALID is real, declare it before trading and define funds, fees, appeal, and finality. Otherwise call it an escalation state, not a ruling.</p></div></div>
+          <p class="evidence"><b>Evidence:</b> <code>demothemis.html:715,1537</code>; <code>run-through.html:4011-4014,4917</code>; <code>GRANT_APPLICATION.md:182-184,229</code>.</p>
+        </article>
+
+        <article class="finding" data-severity="medium" id="M05">
+          <div class="finding-head"><span class="finding-id">M-05</span><h3>The promised early-bettor time bonus is absent from the payout calculator</h3><span class="severity">Medium</span></div>
+          <div class="conflict"><div class="claim"><b>Feature copy</b><p>Early claims carry a time-weight bonus and earn a larger slice.</p></div><div class="claim"><b>Diagram/math</b><p>Winners split the net pot pro rata by nominal stake; no time weights are stored or calculated.</p></div></div>
+          <div class="finding-body"><div><h4>Why</h4><p>The bonus feature was added after the original payout widget.</p></div><div><h4>Handle</h4><p>Specify the weight/decay formula and calculate from weighted stake totals, or remove the feature until defined.</p></div></div>
+          <p class="evidence"><b>Evidence:</b> <code>omenmarketmaker.html:268,613-617,652</code>.</p>
+        </article>
+
+        <article class="finding" data-severity="medium" id="M06">
+          <div class="finding-head"><span class="finding-id">M-06</span><h3>Claims are marketed as tradeable through resolution, but only tokenized claims are</h3><span class="severity">Medium</span></div>
+          <div class="conflict"><div class="claim"><b>Headline</b><p>Claims remain tradeable throughout resolution and appeals.</p></div><div class="claim"><b>Qualification</b><p>This is true only after tokenization; pooled positions simply wait for settlement.</p></div></div>
+          <div class="finding-body"><div><h4>Why</h4><p>A qualified post-graduation capability became a universal headline.</p></div><div><h4>Handle</h4><p>Say “tokenized claims remain tradeable” and disclose when pooled/private positions are locked.</p></div></div>
+          <p class="evidence"><b>Evidence:</b> <code>index.html:76</code>; <code>omenmarketmaker.html:131,499,511</code>.</p>
+        </article>
+
+        <article class="finding" data-severity="medium" id="M07">
+          <div class="finding-head"><span class="finding-id">M-07</span><h3>Omen’s 2% market fee is not reconciled with a 0–1% governance cap</h3><span class="severity">Medium</span></div>
+          <div class="conflict"><div class="claim"><b>Economics page</b><p>Current settlement fee is 2%.</p></div><div class="claim"><b>Governance page</b><p>Product fee/margin is governed within 0–1%.</p></div></div>
+          <div class="finding-body"><div><h4>Why</h4><p>“Fee” and “margin” may mean different layers, but no waterfall names the remainder.</p></div><div><h4>Handle</h4><p>Publish the exact 2% waterfall. If governed margin is only part of gross fee, name every other part; otherwise align the figures.</p></div></div>
+          <p class="evidence"><b>Evidence:</b> <code>omenmarketmaker.html:268,549,557</code>; <code>governance.html:146,255</code>.</p>
+        </article>
+
+        <article class="finding" data-severity="medium" id="M08">
+          <div class="finding-head"><span class="finding-id">M-08</span><h3>The constitutional test-share floor is violated by the default model</h3><span class="severity">Medium</span></div>
+          <div class="conflict"><div class="claim"><b>Constitution</b><p>Resolved-case tests must occupy 5–20% of the score window.</p></div><div class="claim"><b>Shared assumption</b><p>Allowed range is 0–25% and the default is 4%; the attack model consumes it.</p></div></div>
+          <div class="finding-body"><div><h4>Why</h4><p>Model tuning drifted from governance copy.</p></div><div><h4>Handle</h4><p>Choose one constitutional range, define its denominator, and enforce it in the shared assumption schema.</p></div></div>
+          <p class="evidence"><b>Evidence:</b> <code>governance.html:262</code>; <code>assumptions.js:20</code>; <code>break-the-court.html:1019-1023</code>.</p>
+        </article>
+
+        <article class="finding" data-severity="medium" id="M09">
+          <div class="finding-head"><span class="finding-id">M-09</span><h3>“Unbuyable / bullet proof” and attack-language absolutes exceed the project’s own probabilistic model</h3><span class="severity">Medium</span></div>
+          <div class="conflict"><div class="claim"><b>Absolute copy</b><p>Verdicts cannot be bought; an attacker must pre-corrupt a near-majority “to touch” a specific verdict; probability collapses as case volume grows.</p></div><div class="claim"><b>Model</b><p>Capture probability is nonzero well below a majority; one example gives ~2.91% at 19.2%. Per-case probability depends on pool share/panel configuration, while case volume increases repeated cost—not one-draw probability.</p></div></div>
+          <div class="finding-body"><div><h4>Why</h4><p>“Reliable control” and “non-amortized aggregate cost” were shortened into stronger marketing claims.</p></div><div><h4>Handle</h4><p>Use “capture-resistant under published assumptions.” Distinguish any chance, &gt;50% chance, and reliable control; separate per-case probability from repeated attack cost.</p></div></div>
+          <p class="evidence"><b>Evidence:</b> <code>demothemis.html:336,542</code>; <code>break-the-court.html:296</code>; <code>GRANT_APPLICATION.md:162</code>; <code>grant-portal/index.html:240</code>; <code>local-testing-tutorial-assets/02-sandbox-attack-controls.png</code>.</p>
+        </article>
+
+        <article class="finding" data-severity="medium" id="M10">
+          <div class="finding-head"><span class="finding-id">M-10</span><h3>The constitutional rules are described as both permanent and replaceable</h3><span class="severity">Medium</span></div>
+          <div class="conflict"><div class="claim"><b>Immutability claim</b><p>No dial exists; core rules are permanent.</p></div><div class="claim"><b>Escape hatch</b><p>A migration path can replace a faulty rule, without specifying authorization, defaults, funds, or case-state migration.</p></div></div>
+          <div class="finding-body"><div><h4>Why</h4><p>Immutability rhetoric and a necessary successor-system escape hatch were combined.</p></div><div><h4>Handle</h4><p>Say each deployed instance is immutable; define migration as a separate opt-in deployment with no automatic case/fund transfer unless explicitly specified.</p></div></div>
+          <p class="evidence"><b>Evidence:</b> <code>governance.html:246-248,264</code>.</p>
+        </article>
+
+        <article class="finding" data-severity="medium" id="M11">
+          <div class="finding-head"><span class="finding-id">M-11</span><h3>Sepolia is called source-verified while its deployment record says it is not</h3><span class="severity">Medium</span></div>
+          <div class="conflict"><div class="claim"><b>README</b><p>The 7/14 cohort is verified on Blockscout; “all sources verified.”</p></div><div class="claim"><b>Machine record</b><p><code>sourcesVerified: false</code> and the explorer is Alchemy, not Blockscout.</p></div></div>
+          <div class="finding-body"><div><h4>Why</h4><p>README status was not updated when the final cohort deployment record changed.</p></div><div><h4>Handle</h4><p>Verify and update JSON with the exact explorer, or remove the claim. Treat deployment JSON as authoritative and generate tables from it.</p></div></div>
+          <p class="evidence"><b>Evidence:</b> <code>README.md:61,106-108</code>; <code>contracts/deployments/worldchain-sepolia.json:5-10,20</code>.</p>
+        </article>
+
+        <article class="finding" data-severity="medium" id="M12">
+          <div class="finding-head"><span class="finding-id">M-12</span><h3>The configured 7/14 Sepolia app renders a hard-coded mainnet three-seat model</h3><span class="severity">Medium</span></div>
+          <div class="conflict"><div class="claim"><b>Supported configuration</b><p>Chain 4801 cohort: 7-seat panel, 14 minimum, exposed in environment and contract metadata.</p></div><div class="claim"><b>UI</b><p>Dashboard and detail screens render three seats, “/3,” and “Three verified humans.” Any invalid non-480 chain ID also silently becomes cohort mode.</p></div></div>
+          <div class="finding-body"><div><h4>Why</h4><p>The mainnet capstone redesign hard-coded its panel into shared pages.</p></div><div><h4>Handle</h4><p>Validate only 480/4801, derive panel/minimum/copy from deployment metadata, and restore a real cohort view—or remove cohort as supported app mode.</p></div></div>
+          <p class="evidence"><b>Evidence:</b> <code>web/.env.sample:5-7</code>; <code>web/src/lib/chain.ts:8-14</code>; <code>web/src/lib/contracts.ts:6-20</code>; <code>page.tsx:430-448,514</code>; <code>case/[id]/page.tsx:443-459</code>.</p>
+        </article>
+
+        <article class="finding" data-severity="medium" id="M13">
+          <div class="finding-head"><span class="finding-id">M-13</span><h3>The local-testing tutorial documents routes and flows that now redirect away</h3><span class="severity">Medium</span></div>
+          <div class="conflict"><div class="claim"><b>Tutorial/README</b><p>Use <code>/home</code> case cards, a complete <code>/juror-preview</code> journey, and <code>/dispute</code> tabs.</p></div><div class="claim"><b>Current routes</b><p>Home and juror-preview redirect to <code>/app</code>; dispute redirects to a non-submitting preview tab.</p></div></div>
+          <div class="finding-body"><div><h4>Why</h4><p>The oracle-page redesign retired the older multi-route tutorial.</p></div><div><h4>Handle</h4><p>Regenerate the tutorial and screenshots from the current route map, or mark it archived/pre-oracle.</p></div></div>
+          <p class="evidence"><b>Evidence:</b> <code>README.md:79-86</code>; <code>local-testing-tutorial.html:408-424,475-573</code>; <code>home/page.tsx:1-5</code>; <code>juror-preview/page.tsx:1-5</code>; <code>dispute/page.tsx:1-5</code>.</p>
+        </article>
+
+        <article class="finding" data-severity="medium" id="M14">
+          <div class="finding-head"><span class="finding-id">M-14</span><h3>Retired capstone fixtures and storyboard timing are still published as live/non-simulated</h3><span class="severity">Medium</span></div>
+          <div class="conflict"><div class="claim"><b>Published artifacts</b><p>Public JSON says “Live mainnet capstone,” <code>simulated:false</code>, and calls commit/reveal private. Storyboard says the third registration automatically opens and seats the current live case.</p></div><div class="claim"><b>Current runbook/keeper</b><p>Those fixtures are retired and never executed; votes become public; the screen is a prepared next question; keeper funding/opening/drawing take separate later runs.</p></div></div>
+          <div class="finding-body"><div><h4>Why</h4><p>Historical fixtures and storyboard direction remained in the public bundle after the official queue replaced them.</p></div><div><h4>Handle</h4><p>Move fixtures out of public assets or add <code>status: retired</code>/<code>executed:false</code>. Rewrite storyboard sequence to match actual keeper transactions and recapture it.</p></div></div>
+          <p class="evidence"><b>Evidence:</b> <code>web/public/cases/q-capstone.json:2-11</code>; <code>escrow-capstone.json:2-11</code>; <code>CAPSTONE_RUNBOOK.md:208-217</code>; <code>storyboard.html:200-212,256-266</code>; <code>mainnet-question-keeper.mjs:568-604</code>.</p>
+        </article>
+
+        <article class="finding" data-severity="medium" id="M15">
+          <div class="finding-head"><span class="finding-id">M-15</span><h3>“Permanent receipt exposes every transition and payout” omits redraw, no-show, slash, and escrow events</h3><span class="severity">Medium</span></div>
+          <div class="conflict"><div class="claim"><b>Storyboard promise</b><p>Every transition and payout is visible in the permanent receipt.</p></div><div class="claim"><b>Receipt model</b><p>It omits <code>DrawRearmed</code>, <code>Redrawn</code>, <code>NoShowSlashed</code>, and DealEscrow settlement, so important failure-path money/state changes disappear.</p></div></div>
+          <div class="finding-body"><div><h4>Why</h4><p>The receipt was built around the happy-path event set.</p></div><div><h4>Handle</h4><p>Ingest/render all state and money events, or narrow the promise to the exact milestones shown.</p></div></div>
+          <p class="evidence"><b>Evidence:</b> <code>storyboard.html:310-320</code>; <code>web/src/lib/court.ts:70-78,264-309</code>; <code>DisputeCourt.sol:96-104,233-265,326-345</code>.</p>
+        </article>
+
+        <article class="finding" data-severity="medium" id="M16">
+          <div class="finding-head"><span class="finding-id">M-16</span><h3>The on-chain CaseOpened event always records a zero fee even when funds are charged</h3><span class="severity">Medium</span></div>
+          <div class="conflict"><div class="claim"><b>Receipt implication</b><p>The filing event/fingerprint records the exact case and fee on-chain.</p></div><div class="claim"><b>Contract order</b><p><code>_open</code> emits <code>CaseOpened(..., 0, uri)</code>; only afterward does the caller pull and assign the actual fee. The UI schema treats <code>feePool</code> as meaningful.</p></div></div>
+          <div class="finding-body"><div><h4>Why</h4><p>The event is emitted before fee transfer/assignment.</p></div><div><h4>Handle</h4><p>Set/pass the fee before emitting and redeploy, or deprecate the field and ensure no receipt presents it as the filed amount.</p></div></div>
+          <p class="evidence"><b>Evidence:</b> <code>DisputeCourt.sol:175-220</code>; <code>web/src/lib/court.ts:43-48,311-317</code>.</p>
+        </article>
+
+        <article class="finding" data-severity="medium" id="M17">
+          <div class="finding-head"><span class="finding-id">M-17</span><h3>Operational readiness artifacts disagree about repository and keeper status</h3><span class="severity">Medium</span></div>
+          <div class="conflict"><div class="claim"><b>Older dashboard/plan</b><p>“Flip the repo public” is a red gate; activation awaits a keeper secret.</p></div><div class="claim"><b>Readiness/progress/storyboard</b><p>The repository is described as public/open and the same-day progress/runbook says the keeper secret is configured and enabled.</p></div></div>
+          <div class="finding-body"><div><h4>Why</h4><p>Generated shell status and an upgrade plan retained mutable operational snapshots.</p></div><div><h4>Handle</h4><p>Create one dated operational status file; mark plans superseded instead of editing architectural history; rebuild the portal shell from current status.</p></div></div>
+          <p class="evidence"><b>Evidence:</b> <code>grant-portal/index.html:263</code>; <code>GRANT_READINESS.md:11,27,43</code>; <code>storyboard.html:104,114</code>; <code>MVP_UPGRADE_PLAN.md:4,38</code>; <code>go-live-progress.md:3,15-19</code>.</p>
+        </article>
+
+        <article class="finding" data-severity="medium" id="M18">
+          <div class="finding-head"><span class="finding-id">M-18</span><h3>The “Independent review” label and optimistic conclusion conflict with its own unresolved engineering findings</h3><span class="severity">Medium</span></div>
+          <div class="conflict"><div class="claim"><b>Conclusion</b><p>The remaining gap is “not engineering”; no-admin-override checks out; the document calls itself an adversarial multi-agent audit.</p></div><div class="claim"><b>Findings/funding</b><p>The same file identifies escrow lock, 3/3 deadlock, unlimited panels, verifier/relayer risks; pitch material says no security audit exists and M5 funds independent review.</p></div></div>
+          <div class="finding-body"><div><h4>Why</h4><p>An internal AI-assisted review was given an external-sounding title and its summary was not revised after critical issues were added.</p></div><div><h4>Handle</h4><p>Rename it “internal AI-assisted consistency review—not a security audit,” track each issue as open/fixed/accepted, and make the conclusion match current blockers.</p></div></div>
+          <p class="evidence"><b>Evidence:</b> <code>INDEPENDENT_REVIEW.md:1-26,28-69,86-96</code>; <code>PITCH_REVIEW.md:94-99</code>.</p>
+        </article>
+
+        <article class="finding" data-severity="medium" id="M19">
+          <div class="finding-head"><span class="finding-id">M-19</span><h3>Canonical root pages and tracked generated public copies have drifted</h3><span class="severity">Medium</span></div>
+          <div class="conflict"><div class="claim"><b>Build discipline</b><p>Plans say root pages are canonical and generated copies must never be edited as source.</p></div><div class="claim"><b>Repository state</b><p>Seven root/public page pairs are non-identical; the public DemoThemis copy lacks newer source content. A deployment from the wrong directory can therefore publish stale claims.</p></div></div>
+          <div class="finding-body"><div><h4>Why</h4><p>Generated output is tracked but not enforced against the source revision.</p></div><div><h4>Handle</h4><p>Stop tracking generated copies or regenerate them in CI and fail on drift. Stamp outputs with source commit/hash and deploy only from one build path.</p></div></div>
+          <p class="evidence"><b>Evidence:</b> non-identical pairs for <code>run-through</code>, <code>demothemis</code>, <code>break-the-court</code>, <code>omenmarketmaker</code>, <code>bootstrap-loop</code>, <code>governance</code>, and <code>demothemis-mvp</code>; <code>BRANDING_REDESIGN_PLAN.md</code>; <code>RUN_THROUGH_DESIGN_UPDATE_PLAN.md</code>.</p>
+        </article>
+
+        <article class="finding" data-severity="medium" id="M20">
+          <div class="finding-head"><span class="finding-id">M-20</span><h3>Two unmarked root essays describe superseded court and market architectures</h3><span class="severity">Medium</span></div>
+          <div class="conflict"><div class="claim"><b>Legacy essays</b><p>Court: 13 seats, ~$20 upfront bond, commit/reveal called private, dissent forfeiture paid to majority. Market: paired YES/NO minting per DAI and an AMM from day one.</p></div><div class="claim"><b>Current design</b><p>Court: 7/15/31 target, protocol-fronted reserve, receipt-free roadmap, no winner-takes-more. Market: parimutuel pool → standing offers → tokenization after robustness gates.</p></div></div>
+          <div class="finding-body"><div><h4>Why</h4><p>Early design essays remained at repository root after HTML routes moved to the new architecture.</p></div><div><h4>Handle</h4><p>Move them into a dated <code>docs/legacy/</code> folder with a prominent superseded banner, or rewrite them. Do not leave them as unlabeled peer sources.</p></div></div>
+          <p class="evidence"><b>Evidence:</b> <code>juror-court.md:11-17</code>; <code>prediction-market.md:11-23</code>; <code>demothemis.html:559,654-656,707,875</code>; <code>omenmarketmaker.html:267,302,324,367-369</code>.</p>
+        </article>
+
+        <article class="finding" data-severity="medium" id="M21">
+          <div class="finding-head"><span class="finding-id">M-21</span><h3>The public roadmap names funded milestones but omits the ask, schedule, and acceptance evidence</h3><span class="severity">Medium</span></div>
+          <div class="conflict"><div class="claim"><b>Public framing</b><p>M1–M6 are repeatedly called the “funded roadmap.”</p></div><div class="claim"><b>Public detail</b><p>The public narrative contains no requested amount, milestone budgets, delivery dates/duration, dependencies, or acceptance links, while those exist deeper in grant documents.</p></div></div>
+          <div class="finding-body"><div><h4>Why</h4><p>The proposal site was optimized as product storytelling rather than a self-contained grant artifact.</p></div><div><h4>Handle</h4><p>Add a concise grant-summary page/table sourced directly from the budget/application. This is a readiness contradiction of framing, not a protocol fault.</p></div></div>
+          <p class="evidence"><b>Evidence:</b> <code>demothemis-mvp.html:145-218</code>; no funding ask in the root public narrative.</p>
+        </article>
+
+        <article class="finding" data-severity="medium" id="M22">
+          <div class="finding-head"><span class="finding-id">M-22</span><h3>Several screenshots preserve obsolete or overstrong labels even where surrounding prose is careful</h3><span class="severity">Medium</span></div>
+          <div class="conflict"><div class="claim"><b>Images</b><p>“LIVE MVP” on a scaled attack lab, “private commit/reveal,” “cannot be bought,” “live on World Chain,” and an old dependency headline.</p></div><div class="claim"><b>Current boundary</b><p>The lab is simulated; MVP reveals are public/receipt-ful; capture odds are nonzero; “deployed” is not “used by humans”; Omen’s dependency is disputed elsewhere.</p></div></div>
+          <div class="finding-body"><div><h4>Why</h4><p>Unused/orphan and tutorial captures are still copied into published bundles; image copy does not receive normal text refactors.</p></div><div><h4>Handle</h4><p>Maintain a screenshot manifest, remove unused assets from publication, and recapture only after text/status is frozen.</p></div></div>
+          <p class="evidence"><b>Evidence:</b> <code>storyboard-assets/05-sandbox-mission.png</code>; <code>10-doc-home.png</code>; <code>local-testing-tutorial-assets/12-about-scope.png</code>; <code>storyboard.html:103-104,130,140-148</code>.</p>
+        </article>
+
+        <article class="finding" data-severity="medium" id="M23">
+          <div class="finding-head"><span class="finding-id">M-23</span><h3>Public credential language mixes old and new World ID terms</h3><span class="severity">Medium</span></div>
+          <div class="conflict"><div class="claim"><b>Project wording</b><p>“Iris scan,” “Orb/Device,” and per-draw “face check” are blended as one current World ID flow.</p></div><div class="claim"><b>Current official model</b><p>World’s current vocabulary separates Proof of Human (Orb), Document/NFC, and Selfie Check; one-time uniqueness proofs and session continuity are distinct. The production replacement currently asks for the Router-compatible Orb proof only.</p></div></div>
+          <div class="finding-body"><div><h4>Why</h4><p>World ID terminology evolved while the proposal combined deployed registration and a future per-draw liveness concept.</p></div><div><h4>Handle</h4><p>Name the exact accepted credential/schema and separate “one-time registration uniqueness” from the roadmap’s per-draw liveness check. Confirm schema with the Foundation before submission.</p></div></div>
+          <p class="evidence"><b>Evidence:</b> <code>index.html:59</code>; <code>worldchain-mainnet.json:5,9-14</code>; <a href="https://docs.world.org/world-id/overview">World ID credential overview</a>; <a href="https://docs.world.org/world-id/4-0-migration">World ID 4.0 migration guide</a>.</p>
+        </article>
+
+        <article class="finding" data-severity="low" id="L01">
+          <div class="finding-head"><span class="finding-id">L-01</span><h3>Juror eligibility says “holding enough stake” while the design says no upfront reserve</h3><span class="severity">Low</span></div>
+          <div class="conflict"><div class="claim"><b>Assumption copy</b><p>Drawable jurors are “holding enough stake.”</p></div><div class="claim"><b>Design copy</b><p>Jurors need no governance token or upfront reserve; the protocol fronts a private live reserve.</p></div></div>
+          <div class="finding-body"><div><h4>Why</h4><p>“Stake” is being used loosely for account standing/reserve.</p></div><div><h4>Handle</h4><p>Replace with the exact eligibility condition or explicitly define protocol-fronted reserve as the intended stake.</p></div></div>
+          <p class="evidence"><b>Evidence:</b> <code>assumptions.js:16</code>; <code>demothemis.html:559</code>.</p>
+        </article>
+
+        <article class="finding" data-severity="low" id="L02">
+          <div class="finding-head"><span class="finding-id">L-02</span><h3>The state map requires an evidence source that the actual form omits</h3><span class="severity">Low</span></div>
+          <div class="conflict"><div class="claim"><b>State rule</b><p>An evidence source is written before funds arrive.</p></div><div class="claim"><b>Form/run-through</b><p>The creation form has question, close time, and resolve condition only; the later case says “Sources: None supplied.”</p></div></div>
+          <div class="finding-body"><div><h4>Why</h4><p>Evidence policy and a named evidence source were conflated.</p></div><div><h4>Handle</h4><p>Add the field, or say “evidence policy/source, if specified.”</p></div></div>
+          <p class="evidence"><b>Evidence:</b> <code>run-through.html:3890,4917,5071</code>; <code>demothemis.html:365</code>.</p>
+        </article>
+
+        <article class="finding" data-severity="low" id="L03">
+          <div class="finding-head"><span class="finding-id">L-03</span><h3>The launch minimum alternates between “any amount” and a ten-cent floor</h3><span class="severity">Low</span></div>
+          <div class="conflict"><div class="claim"><b>Run-through</b><p>No minimum/any amount.</p></div><div class="claim"><b>Omen/table</b><p>Cost to create is a dime and “$0.10 is enough,” which reads as a protocol minimum.</p></div></div>
+          <div class="finding-body"><div><h4>Why</h4><p>A pedagogical example is phrased as a rule.</p></div><div><h4>Handle</h4><p>State either “any positive supported unit; $0.10 example” or a hard $0.10 minimum.</p></div></div>
+          <p class="evidence"><b>Evidence:</b> <code>run-through.html:3021,3896-3897,4824</code>; <code>omenmarketmaker.html:267,496</code>.</p>
+        </article>
+
+        <article class="finding" data-severity="low" id="L04">
+          <div class="finding-head"><span class="finding-id">L-04</span><h3>An “implemented” run-through plan still contains unmet mandatory CSS-extraction acceptance criteria</h3><span class="severity">Low</span></div>
+          <div class="conflict"><div class="claim"><b>Plan status</b><p>Implemented.</p></div><div class="claim"><b>Plan criteria/current file</b><p>Mandatory extraction to <code>assets/run-through.css</code> remains stated, while large structural CSS stays inline and only brand CSS is external.</p></div></div>
+          <div class="finding-body"><div><h4>Why</h4><p>The implementation deliberately changed approach but the rest of the plan was not marked superseded.</p></div><div><h4>Handle</h4><p>Update those acceptance rows or mark the plan partially implemented/superseded.</p></div></div>
+          <p class="evidence"><b>Evidence:</b> <code>RUN_THROUGH_DESIGN_UPDATE_PLAN.md:5-7,414-415,474,568</code>; <code>run-through.html:2810</code>.</p>
+        </article>
+
+        <article class="finding" data-severity="low" id="L05">
+          <div class="finding-head"><span class="finding-id">L-05</span><h3>The unified deployment plan requires same-origin MVP links, but one gateway hard-codes production</h3><span class="severity">Low</span></div>
+          <div class="conflict"><div class="claim"><b>Plan</b><p>Every MVP link should become same-origin.</p></div><div class="claim"><b>Page</b><p>The primary gateway hard-codes <code>https://demothemis.netlify.app/app#oracle-live-panel</code>.</p></div></div>
+          <div class="finding-body"><div><h4>Why</h4><p>A production URL survived the unified-hosting refactor.</p></div><div><h4>Handle</h4><p>Use <code>/app#oracle-live-panel</code> or document why staging/local intentionally escape to production.</p></div></div>
+          <p class="evidence"><b>Evidence:</b> <code>UNIFIED_DEPLOYMENT_PLAN.md:54</code>; <code>demothemis-mvp.html:48</code>.</p>
+        </article>
+
+        <article class="finding" data-severity="low" id="L06">
+          <div class="finding-head"><span class="finding-id">L-06</span><h3>Documents call missing files authoritative</h3><span class="severity">Low</span></div>
+          <div class="conflict"><div class="claim"><b>References</b><p><code>IMPLEMENTATION_PLAN.md</code> is called the full/governing plan; <code>reference/demothemis-site/</code> is called the canonical mechanism source.</p></div><div class="claim"><b>Repository</b><p>Neither path exists in the reviewed workspace.</p></div></div>
+          <div class="finding-body"><div><h4>Why</h4><p>Files moved or were omitted when repositories were combined.</p></div><div><h4>Handle</h4><p>Restore/version the sources or update links to existing canonical files; add a broken-reference check.</p></div></div>
+          <p class="evidence"><b>Evidence:</b> <code>README.md:118-130</code>; <code>STEP_3.5_KICKOFF.md:9-12</code>; <code>MECHANISM_DELTA.md:3</code>.</p>
+        </article>
+
+        <article class="finding" data-severity="low" id="L07">
+          <div class="finding-head"><span class="finding-id">L-07</span><h3>Toolchain instructions disagree on Node and package manager</h3><span class="severity">Low</span></div>
+          <div class="conflict"><div class="claim"><b>Root README</b><p>Node 20+ and pnpm 9.</p></div><div class="claim"><b>Web package/template README</b><p>Node 24.x and pnpm 11.7; nested README instructs npm.</p></div></div>
+          <div class="finding-body"><div><h4>Why</h4><p>Runtime upgrades and a framework template README were not reconciled.</p></div><div><h4>Handle</h4><p>Choose one supported runtime/package manager and update docs, engines, CI, and lock metadata together.</p></div></div>
+          <p class="evidence"><b>Evidence:</b> <code>README.md:142-149</code>; <code>web/package.json:9-12</code>; <code>web/README.md:7-13</code>. Lint and question-queue validation passed; the current Node 20 runtime triggered an engine warning.</p>
+        </article>
+      </div>
+      <p class="empty" id="empty-results">No findings match this filter.</p>
+    </section>
+
+    <section id="actions">
+      <div class="section-head">
+        <div>
+          <p class="label">Recommended resolution order</p>
+          <h2>How to handle this without creating more drift</h2>
+        </div>
+      </div>
+      <div class="action-grid">
+        <article class="action-card"><span class="step">1</span><h3>Freeze public claims</h3><ol><li>Replace “live/real/three verified humans” with current dynamic status.</li><li>Badge every surface as Deployed, Scripted preview, Simulation, or Roadmap.</li><li>Resolve U.S. eligibility in writing before submission.</li><li>Recapture screenshots only after copy is canonical.</li></ol></article>
+        <article class="action-card"><span class="step">2</span><h3>Finish the automated-court cutover</h3><ol><li>Do not rely on recovery or immutable timing at the legacy Step-5 addresses.</li><li>Deploy and source-verify court liveness version 2 / registry version 1 / automated timing version 1 with all seven capability flags and a recommended 3-seat / minimum-4 eligible configuration.</li><li>Prove eligible-party rejection, first-draw fee/principal unwind, no-show re-bond, retry, timeout, and immutable five-minute-minimum clocks on the replacement.</li><li>Then remove the wrong RP fallback as the remaining separate cutover finding.</li></ol></article>
+        <article class="action-card"><span class="step">3</span><h3>Create one source of truth</h3><ol><li>Version a machine-readable status/feature/parameter manifest.</li><li>Generate public tables, deployment copy, fees, tiers, and screenshots from it.</li><li>Fail CI on generated-copy drift, broken references, forbidden live-state wording, and threshold divergence.</li><li>Archive superseded essays, plans, routes, fixtures, and images.</li></ol></article>
+      </div>
+    </section>
+
+    <section id="not-contradictions">
+      <div class="section-head">
+        <div>
+          <p class="label">Checked and not counted</p>
+          <h2>Intentional differences that are acceptable when labeled</h2>
+        </div>
+      </div>
+      <div class="not-conflict">
+        <div class="ok-item"><strong>The historical 77-test claim was numerically credible.</strong> The original audit found exactly 77 test/invariant functions. The current Router-gate/recovery release has 100 passing Foundry tests; the prior 95-test liveness snapshot measured 89.51% line coverage. The remaining boundary is deployment, not the test headline.</div>
+        <div class="ok-item"><strong>Five versus six contracts is reconcilable.</strong> “Five core contracts + one World ID gate” explains the count when stated explicitly.</div>
+        <div class="ok-item"><strong>60s versus 300s is labeled history.</strong> Deployment JSON distinguishes the legacy constructor/current setter history from the replacement’s immutable 300-second minimum.</div>
+        <div class="ok-item"><strong>$1.50 versus 20 MUSD can be an intentional model variant.</strong> The mechanism delta labels ladder/attack math separately from the replacement question fee; keep that label beside every number.</div>
+        <div class="ok-item"><strong>Redirect stubs are consistent.</strong> <code>vision.html</code>, <code>juror-court.html</code>, and <code>hybrid-juror-system.html</code> correctly redirect and are not competing canonical pages.</div>
+        <div class="ok-item"><strong>Custody separation is consistent.</strong> Omen retains outcome collateral. Only the pre-funded resolution reserve pays DemoThemis; underfunded markets send nothing and refund.</div>
+        <div class="ok-item"><strong>Duplicated storyboard images are byte-identical.</strong> Their problem is staleness, not different copies making different claims.</div>
+      </div>
+    </section>
+
+    <p class="footnote">This review is a consistency and implementation-claim audit, not a formal smart-contract security audit, legal opinion, or guarantee that no additional contradiction exists. It reflects the repository working tree and publicly readable chain/terms state on 22 July 2026. Existing edits to <code>demothemis.html</code> and <code>run-through.html</code> were preserved.</p>
+  </main>
+
+  <script>
+    (() => {
+      const buttons = [...document.querySelectorAll(".filter")];
+      const findings = [...document.querySelectorAll(".finding")];
+      const search = document.getElementById("finding-search");
+      const empty = document.getElementById("empty-results");
+      let severity = "all";
+
+      function apply() {
+        const term = search.value.trim().toLowerCase();
+        let visible = 0;
+        findings.forEach((item) => {
+          const severityMatch = severity === "all" || item.dataset.severity === severity;
+          const textMatch = !term || item.textContent.toLowerCase().includes(term);
+          const show = severityMatch && textMatch;
+          item.classList.toggle("is-hidden", !show);
+          if (show) visible++;
+        });
+        empty.classList.toggle("show", visible === 0);
+      }
+
+      buttons.forEach((button) => {
+        button.addEventListener("click", () => {
+          severity = button.dataset.filter;
+          buttons.forEach((candidate) => candidate.classList.toggle("is-active", candidate === button));
+          apply();
+        });
+      });
+      search.addEventListener("input", apply);
+    })();
+  </script>
+</body>
+</html>

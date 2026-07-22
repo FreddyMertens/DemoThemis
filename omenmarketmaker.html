@@ -52,6 +52,7 @@
   .robustness-card:nth-child(1) { border-color: var(--triad-mint-border); background: var(--triad-mint); }
   .robustness-card:nth-child(2) { border-color: var(--triad-lavender-border); background: var(--triad-lavender); }
   .robustness-card:nth-child(3) { border-color: var(--triad-amber-border); background: var(--triad-amber); }
+  .robustness-card:nth-child(4) { border-color: color-mix(in srgb, var(--accent) 34%, var(--line)); background: color-mix(in srgb, var(--accent-soft) 48%, var(--surface)); }
 
   /* pool vs book table */
   .parts-wrap { overflow-x: auto; }
@@ -125,7 +126,7 @@
       <span class="pk">Product one</span>
       <h3>OmenMarketMaker: six market features</h3>
       <ol class="product-jumps">
-        <li><a href="#exploited-arbiter">Outcomes cannot be bought and arbitration &amp; appeals are robust &amp; reliable: Every final outcome comes from independent verified-human arbitration instead of a token-weighted court.</a></li>
+        <li><a href="#exploited-arbiter">Outcomes cannot be bought and arbitration &amp; appeals are robust &amp; reliable: Every funded final outcome comes from independent verified-human arbitration; an underfunded market refunds without declaring a winner.</a></li>
         <li><a href="#start-market">Start a new prediction market instantly, on any topic, with any liquidity, even with less than a dollar.</a></li>
         <li><a href="#self-custody-tokens">Liquid markets become self-custodied ERC-20 YES and NO tokens for liquidity, collateral, and leverage.</a></li>
         <li><a href="#tradeable-disputes">Claims remain tradeable through resolution and appeal windows, so holders can exit whenever liquidity exists.</a></li>
@@ -192,10 +193,10 @@
     </div>
 
     <p class="oracle-note"><b>The conclusion:</b> a prediction market needs an unbuyable arbiter. UMA shows the whale failure; Kalshi's Khamenei dispute shows the house failure. OmenMarketMaker removes both from direct control of the final verdict.</p>
-    <p>Every market closes into a separately funded DemoThemis ruling from randomly drawn verified humans voting privately, with one person counted once. Neither the venue nor the biggest wallet can buy the verdict, and OmenMarketMaker never gives up custody of the market pot.</p>
+    <p>Every deposit contributes proportionally to a locked resolution reserve. The work-based jury target and the maximum contribution percentage are published before betting starts. A funded market pays DemoThemis automatically and receives a ruling from randomly drawn verified humans; an underfunded market draws no jury and returns its liquidity instead.</p>
 
     <h3>How a market ends with an unbuyable judge</h3>
-    <p><b>The event happens:</b> OmenMarketMaker stops new betting under the written close rule, keeps the market collateral locked, and begins one consistent four-step resolution path.</p>
+    <p><b>The event happens:</b> OmenMarketMaker stops new betting under the written close rule, keeps the outcome collateral locked, and begins one consistent five-step resolution path.</p>
 
     <ol class="stepper reveal">
       <li>
@@ -208,19 +209,26 @@
       <li>
         <span class="step-n">2</span>
         <div class="step-body">
-          <h3>OmenMarketMaker funds the ruling</h3>
-          <p>OmenMarketMaker keeps the entire market pot and pays a separate work-based DemoThemis quote. Only the locked case and funded quote cross the product boundary.</p>
+          <h3>The reserve is checked automatically</h3>
+          <p>Each deposit has contributed at the fixed percentage. If the locked reserve covers the jury quote, DemoThemis is paid automatically. Any excess reserve is returned proportionally.</p>
         </div>
       </li>
       <li>
         <span class="step-n">3</span>
         <div class="step-body">
-          <h3>Verified humans decide</h3>
+          <h3>An underfunded market unwinds</h3>
+          <p>If the reserve is short, the creator gets one fixed top-up window. Without a complete top-up, no jury is drawn: YES and NO positions receive their deposited backing at their recorded prices, and the market closes without a fee.</p>
+        </div>
+      </li>
+      <li>
+          <span class="step-n">4</span>
+        <div class="step-body">
+          <h3>Verified humans decide a funded case</h3>
           <p>DemoThemis locks the case before a public draw, seats verified humans, aggregates private ballots, and runs the appeal ladder when a valid appeal is funded.</p>
         </div>
       </li>
       <li>
-        <span class="step-n">4</span>
+        <span class="step-n">5</span>
         <div class="step-body">
           <h3>The signed ruling returns</h3>
           <p>OmenMarketMaker verifies the final DemoThemis ruling, applies the market's written release rule, redeems claims, routes its fee, and closes the record.</p>
@@ -228,44 +236,44 @@
       </li>
     </ol>
 
-    <p>The service boundary stays deliberately narrow: a case and funded quote go in; a signed ruling comes back. Market custody, fees, and settlement remain with OmenMarketMaker.</p>
+    <p>The service boundary stays deliberately narrow: only a funded case and its locked resolution payment enter DemoThemis; a signed ruling comes back. Outcome collateral, the market fee, and settlement remain with OmenMarketMaker.</p>
 
     <figure class="diagram reveal">
       <div class="diagram-inner">
-        <div class="resolution-bridge" aria-label="OmenMarketMaker keeps escrow, funds a DemoThemis ruling, and settles from the signed result">
+        <div class="resolution-bridge" aria-label="OmenMarketMaker checks the locked resolution reserve, pays DemoThemis only when it is fully funded, and otherwise refunds the market">
           <article class="resolution-step" data-brand="omen">
             <span class="bridge-kicker">01 · OmenMarketMaker</span>
             <strong>Market closes</strong>
-            <p>The fixed case is prepared while all collateral remains in market escrow.</p>
-            <span class="resolution-chip">Escrow stays here</span>
+            <p>The fixed jury target and maximum reserve rate were disclosed before the first bet.</p>
+            <span class="resolution-chip">Reserve gate</span>
           </article>
-          <div class="resolution-connector" aria-hidden="true"><span>Case + funded quote</span><i class="bridge-line"></i></div>
+          <div class="resolution-connector" aria-hidden="true"><span>Funded case only</span><i class="bridge-line"></i></div>
           <article class="resolution-step" data-brand="demothemis">
             <span class="bridge-kicker">02 · DemoThemis</span>
             <strong>Verified court rules</strong>
-            <p>Bound draw, private ballots, panel consensus, and the appeal ladder.</p>
+            <p>The reserve pays the locked quote before the bound draw, private ballots, and panel consensus.</p>
             <span class="resolution-chip">Signed final ruling</span>
           </article>
           <div class="resolution-connector" aria-hidden="true"><span>Ruling + proof</span><i class="bridge-line"></i></div>
           <article class="resolution-step" data-brand="omen">
             <span class="bridge-kicker">03 · OmenMarketMaker</span>
             <strong>Market settles</strong>
-            <p>The written release rule pays claims, routes the fee, and closes the record.</p>
-            <span class="resolution-chip">One final payout</span>
+            <p>A ruling pays winners. If funding failed, the no-jury rule instead returns every position's backing.</p>
+            <span class="resolution-chip">Ruling or refund</span>
           </article>
         </div>
       </div>
-      <figcaption>Two independent products, one narrow handoff. <b>Market money never enters DemoThemis custody.</b></figcaption>
+      <figcaption>Two independent products, one narrow handoff. <b>Only the pre-funded resolution reserve enters DemoThemis; outcome collateral never does.</b></figcaption>
     </figure>
 
-    <p>Every market uses <a href="demothemis.html#capture-resistance">the court</a>: verified humans drawn by a public beacon, voting in encrypted ballots, with an appeal ladder above them when the stakes justify another panel. The market money is already inside OmenMarketMaker escrow, so the returned ruling is not advice; it selects the pre-written release rule. Every completed court case contributes to the shared juror-quality record, and independently checkable outcomes can add later confirmation. <a href="bootstrap-loop.html">The loop chapter</a> explains how that evidence compounds.</p>
+    <p>Every sufficiently funded market uses <a href="demothemis.html#capture-resistance">the court</a>: verified humans drawn by a public beacon, voting in encrypted ballots, with an appeal ladder above them when the stakes justify another panel. The signed ruling selects the pre-written release rule. A market that cannot cover the locked jury price never reaches that draw; after its top-up window it automatically refunds YES and NO backing at the positions' recorded prices. Every completed court case contributes to the shared juror-quality record, and independently checkable outcomes can add later confirmation. <a href="bootstrap-loop.html">The loop chapter</a> explains how that evidence compounds.</p>
   </section>
 
   <section id="start-market" class="reveal">
     <p class="sec-label">Value prop 2</p>
     <h2>2. Start a market with the first bet</h2>
     <p><b>Here is the entire act of creating a market:</b> You type a question, you bet a dime on the side you believe, and you share the link. That is the whole ceremony. No listing process, no market maker, no liquidity provider, no seed money waiting in a vault.</p>
-    <p>A new market is a parimutuel pool, the structure Joseph Oller invented for Paris racetracks in 1867 because he wanted betting without a bookmaker setting odds. The pool predates every market maker ever built. Everyone bets into a shared pot, the odds are nothing more than the ratio of the two sides, and when the question resolves the winners split the entire pot pro-rata, minus OmenMarketMaker's 2% market fee. One refinement is ours: the first bettors set the odds blind, with no crowd to lean on, so their claims carry a time-weight bonus. A dollar staked early earns a larger slice than a dollar that arrived after the picture cleared.</p>
+    <p>A new market is a parimutuel pool, the structure Joseph Oller invented for Paris racetracks in 1867 because he wanted betting without a bookmaker setting odds. Everyone bets into a shared pot and the odds are the ratio of the two sides. Every deposit supplies the same pre-declared percentage to the locked resolution reserve. The jury target is a funding gate, not a collection cap: if the reserve covers the target at close, DemoThemis receives the actual jury payment, every YES and NO position receives its proportional share of any reserve surplus, and winners split the remaining outcome backing after OmenMarketMaker's 2% market fee. One refinement is ours: early claims carry a time-weight bonus.</p>
 
     <div class="widget reveal">
       <div class="widget-head"><span class="live"></span> Born with a dime</div>
@@ -280,6 +288,7 @@
         <button class="btn no" id="PM1n1" type="button">Bet $1 NO</button>
         <button class="btn no" id="PM1n10" type="button">Bet $10 NO</button>
         <button class="btn ghost" id="PM1crowd" type="button">Let 25 bettors arrive</button>
+        <button class="btn ghost" id="PM1funded" type="button">Add $1k balanced</button>
         <button class="btn ghost" id="PM1reset" type="button">Reset</button>
       </div>
       <div class="readout">
@@ -287,11 +296,12 @@
         <div class="stat"><div class="k">Crowd's odds on YES</div><div class="v accent" id="PM1odds">&hellip;</div></div>
         <div class="stat"><div class="k">$1 on YES pays</div><div class="v" id="PM1py">&hellip;</div></div>
         <div class="stat"><div class="k">$1 on NO pays</div><div class="v" id="PM1pn">&hellip;</div></div>
+        <div class="stat"><div class="k">Resolution reserve</div><div class="v" id="PM1reserve">$0 / $20</div></div>
       </div>
-      <p style="font-family:var(--sans);font-size:.86rem;color:var(--faint);margin:1rem 0 0">OmenMarketMaker's 2% market fee comes off the pot. Pro-rata payouts keep both sides live and self-balancing: when YES gets crowded, NO becomes more rewarding and attracts the countertrade.</p>
+      <p style="font-family:var(--sans);font-size:.86rem;color:var(--faint);margin:1rem 0 0">This example locks a $20 jury target and a 3% maximum reserve rate before betting. A market closing below $666.67 cannot fund that jury: without a creator top-up, it draws nobody, charges no market fee, and returns YES and NO backing at the recorded purchase prices.</p>
     </div>
 
-    <p>Notice what the demo never asks for. <b>Nobody funds the market before the crowd exists, because the first dime in is the market.</b> Your opening bet is the listing fee, the seed, and the dare, all at once, and the share link is the entire distribution strategy.</p>
+    <p>Notice what the demo never asks for. <b>Nobody must pre-fund market liquidity before the crowd exists, because the first dime in creates the market.</b> That dime does not promise a subsidized human ruling: the reserve must still reach the locked jury target, the creator must fill the shortfall, or the pool refunds automatically.</p>
   </section>
 
   <section class="reveal">
@@ -366,7 +376,7 @@
     <h2>3. Self-custody tokens for liquid markets</h2>
     <p>Tokenization is when a pool becomes a real market asset. Your claim turns into plain ERC-20 YES and NO tokens you can hold in your wallet, lend, borrow against, route through other venues, or combine into more complex bets. The question is when a pool has earned that power. Section 4 comes back to the resolution benefit: because this claim is transferable, final settlement can take the time it needs without trapping every holder.</p>
     <p>An arbitrary volume threshold, like $100,000 total volume, is lazy game theory. A whale could wash-trade both sides of a market just to force it to tokenize, or dump massive capital on a "sure thing" to trigger an order book that opens completely empty.</p>
-    <p>To prevent manipulation, the market uses a <b>Robustness Strategy</b>. A pool only graduates when it mathematically proves it can sustain an active limit order book by passing three simultaneous checks:</p>
+    <p>To prevent manipulation and preserve a simple refund path, the market uses a <b>Robustness Strategy</b>. A pool only graduates when it can sustain an active limit order book and has fully funded resolution by passing four simultaneous checks:</p>
 
     <div class="widget reveal">
       <div class="widget-head"><span class="live"></span> The Robustness Lock</div>
@@ -386,6 +396,14 @@
           <div style="margin-top:.8rem; font-size:.8rem; font-weight:600; color:var(--ink-soft)">
             YES Vol: <span id="robYesVol" style="color:var(--good)">$0</span> &nbsp;&middot;&nbsp; NO Vol: <span id="robNoVol" style="color:var(--bad)">$0</span>
           </div>
+        </div>
+
+        <div class="robustness-card">
+          <div style="display:flex; justify-content:space-between; margin-bottom:.5rem; font-size:.9rem; font-weight:600; color:var(--ink)">
+            <span><span class="ic">&#9878;</span> Resolution Reserve</span>
+            <span id="robResStat" style="color:var(--bad)">&#10007; $0 of $20 funded</span>
+          </div>
+          <p style="font-size:.8rem; color:var(--muted); margin:0">Keeps transferable tokens from launching until the natural jury price is already covered. An underfunded pool remains easy to unwind at recorded YES/NO prices.</p>
         </div>
 
         <div class="robustness-card">
@@ -422,7 +440,7 @@
     </div>
     
     <script>
-      let rYes = 0, rNo = 0, rMak = 0, rDisMet = false, rMakMet = false, rDone = false;
+      let rYes = 0, rNo = 0, rMak = 0, rDisMet = false, rMakMet = false, rResMet = false, rDone = false;
       function robUpdate() {
         if(rDone) return;
         document.getElementById('robYesVol').textContent = '$' + (rYes/1000).toFixed(0) + 'k';
@@ -438,9 +456,15 @@
         let makStat = document.getElementById('robMakStat');
         makStat.innerHTML = rMakMet ? '&#10003; Passed' : '&#10007; Standing Offers &gt; $1k';
         makStat.style.color = rMakMet ? 'var(--good)' : 'var(--bad)';
+
+        const reserveFunded = (rYes + rNo) * .03;
+        rResMet = reserveFunded >= 20;
+        let resStat = document.getElementById('robResStat');
+        resStat.innerHTML = rResMet ? '&#10003; $' + reserveFunded.toFixed(2) + ' reserve; $20 target funded' : '&#10007; $' + reserveFunded.toFixed(2) + ' of $20 funded';
+        resStat.style.color = rResMet ? 'var(--good)' : 'var(--bad)';
         
         let tBtn = document.getElementById('robTimeBtn');
-        if (rDisMet && rMakMet) {
+        if (rDisMet && rMakMet && rResMet) {
           tBtn.disabled = false;
           tBtn.style.background = 'var(--accent)';
           tBtn.style.color = '#fff';
@@ -459,14 +483,14 @@
         robUpdate();
       }
       function robTime() {
-        if (!rDisMet || !rMakMet) return;
+        if (!rDisMet || !rMakMet || !rResMet) return;
         rDone = true;
         let timStat = document.getElementById('robTimStat');
         timStat.innerHTML = '&#10003; Passed';
         timStat.style.color = 'var(--good)';
         document.getElementById('robTimeBtn').style.display = 'none';
         document.getElementById('robSuccess').style.display = 'block';
-        document.getElementById('robNarr').textContent = "All checks passed. The market proved its liquidity without relying on an arbitrary volume number.";
+        document.getElementById('robNarr').textContent = "All checks passed. The market proved its liquidity and prepaid its natural jury price before transferable tokens launched.";
       }
     </script>
 
@@ -484,7 +508,7 @@
           <div class="node is-accent"><span class="ic">&#128202;</span><span class="lbl">Order book opens</span><span class="sub">pros price the risk</span></div>
         </div>
       </div>
-      <figcaption>Every market is born a pool and earns its book. <b>Nothing is subsidized, nobody quotes blind, and the first dollar of liquidity is the creator's own bet.</b></figcaption>
+      <figcaption>Every market is born a pool and earns its book. <b>Market liquidity is not subsidized, nobody quotes blind, and the first dollar of liquidity is the creator's own bet.</b> Human resolution still requires the locked reserve to reach its jury target.</figcaption>
     </figure>
 
     <div class="widget reveal"><div class="parts-wrap">
@@ -540,30 +564,31 @@
     <p class="sec-label">Value prop 6</p>
     <h2>6. Private markets with neutral escrow</h2>
     <p>This is the feature existing prediction markets mostly skip: a private, invite-only market with real third-party escrow. Set the odds yourself, share the link, and those odds never move.</p>
-    <p>It is a handshake bet with the escrow built in. Post your side at any odds you name, say $700 on YES at 70 cents, and send the link to whoever you want on the other side. Accepting means depositing the matching $300 of NO, and from that moment the odds are locked at exactly what you posted. No crowd, no drift. More invitees can join either side at the same fixed price for as long as the two sides stay matched, and unmatched money walks home at close. Resolution is the same machinery you already know: fixed rules, a separately funded DemoThemis ruling, then settlement from the signed result.</p>
+    <p>It is a handshake bet with the escrow built in. Post your side at any odds you name, say $700 on YES at 70 cents, and send the link to whoever you want on the other side. Accepting means depositing the matching $300 of NO, and from that moment the odds are locked. Each deposit contributes proportionally to the room's pre-declared resolution reserve. A fully funded reserve pays DemoThemis automatically; if it remains short after the creator's top-up window, no jury is drawn and both sides receive their backing at the locked YES/NO prices.</p>
     <p>Two things make the room more than a convenience. It is protocol escrow in its simplest clothes: two parties, a disagreement with money locked in the middle, and an arbiter already attached, which is the exact shape of the deals apps will route here later. And a settled private market gives the court something no public market can: a real question with a verified answer that never appeared on any public page. With the participants' consent it becomes a blind test for jurors, one that cannot be looked up, and <a href="bootstrap-loop.html">the loop chapter</a> puts those tests to work.</p>
   </section>
   <section class="reveal">
     <p class="sec-label">The economics</p>
-    <h2>Independent product economics</h2>
-    <p>OmenMarketMaker currently models a 2% market fee at settlement. That fee belongs to OmenMarketMaker's economics and is governed without reference to DemoThemis. For each market resolution, DemoThemis separately locks a work-based quote before any jury is drawn; neither fee is a percentage of the other, and neither product controls the other's revenue.</p>
+    <h2>Independent products, automatic resolution funding</h2>
+    <p>Before the first bet, a market fixes its work-based jury target and reserve contribution percentage, bounded by the disclosed maximum. Every deposit bears that same percentage, even after the target is reached. At close, OmenMarketMaker automatically transfers only the actual jury payment to DemoThemis before any jury is drawn; excess reserve returns to every YES and NO position proportionally, regardless of which outcome wins. OmenMarketMaker's separately disclosed 2% settlement fee still belongs to its own economics.</p>
 
     <figure class="diagram reveal">
       <div class="diagram-inner">
         <div class="parts-wrap">
           <table class="parts">
-            <thead><tr><th>Product</th><th>Its own charge</th><th>Controlled by</th></tr></thead>
+            <thead><tr><th>Money rail</th><th>Rule fixed before betting</th><th>Destination or fallback</th></tr></thead>
             <tbody>
-              <tr data-brand="omen"><td>OmenMarketMaker</td><td>Market fee: 2% in the current model</td><td>OmenMarketMaker governance and treasury</td></tr>
-              <tr data-brand="demothemis"><td>DemoThemis</td><td>Independent work-based quote for every final ruling</td><td>DemoThemis governance and treasury</td></tr>
+              <tr data-brand="demothemis"><td>Resolution reserve</td><td>Work-based target plus maximum contribution percentage</td><td>DemoThemis only when fully funded; unused reserve returns pro-rata</td></tr>
+              <tr data-brand="omen"><td>OmenMarketMaker fee</td><td>2% in the current model</td><td>OmenMarketMaker treasury, charged only on a resolved settlement</td></tr>
+              <tr><td>Underfunded market</td><td>Creator top-up deadline</td><td>No jury and no fee; YES/NO backing refunds at recorded prices</td></tr>
             </tbody>
           </table>
         </div>
       </div>
-      <figcaption>An integration can create a service payment between the products. <b>It never merges their fees, margins, treasuries, or governance.</b></figcaption>
+      <figcaption>Depositors fund the service pro-rata, but the ledgers stay distinct. <b>The resolution reserve is not OmenMarketMaker revenue, and the market fee is not DemoThemis funding.</b></figcaption>
     </figure>
 
-    <p>That is OmenMarketMaker: unbuyable arbitration, dime-sized market starts, self-held claims, tradeable resolution, fully collateralized parlays without a central bookmaker, and neutral private escrow. The next chapter shows how DemoThemis supplies paid rulings and independently checkable outcomes without joining the products' economics.</p>
+    <p>That is OmenMarketMaker: dime-sized market starts, automatically funded arbitration once the reserve reaches the jury price, honest refunds when it does not, self-held claims, tradeable resolution, fully collateralized parlays, and neutral private escrow. The next chapter shows how DemoThemis supplies paid rulings without becoming the market operator.</p>
   </section>
 
   <footer class="endnote reveal">
@@ -578,7 +603,7 @@
       <a href="demothemis-mvp.html">Live Demo MVP</a>
       <a href="/">Home &middot; the map</a>
     </div>
-    <p class="signoff">Markets that cost a dime to open and settle through an unbuyable court.</p>
+    <p class="signoff">Markets that cost a dime to open, pre-fund their jury, or refund honestly.</p>
   </footer>
 
 </main>
@@ -599,7 +624,9 @@
   var oddsEl = document.getElementById("PM1odds");
   var pyEl = document.getElementById("PM1py");
   var pnEl = document.getElementById("PM1pn");
-  var FEE = 0.02;
+  var MARKET_FEE = 0.02;
+  var RESOLUTION_RATE = 0.03;
+  var JURY_QUOTE = 20;
   var Y = 0, N = 0, bets = 0;
 
   function courtMoney(n) {
@@ -611,14 +638,21 @@
     return sign + "$" + n.toFixed(2);
   }
   function payout(side) {
-    var pot = (Y + N) * (1 - FEE);
+    var gross = Y + N;
+    var reserve = gross * RESOLUTION_RATE;
+    if (reserve < JURY_QUOTE) return null;
+    var outcomePot = gross - reserve - gross * MARKET_FEE;
+    var surplusRefundPerDollar = (reserve - JURY_QUOTE) / gross;
     var own = side === "y" ? Y : N;
     if (own <= 0) return null;
-    return pot / own;
+    return outcomePot / own + surplusRefundPerDollar;
   }
   function render() {
     var pot = Y + N;
     potEl.textContent = courtMoney(pot);
+    var reserveEl = document.getElementById("PM1reserve");
+    var reserve = pot * RESOLUTION_RATE;
+    reserveEl.textContent = courtMoney(reserve) + " / $20";
     if (pot <= 0) {
       bar.classList.add("empty");
       yesEl.style.width = "50%"; noEl.style.width = "50%";
@@ -637,19 +671,23 @@
     noEl.textContent = (100 - wy) < 16 ? "" : "NO " + Math.round((1 - pYes) * 100) + "%";
     oddsEl.textContent = Math.round(pYes * 100) + "%";
     var py = payout("y"), pn = payout("n");
-    pyEl.textContent = py === null ? "needs a YES bet" : "$" + py.toFixed(2);
-    pnEl.textContent = pn === null ? "needs a NO bet" : "$" + pn.toFixed(2);
+    var funded = reserve >= JURY_QUOTE;
+    pyEl.textContent = py === null ? (funded ? "needs a YES bet" : "refund if untopped") : "$" + py.toFixed(2);
+    pnEl.textContent = pn === null ? (funded ? "needs a NO bet" : "refund if untopped") : "$" + pn.toFixed(2);
   }
   function bet(side, amt, quiet) {
     if (side === "y") Y += amt; else N += amt;
     bets++;
     if (!quiet) {
       if (bets === 1) {
-        narr.textContent = "One bet, and the market exists. The pot is the liquidity, your stake set the first odds, and there is no market maker anywhere to bleed.";
+        narr.textContent = "One bet, and the market exists. Its locked jury reserve is not yet funded, so closing now would return this position's backing rather than draw a jury.";
       } else if (Y > 0 && N > 0 && bets === 2) {
-        narr.textContent = "Both sides are in. The odds are just the ratio of the pools, updating with every bet, and the crowded side's payout shrinks while the thin side's grows, which is what recruits the other side.";
+        narr.textContent = "Both sides are in. Their odds remain the ratio of the pools, and each deposit contributes proportionally to the locked resolution reserve.";
       } else {
-        narr.textContent = "Pot " + courtMoney(Y + N) + " across " + bets + " bets. Each winner takes a pro-rata slice of everything, minus OmenMarketMaker's 2% market fee.";
+        var shortfall = Math.max(0, JURY_QUOTE - (Y + N) * RESOLUTION_RATE);
+        narr.textContent = shortfall > 0
+          ? "Pot " + courtMoney(Y + N) + ". The jury reserve is still short by " + courtMoney(shortfall) + "; top up before expiry or every YES/NO position refunds at its recorded price."
+          : "The $20 jury target is funded. DemoThemis can be paid automatically; every position receives its pro-rata share of any reserve surplus, and winners split the net outcome backing.";
       }
     }
     render();
@@ -664,7 +702,17 @@
       var amt = [0.5, 1, 2, 5][Math.floor(Math.random() * 4)];
       bet(Math.random() < lean ? "y" : "n", amt, true);
     }
-    narr.textContent = "Twenty five strangers later: the pot deepened itself and the odds found the crowd's number. Nobody seeded anything, and nobody is on the hook quoting prices.";
+    var shortfall = Math.max(0, JURY_QUOTE - (Y + N) * RESOLUTION_RATE);
+    narr.textContent = shortfall > 0
+      ? "Twenty five strangers deepened the market, but its reserve remains " + courtMoney(shortfall) + " short. It still refunds if nobody tops it up."
+      : "Twenty five strangers deepened the market and fully funded its jury reserve.";
+    render();
+  });
+  document.getElementById("PM1funded").addEventListener("click", function () {
+    Y += 500;
+    N += 500;
+    bets += 2;
+    narr.textContent = "Balanced liquidity took the reserve past its $20 target. The locked quote can now pay DemoThemis automatically without changing the YES:NO odds.";
     render();
   });
   document.getElementById("PM1reset").addEventListener("click", function () {

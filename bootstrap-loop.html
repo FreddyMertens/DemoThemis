@@ -69,12 +69,12 @@
   <section class="reveal" id="first-customer">
     <p class="sec-label">1. The starting point</p>
     <h2>OmenMarketMaker starts the flywheel</h2>
-    <p class="lead">When OmenMarketMaker selects DemoThemis, it supplies paid cases and evidence from completed decisions. DemoThemis earns its own service fee; OmenMarketMaker's market fee, margin, and treasury remain separate.</p>
+    <p class="lead">When a market's locked resolution reserve reaches its pre-declared jury target, OmenMarketMaker automatically sends DemoThemis a paid case. Underfunded markets send no case and refund instead. DemoThemis earns its service fee while OmenMarketMaker's market fee, margin, and treasury remain separate.</p>
 
     <figure class="diagram reveal">
       <div class="diagram-inner">
         <div class="amp">
-          <div class="node" data-brand="omen">OmenMarketMaker selects DemoThemis<small>one customer among many</small></div>
+          <div class="node" data-brand="omen">A market fully funds its reserve<small>depositors contribute pro-rata</small></div>
           <span class="ar">&rarr;</span>
           <div class="node" data-brand="demothemis">DemoThemis earns service fees<small>its own pricing funds the bench</small></div>
           <span class="ar">&rarr;</span>
@@ -91,7 +91,7 @@
   <section class="reveal" id="market-supplies">
     <p class="sec-label">2. What markets provide</p>
     <h2>Integrated markets supply work and quality evidence</h2>
-    <p class="lead">A market that chooses DemoThemis supplies a real question and pays DemoThemis's quoted resolution fee. OmenMarketMaker's own market fee remains outside that transaction. Every completed case updates the shared juror-quality record, and independently checkable outcomes can add later confirmation.</p>
+    <p class="lead">A funded market supplies a real question and pays DemoThemis automatically from the locked resolution reserve. The jury target and contribution percentage, bounded by the disclosed maximum, were fixed before betting. Every deposit contributes at that rate; after the actual jury payment, unused reserve returns to every YES and NO position proportionally. If the reserve and creator top-up cannot cover the jury price, no jury is drawn and YES/NO backing refunds at recorded prices. OmenMarketMaker's own market fee remains outside that transaction.</p>
 
     <h3>DemoThemis receipts fund its bench</h3>
     <p>Each jury quote locks before selection: processing cost + required panel compensation + reward-reserve top-up + capped operations charge. Panel pay follows workload and eligible supply, the reserve top-up falls to zero at target, and operations cannot exceed its approved public budget or per-case cap. Each submitted case includes the required panel compensation.</p>

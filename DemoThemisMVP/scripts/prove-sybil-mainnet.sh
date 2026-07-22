@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
 # Step 3.5: prove WorldIDGate enforcement on World Chain MAINNET (480) with three
 # real transactions against the deployed JurorRegistry (0xbf7E…), whose gate runs
-# a real World ID 4.0 WorldIDVerifier.verify (Staging verifier 0x703a…):
+# the historical World ID 4.0 preview adapter (Staging verifier 0x703a…):
 #
 #   1. FORGED    register(deployer, corrupt(PROOF_A)) -> reverts INSIDE
 #                WorldIDVerifier.verify (a flipped Groth16 limb fails the SNARK).

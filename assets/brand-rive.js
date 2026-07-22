@@ -5,6 +5,7 @@
   if (reducedMotion || !window.rive || !window.rive.Rive) return;
 
   var RIVE_PLAYBACK_RATE = 0.5;
+  var loaderScript = document.currentScript;
   var records = [];
   var observer = null;
   var resizeObserver = null;
@@ -12,11 +13,14 @@
   var syncFrame = 0;
 
   function assetUrl(relativePath) {
-    return new URL(relativePath, document.baseURI).href;
+    var base = loaderScript && loaderScript.src
+      ? new URL(".", loaderScript.src)
+      : new URL("assets/", document.baseURI);
+    return new URL(relativePath, base).href;
   }
 
   if (window.rive.RuntimeLoader && typeof window.rive.RuntimeLoader.setWasmUrl === "function") {
-    window.rive.RuntimeLoader.setWasmUrl(assetUrl("assets/vendor/rive/rive-2.38.5.wasm"));
+    window.rive.RuntimeLoader.setWasmUrl(assetUrl("vendor/rive/rive-2.38.5.wasm"));
   }
 
   function recordForShell(shell) {
@@ -59,7 +63,7 @@
 
     try {
       record.instance = new window.rive.Rive({
-        src: assetUrl("assets/brand/omenmarketmaker/wordmark.riv"),
+        src: assetUrl("brand/omenmarketmaker/wordmark.riv"),
         canvas: record.canvas,
         autoplay: true,
         layout: new window.rive.Layout({

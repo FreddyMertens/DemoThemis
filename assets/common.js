@@ -13,6 +13,7 @@
     { f: "governance.html", t: "Governance", ch: 6 }
   ];
   var TOTAL = CHAPTERS.length;
+  var commonScript = document.currentScript;
 
   function fileOf(path) {
     var clean = String(path || "").split("?")[0].split("#")[0].replace(/\\/g, "/");
@@ -137,7 +138,30 @@
     links.forEach(function (link) {
       nav.appendChild(createSeriesCard(link.cls, link.item, link.dir));
     });
-    el.replaceChildren(label, nav);
+    var handoffTitle = el.getAttribute("data-handoff-title");
+    var handoffCopy = el.getAttribute("data-handoff-copy");
+    if (handoffTitle && handoffCopy) {
+      var layout = document.createElement("div");
+      var intro = document.createElement("div");
+      var eyebrow = document.createElement("span");
+      var title = document.createElement("strong");
+      var copy = document.createElement("span");
+      layout.className = "series-handoff-layout";
+      intro.className = "series-handoff-copy";
+      eyebrow.className = "eyebrow";
+      eyebrow.textContent = el.getAttribute("data-handoff-eyebrow") || "Up next";
+      title.textContent = handoffTitle;
+      copy.className = "summary";
+      copy.textContent = handoffCopy;
+      intro.appendChild(eyebrow);
+      intro.appendChild(title);
+      intro.appendChild(copy);
+      layout.appendChild(intro);
+      layout.appendChild(nav);
+      el.replaceChildren(label, layout);
+    } else {
+      el.replaceChildren(label, nav);
+    }
   }
 
   function renderSeries(el, pos, links) {
@@ -206,6 +230,129 @@
     var next = idx < CHAPTERS.length - 1 ? CHAPTERS[idx + 1] : null;
     nav = chapterNav("Chapter " + c.ch + " of " + TOTAL, prev, next);
     renderSeries(el, nav.pos, nav.links);
+  }
+
+  // ---- intent-based chapter warmup ----
+  var warmedResources = Object.create(null);
+  var chapterHoverTimer = 0;
+
+  function warmupAllowed() {
+    if (location.protocol !== "http:" && location.protocol !== "https:") return false;
+    var connection = navigator.connection || navigator.mozConnection || navigator.webkitConnection;
+    return !(connection && connection.saveData);
+  }
+
+  function proposalAssetUrl(relativePath) {
+    var base = commonScript && commonScript.src
+      ? new URL(".", commonScript.src)
+      : new URL("assets/", document.baseURI);
+    return new URL(relativePath, base).href;
+  }
+
+  function chapterUrl(link) {
+    if (!link || link.hasAttribute("download") || link.target && link.target !== "_self") return null;
+    try {
+      var url = new URL(link.href, location.href);
+      if (url.origin !== location.origin) return null;
+      var file = fileOf(url.pathname);
+      if (file === here || findChapterIndex(file) === -1) return null;
+      url.hash = "";
+      return { file: file, href: url.href };
+    } catch (error) {
+      return null;
+    }
+  }
+
+  function addPrefetch(href, as, type, crossOrigin) {
+    if (!href || warmedResources[href]) return;
+    warmedResources[href] = true;
+    var link = document.createElement("link");
+    link.rel = "prefetch";
+    link.href = href;
+    if (as) link.as = as;
+    if (type) link.type = type;
+    if (crossOrigin) link.crossOrigin = "anonymous";
+    link.setAttribute("fetchpriority", "low");
+    document.head.appendChild(link);
+  }
+
+  function warmRunThroughAssets() {
+    [
+      ["run-through.css", "style"],
+      ["run-through.js", "script"],
+      ["run-through-brand.css", "style"],
+      ["fonts/product-app-fonts.css", "style"],
+      ["fonts/alegreya-sans-medium.woff2", "font", "font/woff2", true],
+      ["fonts/alegreya-sans-bold.woff2", "font", "font/woff2", true],
+      ["fonts/alegreya-sans-extrabold.woff2", "font", "font/woff2", true],
+      ["fonts/alegreya-sans-black.woff2", "font", "font/woff2", true],
+      ["vendor/rive/rive-2.38.5.js", "script"],
+      ["brand-rive.js", "script"],
+      ["vendor/rive/rive-2.38.5.wasm", "fetch", "application/wasm", true],
+      ["brand/omenmarketmaker/wordmark.riv", "fetch", "application/octet-stream", true],
+      ["brand/omenmarketmaker/wordmark-poster.png", "image", "image/png"]
+    ].forEach(function (asset) {
+      addPrefetch(proposalAssetUrl(asset[0]), asset[1], asset[2], asset[3]);
+    });
+  }
+
+  function warmChapterLink(link) {
+    if (!warmupAllowed()) return;
+    var target = chapterUrl(link);
+    if (!target) return;
+    addPrefetch(target.href, "document");
+    if (target.file === "run-through.html") warmRunThroughAssets();
+  }
+
+  function chapterLinkFromEvent(event) {
+    var target = event.target;
+    if (!target || typeof target.closest !== "function") return null;
+    return target.closest("a[data-chapter-link]");
+  }
+
+  function initChapterWarmup() {
+    if (!warmupAllowed()) return;
+    var urls = [];
+    var seenUrls = Object.create(null);
+    Array.prototype.forEach.call(document.querySelectorAll("a[href]"), function (link) {
+      var target = chapterUrl(link);
+      if (!target) return;
+      link.setAttribute("data-chapter-link", "");
+      if (!seenUrls[target.href]) {
+        seenUrls[target.href] = true;
+        urls.push(target.href);
+      }
+    });
+
+    if (urls.length) {
+      var rules = document.createElement("script");
+      rules.type = "speculationrules";
+      rules.textContent = JSON.stringify({
+        prerender: [{ source: "list", urls: urls, eagerness: "moderate" }]
+      });
+      document.head.appendChild(rules);
+    }
+
+    document.addEventListener("mouseover", function (event) {
+      var link = chapterLinkFromEvent(event);
+      if (!link || link.contains(event.relatedTarget)) return;
+      window.clearTimeout(chapterHoverTimer);
+      chapterHoverTimer = window.setTimeout(function () { warmChapterLink(link); }, 100);
+    }, { passive: true });
+    document.addEventListener("mouseout", function (event) {
+      var link = chapterLinkFromEvent(event);
+      if (!link || link.contains(event.relatedTarget)) return;
+      window.clearTimeout(chapterHoverTimer);
+    }, { passive: true });
+    document.addEventListener("focusin", function (event) {
+      warmChapterLink(chapterLinkFromEvent(event));
+    }, { passive: true });
+    document.addEventListener("pointerdown", function (event) {
+      warmChapterLink(chapterLinkFromEvent(event));
+    }, { passive: true });
+    document.addEventListener("touchstart", function (event) {
+      warmChapterLink(chapterLinkFromEvent(event));
+    }, { passive: true });
   }
 
   // ---- in-page table of contents + scroll-spy ----
@@ -395,6 +542,7 @@
   initLocalFileLinks();
   initNav();
   initSeries();
+  initChapterWarmup();
   initToc();
   initToTop();
 })();

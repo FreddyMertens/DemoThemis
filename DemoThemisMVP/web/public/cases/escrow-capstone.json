@@ -3,7 +3,7 @@
   "type": "escrow",
   "standard": "rubric",
   "question": "Should the payee be paid under the linked terms? (vote YES = pay the payee, NO = refund the payer)",
-  "terms": "Deliver a working on-chain arbitration court on World Chain mainnet: a human registers through on-chain World ID 4.0, a case is drawn to a random panel, and the panel resolves it by private commit/reveal. Acceptance = the linked explorer trace shows a case resolved by the panel.",
+  "terms": "Deliver a working on-chain arbitration court on World Chain mainnet: a human registers through a wallet-bound World ID proof checked by the documented mainnet Router, a case is drawn to a random panel, and the panel resolves it by public commit/reveal. Acceptance = the linked explorer trace shows a case resolved by the panel.",
   "evidence": [
     { "label": "Live DisputeCourt on worldscan", "url": "https://worldscan.org/address/0xCDF427D18da8C2e8CCf9a95310bC38857EEf795A" },
     { "label": "Live DealEscrow on worldscan", "url": "https://worldscan.org/address/0xefc898F9C4FC805111041676b720CB478BE67c47" }

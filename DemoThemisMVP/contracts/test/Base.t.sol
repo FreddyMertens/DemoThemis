@@ -11,7 +11,7 @@ import {DealEscrow} from "../src/DealEscrow.sol";
 import {IDisputeCourt} from "../src/interfaces/IDisputeCourt.sol";
 
 /// @dev Shared harness: deploys + wires the full system (7/14 cohort params,
-///      short demo durations) and provides juror/case helpers.
+///      immutable five-minute durations) and provides juror/case helpers.
 contract Base is Test {
     MockUSD internal musd;
     MockSybilGate internal gate;
@@ -20,16 +20,16 @@ contract Base is Test {
     DisputeCourt internal court;
     DealEscrow internal escrow;
 
-    uint64 internal constant COMMIT_DUR = 180;
-    uint64 internal constant REVEAL_DUR = 180;
+    uint64 internal constant COMMIT_DUR = 300;
+    uint64 internal constant REVEAL_DUR = 300;
     uint256 internal constant PANEL = 7;
     uint256 internal constant MINPOOL = 14;
     uint256 internal constant BOND = 5 * 10 ** 6;
-    uint256 internal constant CASE_FEE = 2 * 10 ** 6;
+    uint256 internal constant CASE_FEE = 20 * 10 ** 6;
     // 70/20/10 split of the case fee
-    uint256 internal constant FEE_REWARD = (CASE_FEE * 2000) / 10_000; // 0.4 MUSD
-    uint256 internal constant FEE_PROTOCOL = (CASE_FEE * 1000) / 10_000; // 0.2 MUSD
-    uint256 internal constant FEE_JURORS = CASE_FEE - FEE_REWARD - FEE_PROTOCOL; // 1.4 MUSD
+    uint256 internal constant FEE_REWARD = (CASE_FEE * 2000) / 10_000; // 4 MUSD
+    uint256 internal constant FEE_PROTOCOL = (CASE_FEE * 1000) / 10_000; // 2 MUSD
+    uint256 internal constant FEE_JURORS = CASE_FEE - FEE_REWARD - FEE_PROTOCOL; // 14 MUSD
 
     address internal opener = makeAddr("opener");
     address internal protocol = makeAddr("protocol");

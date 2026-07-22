@@ -2,7 +2,6 @@
 
 import { useEffect, useMemo, useRef, useState } from 'react';
 import {
-  BOND,
   CASE_FEE,
   CaseOutcome,
   CourtSim,
@@ -63,7 +62,7 @@ export function CoreCourt({ seed }: { seed: number }) {
 
   const activeJurors = sim.activeIds().length;
   const canRun = activeJurors >= panelSize;
-  const slashesThisCase = last ? last.noShows.length * BOND : 0;
+  const slashesThisCase = last ? last.payout.slashesToReward : 0;
 
   return (
     <Widget title="The core court: draw, commit, reveal, verdict, payout">
@@ -164,6 +163,7 @@ export function CoreCourt({ seed }: { seed: number }) {
             <Stat k="Verdicts matching the truth" v={`${sweep.correct} / ${sweep.cases}`} tone="good" />
             <Stat k="Court accuracy" v={`${(sweep.accuracy * 100).toFixed(1)}%`} tone="good" />
             <Stat k="Quorum redraws" v={sweep.redraws} />
+            <Stat k="Recovery timeouts" v={sweep.recoveryTimeouts} />
             <Stat k="Reward pool now" v={usd(sweep.rewardPool)} tone="accent" />
           </div>
           <p className="sbx-note">
@@ -184,13 +184,14 @@ export function CoreCourt({ seed }: { seed: number }) {
       <details className="sbx-inline-details">
         <summary>
           <strong>What this court run models</strong>
-          <span>Live mechanics and funded gaps</span>
+          <span>Replacement mechanics and funded gaps</span>
         </summary>
         <div className="sbx-inline-details-body">
           <p className="sbx-prose">
-            The deployed core flow draws a panel, seals votes until reveal, decides the verdict, and splits the 2 MUSD
+            The recovery-enabled replacement flow draws a panel, seals votes until reveal, decides the verdict, and splits the 20 MUSD
             demo fee 70/20/10. No-show bonds and rounding dust enter the reward pool. Each simulated identity fills one
-            seat. Production randomness and receipt-free ballot privacy remain funded work, not MVP features.
+            seat. A missed quorum gets one bounded recovery window: a full retry panel is drawn when available, otherwise
+            the window expires into status quo. Production randomness and receipt-free ballot privacy remain funded work.
           </p>
         </div>
       </details>
@@ -235,9 +236,10 @@ function CaseDetail({
           Verdict: {outcome.outcome ? 'YES' : 'NO'}
         </Verdict>
         {outcome.redrew && <Verdict level="mid">redrew once (quorum miss)</Verdict>}
+        {outcome.recoveryTimedOut && <Verdict level="mid">recovery window expired → status quo</Verdict>}
         <span className="sbx-sans" style={{ fontSize: '.84rem', color: 'var(--muted)' }}>
-          {outcome.yes} yes &middot; {outcome.no} no &middot; {outcome.noShows.length} no-show
-          {outcome.noShows.length === 1 ? '' : 's'} &middot; {decided}/{panelSize} revealed
+          {outcome.yes} yes &middot; {outcome.no} no &middot; {outcome.noShows.length} slashed no-show
+          {outcome.noShows.length === 1 ? '' : 's'} across the case &middot; {decided}/{panelSize} revealed on the final panel
         </span>
       </div>
 

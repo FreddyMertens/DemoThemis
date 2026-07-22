@@ -1,7 +1,8 @@
 # DemoThemis MVP
 
 A working demo of the **DemoThemis arbitration court** for the World Foundation
-Spark Track grant: a juror court gated by **on-chain World ID 4.0**, running on
+Spark Track grant: a juror court gated by a **World ID proof verified on-chain
+through the documented World ID Router**, running on
 World Chain, with a browser sandbox that simulates the full mechanism.
 
 ## Why it's different
@@ -23,47 +24,62 @@ panel is appealed into a larger one). Cost-to-capture scales with pool width × 
 value-at-stake — never a flat panel bribe. Full scan +
 comparison: [docs/DIFFERENTIATION.md](docs/DIFFERENTIATION.md).
 
-**Status: Step 5 of 5 — mainnet deployed & wired; the live 3-human capstone is the
-last step.** The court contracts are built and tested (77 Foundry tests, >90%
-coverage); the browser sandbox and the comparative "buy this verdict" attack demo
-are done; a ~20-juror scale demo with resolved cases runs on the World Chain
-**Sepolia cohort**; and a capstone-ready 3/3 mainnet instance over the **Production**
-World ID 4.0 verifier is **deployed and source-verified**, with a single-tap World App
-juror onboard path (`registerWithPermit2`, sponsored-gas trace pending at the
-capstone) and on-chain commit/reveal. The mainnet deployment uses a single 3-seat
-panel on purpose: it proves the mechanism end-to-end. At 3/3 the pool equals the panel, so this
-demo *is* cheaply flippable — that's a liveness/cost demo, not the security claim. Capture-
+**Status: the case-liveness, automated-timing, and Router-gate release is implemented and tested (100 Foundry tests pass); mainnet
+redeployment is required before the live capstone.** The previously deployed
+v4 preview-verifier instance is source-verified historical evidence, but its immutable
+3/3 court predates this fix and remains vulnerable both to a no-show stall and to
+accepting a case whose parties leave fewer than three eligible jurors. Do not register
+capstone jurors against the recorded Step-5 addresses. The replacement source keeps the
+3-seat panel, fixes the question fee at 20 MUSD, fixes both voting windows at deployment with a five-minute minimum and no duration setter, checks the case-specific eligible pool before accepting funds, and gives every accepted case a
+fixed one-hour first-draw escape. If no panel forms, anyone can unwind it: the unused fee
+returns to the opener/payer and escrow principal returns to the payer. The same source lets
+a slashed verified human rejoin with a fresh Permit2 bond and permissionlessly resolves
+status quo if the separate one-hour retry window cannot form a new panel. A minimum of three
+eligible jurors is fund-safe because of that unwind; the replacement deployment should use at
+least four (`PANEL_SIZE + 1`) so one pre-draw withdrawal does not sacrifice adjudication
+availability. The pool has no maximum. See
+[docs/LIVENESS_RECOVERY.md](docs/LIVENESS_RECOVERY.md) for the lifecycle and cutover
+checklist.
+
+The browser sandbox and comparative "buy this verdict" attack demo are complete, and a
+~20-juror scale demo with resolved cases runs on the World Chain **Sepolia cohort**.
+The mainnet demo uses a single 3-seat panel on purpose: it proves the mechanism
+end-to-end. Both the historical minimum-3 pool and the recommended minimum-4 replacement
+remain cheaply flippable — this is a liveness/cost demo, not the security claim. Capture-
 resistance is the at-scale property: because the panel is drawn at random after the question, an
 attacker can't target it and must instead corrupt a near-majority of the whole pool, per case,
 for only a probability — so cost rises with pool width (plus parallel pᴺ panels and the appeal
 ladder above a value line). Widening the pool and panel and turning on parallel panels + appeals
-is funded-milestone work, not a research risk; the full regime is shown in the labeled sandbox. On-chain World ID verification is **proven** by the three
+is funded-milestone work, not a research risk; the full regime is shown in the labeled sandbox. The historical v4 adapter is exercised by three
 Step-3.5 enforcement
 traces (a valid registration, a forged-proof revert, a duplicate-human revert) —
 using World ID **Simulator / Staging** identities, labeled as such. The
-Production-verifier path is wired and awaiting the live **3-human capstone**
-(`docs/CAPSTONE_RUNBOOK.md`); no real human has registered on the Production-verifier
-instance yet (`jurorCount() == 0`). See [docs/DEMO.md](docs/DEMO.md)
+v4 preview path was exercised on the legacy deployment; it is not the production
+dependency. The replacement uses the documented mainnet Router, and the live capstone is paused
+until the recovery contracts are freshly deployed and wired (`docs/CAPSTONE_RUNBOOK.md`).
+No real human has registered on the legacy preview-verifier instance yet
+(`jurorCount() == 0`). See [docs/DEMO.md](docs/DEMO.md)
 for the clickable explorer traces.
 
 ### What's real on-chain vs. what's simulated
 
 | ✅ Real & on-chain today (mainnet, source-verified) | ◷ Simulated / roadmap (labeled, funded-milestone) |
 |---|---|
-| World ID 4.0 verified **in the transaction** (`WorldIDVerifier.verify`, real Groth16) | Receipt-free MACI ballots — milestone #2 |
+| Replacement source verifies a Router-compatible Orb proof **in the transaction** (`WorldIDRouter.verifyProof`); deployment pending | Receipt-free MACI ballots — milestone #2 |
 | Identity-derived **nullifier sybil gate** (one human, one seat, every wallet) | VRF / drand draw randomness — milestone #1 |
 | **Wallet-bound** proof (a stolen proof reverts) | Appeal ladder (7→15→31 seats) — milestone #3 |
 | Random panel drawn **after** the question | Parallel pᴺ panels above a value line — milestone #3 |
 | Commit / reveal voting | Juror reputation / Wilson gate — milestone #3 |
 | 70/20/10 fee split + 2% escrow fee; **slash-to-pool, never to winners** | Reward-pool cyclic payout — milestone #3 |
 | **Atomic** escrow settlement (`resolve → escrow.settle`) | Work-based quote engine + reusable resolution SDK — milestones #3–4 |
-| **No admin override** (wire-once + phase clock are the entire admin surface) | (external security review — milestone #5) |
-| 77 Foundry tests (invariants + fuzz), >90% coverage, all sources verified | |
+| **No runtime admin override**: one-shot wiring, immutable voting windows, and permissionless lifecycle transitions | (external security review — milestone #5) |
+| 100 passing Foundry tests, including Router binding/rejection, exact-3/3 party exclusion, first-draw unwind, retry recovery, invariants, and fuzz; replacement deployment pending | |
 
 ### How DemoThemis uses the World stack  (deeper than "we call IDKit")
 
-- **On-chain World ID 4.0** — `WorldIDVerifier.verify` runs the real Groth16 check
-  **inside the registration transaction**, not a cloud callback.
+- **On-chain World ID Router** — `WorldIDRouter.verifyProof` runs the Groth16 check
+  **inside the registration transaction**, not a cloud callback. IDKit requests the
+  supported v3 compatibility proof until the v4 verifier leaves preview.
 - **Sybil gate** — the identity-derived nullifier gives one human one seat on every
   wallet; a reused human reverts on-chain.
 - **Wallet-bound proofs** — a stolen or replayed proof reverts before the check.
@@ -83,15 +99,14 @@ Three surfaces, one Next.js app:
   the World App Mini App. Read-only in a desktop browser; the capstone juror flow
   runs on mainnet through World App.
 - The **Sepolia cohort** — seeded scale-and-history demo, rendered read-only
-  (labeled `MockSybilGate` stand-in; the real World ID verifier path is on mainnet).
+  (labeled `MockSybilGate` stand-in; the supported Router path targets mainnet).
 
 ## Deployed contracts
 
-**World Chain mainnet (chain 480) — capstone-ready Production-verifier instance**
-(source-verified on [worldscan](https://worldscan.org); 3/3 demo panel over the real World
-ID 4.0 Production verifier — a liveness/cost demo, cheaply flippable on purpose; the security
-claim is the at-scale regime where, because panels are drawn at random per case, capture cost
-scales with pool width, parallel panels, and appeals). Source:
+**World Chain mainnet (chain 480) — legacy v4 preview-verifier instance with the former 2 MUSD question fee; do not use for the capstone**
+(the historical bytecode is source-verified on [worldscan](https://worldscan.org), but it
+does not contain the bounded case-liveness recovery implementation now in this repository).
+Source and explicit capability status:
 `contracts/deployments/worldchain-mainnet.json`.
 
 | Contract | Address |
@@ -126,8 +141,9 @@ docs/        SPIKE, IMPLEMENTATION_PLAN context, DEMO (explorer traces), MECHANI
 scripts/     deploy/seed/keeper/capstone shell helpers (run in WSL)
 ```
 
-The full build plan is [IMPLEMENTATION_PLAN.md](IMPLEMENTATION_PLAN.md); every MVP
-vs full-design simplification is in [docs/MECHANISM_DELTA.md](docs/MECHANISM_DELTA.md).
+The current activation plan is [docs/MVP_UPGRADE_PLAN.md](docs/MVP_UPGRADE_PLAN.md);
+every MVP vs full-design simplification is in
+[docs/MECHANISM_DELTA.md](docs/MECHANISM_DELTA.md).
 
 ## Quickstart
 
@@ -136,7 +152,7 @@ Contracts (Foundry runs in WSL on the build machine; CI on ubuntu is the arbiter
 ```bash
 cd contracts
 forge build
-forge test          # 77 tests
+forge test          # full unit, fuzz, invariant, and exact-3/3 recovery suite
 ```
 
 Web (Node 20+, pnpm 9):
@@ -152,12 +168,15 @@ pnpm dev            # http://localhost:3000
 
 - **Foundry** (repo-root `.env`, see `.env.example`): `PRIVATE_KEY` (deployer; never
   a personal key), optional `vm.envOr` overrides `PANEL_SIZE` / `MIN_POOL` /
-  `COMMIT_DURATION` / `REVEAL_DURATION` (defaults 7/14/60/60), and `WORLD_ID_VERIFIER`
-  — set it to deploy the real `WorldIDGate` (Staging `0x703a…` or Production
-  `0x0000…94d7`); unset deploys the cohort `MockSybilGate`. RPCs are `foundry.toml`
+  `COMMIT_DURATION` / `REVEAL_DURATION` (defaults 7/14/300/300; both durations are immutable and reject values below 300 seconds), `WORLD_ID_ROUTER`, and
+  `WORLD_ID_APP_ID` — set the Router to the documented World Chain mainnet address
+  to deploy `WorldIDRouterGate`; leave it unset only for the disclosed cohort
+  `MockSybilGate`. The deploy script cannot select the v4 preview verifier. RPCs are `foundry.toml`
   `[rpc_endpoints]` aliases (`worldchain_sepolia` / `worldchain_mainnet`).
+  For the replacement three-seat capstone, explicitly set `PANEL_SIZE=3` and
+  `MIN_POOL>=4`; three remains fund-safe but has no one-withdrawal adjudication reserve.
 - **Web** (`web/.env.local`, see `web/.env.sample`): `NEXT_PUBLIC_CHAIN_ID` (480
-  mainnet capstone-ready / 4801 cohort read-only), `NEXT_PUBLIC_APP_ID`, `RP_ID`,
+  replacement mainnet after cutover / 4801 cohort read-only), `NEXT_PUBLIC_APP_ID`, `RP_ID`,
   `RP_SIGNING_KEY`, `AUTH_SECRET` / `AUTH_TRUST_HOST` / `HMAC_SECRET_KEY` / `AUTH_URL`,
   and for the B5 dev page `NEXT_PUBLIC_SHOW_DEV` + `DEV_PRIVATE_KEY` (keep off in
   production).

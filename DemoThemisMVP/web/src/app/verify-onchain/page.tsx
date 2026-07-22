@@ -1,5 +1,5 @@
 'use client';
-// THROWAWAY PROBE (Step 3.5 de-risk): request a World ID 4.0 *on-chain* proof
+// ARCHIVED PREVIEW PROBE (Step 3.5 de-risk): request a World ID 4.0 proof
 // (proofOfHuman, allow_legacy_proofs:false) and dump the result so we can cast
 // call the Staging verifier with it. Distinct from components/Verify (orbLegacy
 // cloud path). Safe to delete after the assumption is proven.
@@ -60,7 +60,8 @@ export default function VerifyOnchainProbe() {
 
   return (
     <main id="main-content" tabIndex={-1} style={{ padding: 24, fontFamily: 'monospace', maxWidth: 920 }}>
-      <h1>v4 on-chain proof probe (proofOfHuman)</h1>
+      <h1>Archived v4 preview-verifier probe (proofOfHuman)</h1>
+      <p>This preserves historical evidence only. Production registration uses the documented mainnet Router.</p>
       <button onClick={run} style={{ padding: '8px 16px', fontSize: 16 }}>
         Start v4 request
       </button>

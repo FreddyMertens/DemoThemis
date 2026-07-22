@@ -1,15 +1,6 @@
 @font-face {
   font-family: "Alegreya Sans App";
-  src: url("./alegreya-sans-regular.ttf") format("truetype");
-  font-style: normal;
-  font-weight: 400;
-  font-display: swap;
-  size-adjust: 107%;
-}
-
-@font-face {
-  font-family: "Alegreya Sans App";
-  src: url("./alegreya-sans-medium.ttf") format("truetype");
+  src: url("./alegreya-sans-medium.woff2") format("woff2");
   font-style: normal;
   font-weight: 500;
   font-display: swap;
@@ -18,7 +9,7 @@
 
 @font-face {
   font-family: "Alegreya Sans App";
-  src: url("./alegreya-sans-bold.ttf") format("truetype");
+  src: url("./alegreya-sans-bold.woff2") format("woff2");
   font-style: normal;
   font-weight: 700;
   font-display: swap;
@@ -27,7 +18,7 @@
 
 @font-face {
   font-family: "Alegreya Sans App";
-  src: url("./alegreya-sans-extrabold.ttf") format("truetype");
+  src: url("./alegreya-sans-extrabold.woff2") format("woff2");
   font-style: normal;
   font-weight: 800;
   font-display: swap;
@@ -36,7 +27,7 @@
 
 @font-face {
   font-family: "Alegreya Sans App";
-  src: url("./alegreya-sans-black.ttf") format("truetype");
+  src: url("./alegreya-sans-black.woff2") format("woff2");
   font-style: normal;
   font-weight: 900;
   font-display: swap;
@@ -45,7 +36,7 @@
 
 @font-face {
   font-family: "Literata App";
-  src: url("./literata-ui-variable.ttf") format("truetype");
+  src: url("./literata-ui-variable.woff2") format("woff2");
   font-style: normal;
   font-weight: 200 900;
   font-display: swap;
@@ -54,7 +45,7 @@
 
 @font-face {
   font-family: "Noto Serif Tibetan App";
-  src: url("./noto-serif-tibetan-ui-variable.ttf") format("truetype");
+  src: url("./noto-serif-tibetan-ui-variable.woff2") format("woff2");
   font-style: normal;
   font-weight: 100 900;
   font-display: swap;
@@ -64,7 +55,7 @@
 
 @font-face {
   font-family: "Noto Sans Symbols 2 App";
-  src: url("./noto-sans-symbols-2-ui.ttf") format("truetype");
+  src: url("./noto-sans-symbols-2-ui.woff2") format("woff2");
   font-style: normal;
   font-weight: 400;
   font-display: swap;

@@ -17,16 +17,15 @@ contract CourtEdgesTest is Base {
         _registerMany(MINPOOL);
     }
 
-    function test_setDurations_byDeployer() public {
-        court.setDurations(60, 90);
-        assertEq(court.commitDuration(), 60);
-        assertEq(court.revealDuration(), 90);
+    function test_votingDurations_areImmutableDeploymentParameters() public view {
+        assertEq(court.AUTOMATED_TIMING_VERSION(), 1);
+        assertEq(court.commitDuration(), COMMIT_DUR);
+        assertEq(court.revealDuration(), REVEAL_DUR);
     }
 
-    function test_setDurations_onlyDeployer_reverts() public {
-        vm.prank(address(0xBEEF));
-        vm.expectRevert(DisputeCourt.OnlyDeployer.selector);
-        court.setDurations(1, 1);
+    function test_constructor_rejectsUnsafeVotingDurations() public {
+        vm.expectRevert(DisputeCourt.DurationTooShort.selector);
+        new DisputeCourt(musd, registry, address(rewardPool), protocol, 7, 14, 299, 300);
     }
 
     function test_setEscrow_alreadySet_reverts() public {
@@ -36,8 +35,9 @@ contract CourtEdgesTest is Base {
 
     function test_setEscrow_onlyDeployer_reverts() public {
         // fresh court with no escrow set yet
-        DisputeCourt fresh =
-            new DisputeCourt(musd, registry, address(rewardPool), protocol, 7, 14, 180, 180);
+        DisputeCourt fresh = new DisputeCourt(musd, registry, address(rewardPool), protocol, 7, 14, 300, 300);
+        vm.expectRevert(DisputeCourt.ZeroAddress.selector);
+        fresh.setEscrow(address(0));
         vm.prank(address(0xBEEF));
         vm.expectRevert(DisputeCourt.OnlyDeployer.selector);
         fresh.setEscrow(address(0xBEEF));
@@ -72,14 +72,14 @@ contract CourtEdgesTest is Base {
         court.openFromEscrow(0, keccak256("c"), "u", address(1), address(2), 0);
     }
 
-    /// 3/3 mainnet-style court where two of only four jurors are the deal's
-    /// parties: the draw cannot fill an eligible panel and must re-arm, not brick.
-    function test_draw_couldNotFill_rearms() public {
+    /// Opening rejects a deal that cannot leave three eligible jurors, and the
+    /// revert rolls the escrow's attempted status/allowance changes back too.
+    function test_openFromEscrow_tooFewEligible_revertsAtomically() public {
         MockUSD m = new MockUSD();
         MockSybilGate g = new MockSybilGate();
         JurorRegistry r = new JurorRegistry(m, g);
         RewardPool ip = new RewardPool(m);
-        DisputeCourt c = new DisputeCourt(m, r, address(ip), protocol, 3, 3, 180, 180);
+        DisputeCourt c = new DisputeCourt(m, r, address(ip), protocol, 3, 3, 300, 300);
         DealEscrow e = new DealEscrow(m, IDisputeCourt(address(c)));
         r.setCourt(address(c));
         c.setEscrow(address(e));
@@ -101,14 +101,14 @@ contract CourtEdgesTest is Base {
         vm.startPrank(payer);
         m.approve(address(e), type(uint256).max);
         uint256 dealId = e.createDeal(payee, 50 * 10 ** 6, keccak256("t"), "u");
-        e.dispute(dealId); // opens an escrow case excluding payer + payee
+        vm.expectRevert(DisputeCourt.PoolTooSmall.selector);
+        e.dispute(dealId);
         vm.stopPrank();
 
-        uint256 caseId = e.getDeal(dealId).caseId;
-        DisputeCourt.Case memory cc = c.getCase(caseId);
-        vm.roll(uint256(cc.drawBlock) + 1);
-        c.draw(caseId); // eligible = 4 - 2 parties = 2 < panel 3 -> re-arm
-        assertEq(uint256(c.getCase(caseId).status), uint256(DisputeCourt.Status.Open));
-        assertEq(c.panelOf(caseId).length, 0);
+        assertEq(uint256(e.getDeal(dealId).status), uint256(DealEscrow.Status.Funded));
+        assertEq(c.caseCount(), 0);
+        assertEq(m.balanceOf(address(e)), 51 * 10 ** 6);
+        assertEq(m.balanceOf(address(c)), 0);
+        assertEq(m.allowance(address(e), address(c)), 0);
     }
 }

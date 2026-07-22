@@ -4,21 +4,22 @@ pragma solidity ^0.8.24;
 import {ISybilGate} from "./ISybilGate.sol";
 import {ByteHasher} from "../lib/ByteHasher.sol";
 
-/// @title IWorldIDVerifier — the World ID 4.0 on-chain verifier
-/// @notice Minimal interface for the deployed `WorldIDVerifier` on World Chain
-///         mainnet (Staging `0x703a6316c975DEabF30b637c155edD53e24657DB`,
-///         Production `0x00000000009E00F9FE82CfeeBB4556686da094d7`). `verify`
+/// @title IWorldIDVerifier — the preview World ID 4.0 on-chain verifier
+/// @notice Minimal interface retained to reproduce the historical Step-3.5/5
+///         experiments. Official documentation currently marks this verifier
+///         preview, so new production deployments use `WorldIDRouterGate`. `verify`
 ///         reverts on an invalid proof and returns nothing on success — a live
 ///         `cast call` returned `0x` for a valid simulator proof and reverted
 ///         (`0x7fcdd1f4`) for a forged one (docs/STEP_3.5_KICKOFF.md). Declared
 ///         non-`view` so the gate reaches it with a plain CALL regardless of the
-///         verifier's own state mutability.
+///         verifier's own state mutability. “Staging” and “production” below are
+///         historical proof-environment names, not release-status claims.
 /// @dev    Arg order is fixed by the deployed verifier and verified empirically:
 ///         verify(nullifier, action, rpId, nonce, signalHash, expiresAtMin,
 ///         issuerSchemaId, credentialGenesisIssuedAtMin, proof[5]).
 /// @dev    SAFETY: the gate ignores returndata and relies on `verify` REVERTING
 ///         on a bad proof (confirmed for the Staging verifier). Before the Step-5
-///         Production verifier swap, re-confirm Production also reverts (rather
+///         production-environment verifier experiment, re-confirm it also reverts (rather
 ///         than returning a bool) on a forged proof — that is the single
 ///         load-bearing assumption behind the env-only swap.
 interface IWorldIDVerifier {
@@ -35,15 +36,17 @@ interface IWorldIDVerifier {
     ) external;
 }
 
-/// @title WorldIDGate — the REAL one-human-one-seat gate (World ID 4.0, mainnet)
-/// @notice The mainnet `ISybilGate` for `JurorRegistry`. It runs a real on-chain
+/// @title WorldIDGate — historical World ID 4.0 preview adapter
+/// @notice Retained for reproducibility of the immutable Step-3.5/5 deployments.
+///         It runs a real on-chain
 ///         Groth16 verification through the deployed World ID 4.0
 ///         `WorldIDVerifier.verify` in the registration transaction, so the
-///         court's one-human-one-seat claim is provable from a mainnet explorer
-///         trace (the verifier is called in-tx) and a forged proof reverts
-///         on-chain. The same gate serves both World ID environments by address:
+///         proof check and a forged proof reverts on-chain, but this does not
+///         make the preview verifier a production dependency. New deployments
+///         MUST use `WorldIDRouterGate` until the v4 verifier is generally
+///         available. The adapter serves both preview environments by address:
 ///         the Staging verifier (`0x703a…`) accepts World ID Simulator proofs
-///         (Step 3.5, the human-free de-risk), the Production verifier
+///         (Step 3.5, the human-free de-risk), the production-environment preview verifier
 ///         (`0x0000…94d7`) accepts Orb/Device proofs from real humans (Step 5).
 ///         Swapping environments is a constructor-argument change only.
 /// @dev    `proof` is `abi.encode(uint256 nullifier, uint256 action, uint64 rpId,
@@ -57,7 +60,7 @@ interface IWorldIDVerifier {
 contract WorldIDGate is ISybilGate {
     using ByteHasher for bytes;
 
-    /// @notice The deployed World ID 4.0 verifier this gate calls (Staging or Production).
+    /// @notice The preview World ID 4.0 verifier this historical gate calls.
     IWorldIDVerifier public immutable verifier;
 
     /// @notice The field-fitted action this gate accepts: `keccak256("juror-registration") >> 8`.

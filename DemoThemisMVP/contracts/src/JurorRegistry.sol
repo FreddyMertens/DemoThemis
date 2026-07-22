@@ -19,12 +19,15 @@ contract JurorRegistry {
     /// @dev 5 MUSD, 6 decimals.
     uint256 public constant BOND = 5 * 10 ** 6;
 
+    /// @notice Release marker used by operators to prove that the selected
+    ///         immutable registry supports proof-preserving full re-bonding.
+    uint256 public constant LIVENESS_RECOVERY_VERSION = 1;
+
     /// @notice Uniswap's canonical Permit2, at the same address on every chain
     ///         (confirmed deployed on World Chain mainnet). `registerWithPermit2`
     ///         pulls the bond through it because World App auto-revokes plain
     ///         ERC-20 allowances but auto-approves tokens to Permit2.
-    IAllowanceTransfer public constant PERMIT2 =
-        IAllowanceTransfer(0x000000000022D473030F116dDEE9F6B43aC78BA3);
+    IAllowanceTransfer public constant PERMIT2 = IAllowanceTransfer(0x000000000022D473030F116dDEE9F6B43aC78BA3);
 
     IERC20 public immutable bondToken;
     ISybilGate public immutable gate;
@@ -57,6 +60,7 @@ contract JurorRegistry {
     event CourtSet(address indexed court);
 
     error OnlyDeployer();
+    error ZeroAddress();
     error OnlyCourt();
     error CourtAlreadySet();
     error SignalNotSender();
@@ -82,6 +86,7 @@ contract JurorRegistry {
     function setCourt(address _court) external {
         if (msg.sender != deployer) revert OnlyDeployer();
         if (court != address(0)) revert CourtAlreadySet();
+        if (_court == address(0)) revert ZeroAddress();
         court = _court;
         emit CourtSet(_court);
     }
@@ -157,21 +162,34 @@ contract JurorRegistry {
     /// @notice Re-post a bond after a slash or withdrawal to re-enter the pool.
     ///         No new proof needed — the human is already registered.
     function postBond() external {
-        Juror storage j = jurors[msg.sender];
+        _prepareRebond(msg.sender);
+        bondToken.safeTransferFrom(msg.sender, address(this), BOND);
+        emit BondPosted(msg.sender, BOND);
+    }
+
+    /// @notice Permit2 version of `postBond`, used by World App after a slash or
+    ///         withdrawal. The existing registration/nullifier remains binding;
+    ///         this only posts a fresh full bond and restores draw eligibility.
+    /// @dev State rolls back atomically if Permit2 cannot pull the full bond.
+    function postBondWithPermit2() external {
+        _prepareRebond(msg.sender);
+        PERMIT2.transferFrom(msg.sender, address(this), uint160(BOND), address(bondToken));
+        emit BondPosted(msg.sender, BOND);
+    }
+
+    function _prepareRebond(address who) internal {
+        Juror storage j = jurors[who];
         if (!j.registered) revert NotRegistered();
         if (j.idx != 0) revert AlreadyActive();
         if (j.bond != 0) revert BondStillStaked();
 
         j.bond = BOND;
-        _activate(msg.sender);
-
-        bondToken.safeTransferFrom(msg.sender, address(this), BOND);
-        emit BondPosted(msg.sender, BOND);
+        _activate(who);
     }
 
     /// @notice Exit the pool and reclaim the bond. Blocked while empaneled. The
     ///         human stays registered (nullifier remains spent — one seat per
-    ///         human); call postBond() to rejoin.
+    ///         human); call postBond() or postBondWithPermit2() to rejoin.
     function withdraw() external {
         Juror storage j = jurors[msg.sender];
         if (j.idx == 0) revert NotActive();

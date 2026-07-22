@@ -2,15 +2,21 @@
 // gate `bytes proof` for the active instance, and run faucet + classic approve +
 // JurorRegistry.register signed by DEV_PRIVATE_KEY. Server-side so the key never
 // reaches the browser. Gated by NEXT_PUBLIC_SHOW_DEV (checked here too, not just
-// in the page). On the cohort this drives MockSybilGate; on mainnet the real
-// WorldIDGate (running WorldIDVerifier.verify on-chain).
+// in the page). On the cohort this drives MockSybilGate; on a replacement
+// mainnet instance it emits the supported WorldIDRouterGate proof.
 import { createPublicClient, createWalletClient, http, type Hex } from 'viem';
 import { privateKeyToAccount } from 'viem/accounts';
 import { worldchain, worldchainSepolia } from 'viem/chains';
 import { jurorRegistryAbi } from '@/abi/JurorRegistry';
 import { mockUSDAbi } from '@/abi/MockUSD';
 import { IS_COHORT, INSTANCE, addr, BOND } from '@/lib/chain';
-import { encodeMockGateProof, encodeWorldIdGateProof, parseSimulatorJson, signalHashOf } from '@/lib/proof-encode';
+import {
+  encodeMockGateProof,
+  encodeWorldIdRouterGateProof,
+  parseRouterProofJson,
+  parseSimulatorJson,
+  signalHashOf,
+} from '@/lib/proof-encode';
 
 export const runtime = 'nodejs';
 
@@ -37,7 +43,7 @@ export async function GET() {
     devAddress,
     chainId: INSTANCE.chain.chainId,
     instance: INSTANCE.chain.name,
-    gate: IS_COHORT ? 'MockSybilGate' : 'WorldIDGate',
+    gate: IS_COHORT ? 'MockSybilGate' : 'WorldIDRouterGate',
     registry: addr.registry,
     explorer: INSTANCE.chain.explorer,
   });
@@ -62,20 +68,22 @@ export async function POST(req: Request) {
   let proof: Hex;
   try {
     const raw = typeof body.simulatorJson === 'string' ? JSON.parse(body.simulatorJson) : body.simulatorJson;
-    const parts = parseSimulatorJson(raw);
     if (IS_COHORT) {
+      const result = ((raw as { result?: unknown })?.result ?? raw) as { protocol_version?: string };
+      const parts = result?.protocol_version === '3.0' ? parseRouterProofJson(raw) : parseSimulatorJson(raw);
       // MockSybilGate only checks (nullifier, signal); signalHash is unused.
       proof = encodeMockGateProof(parts.nullifier, signal);
     } else {
-      // WorldIDGate binds signalHash to the registering wallet (the dev signer),
-      // so the Simulator proof must have been generated with signal = dev signer.
+      const parts = parseRouterProofJson(raw);
+      // The Router checks this wallet binding as a public input. Confirm it
+      // locally as well so a mismatched proof does not spend a transaction.
       if (signalHashOf(signal) !== parts.signalHash) {
         return Response.json(
           { error: `proof signal_hash is not bound to the dev signer ${signal}. Regenerate it with signal=${signal}.` },
           { status: 400 },
         );
       }
-      proof = encodeWorldIdGateProof(parts);
+      proof = encodeWorldIdRouterGateProof(parts);
     }
   } catch (e) {
     return Response.json({ error: e instanceof Error ? e.message : String(e) }, { status: 400 });

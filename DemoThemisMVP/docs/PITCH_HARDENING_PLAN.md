@@ -1,5 +1,14 @@
 # Implementation plan — pitch hardening (grant points 1, 2, 3, 5)
 
+> **Archived baseline:** this copy-only plan predates the 2026-07-22 eligible-party,
+> first-draw-unwind, and quorum-miss remediation. Its "no Solidity / no redeploy"
+> guardrail, three-human/3/3 activation assumptions, and proposed "capstone is the last
+> step" wording are historical, not current instructions. The replacement should use a
+> three-seat panel with `MIN_POOL >= 4` and at least four eligible humans.
+> Use `LIVENESS_RECOVERY.md` and `CAPSTONE_RUNBOOK.md` for the executable state.
+> Its v4 “Production verifier” content is also superseded: new deployments use
+> `WorldIDRouterGate`; `WorldIDGate` is historical preview evidence only.
+
 **What this fixes** (from `docs/GRANT_READINESS.md`):
 1. The 3-seat live panel undercuts "truth isn't for sale" (~$13 to flip) — reframe as a deliberate demo size whose security is **pool width**, a parameter sweep, not a research risk.
 2. **Honesty:** nothing may read as "real humans have used the live court" while `jurorCount() == 0`. (The README was already softened — finish the sweep across all artifacts.)
@@ -40,7 +49,7 @@ Create these three blocks first; every workstream just *places* them. Keep wordi
 | Commit / reveal voting | Juror reputation / Wilson gate — milestone #3 |
 | 70/20/10 fee split + 2% escrow fee; **slash-to-pool, never to winners** | Reward-pool cyclic payout — milestone #3 |
 | **Atomic** escrow settlement (`resolve → escrow.settle`) | Work-based quote engine + reusable resolution SDK — milestones #3–4 |
-| **No admin override** (wire-once + phase clock are the entire admin surface) | (external security review — milestone #5) |
+| **No runtime admin override**: one-shot wiring, immutable voting windows, and permissionless lifecycle transitions | (external security review — milestone #5) |
 | 77 Foundry tests (invariants + fuzz), >90% coverage, all sources verified | |
 ```
 

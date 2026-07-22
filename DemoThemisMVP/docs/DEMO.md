@@ -1,23 +1,26 @@
 # DEMO — on-chain evidence
 
 The self-evidencing artifacts behind the grant's claims: clickable explorer
-traces, not markdown assertions. It holds the **Step 3.5** evidence (real on-chain
-World ID 4.0 verification on World Chain mainnet, Staging verifier), the **Step 4**
-Sepolia cohort history, and the **Step 5** Production-verifier question queue.
-The Step-5 table is filled as the first official three-human question runs.
+traces, not markdown assertions. It holds the **archived Step 3.5** evidence (a real
+on-chain proof check against the World ID 4.0 Staging preview verifier), the **Step 4**
+Sepolia cohort history, and the **Step 5** Router-gated replacement queue.
+The Step-5 table is filled as the first official three-seat question runs from a
+pool of at least four eligible humans.
 
-## Step 3.5 — World ID 4.0 verified on-chain (World Chain mainnet, chain 480)
+## Archived Step 3.5 — World ID 4.0 preview verifier (World Chain mainnet, chain 480)
 
-The court's one-human-one-seat claim is carried by a real `WorldIDVerifier.verify`
-(World ID 4.0 Groth16) running inside the juror-registration transaction, and a
-forged/duplicate proof reverting on-chain. Proven here against the World ID 4.0
-**Staging** verifier with World ID **Simulator** identities — real v4 proofs, real
-verifier contract, no Orb, cents of gas. Step 5 swaps to the **Production** verifier
-for the 3-human capstone (the only change is the verifier address).
+The historical adapter's proof and nullifier behavior is shown by a real
+`WorldIDVerifier.verify` call running inside the juror-registration transaction,
+plus forged/duplicate proof reverts. Proven here against the World ID 4.0
+**Staging** preview verifier with World ID **Simulator** identities — real v4 proofs,
+a real contract call, no Orb, cents of gas. This is historical adapter evidence,
+not production-readiness evidence. Step 5 uses `WorldIDRouterGate` and the documented
+mainnet Router while also deploying the current liveness-enabled court and escrow.
 
 > Honesty note: the registering identities below are World ID **Simulator** staging
 > identities (labeled simulated). What is NOT simulated is the verification: the
-> deployed `WorldIDVerifier` contract runs the real Groth16 check on-chain.
+> preview `WorldIDVerifier` contract ran the proof check on-chain. Official release
+> status, credential provenance, and proof validity are separate facts.
 
 ### Deployed instance (source of the addresses: `contracts/deployments/worldchain-mainnet.json`)
 
@@ -51,21 +54,19 @@ the deployer, one to a second wallet), via `scripts/prove-sybil-mainnet.sh`.
 > `0x703a…` succeeding in the same transaction. Tx #1 shows that call reverting on a
 > forged proof; Tx #3 shows a second wallet with the same human's nullifier rejected.
 
-### Reproduce
+### Inspect the archived experiment
 
-1. `cd web && pnpm dev`, open `/register-onchain`, set the signal to the registering
-   wallet, click **Generate**, paste the `connectorURI` into
-   [simulator.worldcoin.org](https://simulator.worldcoin.org) (pick a "Verified (All)"
-   identity), and copy the emitted `bytes proof`. Repeat for the second wallet using
-   the **same** identity.
-2. `PROOF_A=0x… PROOF_B=0x… REPO_ROOT=/mnt/c/dev/DemoThemisMVP bash scripts/prove-sybil-mainnet.sh`
-3. Inspect any tx: `cast run <txhash> --rpc-url https://worldchain-mainnet.g.alchemy.com/public`
+The production `/register-onchain` route now emits Router-compatible proofs and cannot
+recreate this preview tuple. Inspect the linked immutable transactions with
+`cast run <txhash> --rpc-url https://worldchain-mainnet.g.alchemy.com/public`.
+The archived `scripts/prove-sybil-mainnet.sh` documents how the recorded v4 proof
+blobs were submitted; do not use it as a current deployment or onboarding procedure.
 
 ## Step 4 — the Sepolia cohort (chain 4801, simulated scale demo)
 
 The free scale-and-history demo: ~20 scripted jurors and a mix of resolved cases
-across both types, gated by the labeled `MockSybilGate` stand-in (the real on-chain
-World ID claim lives on mainnet, above). All cohort data is **simulated and
+across both types, gated by the labeled `MockSybilGate` stand-in (the historical
+preview-verifier evidence lives on mainnet, above). All cohort data is **simulated and
 disclosed** — the honesty rule. Source: `contracts/deployments/worldchain-sepolia.json`.
 
 | Contract | Address |
@@ -96,19 +97,20 @@ The Mini App surfaces this on the Become-a-juror screen alongside the two mainne
 World ID reverts (forged proof → verifier revert; same human second wallet →
 NullifierAlreadyUsed).
 
-## Step 5 — official three-juror question queue (chain 480)
+## Step 5 legacy preview instance and Router-gated replacement (chain 480)
 
-This is the live demo slice: one public-research question at a time, decided by
-exactly three Production World ID humans on World Chain mainnet. Jurors receive
+The intended live demo slice is one public-research question at a time, decided by
+a 3-seat panel drawn from at least the configured eligible minimum of Orb-verified humans on World Chain mainnet. The replacement deployment should use `MIN_POOL >= 4` so one pre-draw withdrawal still leaves three seats; `MIN_POOL = 3` remains fund-safe through its bounded unwind but does not provide that adjudication-availability reserve. Jurors receive
 the question and objective YES rule but no supplied evidence links; each juror
 finds and evaluates public sources independently. MockUSD is valueless, and the
 three-seat panel is an explicit demo parameter.
 
-The same `WorldIDGate` proven against the Staging verifier in Step 3.5 now points
-to the Production verifier
-[`0x00000000009E00F9FE82CfeeBB4556686da094d7`](https://worldscan.org/address/0x00000000009E00F9FE82CfeeBB4556686da094d7).
+The replacement `WorldIDRouterGate` points to the officially documented World ID
+Router [`0x17B354dD2595411ff79041f930e491A4Df39A278`](https://worldscan.org/address/0x17B354dD2595411ff79041f930e491A4Df39A278).
+It binds the proof to the wallet and the `juror-registration` app action. The old
+v4 address remains recorded only as an immutable preview-era deployment fact.
 
-### Deployed and source-verified instance
+### Legacy deployed and source-verified instance — do not use for the capstone
 
 Source: `contracts/deployments/worldchain-mainnet.json`; deployment block
 31,256,151.
@@ -116,31 +118,42 @@ Source: `contracts/deployments/worldchain-mainnet.json`; deployment block
 | Contract | Address |
 |---|---|
 | MockUSD | [`0x70ECE5…497a`](https://worldscan.org/address/0x70ECE5DcAA68741BF41F6A4Aa0af3a8D44e4497a#code) |
-| WorldIDGate (→ Production verifier) | [`0x0540f4…3Fbe`](https://worldscan.org/address/0x0540f47842a31C681dce76E856b4b76fcCc53Fbe#code) |
+| WorldIDGate (historical v4 preview adapter) | [`0x0540f4…3Fbe`](https://worldscan.org/address/0x0540f47842a31C681dce76E856b4b76fcCc53Fbe#code) |
 | JurorRegistry (`registerWithPermit2`) | [`0x226974…7F84`](https://worldscan.org/address/0x226974149087b36769a54B998acfe4087eEb7F84#code) |
 | RewardPool | [`0xAF96A6…04A0`](https://worldscan.org/address/0xAF96A65A6b9643451E33cAf96717d071eDae04A0#code) |
 | DisputeCourt (3 seats / minimum pool 3) | [`0xCDF427…795A`](https://worldscan.org/address/0xCDF427D18da8C2e8CCf9a95310bC38857EEf795A#code) |
 | Permit2 | [`0x000000…BA3`](https://worldscan.org/address/0x000000000022D473030F116dDEE9F6B43aC78BA3) |
 
-On-chain reads confirm that `WorldIDGate.verifier()` is the Production verifier,
+On-chain reads confirm that the historical `WorldIDGate.verifier()` uses the v4
+contract's production environment address,
 `action` is `keccak256("juror-registration") >> 8`, `rpId` is
 `0x1ddcf8ba2efe3f36`, and `JurorRegistry.PERMIT2()` is canonical Permit2. Juror
 onboarding batches `Permit2.approve` and `registerWithPermit2` for the valueless
 bond; the first real World App run must supply the pending sponsored-gas trace.
 
+These addresses predate the eligible-party preflight, bounded first-draw unwind, and
+bounded quorum-miss recovery in the current source. Their verified bytecode remains
+historical evidence, but an active case party can leave too few eligible candidates and
+a no-show can deplete the minimum-size pool, either of which can stall the queue and
+strand escrow principal. A fresh registry/court/escrow deployment,
+source verification, Mini App and keeper cutover, and Developer Portal permission
+update are mandatory before the first real run. See
+[LIVENESS_RECOVERY.md](LIVENESS_RECOVERY.md).
+
 ### Current readiness
 
-Audited on 2026-07-14:
+Audited on 2026-07-22:
 
 | Check | State |
 |---|---|
 | Public app | [Netlify `/app`](https://demothemis.netlify.app/app) is deployed. |
 | Official queue | **0 / 21 filed**; all deployed question files match the manifest. |
-| Juror pool | **0 / exactly 3 required**. |
-| Voting windows | **300s seal / 300s reveal — ready.** [Configuration transaction](https://worldscan.org/tx/0x429dfd1ad1aa5e0f628ea02c47950e440ad658b38540401d8ae045f3316866ca). |
+| Juror pool | Legacy instance: **0 / minimum 3 required**. The replacement has no maximum; use `MIN_POOL >= 4` for a 3-seat deployment and register at least that many eligible jurors. |
+| Voting windows | Legacy court: mutable, currently **300s seal / 300s reveal** ([historical configuration transaction](https://worldscan.org/tx/0x429dfd1ad1aa5e0f628ea02c47950e440ad658b38540401d8ae045f3316866ca)). Replacement source: immutable constructor values with a five-minute minimum and `AUTOMATED_TIMING_VERSION() == 1`. |
 | Unexpected cases | No unresolved nonofficial case. |
-| Scheduled keeper | Secret configured; the five-minute workflow waits safely for exactly three active jurors. |
-| World App cutover | Portal name, Netlify `/onboard` entry, worldwide availability, World ID action, and contract/Permit2 permissions are verified. The preview QR still needs its phone smoke test. |
+| Scheduled keeper | Secret configured; threshold and timeout logic updated, but execution paused until replacement addresses are selected. |
+| Recovery replacement | Contract (court liveness v2 / registry v1 / automated timing v1), keeper, and Mini App source implemented; deployment, verification, addresses, and live traces pending. |
+| World App cutover | Legacy Portal configuration is verified. Replacement addresses and `postBondWithPermit2()` permission must be added before the QR phone smoke test. |
 
 Question one is fixed by all four fields below:
 
@@ -154,17 +167,21 @@ Question one is fixed by all four fields below:
 Use only the [mainnet question-queue runbook](CAPSTONE_RUNBOOK.md). The manifest
 validator is `pnpm validate:question-queue`; the dry operator report is
 `node scripts/mainnet-question-keeper.mjs`. The scheduled keeper advances at
-most one non-juror transition per run and refuses to proceed with the wrong jury
-size, short windows, an altered question, or an unresolved nonofficial case.
+most one non-juror transition per run and refuses to proceed with too few jurors,
+short windows, an altered official question, or more than one unresolved official
+case. It warns about but ignores nonofficial cases for queue sequencing, so refundable
+spam cannot censor the authenticated queue. It accepts an active pool wider than the
+configured minimum and finalizes either expired liveness deadline without waiting for
+the pool to refill.
 
 ### First official run — evidence table
 
-> Pending: no Production juror has registered and question one has not opened.
+> Pending: no Router-gated production juror has registered and question one has not opened.
 > Replace each `_pending_` cell with a direct Worldscan or permanent app link.
 
 | # | Evidence | Tx / link |
 |---|---|---|
-| 1 | Human #1 registers; Production `WorldIDVerifier.verify` succeeds in-tx | _pending_ |
+| 1 | Human #1 registers; `WorldIDRouter.verifyProof` succeeds in-tx | _pending_ |
 | 2 | Human #2 registers | _pending_ |
 | 3 | Human #3 registers | _pending_ |
 | 4 | Sponsored World App transaction; sponsor pays gas | _pending_ |
@@ -192,8 +209,9 @@ Show the small, real product from input to permanent result.
 2. **How a question enters (~0:25).** Open the **Submit** tab to show the app-side
    submission view. Explain that the 21 demo questions and hashes are fixed in
    advance and the non-juror keeper files only the next official question.
-3. **Three real jurors (~0:55).** In World App, show exactly three people joining
-   through Production World ID. Point to the 3/3 panel and one sponsored
+3. **A real juror pool (~0:55).** In World App, show at least four eligible people joining
+   through Production World ID. Point to the three selected panelists, the availability
+   reserve, and one sponsored
    registration transaction.
 4. **Independent judgment (~0:55).** Each juror finds public evidence, then seals
    a YES or NO answer without exposing it during the commit window. Show all
@@ -206,5 +224,6 @@ Show the small, real product from input to permanent result.
    Step 3.5. Close on [the live app](https://demothemis.netlify.app/app).
 
 The attack simulator and Sepolia cohort can be optional supporting material, but
-they should not interrupt the main MVP story: three verified humans complete one
+they should not interrupt the main MVP story: three selected verified humans from an
+at-least-four-person eligible pool complete one
 real question entirely on-chain.

@@ -16,11 +16,12 @@ import type { Phase } from '@/lib/court';
 const ZERO_COMMITMENT = `0x${'0'.repeat(64)}` as Hex;
 const ZERO_ADDRESS = '0x0000000000000000000000000000000000000000' as Address;
 
-type SavedBallot = { vote: boolean; salt: Hex; wallet: Address };
+type SavedBallot = { vote: boolean; salt: Hex; wallet: Address; round: number };
+type LegacySavedBallot = Omit<SavedBallot, 'round'>;
 
-function isSavedBallot(value: unknown, wallet: Address): value is SavedBallot {
+function isLegacySavedBallot(value: unknown, wallet: Address): value is LegacySavedBallot {
   if (!value || typeof value !== 'object') return false;
-  const ballot = value as Partial<SavedBallot>;
+  const ballot = value as Partial<LegacySavedBallot>;
   return (
     typeof ballot.vote === 'boolean' &&
     typeof ballot.salt === 'string' &&
@@ -30,14 +31,30 @@ function isSavedBallot(value: unknown, wallet: Address): value is SavedBallot {
   );
 }
 
+function isSavedBallot(value: unknown, wallet: Address, round: number): value is SavedBallot {
+  if (!value || typeof value !== 'object') return false;
+  const ballot = value as Partial<SavedBallot>;
+  return (
+    typeof ballot.vote === 'boolean' &&
+    typeof ballot.salt === 'string' &&
+    /^0x[0-9a-fA-F]{64}$/.test(ballot.salt) &&
+    typeof ballot.wallet === 'string' &&
+    ballot.wallet.toLowerCase() === wallet.toLowerCase() &&
+    ballot.round === round
+  );
+}
+
 export function LiveBallot({
   caseId,
+  round,
   panel,
   phase,
   contentVerified,
   refresh,
 }: {
   caseId: number;
+  /** Zero for the first panel, one for the single recovery redraw. */
+  round: number;
   panel: readonly Address[];
   phase: Phase;
   contentVerified: boolean;
@@ -50,10 +67,13 @@ export function LiveBallot({
   const [vote, setVote] = useState<boolean | null>(null);
   const [salt, setSalt] = useState<Hex>('0x');
   const [saved, setSaved] = useState<SavedBallot | null>(null);
-  const storeKey = wallet ? `ballot-${addr.court}-${caseId}-${wallet.toLowerCase()}` : null;
+  const storeKey = wallet
+    ? `ballot-${addr.court}-${caseId}-round-${round}-${wallet.toLowerCase()}`
+    : null;
+  const legacyStoreKey = wallet ? `ballot-${addr.court}-${caseId}-${wallet.toLowerCase()}` : null;
 
   const readWalletBallot = useCallback(async () => {
-    if (!wallet) return { commitment: ZERO_COMMITMENT, revealed: false };
+    if (!wallet) return { commitment: ZERO_COMMITMENT, revealed: false, round };
     const [commitment, revealed] = await Promise.all([
       publicClient.readContract({
         address: addr.court,
@@ -68,18 +88,18 @@ export function LiveBallot({
         args: [BigInt(caseId), wallet],
       }),
     ]);
-    return { commitment, revealed };
-  }, [caseId, wallet]);
+    return { commitment, revealed, round };
+  }, [caseId, round, wallet]);
   const walletBallot = usePolledData(readWalletBallot, 4000);
 
   useEffect(() => {
     setSaved(null);
     setVote(null);
-    const raw = storeKey ? localStorage.getItem(storeKey) : null;
+    let raw = storeKey ? localStorage.getItem(storeKey) : null;
     if (raw && wallet) {
       try {
         const parsed: unknown = JSON.parse(raw);
-        if (isSavedBallot(parsed, wallet)) {
+        if (isSavedBallot(parsed, wallet, round)) {
           setSaved(parsed);
           setVote(parsed.vote);
           setSalt(parsed.salt);
@@ -89,11 +109,37 @@ export function LiveBallot({
         // Invalid local ballot data is replaced with a fresh secret below.
       }
       if (storeKey) localStorage.removeItem(storeKey);
+      raw = null;
     }
+
+    // Before redraws were round-keyed, first-panel secrets used the legacy key.
+    // Migrate only round zero: carrying that disclosed salt into a retry would
+    // defeat the reason for separating ballot storage by round.
+    if (!raw && round === 0 && storeKey && legacyStoreKey && wallet) {
+      const legacyRaw = localStorage.getItem(legacyStoreKey);
+      if (legacyRaw) {
+        try {
+          const parsed: unknown = JSON.parse(legacyRaw);
+          if (isLegacySavedBallot(parsed, wallet)) {
+            const migrated: SavedBallot = { ...parsed, round: 0 };
+            localStorage.setItem(storeKey, JSON.stringify(migrated));
+            localStorage.removeItem(legacyStoreKey);
+            setSaved(migrated);
+            setVote(migrated.vote);
+            setSalt(migrated.salt);
+            return;
+          }
+        } catch {
+          // Invalid legacy data is discarded and replaced with a fresh secret.
+        }
+        localStorage.removeItem(legacyStoreKey);
+      }
+    }
+
     const bytes = new Uint8Array(32);
     crypto.getRandomValues(bytes);
     setSalt(`0x${Array.from(bytes, (byte) => byte.toString(16).padStart(2, '0')).join('')}` as Hex);
-  }, [storeKey, wallet]);
+  }, [legacyStoreKey, round, storeKey, wallet]);
 
   const commitment = useMemo<Hex>(() => {
     if (vote === null || salt === '0x') return ZERO_COMMITMENT;
@@ -112,7 +158,7 @@ export function LiveBallot({
 
   async function sealVote() {
     if (!contentVerified || !wallet || !storeKey || vote === null || salt === '0x' || hasCommitted) return;
-    const ballot: SavedBallot = { vote, salt, wallet };
+    const ballot: SavedBallot = { vote, salt, wallet, round };
     // Persist before asking World App to submit. If the transaction succeeds but
     // receipt polling or the page connection drops, the juror still has the
     // exact secret needed for reveal.

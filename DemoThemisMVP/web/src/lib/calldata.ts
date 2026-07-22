@@ -45,6 +45,12 @@ export const courtTx = {
     data: encodeFunctionData({ abi: jurorRegistryAbi, functionName: 'registerWithPermit2', args: [signal, proof] }),
   }),
 
+  /** JurorRegistry.postBondWithPermit2() — rejoin after a slash/withdrawal without another World ID proof. */
+  postBondWithPermit2: () => ({
+    to: addr.registry,
+    data: encodeFunctionData({ abi: jurorRegistryAbi, functionName: 'postBondWithPermit2', args: [] }),
+  }),
+
   /** JurorRegistry.withdraw() — leave the active pool and recover the demo bond. */
   withdrawJuror: () => ({
     to: addr.registry,

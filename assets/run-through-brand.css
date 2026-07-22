@@ -542,6 +542,118 @@ body[data-page-brand="neutral"] .sim-app-viewport[data-app-theme="omen"] :is(.li
   border-color: rgba(4, 226, 109, .5);
 }
 
+/* OmenMarketMaker appeal UX: one calm decision surface, one direct-funding
+   checkout, and one returned-result surface. The green mesh remains ambient;
+   the brighter treatment is reserved for the current decision and proof. */
+body[data-page-brand="neutral"] .sim-app-viewport[data-app-theme="omen"] .live-page:is(
+  .page-appeal-review,
+  .page-appeal-checkout,
+  .page-appeal-result
+) {
+  background:
+    radial-gradient(circle at 86% 8%, rgba(4, 226, 109, .09), transparent 28%),
+    linear-gradient(180deg, rgba(0, 7, 3, .54), rgba(0, 4, 2, .9));
+}
+
+body[data-page-brand="neutral"] .sim-app-viewport[data-app-theme="omen"] .live-page:is(
+  .page-appeal-review,
+  .page-appeal-checkout,
+  .page-appeal-result
+) .live-head {
+  position: relative;
+  overflow: hidden;
+  border-color: rgba(4, 226, 109, .58);
+  background:
+    linear-gradient(105deg, rgba(4, 226, 109, .12), rgba(7, 24, 15, .97) 42%, rgba(4, 226, 109, .04));
+  box-shadow: inset 0 0 0 1px rgba(4, 226, 109, .08), 0 0 18px rgba(4, 226, 109, .08);
+}
+
+body[data-page-brand="neutral"] .sim-app-viewport[data-app-theme="omen"] .live-page:is(
+  .page-appeal-review,
+  .page-appeal-checkout,
+  .page-appeal-result
+) .live-head::after {
+  position: absolute;
+  right: 0;
+  bottom: 0;
+  left: 0;
+  height: 1px;
+  background: linear-gradient(90deg, transparent, rgba(4, 226, 109, .88) 24%, rgba(4, 226, 109, .24) 76%, transparent);
+  content: "";
+  pointer-events: none;
+}
+
+body[data-page-brand="neutral"] .sim-app-viewport[data-app-theme="omen"] .live-page:is(
+  .page-appeal-review,
+  .page-appeal-checkout,
+  .page-appeal-result
+) .live-kpi {
+  border-color: rgba(4, 226, 109, .2);
+  background: rgba(7, 18, 12, .94);
+}
+
+body[data-page-brand="neutral"] .sim-app-viewport[data-app-theme="omen"] .live-page:is(
+  .page-appeal-review,
+  .page-appeal-checkout,
+  .page-appeal-result
+) .live-kpi:first-child {
+  border-color: rgba(4, 226, 109, .52);
+  background: linear-gradient(145deg, rgba(4, 226, 109, .12), rgba(7, 18, 12, .96) 58%);
+  box-shadow: inset 0 0 0 1px rgba(4, 226, 109, .05), 0 0 13px rgba(4, 226, 109, .07);
+}
+
+body[data-page-brand="neutral"] .sim-app-viewport[data-app-theme="omen"] .page-appeal-review .block-record,
+body[data-page-brand="neutral"] .sim-app-viewport[data-app-theme="omen"] .page-appeal-checkout .block-checkout,
+body[data-page-brand="neutral"] .sim-app-viewport[data-app-theme="omen"] .page-appeal-result .block-proof {
+  border-color: rgba(4, 226, 109, .66);
+  background:
+    radial-gradient(circle at 100% 0, rgba(4, 226, 109, .12), transparent 36%),
+    rgba(8, 21, 13, .98);
+  box-shadow: inset 0 0 0 1px rgba(4, 226, 109, .08), 0 0 17px rgba(4, 226, 109, .1);
+}
+
+body[data-page-brand="neutral"] .sim-app-viewport[data-app-theme="omen"] .page-appeal-review .block-record[open] > summary,
+body[data-page-brand="neutral"] .sim-app-viewport[data-app-theme="omen"] .page-appeal-checkout .block-record[open] > summary {
+  border-bottom-color: rgba(4, 226, 109, .22);
+  background: rgba(4, 226, 109, .045);
+}
+
+body[data-page-brand="neutral"] .sim-app-viewport[data-app-theme="omen"] .page-appeal-review :is(.mini-row, .receipt-detail),
+body[data-page-brand="neutral"] .sim-app-viewport[data-app-theme="omen"] .page-appeal-checkout :is(.checkout-row, .receipt-detail),
+body[data-page-brand="neutral"] .sim-app-viewport[data-app-theme="omen"] .page-appeal-result :is(.app-route-step, .mini-row) {
+  border-color: rgba(4, 226, 109, .18);
+  background: rgba(0, 8, 4, .72);
+}
+
+body[data-page-brand="neutral"] .sim-app-viewport[data-app-theme="omen"] .page-appeal-checkout .checkout-row.winner {
+  border-color: var(--omm-green);
+  background: linear-gradient(90deg, rgba(4, 226, 109, .18), rgba(4, 226, 109, .07));
+  color: var(--omm-mint);
+  box-shadow: inset 3px 0 0 var(--omm-green), 0 0 13px rgba(4, 226, 109, .1);
+}
+
+body[data-page-brand="neutral"] .sim-app-viewport[data-app-theme="omen"] .page-appeal-checkout .block-checkout .live-action-row {
+  padding-top: .14rem;
+}
+
+body[data-page-brand="neutral"] .sim-app-viewport[data-app-theme="omen"] .page-appeal-checkout .block-checkout .sim-app-action {
+  width: 100%;
+  justify-content: space-between;
+  min-height: 3rem;
+  box-shadow: 0 0 0 1px rgba(4, 226, 109, .22), 0 0 15px rgba(4, 226, 109, .14);
+}
+
+body[data-page-brand="neutral"] .sim-app-viewport[data-app-theme="omen"] .page-appeal-result .proof-stamp {
+  border-color: rgba(4, 226, 109, .46);
+  background: rgba(4, 226, 109, .12);
+  color: var(--omm-mint);
+}
+
+body[data-page-brand="neutral"] .sim-app-viewport[data-app-theme="omen"] .page-appeal-result .block-proof .app-value {
+  color: var(--omm-mint);
+  text-shadow: 0 0 12px rgba(4, 226, 109, .2);
+}
+
 body[data-page-brand="neutral"] .product-mode-panel[data-active-brand] .sim-app-viewport[data-app-theme="themis"] {
   --product-ui-font: "Inter", system-ui, -apple-system, "Segoe UI", sans-serif;
   --bg: var(--dt-canvas);

@@ -8,7 +8,7 @@ import { CourtTopBar } from '@/components/CourtTopBar';
 import { ErrorState, Skeleton } from '@/components/court-ui';
 import { InstanceBanner } from '@/components/InstanceBanner';
 import { LiveBallot } from '@/components/LiveBallot';
-import { explorerAddress, explorerTx } from '@/lib/chain';
+import { explorerAddress, explorerTx, SUPPORTS_LIVENESS_RECOVERY } from '@/lib/chain';
 import {
   fetchCaseContent,
   getCase,
@@ -64,6 +64,15 @@ function formatMoment(value?: string) {
   );
 }
 
+function formatRecoveryDeadline(value: bigint) {
+  if (value === BigInt(0)) return 'the fixed recovery deadline';
+  return `${new Intl.DateTimeFormat('en-GB', {
+    dateStyle: 'medium',
+    timeStyle: 'short',
+    timeZone: 'UTC',
+  }).format(Number(value) * 1000)} UTC`;
+}
+
 function compactHash(hash: Hex) {
   return `${hash.slice(0, 10)}…${hash.slice(-6)}`;
 }
@@ -73,14 +82,24 @@ function phaseIndex(phase: Phase) {
 }
 
 function CaseProgress({ receipt }: { receipt: CaseReceipt }) {
+  const initialDrawUnwind = Boolean(receipt.events.initialDrawTimedOut)
+    || (receipt.case.status === 0 && receipt.case.redraws === 0 && receipt.case.panel.length === 0 && receipt.case.phase === 'Resolvable');
   const rank = phaseIndex(receipt.case.phase);
-  const steps = [
-    { label: 'Filed', complete: true, current: false },
-    { label: 'Panel seated', complete: rank >= 1, current: rank === 0 },
-    { label: 'Seal window', complete: rank >= 2, current: rank === 1 },
-    { label: 'Reveal window', complete: rank >= 3, current: rank === 2 },
-    { label: 'Ruling', complete: rank === 4, current: rank === 3 },
-  ];
+  const steps = initialDrawUnwind
+    ? [
+        { label: 'Filed', complete: true, current: false },
+        { label: 'No panel', complete: false, current: false },
+        { label: 'No seals', complete: false, current: false },
+        { label: 'No reveals', complete: false, current: false },
+        { label: 'Refund', complete: receipt.case.phase === 'Resolved', current: receipt.case.phase === 'Resolvable' },
+      ]
+    : [
+        { label: 'Filed', complete: true, current: false },
+        { label: 'Panel seated', complete: rank >= 1, current: rank === 0 },
+        { label: 'Seal window', complete: rank >= 2, current: rank === 1 },
+        { label: 'Reveal window', complete: rank >= 3, current: rank === 2 },
+        { label: 'Ruling', complete: rank === 4, current: rank === 3 },
+      ];
 
   return (
     <ol className="oracle-progress" aria-label={`Case progress: ${phaseLabels[receipt.case.phase]}`}>
@@ -145,6 +164,15 @@ function SeatStrip({ receipt }: { receipt: CaseReceipt }) {
 function FinalRuling({ receipt }: { receipt: CaseReceipt }) {
   const rulingTx = receipt.transactionHashes.Resolved;
   if (receipt.case.phase !== 'Resolved') return null;
+  const initialDrawTimedOut = receipt.events.initialDrawTimedOut;
+  const recoveryTimedOut = receipt.events.recoveryTimedOut !== null;
+  const firstRoundYes = recoveryTimedOut ? receipt.events.revealed.filter((event) => event.vote).length : 0;
+  const firstRoundNo = recoveryTimedOut ? receipt.events.revealed.filter((event) => !event.vote).length : 0;
+  const yes = receipt.tally ? Number(receipt.tally.yes) : 0;
+  const no = receipt.tally ? Number(receipt.tally.no) : 0;
+  const revealed = yes + no;
+  const retryMissedQuorum = receipt.case.redraws > 0 && revealed < 2;
+  const tied = revealed >= 2 && yes === no;
 
   return (
     <section className="oracle-final-receipt" aria-labelledby="ruling-title">
@@ -152,12 +180,35 @@ function FinalRuling({ receipt }: { receipt: CaseReceipt }) {
         <CheckCircle />
       </div>
       <div className="oracle-ruling-copy">
-        <span>Ruling recorded on World Chain</span>
-        <h2 id="ruling-title">The jury answered {receipt.case.outcome ? 'YES' : 'NO'}.</h2>
-        <p>
-          {receipt.tally ? Number(receipt.tally.yes) : 0} YES · {receipt.tally ? Number(receipt.tally.no) : 0} NO ·{' '}
-          {receipt.activity.revealCount}/3 answers revealed
-        </p>
+        <span>{initialDrawTimedOut ? 'Unwind recorded on World Chain' : 'Ruling recorded on World Chain'}</span>
+        <h2 id="ruling-title">
+          {initialDrawTimedOut
+            ? 'No panel was seated. The case was unwound.'
+            : recoveryTimedOut
+            ? 'Recovery expired. Status quo was applied.'
+            : retryMissedQuorum
+              ? 'The retry missed quorum. Status quo was applied.'
+              : tied
+                ? 'The panel tied. Status quo was applied.'
+                : `The jury answered ${receipt.case.outcome ? 'YES' : 'NO'}.`}
+        </h2>
+        {initialDrawTimedOut ? (
+          <p>
+            {fmtMusd(initialDrawTimedOut.feeRefunded)} MUSD returned to {shortAddr(initialDrawTimedOut.refundTo)}
+            {receipt.case.caseType === 1 ? ' · escrow principal returned to the payer' : ''} · no merits ruling
+          </p>
+        ) : recoveryTimedOut ? (
+          <p>First round: {firstRoundYes} YES · {firstRoundNo} NO · quorum not met · no retry panel formed</p>
+        ) : retryMissedQuorum ? (
+          <p>Retry: {yes} YES · {no} NO · quorum not met</p>
+        ) : tied ? (
+          <p>{yes} YES · {no} NO · quorum met, votes tied</p>
+        ) : (
+          <p>
+            {yes} YES · {no} NO ·{' '}
+            {receipt.activity.revealCount}/3 answers revealed
+          </p>
+        )}
       </div>
       {rulingTx && (
         <a href={explorerTx(rulingTx)} target="_blank" rel="noreferrer">
@@ -189,16 +240,35 @@ function TransactionLinks({ hashes }: { hashes: readonly Hex[] }) {
 
 function ChainReceipt({ receipt }: { receipt: CaseReceipt }) {
   const tx = receipt.transactionHashes;
+  const initialDrawTimedOut = receipt.events.initialDrawTimedOut;
   const rows: { label: string; count: string; hashes: readonly Hex[] }[] = [
     { label: 'Case filed', count: tx.CaseOpened ? 'Recorded' : 'Waiting', hashes: tx.CaseOpened ? [tx.CaseOpened] : [] },
     { label: 'Panel seated', count: `${tx.PanelDrawn.length} draw`, hashes: tx.PanelDrawn },
-    { label: 'Answers sealed', count: `${receipt.activity.commitmentCount}/3 on current panel`, hashes: tx.Committed },
-    { label: 'Answers revealed', count: `${receipt.activity.revealCount}/3 on current panel`, hashes: tx.Revealed },
-    { label: 'Ruling', count: tx.Resolved ? 'Recorded' : 'Waiting', hashes: tx.Resolved ? [tx.Resolved] : [] },
+    { label: 'Answers sealed', count: `${receipt.activity.commitmentCount}/3 current · ${tx.Committed.length} event${tx.Committed.length === 1 ? '' : 's'} overall`, hashes: tx.Committed },
+    { label: 'Answers revealed', count: `${receipt.activity.revealCount}/3 current · ${tx.Revealed.length} event${tx.Revealed.length === 1 ? '' : 's'} overall`, hashes: tx.Revealed },
+    ...(tx.RedrawRecoveryStarted
+      ? [{
+          label: 'Quorum recovery',
+          count: tx.RedrawRecoveryTimedOut ? 'Deadline expired' : 'Retry opened',
+          hashes: [tx.RedrawRecoveryStarted, ...(tx.RedrawRecoveryTimedOut ? [tx.RedrawRecoveryTimedOut] : [])],
+        }]
+      : []),
+    ...(tx.InitialDrawTimedOut && initialDrawTimedOut
+      ? [{
+          label: 'Initial draw unwind',
+          count: `${fmtMusd(initialDrawTimedOut.feeRefunded)} MUSD refunded`,
+          hashes: [tx.InitialDrawTimedOut],
+        }]
+      : []),
+    {
+      label: initialDrawTimedOut ? 'Terminal record' : 'Ruling',
+      count: tx.Resolved ? (initialDrawTimedOut ? 'Unwind recorded' : 'Recorded') : 'Waiting',
+      hashes: tx.Resolved ? [tx.Resolved] : [],
+    },
     { label: 'Juror payouts', count: `${tx.FeePaid.length} paid`, hashes: tx.FeePaid },
     {
       label: 'Fee distribution',
-      count: tx.FeeDistributed ? 'Recorded' : 'Waiting',
+      count: initialDrawTimedOut ? 'Not applicable · fee refunded' : tx.FeeDistributed ? 'Recorded' : 'Waiting',
       hashes: tx.FeeDistributed ? [tx.FeeDistributed] : [],
     },
   ];
@@ -255,13 +325,19 @@ function ChainReceipt({ receipt }: { receipt: CaseReceipt }) {
               ))}
             </ul>
           ) : (
-            <p className="mt-2 text-xs leading-relaxed text-emerald-800">Payments appear here after the ruling.</p>
+            <p className="mt-2 text-xs leading-relaxed text-emerald-800">
+              {initialDrawTimedOut ? 'No panel was seated, so no juror payout was due.' : 'Payments appear here after the ruling.'}
+            </p>
           )}
         </div>
 
         <div className="rounded-2xl border border-violet-200 bg-violet-50 p-4">
           <span className="text-[10px] font-extrabold uppercase tracking-wider text-violet-700">Fee split</span>
-          {receipt.feeDistribution ? (
+          {initialDrawTimedOut ? (
+            <p className="mt-2 text-xs leading-relaxed text-violet-800">
+              {fmtMusd(initialDrawTimedOut.feeRefunded)} MUSD was returned to {shortAddr(initialDrawTimedOut.refundTo)} because no panel was seated. Nothing was distributed.
+            </p>
+          ) : receipt.feeDistribution ? (
             <dl className="mt-3 grid grid-cols-3 gap-2 text-center">
               <div><dt className="text-[10px] text-violet-600">Jurors</dt><dd className="mt-1 text-xs font-bold text-violet-950">{fmtMusd(receipt.feeDistribution.toJurors)}</dd></div>
               <div><dt className="text-[10px] text-violet-600">Rewards</dt><dd className="mt-1 text-xs font-bold text-violet-950">{fmtMusd(receipt.feeDistribution.toReward)}</dd></div>
@@ -338,6 +414,26 @@ export default function CaseDetail() {
   }>({ loaded: false });
   const caseUri = receipt?.case.uri;
   const criteriaHash = receipt?.case.criteriaHash;
+  const awaitingInitialDraw = receipt?.case.status === 0 && receipt.case.redraws === 0 && receipt.case.panel.length === 0;
+  const boundedInitialDraw = SUPPORTS_LIVENESS_RECOVERY && awaitingInitialDraw;
+  const legacyInitialDraw = !SUPPORTS_LIVENESS_RECOVERY && awaitingInitialDraw;
+  const initialDrawExpired = boundedInitialDraw && receipt?.case.phase === 'Resolvable';
+  const awaitingRetry = receipt?.case.status === 0 && receipt.case.redraws > 0;
+  const boundedRecovery = SUPPORTS_LIVENESS_RECOVERY && awaitingRetry;
+  const legacyStalledPanel = !SUPPORTS_LIVENESS_RECOVERY && awaitingRetry;
+  const liveStateLabel = receipt
+    ? boundedInitialDraw
+      ? initialDrawExpired ? 'Initial draw expired · refund ready' : 'Waiting for the first panel'
+      : legacyInitialDraw
+        ? 'Legacy initial draw · no timeout protection'
+        : awaitingRetry
+          ? boundedRecovery
+            ? receipt.case.phase === 'Resolvable'
+              ? 'Recovery expired · status quo ready'
+              : 'Restoring the retry panel'
+            : 'Legacy redraw · no timeout protection'
+          : phaseLabels[receipt.case.phase]
+    : '';
 
   useEffect(() => {
     if (!caseUri || !criteriaHash) {
@@ -394,7 +490,7 @@ export default function CaseDetail() {
                     <span className="oracle-eyebrow">On-chain question · Case #{receipt.case.id}</span>
                     <div className="oracle-live-state">
                       <i aria-hidden="true" />
-                      {phaseLabels[receipt.case.phase]}
+                      {liveStateLabel}
                     </div>
                   </div>
                   <div className="oracle-chain-mark">
@@ -441,6 +537,58 @@ export default function CaseDetail() {
                 </div>
 
                 <CaseProgress receipt={receipt} />
+                {boundedInitialDraw && (
+                  <div className="mt-4 rounded-2xl border border-amber-200 bg-amber-50 p-4 text-sm text-amber-950" role="status">
+                    <strong>{initialDrawExpired ? 'No panel was seated before the fixed deadline.' : 'Case parties are excluded from the draw.'}</strong>
+                    <p className="mt-1 text-xs leading-relaxed">
+                      {initialDrawExpired
+                        ? `Anyone may now unwind this case. The ${fmtMusd(receipt.case.feePool)} MUSD unused fee returns to the payer${receipt.case.caseType === 1 ? ', together with the escrow principal' : ''}; no merits ruling is recorded.`
+                        : `A first panel must be seated by ${formatRecoveryDeadline(receipt.case.initialDrawDeadline)}. If the eligible pool shrinks, this deadline cannot move and the unused fee${receipt.case.caseType === 1 ? ' and escrow principal' : ''} can be recovered.`}
+                    </p>
+                    {!initialDrawExpired && (
+                      <Link href="/onboard" className="mt-3 inline-flex items-center gap-1 font-semibold text-amber-950 underline">
+                        Join the pool <ArrowRight />
+                      </Link>
+                    )}
+                  </div>
+                )}
+                {legacyInitialDraw && (
+                  <div className="mt-4 rounded-2xl border border-red-200 bg-red-50 p-4 text-sm text-red-950" role="alert">
+                    <strong>This immutable case has no initial-draw deadline.</strong>
+                    <p className="mt-1 text-xs leading-relaxed">
+                      Party exclusions or a withdrawal can leave fewer than three eligible jurors and strand the case.
+                      The replacement court preflights eligibility and adds a refund-and-unwind deadline, but cannot protect this legacy case retroactively.
+                    </p>
+                  </div>
+                )}
+                {boundedRecovery && (
+                  <div className="mt-4 rounded-2xl border border-amber-200 bg-amber-50 p-4 text-sm text-amber-950" role="status">
+                    <strong>
+                      {receipt.case.phase === 'Resolvable'
+                        ? 'The fixed recovery deadline has passed.'
+                        : 'The first panel missed quorum.'}
+                    </strong>
+                    <p className="mt-1 text-xs leading-relaxed">
+                      {receipt.case.phase === 'Resolvable'
+                        ? 'Anyone may now finalize status quo; the case no longer waits for the juror pool to recover.'
+                        : `Fully slashed jurors can restore a fresh bond without another World ID proof. A new three-seat panel must be drawn by ${formatRecoveryDeadline(receipt.case.recoveryDeadline)}; this deadline cannot be extended.`}
+                    </p>
+                    {receipt.case.phase !== 'Resolvable' && (
+                      <Link href="/onboard" className="mt-3 inline-flex items-center gap-1 font-semibold text-amber-950 underline">
+                        Restore or join <ArrowRight />
+                      </Link>
+                    )}
+                  </div>
+                )}
+                {legacyStalledPanel && (
+                  <div className="mt-4 rounded-2xl border border-red-200 bg-red-50 p-4 text-sm text-red-950" role="alert">
+                    <strong>This immutable case has no recovery deadline.</strong>
+                    <p className="mt-1 text-xs leading-relaxed">
+                      It needs additional eligible humans to fill the redraw. The bounded timeout protects future cases
+                      only after the replacement court is deployed; it cannot be applied retroactively to this case.
+                    </p>
+                  </div>
+                )}
                 <div className="oracle-counts" aria-label="Live ballot counts">
                   <div><span>Panel</span><strong>{receipt.case.panel.length}/3</strong><small>verified jurors seated</small></div>
                   <div><span>Sealed</span><strong>{receipt.activity.commitmentCount}/3</strong><small>answers locked on-chain</small></div>
@@ -474,6 +622,7 @@ export default function CaseDetail() {
             {(receipt.case.phase === 'Commit' || receipt.case.phase === 'Reveal') && (
               <LiveBallot
                 caseId={receipt.case.id}
+                round={receipt.case.redraws}
                 panel={receipt.case.panel}
                 phase={receipt.case.phase}
                 contentVerified={question.matches === true}
@@ -483,8 +632,20 @@ export default function CaseDetail() {
 
             {receipt.case.phase === 'Resolvable' && (
               <div className="rounded-2xl border border-amber-200 bg-amber-50 p-4 text-sm text-amber-900">
-                <strong>All available answers are in.</strong>
-                <p className="mt-1 text-xs leading-relaxed">The on-chain ruling is ready to be recorded.</p>
+                <strong>
+                  {receipt.case.status === 0
+                    ? receipt.case.redraws === 0
+                      ? 'The initial draw timed out.'
+                      : 'Recovery timed out.'
+                    : 'All available answers are in.'}
+                </strong>
+                <p className="mt-1 text-xs leading-relaxed">
+                  {receipt.case.status === 0
+                    ? receipt.case.redraws === 0
+                      ? `The unused fee${receipt.case.caseType === 1 ? ' and escrow principal are' : ' is'} ready to be returned without a merits ruling.`
+                      : 'The on-chain status-quo ruling is ready to be recorded without a replacement panel.'
+                    : 'The on-chain ruling is ready to be recorded.'}
+                </p>
               </div>
             )}
 

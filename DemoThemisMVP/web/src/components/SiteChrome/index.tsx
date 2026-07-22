@@ -41,6 +41,23 @@ const MVP_ROUTES = [
   },
 ] as const;
 
+const warmedChapterDocuments = new Set<string>();
+
+function warmChapterDocument(href: string) {
+  if (typeof window === 'undefined') return;
+  const connection = (navigator as Navigator & { connection?: { saveData?: boolean } }).connection;
+  if (connection?.saveData) return;
+  const url = new URL(href, window.location.href);
+  if (url.origin !== window.location.origin || warmedChapterDocuments.has(url.href)) return;
+  warmedChapterDocuments.add(url.href);
+  const hint = document.createElement('link');
+  hint.rel = 'prefetch';
+  hint.href = url.href;
+  hint.as = 'document';
+  hint.setAttribute('fetchpriority', 'low');
+  document.head.appendChild(hint);
+}
+
 export function SiteChrome() {
   const pathname = usePathname() || '/app';
   const productTab = useSearchParams().get('tab');
@@ -85,13 +102,37 @@ export function SiteChrome() {
     };
   }, [open]);
 
+  useEffect(() => {
+    const connection = (navigator as Navigator & { connection?: { saveData?: boolean } }).connection;
+    if (connection?.saveData) return;
+    const rules = document.createElement('script');
+    rules.type = 'speculationrules';
+    rules.textContent = JSON.stringify({
+      prerender: [{
+        source: 'document',
+        where: { selector_matches: 'a[data-chapter-link]' },
+        eagerness: 'moderate',
+      }],
+    });
+    document.head.appendChild(rules);
+    return () => rules.remove();
+  }, []);
+
   return (
     <header className="site-chrome">
       <div className="site-primary" ref={primaryRef}>
         {/* This must reload the document: Netlify serves the static proposal at `/`,
             while Next's own root is published at `/app` in the unified deployment. */}
         {/* eslint-disable-next-line @next/next/no-html-link-for-pages */}
-        <a className="site-brand" href="/" aria-label="DemoThemis proposal home">
+        <a
+          className="site-brand"
+          href="/"
+          aria-label="DemoThemis proposal home"
+          data-chapter-link=""
+          onPointerEnter={() => warmChapterDocument('/')}
+          onFocus={() => warmChapterDocument('/')}
+          onTouchStart={() => warmChapterDocument('/')}
+        >
           <Image
             className="site-brand-wordmark"
             src="/assets/brand/demothemis/wordmark.png"
@@ -118,7 +159,14 @@ export function SiteChrome() {
         </button>
         <nav className={`site-chapters${open ? ' is-open' : ''}`} id="site-chapters" aria-label="Proposal chapters">
           {CHAPTERS.map((item) => (
-            <a key={item.href} href={item.href}>
+            <a
+              key={item.href}
+              href={item.href}
+              data-chapter-link=""
+              onPointerEnter={() => warmChapterDocument(item.href)}
+              onFocus={() => warmChapterDocument(item.href)}
+              onTouchStart={() => warmChapterDocument(item.href)}
+            >
               {'number' in item && <span>{item.number}</span>}
               {item.label}
             </a>

@@ -870,6 +870,13 @@ body .diagram-inner .exhaust > .e:nth-of-type(3) {
 .series-nav .dir { font-size: .72rem; letter-spacing: .08em; text-transform: uppercase; color: var(--faint); }
 .series-nav .ttl { display: block; font-weight: 600; margin-top: .15rem; }
 .series-nav .next { text-align: right; }
+.series-handoff-layout { display: grid; grid-template-columns: minmax(0, .9fr) minmax(0, 1.1fr); gap: 1rem; align-items: stretch; margin: 0 0 2rem; }
+.series-handoff-layout .series-nav { align-self: stretch; margin: 0; }
+.series-handoff-layout .series-nav a { display: flex; flex-direction: column; justify-content: center; }
+.series-handoff-copy { display: flex; flex-direction: column; justify-content: center; border: 1px solid var(--line); border-radius: 12px; background: linear-gradient(145deg, var(--accent-soft), var(--surface)); padding: 1rem 1.1rem; box-shadow: var(--shadow); font-family: var(--sans); }
+.series-handoff-copy .eyebrow { color: var(--accent-ink); font-family: var(--mono); font-size: .68rem; font-weight: 750; letter-spacing: .07em; text-transform: uppercase; }
+.series-handoff-copy strong { display: block; margin: .35rem 0 .4rem; color: var(--ink); font-size: 1.05rem; line-height: 1.3; }
+.series-handoff-copy .summary { display: block; color: var(--muted); font-size: .86rem; line-height: 1.5; }
 
 /* ===== site-map footer ===== */
 .sitemap { display: grid; grid-template-columns: repeat(auto-fit, minmax(10rem, 1fr)); gap: .45rem 1.2rem; font-family: var(--sans); margin: 0 0 1.5rem; }
@@ -919,6 +926,7 @@ body .diagram-inner .exhaust > .e:nth-of-type(3) {
   .nav-links { display: none; position: absolute; top: 100%; left: 0; right: 0; flex-direction: column; align-items: stretch; gap: .05rem; background: var(--surface); border-bottom: 1px solid var(--line); padding: .6rem 1.5rem 1rem; box-shadow: var(--shadow); }
   .sitenav.open .nav-links { display: flex; }
   .nav-links a { padding: .65rem .4rem; text-align: left; }
+  .series-handoff-layout { grid-template-columns: 1fr; }
   .series-nav { flex-direction: column; }
   .series-nav a:only-child { flex: 1 1 auto; max-width: none; }
   .series-nav .prev:only-child, .series-nav .next:only-child { margin-left: 0; margin-right: 0; }

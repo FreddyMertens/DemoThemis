@@ -19,15 +19,15 @@ The deck opens on an abstract capital-vs-personhood attack and **proves** on-cha
 World ID verification (frame 6), but never states the counterfactual a World
 reviewer scores hardest:
 
-> **A one-human-one-vote court could not be built on-chain until World ID 4.0 moved
-> verification on-chain. That is the unlock — and the reason this is a World project,
+> **A one-human-one-vote court becomes enforceable when a World ID proof is verified
+> on-chain. The documented mainnet Router is that production unlock — and the reason this is a World project,
 > now.** UMA and Kleros decide by capital because no on-chain personhood oracle
 > existed when they were built; capital-weighting is a *substitute* for personhood,
 > not a rejection of it.
 
 Near-zero build (reframes assets already in the deck); answers "why World ID" and
-"why now" in one line. **Caveat:** "the strongest on-chain personhood primitive,
-newly callable in production v4" — not "the only one" (BrightID/Gitcoin Passport are
+"why now" in one line. **Caveat:** do not call the v4 on-chain verifier production
+while official documentation marks it preview — not "the only one" (BrightID/Gitcoin Passport are
 weaker, not nonexistent).
 
 ---
@@ -37,15 +37,17 @@ weaker, not nonexistent).
 | # | Angle | Leverage | What it does | Applied |
 |---|---|---|---|---|
 | 1 | **Why-now / why-World ID** (above) | ★ highest | Answers the two hardest grant questions; reframes UMA/Kleros honestly | ✅ folded into frame 6 |
-| 2 | **No admin can touch a verdict** (grep-it) | high | Turns vague "can't be leaned on" into a checkable property: no pause, no upgrade key, no verdict override, no fund-seizure — only one-time wiring + a future-cases phase clock | ✅ callout + matrix row |
+| 2 | **No admin can touch a verdict or its clocks** (grep-it) | high | Turns vague "can't be leaned on" into a checkable property: no pause, no upgrade key, no verdict override, no fund-seizure, no duration setter — only one-time deployment wiring | ✅ callout + matrix row |
 | 3 | **Atomic settlement** | high | The *same tx* that tallies votes releases the funds (`resolve → escrow.settle`) — decision **is** enforcement; no claim button, no marshal. Categorical vs UMA/Kleros (emit a ruling), centralized (a human clicks refund), courts (a marshal) | ✅ frame 8 reword |
 | 4 | **Ecosystem-fit GTM** | high | "Start neutral" → customers *and* jurors both already live in World App; the integration is two functions (open a dispute, receive the verdict); juror pool gated by World ID + a $5 bond, no token to buy | ✅ frame 13 reframe |
 | 5 | **One human = one nullifier on every wallet** | med-high | Names *why* the duplicate-revert is unfakeable: the nullifier is identity-derived, wallet-independent — 10,000 wallets buy zero seats. The literal differentiator from capital systems | ✅ frame 6 caption + matrix |
 | 6 | **Proofs bound to the wallet** | med | A stolen/replayed World ID proof reverts (signal-hash binding before the Groth16 check) — reinforces "no trusted middleman" | ✅ frame 6 footnote |
 
-**Scoping caveats kept:** #2 — `setDurations` is a real (narrow) deployer power over
-*future* cases, and the contracts are unaudited/non-upgradeable (say "no admin power
-over any open verdict or payout," never "fully immutable"). #3 — atomic only over
+**Historical scoping caveat resolved:** #2 — the legacy `setDurations` power over
+open-but-undrawn cases is removed in replacement source; its constructor durations are immutable
+and enforce a five-minute minimum. The contracts remain unaudited and non-upgradeable;
+say “no runtime admin power over a verdict, payout, or voting clock,” not “risk-free.”
+#3 — atomic only over
 funds the escrow custodies (valueless MockUSD today), not the real world. #4 — no
 third-party integrates it yet, MockUSD is valueless, the platform stays
 merchant-of-record and legally liable; present the network effect as the thesis the
@@ -102,10 +104,10 @@ anti-coercion.
 
 ## Code-verification log (so the grep-it claims are safe)
 
-- **No admin surface:** the only privileged functions across the 5 contracts are
+- **No runtime admin surface:** the only privileged functions across the 5 contracts are
   `DisputeCourt.setEscrow` (deployer, reverts `EscrowAlreadySet` after first call),
-  `DisputeCourt.setDurations` (deployer, future cases only — each case snapshots its
-  own deadlines), and `JurorRegistry.setCourt` (deployer, reverts after first call).
+  and `JurorRegistry.setCourt` (deployer, reverts after first call). Both are one-shot
+  deployment wiring. Voting durations are immutable and there is no duration setter.
   `slash/enterPanel/exitPanel` are `onlyCourt` (the contract, per protocol — no human
   caller). **No** Ownable / onlyOwner / pause / upgradeTo / UUPS / proxy / delegatecall
   / selfdestruct anywhere. No function writes a case `outcome` except the vote tally.

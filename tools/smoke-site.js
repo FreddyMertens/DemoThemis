@@ -2,6 +2,7 @@ const fs = require("fs");
 const http = require("http");
 const path = require("path");
 const vm = require("vm");
+const crypto = require("crypto");
 
 const root = path.resolve(__dirname, "..");
 const outDir = path.join(root, "dist");
@@ -99,8 +100,24 @@ function toPublicPath(file) {
   return file === "index.html" ? "/" : `/${file.replace(/\.html$/i, "")}`;
 }
 
-function readDist(file) {
+function readRawDist(file) {
   return fs.readFileSync(path.join(outDir, file), "utf8");
+}
+
+function normalizeVersionedAssetPaths(content) {
+  return String(content).replace(/assets\/v\/[a-f0-9]{12}\//gi, "assets/");
+}
+
+function readDist(file) {
+  let content = readRawDist(file);
+  if (file === "run-through.html") {
+    const css = readRawDist("assets/run-through.css");
+    const script = readRawDist("assets/run-through.js");
+    content = content
+      .replace(/(<link\b[^>]*href=["'][^"']*run-through\.css["'][^>]*>)/i, (tag) => `${tag}\n<style data-smoke-external="run-through.css">${css}</style>`)
+      .replace(/(<script\b[^>]*src=["'][^"']*run-through\.js["'][^>]*><\/script>)/i, (tag) => `${tag}\n<script data-smoke-external="run-through.js">${script}</script>`);
+  }
+  return normalizeVersionedAssetPaths(content);
 }
 
 function contentType(file) {
@@ -173,6 +190,66 @@ function checkDistFiles(failures) {
   }
 }
 
+function checkVersionedAssetBundle(failures) {
+  const versions = new Set();
+  for (const file of publicHtml.concat("404.html")) {
+    const html = readRawDist(file);
+    const matches = Array.from(html.matchAll(/assets\/v\/([a-f0-9]{12})\//gi), (match) => match[1]);
+    matches.forEach((version) => versions.add(version));
+    assert(matches.length > 0, `${file} has no content-versioned asset reference`, failures);
+    assert(!/assets\/(?!v\/)/i.test(html), `${file} contains an unversioned proposal asset reference`, failures);
+    assert(!/assets\/v\/[a-f0-9]{12}\/[^"'\s)<>]+\?v=/i.test(html), `${file} retains a redundant manual asset cachebuster`, failures);
+  }
+  assert(versions.size === 1, `proposal pages must share one asset version (found ${Array.from(versions).join(", ") || "none"})`, failures);
+  if (versions.size !== 1) return;
+
+  const version = Array.from(versions)[0];
+  const assetRoot = path.join(outDir, "assets");
+  const versionRoot = path.join(assetRoot, "v", version);
+  assert(fs.existsSync(versionRoot), `content-versioned asset bundle is missing: ${version}`, failures);
+
+  const files = [];
+  function walk(current) {
+    for (const entry of fs.readdirSync(current, { withFileTypes: true })) {
+      if (current === assetRoot && entry.name === "v") continue;
+      const absolute = path.join(current, entry.name);
+      if (entry.isDirectory()) walk(absolute);
+      else files.push(absolute);
+    }
+  }
+  walk(assetRoot);
+  files.sort((a, b) => a.split(path.sep).join("/").localeCompare(b.split(path.sep).join("/")));
+  files.push(path.join(outDir, "assumptions.js"));
+  const hash = crypto.createHash("sha256");
+  for (const file of files) {
+    hash.update(path.relative(outDir, file).split(path.sep).join("/"));
+    hash.update("\0");
+    hash.update(fs.readFileSync(file));
+    hash.update("\0");
+  }
+  assert(hash.digest("hex").slice(0, 12) === version, "proposal asset version must be deterministic and content-derived", failures);
+
+  for (const file of [
+    "common.js",
+    "run-through.css",
+    "run-through.js",
+    "brand-rive.js",
+    "vendor/rive/rive-2.38.5.wasm",
+    "brand/omenmarketmaker/wordmark.riv",
+    "fonts/product-app-fonts.css",
+    "fonts/alegreya-sans-medium.woff2",
+    "assumptions.js"
+  ]) {
+    assert(fs.existsSync(path.join(versionRoot, file)), `versioned proposal asset missing: ${file}`, failures);
+  }
+
+  const rawRunThrough = readRawDist("run-through.html");
+  assert(!/<style>/i.test(rawRunThrough), "run-through must not retain its large inline stylesheet", failures);
+  assert(!/<script(?![^>]*\bsrc\s*=)[^>]*>[\s\S]*?<\/script>/i.test(rawRunThrough), "run-through must not retain its large inline program", failures);
+  assert(/run-through\.css/i.test(rawRunThrough) && /run-through\.js/i.test(rawRunThrough), "run-through must load its extracted cached assets", failures);
+  assert(/rel=["']preload["'][^>]*run-through\.js[^>]*as=["']script["']/i.test(rawRunThrough), "run-through must preload its extracted program", failures);
+}
+
 function checkHeaders(failures) {
   const headers = readDist("_headers");
   const genericHeaders = headers.split("\n\n/")[0];
@@ -182,8 +259,12 @@ function checkHeaders(failures) {
   assert(/Referrer-Policy: strict-origin-when-cross-origin/i.test(headers), "_headers missing Referrer-Policy", failures);
   assert(!/unpkg\.com/i.test(headers), "_headers should not allow unpkg.com", failures);
   assert(!/wasm-unsafe-eval/i.test(genericHeaders), "generic CSP must not grant WASM execution to every route", failures);
+  assert(/inline-speculation-rules/i.test(headers), "CSP must allow the safe inline chapter-prerender rules", failures);
+  assert(/\/assets\/v\/\*[\s\S]*Cache-Control:\s*public,\s*max-age=31536000,\s*immutable/i.test(headers), "versioned proposal assets must receive immutable browser caching", failures);
+  assert(/\/\*\.html[\s\S]*Cache-Control:\s*public,\s*max-age=0,\s*must-revalidate/i.test(headers), "proposal HTML must remain revalidated", failures);
   assert(/\n\/\n[\s\S]*wasm-unsafe-eval/i.test(headers), "proposal homepage CSP must allow its local Rive WASM runtime", failures);
   assert(/\/index\.html[\s\S]*wasm-unsafe-eval/i.test(headers), "index.html CSP must allow its local Rive WASM runtime", failures);
+  assert(/\/run-through\*[\s\S]*wasm-unsafe-eval/i.test(headers), "run-through CSP must allow its local Rive WASM runtime", failures);
   assert(/\/omenmarketmaker\*[\s\S]*wasm-unsafe-eval/i.test(headers), "OmenMarketMaker CSP must allow its local Rive WASM runtime", failures);
 }
 
@@ -335,6 +416,10 @@ function checkChapterSequence(failures) {
   assert(/function\s+initLocalFileLinks\s*\(\)/.test(commonSource), "assets/common.js is missing local-file Home link handling", failures);
   assert(/location\.protocol\s*!==\s*["']file:["']/.test(commonSource) && /querySelectorAll\(["']a\[href=\\?["']\/\\?["']\]["']\)/.test(commonSource), "local-file Home handling must only rewrite root links under file URLs", failures);
   assert(/initLocalFileLinks\(\);\s*initNav\(\);/.test(commonSource), "local Home links must be repaired before navigation state is initialized", failures);
+  assert(/function\s+initChapterWarmup\s*\(/.test(commonSource) && /type\s*=\s*["']speculationrules["']/.test(commonSource) && /eagerness:\s*["']moderate["']/.test(commonSource), "chapter navigation must install moderate intent-based prerendering", failures);
+  assert(/rel\s*=\s*["']prefetch["']/.test(commonSource) && /focusin/.test(commonSource) && /pointerdown/.test(commonSource), "chapter navigation must retain keyboard, pointer, and unsupported-browser prefetch fallbacks", failures);
+  assert(/connection\.saveData/.test(commonSource) && /location\.protocol\s*!==\s*["']http:["']/.test(commonSource), "chapter warmup must respect data-saving and local-preview constraints", failures);
+  assert(/rive-2\.38\.5\.wasm/.test(commonSource) && /wordmark\.riv/.test(commonSource) && /run-through\.js/.test(commonSource), "Run-through intent must warm its program and Rive resources", failures);
   const commonLiteral = commonSource.match(/var\s+CHAPTERS\s*=\s*(\[[\s\S]*?\]);/);
   assert(Boolean(commonLiteral), "assets/common.js is missing its canonical CHAPTERS list", failures);
   if (commonLiteral) {
@@ -350,6 +435,7 @@ function checkChapterSequence(failures) {
 
   const siteChromePath = path.join(root, "DemoThemisMVP", "web", "src", "components", "SiteChrome", "index.tsx");
   const siteChrome = fs.readFileSync(siteChromePath, "utf8");
+  assert(/data-chapter-link/.test(siteChrome) && /type\s*=\s*['"]speculationrules['"]/.test(siteChrome) && /warmChapterDocument/.test(siteChrome), "MVP chrome must warm proposal chapters without changing ordinary link navigation", failures);
   const siteChromeBlock = siteChrome.match(/const\s+CHAPTERS\s*=\s*\[([\s\S]*?)\]\s+as const;/);
   assert(Boolean(siteChromeBlock), "MVP SiteChrome is missing its CHAPTERS list", failures);
   if (siteChromeBlock) {
@@ -486,10 +572,10 @@ function checkMvpPage(html, failures) {
   assert(/\bthree (?:World ID-)?verified humans\b/i.test(html), "demothemis-mvp.html should identify the three verified jurors", failures);
   assert(/\bon[- ]?chain\b/i.test(html), "demothemis-mvp.html should explain the on-chain result", failures);
   assert(/\bJurors research independently\b/i.test(html), "demothemis-mvp.html should explain that jurors research independently", failures);
-  assert(/\b20 MUSD locked before the draw\b/i.test(html) && /\b1\.00 MUSD\b/i.test(html) && /\b15\.00 MUSD\b/i.test(html) && /\b2\.50 MUSD\b/i.test(html) && /\b1\.50 MUSD\b/i.test(html), "demothemis-mvp.html ruling receipt should account for the 20 MUSD illustrative work-based quote", failures);
-  assert(/\bAll completed jurors receive the work payment locked for this case\b/i.test(html) && /\b5\.00 MUSD\b/i.test(html), "demothemis-mvp.html ruling receipt should pay completed work rather than only the majority", failures);
-  assert(/\bNo permanent fee split\b/i.test(html) && /\bCurrent demand\b/i.test(html) && /\bReward-reserve top-up\b/i.test(html) && /\bCapped operations\b/i.test(html), "demothemis-mvp.html should show the current demand-responsive quote design", failures);
-  assert(!/70\s*\/\s*20\s*\/\s*10/i.test(html), "demothemis-mvp.html should not present the retired permanent 70/20/10 split", failures);
+  assert(/\b20 MUSD case fee locked before the draw\b/i.test(html) && /\b14\.00 MUSD\b/i.test(html) && /\b4\.00 MUSD\b/i.test(html) && /\b2\.00 MUSD\b/i.test(html), "demothemis-mvp.html ruling receipt should account for the fixed 20 MUSD fee using the 70/20/10 split", failures);
+  assert(/\bOnly outcome-matching revealers share the 14 MUSD juror pot\b/i.test(html) && /\b2 coherent\b/i.test(html) && (html.match(/\b7\.00 MUSD\b/gi) ?? []).length >= 2 && /\b0\.00 MUSD\b/i.test(html), "demothemis-mvp.html ruling receipt should pay the two coherent jurors and exclude the dissenting revealer", failures);
+  assert(/\bPermanent 70\s*\/\s*20\s*\/\s*10\b/i.test(html) && /\bFixed question fee\b/i.test(html) && /\bReward pool\b/i.test(html) && /\bProtocol\b/i.test(html), "demothemis-mvp.html should show the court's fixed fee and permanent split", failures);
+  assert(!/All completed jurors receive|No permanent fee split|Current demand|Reward-reserve top-up/i.test(html), "demothemis-mvp.html should not retain the superseded completion-pay or demand-quote receipt", failures);
   assert(!/optimistic(?: fast)? path|bonded[- ]assertion|settle(?:s|d)? free|jury is the (?:rare )?backstop/i.test(html), "demothemis-mvp.html must not restore the retired pre-jury settlement path", failures);
   assert(!/\bSafe local preview\b/i.test(html) && !/class=["'][^"']*mvp-sim-footnote/i.test(html), "demothemis-mvp.html should remove the redundant local-preview notice", failures);
   assert(/class=["'][^"']*mvp-button secondary[^"']*["'][^>]*href=["']https:\/\/demothemis\.netlify\.app\/app#oracle-live-panel["'][^>]*>\s*Open the deployed MVP/i.test(html), "the hero's deployed-MVP button must navigate directly to the deployed app", failures);
@@ -555,8 +641,19 @@ function checkStateMachineData(html, failures) {
   }
   assert(hasEdge("private-room", "event-close", "skip"), "private rooms must bypass public graduation", failures);
   assert(hasEdge("pooled-claims", "event-close", "skip"), "pooled claims must bypass the optional parlay", failures);
-  assert(hasEdge("event-close", "resolution-requested", "forward") && hasEdge("resolution-requested", "court-quote-funded", "forward") && hasEdge("court-quote-funded", "case-locked", "forward"), "every closed market must fund and lock the independent court handoff", failures);
+  assert(
+    hasEdge("event-close", "resolution-requested", "forward") &&
+      hasEdge("resolution-requested", "resolution-reserve-gate", "forward") &&
+      hasEdge("resolution-reserve-gate", "court-quote-funded", "branch") &&
+      hasEdge("resolution-reserve-gate", "resolution-top-up", "branch") &&
+      hasEdge("resolution-top-up", "court-quote-funded", "branch") &&
+      hasEdge("resolution-top-up", "underfunded-refund", "branch") &&
+      hasEdge("court-quote-funded", "case-locked", "forward"),
+    "closed markets must branch from the reserve gate to an automatically paid case or an underfunded YES/NO refund",
+    failures
+  );
   assert(hasEdge("larger-panel", "panel-plan", "loop"), "a funded appeal must loop to a fresh wider panel plan", failures);
+  assert(hasEdge("provisional-verdict", "provisional-handoff", "forward") && hasEdge("provisional-handoff", "omen-appeal-choice", "forward") && hasEdge("omen-appeal-choice", "appeal-gate", "forward"), "every provisional court result must return to the OmenMarketMaker appeal interface before the next-rung funding decision", failures);
   const seatCheck = data.states.find((state) => state.id === "seat-checked");
   assert(seatCheck && /deterministic standby/i.test(seatCheck.detail || ""), "seat checks must explain deterministic standby continuity", failures);
   assert(hasEdge("panel-consensus", "provisional-verdict", "branch") && hasEdge("panel-consensus", "invalid-verdict", "branch"), "parallel panels must explicitly support consensus or an INVALID result", failures);
@@ -607,7 +704,7 @@ function checkProductModeData(html, failures) {
     assert(!boundaries.protocol, "protocol explainers must not be registered as application boundaries", failures);
     assert(eventBoundaries.slice(0, 8).every((boundary) => boundary === boundaries.omen), "Events 01-08 must use the OmenMarketMaker app", failures);
     assert(eventBoundaries[8] === null && eventBoundaries[10] === null && eventBoundaries[12] === null, "draw, tally, and proof relay must have no application boundary", failures);
-    assert(eventBoundaries[9] === boundaries.themis && eventBoundaries[11] === boundaries.themis, "juror and appellant actions must use the DemoThemis app", failures);
+    assert(eventBoundaries[9] === boundaries.themis && eventBoundaries[11] === boundaries.omen, "juror voting must use DemoThemis while market appeals begin in OmenMarketMaker", failures);
   } catch (error) {
     failures.push("run-through product-mode data cannot be evaluated: " + error.message);
   }
@@ -619,7 +716,7 @@ function checkAppOwnershipData(html, failures) {
   assert(pages.length === 13, "APP_PAGES must define all 13 events", failures);
   assert(pages.slice(0, 8).every((page) => /^OmenMarketMaker\b/.test(page.product || "")), "APP_PAGES Events 01-08 must belong to OmenMarketMaker", failures);
   assert([8, 10, 12].every((index) => /on-chain sequence$/i.test(pages[index].product || "")), "automated event data must belong to the DemoThemis on-chain sequence", failures);
-  assert([9, 11].every((index) => pages[index].product === "DemoThemis"), "APP_PAGES participant events must belong to DemoThemis", failures);
+  assert(pages[9].product === "DemoThemis" && pages[11].product === "OmenMarketMaker", "APP_PAGES must keep juror voting in DemoThemis and market appeal review in OmenMarketMaker", failures);
   assert(!/var\s+(?:PRODUCT_SCREENS|APP_SCREENS)\s*=/.test(html), "run-through must keep one canonical app-page data source", failures);
 }
 
@@ -918,7 +1015,7 @@ function checkCompactAppViews(html, failures) {
   });
 
   const resolvedSnapshots = snapshots.filter((snapshot) => snapshot.state !== "base");
-  assert(resolvedSnapshots.length === 34, `app simulator must expose exactly 34 streamlined states (found ${resolvedSnapshots.length})`, failures);
+  assert(resolvedSnapshots.length === 38, `app simulator must expose exactly 38 streamlined states (found ${resolvedSnapshots.length})`, failures);
   const deadPageKeys = ["intent", "summary", "sideTitle", "sideRows"];
   assert(
     pages.every((page) => deadPageKeys.every((key) => !Object.prototype.hasOwnProperty.call(page, key))) &&
@@ -979,16 +1076,16 @@ function checkCompactAppViews(html, failures) {
   const resolutionRequest = demoBlock(resolutionStart, (block) => block.type === "record" && block.title === "Resolution request");
   const resolutionOdds = demoBlock(resolutionStart, (block) => block.type === "odds" && block.title === "Secondary trading live");
   assert(
-    resolutionStart && resolutionStart.page.route === "/markets/england-euro-final/resolution" && rowValue(resolutionRequest, "Provider") === "DemoThemis" && /stays here/i.test(rowValue(resolutionRequest, "Market escrow") || "") && resolutionOdds && resolutionOdds.yes === 91 && resolutionOdds.no === 9,
-    "Event 07 must fund DemoThemis from a production resolution page while OmenMarketMaker keeps the market escrow",
+    resolutionStart && resolutionStart.page.route === "/markets/england-euro-final/resolution" && /fixed before betting/i.test(rowValue(resolutionRequest, "Jury target") || "") && rowValue(resolutionRequest, "Maximum reserve rate") === "3%" && /stays here/i.test(rowValue(resolutionRequest, "Outcome backing") || "") && resolutionOdds && resolutionOdds.yes === 91 && resolutionOdds.no === 9,
+    "Event 07 must show the pre-declared depositor reserve and separate outcome backing before automatic court payment",
     failures
   );
   assert(!/bond|challenge period|asserted/i.test(JSON.stringify(resolutionStart.page)), "Event 07 must not restore the removed assertion and watcher path", failures);
   const fundedResolution = demoSnapshot(7, "after-1");
   const fundedRecord = demoBlock(fundedResolution, (block) => block.type === "record" && block.title === "Funded resolution");
   assert(
-    fundedRecord && fundedResolution.page.route === "/markets/england-euro-final/resolution/funded" && rowValue(fundedRecord, "DemoThemis quote") === "Funded separately" && /stays here/i.test(rowValue(fundedRecord, "Market escrow") || "") && /^0x/i.test(rowValue(fundedRecord, "Transaction") || ""),
-    "Event 07 must finish on a durable funded-resolution record with separate custody",
+    fundedRecord && fundedResolution.page.route === "/markets/england-euro-final/resolution/funded" && rowValue(fundedRecord, "DemoThemis quote") === "Paid automatically" && /stays here/i.test(rowValue(fundedRecord, "Outcome collateral") || "") && /^0x/i.test(rowValue(fundedRecord, "Transaction") || ""),
+    "Event 07 must finish on a durable reserve-funded resolution record with separate outcome custody",
     failures
   );
 
@@ -997,8 +1094,8 @@ function checkCompactAppViews(html, failures) {
   const handoffBoundary = demoBlock(handoffStart, (block) => block.type === "table" && block.title === "Product boundary");
   const handoffStartOdds = demoBlock(handoffStart, (block) => block.type === "odds" && block.title === "Current market odds");
   assert(
-    handoffStart && handoffStart.page.route === "/markets/england-euro-final/court-handoff" && /Move to DemoThemis/i.test(rowValue(handoffRecord, "Case and evidence rules") || "") && /stays at OmenMarketMaker/i.test(rowValue(handoffRecord, "Market escrow") || "") && rowValue(handoffBoundary, "OmenMarketMaker") === "Holds market escrow",
-    "Event 08 must make the case-only product handoff and separate custody immediately understandable",
+    handoffStart && handoffStart.page.route === "/markets/england-euro-final/court-handoff" && /Move to DemoThemis/i.test(rowValue(handoffRecord, "Case and evidence rules") || "") && rowValue(handoffRecord, "Resolution payment") === "Comes from locked reserve" && /stays at OmenMarketMaker/i.test(rowValue(handoffRecord, "Outcome collateral") || "") && rowValue(handoffBoundary, "OmenMarketMaker") === "Holds outcome collateral",
+    "Event 08 must make the reserve-funded case handoff and separate outcome custody immediately understandable",
     failures
   );
   assert(handoffStartOdds && handoffStartOdds.yes === 91 && handoffStartOdds.no === 9, "Event 08 must keep the unchanged 91/9 secondary-market price through the handoff", failures);
@@ -1007,8 +1104,8 @@ function checkCompactAppViews(html, failures) {
   const custodyTable = demoBlock(handoffEnd, (block) => block.type === "table" && block.title === "Separate custody");
   const handoffEndOdds = demoBlock(handoffEnd, (block) => block.type === "odds" && block.title === "Secondary trading live");
   assert(
-    courtRecord && handoffEnd.page.route === "/markets/england-euro-final/court-case" && /Case #1182/i.test(courtRecord.value || "") && rowValue(courtRecord, "Rules") === "Locked" && rowValue(courtRecord, "Panel") === "15 seats" && rowValue(courtRecord, "Court quote") === "Funded" && rowValue(custodyTable, "Omen escrow") === "$118,000" && /locked here/i.test(JSON.stringify(custodyTable || {})),
-    "Event 08 must open a draw-ready court intake record without moving OmenMarketMaker escrow",
+    courtRecord && handoffEnd.page.route === "/markets/england-euro-final/court-case" && /Case #1182/i.test(courtRecord.value || "") && rowValue(courtRecord, "Rules") === "Locked" && rowValue(courtRecord, "Panel") === "7 seats" && rowValue(courtRecord, "Court quote") === "Funded" && rowValue(custodyTable, "Outcome collateral") === "$118,000" && /Paid from reserve/i.test(JSON.stringify(custodyTable || {})),
+    "Event 08 must open a draw-ready court intake record funded from the reserve without moving outcome collateral",
     failures
   );
   assert(handoffEndOdds && handoffEndOdds.yes === 91 && handoffEndOdds.no === 9, "Event 08 must not fabricate a price jump during the administrative handoff", failures);
@@ -1038,14 +1135,24 @@ function checkCompactAppViews(html, failures) {
   );
 
   const appealStart = demoSnapshot(12, "start");
-  const appealCheckout = demoBlock(appealStart, (block) => block.type === "checkout" && block.title === "Required bond");
-  const appealCaseStatus = demoBlock(appealStart, (block) => block.type === "record" && block.title === "Case status");
+  const appealStartResult = demoBlock(appealStart, (block) => block.type === "record" && block.title === "Provisional court result");
+  const appealCheckoutState = demoSnapshot(12, "after-1");
+  const appealCheckout = demoBlock(appealCheckoutState, (block) => block.type === "appealCrowdfund" && block.title === "Crowdfunded appeal bond");
   assert(
-    rowValue(appealCheckout, "31-juror minimum") === "$12,400" && rowValue(appealCheckout, "Security minimum") === "$31,000" && rowValue(appealCheckout, "Delay minimum") === "$8,200" && rowValue(appealCheckout, "Required bond") === "$31,000" && appealCheckout.winner === "Highest minimum applied",
-    "Event 12 must show each minimum and the highest applied appeal bond",
+    appealCheckout && appealCheckout.goal === 31000 && appealCheckout.funded === 18400 && appealCheckout.remaining === 12600 && Array.isArray(appealCheckout.quoteRows) && rowValue({ rows: appealCheckout.quoteRows }, "Security floor") === "$31,000",
+    "Event 12 must show the public appeal goal, existing funding, remaining gap, and applied security floor",
     failures
   );
-  assert(appealCaseStatus && /Provisional/i.test(appealCaseStatus.value || "") && /UTC/i.test(rowValue(appealCaseStatus, "Deadline") || ""), "Event 12 must show the provisional verdict and an exact appeal deadline", failures);
+  assert(appealStartResult && /Provisional/i.test(appealStartResult.value || "") && /UTC/i.test(rowValue(appealStartResult, "Deadline") || ""), "Event 12 must return the provisional verdict and exact appeal deadline to OmenMarketMaker", failures);
+  assert(appealCheckout && appealCheckout.destination === "DemoThemis appeal contract" && /pro-rata/i.test(appealCheckout.note || "") && /refund/i.test(appealCheckout.note || ""), "Event 12 must keep appeal contributions directly attributed and refundable when the public goal expires short", failures);
+  const contributedAppealState = demoSnapshot(12, "after-2");
+  const contributedAppeal = demoBlock(contributedAppealState, (block) => block.type === "appealCrowdfund" && block.title === "Crowdfunded appeal bond");
+  assert(contributedAppeal && contributedAppeal.funded === 22400 && contributedAppeal.userContribution === 4000 && contributedAppeal.contributors.some((row) => /You/.test(row[0]) && row[1] === 4000), "Event 12 must record the connected wallet's contribution and proportional bond share before the crowd completes the goal", failures);
+  const fundedAppealState = demoSnapshot(12, "after-3");
+  const fundedAppealRoute = demoBlock(fundedAppealState, (block) => block.type === "route" && block.title === "Appeal funding complete");
+  assert(fundedAppealState.page.surface === "protocol" && fundedAppealRoute && /31,000 locked/.test(JSON.stringify(fundedAppealRoute)), "Event 12 must start DemoThemis adjudication only after the crowdfunded goal reaches 100%", failures);
+  const returnedAppealResult = demoSnapshot(12, "after-5");
+  assert(returnedAppealResult.page.surface === "omen" && returnedAppealResult.page.template === "appeal-result" && /NO 9.6/i.test(JSON.stringify(returnedAppealResult.page)) && /31-person/i.test(JSON.stringify(returnedAppealResult.page)), "Event 12 must return the 15-person provisional result and the next appeal window to OmenMarketMaker", failures);
 
   const proofStart = demoBlock(demoSnapshot(11, "start"), (block) => block.type === "proof");
   const proofPosted = demoBlock(demoSnapshot(11, "after-1"), (block) => block.type === "proof" && block.title === "Aggregate tally");
@@ -1063,18 +1170,18 @@ function checkCompactAppViews(html, failures) {
 
   const jurySeats = seatBlocksFor(9);
   const appealSeats = seatBlocksFor(12);
-  assert(jurySeats.length > 0 && jurySeats.every((block) => block.count === 15), "Event 09 must render the production 15-seat jury for the $118,000 case", failures);
-  assert(jurySeats.every((block) => block.on === 0 || block.on === 15), "Event 09 active-seat count must be either 0 or 15", failures);
-  assert(appealSeats.length > 0 && appealSeats.every((block) => block.count === 31), "Event 12 must render exactly 31 appeal seats", failures);
-  assert(appealSeats.every((block) => block.on === 0 || block.on === 31), "Event 12 active-seat count must be either 0 or 31", failures);
+  assert(jurySeats.length > 0 && jurySeats.every((block) => block.count === 7), "Event 09 must render the documented first-rung 7-seat jury", failures);
+  assert(jurySeats.every((block) => block.on === 0 || block.on === 7), "Event 09 active-seat count must be either 0 or 7", failures);
+  assert(appealSeats.length > 0 && appealSeats.every((block) => block.count === 15), "Event 12 must render exactly 15 first-appeal seats", failures);
+  assert(appealSeats.every((block) => block.on === 0 || block.on === 15), "Event 12 active-seat count must be either 0 or 15", failures);
 
-  const compactDemoStepCounts = [1, 1, 2, 1, 2, 2, 1];
+  const compactDemoStepCounts = [1, 1, 2, 1, 2, 6, 2];
   assert(
     JSON.stringify(flows.slice(6).map((flow) => (flow.steps || []).length)) === JSON.stringify(compactDemoStepCounts),
-    "DemoThemis Events 07-13 must retain the shorter 1/1/2/1/2/2/1 action path",
+    "Court-path Events 07-13 must retain the explicit 1/1/2/1/2/6/2 product-boundary path",
     failures
   );
-  const exactSimulatorStepCounts = [1, 2, 1, 1, 2, 4, 1, 1, 2, 1, 2, 2, 1];
+  const exactSimulatorStepCounts = [1, 1, 1, 1, 2, 4, 1, 1, 2, 1, 2, 6, 2];
   assert(
     JSON.stringify(flows.map((flow) => (flow.steps || []).length)) === JSON.stringify(exactSimulatorStepCounts),
     "the OmenMarketMaker-to-DemoThemis simulator must retain its streamlined 13-event state path",
@@ -1090,17 +1197,19 @@ function checkCompactAppViews(html, failures) {
   const appealEndCopy = JSON.stringify(appealEnd && appealEnd.page || {});
   assert(/\bNO\b/i.test(appealEndCopy) && /final|resolved/i.test(appealEndCopy), "Event 12 must show a final NO appeal verdict before finality", failures);
   const finalityStartCopy = JSON.stringify(demoSnapshot(13, "start").page);
-  const finalityEndCopy = JSON.stringify(demoSnapshot(13, "after-1").page);
+  const finalityJurorCopy = JSON.stringify(demoSnapshot(13, "after-1").page);
+  const finalityEndCopy = JSON.stringify(demoSnapshot(13, "after-" + flows[12].steps.length).page);
   assert(/\bNO\b/i.test(finalityStartCopy) && /final/i.test(finalityStartCopy), "Event 13 must carry the final NO verdict into court finality", failures);
+  assert(/Juror 04|juror wallet/i.test(finalityJurorCopy) && /rating/i.test(finalityJurorCopy) && /\+\$92\.00|"fee":92/i.test(finalityJurorCopy), "Event 13 must fund the private juror wallet and update the juror rating before market settlement", failures);
   assert(/relay/i.test(finalityStartCopy) && /OmenMarketMaker/i.test(finalityEndCopy), "Event 13 must relay one final proof back to OmenMarketMaker", failures);
   assert(/Settlement complete|Payout received|\$210\.50|"status":"Paid"/i.test(finalityEndCopy) && !/Redeemable|redeem/i.test(finalityEndCopy), "Event 13 must finish on a paid OmenMarketMaker settlement with no contradictory redemption state", failures);
   assert(demoSnapshot(9, "start").page.surface === "protocol" && demoSnapshot(9, "after-2").page.surface === "protocol", "Event 09 must remain on the protocol sequence canvas from start through completion", failures);
   assert(demoSnapshot(11, "start").page.surface === "protocol" && demoSnapshot(11, "after-2").page.surface === "protocol", "Event 11 must remain on the protocol sequence canvas from start through completion", failures);
-  assert(demoSnapshot(12, "start").page.surface === "themis" && demoSnapshot(12, "after-1").page.surface === "protocol" && demoSnapshot(12, "after-2").page.surface === "protocol", "Event 12 must replace the appeal app with the sequence canvas after payment", failures);
-  assert(demoSnapshot(13, "start").page.surface === "protocol" && demoSnapshot(13, "after-1").page.surface === "omen", "Event 13 must replace the sequence canvas with the OmenMarketMaker payout app after relay", failures);
+  assert(demoSnapshot(12, "start").page.surface === "omen" && demoSnapshot(12, "after-1").page.surface === "omen" && demoSnapshot(12, "after-2").page.surface === "omen" && demoSnapshot(12, "after-3").page.surface === "protocol" && demoSnapshot(12, "after-4").page.surface === "protocol" && demoSnapshot(12, "after-5").page.surface === "omen" && demoSnapshot(12, "after-6").page.surface === "protocol", "Event 12 must keep partial crowdfunding in Omen, start DemoThemis only at 100%, return the provisional result to Omen, and close in DemoThemis finality", failures);
+  assert(demoSnapshot(13, "start").page.surface === "protocol" && demoSnapshot(13, "after-1").page.surface === "themis" && demoSnapshot(13, "after-2").page.surface === "omen", "Event 13 must settle the private juror account before replacing the sequence canvas with the OmenMarketMaker payout app", failures);
   assert(pages.slice(0, 8).every((page) => /^OmenMarketMaker\b/.test(page.product || "")), "Events 01-08 must remain owned by OmenMarketMaker", failures);
   assert([8, 10, 12].every((index) => /on-chain sequence$/i.test(pages[index].product || "")), "automated court events must be presented as the DemoThemis on-chain sequence", failures);
-  assert([9, 11].every((index) => pages[index].product === "DemoThemis"), "juror and appellant events must be owned by DemoThemis", failures);
+  assert(pages[9].product === "DemoThemis" && pages[11].product === "OmenMarketMaker", "juror voting must remain DemoThemis-owned while the market appeal interface is OmenMarketMaker-owned", failures);
   assert(pages.slice(6).every((page) => !/full design/i.test(page.context || "")), "Court-path screens must use product context instead of an internal full-design label", failures);
 
   function evaluateDataArray(startMarker, endMarker, expression, filename) {
@@ -1153,12 +1262,12 @@ function checkCompactAppViews(html, failures) {
   }
 
   const knownBlockTypes = new Set([
-    "ballot", "bars", "beacon", "checklist", "checkout", "closed", "countdown", "evidence",
-    "faceChecks", "fields", "handoff", "legs", "liquidity", "odds", "participants", "proof",
-    "receipt", "record", "route", "scoreboard", "seats", "settlement", "table", "ticket", "tokens"
+    "appealCrowdfund", "ballot", "bars", "beacon", "capital", "checklist", "checkout", "closed", "countdown", "evidence",
+    "faceChecks", "fields", "fill", "handoff", "legs", "liquidity", "marketTrade", "odds", "participants", "proof",
+    "jurorSettlement", "receipt", "record", "route", "scoreboard", "seats", "settlement", "table", "ticket", "tokens", "utilities", "yield"
   ]);
   const moneyValuePattern = /^(?:[$£€]\s*\d[\d,]*(?:\.\d+)?[kmb]?|\d[\d,]*(?:\.\d+)?[kmb]?\s*(?:USD|USDC|WLD|ETH))$/i;
-  const actionVerbPattern = /^(?:submit|stake|buy|sell|take|fill|post|publish|pay|resolve|claim|invite|lock|build|cash\s*out|run|check|seal|open|show|challenge|return|restart)\b/i;
+  const actionVerbPattern = /^(?:submit|contribute|deposit|supply|stake|buy|sell|take|fill|post|publish|pay|resolve|claim|invite|lock|build|cash\s*out|run|check|seal|open|show|challenge|return|restart)\b/i;
   let hasOddTicketRows = false;
 
   for (const snapshot of resolvedSnapshots) {
@@ -1236,6 +1345,29 @@ function checkCompactAppViews(html, failures) {
           assertText(block.status, `${blockLabel} status`);
           assert(Array.isArray(block.details) && block.details.length >= 4, `${blockLabel} must preserve payout and proof details`, failures);
           if (Array.isArray(block.details)) assertTupleList(block.details, 2, `${blockLabel} details`);
+          break;
+        case "appealCrowdfund":
+          for (const field of ["goal", "funded", "remaining", "walletBalance", "userContribution"]) {
+            assert(Number.isFinite(block[field]) && block[field] >= 0, `${blockLabel} ${field} must be a non-negative number`, failures);
+          }
+          assert(block.funded + block.remaining === block.goal, `${blockLabel} funded and remaining values must equal the goal`, failures);
+          assertText(block.deadline, `${blockLabel} deadline`);
+          assertText(block.destination, `${blockLabel} destination`);
+          assertText(block.note, `${blockLabel} note`);
+          assert(typeof block.editable === "boolean", `${blockLabel} editable must be boolean`, failures);
+          assert(Array.isArray(block.contributors), `${blockLabel} contributors must be a list`, failures);
+          if (Array.isArray(block.contributors) && block.contributors.length) assertTupleList(block.contributors, 4, `${blockLabel} contributors`);
+          if (Array.isArray(block.quoteRows)) assertTupleList(block.quoteRows, 2, `${blockLabel} quoteRows`);
+          break;
+        case "jurorSettlement":
+          for (const field of ["source", "destination", "vote", "voteLabel", "finalVerdict", "note"]) {
+            assertText(block[field], `${blockLabel} ${field}`);
+          }
+          for (const field of ["balanceBefore", "balanceAfter", "fee", "reserveDebit", "netCredit", "ratingBefore", "ratingAfter", "ratingDelta"]) {
+            assert(Number.isFinite(block[field]), `${blockLabel} ${field} must be numeric`, failures);
+          }
+          assert(["up", "down"].includes(block.ratingDirection), `${blockLabel} ratingDirection must be up or down`, failures);
+          assertTupleList(block.factors, 2, `${blockLabel} factors`);
           break;
         case "odds":
           assert(Number.isFinite(block.yes) && block.yes >= 0 && block.yes <= 100, `${blockLabel} YES odds must be between 0 and 100`, failures);
@@ -1348,8 +1480,8 @@ function checkCompactAppViews(html, failures) {
   });
   const expectedInAppContinuationLabels = [
     "Open live market",
-    "View fixed-price offers",
-    "View claim eligibility",
+    "Graduate the market",
+    "Open the ERC-20 order book",
     "Create private room",
     "Build a parlay",
     "Open court resolution",
@@ -1362,7 +1494,7 @@ function checkCompactAppViews(html, failures) {
   );
   assert(continuations.every((continuation) => continuation && continuation.dock !== "card"), "event continuations must use the destination page or product boundary instead of a receipt card", failures);
   assert(continuations[6] && continuations[6].targetTitle === "Funded resolution", "Event 07 handoff navigation must attach to the funded resolution record", failures);
-  assert(continuations[9] && continuations[9].action === "View aggregate tally" && continuations[10] && continuations[10].action === "Review appeal bond" && continuations[11] && continuations[11].action === "View final proof relay", "court-path continuation labels must describe the next visible state", failures);
+  assert(continuations[9] && continuations[9].action === "View aggregate tally" && continuations[10] && continuations[10].action === "Review appeal in OmenMarketMaker" && continuations[11] && continuations[11].action === "View final proof relay", "court-path continuation labels must describe the next visible state and product boundary", failures);
   assert(flows[6] && flows[7] && flows[6].start.account === "Protocol" && flows[7].start.account === "Protocol", "the mandatory resolution and handoff screens must present protocol-owned actions rather than fictional user accounts", failures);
 
   const oddTicketCssRule = Array.from(html.matchAll(/([^{}]+)\{([^{}]*)\}/g)).some((match) =>
@@ -1406,7 +1538,7 @@ function checkCompactAppViews(html, failures) {
     9: ["Case #1182", "0x7c...42"],
     10: ["Private ballot", "Juror 04"],
     11: ["Case #1182", "0x7c...42"],
-    12: ["Appeal checkout", "0x7c...42"],
+    12: ["EURO-FINAL · Resolution", "0x51...9b"],
     13: ["EURO-FINAL", "0x7c...42"]
   };
 
@@ -1435,8 +1567,8 @@ function checkCompactAppViews(html, failures) {
       ((page && page.blocks) || []).map(visibleBlockCopy).join("");
   }
 
-  const maxStateCopyBudgets = { 7: 370, 8: 425, 9: 350, 10: 380, 11: 386, 12: 401, 13: 520 };
-  const traversalCopyBudgets = { 7: 1416, 8: 1534, 9: 1350, 10: 1433, 11: 1374, 12: 1415, 13: 1991 };
+  const maxStateCopyBudgets = { 7: 370, 8: 425, 9: 350, 10: 380, 11: 386, 12: 850, 13: 520 };
+  const traversalCopyBudgets = { 7: 1416, 8: 1534, 9: 1350, 10: 1433, 11: 1450, 12: 4950, 13: 1991 };
   let demoTraversalCopy = 0;
 
   for (let event = 7; event <= 13; event += 1) {
@@ -1451,12 +1583,14 @@ function checkCompactAppViews(html, failures) {
     const eventTraversalCopy = pageTraversalCopy + guideCopy + flowCopy + continuationCopy;
 
     const largestStateCopy = Math.max.apply(null, stateCopyLengths);
-    assert(largestStateCopy <= maxStateCopyBudgets[event], `Event ${event} exceeds its existing maximum visible app-copy budget (${largestStateCopy} > ${maxStateCopyBudgets[event]})`, failures);
+    const largestStateIndex = stateCopyLengths.indexOf(largestStateCopy);
+    const largestStateName = eventStates[largestStateIndex] && eventStates[largestStateIndex].state;
+    assert(largestStateCopy <= maxStateCopyBudgets[event], `Event ${event} state ${largestStateName} exceeds its existing maximum visible app-copy budget (${largestStateCopy} > ${maxStateCopyBudgets[event]})`, failures);
     assert(eventTraversalCopy <= traversalCopyBudgets[event], `Event ${event} increases DemoThemis traversal copy (${eventTraversalCopy} > ${traversalCopyBudgets[event]})`, failures);
     demoTraversalCopy += eventTraversalCopy;
   }
 
-  assert(demoTraversalCopy <= 10500, `DemoThemis traversal copy must not exceed the existing 10,500-character budget (found ${demoTraversalCopy})`, failures);
+  assert(demoTraversalCopy <= 12750, `court-path traversal copy must stay within the 12,750-character product-boundary budget (found ${demoTraversalCopy})`, failures);
 
   for (const snapshot of snapshots) {
     const label = `Event ${snapshot.event} ${snapshot.state}`;
@@ -1509,12 +1643,12 @@ function checkCompactAppViews(html, failures) {
 
   const eventOne = pages[0];
   const marketForm = (eventOne.blocks || []).find((block) => block.title === "Market form");
-  const startingPosition = (eventOne.blocks || []).find((block) => block.title === "First stake");
+  const startingPosition = (eventOne.blocks || []).find((block) => block.title === "Initial liquidity");
   assert(marketForm && !(marketForm.rows || []).some((row) => /^category$/i.test(row[0])), "Event 01 market form must omit demo-only category metadata", failures);
   const resolveCondition = marketForm && (marketForm.rows || []).find((row) => /^resolve condition$/i.test(row[0]));
   assert(marketForm && marketForm.editable && resolveCondition && resolveCondition[2] === "textarea", "Event 01 must provide an editable resolve-condition textarea", failures);
   const openingOffers = startingPosition && startingPosition.offers || [];
-  assert(startingPosition && startingPosition.type === "liquidity" && openingOffers.some((offer) => offer[0] === "YES" && offer[1] === "yes") && openingOffers.some((offer) => offer[0] === "NO" && offer[1] === "no"), "Event 01 must let the first trader stake on YES, NO, or both", failures);
+  assert(startingPosition && startingPosition.type === "liquidity" && openingOffers.some((offer) => offer[0] === "YES" && offer[1] === "yes") && openingOffers.some((offer) => offer[0] === "NO" && offer[1] === "no"), "Event 01 must let the creator deposit initial liquidity into YES, NO, or both", failures);
   assert(!(startingPosition && startingPosition.options), "Event 01 must not embed the opening amount inside a side label", failures);
   assert(!eventOne.intent && (eventOne.kpis || []).length === 0, "Event 01 must open without explanatory or summary strips", failures);
 
@@ -1531,22 +1665,20 @@ function checkCompactAppViews(html, failures) {
   );
 
   const event1Published = snapshots.find((snapshot) => snapshot.event === 1 && snapshot.state === "after-1");
-  const event2AfterYes = snapshots.find((snapshot) => snapshot.event === 2 && snapshot.state === "after-1");
-  const event2AfterNo = snapshots.find((snapshot) => snapshot.event === 2 && snapshot.state === "after-2");
-  const event3Estimate = snapshots.find((snapshot) => snapshot.event === 3 && snapshot.state === "start");
-  const event3Fill = snapshots.find((snapshot) => snapshot.event === 3 && snapshot.state === "after-1");
-  const event4ClaimReady = snapshots.find((snapshot) => snapshot.event === 4 && snapshot.state === "start");
-  const event4Claimed = snapshots.find((snapshot) => snapshot.event === 4 && snapshot.state === "after-1");
+  const event2Position = snapshots.find((snapshot) => snapshot.event === 2 && snapshot.state === "after-1");
+  const event3Graduated = snapshots.find((snapshot) => snapshot.event === 3 && snapshot.state === "start");
+  const event3Lending = snapshots.find((snapshot) => snapshot.event === 3 && snapshot.state === "after-1");
+  const event4OrderBook = snapshots.find((snapshot) => snapshot.event === 4 && snapshot.state === "start");
+  const event4Fill = snapshots.find((snapshot) => snapshot.event === 4 && snapshot.state === "after-1");
   const event5Funded = snapshots.find((snapshot) => snapshot.event === 5 && snapshot.state === "after-2");
   const snapshotCopy = (snapshot) => JSON.stringify(snapshot && snapshot.page || {});
   assert(event1Published && event1Published.page.route === "/m/england-euro-final" && /Market details/.test(snapshotCopy(event1Published)) && !/\/receipt/.test(event1Published.page.route), "Event 01 must publish directly to the actual public market page", failures);
-  assert(/\$690/.test(snapshotCopy(event2AfterYes)) && /YES stake/.test(snapshotCopy(event2AfterYes)) && /\$50/.test(snapshotCopy(event2AfterYes)) && /1\.08x/.test(snapshotCopy(event2AfterYes)), "Event 02 YES action must spend $50 from $740 and show its early pool weight", failures);
-  assert(/\$610/.test(snapshotCopy(event2AfterNo)) && /YES stake/.test(snapshotCopy(event2AfterNo)) && /NO stake/.test(snapshotCopy(event2AfterNo)) && /1\.08x/.test(snapshotCopy(event2AfterNo)) && /1\.03x/.test(snapshotCopy(event2AfterNo)), "Event 02 NO action must reconcile both weighted pool stakes and the $610 balance", failures);
-  assert(/Estimated fill/.test(snapshotCopy(event3Estimate)) && /Estimated average/.test(snapshotCopy(event3Estimate)) && /Estimated cost/.test(snapshotCopy(event3Estimate)) && !/Fill status/.test(snapshotCopy(event3Estimate)), "Event 03 must present a customer-facing estimated fill instead of matching-engine steps", failures);
-  assert(/740 YES/.test(snapshotCopy(event3Fill)) && /\$438\.80/.test(snapshotCopy(event3Fill)) && /\$171\.20/.test(snapshotCopy(event3Fill)) && /58c \+ 240 @ 62c pool/.test(snapshotCopy(event3Fill)) && /Fill details/.test(snapshotCopy(event3Fill)) && /\$0\.00/.test(snapshotCopy(event3Fill)), "Event 03 fill must use the better standing offer before pool overflow and retain exact-fee details", failures);
-  assert(/Eligible to claim/.test(snapshotCopy(event4ClaimReady)) && /Your position/.test(snapshotCopy(event4ClaimReady)) && /Why eligible/.test(snapshotCopy(event4ClaimReady)) && /820\.6 YES/.test(snapshotCopy(event4ClaimReady)) && /210\.5 NO/.test(snapshotCopy(event4ClaimReady)), "Event 04 must attach claiming to the position and demote graduation checks to read-only eligibility details", failures);
-  assert(/Claim transaction/.test(snapshotCopy(event4Claimed)) && /World Chain/.test(snapshotCopy(event4Claimed)) && /Transaction/.test(snapshotCopy(event4Claimed)), "Event 04 must retain permanent wallet transaction details", failures);
-  assert(/Wallet assets/.test(snapshotCopy(event4Claimed)) && /\"title\":\"Order book\"/.test(snapshotCopy(event4Claimed)), "Event 04 must combine the claimed assets and destination order book after one tap", failures);
+  assert(/\$690/.test(snapshotCopy(event2Position)) && /\$50 YES/.test(snapshotCopy(event2Position)) && /\+8%/.test(snapshotCopy(event2Position)) && /treated like \$54/.test(snapshotCopy(event2Position)), "Event 02 must create one clearly explained early-entry position without a second pool action", failures);
+  assert(/Claims tokenized/.test(snapshotCopy(event3Graduated)) && /820\.6/.test(snapshotCopy(event3Graduated)) && /Deposit YES to earn/.test(snapshotCopy(event3Graduated)) && !/How your order will fill/.test(snapshotCopy(event3Graduated)), "Event 03 must graduate the pool into wallet-held ERC-20 claims before order-book trading", failures);
+  assert(/250 YES deposited/.test(snapshotCopy(event3Lending)) && /12\.4%/.test(snapshotCopy(event3Lending)) && /protected (?:lending|borrowing)/i.test(snapshotCopy(event3Lending)), "Event 03 must retain the protected ERC-20 lending demonstration after graduation", failures);
+  assert(!/\bSupply\b|\bSupplied\b|Amount to supply|Supply fee/.test(snapshotCopy(event3Graduated) + snapshotCopy(event3Lending)), "Event 03 yield UX must consistently use deposit and withdraw terminology", failures);
+  assert(/Buy 740 ERC-20 YES/.test(snapshotCopy(event4OrderBook)) && /500 YES available/.test(snapshotCopy(event4OrderBook)) && /240 YES needed/.test(snapshotCopy(event4OrderBook)) && /60/.test(snapshotCopy(event4OrderBook)) && !/Live pool|Pool remainder/.test(snapshotCopy(event4OrderBook)), "Event 04 must trade only graduated ERC-20 limit orders", failures);
+  assert(/740 ERC-20 YES/.test(snapshotCopy(event4Fill)) && /\$434\.00/.test(snapshotCopy(event4Fill)) && /\$306\.00/.test(snapshotCopy(event4Fill)) && /58\.65/.test(snapshotCopy(event4Fill)) && /Trade record/.test(snapshotCopy(event4Fill)) && !/Live pool|Pool remainder/.test(snapshotCopy(event4Fill)), "Event 04 fill must use the two cheapest ERC-20 sell orders and retain exact transaction details", failures);
   assert(/\$20,000 locked/.test(snapshotCopy(event5Funded)) && /PM-ROOM-204/.test(snapshotCopy(event5Funded)) && !/60c|40c/.test(snapshotCopy(event5Funded)), "Event 05 funded room must show coherent equal-stake terms and a room reference", failures);
   assert(!/Final payout unlocked|redeem YES\/NO/.test(html), "Event 13 supporting copy must remain consistent with its automatic settlement", failures);
 
@@ -1723,14 +1855,13 @@ function checkCompactAppViews(html, failures) {
 function checkProductFontAssets(html, failures) {
   const cssPath = "assets/fonts/product-app-fonts.css";
   const fontFiles = [
-    "alegreya-sans-regular.ttf",
-    "alegreya-sans-medium.ttf",
-    "alegreya-sans-bold.ttf",
-    "alegreya-sans-extrabold.ttf",
-    "alegreya-sans-black.ttf",
-    "literata-ui-variable.ttf",
-    "noto-serif-tibetan-ui-variable.ttf",
-    "noto-sans-symbols-2-ui.ttf"
+    "alegreya-sans-medium.woff2",
+    "alegreya-sans-bold.woff2",
+    "alegreya-sans-extrabold.woff2",
+    "alegreya-sans-black.woff2",
+    "literata-ui-variable.woff2",
+    "noto-serif-tibetan-ui-variable.woff2",
+    "noto-sans-symbols-2-ui.woff2"
   ];
   const licenseFiles = [
     "OFL-Alegreya-Sans.txt",
@@ -1757,7 +1888,9 @@ function checkProductFontAssets(html, failures) {
   assert(/font-family:\s*["']Literata App["']/i.test(css) && /font-weight:\s*200\s+900/i.test(css), "DemoThemis variable font range is missing", failures);
   assert(/font-family:\s*["']Noto Serif Tibetan App["']/i.test(css) && /unicode-range:\s*U\+0F00-0FFF/i.test(css), "Tibetan fallback range is missing", failures);
   assert(/font-family:\s*["']Noto Sans Symbols 2 App["']/i.test(css), "UI symbol fallback is missing", failures);
-  assert((css.match(/font-family:\s*["']Alegreya Sans App["'][\s\S]*?size-adjust:\s*107%/gi) || []).length === 5, "every OmenMarketMaker font face must retain the 107% optical calibration", failures);
+  assert(!/alegreya-sans-regular|font-weight:\s*400[\s\S]*?Alegreya Sans App/i.test(css), "the unused Alegreya Sans 400 face must stay out of the delivered stylesheet", failures);
+  assert(!/\.ttf\b|format\(["']truetype["']\)/i.test(css), "product fonts must use compressed WOFF2 delivery", failures);
+  assert((css.match(/font-family:\s*["']Alegreya Sans App["'][\s\S]*?size-adjust:\s*107%/gi) || []).length === 4, "every used OmenMarketMaker font face must retain the 107% optical calibration", failures);
   assert(/font-family:\s*["']Literata App["'][\s\S]*?size-adjust:\s*97%/i.test(css), "DemoThemis Literata must retain the 97% optical calibration", failures);
   assert(!/font-family:\s*["'](?:Alegreya Sans App|Literata App)["'][\s\S]*?size-adjust:\s*100%/i.test(css), "primary product fonts must not fall back to equal CSS scaling", failures);
   assert(/font-family:\s*["']Noto Sans Symbols 2 App["'][\s\S]*?size-adjust:\s*72%/i.test(css), "UI symbol fallback must match the product cap height", failures);
@@ -1798,7 +1931,7 @@ function checkProductFontAssets(html, failures) {
   assert(/\.live-kpis\s*>\s*\.live-kpi:nth-child\(n\)[\s\S]{0,220}background:\s*var\(--surface\)/i.test(html), "app metrics must use neutral structure instead of decorative category colors", failures);
   const scanHierarchyStart = html.indexOf("/* Scan-first app hierarchy");
   const scanHierarchyCss = scanHierarchyStart >= 0 ? html.slice(scanHierarchyStart, html.indexOf("</style>", scanHierarchyStart)) : "";
-  for (const template of ["create-market", "live-market", "order-book", "wallet-unlock", "private-room", "parlay-slip", "resolution-request", "court-handoff", "jury-draw", "juror-workspace", "verdict-page", "appeal-checkout", "final-receipt"]) {
+  for (const template of ["create-market", "live-market", "order-book", "wallet-unlock", "private-room", "parlay-slip", "resolution-request", "court-handoff", "jury-draw", "juror-workspace", "verdict-page", "appeal-review", "appeal-checkout", "appeal-crowdfund", "appeal-result", "final-receipt"]) {
     assert(scanHierarchyCss.includes(`.page-${template}`), `scan-first hierarchy is missing the ${template} app view`, failures);
   }
   assert(!/#b83c32|#f7f2e8|#fffdf8/i.test(html), "OmenMarketMaker must not retain the red or near-white palette", failures);
@@ -2211,8 +2344,8 @@ function checkBackNavigationCoverage(html, failures) {
         );
       }
     }
-    assert(stateCount === 34, "the Back regression matrix must cover all 34 streamlined states", failures);
-    assert(predecessorCount === 33, "exactly 33 streamlined states must have a valid predecessor", failures);
+    assert(stateCount === 38, "the Back regression matrix must cover all 38 streamlined states", failures);
+    assert(predecessorCount === 37, "exactly 37 streamlined states must have a valid predecessor", failures);
   } catch (error) {
     failures.push("Back navigation history cannot be evaluated: " + error.message);
   }
@@ -2555,9 +2688,9 @@ function checkActionButtonInfoLabels(html, failures) {
     failures
   );
   const guidedStateCount = flows.reduce((total, flow) => total + (flow.steps || []).length, 0) + continuations.length;
-  assert(guidedStateCount === 34, `the simulator must expose a clear label in all 34 user and automatic states (found ${guidedStateCount})`, failures);
+  assert(guidedStateCount === 38, `the simulator must expose a clear label in all 38 user and automatic states (found ${guidedStateCount})`, failures);
   const automaticSteps = flows.flatMap((flow) => (flow.steps || []).filter((step) => step.autoAdvance));
-  assert(automaticSteps.length === 5 && automaticSteps.every((step) => step.actionOwner === "protocol"), "exactly five internal protocol transitions must autoplay without extra user taps", failures);
+  assert(automaticSteps.length === 8 && automaticSteps.every((step) => step.actionOwner === "protocol"), "exactly eight internal protocol transitions must autoplay without extra user taps", failures);
   flows.forEach((flow, eventIndex) => {
     (flow.steps || []).forEach((step, stepIndex) => {
       const label = String(step.actionLabel || String(step.cue || "").replace(/^Tap\s+/i, "") || step.title || "").replace(/\s+/g, " ").trim();
@@ -2707,6 +2840,12 @@ function checkBrandSystem(failures) {
   assert(!/title-product/i.test(demoHero), "DemoThemis hero must not repeat its wordmark as a second visible product-name title", failures);
 
   const omen = readDist("omenmarketmaker.html");
+  assert(/Every deposit contributes proportionally to a locked resolution reserve/i.test(omen), "OmenMarketMaker must explain proportional resolution-reserve funding", failures);
+  assert(/without a complete top-up, no jury is drawn/i.test(omen) && /recorded purchase prices/i.test(omen), "OmenMarketMaker must explain the underfunded no-jury YES\/NO refund", failures);
+  assert(/var RESOLUTION_RATE = 0\.03/i.test(omen) && /var JURY_QUOTE = 20/i.test(omen) && /PM1reserve/i.test(omen), "OmenMarketMaker's interactive pool must model the fixed contribution rate and jury target", failures);
+  assert(/var reserve = pot \* RESOLUTION_RATE/i.test(omen) && !/Math\.min\(pot \* RESOLUTION_RATE,\s*JURY_QUOTE\)/i.test(omen), "the jury target must remain a funding gate rather than capping equal reserve contributions", failures);
+  assert(/surplusRefundPerDollar\s*=\s*\(reserve\s*-\s*JURY_QUOTE\)\s*\/\s*gross/i.test(omen), "unused resolution reserve must return proportionally instead of being awarded only to winners", failures);
+  assert(/outcomePot\s*=\s*gross\s*-\s*reserve\s*-\s*gross\s*\*\s*MARKET_FEE/i.test(omen) && /return\s+outcomePot\s*\/\s*own\s*\+\s*surplusRefundPerDollar/i.test(omen), "winner payouts must use outcome backing while reserve surplus is returned separately pro-rata", failures);
   assert(/data-omen-rive/i.test(omen) && /wordmark-poster\.png/i.test(omen) && /omen-brand-canvas/i.test(omen), "OmenMarketMaker hero must provide both a static poster and Rive canvas", failures);
   assert(/assets\/vendor\/rive\/rive-2\.38\.5\.js/i.test(omen) && /assets\/brand-rive\.js/i.test(omen), "OmenMarketMaker hero is missing its local Rive scripts", failures);
   const omenHero = (omen.match(/<header\b[^>]*class=["'][^"']*\bbrand-hero\b[^"']*["'][^>]*>([\s\S]*?)<\/header>/i) || ["", ""])[1];
@@ -2717,7 +2856,7 @@ function checkBrandSystem(failures) {
   assert(/body\[data-page-brand=["']omen["']\] \.hero\.brand-hero::after\s*\{[^}]*card-grid\.svg[^}]*animation:\s*omen-card-grid-scroll\s+30s\s+linear\s+infinite/i.test(styles), "OmenMarketMaker hero must share the animated product-card mesh", failures);
   const riveLoader = readDist("assets/brand-rive.js");
   assert(/querySelectorAll\(["']\[data-omen-rive\]["']\)/i.test(riveLoader), "Rive loader must support both homepage and chapter wordmarks", failures);
-  assert(/RuntimeLoader\.setWasmUrl/i.test(riveLoader) && /assets\/vendor\/rive\/rive-2\.38\.5\.wasm/i.test(riveLoader), "Rive loader must use the self-hosted WASM file", failures);
+  assert(/RuntimeLoader\.setWasmUrl/i.test(riveLoader) && /vendor\/rive\/rive-2\.38\.5\.wasm/i.test(riveLoader) && /document\.currentScript/i.test(riveLoader), "Rive loader must resolve its self-hosted WASM file from the active asset bundle", failures);
   assert(/RIVE_PLAYBACK_RATE\s*=\s*0\.5/i.test(riveLoader) && /elapsedTime\s*\*\s*RIVE_PLAYBACK_RATE/i.test(riveLoader), "Omen Rive wordmarks must play at half speed without reducing their render frame rate", failures);
   assert(/prefers-reduced-motion:\s*reduce/i.test(riveLoader), "Rive loader must respect reduced motion", failures);
   assert(/IntersectionObserver/i.test(riveLoader) && /visibilitychange/i.test(riveLoader) && /\.cleanup\(/i.test(riveLoader), "Rive loader must lazy-start, pause offscreen, and clean up", failures);
@@ -2727,7 +2866,7 @@ function checkBrandSystem(failures) {
   const mvp = readDist("demothemis-mvp.html");
   for (const file of publicHtml.filter((name) => name !== "omenmarketmaker.html")) {
     const page = readDist(file);
-    assert(/assets\/brand\/demothemis\/mark-32\.png\?v=20260721-dt2/i.test(page), `${file} must use the cache-busted DemoThemis favicon`, failures);
+    assert(/assets\/brand\/demothemis\/mark-32\.png/i.test(page) && !/mark-32\.png\?v=/i.test(page), `${file} must use the content-versioned DemoThemis favicon without a duplicate query cachebuster`, failures);
     assert(!/assets\/brand\/demothemis\/favicon\.ico/i.test(page), `${file} must not prefer the cached legacy DemoThemis ICO`, failures);
   }
   assert(/mvp-sim-site-brand[\s\S]*assets\/brand\/demothemis\/wordmark\.png/i.test(mvp), "MVP preview header is missing the full DemoThemis wordmark", failures);
@@ -2782,7 +2921,7 @@ function checkBrandSystem(failures) {
 
   const notFound = readDist("404.html");
   assert(/data-page-brand=["']demothemis["']/i.test(notFound) && /assets\/brand\/demothemis\/mark-192\.png/i.test(notFound), "404 page is missing the DemoThemis identity", failures);
-  assert(/assets\/brand\/demothemis\/mark-32\.png\?v=20260721-dt2/i.test(notFound) && !/assets\/brand\/demothemis\/favicon\.ico/i.test(notFound), "404 page must use the cache-busted DemoThemis favicon", failures);
+  assert(/assets\/brand\/demothemis\/mark-32\.png/i.test(notFound) && !/mark-32\.png\?v=/i.test(notFound) && !/assets\/brand\/demothemis\/favicon\.ico/i.test(notFound), "404 page must use the content-versioned DemoThemis favicon", failures);
 
   const generator = fs.readFileSync(path.join(root, "tools", "generate-brand-assets.py"), "utf8");
   const socialDemo = (generator.match(/def\s+social_demo\([^)]*\)[^:]*:\s*([\s\S]*?)\n\s*def\s+social_omen/i) || ["", ""])[1];
@@ -2862,7 +3001,7 @@ function checkBuiltHtml(failures) {
   checkBackNavigationCoverage(runThrough, failures);
   checkCoachmarkTextAvoidance(runThrough, failures);
   checkActionButtonInfoLabels(runThrough, failures);
-  assert(/Run-through: from first stake to an unbuyable verdict/i.test(runThrough), "run-through chapter missing public title", failures);
+  assert(/Run-through: from initial liquidity to an unbuyable verdict/i.test(runThrough), "run-through chapter missing public title", failures);
   assert(/id=["']productTabOmen["']/i.test(runThrough), "run-through missing OmenMarketMaker parent tab", failures);
   assert(/id=["']productTabThemis["']/i.test(runThrough), "run-through missing DemoThemis parent tab", failures);
   assert(!/id=["']productModePanel["'][^>]*role=["']tabpanel["']/i.test(runThrough), "starting-point buttons must not control a misleading tabpanel", failures);
@@ -2980,6 +3119,7 @@ async function main() {
   checkDistFiles(failures);
   if (failures.length) throw new Error(failures.join("\n"));
 
+  checkVersionedAssetBundle(failures);
   checkHeaders(failures);
   checkRedirects(failures);
   checkBuiltHtml(failures);

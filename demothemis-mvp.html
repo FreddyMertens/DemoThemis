@@ -11,7 +11,7 @@
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@500;700&family=Newsreader:opsz,wght@6..72,200..700&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="assets/styles.css?v=20260721-warm-ivory-2">
-<link rel="stylesheet" href="assets/mvp-simulator.css?v=20260721-original-palette-1">
+<link rel="stylesheet" href="assets/mvp-simulator.css?v=20260722-fixed-fee-20">
 </head>
 <body class="mvp-page" data-page-brand="demothemis" data-dt-palette="original">
 <div id="progress"></div>
@@ -168,7 +168,7 @@
           <div class="mvp-comparison-cell is-live" role="cell">
             <span class="mvp-comparison-cell-kicker">Live on-chain</span>
             <strong>Verified personhood, limited draw</strong>
-            <p>World ID 4.0, a nullifier sybil gate, wallet-bound proofs, and a two-step post-question draw for the three-seat demo.</p>
+            <p>A World ID proof checked by the documented mainnet Router, a nullifier sybil gate, wallet binding, and a two-step post-question draw for the three-seat demo.</p>
           </div>
           <div class="mvp-comparison-cell is-roadmap" role="cell">
             <span class="mvp-comparison-cell-kicker">M1</span>
@@ -295,7 +295,7 @@
     { title: "The panel is ready", body: "Three verified humans are seated. Open the seal window inside the case." },
     { title: "Choose and seal your answer", body: "Select YES or NO, then seal it. The vote stays hidden until reveal." },
     { title: "Reveal the saved answer", body: "Reveal the same answer so the contract can verify the commitment." },
-    { title: "The ruling is automatic", body: "Read what this case's locked quote paid for, then open Join as juror." },
+    { title: "The ruling is automatic", body: "Read how this case's fixed fee was split, then open Join as juror." },
     { title: "See how jurors join", body: "Review World ID, the demo bond, and one-human-one-seat. Finish when ready." }
   ];
 
@@ -364,7 +364,7 @@
 
   function submitSide(reviewing) {
     return '<aside class="oracle-submit-side">' +
-      '<div class="oracle-fee-card"><span>Illustrative case quote</span><strong>20 <small>MUSD</small></strong><p>Calculated from current demand and published inputs, then locked before any juror is selected.</p><dl><div><dt>Processing</dt><dd>Cost</dd></div><div><dt>Panel work</dt><dd>Demand-priced</dd></div><div><dt>Reserve</dt><dd>To target</dd></div><div><dt>Operations</dt><dd>Capped</dd></div></dl></div>' +
+      '<div class="oracle-fee-card"><span>Fixed question fee</span><strong>20 <small>MUSD</small></strong><p>The court locks the same fixed fee before any juror is selected.</p><dl><div><dt>Question case</dt><dd>20 MUSD</dd></div><div><dt>Juror pot</dt><dd>70%</dd></div><div><dt>Reward pool</dt><dd>20%</dd></div><div><dt>Protocol</dt><dd>10%</dd></div></dl></div>' +
       '<div class="oracle-one-at-time"><span>' + icon('lock') + '</span><div><strong>One official question at a time</strong><p>' + (reviewing ? 'The fingerprint fixes the terms before the panel is drawn.' : 'The official opener can file the next prepared question.') + '</p></div></div>' +
       '<div class="oracle-submit-steps"><div><span>01</span><p><strong>Question filed</strong><small>Its exact fingerprint and fee go on-chain.</small></p></div><div><span>02</span><p><strong>Jurors research</strong><small>No selected sources or evidence pack.</small></p></div><div><span>03</span><p><strong>Majority recorded</strong><small>The contract counts and pays by rule.</small></p></div></div>' +
       '</aside>';
@@ -432,20 +432,20 @@
   function finalReceipt() {
     return '<section class="oracle-final-receipt" aria-labelledby="mvpSimRulingTitle"><div class="oracle-ruling-mark">' + icon('check') + '</div><div class="oracle-ruling-copy"><span>Ruling recorded on World Chain</span><h2 id="mvpSimRulingTitle">The jury answered YES.</h2><p>2 YES &middot; 1 NO &middot; 3/3 answers revealed</p></div><a href="/app#oracle-live-panel" data-local-preview-route="live">Open deployed receipt ' + icon('arrow') + '</a></section>' +
       '<section class="mvp-sim-settlement" aria-labelledby="mvpSimSettlementTitle">' +
-        '<header class="mvp-sim-settlement-head"><div><span>Current design &middot; illustrative settlement</span><h3 id="mvpSimSettlementTitle">20 MUSD locked before the draw</h3></div><strong>' + icon('check') + ' This case</strong></header>' +
+        '<header class="mvp-sim-settlement-head"><div><span>Current fixed-fee rule &middot; illustrative settlement</span><h3 id="mvpSimSettlementTitle">20 MUSD case fee locked before the draw</h3></div><strong>' + icon('check') + ' This case</strong></header>' +
         '<div class="mvp-sim-settlement-grid">' +
-          '<article class="mvp-sim-payouts"><div class="mvp-sim-card-head"><span>Panel compensation</span><strong>3 completed</strong></div><p>All completed jurors receive the work payment locked for this case. It is not a winner-takes-more pool.</p><ul>' +
-            '<li><span class="mvp-sim-juror-mark">01</span><div><strong>0x7A4E&hellip;91C2</strong><small>Completed reveal</small></div><b>5.00 MUSD</b></li>' +
-            '<li><span class="mvp-sim-juror-mark">02</span><div><strong>0x12B9&hellip;A840</strong><small>Completed reveal</small></div><b>5.00 MUSD</b></li>' +
-            '<li><span class="mvp-sim-juror-mark">03</span><div><strong>0xE61F&hellip;3D17</strong><small>Completed reveal</small></div><b>5.00 MUSD</b></li>' +
+          '<article class="mvp-sim-payouts"><div class="mvp-sim-card-head"><span>Coherent-juror payouts</span><strong>2 coherent</strong></div><p>Only outcome-matching revealers share the 14 MUSD juror pot. A dissenting revealer receives no fee payout.</p><ul>' +
+            '<li><span class="mvp-sim-juror-mark">01</span><div><strong>0x7A4E&hellip;91C2</strong><small>Revealed YES &middot; coherent</small></div><b>7.00 MUSD</b></li>' +
+            '<li><span class="mvp-sim-juror-mark">02</span><div><strong>0x12B9&hellip;A840</strong><small>Revealed YES &middot; coherent</small></div><b>7.00 MUSD</b></li>' +
+            '<li><span class="mvp-sim-juror-mark">03</span><div><strong>0xE61F&hellip;3D17</strong><small>Revealed NO &middot; not fee-eligible</small></div><b>0.00 MUSD</b></li>' +
           '</ul></article>' +
-          '<article class="mvp-sim-fee-split"><div class="mvp-sim-card-head"><span>This case\'s quote</span><strong>No permanent split</strong></div>' +
-            '<div class="mvp-sim-fee-bar" role="img" aria-label="This illustrative case allocates its locked quote to processing cost, panel compensation, reward reserve top-up, and a capped operations charge"><i class="is-processing"></i><i class="is-panel"></i><i class="is-reserve"></i><i class="is-operations"></i></div>' +
-            '<dl><div><dt><i class="is-processing"></i>Processing cost</dt><dd>1.00 MUSD</dd></div><div><dt><i class="is-panel"></i>Panel compensation</dt><dd>15.00 MUSD</dd></div><div><dt><i class="is-reserve"></i>Reward-reserve top-up</dt><dd>2.50 MUSD</dd></div><div><dt><i class="is-operations"></i>Capped operations</dt><dd>1.50 MUSD</dd></div></dl>' +
-            '<div class="mvp-sim-quote-drivers"><span>Current demand</span><span>Standard complexity</span><span>3-seat panel</span></div>' +
+          '<article class="mvp-sim-fee-split"><div class="mvp-sim-card-head"><span>This case\'s fixed fee</span><strong>Permanent 70 / 20 / 10</strong></div>' +
+            '<div class="mvp-sim-fee-bar" role="img" aria-label="This illustrative case allocates 14 MUSD to coherent jurors, 4 MUSD to the reward pool, and 2 MUSD to protocol"><i class="is-panel"></i><i class="is-reserve"></i><i class="is-operations"></i></div>' +
+            '<dl><div><dt><i class="is-panel"></i>Coherent-juror pot</dt><dd>14.00 MUSD</dd></div><div><dt><i class="is-reserve"></i>Reward pool</dt><dd>4.00 MUSD</dd></div><div><dt><i class="is-operations"></i>Protocol</dt><dd>2.00 MUSD</dd></div></dl>' +
+            '<div class="mvp-sim-quote-drivers"><span>Fixed question fee</span><span>Coherent winners</span><span>3-seat panel</span></div>' +
           '</article>' +
         '</div>' +
-        '<footer><span>' + icon('fingerprint') + ' Inputs published by epoch</span><span>Quote locked before selection</span><strong>No permanent fee split</strong></footer>' +
+        '<footer><span>' + icon('fingerprint') + ' Fee fixed in court source</span><span>Locked before selection</span><strong>70 / 20 / 10 split</strong></footer>' +
       '</section>';
   }
 
@@ -456,19 +456,19 @@
 
   function liveView(step) {
     var phase = step === 2 ? "Question filed" : step === 3 ? "Answers being sealed" : step === 4 ? "Answers being revealed" : "Ruling recorded";
-    var chainState = step === 2 ? "Question fingerprint, locked quote, and panel draw recorded in this preview." : step === 3 ? "Two answer commitments are already sealed; yours is the final seat." : step === 4 ? "Two answers are revealed; your saved commitment is ready." : "The ruling, completed-work payments, and this case's locked quote form the permanent receipt.";
+    var chainState = step === 2 ? "Question fingerprint, fixed 20 MUSD fee, and panel draw recorded in this preview." : step === 3 ? "Two answer commitments are already sealed; yours is the final seat." : step === 4 ? "Two answers are revealed; your saved commitment is ready." : "The ruling, coherent-juror payments, and permanent fee split form the receipt.";
     return tabs('live') + '<section class="oracle-panel" aria-label="Live case preview"><div class="oracle-live-layout"><article class="oracle-case-card"><header class="oracle-case-head"><div><span class="oracle-eyebrow">Live case &middot; #17</span><div class="oracle-live-state"><i aria-hidden="true"></i>' + phase + '</div></div><div class="oracle-chain-mark">' + icon('fingerprint') + '<span>World Chain</span></div></header><h2>' + escapeHTML(state.question) + '</h2>' + questionFacts() + '<div class="oracle-integrity is-verified">' + icon('check') + '<span>Question matches its on-chain fingerprint</span></div>' + researchNote() + caseProgress(step) + ballotCounts(step) + '<div class="oracle-chain-read-state">' + icon('fingerprint') + '<span>' + chainState + '</span></div>' + caseAction(step) + '</article>' + juryCard(step) + '</div>' + ballot(step) + (step === 5 ? finalReceipt() : '') + '</section>';
   }
 
   function onboardingView() {
     return '<section class="mvp-preview-onboard oracle-panel" aria-labelledby="mvpPreviewOnboardTitle">' +
-      '<header class="mvp-preview-onboard-topbar"><button type="button" data-preview-route="live"><span aria-hidden="true">&#8592;</span> Live case</button><div><span>Juror route</span><h2 id="mvpPreviewOnboardTitle">Join the three-person jury</h2></div><span class="mvp-preview-world-badge">World App</span></header>' +
+      '<header class="mvp-preview-onboard-topbar"><button type="button" data-preview-route="live"><span aria-hidden="true">&#8592;</span> Live case</button><div><span>Juror route</span><h2 id="mvpPreviewOnboardTitle">Join the juror pool</h2></div><span class="mvp-preview-world-badge">World App</span></header>' +
       '<div class="mvp-preview-local-banner"><span>' + icon('check') + '</span><div><strong>Local app preview</strong><p>This route is fully visible here without opening a wallet, requesting a World ID proof, or posting a transaction.</p></div></div>' +
       '<div class="mvp-preview-onboard-layout"><div class="mvp-preview-onboard-main">' +
-        '<article class="mvp-preview-onboard-status"><span class="mvp-preview-onboard-icon">' + icon('group') + '</span><div><small>Official three-seat MVP</small><h3>The three jury seats are filled.</h3><p>The deployed demo uses these three verified humans for each prepared question. Joining reopens when a seat becomes available.</p><button type="button" class="mvp-tutorial-target" data-sim-action="restart">Finish preview &amp; start again</button></div></article>' +
+        '<article class="mvp-preview-onboard-status"><span class="mvp-preview-onboard-icon">' + icon('group') + '</span><div><small>Recovery-enabled release preview</small><h3>The panel has enough active jurors.</h3><p>Each question draws three verified humans from the pool. After the replacement deployment, additional humans can join and strengthen the recovery reserve.</p><button type="button" class="mvp-tutorial-target" data-sim-action="restart">Finish preview &amp; start again</button></div></article>' +
         '<details class="mvp-preview-disclosure" open><summary><span>How joining works</span><small>3 steps</small></summary><ol><li><b>1</b><div><strong>Verify with World ID</strong><p>Proves one unique person and binds that seat to a wallet.</p></div></li><li><b>2</b><div><strong>Post a 5 MUSD demo bond</strong><p>The token is valueless; World App submits the bond and registration together.</p></div></li><li><b>3</b><div><strong>Join the juror pool</strong><p>You can be drawn for cases and withdraw when you are not serving.</p></div></li></ol></details>' +
         '<details class="mvp-preview-disclosure"><summary><span>Why one human can only join once</span><small>on-chain evidence</small></summary><div class="mvp-preview-proof-copy"><span>' + icon('fingerprint') + '</span><p>A World ID nullifier prevents the same person from taking a second seat, while the proof binds the permitted seat to one wallet.</p></div></details>' +
-      '</div><aside class="mvp-preview-onboard-side"><span class="mvp-preview-side-label">What the live route uses</span><div><span>' + icon('fingerprint') + '</span><p><strong>World ID 4.0</strong><small>One unique human proof</small></p></div><div><span>' + icon('lock') + '</span><p><strong>5 MUSD bond</strong><small>Valueless demo collateral</small></p></div><div><span>' + icon('send') + '</span><p><strong>Sponsored gas</strong><small>Submitted through World App</small></p></div><p class="mvp-preview-side-note">This preview never requests any of them. It shows the complete route and its current filled-seat state safely.</p></aside></div>' +
+      '</div><aside class="mvp-preview-onboard-side"><span class="mvp-preview-side-label">What the live route uses</span><div><span>' + icon('fingerprint') + '</span><p><strong>World ID Router</strong><small>One wallet-bound human proof</small></p></div><div><span>' + icon('lock') + '</span><p><strong>5 MUSD bond</strong><small>Valueless demo collateral</small></p></div><div><span>' + icon('send') + '</span><p><strong>Sponsored gas</strong><small>Submitted through World App</small></p></div><p class="mvp-preview-side-note">This preview never requests any of them. It shows the complete route and its current filled-seat state safely.</p></aside></div>' +
       '</section>';
   }
 

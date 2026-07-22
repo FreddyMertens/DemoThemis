@@ -10,7 +10,7 @@
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@500;700&family=Newsreader:opsz,wght@6..72,200..700&display=swap" rel="stylesheet">
-<link rel="stylesheet" href="assets/styles.css?v=20260721-warm-ivory-1">
+<link rel="stylesheet" href="assets/styles.css?v=20260722-reader-handoff-1">
 <script>document.documentElement.classList.add("reader-tabs-enabled");</script>
 <style>
 
@@ -66,7 +66,36 @@
   .simple-list div { border-top: 1px solid var(--line); padding-top: .75rem; }
   .simple-list b { display: block; font-size: .9rem; margin-bottom: .25rem; color: var(--ink); }
   .simple-list span { display: block; color: var(--muted); font-size: .86rem; line-height: 1.5; }
+  .appeal-flow { position: relative; overflow: hidden; margin: 1.7rem 0 0; border: 1px solid color-mix(in srgb, var(--accent) 26%, var(--line)); border-radius: 22px; background: linear-gradient(145deg, color-mix(in srgb, var(--accent-soft) 32%, var(--surface)), var(--surface) 48%, color-mix(in srgb, var(--triad-lavender) 56%, var(--surface))); box-shadow: var(--shadow); padding: 1.1rem; font-family: var(--sans); }
+  .appeal-flow::before { content: ""; position: absolute; inset: 0; pointer-events: none; background: radial-gradient(circle at 0 0, color-mix(in srgb, var(--accent) 13%, transparent), transparent 34%), radial-gradient(circle at 100% 100%, color-mix(in srgb, var(--accent) 8%, transparent), transparent 30%); }
+  .appeal-flow-caption { position: relative; display: flex; align-items: end; justify-content: space-between; gap: 1rem; margin: 0 0 1rem; border-bottom: 1px solid var(--line); padding: .15rem .2rem .85rem; }
+  .appeal-flow-caption span { color: var(--accent-ink); font-family: var(--mono); font-size: .68rem; font-weight: 750; letter-spacing: .07em; text-transform: uppercase; }
+  .appeal-flow-caption strong { max-width: 26rem; color: var(--ink); font-size: .9rem; line-height: 1.4; text-align: right; }
+  .appeal-flow-track { position: relative; display: grid; gap: .82rem; margin: 0; padding: 0; list-style: none; }
+  .appeal-flow-track::before { content: ""; position: absolute; top: 1.25rem; bottom: 1.25rem; left: 1.25rem; width: 2px; background: linear-gradient(180deg, color-mix(in srgb, var(--accent) 32%, transparent), var(--accent) 48%, color-mix(in srgb, var(--accent) 42%, transparent)); box-shadow: 0 0 10px color-mix(in srgb, var(--accent) 40%, transparent); }
+  .appeal-flow-step { --step-width: 100%; position: relative; z-index: 1; display: grid; width: var(--step-width); grid-template-columns: 2.6rem minmax(0, 1fr); align-items: center; gap: .75rem; }
+  .appeal-flow-step:not(:last-child)::after { content: ""; position: absolute; bottom: -.65rem; left: 1.06rem; width: .38rem; height: .38rem; border-right: 2px solid var(--accent); border-bottom: 2px solid var(--accent); transform: rotate(45deg); }
+  .appeal-flow-marker { display: grid; width: 2.5rem; height: 2.5rem; place-items: center; border: 1px solid color-mix(in srgb, var(--accent) 58%, var(--line)); border-radius: 999px; background: var(--surface); color: var(--accent-ink); box-shadow: 0 0 0 4px color-mix(in srgb, var(--surface) 84%, transparent), 0 0 13px color-mix(in srgb, var(--accent) 22%, transparent); font-family: var(--mono); font-size: .68rem; font-weight: 800; }
+  .appeal-flow-card { display: grid; min-width: 0; gap: .52rem; border: 1px solid var(--line-strong); border-radius: 15px; background: color-mix(in srgb, var(--surface) 94%, transparent); padding: .9rem 1rem; transition: border-color .18s ease, box-shadow .18s ease, transform .18s ease; }
+  .appeal-flow-step.is-appeal .appeal-flow-card { border-color: color-mix(in srgb, var(--accent) 32%, var(--line)); background: color-mix(in srgb, var(--accent-soft) 54%, var(--surface)); }
+  .appeal-flow-step.is-final .appeal-flow-card { border-color: color-mix(in srgb, var(--accent) 44%, var(--line)); }
+  .appeal-flow-card:hover, .appeal-flow-card:focus-visible { border-color: color-mix(in srgb, var(--accent) 74%, var(--line)); outline: none; box-shadow: 0 0 0 1px color-mix(in srgb, var(--accent) 28%, transparent), 0 0 18px color-mix(in srgb, var(--accent) 20%, transparent); transform: translateX(3px); }
+  .appeal-flow-topline { display: flex; align-items: center; justify-content: space-between; gap: .8rem; }
+  .appeal-flow-kicker { color: var(--faint); font-family: var(--mono); font-size: .65rem; font-weight: 750; letter-spacing: .06em; text-transform: uppercase; }
+  .appeal-flow-card strong { color: var(--ink); font-size: 1rem; line-height: 1.25; }
+  .appeal-flow-card p { margin: 0; color: var(--muted); font-size: .8rem; line-height: 1.45; }
+  .appeal-jury { display: inline-flex; align-items: center; gap: .4rem; border: 1px solid color-mix(in srgb, var(--accent) 18%, var(--line)); border-radius: 999px; background: color-mix(in srgb, var(--accent-soft) 48%, var(--surface)); padding: .27rem .5rem; color: var(--accent-ink); font-family: var(--mono); font-size: .68rem; font-weight: 800; white-space: nowrap; }
+  .appeal-jury-dots { display: flex; padding-left: .16rem; }
+  .appeal-jury-dots i { display: block; width: .42rem; height: .42rem; margin-left: -.16rem; border: 1px solid var(--surface); border-radius: 50%; background: var(--accent); }
+  .appeal-bond { display: grid; grid-template-columns: minmax(0, 1fr) auto; align-items: center; gap: .4rem .7rem; }
+  .appeal-bond-bar { height: .38rem; overflow: hidden; border: 1px solid color-mix(in srgb, var(--accent) 18%, var(--line)); border-radius: 999px; background: color-mix(in srgb, var(--line) 76%, transparent); }
+  .appeal-bond-bar i { display: block; width: var(--bond-level); height: 100%; border-radius: inherit; background: linear-gradient(90deg, color-mix(in srgb, var(--accent) 48%, #fff), var(--accent)); box-shadow: 0 0 9px color-mix(in srgb, var(--accent) 54%, transparent); }
+  .appeal-bond b { color: var(--accent-ink); font-family: var(--mono); font-size: .67rem; white-space: nowrap; }
   .deep-note { border-left: 3px solid var(--accent); padding-left: 1rem; color: var(--muted); font-family: var(--sans); }
+  .reader-end-action { display: flex; margin-top: 1rem; }
+  .reader-mode-cta { display: inline-flex; align-items: center; gap: .65rem; border: 1px solid var(--accent); border-radius: 12px; background: var(--accent); padding: .72rem 1rem; color: #fff; box-shadow: 0 8px 20px color-mix(in srgb, var(--accent) 22%, transparent); font-family: var(--sans); font-size: .88rem; font-weight: 750; text-decoration: none; transition: transform .16s ease, box-shadow .16s ease; }
+  .reader-mode-cta:hover { transform: translateY(-2px); box-shadow: 0 12px 25px color-mix(in srgb, var(--accent) 28%, transparent); }
+  .reader-mode-cta:focus-visible { outline: 3px solid color-mix(in srgb, var(--accent) 40%, transparent); outline-offset: 3px; }
   .underhood-map { display: grid; grid-template-columns: repeat(3, 1fr); gap: 1rem; margin: 1.3rem 0; }
   .underhood-map a { display: flex; min-height: 8.75rem; position: relative; flex-direction: column; justify-content: space-between; gap: 1rem; border: 1.5px solid var(--line); border-radius: var(--radius); background: var(--surface); padding: 1.05rem 1.1rem; box-shadow: var(--shadow); text-decoration: none; font-family: var(--sans); cursor: pointer; transition: transform .18s ease, box-shadow .18s ease, filter .18s ease; }
   .underhood-map a:hover { transform: translateY(-3px); box-shadow: 0 14px 30px rgba(16, 24, 40, .13); filter: saturate(1.06); }
@@ -95,8 +124,16 @@
     .reader-tabs { border-radius: 14px; }
     .reader-tab { align-items: flex-start; flex-direction: column; gap: .18rem; padding: .72rem .7rem; }
     .simple-loop { grid-template-columns: 1fr; }
+    .appeal-flow { border-radius: 18px; padding: .82rem; }
+    .appeal-flow-caption { align-items: flex-start; flex-direction: column; gap: .3rem; }
+    .appeal-flow-caption strong { text-align: left; }
+    .appeal-flow-step { --step-width: 100% !important; grid-template-columns: 2.3rem minmax(0, 1fr); gap: .55rem; }
+    .appeal-flow-track::before { left: 1.08rem; }
+    .appeal-flow-step:not(:last-child)::after { left: .9rem; }
+    .appeal-flow-marker { width: 2.15rem; height: 2.15rem; }
+    .appeal-flow-card { padding: .78rem .82rem; }
   }
-  @media (prefers-reduced-motion: reduce) { .reader-tabs, .reader-tab, .reader-tab span, .reader-tab small, .underhood-map a, .underhood-map .link-cue span { transition: none; } }
+  @media (prefers-reduced-motion: reduce) { .reader-tabs, .reader-tab, .reader-tab span, .reader-tab small, .underhood-map a, .underhood-map .link-cue span, .appeal-flow-card { transition: none; } }
 
 .vhub { display: flex; align-items: center; justify-content: center; gap: .8rem; flex-wrap: wrap; }
   .vhub .apps { display: grid; gap: .45rem; }
@@ -360,9 +397,63 @@ body.theme-solve { --accent: #2f62cf; --accent-soft: #e6edfa; --accent-ink: #214
   </section>
 
   <section class="reveal" id="disputes-courts">
-    <p class="sec-label">Appeals and finality</p>
-    <h2>An appeal brings in a larger, fresh jury</h2>
-    <p>A losing party can fund a new decision by a larger panel: 7 jurors, then 15, then 31. When no appeal is funded&mdash;or the final panel rules&mdash;the decision becomes final. Later proof of collusion can punish jurors, but it cannot reopen the ruling or a completed settlement.</p>
+    <h2>How Appeals work</h2>
+    <p class="lead">An appeal brings in a larger jury that was not on the jury for the last verdict with a bond that is lost if verdict is against appealer, this bond increases in value with each appeal and so does the jury.</p>
+    <figure class="appeal-flow" aria-labelledby="appeal-flow-title">
+      <figcaption class="appeal-flow-caption"><span>Appeal ladder</span><strong id="appeal-flow-title">Every appeal raises both the bond and the jury count.</strong></figcaption>
+      <ol class="appeal-flow-track" aria-label="Initial case, first verdict, first appeal, second verdict, second appeal, and final verdict">
+        <li class="appeal-flow-step" style="--step-width: 82%;">
+          <span class="appeal-flow-marker" aria-hidden="true">01</span>
+          <div class="appeal-flow-card" tabindex="0">
+            <div class="appeal-flow-topline"><span class="appeal-flow-kicker">Initial case</span><span class="appeal-jury"><span class="appeal-jury-dots" aria-hidden="true"><i></i><i></i><i></i></span>7 jurors</span></div>
+            <strong>The first jury hears the case</strong>
+            <p>Seven newly drawn jurors review the evidence and vote.</p>
+          </div>
+        </li>
+        <li class="appeal-flow-step" style="--step-width: 85%;">
+          <span class="appeal-flow-marker" aria-hidden="true">02</span>
+          <div class="appeal-flow-card" tabindex="0">
+            <div class="appeal-flow-topline"><span class="appeal-flow-kicker">Verdict 01</span><span class="appeal-jury">7-juror verdict</span></div>
+            <strong>The first ruling is returned</strong>
+            <p>The losing side can accept it or fund an appeal.</p>
+          </div>
+        </li>
+        <li class="appeal-flow-step is-appeal" style="--step-width: 89%; --bond-level: 58%;">
+          <span class="appeal-flow-marker" aria-hidden="true">03</span>
+          <div class="appeal-flow-card" tabindex="0">
+            <div class="appeal-flow-topline"><span class="appeal-flow-kicker">Appeal 01</span><span class="appeal-jury">Next jury: 15</span></div>
+            <strong>A higher bond funds a fresh, larger jury</strong>
+            <p>The bond is lost if the new verdict is against the appealer.</p>
+            <div class="appeal-bond" aria-label="Appeal bond level one"><span class="appeal-bond-bar" aria-hidden="true"><i></i></span><b>Bond &uarr;</b></div>
+          </div>
+        </li>
+        <li class="appeal-flow-step" style="--step-width: 92%;">
+          <span class="appeal-flow-marker" aria-hidden="true">04</span>
+          <div class="appeal-flow-card" tabindex="0">
+            <div class="appeal-flow-topline"><span class="appeal-flow-kicker">Verdict 02</span><span class="appeal-jury"><span class="appeal-jury-dots" aria-hidden="true"><i></i><i></i><i></i><i></i></span>15 jurors</span></div>
+            <strong>A different jury returns the next ruling</strong>
+            <p>No juror from the previous verdict sits on this panel.</p>
+          </div>
+        </li>
+        <li class="appeal-flow-step is-appeal" style="--step-width: 96%; --bond-level: 100%;">
+          <span class="appeal-flow-marker" aria-hidden="true">05</span>
+          <div class="appeal-flow-card" tabindex="0">
+            <div class="appeal-flow-topline"><span class="appeal-flow-kicker">Appeal 02</span><span class="appeal-jury">Next jury: 31</span></div>
+            <strong>The bond and the fresh jury grow again</strong>
+            <p>The second appeal risks a larger bond to fund the largest panel.</p>
+            <div class="appeal-bond" aria-label="Appeal bond level two, higher than level one"><span class="appeal-bond-bar" aria-hidden="true"><i></i></span><b>Bond &uarr;&uarr;</b></div>
+          </div>
+        </li>
+        <li class="appeal-flow-step is-final" style="--step-width: 100%;">
+          <span class="appeal-flow-marker" aria-hidden="true">06</span>
+          <div class="appeal-flow-card" tabindex="0">
+            <div class="appeal-flow-topline"><span class="appeal-flow-kicker">Verdict 03</span><span class="appeal-jury"><span class="appeal-jury-dots" aria-hidden="true"><i></i><i></i><i></i><i></i><i></i></span>31 jurors</span></div>
+            <strong>The largest jury returns the final verdict</strong>
+            <p>The appeal ladder ends after the 31-juror decision.</p>
+          </div>
+        </li>
+      </ol>
+    </figure>
   </section>
   </div>
 
@@ -388,8 +479,9 @@ body.theme-solve { --accent: #2f62cf; --accent-soft: #e6edfa; --accent-ink: #214
   <section class="reveal" id="bootstrap">
     <p class="sec-label">Bootstrap</p>
     <h2>OmenMarketMaker to seed DemoThemis with demand</h2>
-    <p>When OmenMarketMaker selects DemoThemis, it sends a case and pays DemoThemis's independently quoted resolution fee. OmenMarketMaker's market margin and treasury remain entirely separate. Every completed case contributes to the shared juror-quality record, while independently checkable outcomes can add later confirmation.</p>
+    <p>Before betting, each OmenMarketMaker market fixes a work-based jury target and a resolution-reserve percentage bounded by the disclosed maximum. Every deposit contributes at that same rate. A fully funded reserve pays DemoThemis automatically and returns any surplus to every YES and NO position pro-rata; an underfunded market sends no case and refunds YES/NO backing after its creator top-up window. OmenMarketMaker's margin and treasury remain separate. Every completed case contributes to the shared juror-quality record.</p>
     <p class="deep-note">That is one launch path, not a product dependency. Switch to Deep dive for the mechanics and interactive stress tests behind each claim.</p>
+    <div class="reader-end-action"><a class="reader-mode-cta" href="#deep-dive">Switch to Deep dive <span aria-hidden="true">&rarr;</span></a></div>
   </section>
   </div>
   </div>
@@ -879,7 +971,7 @@ body.theme-solve { --accent: #2f62cf; --accent-soft: #e6edfa; --accent-ink: #214
   </div>
 
   <footer class="endnote reveal">
-    <nav id="series" aria-label="Where you are in the series"></nav>
+    <nav id="series" aria-label="Where you are in the series" data-handoff-eyebrow="Next: interactive stress test" data-handoff-title="Try to break the design yourself" data-handoff-copy="Break the Court is an interactive attack lab. Raise attacker pressure or switch defenses off to expose the nearest capture point, then restore them to see why each safeguard exists."></nav>
     <div class="sitemap sitemap-flat">
       <a href="run-through.html">1. Run-through</a>
       <a href="demothemis.html">2. DemoThemis</a>
@@ -1051,7 +1143,7 @@ body.theme-solve { --accent: #2f62cf; --accent-soft: #e6edfa; --accent-ink: #214
   window.requestAnimationFrame(syncReaderSwitchState);
 })();
 </script>
-<script src="assets/common.js"></script>
+<script src="assets/common.js?v=20260722-reader-handoff-1"></script>
 <script>
 // Shared combinatorics helpers for the court widgets.
 (function () {

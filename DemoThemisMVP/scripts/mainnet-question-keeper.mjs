@@ -23,6 +23,7 @@ const {
   http,
   keccak256,
   maxUint256,
+  parseEventLogs,
 } = requireFromWeb('viem');
 const { privateKeyToAccount } = requireFromWeb('viem/accounts');
 const { worldchain } = requireFromWeb('viem/chains');
@@ -32,8 +33,9 @@ const PUBLIC = path.join(ROOT, 'web', 'public');
 const MANIFEST_PATH = path.join(PUBLIC, 'cases', 'question-queue.json');
 const DEPLOYMENT_PATH = path.join(ROOT, 'contracts', 'deployments', 'worldchain-mainnet.json');
 const RPC = process.env.RPC ?? 'https://worldchain-mainnet.gateway.tenderly.co';
-const REQUIRED_JURORS = BigInt(3);
+const EXPECTED_PANEL_SIZE = BigInt(3);
 const MIN_HUMAN_DURATION = BigInt(300);
+const ZERO_ADDRESS = '0x0000000000000000000000000000000000000000';
 const EXECUTE = process.argv.includes('--execute');
 const HELP = process.argv.includes('--help') || process.argv.includes('-h');
 const unknownArgs = process.argv.slice(2).filter((arg) => !['--execute', '--help', '-h'].includes(arg));
@@ -51,6 +53,21 @@ if (unknownArgs.length !== 0) throw new Error(`Unknown argument(s): ${unknownArg
 
 const deployment = JSON.parse(await readFile(DEPLOYMENT_PATH, 'utf8'));
 if (deployment.chainId !== 480) throw new Error('Keeper requires the World Chain mainnet deployment (chain 480).');
+const replacementMetadataReady =
+  deployment.currentSourceMatchesDeployment === true &&
+  deployment.livenessRecovery?.boundedRedrawWindow === true &&
+  deployment.livenessRecovery?.permissionlessTimeoutFinalizer === true &&
+  deployment.livenessRecovery?.permit2Rebond === true &&
+  deployment.livenessRecovery?.eligiblePartyPreflight === true &&
+  deployment.livenessRecovery?.boundedInitialDrawTimeout === true &&
+  deployment.livenessRecovery?.unusedFeeRefund === true &&
+  deployment.livenessRecovery?.immutableVotingDurations === true;
+
+if (EXECUTE && !replacementMetadataReady) {
+  throw new Error(
+    'Broadcast disabled: the selected deployment record is legacy or does not attest eligible-party preflight, bounded initial/redraw recovery, Permit2 re-bonding, unused-fee refunds, and immutable voting durations.',
+  );
+}
 
 const COURT = getAddress(deployment.contracts.DisputeCourt);
 const REGISTRY = getAddress(deployment.contracts.JurorRegistry);
@@ -74,6 +91,51 @@ const caseComponents = [
 ];
 
 const courtAbi = [
+  {
+    type: 'function',
+    name: 'LIVENESS_RECOVERY_VERSION',
+    stateMutability: 'view',
+    inputs: [],
+    outputs: [{ type: 'uint256' }],
+  },
+  {
+    type: 'function',
+    name: 'AUTOMATED_TIMING_VERSION',
+    stateMutability: 'view',
+    inputs: [],
+    outputs: [{ type: 'uint256' }],
+  },
+  {
+    type: 'function',
+    name: 'INITIAL_DRAW_WINDOW',
+    stateMutability: 'view',
+    inputs: [],
+    outputs: [{ type: 'uint64' }],
+  },
+  {
+    type: 'function',
+    name: 'initialDrawDeadline',
+    stateMutability: 'view',
+    inputs: [{ name: 'caseId', type: 'uint256' }],
+    outputs: [{ type: 'uint64' }],
+  },
+  {
+    type: 'function',
+    name: 'redrawDeadline',
+    stateMutability: 'view',
+    inputs: [{ name: 'caseId', type: 'uint256' }],
+    outputs: [{ type: 'uint64' }],
+  },
+  {
+    type: 'function',
+    name: 'eligibleJurorCount',
+    stateMutability: 'view',
+    inputs: [
+      { name: 'party1', type: 'address' },
+      { name: 'party2', type: 'address' },
+    ],
+    outputs: [{ type: 'uint256' }],
+  },
   {
     type: 'function',
     name: 'caseCount',
@@ -174,9 +236,26 @@ const courtAbi = [
     inputs: [{ name: 'caseId', type: 'uint256' }],
     outputs: [],
   },
+  {
+    type: 'event',
+    name: 'InitialDrawTimedOut',
+    inputs: [
+      { name: 'caseId', type: 'uint256', indexed: true },
+      { name: 'refundTo', type: 'address', indexed: true },
+      { name: 'feeRefunded', type: 'uint256', indexed: false },
+    ],
+    anonymous: false,
+  },
 ];
 
 const registryAbi = [
+  {
+    type: 'function',
+    name: 'LIVENESS_RECOVERY_VERSION',
+    stateMutability: 'view',
+    inputs: [],
+    outputs: [{ type: 'uint256' }],
+  },
   {
     type: 'function',
     name: 'jurorCount',
@@ -225,6 +304,42 @@ const tokenAbi = [
 ];
 
 const publicClient = createPublicClient({ chain: worldchain, transport: http(RPC) });
+
+async function readVersion(address, abi, functionName) {
+  try {
+    return await publicClient.readContract({
+      address,
+      abi,
+      functionName,
+    });
+  } catch {
+    // Legacy contracts do not expose this marker. Treat any failed probe as an
+    // unsupported release so an RPC or ABI problem can never fail open.
+    return BigInt(0);
+  }
+}
+
+const [courtRecoveryVersion, registryRecoveryVersion, automatedTimingVersion] = await Promise.all([
+  readVersion(COURT, courtAbi, 'LIVENESS_RECOVERY_VERSION'),
+  readVersion(REGISTRY, registryAbi, 'LIVENESS_RECOVERY_VERSION'),
+  readVersion(COURT, courtAbi, 'AUTOMATED_TIMING_VERSION'),
+]);
+const recoveryDeploymentReady =
+  replacementMetadataReady &&
+  courtRecoveryVersion === BigInt(2) &&
+  registryRecoveryVersion === BigInt(1) &&
+  automatedTimingVersion === BigInt(1);
+
+if (EXECUTE && !recoveryDeploymentReady) {
+  throw new Error(
+    `Broadcast disabled: on-chain markers must be court recovery=2, registry recovery=1, and automated timing=1; found ${courtRecoveryVersion}, ${registryRecoveryVersion}, and ${automatedTimingVersion}.`,
+  );
+}
+
+const initialDrawWindow = recoveryDeploymentReady
+  ? await publicClient.readContract({ address: COURT, abi: courtAbi, functionName: 'INITIAL_DRAW_WINDOW' })
+  : null;
+
 const privateKey = process.env.PRIVATE_KEY?.trim().replace(/^['"]|['"]$/g, '');
 if (EXECUTE && !privateKey) throw new Error('PRIVATE_KEY is required with --execute.');
 const account = privateKey ? privateKeyToAccount(privateKey) : null;
@@ -335,6 +450,30 @@ async function phaseOf(caseId) {
   );
 }
 
+async function eligibleJurors(party1, party2) {
+  if (!recoveryDeploymentReady) return null;
+  return publicClient.readContract({
+    address: COURT,
+    abi: courtAbi,
+    functionName: 'eligibleJurorCount',
+    args: [party1, party2],
+  });
+}
+
+async function openCaseDeadline(caseId, redraws) {
+  if (!recoveryDeploymentReady) return null;
+  return publicClient.readContract({
+    address: COURT,
+    abi: courtAbi,
+    functionName: redraws === 0 ? 'initialDrawDeadline' : 'redrawDeadline',
+    args: [BigInt(caseId)],
+  });
+}
+
+function formatTimestamp(timestamp) {
+  return new Date(Number(timestamp) * 1000).toISOString();
+}
+
 async function send(label, contract) {
   if (!EXECUTE || account === null || walletClient === null) {
     console.log(`DRY RUN: would ${label}`);
@@ -345,7 +484,7 @@ async function send(label, contract) {
   console.log(`${label}: ${hash}`);
   const receipt = await publicClient.waitForTransactionReceipt({ hash });
   if (receipt.status !== 'success') throw new Error(`${label} reverted: ${hash}`);
-  return hash;
+  return receipt;
 }
 
 function refuseExpectedAction(message) {
@@ -359,13 +498,11 @@ function waitForJurors(message) {
   process.exit(0);
 }
 
-function requireExactJurorCount(nextAction, jurorCount) {
-  if (jurorCount === REQUIRED_JURORS) return;
-  if (jurorCount < REQUIRED_JURORS) {
-    waitForJurors(`${nextAction} will begin after exactly ${REQUIRED_JURORS} active jurors register; found ${jurorCount}.`);
-  }
-  refuseExpectedAction(
-    `Refusing to ${nextAction}: the official demo requires exactly ${REQUIRED_JURORS} active jurors; found ${jurorCount}. An extra juror must leave the active pool.`,
+function requireMinimumJurorCount(nextAction, candidateCount, minimum, candidateLabel, reason) {
+  if (candidateCount >= minimum) return;
+  waitForJurors(
+    `${nextAction} needs at least ${minimum} ${candidateLabel} ${reason}; found ${candidateCount}. ` +
+      'Additional active jurors are allowed and improve the recovery reserve.',
   );
 }
 
@@ -444,21 +581,40 @@ const [jurorCount, minPool, panelSize, commitDuration, revealDuration, operatorI
 ]);
 const phaseNames = ['Open', 'Commit', 'Reveal', 'Resolvable', 'Resolved'];
 
-if (minPool !== REQUIRED_JURORS || panelSize !== REQUIRED_JURORS) {
-  throw new Error(`Keeper requires the deployed 3/3 court; found panel ${panelSize}, minimum pool ${minPool}.`);
+if (panelSize !== EXPECTED_PANEL_SIZE) {
+  throw new Error(`Keeper requires a three-seat panel; found panel size ${panelSize}.`);
+}
+if (minPool < panelSize) {
+  throw new Error(`Invalid court configuration: minimum pool ${minPool} is smaller than panel size ${panelSize}.`);
 }
 
 console.log(`Mode: ${EXECUTE ? 'EXECUTE' : 'read-only dry run'}`);
+console.log(
+  recoveryDeploymentReady
+    ? 'Deployment capability: eligible-party preflight plus bounded initial/redraw recovery enabled'
+    : 'Deployment capability: LEGACY / complete liveness recovery not deployed; read-only inspection only',
+);
+console.log(
+  `On-chain versions: court recovery ${courtRecoveryVersion}; registry recovery ${registryRecoveryVersion}; automated timing ${automatedTimingVersion} (required: 2 / 1 / 1)`,
+);
+if (initialDrawWindow !== null) {
+  console.log(`Initial draw recovery window: ${initialDrawWindow}s; unused fees refund on timeout`);
+}
 console.log(`Operator: ${operator}${operatorIsJuror ? ' (ACTIVE JUROR - unsafe for opening)' : ' (non-juror)'}`);
 console.log(`Official opener: ${officialOpener}`);
-console.log(`Active jurors: ${jurorCount} / exactly ${REQUIRED_JURORS} required`);
-console.log(`Voting windows: ${commitDuration}s seal / ${revealDuration}s reveal (minimum ${MIN_HUMAN_DURATION}s each)`);
-console.log(`Official queue: ${officialCases.length}/${queue.length} filed`);
+console.log(`Active jurors: ${jurorCount} (opening minimum ${minPool}; panel size ${panelSize}; no keeper-imposed maximum)`);
 console.log(
-  unresolvedNonOfficialCases.length === 0
-    ? 'Unresolved nonofficial court cases: none'
-    : `Unresolved nonofficial court case IDs: ${unresolvedNonOfficialCases.map(({ id }) => id).join(', ')}`,
+  `${automatedTimingVersion === BigInt(1) ? 'Immutable' : 'Current legacy'} voting windows: ${commitDuration}s seal / ${revealDuration}s reveal (replacement minimum ${MIN_HUMAN_DURATION}s each)`,
 );
+console.log(`Official queue: ${officialCases.length}/${queue.length} filed`);
+if (unresolvedNonOfficialCases.length === 0) {
+  console.log('Unresolved nonofficial court cases: none');
+} else {
+  console.warn(
+    `WARNING: ignoring unresolved nonofficial court case IDs ${unresolvedNonOfficialCases.map(({ id }) => id).join(', ')}. ` +
+      'Only authenticated official queue cases participate in the one-active-at-a-time policy.',
+  );
+}
 
 if (activeCases.length === 1) {
   const active = activeCases[0];
@@ -466,14 +622,30 @@ if (activeCases.length === 1) {
   console.log(`Active: #${entry.sequence} case ${active.id}, ${entry.title} (${phaseNames[active.phase]})`);
 
   if (active.phase === 0) {
-    if (unresolvedNonOfficialCases.length !== 0) {
-      refuseExpectedAction(
-        `Refusing to draw official case ${active.id}: unresolved nonofficial court case IDs ${unresolvedNonOfficialCases.map(({ id }) => id).join(', ')} must be resolved first.`,
-      );
+    const drawEligibleCount = await eligibleJurors(active.data.party1, active.data.party2);
+    const drawCandidateCount = drawEligibleCount ?? jurorCount;
+    const drawCandidateLabel =
+      drawEligibleCount === null
+        ? 'active jurors (legacy raw-count inspection)'
+        : 'jurors eligible after excluding the case parties';
+    if (drawEligibleCount !== null) {
+      console.log(`Eligible for case ${active.id}: ${drawEligibleCount}/${jurorCount} active jurors`);
+      const deadline = await openCaseDeadline(active.id, Number(active.data.redraws));
+      if (deadline !== null && deadline > BigInt(0)) {
+        console.log(
+          `${Number(active.data.redraws) === 0 ? 'Initial draw' : 'Redraw recovery'} deadline: ${formatTimestamp(deadline)}`,
+        );
+      }
     }
-    requireExactJurorCount(`draw official case ${active.id}`, jurorCount);
+    requireMinimumJurorCount(
+      `draw official case ${active.id}`,
+      drawCandidateCount,
+      panelSize,
+      drawCandidateLabel,
+      `to fill its ${panelSize}-seat panel`,
+    );
     if (commitDuration < MIN_HUMAN_DURATION || revealDuration < MIN_HUMAN_DURATION) {
-      refuseExpectedAction(`Refusing to draw: set both voting windows to at least ${MIN_HUMAN_DURATION} seconds first.`);
+      refuseExpectedAction(`Refusing to draw: this deployment has unsafe immutable voting windows below ${MIN_HUMAN_DURATION} seconds.`);
     }
     const block = await publicClient.getBlockNumber();
     if (block <= active.data.drawBlock) {
@@ -497,19 +669,56 @@ if (activeCases.length === 1) {
   }
 
   if (active.phase === 3) {
-    await reportJurorProgress(active);
-    await send(`resolve case ${active.id}`, {
+    const expiredOpenCase = Number(active.data.status) === 0;
+    const expiredInitialDraw = expiredOpenCase && Number(active.data.redraws) === 0;
+    const expiredRedraw = expiredOpenCase && Number(active.data.redraws) > 0;
+    if (expiredInitialDraw || expiredRedraw) {
+      const deadline = await openCaseDeadline(active.id, Number(active.data.redraws));
+      console.log(
+        expiredInitialDraw
+          ? `Initial draw window expired for case ${active.id}${deadline === null ? '' : ` at ${formatTimestamp(deadline)}`}; finalization refunds the unused fee and does not require jurors.`
+          : `Redraw recovery window expired for case ${active.id}${deadline === null ? '' : ` at ${formatTimestamp(deadline)}`}; finalization records status quo and does not require the juror pool to be replenished.`,
+      );
+    } else {
+      await reportJurorProgress(active);
+    }
+    const resolveLabel = expiredInitialDraw
+      ? 'finalize expired initial draw and refund the unused fee for'
+      : expiredRedraw
+        ? 'finalize expired redraw recovery for'
+        : 'resolve';
+    const resolveReceipt = await send(`${resolveLabel} case ${active.id}`, {
       address: COURT,
       abi: courtAbi,
       functionName: 'resolve',
       args: [BigInt(active.id)],
     });
     if (EXECUTE) {
+      if (expiredInitialDraw) {
+        const timeoutEvents = parseEventLogs({
+          abi: courtAbi,
+          logs: resolveReceipt.logs,
+          eventName: 'InitialDrawTimedOut',
+          strict: true,
+        });
+        if (timeoutEvents.length !== 1) {
+          throw new Error(`Case ${active.id} resolved without exactly one InitialDrawTimedOut refund event.`);
+        }
+        const refunded = timeoutEvents[0].args;
+        if (
+          refunded.caseId !== BigInt(active.id) ||
+          refunded.refundTo.toLowerCase() !== active.data.party1.toLowerCase() ||
+          refunded.feeRefunded !== active.data.feePool
+        ) {
+          throw new Error(`Case ${active.id} emitted an unexpected initial-draw refund.`);
+        }
+        console.log(`Unused fee refunded to ${refunded.refundTo}: ${refunded.feeRefunded} token units.`);
+      }
       const resultingPhase = await phaseOf(active.id);
       console.log(
         resultingPhase === 4
           ? `Case ${active.id} resolved. A later keeper run may open the next question.`
-          : `Case ${active.id} did not reach quorum and returned to ${phaseNames[resultingPhase]}; no next question was opened.`,
+          : `Case ${active.id} did not reach quorum and entered its bounded redraw-recovery window; no next question was opened.`,
       );
     }
     process.exit(0);
@@ -523,15 +732,25 @@ if (!next) {
   console.log('Queue complete: all 21 official questions have been filed and resolved.');
   process.exit(0);
 }
-if (unresolvedNonOfficialCases.length !== 0) {
-  refuseExpectedAction(
-    `Refusing to open question ${next.sequence}: unresolved nonofficial court case IDs ${unresolvedNonOfficialCases.map(({ id }) => id).join(', ')} must be resolved first.`,
-  );
+const openingEligibleCount = await eligibleJurors(officialOpener, ZERO_ADDRESS);
+const openingCandidateCount = openingEligibleCount ?? jurorCount;
+const openingCandidateLabel =
+  openingEligibleCount === null
+    ? 'active jurors (legacy raw-count inspection)'
+    : 'jurors eligible after excluding the official opener';
+if (openingEligibleCount !== null) {
+  console.log(`Eligible for the next official question: ${openingEligibleCount}/${jurorCount} active jurors`);
 }
-requireExactJurorCount(`open question ${next.sequence}`, jurorCount);
+requireMinimumJurorCount(
+  `open question ${next.sequence}`,
+  openingCandidateCount,
+  minPool,
+  openingCandidateLabel,
+  `to meet the court's opening minimum`,
+);
 if (commitDuration < MIN_HUMAN_DURATION || revealDuration < MIN_HUMAN_DURATION) {
   refuseExpectedAction(
-    `Refusing to open question ${next.sequence}: set both voting windows to at least ${MIN_HUMAN_DURATION} seconds first.`,
+    `Refusing to open question ${next.sequence}: this deployment has unsafe immutable voting windows below ${MIN_HUMAN_DURATION} seconds.`,
   );
 }
 if (operator.toLowerCase() !== officialOpener.toLowerCase()) {
@@ -539,7 +758,7 @@ if (operator.toLowerCase() !== officialOpener.toLowerCase()) {
 }
 if (operatorIsJuror) {
   refuseExpectedAction(
-    'Refusing to open: the operator is an active juror and would make a three-person draw impossible.',
+    'Refusing to open: the fixed official opener must remain outside the juror pool so party exclusion cannot reduce the eligible reserve.',
   );
 }
 
@@ -591,15 +810,37 @@ if (EXECUTE) {
   const countAfter = Number(
     await publicClient.readContract({ address: COURT, abi: courtAbi, functionName: 'caseCount' }),
   );
-  if (countAfter !== countBefore + 1) throw new Error('openQuestion succeeded but caseCount did not advance by one.');
-  const opened = await publicClient.readContract({
-    address: COURT,
-    abi: courtAbi,
-    functionName: 'getCase',
-    args: [BigInt(countBefore)],
-  });
-  if (opened.uri !== next.uri || opened.criteriaHash.toLowerCase() !== next.hash.toLowerCase()) {
-    throw new Error('New case does not match the exact queued URI/hash.');
+  if (countAfter <= countBefore) throw new Error('openQuestion succeeded but caseCount did not advance.');
+  const concurrentCases = await Promise.all(
+    Array.from({ length: countAfter - countBefore }, (_, offset) => {
+      const id = countBefore + offset;
+      return publicClient
+        .readContract({
+          address: COURT,
+          abi: courtAbi,
+          functionName: 'getCase',
+          args: [BigInt(id)],
+        })
+        .then((data) => ({ id, data }));
+    }),
+  );
+  const openedMatches = concurrentCases.filter(
+    ({ data }) =>
+      Number(data.caseType) === 0 &&
+      data.party1.toLowerCase() === officialOpener.toLowerCase() &&
+      data.uri === next.uri &&
+      data.criteriaHash.toLowerCase() === next.hash.toLowerCase(),
+  );
+  if (openedMatches.length !== 1) {
+    throw new Error('Could not identify exactly one newly opened case matching the official queued URI/hash/opener.');
   }
-  console.log(`Opened case ${countBefore}. A later keeper run may draw its panel.`);
+  const openedCaseId = openedMatches[0].id;
+  const ignoredConcurrent = concurrentCases.length - 1;
+  console.log(
+    `Opened official case ${openedCaseId}.` +
+      (ignoredConcurrent === 0
+        ? ''
+        : ` Ignored ${ignoredConcurrent} concurrently opened nonofficial case${ignoredConcurrent === 1 ? '' : 's'}.`) +
+      ' A later keeper run may draw its panel.',
+  );
 }

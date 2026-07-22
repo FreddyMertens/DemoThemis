@@ -1,6 +1,9 @@
 import type { Address, Hex } from 'viem';
 import type { CaseView, RegistryStats } from './court';
-import { listCases, registryStats } from './court';
+import { eligibleJurorCount, listCases, registryStats } from './court';
+import { SUPPORTS_LIVENESS_RECOVERY } from './chain';
+
+const ZERO_ADDRESS = '0x0000000000000000000000000000000000000000' as Address;
 
 export type QuestionQueueEntry = {
   sequence: number;
@@ -24,6 +27,7 @@ export type OracleDashboard = {
   nextQuestion: QuestionQueueEntry | null;
   queue: QuestionQueueEntry[];
   officialOpener: Address;
+  officialEligibleJurors: number;
   overlappingActiveCases: number;
   unofficialActiveCaseIds: number[];
 };
@@ -95,6 +99,9 @@ export function officialQueueEntryForCase(
 
 export async function loadOracleDashboard(): Promise<OracleDashboard> {
   const [stats, cases, manifest] = await Promise.all([registryStats(), listCases(), loadQuestionManifest()]);
+  const officialEligibleJurors = SUPPORTS_LIVENESS_RECOVERY
+    ? await eligibleJurorCount(manifest.officialOpener, ZERO_ADDRESS)
+    : stats.jurorCount;
   const queueCases = cases.filter((courtCase) => officialQueueEntryForCase(manifest, courtCase) !== undefined);
   const activeCases = queueCases.filter((courtCase) => courtCase.phase !== 'Resolved').sort((a, b) => a.id - b.id);
   const resolvedCases = queueCases.filter((courtCase) => courtCase.phase === 'Resolved').sort((a, b) => b.id - a.id);
@@ -113,6 +120,7 @@ export async function loadOracleDashboard(): Promise<OracleDashboard> {
     nextQuestion,
     queue: manifest.questions,
     officialOpener: manifest.officialOpener,
+    officialEligibleJurors,
     overlappingActiveCases: Math.max(0, activeCases.length - 1),
     unofficialActiveCaseIds,
   };

@@ -196,6 +196,40 @@ contract JurorRegistryTest is Base {
         assertEq(registry.bondOf(j), BOND);
     }
 
+    function test_postBondWithPermit2_rejoinsAfterWithdraw() public {
+        address j = _registerPermit2(0);
+        vm.startPrank(j);
+        registry.withdraw();
+        IAllowanceTransfer(PERMIT2_ADDR).approve(address(musd), address(registry), uint160(BOND), 0);
+        registry.postBondWithPermit2();
+        vm.stopPrank();
+
+        assertTrue(registry.isActive(j));
+        assertEq(registry.jurorCount(), 1);
+        assertEq(registry.bondOf(j), BOND);
+        assertEq(musd.balanceOf(address(registry)), BOND);
+        assertEq(musd.balanceOf(j), 100 * 10 ** 6 - BOND);
+    }
+
+    function test_postBondWithPermit2_failedPull_isAtomic() public {
+        address j = _registerPermit2(0);
+        vm.prank(j);
+        registry.withdraw();
+
+        // The registration consumed the one-shot Permit2 allowance. The registry
+        // tentatively prepares the re-bond before the pull, but the external-call
+        // revert must roll every activation/bond write back atomically.
+        vm.prank(j);
+        vm.expectRevert(MockPermit2.InsufficientAllowance.selector);
+        registry.postBondWithPermit2();
+
+        assertFalse(registry.isActive(j));
+        assertEq(registry.jurorCount(), 0);
+        assertEq(registry.bondOf(j), 0);
+        assertEq(musd.balanceOf(address(registry)), 0);
+        assertEq(musd.balanceOf(j), 100 * 10 ** 6);
+    }
+
     function test_slash_onlyCourt() public {
         address j = _register(0);
         vm.expectRevert(JurorRegistry.OnlyCourt.selector);
@@ -203,6 +237,10 @@ contract JurorRegistryTest is Base {
     }
 
     function test_setCourt_onlyOnceAndDeployer() public {
+        JurorRegistry fresh = new JurorRegistry(musd, gate);
+        vm.expectRevert(JurorRegistry.ZeroAddress.selector);
+        fresh.setCourt(address(0));
+
         // already set in setUp(); a second set reverts
         vm.expectRevert(JurorRegistry.CourtAlreadySet.selector);
         registry.setCourt(address(0xdead));

@@ -13,7 +13,7 @@ import { InstanceBanner } from '@/components/InstanceBanner';
 import { SybilDemo } from '@/components/SybilDemo';
 import { usePolledData } from '@/lib/hooks';
 import { getJurorMembership, registryStats, musdBalanceOf } from '@/lib/court';
-import { IS_COHORT, explorerTx, BOND } from '@/lib/chain';
+import { IS_COHORT, SUPPORTS_LIVENESS_RECOVERY, explorerTx, BOND } from '@/lib/chain';
 import { generateRegistrationProof } from '@/lib/worldid';
 import { courtTx } from '@/lib/calldata';
 import { useCourtTx } from '@/lib/tx';
@@ -36,7 +36,7 @@ const STEPS = [
   },
 ];
 
-type Phase = 'idle' | 'verifying' | 'submitting' | 'leaving' | 'done' | 'left' | 'error';
+type Phase = 'idle' | 'verifying' | 'submitting' | 'rejoining' | 'leaving' | 'done' | 'rejoined' | 'left' | 'error';
 
 export default function Onboard() {
   const stats = usePolledData(registryStats);
@@ -58,6 +58,11 @@ export default function Onboard() {
   // registerWithPermit2, batched through World App's sponsored-gas path. This write
   // path runs only inside World App on mainnet and is verified on-device at the capstone.
   async function onboard() {
+    if (!IS_COHORT && !SUPPORTS_LIVENESS_RECOVERY) {
+      setPhase('error');
+      setNote('Capstone onboarding is paused until replacement contracts with party-aware admission and both bounded recovery paths are deployed.');
+      return;
+    }
     if (!wallet) {
       setPhase('error');
       setNote('Connect your World App wallet first.');
@@ -117,10 +122,47 @@ export default function Onboard() {
     }
   }
 
-  const busy = phase === 'verifying' || phase === 'submitting' || phase === 'leaving';
+  // A previously verified human only needs to restore the full bond. The durable
+  // World ID registration/nullifier remains in the registry, so asking for a new
+  // proof here would be both unnecessary and rejected by the contract.
+  async function rejoinJury() {
+    if (!SUPPORTS_LIVENESS_RECOVERY) {
+      setPhase('error');
+      setNote('This deployed registry predates safe Permit2 rejoining. A replacement deployment is required.');
+      return;
+    }
+    if (!wallet) {
+      setPhase('error');
+      setNote('Connect your World App wallet first.');
+      return;
+    }
+    try {
+      setPhase('rejoining');
+      setNote('Restoring your 5 MUSD demo bond and rejoining the juror pool…');
+      const balance = await musdBalanceOf(wallet);
+      const batch = [
+        ...(balance < BOND ? [courtTx.faucet()] : []),
+        courtTx.permit2ApproveBond(),
+        courtTx.postBondWithPermit2(),
+      ];
+      const hash = await tx.submit(batch);
+      if (!hash) {
+        setPhase('error');
+        setNote(tx.error ?? 'The transaction did not go through.');
+        return;
+      }
+      await Promise.all([stats.refresh(), membership.refresh()]);
+      setPhase('rejoined');
+      setNote('Your bond is restored. You are available for future panel draws again.');
+    } catch (e) {
+      setPhase('error');
+      setNote(e instanceof Error ? e.message : String(e));
+    }
+  }
+
+  const busy = phase === 'verifying' || phase === 'submitting' || phase === 'rejoining' || phase === 'leaving';
   const verifiedHumanLabel = verifiedIndex == null ? 'Verified human' : `Verified human #${verifiedIndex}`;
-  const seatsFilled = !IS_COHORT && (stats.data?.jurorCount ?? 0) >= 3;
-  const tooManyJurors = !IS_COHORT && (stats.data?.jurorCount ?? 0) > 3;
+  const activePoolSize = stats.data?.jurorCount ?? 0;
   const isActiveJuror = membership.data?.active === true;
   const isInactiveJuror = membership.data?.registered === true && !isActiveJuror;
   const isServing = (membership.data?.activePanels ?? 0) > 0;
@@ -138,11 +180,11 @@ export default function Onboard() {
     </div>
   ) : isActiveJuror ? (
     <div className="rounded-xl border border-emerald-300 bg-emerald-50 p-4 text-center">
-      <p className="text-base font-bold text-emerald-950">You are an active juror.</p>
+      <p className="text-base font-bold text-emerald-950">You are active in the juror pool.</p>
       <p className="mt-1 text-sm text-emerald-800">
         {isServing
           ? 'Finish your current panel before leaving the jury.'
-          : 'Leaving returns your valueless 5 MUSD demo bond and removes you from future draws.'}
+          : `The pool has ${activePoolSize} active ${activePoolSize === 1 ? 'human' : 'humans'}; each case draws a three-seat panel.`}
       </p>
       {isInstalled ? (
         <button
@@ -164,32 +206,53 @@ export default function Onboard() {
     </div>
   ) : isInactiveJuror ? (
     <div className="rounded-xl border border-emerald-300 bg-emerald-50 p-4 text-center">
-      <p className="text-base font-bold text-emerald-950">You are no longer in the active jury.</p>
+      <p className="text-base font-bold text-emerald-950">Your verified seat is inactive.</p>
       <p className="mt-1 text-sm text-emerald-800">
-        {phase === 'left' ? note : 'Your World ID registration remains unique, but this wallet is not available for panel draws.'}
+        {phase === 'left' || phase === 'rejoined'
+          ? note
+          : SUPPORTS_LIVENESS_RECOVERY
+            ? 'Your World ID registration remains valid. Restore the demo bond to become available for panel draws again—no new identity proof is needed.'
+            : 'Your World ID registration remains valid, but these deployed addresses predate safe Permit2 rejoining. A replacement deployment is required before this wallet can restore its bond.'}
       </p>
-      {tx.txHash && phase === 'left' && (
+      {SUPPORTS_LIVENESS_RECOVERY && isInstalled && phase !== 'rejoined' ? (
+        <button
+          type="button"
+          onClick={rejoinJury}
+          disabled={busy}
+          className="mt-3 w-full rounded-xl bg-emerald-800 px-4 py-3 text-sm font-semibold text-white disabled:opacity-60"
+        >
+          {phase === 'rejoining' ? 'Restoring bond…' : 'Restore bond & rejoin pool'}
+        </button>
+      ) : SUPPORTS_LIVENESS_RECOVERY && !isInstalled && phase !== 'rejoined' ? (
+        <div className="mt-3"><AuthButton /></div>
+      ) : null}
+      {tx.txHash && (phase === 'left' || phase === 'rejoined') && (
         <a href={explorerTx(tx.txHash)} target="_blank" rel="noreferrer" className="mt-2 inline-block text-xs font-medium text-emerald-700 underline">
-          View withdrawal on Worldscan ↗
+          View transaction on Worldscan ↗
         </a>
+      )}
+      {note && phase === 'error' && (
+        <p className="mt-2 rounded-lg bg-rose-50 px-3 py-2 text-xs text-rose-700" role="alert">{note}</p>
       )}
       <Link href="/app" className="mt-3 block rounded-xl bg-emerald-800 px-4 py-3 text-sm font-semibold text-white">
         View the live case
       </Link>
     </div>
-  ) : tooManyJurors ? (
+  ) : !SUPPORTS_LIVENESS_RECOVERY ? (
     <div className="rounded-xl border border-amber-300 bg-amber-50 p-4 text-center">
-      <p className="text-base font-bold text-amber-950">The official pool must contain exactly three jurors.</p>
-      <p className="mt-1 text-sm text-amber-800">Registration is paused until the extra juror leaves the pool.</p>
-      <Link href="/app" className="mt-3 block rounded-xl bg-amber-800 px-4 py-3 text-sm font-semibold text-white">
-        View the live case
+      <p className="text-base font-bold text-amber-950">Capstone onboarding is paused.</p>
+      <p className="mt-1 text-sm text-amber-800">
+        The selected mainnet addresses predate party-aware admission and both bounded recovery paths. No new jurors should register until the replacement deployment is configured here.
+      </p>
+      <Link href="/app" className="mt-3 block rounded-xl bg-amber-900 px-4 py-3 text-sm font-semibold text-white">
+        Review deployment status
       </Link>
     </div>
   ) : phase === 'done' ? (
     <div className="rounded-xl border border-emerald-300 bg-emerald-50 p-4 text-center">
-      <p className="text-base font-bold text-emerald-900">You&apos;re a juror.</p>
+      <p className="text-base font-bold text-emerald-900">You&apos;re in the juror pool.</p>
       <p className="mt-1 text-sm text-emerald-800">
-        {verifiedHumanLabel}. This World ID now has one seat; another wallet cannot register it again.
+        {verifiedHumanLabel}. This World ID now has one pool entry; each case randomly draws three active humans.
       </p>
       {tx.txHash && (
         <a
@@ -205,14 +268,6 @@ export default function Onboard() {
         href="/app"
         className="mt-3 block w-full rounded-xl bg-slate-900 px-4 py-3 text-sm font-semibold text-white"
       >
-        View the live case
-      </Link>
-    </div>
-  ) : seatsFilled ? (
-    <div className="rounded-xl border border-violet-200 bg-violet-50 p-4 text-center">
-      <p className="text-base font-bold text-violet-950">The three jury seats are filled.</p>
-      <p className="mt-1 text-sm text-violet-800">The official demo now uses these three verified humans for each question.</p>
-      <Link href="/app" className="mt-3 block rounded-xl bg-violet-700 px-4 py-3 text-sm font-semibold text-white">
         View the live case
       </Link>
     </div>
@@ -266,7 +321,7 @@ export default function Onboard() {
     <>
       <Page.Header className="p-0">
         <CourtTopBar
-          title="Join the three-person jury"
+          title="Join the juror pool"
           startAdornment={
             <Link href="/app" className="text-sm text-slate-500">
               ← Live case
@@ -277,6 +332,14 @@ export default function Onboard() {
       <Page.Main className="flex flex-col items-stretch gap-4 mb-20">
         <InstanceBanner />
         {actionPanel}
+        {!IS_COHORT && (
+          <div className="rounded-xl border border-violet-200 bg-violet-50 px-4 py-3 text-center">
+            <p className="text-sm font-semibold text-violet-950">
+              Active pool: {activePoolSize} verified {activePoolSize === 1 ? 'human' : 'humans'}
+            </p>
+            <p className="mt-1 text-xs text-violet-700">The pool can grow beyond three; each question draws exactly three panel seats.</p>
+          </div>
+        )}
         {!IS_COHORT && (
           <div className="flex justify-center">
             <GasBadge />

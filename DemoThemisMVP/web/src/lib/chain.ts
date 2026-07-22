@@ -11,6 +11,10 @@ const chainId = Number(process.env.NEXT_PUBLIC_CHAIN_ID ?? '480');
 export const IS_COHORT = chainId !== 480;
 
 export const INSTANCE = IS_COHORT ? COHORT : LIVE;
+/** Flipped only when selected addresses implement eligible-party admission, both liveness timeouts, and re-bonding. */
+export const SUPPORTS_LIVENESS_RECOVERY: boolean = INSTANCE.supportsLivenessRecovery;
+/** Flipped only when the selected court exposes immutable, human-safe voting windows and no duration setter. */
+export const SUPPORTS_AUTOMATED_TIMING: boolean = INSTANCE.supportsAutomatedTiming;
 const viemChain = IS_COHORT ? worldchainSepolia : worldchain;
 
 export const publicClient = createPublicClient({

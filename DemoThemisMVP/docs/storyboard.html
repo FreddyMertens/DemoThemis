@@ -160,12 +160,13 @@
           <h1>What is live—and what the grant completes</h1>
           <div class="scope-columns">
             <div class="scope-column">
-              <span class="scope-label">Live MVP</span>
-              <h2>The working core</h2>
+              <span class="scope-label">Replacement source · deployment pending</span>
+              <h2>The tested capstone core</h2>
               <ul>
-                <li>Source-verified World Chain contracts</li>
+                <li>Legacy contracts source-verified; liveness replacement tested in source</li>
                 <li>Production World ID gate: one human, one seat</li>
-                <li>Fixed 3-seat panel and post-question two-step draw</li>
+                <li>3-seat panel from minimum 4 eligible humans</li>
+                <li>Eligible-party preflight and bounded fee/principal unwind</li>
                 <li>Commit/reveal majority ruling</li>
                 <li>Demo fees, escrow settlement, and permanent receipt</li>
               </ul>
@@ -189,8 +190,8 @@
         <div class="notes-body">
           <div class="direction"><label>On screen</label><p>Reveal the Live MVP column first, then the Funded final version. Keep both visible for the scope statement.</p></div>
           <div class="direction"><label>Action</label><p>State the boundary before showing the demo. Never let the three-seat proof stand in for the final capture-resistant design.</p></div>
-          <blockquote class="say">Before we show the MVP, here is the exact boundary. The deployed version proves on-chain personhood, a post-question panel draw, commit and reveal voting, majority resolution, fee distribution, escrow settlement, and a permanent receipt. Its panel is deliberately three seats and its token is valueless. It does not yet claim production-grade capture resistance. The funded version adds verified randomness, receipt-free ballots, juror quality and liveness, expanding appeals, parallel panels, Invalid or void finality, reward distribution, a stable SDK, and independent review. The next seven slides show only the MVP.</blockquote>
-          <div class="proof-note">The complete row-by-row distinction remains in “Real vs roadmap.” The live three-seat panel is a cost-and-liveness proof, not the finished security model.</div>
+          <blockquote class="say">Before we show the MVP, here is the exact boundary. The legacy deployment proves the World ID and court path but has two known liveness faults. The replacement source fixes party exclusion before funds lock, adds a first-draw refund and escrow-principal unwind, and bounds no-show recovery; it still needs deployment and a real-human capstone. Its panel is deliberately three seats from at least four eligible humans and its token is valueless. The funded version adds verified randomness, receipt-free ballots, juror quality and presence, expanding appeals, parallel panels, Invalid or void finality, reward distribution, a stable SDK, and independent review.</blockquote>
+          <div class="proof-note">The complete row-by-row distinction remains in “Real vs roadmap.” Do not call the legacy addresses recovered or the replacement live until the verified cutover.</div>
           <a class="live-link" href="https://demothemis.netlify.app/app" target="_blank" rel="noopener"><code>/app</code><span>Open the live MVP ↗</span></a>
         </div>
         <footer class="shotbar"><small>Shot map</small><div class="dots"></div><span class="word-count"></span></footer>
@@ -208,7 +209,7 @@
           <div class="direction"><label>On screen</label><p>The live question, exact YES condition, judged-as-of time, and independent-research instruction.</p></div>
           <div class="direction"><label>Action</label><p>Scroll only enough to keep the full case terms and the three empty jury seats together.</p></div>
           <blockquote class="say">The live demo begins with case terms that jurors can actually apply. The question, exact YES rule, and judgment time are fixed before voting. Jurors receive no preferred evidence pack; they research the public facts independently.</blockquote>
-          <div class="proof-note">This is the official public question currently displayed by the deployed MVP.</div>
+          <div class="proof-note">This is the prepared official question in the deployed interface. It is not an on-chain ruling or filed replacement case until the capstone runs.</div>
           <a class="live-link" href="https://demothemis.netlify.app/app#oracle-live-panel" target="_blank" rel="noopener"><code>/app#oracle-live-panel</code><span>Open live case ↗</span></a>
         </div>
         <footer class="shotbar"><small>Shot map</small><div class="dots"></div><span class="word-count"></span></footer>
@@ -223,7 +224,7 @@
       <article class="notes">
         <header class="notes-head"><div class="meta"><span class="shot-no">SHOT 06</span><span class="timecode"></span><span class="status live">Live preview</span></div><h2>Preview a case submission</h2><div class="speaker"><b>Speaker:</b> Founder 2</div></header>
         <div class="notes-body">
-          <div class="direction"><label>On screen</label><p>The question, YES rule, date, fixed 2 MUSD demo fee, and visible 70/20/10 distribution.</p></div>
+          <div class="direction"><label>On screen</label><p>The question, YES rule, date, fixed 20 MUSD demo fee, and visible 70/20/10 distribution.</p></div>
           <div class="direction"><label>Action</label><p>Edit one field, then point to the fee distribution. Do not imply the preview transmits a case.</p></div>
           <blockquote class="say">A requester defines the case and funds the work. This preview makes the payload explicit: the question, decision rule, deadline, and fee. The current demo screen is intentionally non-submitting, so nothing is sent while we walk through it.</blockquote>
           <div class="proof-note">This is a live UI preview, not a working public filing transaction.</div>
@@ -242,7 +243,7 @@
         <header class="notes-head"><div class="meta"><span class="shot-no">SHOT 07</span><span class="timecode"></span><span class="status live">Phone capture</span></div><h2>Join the jury pool</h2><div class="speaker"><b>Speaker:</b> Founder 1</div></header>
         <div class="notes-body">
           <div class="direction"><label>On screen</label><p>Open `/onboard` inside World App, verify, post the valueless 5 MUSD demo bond, and show the confirmation.</p></div>
-          <div class="direction"><label>Action</label><p>Record all three real registrations as short consecutive cuts. Keep wallet and private proof details hidden.</p></div>
+          <div class="direction"><label>Action</label><p>Record at least four real registrations as short consecutive cuts. Keep wallet and private proof details hidden.</p></div>
           <blockquote class="say">Each jury seat belongs to one World ID-verified person, bound to the wallet they use. The juror posts a small valueless demo bond and joins voluntarily. A second wallet cannot turn the same person into a second juror.</blockquote>
           <div class="proof-note">Use the real World ID sheet and sponsored transaction during the capstone recording.</div>
           <a class="live-link" href="https://demothemis.netlify.app/onboard" target="_blank" rel="noopener"><code>/onboard</code><span>Open jury onboarding ↗</span></a>
@@ -259,9 +260,9 @@
       <article class="notes">
         <header class="notes-head"><div class="meta"><span class="shot-no">SHOT 08</span><span class="timecode"></span><span class="status camera">Capture after capstone</span></div><h2>The contract seats the panel</h2><div class="speaker"><b>Speaker:</b> Founder 2</div></header>
         <div class="notes-body">
-          <div class="direction"><label>On screen</label><p>The live case immediately after the third verified registration completes.</p></div>
+          <div class="direction"><label>On screen</label><p>The live case after at least four eligible registrations complete and the three-seat panel is drawn.</p></div>
           <div class="direction"><label>Action</label><p>Refresh once and hold on 3/3 seats plus the confirmed question fingerprint.</p></div>
-          <blockquote class="say">When the third verified juror joins, the official question opens and the contract seats all three. The interface reads that state from World Chain. An operator does not choose the panel or edit the case after seeing who was selected.</blockquote>
+          <blockquote class="say">Once at least four eligible jurors are active, the official question can open and the contract randomly seats three. The fourth is a pre-draw availability reserve, not a fourth vote. The interface reads that state from World Chain; an operator does not choose the panel or edit the case after seeing who was selected.</blockquote>
           <div class="proof-note">Replace this capture instruction with the real seated state; do not reconstruct it.</div>
           <a class="live-link" href="https://demothemis.netlify.app/app#oracle-live-panel" target="_blank" rel="noopener"><code>/app#oracle-live-panel</code><span>Open live panel ↗</span></a>
         </div>

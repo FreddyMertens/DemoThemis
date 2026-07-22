@@ -13,7 +13,7 @@ Mirror of IMPLEMENTATION_PLAN.md §3. Step 1 is done when every row is checked a
 ## Repo
 
 - [x] Monorepo scaffold: `contracts/` (Foundry) + `web/` (create-mini-app) + `docs/`
-- [x] Public GitHub repository: [FreddyMertens/DemoThemis](https://github.com/FreddyMertens/DemoThemis), with CI and the mainnet question keeper enabled
+- [x] Public GitHub repository: [FreddyMertens/DemoThemis](https://github.com/FreddyMertens/DemoThemis), with CI and the mainnet question-keeper workflow present; keeper writes fail closed until the verified liveness replacement is selected
 - [x] Canonical production deployment: [demothemis.netlify.app](https://demothemis.netlify.app) with the Mini App at `/onboard`; the former Vercel hello-world is only an archived rollback artifact
 
 ## World Developer Portal
@@ -29,17 +29,17 @@ Mirror of IMPLEMENTATION_PLAN.md §3. Step 1 is done when every row is checked a
 
 - [x] Fresh deployer keypair generated: `0xe8E539aa5c3E74453892DAd479Bf9feB51CF516c` (project-only; plaintext in `.env`, demo scale only — never reuse elsewhere)
 - [x] World Chain Sepolia ETH on deployer: **0.2 ETH** (Alchemy faucet is unusable — gates on Ethereum *mainnet activity*; got it free via pk910 PoW faucet → `scripts/bridge-l1-to-wc-sepolia.sh`). ~0.13 ETH also left on Ethereum Sepolia. (User sent 0.003 ETH on Ethereum mainnet to clear the original balance gate before we discovered the activity gate.)
-- [ ] ~$5–10 ETH bridged to World Chain mainnet on deployer — NEEDS HUMAN (real money); for **Option A (locked)** this funds the mainnet contract deploys + the 3-human showcase + 2 mainnet cases; most stays as buffer (World App sponsors the humans' gas)
+- [ ] ~$5–10 ETH bridged to World Chain mainnet on deployer — NEEDS HUMAN (real money); for **Option A (locked)** this funds the liveness-enabled replacement deploys + the three-seat / at-least-four-human showcase + 2 mainnet cases; most stays as buffer (World App sponsors the humans' gas)
 - [x] RPC endpoints confirmed (chain ids 4801 / 480 — see SPIKE.md constants)
 
 ## People
 
-- [ ] 3 verified humans lined up for step 3 (any mix Orb / Device level; reachable on demo day, available twice per case for commit + reveal)
+- [ ] At least 4 verified humans lined up for step 3 (three panel seats plus one pre-draw availability reserve; any mix Orb / Device level; reachable on demo day, available twice per case for commit + reveal)
 
 ## Spike (SPIKE.md) — see that file for the full write-up
 
-- [x] (a) on-chain World ID verification — ANSWERED: World ID 4.0 moved verification to `WorldIDVerifier.verify` on World Chain **mainnet** (no Sepolia v4 deployment); v3 router still on Sepolia for v3 proofs. Reshapes the two-instance design.
+- [x] (a) on-chain World ID verification — CORRECTED 2026-07-22: the v4 `WorldIDVerifier` is preview and is retained only as historical evidence. Production replacement uses the documented v3-compatible Router on World Chain mainnet (`0x17B3…A278`).
 - [ ] (b) sponsored mainnet `sendTransaction` — deferred (needs phone + mainnet instance)
-- [x] (c) World App `chainId: 4801` — reframed: 4.0 verification is mainnet-only, so the World-ID step is mainnet-bound regardless. Collapses to one instance, but on **mainnet**.
+- [x] (c) World App `chainId: 4801` — production personhood remains mainnet-bound because the supported Router target is on World Chain mainnet; the Sepolia cohort remains a disclosed mock.
 - [x] Toolchain proven: forge → WC Sepolia deploy (`Ping` `0x117C7ba5bC479Ef62D9Edd64f1737c3dDF55022b`)
-- [x] **Architecture LOCKED: Option A (hybrid)** — cohort on WC Sepolia (free), real World ID 4.0 + 3 humans on WC mainnet; chosen as the most reviewer-favorable + most robust. See SPIKE.md for rationale and the step-2 implications.
+- [x] **Architecture LOCKED: Option A (hybrid)** — cohort on WC Sepolia (free), Router-verified Orb humans + a three-seat panel drawn from at least four eligible humans on WC mainnet. The v4 preview adapter is not a production dependency.

@@ -2,9 +2,9 @@
 // B5 — paste-a-proof dev page (/app/dev). Dev-only (NEXT_PUBLIC_SHOW_DEV). Paste a
 // World ID Simulator completion JSON; the server abi.encodes the gate proof and
 // runs faucet + approve + register from DEV_PRIVATE_KEY against the
-// NEXT_PUBLIC_CHAIN_ID instance (MockSybilGate on the cohort, the real WorldIDGate
-// on mainnet). The matching IDKit flow is /register-onchain; the encoding is the
-// same one the World App onboard uses (lib/proof-encode.ts).
+// NEXT_PUBLIC_CHAIN_ID instance (MockSybilGate on the cohort, WorldIDRouterGate
+// on a replacement mainnet deployment). /register-onchain exposes the same
+// Router-compatible proof encoding used by lib/worldid.ts.
 import { useEffect, useState } from 'react';
 
 type Info = {
@@ -88,19 +88,15 @@ export default function DevRegister() {
       <ol style={{ fontSize: 13, color: '#444', lineHeight: 1.6 }}>
         <li>
           Open <a href="/register-onchain">/register-onchain</a>, set the signal to the dev signer above,
-          click <b>Generate proof</b>, and paste the <code>connectorURI</code> into{' '}
-          <a href="https://simulator.worldcoin.org" target="_blank" rel="noreferrer">
-            simulator.worldcoin.org
-          </a>{' '}
-          (pick a &ldquo;Verified (All)&rdquo; identity).
+          click <b>Generate proof</b>, and open the <code>connectorURI</code> with an Orb-verified World App.
         </li>
         <li>
           Copy the <b>raw IDKit completion</b> JSON it prints (the <code>window.__result</code> block) and
           paste it below.
         </li>
         <li>
-          {info?.gate === 'WorldIDGate'
-            ? 'Register runs the real WorldIDVerifier.verify on-chain (mainnet).'
+          {info?.gate === 'WorldIDRouterGate'
+            ? 'Register runs WorldIDRouter.verifyProof on-chain (mainnet).'
             : 'Register goes through the labeled MockSybilGate (cohort).'}
         </li>
       </ol>
@@ -108,7 +104,7 @@ export default function DevRegister() {
       <textarea
         value={json}
         onChange={(e) => setJson(e.target.value)}
-        placeholder='{"success":true,"result":{"responses":[{"nullifier":"0x…","signal_hash":"0x…","proof":["0x…", …]}],"nonce":"0x…"}}'
+        placeholder='{"success":true,"result":{"protocol_version":"3.0","responses":[{"nullifier":"0x…","signal_hash":"0x…","merkle_root":"0x…","proof":"0x…"}]}}'
         style={{ width: '100%', height: 200, fontFamily: 'monospace', fontSize: 12, padding: 8 }}
       />
       <p>

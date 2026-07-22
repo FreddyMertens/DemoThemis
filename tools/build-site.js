@@ -1,5 +1,6 @@
 const fs = require("fs");
 const path = require("path");
+const crypto = require("crypto");
 
 const root = path.resolve(__dirname, "..");
 const outDir = path.join(root, "dist");
@@ -18,6 +19,8 @@ const publicFiles = [
   "assets/common.js",
   "assets/brand-rive.js",
   "assets/mvp-simulator.css",
+  "assets/run-through.css",
+  "assets/run-through.js",
   "assets/run-through-brand.css",
   "assets/styles.css",
   "assets/brand/brand-manifest.json",
@@ -52,14 +55,13 @@ const publicFiles = [
   "assets/vendor/tippy-6.3.7.umd.min.js",
   "assets/vendor/tippy-shift-away-6.3.7.css",
   "assets/fonts/product-app-fonts.css",
-  "assets/fonts/alegreya-sans-regular.ttf",
-  "assets/fonts/alegreya-sans-medium.ttf",
-  "assets/fonts/alegreya-sans-bold.ttf",
-  "assets/fonts/alegreya-sans-extrabold.ttf",
-  "assets/fonts/alegreya-sans-black.ttf",
-  "assets/fonts/literata-ui-variable.ttf",
-  "assets/fonts/noto-serif-tibetan-ui-variable.ttf",
-  "assets/fonts/noto-sans-symbols-2-ui.ttf",
+  "assets/fonts/alegreya-sans-medium.woff2",
+  "assets/fonts/alegreya-sans-bold.woff2",
+  "assets/fonts/alegreya-sans-extrabold.woff2",
+  "assets/fonts/alegreya-sans-black.woff2",
+  "assets/fonts/literata-ui-variable.woff2",
+  "assets/fonts/noto-serif-tibetan-ui-variable.woff2",
+  "assets/fonts/noto-sans-symbols-2-ui.woff2",
   "assets/fonts/OFL-Alegreya-Sans.txt",
   "assets/fonts/OFL-Literata.txt",
   "assets/fonts/OFL-Noto-Serif-Tibetan.txt",
@@ -166,6 +168,73 @@ function writeFile(file, content) {
   const to = path.join(outDir, file);
   fs.mkdirSync(path.dirname(to), { recursive: true });
   fs.writeFileSync(to, content, "utf8");
+}
+
+function walkFiles(dir) {
+  const files = [];
+  function walk(current) {
+    for (const entry of fs.readdirSync(current, { withFileTypes: true })) {
+      const absolute = path.join(current, entry.name);
+      if (entry.isDirectory()) walk(absolute);
+      else files.push(absolute);
+    }
+  }
+  walk(dir);
+  return files.sort((a, b) => toPosix(a).localeCompare(toPosix(b)));
+}
+
+function computeProposalAssetVersion() {
+  const assetRoot = path.join(outDir, "assets");
+  const runtimeFiles = walkFiles(assetRoot).concat(path.join(outDir, "assumptions.js"));
+  const hash = crypto.createHash("sha256");
+  for (const file of runtimeFiles) {
+    hash.update(toPosix(path.relative(outDir, file)));
+    hash.update("\0");
+    hash.update(fs.readFileSync(file));
+    hash.update("\0");
+  }
+  return hash.digest("hex").slice(0, 12);
+}
+
+function rewriteProposalAssetReferences(content, version) {
+  const prefix = `assets/v/${version}/`;
+  const escapedPrefix = prefix.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
+  return String(content)
+    .replace(/assets\/(?!v\/)/g, prefix)
+    .replace(
+      new RegExp(`(${escapedPrefix}[A-Za-z0-9_./-]+\\.[A-Za-z0-9]+)\\?[^#\"'\\s)<>]+`, "g"),
+      "$1"
+    )
+    .replace(/([\"'(=\s])(?:\.\/)?assumptions\.js(?:\?[^#\"'\s)<>]+)?/g, `$1${prefix}assumptions.js`);
+}
+
+function copyVersionedAssetBundle(version) {
+  const assetRoot = path.join(outDir, "assets");
+  const versionRoot = path.join(assetRoot, "v", version);
+  const textExtensions = new Set([".css", ".js", ".json", ".svg"]);
+
+  for (const source of walkFiles(assetRoot)) {
+    const relative = path.relative(assetRoot, source);
+    const destination = path.join(versionRoot, relative);
+    fs.mkdirSync(path.dirname(destination), { recursive: true });
+    if (textExtensions.has(path.extname(source).toLowerCase())) {
+      const content = rewriteProposalAssetReferences(fs.readFileSync(source, "utf8"), version);
+      fs.writeFileSync(destination, content, "utf8");
+    } else {
+      fs.copyFileSync(source, destination);
+    }
+  }
+
+  const assumptions = fs.readFileSync(path.join(outDir, "assumptions.js"), "utf8");
+  fs.writeFileSync(path.join(versionRoot, "assumptions.js"), rewriteProposalAssetReferences(assumptions, version), "utf8");
+}
+
+function rewriteBuiltProposalPages(version) {
+  const files = publicFiles.filter((file) => file.endsWith(".html")).concat("404.html");
+  for (const file of files) {
+    const target = path.join(outDir, file);
+    fs.writeFileSync(target, rewriteProposalAssetReferences(fs.readFileSync(target, "utf8"), version), "utf8");
+  }
 }
 
 function stripHashAndQuery(value) {
@@ -331,7 +400,7 @@ function validateNoInternalArtifacts() {
   }
 }
 
-function validateSeoMetadata() {
+function validateSeoMetadata(assetVersion) {
   const htmlFiles = publicFiles.filter((file) => file.endsWith(".html"));
   const missing = [];
   const required = [
@@ -358,7 +427,8 @@ function validateSeoMetadata() {
       missing.push(`${file}: twitter:card should be ${expectedCard}`);
     }
     if (brand) {
-      const imageUrl = assetUrl(brand.image).replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
+      const versionedImage = rewriteProposalAssetReferences(assetUrl(brand.image), assetVersion);
+      const imageUrl = versionedImage.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
       const brandedRequired = [
         { label: "icon", pattern: /<link\s+[^>]*rel=["']icon["'][^>]*href=["'][^"']+["']/i },
         { label: "apple-touch-icon", pattern: /<link\s+[^>]*rel=["']apple-touch-icon["'][^>]*href=["'][^"']+["']/i },
@@ -389,7 +459,9 @@ function buildSitemap() {
 
 function buildHeaders() {
   const common = "default-src 'self'; img-src 'self' data: https:; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src 'self' https://fonts.gstatic.com; connect-src 'self'; frame-ancestors 'none'; base-uri 'self'; form-action 'self'; object-src 'none'";
-  return `/*\n  X-Content-Type-Options: nosniff\n  Referrer-Policy: strict-origin-when-cross-origin\n  Permissions-Policy: camera=(), microphone=(), geolocation=(), payment=()\n  X-Frame-Options: DENY\n  Content-Security-Policy: ${common}; script-src 'self' 'unsafe-inline'\n\n/\n  Content-Security-Policy: ${common}; script-src 'self' 'unsafe-inline' 'wasm-unsafe-eval'\n\n/index.html\n  Content-Security-Policy: ${common}; script-src 'self' 'unsafe-inline' 'wasm-unsafe-eval'\n\n/omenmarketmaker*\n  Content-Security-Policy: ${common}; script-src 'self' 'unsafe-inline' 'wasm-unsafe-eval'\n`;
+  const scripts = "script-src 'self' 'unsafe-inline' 'inline-speculation-rules'";
+  const riveScripts = `${scripts} 'wasm-unsafe-eval'`;
+  return `/*\n  X-Content-Type-Options: nosniff\n  Referrer-Policy: strict-origin-when-cross-origin\n  Permissions-Policy: camera=(), microphone=(), geolocation=(), payment=()\n  X-Frame-Options: DENY\n  Content-Security-Policy: ${common}; ${scripts}\n\n/*.html\n  Cache-Control: public, max-age=0, must-revalidate\n\n/assets/v/*\n  Cache-Control: public, max-age=31536000, immutable\n\n/\n  Cache-Control: public, max-age=0, must-revalidate\n  Content-Security-Policy: ${common}; ${riveScripts}\n\n/index.html\n  Content-Security-Policy: ${common}; ${riveScripts}\n\n/proposal-home*\n  Content-Security-Policy: ${common}; ${riveScripts}\n\n/run-through*\n  Content-Security-Policy: ${common}; ${riveScripts}\n\n/omenmarketmaker*\n  Content-Security-Policy: ${common}; ${riveScripts}\n`;
 }
 
 function buildRedirects() {
@@ -423,14 +495,17 @@ fs.rmSync(outDir, { recursive: true, force: true });
 fs.mkdirSync(outDir, { recursive: true });
 
 publicFiles.forEach(copyFile);
+const proposalAssetVersion = computeProposalAssetVersion();
+copyVersionedAssetBundle(proposalAssetVersion);
+writeFile("404.html", build404());
+rewriteBuiltProposalPages(proposalAssetVersion);
 writeFile("_headers", buildHeaders());
 writeFile("_redirects", buildRedirects());
 writeFile("robots.txt", "User-agent: *\nAllow: /\nSitemap: " + siteUrl + "/sitemap.xml\n");
 writeFile("sitemap.xml", buildSitemap());
-writeFile("404.html", build404());
 
 validateLinks();
 validateNoInternalArtifacts();
-validateSeoMetadata();
+validateSeoMetadata(proposalAssetVersion);
 
-console.log(`Built ${publicFiles.length} public files into ${path.relative(root, outDir) || outDir}`);
+console.log(`Built ${publicFiles.length} public files into ${path.relative(root, outDir) || outDir} with asset bundle ${proposalAssetVersion}`);

@@ -3956,6 +3956,11 @@ a.text-slate-950 {
   color: var(--accent);
 }
 
+.oracle-receipt-list .is-recorded {
+  background: rgba(120, 106, 94, 0.09);
+  color: var(--muted);
+}
+
 .oracle-receipt-list strong,
 .oracle-receipt-list small {
   display: block;

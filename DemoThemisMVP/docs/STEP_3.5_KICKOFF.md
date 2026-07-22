@@ -1,5 +1,10 @@
 # Step 3.5 kickoff — real on-chain World ID 4.0 + the sybil-rejection demo
 
+> **Archived preview experiment — do not use for production deployment.** This plan
+> predates the official preview classification. Its v4 adapter and traces remain useful
+> historical evidence, but `Deploy.s.sol` and the live onboard now use
+> `WorldIDRouterGate` with the documented mainnet Router. `WORLD_ID_VERIFIER` is retired.
+
 You are continuing the DemoThemis MVP. Step 3 (the sandbox + comparative attack
 demo) is complete, tested, and on `main`. You are on branch **`step-3.5-worldid`**
 (off `main`). Goal: prove the court's one-human-one-seat claim **on-chain** —
@@ -98,12 +103,13 @@ commit `8d3e78f`; it is authoritative and outranks generic public docs.
 - **`DisputeCourt`** stored `Status` enum is `{Open, Drawn, Resolved}`; Commit/Reveal
   are time-derived UI phases via `phaseOf()`, not stored statuses. Commit hash =
   `keccak256(abi.encode(bool vote, bytes32 salt, uint256 caseId, address juror))`
-  (abi.encode, NOT packed — wrong encoding bricks reveal). `setDurations(uint64,uint64)`
-  emits no event. Durations deploy at 60s/60s.
+  (abi.encode, NOT packed — wrong encoding bricks reveal). The historical Step-3.5
+  court exposed `setDurations(uint64,uint64)` and deployed at 60s/60s; the replacement
+  removes that function and enforces immutable durations of at least 300s/300s.
 - **`RewardPool`** is a transfer-only sink: funds arrive by plain ERC-20 transfer;
   only view is `balance()` (no `deposit`/`receive`).
 - **Env:** Foundry reads `PRIVATE_KEY` (+ `vm.envOr` `PANEL_SIZE`/`MIN_POOL`/
-  `COMMIT_DURATION`/`REVEAL_DURATION`, defaults 7/14/60/60). RPC is selected via
+  `COMMIT_DURATION`/`REVEAL_DURATION`, current defaults 7/14/300/300). RPC is selected via
   `--rpc-url worldchain_mainnet` (a `foundry.toml` alias), not an env var.
 - **Web:** the Mini App is at `web/src/app/(protected)/home`, NOT `/app`. The
   onboard flow today is **cloud-verify only** (`components/Verify/index.tsx` →

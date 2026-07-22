@@ -1,30 +1,15 @@
 'use client';
-// Step 3.5: generate a World ID 4.0 *on-chain* proof bound to a wallet, and emit
-// the exact `bytes proof` that WorldIDGate.verify decodes — so the proof can be
-// submitted to JurorRegistry.register on WC mainnet (via cast, or the Step-4/5
-// MiniKit onboard path, which reuses this same abi.encode). Distinct from
-// components/Verify (the legacy cloud path). The IDKit->verify field mapping this
-// page implements is documented in docs/MECHANISM_DELTA.md.
-import { IDKit, proofOfHuman, type IDKitResult } from '@worldcoin/idkit';
-import { encodeAbiParameters, isAddress, keccak256, stringToBytes, type Hex } from 'viem';
+// Dev proof probe for the production WorldIDRouterGate. It requests the supported
+// v3 compatibility proof and emits the exact bytes accepted by the gate.
+import { IDKit, orbLegacy, type IDKitResult } from '@worldcoin/idkit';
+import { isAddress, type Hex } from 'viem';
 import { useState } from 'react';
-
-const ACTION = 'juror-registration';
-// hashToField("juror-registration"): the field-fitted action WorldIDGate asserts.
-const ACTION_FIELD = BigInt(keccak256(stringToBytes(ACTION))) >> BigInt(8);
-
-// The v4 9-tuple WorldIDGate.verify abi.decodes (src/sybil/WorldIDGate.sol).
-const PROOF_TUPLE = [
-  { type: 'uint256' }, // nullifier
-  { type: 'uint256' }, // action (field-fitted)
-  { type: 'uint64' }, // rpId
-  { type: 'uint256' }, // nonce
-  { type: 'uint256' }, // signalHash
-  { type: 'uint64' }, // expiresAtMin
-  { type: 'uint64' }, // issuerSchemaId
-  { type: 'uint256' }, // credentialGenesisIssuedAtMin
-  { type: 'uint256[5]' }, // proof: 4 Groth16 limbs + Merkle root
-] as const;
+import {
+  ACTION,
+  encodeWorldIdRouterGateProof,
+  parseRouterProofJson,
+  signalHashOf,
+} from '@/lib/proof-encode';
 
 const hex = (v: bigint) => ('0x' + v.toString(16)) as Hex;
 
@@ -58,8 +43,6 @@ export default function RegisterOnchain() {
         throw new Error(`rp-signature ${rpRes.status}: ${await rpRes.text()}`);
       }
       const rpSig = await rpRes.json();
-      // rp_1ddcf8ba2efe3f36 -> 0x1ddcf8ba2efe3f36 as uint64.
-      const rpId64 = BigInt('0x' + String(rpSig.rp_id).replace(/^rp_/, ''));
       const rp_context = {
         rp_id: rpSig.rp_id,
         nonce: rpSig.nonce,
@@ -68,17 +51,17 @@ export default function RegisterOnchain() {
         signature: rpSig.sig,
       };
 
-      setStatus('creating IDKit v4 request (proofOfHuman, staging)...');
+      setStatus('creating Router-compatible World ID request...');
       const request = await IDKit.request({
         app_id: process.env.NEXT_PUBLIC_APP_ID as `app_${string}`,
         action: ACTION,
         rp_context,
-        allow_legacy_proofs: false,
-        environment: 'staging',
-      }).preset(proofOfHuman({ signal }));
+        allow_legacy_proofs: true,
+        environment: 'production',
+      }).preset(orbLegacy({ signal }));
 
       setConnectorURI(request.connectorURI || '(empty — running inside World App)');
-      setStatus('waiting for proof — paste the URI into simulator.worldcoin.org...');
+      setStatus('waiting for an Orb proof...');
       const completion = await request.pollUntilCompletion();
       (window as Window & typeof globalThis & { __result?: unknown }).__result =
         completion;
@@ -89,68 +72,25 @@ export default function RegisterOnchain() {
       }
 
       const result: IDKitResult = completion.result;
-      if (result.protocol_version !== '4.0') {
+      if (result.protocol_version !== '3.0') {
         setStatus(`unexpected protocol_version ${result.protocol_version}`);
         return;
       }
-      if ('session_id' in result) {
-        setStatus('got a session proof, expected a v4 uniqueness proof');
-        return;
-      }
-      const res = result.responses[0];
-      if (!res || !res.signal_hash) {
-        setStatus('response missing signal_hash (was a signal provided?)');
-        return;
-      }
-      if (res.proof.length !== 5) {
-        setStatus(`proof has ${res.proof.length} elements, expected 5`);
-        return;
-      }
-
-      const nullifier = BigInt(res.nullifier);
-      const nonce = BigInt(result.nonce);
-      const signalHash = BigInt(res.signal_hash);
-      const expiresAtMin = BigInt(res.expires_at_min);
-      const issuerSchemaId = BigInt(res.issuer_schema_id);
-      const proof5 = res.proof.map((p) => BigInt(p)) as [
-        bigint,
-        bigint,
-        bigint,
-        bigint,
-        bigint,
-      ];
-
-      // Binding sanity check: the gate recomputes keccak256(addr) >> 8 on-chain
-      // and asserts it equals signal_hash. Confirm it here BEFORE spending a tx.
-      const recomputed = BigInt(keccak256(signal)) >> BigInt(8);
-      const matches = recomputed === signalHash;
-
-      const encoded = encodeAbiParameters(PROOF_TUPLE, [
-        nullifier,
-        ACTION_FIELD,
-        rpId64,
-        nonce,
-        signalHash,
-        expiresAtMin,
-        issuerSchemaId,
-        BigInt(0),
-        proof5,
-      ]);
+      const parts = parseRouterProofJson(result);
+      const recomputed = signalHashOf(signal);
+      const matches = recomputed === parts.signalHash;
+      const encoded = encodeWorldIdRouterGateProof(parts);
       setBytesProof(encoded);
       setFields(
         JSON.stringify(
           {
             signal,
-            nullifier: hex(nullifier),
-            action_field: hex(ACTION_FIELD),
-            rpId: hex(rpId64),
-            nonce: hex(nonce),
-            signalHash: hex(signalHash),
+            merkleRoot: hex(parts.root),
+            nullifier: hex(parts.nullifier),
+            signalHash: hex(parts.signalHash),
             signalHash_recomputed_onchain: hex(recomputed),
             signalHash_binding_ok: matches,
-            expiresAtMin: expiresAtMin.toString(),
-            issuerSchemaId: issuerSchemaId.toString(),
-            proof5: proof5.map(hex),
+            proof8: parts.proof8.map(hex),
           },
           null,
           2,
@@ -170,9 +110,9 @@ export default function RegisterOnchain() {
 
   return (
     <main id="main-content" tabIndex={-1} style={{ padding: 24, fontFamily: 'monospace', maxWidth: 960 }}>
-      <h1>WorldIDGate registration proof (v4 on-chain)</h1>
+      <h1>World ID Router registration proof</h1>
       <p>
-        Generates a World ID 4.0 proof bound to the wallet below and emits the
+        Generates a Router-compatible Orb proof bound to the wallet below and emits the
         <code> bytes proof </code> for
         <code> JurorRegistry.register(signal, proof)</code>. Set the signal to the
         wallet that will send the register transaction.
@@ -192,7 +132,7 @@ export default function RegisterOnchain() {
         </button>
       </p>
       <p>status: {status}</p>
-      <h3>connectorURI (paste into simulator.worldcoin.org):</h3>
+      <h3>connectorURI (scan/open with World App):</h3>
       <textarea readOnly value={connectorURI} style={{ width: '100%', height: 80 }} />
       <h3>bytes proof (for JurorRegistry.register):</h3>
       <textarea
