@@ -24,24 +24,32 @@
   .pmnarr { font-family: var(--sans); font-size: .9rem; color: var(--ink-soft); background: var(--bg); border: 1px solid var(--line-strong); border-radius: 10px; padding: .75rem 1rem; margin-bottom: 1rem; min-height: 3.4rem; }
 
   /* mandatory resolution handoff */
-  .resolution-bridge { display: grid; grid-template-columns: minmax(0, 1fr) minmax(5.5rem, .55fr) minmax(0, 1fr) minmax(5.5rem, .55fr) minmax(0, 1fr); align-items: stretch; gap: .75rem; font-family: var(--sans); }
-  .resolution-step { position: relative; min-width: 0; padding: 1rem; border: 1px solid color-mix(in srgb, var(--line-strong) 82%, transparent); border-radius: 16px; background: color-mix(in srgb, var(--surface) 94%, transparent); box-shadow: inset 0 0 0 1px rgba(255,255,255,.55), 0 16px 32px -28px rgba(0,0,0,.5); overflow: hidden; }
+  .resolution-diagram { position: relative; left: 50%; width: min(58rem, calc(100vw - 3rem)); translate: -50% 0; }
+  .resolution-bridge { display: grid; grid-template-columns: minmax(11rem, 1fr) minmax(4.5rem, .42fr) minmax(11rem, 1fr) minmax(4.5rem, .42fr) minmax(11rem, 1fr); align-items: stretch; gap: clamp(.7rem, 1.25vw, 1rem); font-family: var(--sans); }
+  .resolution-step { position: relative; display: flex; min-width: 0; flex-direction: column; align-items: flex-start; padding: clamp(1rem, 1.5vw, 1.3rem); border: 1px solid color-mix(in srgb, var(--line-strong) 82%, transparent); border-radius: 16px; background: color-mix(in srgb, var(--surface) 94%, transparent); box-shadow: inset 0 0 0 1px rgba(255,255,255,.55), 0 16px 32px -28px rgba(0,0,0,.5); overflow: hidden; }
   .resolution-step::after { content: ""; position: absolute; inset: auto 12% 0; height: 2px; border-radius: 999px; opacity: .72; }
   .resolution-step[data-brand="omen"] { border-color: color-mix(in srgb, #00f078 52%, var(--line)); background: linear-gradient(145deg, rgba(0,240,120,.09), rgba(255,255,255,.78)); }
   .resolution-step[data-brand="omen"]::after { background: #00d96c; box-shadow: 0 0 12px rgba(0,240,120,.58); }
   .resolution-step[data-brand="demothemis"] { border-color: color-mix(in srgb, #00e5ff 58%, var(--line)); background: linear-gradient(145deg, rgba(0,229,255,.1), rgba(255,255,255,.8)); }
   .resolution-step[data-brand="demothemis"]::after { background: #00e5ff; box-shadow: 0 0 13px rgba(0,229,255,.62); }
-  .resolution-step .bridge-kicker { display: block; margin-bottom: .45rem; color: var(--muted); font: 700 .66rem/1 var(--mono); letter-spacing: .09em; text-transform: uppercase; }
+  .resolution-step .bridge-kicker { display: block; max-width: 100%; margin-bottom: .45rem; color: var(--muted); font: 700 .66rem/1.25 var(--mono); letter-spacing: .075em; text-transform: uppercase; }
   .resolution-step strong { display: block; color: var(--ink); font-size: 1rem; line-height: 1.2; }
   .resolution-step p { margin: .45rem 0 0; color: var(--muted); font-size: .82rem; line-height: 1.45; }
-  .resolution-chip { display: inline-flex; margin-top: .75rem; padding: .28rem .52rem; border: 1px solid color-mix(in srgb, currentColor 32%, transparent); border-radius: 999px; color: var(--ink-soft); background: rgba(255,255,255,.56); font: 700 .68rem/1 var(--mono); }
+  .resolution-chip { display: inline-flex; align-self: flex-start; box-sizing: border-box; max-width: 100%; margin-top: auto; padding: .32rem .58rem; border: 1px solid color-mix(in srgb, currentColor 32%, transparent); border-radius: 999px; color: var(--ink-soft); background: rgba(255,255,255,.56); font: 700 .68rem/1.15 var(--mono); }
   .resolution-connector { display: flex; flex-direction: column; align-items: center; justify-content: center; gap: .45rem; min-width: 0; text-align: center; color: var(--muted); font: 700 .62rem/1.35 var(--mono); letter-spacing: .04em; text-transform: uppercase; }
   .resolution-connector .bridge-line { position: relative; width: 100%; height: 2px; border-radius: 999px; background: linear-gradient(90deg, #00d96c, #00e5ff, #00d96c); background-size: 200% 100%; box-shadow: 0 0 9px rgba(0,229,255,.34); animation: resolution-flow 5.5s linear infinite; }
   .resolution-connector .bridge-line::after { content: ""; position: absolute; top: 50%; right: -1px; width: 7px; height: 7px; border-top: 2px solid #00e5ff; border-right: 2px solid #00e5ff; transform: translateY(-50%) rotate(45deg); }
   @keyframes resolution-flow { to { background-position: -200% 0; } }
-  @media (max-width: 760px) {
+  @media (max-width: 920px) {
     .resolution-bridge { grid-template-columns: 1fr; gap: .55rem; }
-    .resolution-connector { min-height: 3.2rem; }
+    .resolution-step { min-height: 0; padding: 1.15rem 1.2rem 1.1rem; }
+    .resolution-step p { max-width: 58ch; font-size: .88rem; }
+    .resolution-chip { margin-top: .8rem; }
+    .resolution-connector { display: grid; grid-template-columns: max-content minmax(4.5rem, 8rem); justify-content: center; min-height: 2.7rem; gap: .8rem; }
+  }
+  @media (max-width: 560px) {
+    .resolution-diagram { width: calc(100vw - 2rem); }
+    .resolution-connector { display: flex; min-height: 3.2rem; }
     .resolution-connector .bridge-line { width: 2px; height: 2.1rem; background: linear-gradient(180deg, #00d96c, #00e5ff); }
     .resolution-connector .bridge-line::after { top: auto; right: 50%; bottom: -1px; transform: translateX(50%) rotate(135deg); }
   }
@@ -238,7 +246,7 @@
 
     <p>The service boundary stays deliberately narrow: only the locked case and the caller's resolution-bond payment enter DemoThemis; a signed ruling comes back. Outcome collateral, the market fee, and settlement remain with OmenMarketMaker.</p>
 
-    <figure class="diagram reveal">
+    <figure class="diagram reveal resolution-diagram">
       <div class="diagram-inner">
         <div class="resolution-bridge" aria-label="A caller bonds the exact court fee, DemoThemis rules, and OmenMarketMaker applies the precommitted settlement rule">
           <article class="resolution-step" data-brand="omen">

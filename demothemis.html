@@ -541,6 +541,7 @@ body.theme-solve { --accent: #2f62cf; --accent-soft: #e6edfa; --accent-ink: #214
       <div><b>Pay does most of the reward</b><span>Careful jurors earn more and get drawn more often, but caps stop any one juror from dominating the pool.</span></div>
     </div>
   </section>
+  </div>
 
   <section class="reveal" id="bootstrap">
     <p class="sec-label">Bootstrap</p>
@@ -549,7 +550,6 @@ body.theme-solve { --accent: #2f62cf; --accent-soft: #e6edfa; --accent-ink: #214
     <p class="deep-note">That is one launch path, not a product dependency. Switch to Deep dive for the mechanics and interactive stress tests behind each claim.</p>
     <div class="reader-end-action"><a class="reader-mode-cta" href="#deep-dive">Switch to Deep dive <span aria-hidden="true">&rarr;</span></a></div>
   </section>
-  </div>
   </div>
 
   <div class="reading-pane" id="reader-panel-deep" role="tabpanel" aria-labelledby="reader-tab-deep" data-reader-pane="deep">
@@ -599,11 +599,19 @@ body.theme-solve { --accent: #2f62cf; --accent-soft: #e6edfa; --accent-ink: #214
     <p>The requester supplies the case, decision criteria, evidence rules, and juror fee. DemoThemis returns the ruling; when assets are involved, optional escrow can release or refund them by rule. Each customer replaces a private backstop with one shared court.</p>
   </section>
 
-  <section class="reveal">
-    <p class="sec-label">Why shared history compounds</p>
-    <h2>The history is useful without being public</h2>
-    <p>Each case leaves only the history needed to grade juror quality and prove the court followed its rules: who served, how the panel split, whether an appeal changed the result, and whether reality later confirmed it. When escrow is attached, the same receipt proves it followed the ruling. This is not a public reputation feed. Parties and the requester receive a signed receipt, while scoring receives the minimum case data it needs. Public markets resolve publicly because traders need settlement; private arbitrations stay private by default.</p>
+  <section class="reveal" id="adaptive-fees">
+    <p class="sec-label">The court fee</p>
+    <h2>Price the work, not a permanent split</h2>
+    <p class="lead">When a resolution request is accepted, the versioned fee policy calculates one deterministic court fee: processing cost + required panel compensation + reward-pool top-up + capped operations charge. The caller's bond pays it before the draw.</p>
+    <div class="simple-grid two">
+      <div class="simple-card"><span class="num">1</span><h3>Pay follows the work</h3><p>Juror pay responds to eligible supply, case volume, panel size, expected time, and complexity.</p></div>
+      <div class="simple-card"><span class="num">2</span><h3>The reserve fills to target</h3><p>Cases add more below the published coverage target and nothing once the reserve is full.</p></div>
+      <div class="simple-card"><span class="num">3</span><h3>Operations has a ceiling</h3><p>An approved, public budget is recovered only up to a hard per-case cap, never as a permanent revenue share.</p></div>
+      <div class="simple-card"><span class="num">4</span><h3>Each rung pays for itself</h3><p>Every funded appeal consumes one service fee for its panel and delay. Its separate security bond is never counted as service revenue.</p></div>
+    </div>
+    <p>Pricing inputs move only between published epochs. Governance may set the jury-fee ceiling only within the lab's 0.5&ndash;3% range; the calculated fee can be lower. The complexity class and fee freeze when the request opens the case, and any market whose pool cannot reimburse that fee after a directional ruling follows its precommitted cancellation rule instead of cutting juror pay.</p>
   </section>
+
   </div>
 
   <div class="reading-category" data-reader-category="resistance">
@@ -624,19 +632,6 @@ body.theme-solve { --accent: #2f62cf; --accent-soft: #e6edfa; --accent-ink: #214
     <p>In token courts like UMA and Kleros, voting weight follows the wallet, so a majority has a market price. Disputed Polymarket resolutions show the problem in practice; the evidence is in the <a href="omenmarketmaker.html#exploited-arbiter">OmenMarketMaker chapter</a>.</p>
     <p>That is not merely a bad implementation. If stake is voting power, the protocol works as written when the largest holder wins. An attacker reads the rule as a price list: acquire enough tokens and buy the verdict.</p>
     <p>DemoThemis swaps the foundation to <b>one human, one vote</b>. Every seat is backed by a World ID that no wallet can mint twice or exchange can sell in bulk. An attacker must recruit people separately, keep them present, land them in a sealed draw, and somehow enforce their private votes. Every funded case that reaches DemoThemis faces every lock below at once.</p>
-  </section>
-
-  <section class="reveal" id="adaptive-fees">
-    <p class="sec-label">The court fee</p>
-    <h2>Price the work, not a permanent split</h2>
-    <p class="lead">When a resolution request is accepted, the versioned fee policy calculates one deterministic court fee: processing cost + required panel compensation + reward-pool top-up + capped operations charge. The caller's bond pays it before the draw.</p>
-    <div class="simple-grid two">
-      <div class="simple-card"><span class="num">1</span><h3>Pay follows the work</h3><p>Juror pay responds to eligible supply, case volume, panel size, expected time, and complexity.</p></div>
-      <div class="simple-card"><span class="num">2</span><h3>The reserve fills to target</h3><p>Cases add more below the published coverage target and nothing once the reserve is full.</p></div>
-      <div class="simple-card"><span class="num">3</span><h3>Operations has a ceiling</h3><p>An approved, public budget is recovered only up to a hard per-case cap, never as a permanent revenue share.</p></div>
-      <div class="simple-card"><span class="num">4</span><h3>Each rung pays for itself</h3><p>Every funded appeal consumes one service fee for its panel and delay. Its separate security bond is never counted as service revenue.</p></div>
-    </div>
-    <p>Pricing inputs move only between published epochs. Governance may set the jury-fee ceiling only within the lab's 0.5&ndash;3% range; the calculated fee can be lower. The complexity class and fee freeze when the request opens the case, and any market whose pool cannot reimburse that fee after a directional ruling follows its precommitted cancellation rule instead of cutting juror pay.</p>
   </section>
 
   <section class="reveal">
@@ -789,6 +784,76 @@ body.theme-solve { --accent: #2f62cf; --accent-soft: #e6edfa; --accent-ink: #214
     <p>Every seat changes workload, compensation, formation capacity, and the fee, so all 93 or 155 ruling seats are priced and reserved. Standbys are additional. If a current or appeal rung lacks enough fresh eligible jurors, it is unavailable rather than silently shrunk.</p>
     <p class="deep-note"><b>There is a real limit:</b> bigger panels cannot repair a cohort whose attacker selection weight approaches 50%, and several panels cannot cure evidence that makes everyone wrong together. Pool health and shared-evidence quality remain separate admission checks.</p>
   </section>
+
+  <section class="reveal" id="appeal-finality">
+    <p class="sec-label">Disputes</p>
+    <h2>The ladder, and the two clocks</h2>
+    <p>An appeal redraws at the next size, 7 to 15 to 31. Once a juror serves on a dispute, every later panel and appeal for that dispute excludes them; the same juror can never judge two rungs of one dispute. The appeal service fee is the sum of panel work and delay compensation. The security target is capture odds times the stake; only any amount above the service fee is locked as a separate security bond.</p>
+    <p>A loser can fund the quote alone or gather at least 5% of losing-side verified humans, with every payment attributed pro-rata. If the goal expires short, every payment refunds and no jury starts. Once fully funded, the service fee pays the new panel and credits delay compensation under the case's precommitted rule. If the appeal succeeds, the escrowed security bond returns to contributors pro-rata; if it fails, only that security bond enters the reward pool.</p>
+    <p>Each rung uses one published <b>2&ndash;8 week</b> window. If nobody funds the next rung&mdash;or the 31-seat rung ends&mdash;the ruling becomes final and returns to the requester; attached escrow, if any, settles. Later collusion can change private bonds and eligibility, not the final ruling or completed settlement.</p>
+
+    <figure class="diagram reveal">
+      <div class="diagram-inner">
+        <div class="clocks">
+          <div class="clock money">
+            <h4>The finality clock &middot; finite ladder</h4>
+            <div class="step">Verdict at 7 seats</div>
+            <div class="step">Appeal: bond or loser-side petition, with the configured 2&ndash;8-week window</div>
+            <div class="step">Move one rung: 7 &rarr; 15 &rarr; 31 &rarr; 3 &times; 31 &rarr; 5 &times; 31</div>
+            <div class="step">Final ruling returns; any connected escrow executes</div>
+            <p class="ends">Finality takes one window if unchallenged, plus one per appealed rung.</p>
+          </div>
+          <div class="clock justice">
+            <h4>The justice clock &middot; remains open</h4>
+            <div class="step">Anyone reports evidence of collusion, even years later</div>
+            <div class="step">Encrypted-history audit tests the published rule</div>
+            <div class="step">Proven colluders lose private bonds and eligibility; aggregate forfeiture funds the pool</div>
+            <p class="ends">No deadline, and no final ruling or completed settlement held hostage.</p>
+          </div>
+        </div>
+      </div>
+      <figcaption><b>Finality and accountability use separate clocks:</b> finality closes the ruling and any connected settlement; later proven collusion changes private bonds and eligibility, not the result.</figcaption>
+    </figure>
+  </section>
+
+  <section class="reveal" id="appeal-funding">
+    <p class="sec-label">The appeal funding quote</p>
+    <h2>Why a wider pool makes appeals cheaper</h2>
+    <p>The capture target is probability times stake, not the whole stake. A ten-million-dollar case does not automatically require a ten-million-dollar security bond. In a wide pool, a small bloc almost never wins a panel majority, so the non-refundable service fee can already exceed the anti-re-roll target and no extra security is needed.</p>
+    <p>The adaptive selector chooses the initial ruling set. Once a ruling exists, an appeal can only buy the immediate stronger rung: <b>7 &rarr; 15 &rarr; 31 &rarr; 3 &times; 31 &rarr; 5 &times; 31</b>. Every quote identifies its funding source and destination: contributors fund all new panel work and delay compensation once, while separately escrowed security principal supplies the success refund or failure forfeiture.</p>
+    <div class="widget reveal">
+      <div class="widget-head"><span class="live"></span> What does it cost to appeal?</div>
+      <div class="controls">
+        <div class="row"><label id="abCurrentLabel">Current ruling set</label> <span class="seg" id="abCurrentPanel" role="group" aria-labelledby="abCurrentLabel">
+          <button type="button" data-current-config="p7" class="active" aria-pressed="true">7</button>
+          <button type="button" data-current-config="p15" aria-pressed="false">15</button>
+          <button type="button" data-current-config="p31" aria-pressed="false">31</button>
+          <button type="button" data-current-config="p31x3" aria-pressed="false">3 &times; 31</button>
+          <button type="button" data-current-config="p31x5" aria-pressed="false">5 &times; 31</button>
+        </span></div>
+        <div class="row"><label for="abStake">Value affected by the ruling</label> <b id="abStakeOut">$10,000</b></div>
+        <input id="abStake" type="range" min="0" max="100" step="1" value="40">
+        <div class="row"><label for="abPool">Eligible jurors before this dispute's exclusions</label> <b id="abPoolOut">5,000</b></div>
+        <input id="abPool" type="range" min="0" max="100" step="1" value="41">
+        <div class="row"><label for="abWeeks">Appeal window</label> <b id="abWeeksOut">4 weeks</b></div>
+        <input id="abWeeks" type="range" min="2" max="8" step="1" value="4">
+      </div>
+      <div class="floors">
+        <div class="fl"><div class="flk"><span>Panel work fee</span><span id="abPanelV">&hellip;</span></div><div class="flt"><span class="panel" id="abPanelBar"></span></div></div>
+        <div class="fl"><div class="flk"><span>Delay compensation: value &times; weeks &times; 1%</span><span id="abDelayV">&hellip;</span></div><div class="flt"><span class="panel" id="abDelayBar"></span></div></div>
+        <div class="fl"><div class="flk"><span>Anti-re-roll target: odds &times; value &times; 2</span><span id="abCapV">&hellip;</span></div><div class="flt"><span class="cap" id="abCapBar"></span></div></div>
+      </div>
+      <div class="bondnote" id="abNote">&hellip;</div>
+      <div class="readout">
+        <div class="stat"><div class="k">Next legal panel</div><div class="v" id="abNextPanel">&hellip;</div></div>
+        <div class="stat"><div class="k">Service fee &middot; panel + delay</div><div class="v" id="abService">&hellip;</div></div>
+        <div class="stat"><div class="k">Security bond &middot; return/forfeit</div><div class="v" id="abSecurity">&hellip;</div></div>
+        <div class="stat"><div class="k">Total appeal funding</div><div class="v accent" id="abTotal">&hellip;</div></div>
+      </div>
+      <p id="abFundingNote" style="font-family:var(--sans);font-size:.86rem;color:var(--faint);margin:1rem 0 0"><b>Funding source:</b> the wallets that complete this appeal goal. The service fee is consumed once; the security bond remains separately attributable to those wallets.</p>
+    </div>
+
+  </section>
   </div>
 
   <div class="reading-category" data-reader-category="quality">
@@ -797,6 +862,12 @@ body.theme-solve { --accent: #2f62cf; --accent-soft: #e6edfa; --accent-ink: #214
     <h2>How careful jurors stand out</h2>
     <p class="lead">Every completed case contributes evidence about juror accuracy without turning the first majority into the answer key.</p>
     <p>Across many cases, DemoThemis combines useful agreement above the obvious, consistency with written criteria, appeal survival, and later independent evidence when available. Careful jurors are drawn and paid more while careless ones receive less.</p>
+  </section>
+
+  <section class="reveal">
+    <p class="sec-label">Why shared history compounds</p>
+    <h2>The history is useful without being public</h2>
+    <p>Each case leaves only the history needed to grade juror quality and prove the court followed its rules: who served, how the panel split, whether an appeal changed the result, and whether reality later confirmed it. When escrow is attached, the same receipt proves it followed the ruling. This is not a public reputation feed. Parties and the requester receive a signed receipt, while scoring receives the minimum case data it needs. Public markets resolve publicly because traders need settlement; private arbitrations stay private by default.</p>
   </section>
 
   <section class="reveal">
@@ -880,6 +951,27 @@ body.theme-solve { --accent: #2f62cf; --accent-soft: #e6edfa; --accent-ink: #214
     </figure>
 
     <p>Every completed case updates the same quality record. Difficulty-adjusted agreement, consistency with the written criteria, and appeal survival provide ongoing evidence; later independent outcomes add an external check when available. The complete rule is <b>useful judgment above the obvious, tested against every reliable signal the case can provide</b>.</p>
+  </section>
+
+  <section class="reveal">
+    <p class="sec-label">One court</p>
+    <h2>Different evidence, one quality record</h2>
+    <p>Every case uses the same random draw, private ballots, appeal ladder, and juror-quality system. The question and decision criteria are fixed before the draw, and every final case contributes evidence about juror accuracy.</p>
+    <p>A market result may later provide independent confirmation. A delivery dispute can show whether jurors applied a written specification consistently. A community-standard case contributes difficulty-adjusted agreement and appeal evidence. The available signals vary; whether the case counts does not.</p>
+    <p>Scores combine useful agreement above the obvious majority, consistency with the written criteria, appeal survival, and later independent evidence when available. No case type is excluded, and no first majority becomes automatic truth.</p>
+
+    <div class="widget reveal">
+      <div class="widget-head"><span class="live"></span> How does this case add quality evidence?</div>
+      <div class="controls">
+        <div class="row"><label>Pick a case</label> <span class="seg" id="RT1seg">
+          <button data-k="btc" class="active">Did bitcoin close above $100k?</button>
+          <button data-k="logo">Were the logo files delivered to spec?</button>
+          <button data-k="apt">Was the Airbnb as described?</button>
+        </span></div>
+      </div>
+      <div class="routepanel" id="RT1panel">&hellip;</div>
+      <p style="font-family:var(--sans);font-size:.86rem;color:var(--faint);margin:1rem 0 0">The court does not route cases into separate accuracy systems. It records the evidence each case can provide, then updates one shared juror-quality history.</p>
+    </div>
   </section>
 
   <section class="reveal">
@@ -967,96 +1059,6 @@ body.theme-solve { --accent: #2f62cf; --accent-soft: #e6edfa; --accent-ink: #214
     <p>Wrong-side updates use the <b>post-appeal</b> outcome, not the first panel's verdict. If a 31-seat appeal overturns a 15-seat panel, the original dissenter's private debit and score update are reversed, while the overturned majority takes the loss. No public refund identifies the dissenter. Near-tie penalties were already small; vindicated dissent costs nothing.</p>
   </section>
 
-  <section class="reveal">
-    <p class="sec-label">Disputes</p>
-    <h2>The ladder, and the two clocks</h2>
-    <p>An appeal redraws at the next size, 7 to 15 to 31. Once a juror serves on a dispute, every later panel and appeal for that dispute excludes them; the same juror can never judge two rungs of one dispute. The appeal service fee is the sum of panel work and delay compensation. The security target is capture odds times the stake; only any amount above the service fee is locked as a separate security bond.</p>
-    <p>A loser can fund the quote alone or gather at least 5% of losing-side verified humans, with every payment attributed pro-rata. If the goal expires short, every payment refunds and no jury starts. Once fully funded, the service fee pays the new panel and credits delay compensation under the case's precommitted rule. If the appeal succeeds, the escrowed security bond returns to contributors pro-rata; if it fails, only that security bond enters the reward pool.</p>
-    <p>Each rung uses one published <b>2&ndash;8 week</b> window. If nobody funds the next rung&mdash;or the 31-seat rung ends&mdash;the ruling becomes final and returns to the requester; attached escrow, if any, settles. Later collusion can change private bonds and eligibility, not the final ruling or completed settlement.</p>
-
-    <figure class="diagram reveal">
-      <div class="diagram-inner">
-        <div class="clocks">
-          <div class="clock money">
-            <h4>The finality clock &middot; finite ladder</h4>
-            <div class="step">Verdict at 7 seats</div>
-            <div class="step">Appeal: bond or loser-side petition, with the configured 2&ndash;8-week window</div>
-            <div class="step">Move one rung: 7 &rarr; 15 &rarr; 31 &rarr; 3 &times; 31 &rarr; 5 &times; 31</div>
-            <div class="step">Final ruling returns; any connected escrow executes</div>
-            <p class="ends">Finality takes one window if unchallenged, plus one per appealed rung.</p>
-          </div>
-          <div class="clock justice">
-            <h4>The justice clock &middot; remains open</h4>
-            <div class="step">Anyone reports evidence of collusion, even years later</div>
-            <div class="step">Encrypted-history audit tests the published rule</div>
-            <div class="step">Proven colluders lose private bonds and eligibility; aggregate forfeiture funds the pool</div>
-            <p class="ends">No deadline, and no final ruling or completed settlement held hostage.</p>
-          </div>
-        </div>
-      </div>
-      <figcaption><b>Finality and accountability use separate clocks:</b> finality closes the ruling and any connected settlement; later proven collusion changes private bonds and eligibility, not the result.</figcaption>
-    </figure>
-  </section>
-
-  <section class="reveal">
-    <p class="sec-label">The appeal funding quote</p>
-    <h2>Why a wider pool makes appeals cheaper</h2>
-    <p>The capture target is probability times stake, not the whole stake. A ten-million-dollar case does not automatically require a ten-million-dollar security bond. In a wide pool, a small bloc almost never wins a panel majority, so the non-refundable service fee can already exceed the anti-re-roll target and no extra security is needed.</p>
-    <p>The adaptive selector chooses the initial ruling set. Once a ruling exists, an appeal can only buy the immediate stronger rung: <b>7 &rarr; 15 &rarr; 31 &rarr; 3 &times; 31 &rarr; 5 &times; 31</b>. Every quote identifies its funding source and destination: contributors fund all new panel work and delay compensation once, while separately escrowed security principal supplies the success refund or failure forfeiture.</p>
-    <div class="widget reveal">
-      <div class="widget-head"><span class="live"></span> What does it cost to appeal?</div>
-      <div class="controls">
-        <div class="row"><label id="abCurrentLabel">Current ruling set</label> <span class="seg" id="abCurrentPanel" role="group" aria-labelledby="abCurrentLabel">
-          <button type="button" data-current-config="p7" class="active" aria-pressed="true">7</button>
-          <button type="button" data-current-config="p15" aria-pressed="false">15</button>
-          <button type="button" data-current-config="p31" aria-pressed="false">31</button>
-          <button type="button" data-current-config="p31x3" aria-pressed="false">3 &times; 31</button>
-          <button type="button" data-current-config="p31x5" aria-pressed="false">5 &times; 31</button>
-        </span></div>
-        <div class="row"><label for="abStake">Value affected by the ruling</label> <b id="abStakeOut">$10,000</b></div>
-        <input id="abStake" type="range" min="0" max="100" step="1" value="40">
-        <div class="row"><label for="abPool">Eligible jurors before this dispute's exclusions</label> <b id="abPoolOut">5,000</b></div>
-        <input id="abPool" type="range" min="0" max="100" step="1" value="41">
-        <div class="row"><label for="abWeeks">Appeal window</label> <b id="abWeeksOut">4 weeks</b></div>
-        <input id="abWeeks" type="range" min="2" max="8" step="1" value="4">
-      </div>
-      <div class="floors">
-        <div class="fl"><div class="flk"><span>Panel work fee</span><span id="abPanelV">&hellip;</span></div><div class="flt"><span class="panel" id="abPanelBar"></span></div></div>
-        <div class="fl"><div class="flk"><span>Delay compensation: value &times; weeks &times; 1%</span><span id="abDelayV">&hellip;</span></div><div class="flt"><span class="panel" id="abDelayBar"></span></div></div>
-        <div class="fl"><div class="flk"><span>Anti-re-roll target: odds &times; value &times; 2</span><span id="abCapV">&hellip;</span></div><div class="flt"><span class="cap" id="abCapBar"></span></div></div>
-      </div>
-      <div class="bondnote" id="abNote">&hellip;</div>
-      <div class="readout">
-        <div class="stat"><div class="k">Next legal panel</div><div class="v" id="abNextPanel">&hellip;</div></div>
-        <div class="stat"><div class="k">Service fee · panel + delay</div><div class="v" id="abService">&hellip;</div></div>
-        <div class="stat"><div class="k">Security bond · return/forfeit</div><div class="v" id="abSecurity">&hellip;</div></div>
-        <div class="stat"><div class="k">Total appeal funding</div><div class="v accent" id="abTotal">&hellip;</div></div>
-      </div>
-      <p id="abFundingNote" style="font-family:var(--sans);font-size:.86rem;color:var(--faint);margin:1rem 0 0"><b>Funding source:</b> the wallets that complete this appeal goal. The service fee is consumed once; the security bond remains separately attributable to those wallets.</p>
-    </div>
-
-  </section>
-
-  <section class="reveal">
-    <p class="sec-label">One court</p>
-    <h2>Different evidence, one quality record</h2>
-    <p>Every case uses the same random draw, private ballots, appeal ladder, and juror-quality system. The question and decision criteria are fixed before the draw, and every final case contributes evidence about juror accuracy.</p>
-    <p>A market result may later provide independent confirmation. A delivery dispute can show whether jurors applied a written specification consistently. A community-standard case contributes difficulty-adjusted agreement and appeal evidence. The available signals vary; whether the case counts does not.</p>
-    <p>Scores combine useful agreement above the obvious majority, consistency with the written criteria, appeal survival, and later independent evidence when available. No case type is excluded, and no first majority becomes automatic truth.</p>
-
-    <div class="widget reveal">
-      <div class="widget-head"><span class="live"></span> How does this case add quality evidence?</div>
-      <div class="controls">
-        <div class="row"><label>Pick a case</label> <span class="seg" id="RT1seg">
-          <button data-k="btc" class="active">Did bitcoin close above $100k?</button>
-          <button data-k="logo">Were the logo files delivered to spec?</button>
-          <button data-k="apt">Was the Airbnb as described?</button>
-        </span></div>
-      </div>
-      <div class="routepanel" id="RT1panel">&hellip;</div>
-      <p style="font-family:var(--sans);font-size:.86rem;color:var(--faint);margin:1rem 0 0">The court does not route cases into separate accuracy systems. It records the evidence each case can provide, then updates one shared juror-quality history.</p>
-    </div>
-  </section>
   </div>
   </div>
 

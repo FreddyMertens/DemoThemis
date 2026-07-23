@@ -76,6 +76,8 @@ function loadLabModel(htmlSource, assumptionsSource) {
     STRESS_CASES,
     PROTECTION_BENCHMARKS,
     STRONG_BENCHMARK_RATIO,
+    boundedSuccessRatio,
+    operatingChecksFor,
     stateFromPreset,
     clampModelState,
     compute,
@@ -563,6 +565,9 @@ attackIds.forEach((id) => {
 });
 
 if (!html.includes("var STRESS_CASES")) fail("Missing fixed STRESS_CASES definitions");
+if (!html.includes("What green requires") || !html.includes("1.2&times; safety ratio")) {
+  fail("Break the court must explain the conditions required for a strong green result");
+}
 
 if (html.includes('data-preset="broken"')) {
   fail('Broken-locks failure demo must not appear as a normal Try preset');
@@ -633,17 +638,48 @@ if (labModel) {
   if (visiblePresetNames.length !== expectedPresets.length || expectedPresets.some((name) => !visiblePresetNames.includes(name))) {
     fail(`Visible preset buttons must be exactly: ${expectedPresets.join(", ")}`);
   }
+  const targetedPressure = {
+    base: "capture",
+    cold: "appealCapacity",
+    surge: "funding",
+    whale: "bribe",
+    bloc: "capture",
+    drift: "drift"
+  };
   presetNames.forEach((name) => {
     const state = labModel.clampModelState(labModel.stateFromPreset(name));
     const model = labModel.compute(state);
     const verdict = labModel.modelState(state, model);
     if (verdict.teaching) fail(`Visible preset "${name}" unexpectedly disables a required protection`);
+    if (verdict.state !== "good") {
+      const ratios = (verdict.checks || [])
+        .map((check) => `${check.key}=${Number.isFinite(check.ratio) ? check.ratio.toFixed(3) : check.ratio}`)
+        .join(", ");
+      const selectionLabel = model.policySelection && model.policySelection.selected
+        ? model.policySelection.selected.candidate.id
+        : model.policySelection && model.policySelection.status;
+      fail(`Visible preset "${name}" must hold every applicable attack and operating check with a strong margin; selected=${selectionLabel}, correct=${model.correctPanel}, drawable=${model.drawJurors}, required=${model.requiredCapacity}, feeGap=${model.supportGapPerCase}, weakest=${verdict.top.key} (${verdict.top.ratio}), ${ratios}`);
+    }
+    (verdict.checks || []).forEach((check) => {
+      if (check.applicable && (!finiteOrInfinity(check.ratio) || check.ratio < labModel.STRONG_BENCHMARK_RATIO)) {
+        fail(`Visible preset "${name}" is below the 1.2x strong threshold on ${check.key} (ratio ${check.ratio})`);
+      }
+    });
     const selection = model.policySelection;
-    if (!selection || !["SELECTED", "SECURE_PANEL_UNAVAILABLE"].includes(selection.status)) fail(`Visible preset "${name}" lacks a deterministic adaptive-policy result`);
+    if (!selection || selection.status !== "SELECTED") fail(`Visible preset "${name}" must select a safe ruling set; received ${selection && selection.status}`);
     if (selection && selection.status === "SELECTED" && (!selection.selected || !selection.selected.passes || model.candidateId !== selection.selected.candidate.id)) {
       fail(`Visible preset "${name}" does not display the first passing automatic ruling set`);
     }
-    if (selection && selection.status === "SECURE_PANEL_UNAVAILABLE" && selection.selected) fail(`Visible preset "${name}" uses an unsafe fallback after selection failure`);
+    if (model.panelShortage || model.appealPanelShortage || model.supportGapPerCase > 1e-9) {
+      fail(`Visible preset "${name}" must have funded current and fresh-appeal capacity without a support gap`);
+    }
+    [model.correctPanel, model.formation, model.requiredCaseFee, model.feeCeilingPerCase, model.drawJurors].forEach((value) => {
+      if (!Number.isFinite(value)) fail(`Visible preset "${name}" has a non-finite operating output (${value})`);
+    });
+    const target = (verdict.checks || []).find((check) => check.key === targetedPressure[name]);
+    if (!target || !Number.isFinite(target.ratio) || target.ratio < labModel.STRONG_BENCHMARK_RATIO) {
+      fail(`Visible preset "${name}" must exercise its named ${targetedPressure[name]} pressure with a finite strong ratio`);
+    }
     attackIds.forEach((id) => {
       const narrative = labModel.attackNarrative(state, model, id);
       if (!narrative || !narrative.check) fail(`Visible preset "${name}" has no benchmark narrative for ${id}`);
@@ -651,7 +687,7 @@ if (labModel) {
   });
 
   const stress = labModel.runStress();
-  const expectedStressIds = ["cold", "surge", "whale", "bloc", "drift", "appeal"];
+  const expectedStressIds = ["base", "cold", "surge", "whale", "bloc", "drift"];
   const stressIds = stress.rows.map((row) => row.config.id);
   if (stress.rows.length !== expectedStressIds.length || expectedStressIds.some((id) => !stressIds.includes(id))) {
     fail(`Fixed stress cases must be exactly: ${expectedStressIds.join(", ")}`);
@@ -660,9 +696,10 @@ if (labModel) {
     const selection = row.model.policySelection;
     if (!selection || !["SELECTED", "SECURE_PANEL_UNAVAILABLE"].includes(selection.status)) fail(`Stress case "${row.config.id}" lacks a deterministic adaptive-policy result`);
     if (selection && selection.status === "SECURE_PANEL_UNAVAILABLE" && selection.selected) fail(`Stress case "${row.config.id}" uses an unsafe fallback`);
+    if (row.state.state !== "good") fail(`Stress case "${row.config.id}" must hold with a strong margin; received ${row.state.state} at ${row.state.top.key} (${row.state.top.ratio})`);
   });
-  if (stress.held + stress.broken !== 6 || stress.watch > stress.held) {
-    fail(`Stress summary counts must cover all six fixtures; received held=${stress.held}, watch=${stress.watch}, broken=${stress.broken}`);
+  if (stress.held !== 6 || stress.watch !== 0 || stress.broken !== 0) {
+    fail(`Stress summary counts must cover the same six visible presets; received held=${stress.held}, watch=${stress.watch}, broken=${stress.broken}`);
   }
 
   validateProtectionCrossings(labModel);

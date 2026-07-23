@@ -489,7 +489,7 @@ function checkChapterSequence(failures) {
   assert(/id=["']reader-panel-simple["'][^>]*data-reader-pane=["']simple["']/i.test(demoThemis) && /id=["']reader-panel-deep["'][^>]*data-reader-pane=["']deep["']/i.test(demoThemis), "DemoThemis reader tabs must control two explicit content panels", failures);
   assert(/id=["']simple-problem["'][^>]*data-reader-category=["']problem["'][\s\S]*id=["']why-it-exists["'][\s\S]*id=["']case-lifecycle["']/i.test(demoThemis), "DemoThemis simple Problem and role category must contain the introduction and lifecycle", failures);
   assert(/id=["']simple-resistance["'][^>]*data-reader-category=["']resistance["'][\s\S]*id=["']attack-model["'][\s\S]*id=["']disputes-courts["']/i.test(demoThemis), "DemoThemis simple Attack resistance category must contain the attack and appeal sections", failures);
-  assert(/id=["']simple-quality["'][^>]*data-reader-category=["']quality["'][\s\S]*id=["']juror-quality["'][\s\S]*id=["']bootstrap["']/i.test(demoThemis), "DemoThemis simple Juror quality category must contain quality and bootstrap sections", failures);
+  assert(/id=["']simple-quality["'][^>]*data-reader-category=["']quality["'][\s\S]*id=["']juror-quality["'][\s\S]*<\/section>\s*<\/div>\s*<section\b[^>]*id=["']bootstrap["']/i.test(demoThemis), "DemoThemis simple Juror quality category must end before the cross-product Bootstrap conclusion", failures);
   const categoryMaps = Array.from(demoThemis.matchAll(/<div\b[^>]*class=["'][^"']*\bunderhood-map\b[^"']*["'][^>]*>([\s\S]*?)<\/div>/gi), (match) => match[1]);
   assert(categoryMaps.length === 2 && categoryMaps.every((map) => (map.match(/class=["']link-cue["']/g) || []).length === 3), "Both DemoThemis reading modes must expose three clear category buttons", failures);
   assert(categoryMaps.every((map) => !/DemoThemis turns rented arbitration|Verified humans, live reserves|Completed cases, difficulty-adjusted scoring/i.test(map)), "DemoThemis category buttons must not include the old blurbs", failures);
@@ -505,6 +505,33 @@ function checkChapterSequence(failures) {
   assert(!/The self-pricing seat|The live reserve, derived then stress-tested|id=["']F1f["']/i.test(demoThemis), "DemoThemis must remove the obsolete self-pricing-seat section and reserve widget", failures);
   assert(/data-reader-category=["']quality["'][\s\S]*id=["']quality-accountability["'][\s\S]*Careless voting carries a cost/i.test(demoThemis), "DemoThemis must place immediate juror accountability inside the Juror quality category", failures);
   assert(/World ID&ndash;linked account becomes negative[\s\S]*future jury earnings clear the debt first[\s\S]*changing wallets cannot reset it/i.test(demoThemis), "DemoThemis juror penalty copy must explain negative balances and World ID persistence", failures);
+  const deepDemoThemis = demoThemis.slice(demoThemis.indexOf('id="reader-panel-deep"'));
+  const deepSectionOrder = [
+    'id="trust-layer"',
+    'id="adaptive-fees"',
+    'id="capture-resistance"',
+    'The sealed die',
+    'id="face-check"',
+    'id="encrypted-ballot"',
+    'id="adaptive-panel-selection"',
+    'Parallel panels are stronger rungs, not dollar tiers',
+    'id="appeal-finality"',
+    'id="appeal-funding"',
+    'id="quality-engine"',
+    'The history is useful without being public',
+    'Agreement is the wrong thing to pay for',
+    'Credit above the obvious',
+    'Different evidence, one quality record',
+    'A score with an error bar attached',
+    'id="quality-accountability"',
+    'Why the gate waits so long'
+  ];
+  let previousDeepPosition = -1;
+  for (const marker of deepSectionOrder) {
+    const markerPosition = deepDemoThemis.indexOf(marker);
+    assert(markerPosition > previousDeepPosition, `DemoThemis Deep dive section order is broken at: ${marker}`, failures);
+    previousDeepPosition = markerPosition;
+  }
   assert(/class=["'][^"']*mechanism-target[^"']*["'][^>]*id=["']face-check["']/i.test(demoThemis) && /class=["'][^"']*mechanism-target[^"']*["'][^>]*id=["']encrypted-ballot["']/i.test(demoThemis) && /\.mechanism-target:target\s*\{[^}]*--dt-emission/i.test(demoThemis), "DemoThemis mechanism links must land on cyan-highlighted explanatory sections", failures);
   assert(/token-weighted courts like UMA and Kleros/i.test(marketChapter), "OmenMarketMaker must use the wording token-weighted courts like UMA and Kleros", failures);
   assert(runThrough.includes("Every case updates juror quality") && runThrough.includes("All well-defined cases contribute to sustainable consensus"), "Run-through must show one quality system for every final case", failures);

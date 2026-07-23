@@ -1,0 +1,210 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Break the Court &mdash; High-Priority Design Sync Review</title>
+  <meta name="description" content="A plain-language explanation of the high-priority differences between Break the Court and the public DemoThemis system design.">
+  <style>
+    :root {
+      --ink:#17201f;
+      --ink-soft:#33413f;
+      --muted:#66716e;
+      --paper:#f2f0e9;
+      --surface:#fffdf8;
+      --surface-2:#f8f5ee;
+      --line:#d7d2c7;
+      --line-strong:#bdb7aa;
+      --accent:#08785f;
+      --accent-soft:#dff1ea;
+      --accent-deep:#075d4b;
+      --risk:#b64b26;
+      --risk-soft:#f8e8df;
+      --blue:#2e6485;
+      --blue-soft:#e5eff5;
+      --gold:#8b670e;
+      --gold-soft:#f4ecd0;
+      --shadow:0 18px 55px rgba(46,43,34,.09);
+      --sans:Inter,ui-sans-serif,system-ui,-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;
+      --serif:"Iowan Old Style","Palatino Linotype","Book Antiqua",Georgia,serif;
+      --mono:"SFMono-Regular",Consolas,"Liberation Mono",monospace;
+    }
+    *{box-sizing:border-box}
+    html{scroll-behavior:smooth}
+    body{margin:0;color:var(--ink);background:radial-gradient(circle at 8% 0,rgba(8,120,95,.12),transparent 30rem),radial-gradient(circle at 95% 16%,rgba(182,75,38,.08),transparent 27rem),var(--paper);font-family:var(--sans);line-height:1.58}
+    a{color:var(--accent-deep);text-underline-offset:3px}
+    a:hover{color:#043c31}
+    .shell{width:min(1120px,calc(100% - 36px));margin:0 auto}
+    .hero{padding:64px 0 38px;border-bottom:1px solid rgba(59,68,64,.16)}
+    .hero-grid{display:grid;grid-template-columns:minmax(0,1.45fr) minmax(280px,.7fr);gap:34px;align-items:end}
+    .eyebrow,.kicker{margin:0 0 10px;color:var(--accent-deep);font-size:.72rem;font-weight:900;letter-spacing:.14em;text-transform:uppercase}
+    h1,h2,h3{text-wrap:balance}
+    h1{max-width:820px;margin:0;font:700 clamp(2.65rem,6vw,5.25rem)/.96 var(--serif);letter-spacing:-.045em}
+    .dek{max-width:820px;margin:22px 0 0;color:var(--ink-soft);font-size:clamp(1.02rem,2vw,1.2rem)}
+    .verdict{padding:21px;border:1px solid color-mix(in srgb,var(--risk) 35%,var(--line));border-radius:18px;background:rgba(255,253,248,.82);box-shadow:var(--shadow)}
+    .verdict .count{display:flex;align-items:center;gap:12px;margin-bottom:11px}.verdict .count b{font:750 3rem/1 var(--serif);color:var(--risk)}
+    .verdict .count span{max-width:12rem;font-size:.78rem;font-weight:850;letter-spacing:.07em;text-transform:uppercase}
+    .verdict p{margin:0;color:var(--ink-soft);font-size:.9rem}
+    .quick-links{display:flex;flex-wrap:wrap;gap:8px;margin-top:23px}.quick-links a{padding:7px 10px;border:1px solid var(--line);border-radius:999px;background:rgba(255,255,255,.58);font-size:.76rem;font-weight:800;text-decoration:none}
+    main{padding:34px 0 82px}
+    section{scroll-margin-top:18px}
+    .section-head{display:flex;justify-content:space-between;gap:28px;align-items:end;margin:48px 0 18px}
+    .section-head h2{margin:0;font:700 clamp(1.8rem,4vw,3rem)/1.02 var(--serif);letter-spacing:-.03em}.section-head>p{max-width:610px;margin:0;color:var(--muted)}
+    .anchor-strip{display:grid;grid-template-columns:repeat(7,minmax(0,1fr));gap:8px;margin:23px 0 0}
+    .anchor-strip a{display:grid;min-height:92px;align-content:space-between;padding:12px;border:1px solid var(--line);border-radius:13px;background:var(--surface);box-shadow:0 8px 22px rgba(46,43,34,.04);color:var(--ink);text-decoration:none}
+    .anchor-strip a:hover{border-color:var(--accent);transform:translateY(-1px)}
+    .anchor-strip b{color:var(--risk);font:.74rem var(--mono)}.anchor-strip span{font-size:.78rem;font-weight:780;line-height:1.25}
+    .bottom-line{display:grid;grid-template-columns:1.2fr .8fr;gap:13px}
+    .panel{padding:21px;border:1px solid var(--line);border-radius:17px;background:var(--surface);box-shadow:0 8px 28px rgba(46,43,34,.045)}
+    .panel h3{margin:0 0 8px;font-size:1.05rem}.panel p{margin:0;color:var(--ink-soft)}
+    .aligned{border-color:#a9cfc2;background:linear-gradient(135deg,var(--accent-soft),var(--surface))}.aligned strong{color:var(--accent-deep)}
+    .warning{border-color:#dfbcae;background:linear-gradient(135deg,var(--risk-soft),var(--surface))}.warning strong{color:#873719}
+    .issues{display:grid;gap:18px}
+    .issue{overflow:hidden;border:1px solid var(--line);border-top:5px solid var(--risk);border-radius:20px;background:var(--surface);box-shadow:var(--shadow)}
+    .issue-head{display:grid;grid-template-columns:auto 1fr auto;gap:15px;align-items:start;padding:23px 24px 17px}
+    .issue-number{display:grid;width:39px;height:39px;place-items:center;border-radius:50%;background:var(--risk);color:#fff;font:850 .78rem var(--mono)}
+    .issue h3{margin:0;font-size:clamp(1.15rem,2.2vw,1.45rem);line-height:1.22}.issue-sub{margin:6px 0 0;color:var(--muted);font-size:.9rem}
+    .priority{padding:5px 9px;border-radius:999px;background:var(--risk-soft);color:#8f3719;font-size:.65rem;font-weight:900;letter-spacing:.09em;text-transform:uppercase;white-space:nowrap}
+    .plain{margin:0 24px 18px;padding:15px 17px;border-left:4px solid var(--accent);border-radius:0 11px 11px 0;background:var(--accent-soft);font-size:.96rem}.plain b{color:var(--accent-deep)}
+    .compare{display:grid;grid-template-columns:1fr 1fr;gap:1px;margin:0 24px 18px;overflow:hidden;border:1px solid var(--line);border-radius:13px;background:var(--line)}
+    .side{padding:17px;background:var(--surface-2)}.side.current{background:#fff7f2}.side.design{background:#f2faf7}
+    .side .label{display:block;margin-bottom:7px;color:var(--muted);font-size:.68rem;font-weight:900;letter-spacing:.1em;text-transform:uppercase}.side p{margin:0;font-size:.88rem}
+    .example{margin:0 24px 18px;padding:17px;border:1px dashed var(--line-strong);border-radius:13px;background:#fbfaf6}
+    .example-label{display:block;margin-bottom:10px;color:var(--gold);font-size:.68rem;font-weight:900;letter-spacing:.1em;text-transform:uppercase}
+    .flow{display:flex;align-items:stretch;gap:8px}.step{flex:1;min-width:0;padding:11px;border:1px solid var(--line);border-radius:10px;background:#fff;font-size:.81rem}.step b{display:block;margin-bottom:3px}.arrow{display:grid;place-items:center;color:var(--accent);font-weight:900}
+    .example p{margin:10px 0 0;color:var(--muted);font-size:.82rem}
+    .outcome-row{display:grid;grid-template-columns:repeat(3,1fr);gap:8px}.outcome{padding:11px;border:1px solid var(--line);border-radius:10px;background:#fff;text-align:center;font-weight:850;font-size:.82rem}.outcome.info{border-color:#d7bd79;background:var(--gold-soft);color:#6a4c05}
+    .issue-body{display:grid;grid-template-columns:1fr 1fr;gap:18px;padding:0 24px 22px}.issue-body h4{margin:0 0 6px;color:var(--muted);font-size:.68rem;letter-spacing:.1em;text-transform:uppercase}.issue-body p,.issue-body ul{margin:0;color:var(--ink-soft);font-size:.87rem}.issue-body ul{padding-left:18px}.issue-body li+li{margin-top:5px}
+    .fix{padding:14px 15px;border:1px solid #a9cfc2;border-radius:12px;background:var(--accent-soft)}.fix h4{color:var(--accent-deep)}
+    details{margin:0 24px 22px;padding:10px 13px;border:1px solid var(--line);border-radius:11px;background:var(--surface-2);color:var(--muted);font-size:.77rem}summary{cursor:pointer;color:var(--ink-soft);font-weight:800}details p{margin:8px 0 0}
+    .repair-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:12px}.repair{padding:18px;border:1px solid var(--line);border-radius:15px;background:var(--surface)}.repair b{display:grid;width:30px;height:30px;place-items:center;margin-bottom:12px;border-radius:50%;background:var(--ink);color:#fff}.repair h3{margin:0 0 7px;font-size:1rem}.repair p{margin:0;color:var(--muted);font-size:.84rem}
+    .success{margin-top:18px;padding:20px;border:1px solid #a9cfc2;border-radius:16px;background:linear-gradient(120deg,var(--accent-soft),var(--surface))}.success h3{margin:0 0 8px}.success ul{display:grid;grid-template-columns:1fr 1fr;gap:7px 25px;margin:0;padding-left:19px;color:var(--ink-soft);font-size:.87rem}
+    .foot{margin-top:46px;padding-top:20px;border-top:1px solid var(--line);color:var(--muted);font-size:.79rem}
+    @media(max-width:920px){.hero-grid,.bottom-line{grid-template-columns:1fr}.anchor-strip{grid-template-columns:repeat(4,1fr)}.repair-grid{grid-template-columns:1fr 1fr}}
+    @media(max-width:650px){.shell{width:min(100% - 22px,1120px)}.hero{padding-top:40px}.anchor-strip{grid-template-columns:1fr 1fr}.issue-head{grid-template-columns:auto 1fr;padding:18px 17px 13px}.priority{grid-column:2;justify-self:start}.plain,.compare,.example,details{margin-left:17px;margin-right:17px}.compare,.issue-body{grid-template-columns:1fr}.issue-body{padding:0 17px 18px}.flow{display:grid;grid-template-columns:1fr}.arrow{transform:rotate(90deg)}.repair-grid,.success ul{grid-template-columns:1fr}}
+    @media print{body{background:#fff;font-size:10pt}.shell{width:100%}.hero{padding-top:0}.quick-links,.anchor-strip{display:none}.issue{break-inside:avoid;box-shadow:none}.repair-grid{grid-template-columns:repeat(2,1fr)}details{display:none}}
+  </style>
+</head>
+<body>
+  <header class="hero">
+    <div class="shell hero-grid">
+      <div>
+        <p class="eyebrow">Plain-language mechanism review &middot; 23 July 2026</p>
+        <h1>Where Break the Court and the system design still disagree</h1>
+        <p class="dek">The adaptive panel ladder is now broadly correct. The remaining high-priority problems are about <b>which jurors count, how appeals are tested, and whether every public explanation is teaching the same rules.</b></p>
+        <nav class="quick-links" aria-label="Related project pages">
+          <a href="break-the-court.html">Open Break the Court</a>
+          <a href="demothemis.html">Open DemoThemis</a>
+          <a href="run-through.html">Open the run-through</a>
+          <a href="contradiction-review.html">Open the full contradiction review</a>
+        </nav>
+      </div>
+      <aside class="verdict" aria-label="Review result">
+        <div class="count"><b>7</b><span>high-priority sync issues</span></div>
+        <p>None requires abandoning adaptive panels. They require the same frozen inputs, appeal logic, voting model, and public rules to be used everywhere.</p>
+      </aside>
+    </div>
+  </header>
+
+  <main class="shell">
+    <section aria-labelledby="overview-title">
+      <div class="section-head"><div><p class="kicker">The short answer</p><h2 id="overview-title">The foundation is aligned; the calculations around it are not yet fully shared</h2></div></div>
+      <div class="bottom-line">
+        <article class="panel aligned"><h3><strong>Already aligned</strong></h3><p>Both pages use the same five legal configurations: 7, 15, 31, 3 &times; 31, and 5 &times; 31. They use value to tighten a risk limit, test configurations in order, and select the smallest one that passes security, quality, formation, capacity, and funding.</p></article>
+        <article class="panel warning"><h3><strong>Still unsafe to describe as one model</strong></h3><p>The two pages can feed that shared ladder different juror pools, fee assumptions, vote rules, and appeal assumptions. The shared ladder can therefore produce different answers depending on which page is explaining it.</p></article>
+      </div>
+      <nav class="anchor-strip" aria-label="Jump to an issue">
+        <a href="#issue-1"><b>01</b><span>Cohort changes while testing</span></a>
+        <a href="#issue-2"><b>02</b><span>Appeal uses the wrong context</span></a>
+        <a href="#issue-3"><b>03</b><span>Appeal threat model changes</span></a>
+        <a href="#issue-4"><b>04</b><span>Run-through teaches old rules</span></a>
+        <a href="#issue-5"><b>05</b><span>Weighted versus equal jurors</span></a>
+        <a href="#issue-6"><b>06</b><span>Third outcome is missing</span></a>
+        <a href="#issue-7"><b>07</b><span>Public calculators disagree</span></a>
+      </nav>
+    </section>
+
+    <section aria-labelledby="issues-title">
+      <div class="section-head"><div><p class="kicker">High-priority issues</p><h2 id="issues-title">What is wrong, why it matters, and how to fix it</h2></div><p>Each issue below can change the selected court, the quoted appeal, or the outcome a reviewer believes the protocol will produce.</p></div>
+      <div class="issues">
+
+        <article class="issue" id="issue-1">
+          <header class="issue-head"><span class="issue-number">01</span><div><h3>The &ldquo;frozen&rdquo; juror pool changes while panel sizes are being tested</h3><p class="issue-sub">A candidate configuration can partly change the evidence used to declare itself safe.</p></div><span class="priority">High</span></header>
+          <p class="plain"><b>In plain English:</b> the protocol is supposed to decide who is eligible first, freeze that list, and then test every panel against the same list. Break the Court instead recalculates pay, workload, retention, and drawable jurors for each candidate.</p>
+          <div class="compare"><div class="side design"><span class="label">System design</span><p>Freeze exposure and the conservative eligible cohort. Candidate-specific qualifications may remove people, but cannot create a larger safety pool.</p></div><div class="side current"><span class="label">Current Break model</span><p>Testing 31 seats and testing 5 &times; 31 seats can produce different retained and drawable populations because the candidate changes the economics.</p></div></div>
+          <div class="example"><span class="example-label">Simple example</span><div class="flow"><div class="step"><b>Start</b>1,000 potentially eligible jurors</div><div class="arrow">&rarr;</div><div class="step"><b>Test a small panel</b>Model says 330 remain drawable</div><div class="arrow">&rarr;</div><div class="step"><b>Test a large panel</b>Model now says 350 are drawable</div></div><p>The underlying case and people did not change; only the candidate changed. That makes the comparison circular.</p></div>
+          <div class="issue-body"><div><h4>Why it matters</h4><ul><li>A larger configuration can pass using a pool that did not exist when testing began.</li><li>Capture probability and capacity can look better than the genuinely frozen case state supports.</li></ul></div><div class="fix"><h4>Best fix</h4><p>Build one case-frozen cohort before evaluating candidates. Calculate retention separately as a possible disqualifier, and cap every candidate&rsquo;s usable cohort at the frozen number.</p></div></div>
+          <details><summary>Where the mismatch appears</summary><p>DemoThemis, &ldquo;Choose the smallest ruling set that is actually safe,&rdquo; says to freeze the cohort first and says fee-driven retention cannot inflate it. Break recalculates supply inside each candidate evaluation.</p></details>
+        </article>
+
+        <article class="issue" id="issue-2">
+          <header class="issue-head"><span class="issue-number">02</span><div><h3>The next appeal is tested using the current court&rsquo;s eligibility and pay assumptions</h3><p class="issue-sub">The lab changes the number of seats, but does not completely rebuild the next rung.</p></div><span class="priority">High</span></header>
+          <p class="plain"><b>In plain English:</b> a 15-seat court and a 31-seat court do not necessarily use the same eligible people or cost per juror. Break currently starts with the 15-seat context, subtracts the current jurors, and uses what remains to estimate the 31-seat appeal.</p>
+          <div class="compare"><div class="side design"><span class="label">System design</span><p>Every appeal uses the immediate stronger rung, reapplies all qualification and prior-juror exclusions, prices every new seat, and halts if that fresh court cannot form.</p></div><div class="side current"><span class="label">Current Break model</span><p>The next appeal inherits the current rung&rsquo;s drawable pool and per-vote pay. A 15 &rarr; 31 appeal can therefore count jurors who do not meet the 31-seat seniority requirement.</p></div></div>
+          <div class="example"><span class="example-label">Why this can fail</span><div class="flow"><div class="step"><b>Current 31-seat ruling set</b>38 people needed with standbys; 92 appear available</div><div class="arrow">&rarr;</div><div class="step"><b>After 31 serve</b>61 appear fresh</div><div class="arrow">&rarr;</div><div class="step"><b>Next 3 &times; 31 appeal</b>112 fresh people are required</div></div><p>The current selector can still recommend the initial court even though the promised next appeal cannot form.</p></div>
+          <div class="issue-body"><div><h4>Why it matters</h4><ul><li>An appeal may be shown as cheaper or more available than it really is.</li><li>A case can be admitted with no viable next rung, silently weakening the appeal promise.</li><li>Subtracting only the current panel is wrong once a case has a longer served-juror history.</li></ul></div><div class="fix"><h4>Best fix</h4><p>Create a path-aware appeal calculation: actual served-juror history &rarr; next-rung qualifications &rarr; next-rung workload and fee &rarr; capacity and security gates. Either require the next rung at intake or explicitly declare the admitted ruling terminal.</p></div></div>
+          <details><summary>Where the mismatch appears</summary><p>Break computes the next candidate after finishing the current candidate model, then reuses the current drawable cohort and pay rate. DemoThemis requires exclusions and qualifications before testing every rung.</p></details>
+        </article>
+
+        <article class="issue" id="issue-3">
+          <header class="issue-head"><span class="issue-number">03</span><div><h3>The attacker assumption becomes weaker when the appeal is priced</h3><p class="issue-sub">Initial selection and appeal security do not use one published threat model.</p></div><span class="priority">High</span></header>
+          <p class="plain"><b>In plain English:</b> the initial panel is tested against at least a published 25% attacker-weight scenario. The next appeal&rsquo;s security amount is based on the smaller attacker share visible in the current lab settings. Lowering the attacker slider can therefore make an appeal look safer without changing the published security promise.</p>
+          <div class="compare"><div class="side design"><span class="label">Initial panel</span><p>Uses the published 25% attacker-weight envelope, or a harsher visible attack when one exists.</p></div><div class="side current"><span class="label">Next appeal</span><p>Uses the current qualified coalition as a percentage of the current drawable pool. The DemoThemis appeal widget uses yet another assumption: up to 500 attackers.</p></div></div>
+          <div class="example"><span class="example-label">The unintended result</span><div class="flow"><div class="step"><b>Published promise</b>Stress 25% attacker weight</div><div class="arrow">&rarr;</div><div class="step"><b>Lab slider</b>Visible bloc happens to equal 4%</div><div class="arrow">&rarr;</div><div class="step"><b>Appeal quote</b>Security is priced using 4%</div></div><p>The appeal becomes cheaper because the calculator changed assumptions, not because the system proved a safer pool.</p></div>
+          <div class="issue-body"><div><h4>Why it matters</h4><p>The security bond can be understated, making repeated or strategic appeals cheaper than the published threat model intends.</p></div><div class="fix"><h4>Best fix</h4><p>Publish one versioned appeal threat rule. Use the worst of the constitutional envelope and the current measured pressure, then use that same rule in Break, DemoThemis, and the run-through.</p></div></div>
+          <details><summary>Where the mismatch appears</summary><p>Break&rsquo;s initial policy context inserts the published 25% envelope. Its next-appeal probability instead derives attackers from the current modeled bloc share. The DemoThemis appeal calculator uses a fixed 500-attacker ceiling.</p></details>
+        </article>
+
+        <article class="issue" id="issue-4">
+          <header class="issue-head"><span class="issue-number">04</span><div><h3>The run-through still teaches the old panel-selection and consensus rules</h3><p class="issue-sub">A reviewer can learn one rule in Chapter 1 and see another in Break the Court.</p></div><span class="priority">High</span></header>
+          <p class="plain"><b>In plain English:</b> the run-through says money directly selects a panel tier and that parallel panels must all agree. The current adaptive design says value only tightens the risk requirement, and 2 of 3 or 3 of 5 panels can decide.</p>
+          <div class="compare"><div class="side current"><span class="label">Run-through currently says</span><p>&ldquo;Panel plan fixed by value.&rdquo; Parallel top-tier panels must reach the same answer; a split becomes insufficient information.</p></div><div class="side design"><span class="label">Current shared policy says</span><p>Test every legal configuration and choose the smallest passing one. Two of three or three of five panel majorities produce the ruling.</p></div></div>
+          <div class="example"><span class="example-label">Concrete contradiction</span><div class="outcome-row"><div class="outcome">Panel A: YES</div><div class="outcome">Panel B: YES</div><div class="outcome">Panel C: NO</div></div><p>Under the shared policy, YES wins 2&ndash;1. Under the run-through wording, the disagreement becomes insufficient information. Both cannot be the production rule.</p></div>
+          <div class="issue-body"><div><h4>Why it matters</h4><p>The run-through is the first and easiest explanation of the system. If it teaches the old rule, most reviewers will carry the wrong mental model into every later chapter.</p></div><div class="fix"><h4>Best fix</h4><p>Rewrite those run-through steps: value tightens the risk limit; the selector chooses the first passing configuration; parallel configurations use 2-of-3 or 3-of-5 panel majorities.</p></div></div>
+          <details><summary>Where the mismatch appears</summary><p>Run-through lifecycle events &ldquo;Panel plan fixed by value&rdquo; and &ldquo;Required panels agree?&rdquo; conflict with the shared adaptive policy and the updated DemoThemis ladder.</p></details>
+        </article>
+
+        <article class="issue" id="issue-5">
+          <header class="issue-head"><span class="issue-number">05</span><div><h3>The chapter describes weighted jurors, while Break counts equal people and equal votes</h3><p class="issue-sub">This is an unresolved design choice, not merely a different display.</p></div><span class="priority">High</span></header>
+          <p class="plain"><b>In plain English:</b> DemoThemis says reputation can make a juror up to three times as likely to be drawn and that full vote weight must be earned. Break calculates capture as if every eligible juror is equally likely to be selected and every selected seat has one equal vote.</p>
+          <div class="compare"><div class="side design"><span class="label">DemoThemis chapter</span><p>Private reputation changes draw rate, pay, and vote weight. A person may be eligible without yet having full vote weight.</p></div><div class="side current"><span class="label">Break calculation</span><p>It converts attacker &ldquo;weight&rdquo; into an attacker headcount and applies an equal-probability finite-pool draw followed by a simple seat majority.</p></div></div>
+          <div class="example"><span class="example-label">Why the words matter</span><div class="flow"><div class="step"><b>Equal-seat system</b>100 people = 100 equal chances and 100 equal votes</div><div class="arrow">&ne;</div><div class="step"><b>Weighted system</b>100 people can create different selection chances and different tally influence</div></div><p>An exact probability for the first system is not automatically exact for the second.</p></div>
+          <div class="issue-body"><div><h4>Why it matters</h4><ul><li>Capture odds may be optimistic or pessimistic depending on where high reputation is concentrated.</li><li>&ldquo;One human, one vote&rdquo; is also unclear if tally weight differs.</li></ul></div><div class="fix"><h4>Best fix</h4><p>Choose explicitly. The cleaner security design is one human, one equal seated vote, with reputation affecting qualification, draw frequency, and pay only. If weighted voting remains, Break must model weighted sampling and weighted tally capture.</p></div></div>
+          <details><summary>Where the mismatch appears</summary><p>DemoThemis, &ldquo;The reputation dial,&rdquo; specifies a draw-rate cap and earned full vote weight. Break and the shared panel policy use integer juror counts and ordinary majorities.</p></details>
+        </article>
+
+        <article class="issue" id="issue-6">
+          <header class="issue-head"><span class="issue-number">06</span><div><h3>The complete court has three outcomes, but the robustness model is binary</h3><p class="issue-sub">Break cannot test attacks or failure modes that aim for no usable verdict.</p></div><span class="priority">High</span></header>
+          <p class="plain"><b>In plain English:</b> the product allows YES, NO, and INSUFFICIENT INFORMATION. Break reduces each juror or panel to &ldquo;correct&rdquo; or &ldquo;wrong.&rdquo; It therefore cannot show what happens when no option receives the required majority or when an attacker benefits by forcing an inconclusive result.</p>
+          <div class="compare"><div class="side design"><span class="label">Complete product</span><p>INSUFFICIENT INFORMATION is a real ruling with its own market and escrow consequences.</p></div><div class="side current"><span class="label">Break model</span><p>Decision quality is a binary correct-majority probability. Attendance formation is measured, but verdict formation across three options is not.</p></div></div>
+          <div class="example"><span class="example-label">A missing state</span><div class="outcome-row"><div class="outcome">YES bloc</div><div class="outcome">NO bloc</div><div class="outcome info">INSUFFICIENT bloc</div></div><p>The court needs a deterministic rule for an outright majority, a plurality, or no consensus. The current model does not distinguish these paths.</p></div>
+          <div class="issue-body"><div><h4>Why it matters</h4><p>A denial-of-resolution attack can have economic value even when the attacker cannot force YES or NO. Binary capture probability does not measure that risk.</p></div><div class="fix"><h4>Best fix</h4><p>Define the three-outcome tally and escalation rule first. Then include directional capture, forced-insufficient capture, and no-consensus probability in the selector. If this is deferred, label Break clearly as a binary abstraction.</p></div></div>
+          <details><summary>Where the mismatch appears</summary><p>OmenMarketMaker, DemoThemis, and the run-through all give insufficient information settlement meaning. Break and the shared decision-quality calculation currently use a binary majority model.</p></details>
+        </article>
+
+        <article class="issue" id="issue-7">
+          <header class="issue-head"><span class="issue-number">07</span><div><h3>The two public panel calculators do not actually use the same reference inputs</h3><p class="issue-sub">One calculator can say a configuration passes while the other correctly halts it.</p></div><span class="priority">High</span></header>
+          <p class="plain"><b>In plain English:</b> the DemoThemis widget says it is demonstrating the same reproducible adaptive policy as Break. But it automatically marks fee funding as feasible, uses $1.50 per seat, and keeps 75% of the pool for senior panels. Break calculates the full fee and defaults to a 45% senior pool.</p>
+          <div class="compare"><div class="side design"><span class="label">DemoThemis widget</span><p>Fee gate is always passed. Required fee is simplified to seats &times; $1.50. Senior eligibility is 75%.</p></div><div class="side current"><span class="label">Break model</span><p>Fee includes processing, adaptive panel pay, reward-pool top-up, and capped operations. Senior eligibility defaults to 45% before other reductions.</p></div></div>
+          <div class="example"><span class="example-label">What a reviewer can see</span><div class="flow"><div class="step"><b>Same visible case</b>Exposure, pool, attacker share, accuracy</div><div class="arrow">&rarr;</div><div class="step"><b>DemoThemis</b>Funding always passes</div><div class="arrow">&ne;</div><div class="step"><b>Break</b>Funding or senior capacity can halt</div></div><p>The shared ladder is not enough when each page supplies it with different facts.</p></div>
+          <div class="issue-body"><div><h4>Why it matters</h4><p>The simpler chapter widget can recommend a court the full model says cannot be funded or staffed, undermining confidence in both explanations.</p></div><div class="fix"><h4>Best fix</h4><p>Share a single versioned context builder for frozen cohort, senior qualification, deterministic fee, and attack scenarios. Both pages can present different levels of detail while calculating the same answer.</p></div></div>
+          <details><summary>Where the mismatch appears</summary><p>The DemoThemis adaptive widget hardcodes fee feasibility and a 75% senior cohort. Break uses the full deterministic fee and the assumptions file&rsquo;s 45% senior-pool default.</p></details>
+        </article>
+      </div>
+    </section>
+
+    <section aria-labelledby="repair-title">
+      <div class="section-head"><div><p class="kicker">Recommended repair order</p><h2 id="repair-title">Fix the shared calculations before polishing the explanations</h2></div><p>This order prevents copy from being rewritten around rules that may still change.</p></div>
+      <div class="repair-grid">
+        <article class="repair"><b>1</b><h3>Freeze one case context</h3><p>Exposure, eligible cohort, served-juror history, and published threat assumptions become immutable inputs.</p></article>
+        <article class="repair"><b>2</b><h3>Build one appeal engine</h3><p>Reapply next-rung qualifications, pricing, capacity, and security using the actual dispute path.</p></article>
+        <article class="repair"><b>3</b><h3>Resolve voting semantics</h3><p>Choose equal or weighted seats and define exactly how three outcomes reach a ruling.</p></article>
+        <article class="repair"><b>4</b><h3>Connect every public surface</h3><p>Use the shared context in both widgets, then update the run-through&rsquo;s selection and consensus copy.</p></article>
+      </div>
+      <div class="success"><h3>What &ldquo;fully synchronized&rdquo; should mean</h3><ul><li>The same case produces the same frozen cohort on every page.</li><li>The same next appeal produces the same capacity, fee, capture odds, and security amount.</li><li>Parallel panel results have one published decision rule.</li><li>YES, NO, and insufficient information are modeled consistently.</li><li>No public calculator silently bypasses a safety gate.</li><li>Break remains an explanatory stress test, not an alternative protocol specification.</li></ul></div>
+    </section>
+
+    <p class="foot">Scope: high-priority synchronization issues between the reviewer-visible Break the Court lab and the public chapters. Lower-priority wording, governance-range, and presentation cleanup is intentionally left to the broader contradiction review.</p>
+  </main>
+</body>
+</html>
