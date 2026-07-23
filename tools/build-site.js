@@ -17,7 +17,7 @@ const publicFiles = [
   "demothemis-mvp.html",
   "assumptions.js",
   "assets/common.js",
-  "assets/panel-schedule.js",
+  "assets/panel-policy.js",
   "assets/brand-rive.js",
   "assets/mvp-simulator.css",
   "assets/run-through.css",

@@ -61,7 +61,7 @@
       <p class="eyebrow">Reviewer-facing site audit · 23 July 2026</p>
       <h1>Contradiction review of the public chapters and demo MVP</h1>
       <p class="hero-dek">This edition checks only claims a reviewer can encounter on the public proposal site: the chapters, diagrams, interactive widgets, run-through simulator, static MVP preview, and visible live-demo screens.</p>
-      <div class="verdict"><span class="verdict-mark">!</span><div><strong>14 public-facing contradictions remain: 1 high, 7 medium, and 6 low.</strong><p>The caller-bond design, 20 MUSD MVP fee, three-choice ballot, Orb-plus-device explanation, appeal quote, and public panel schedule are now substantially aligned. The largest remaining issue is absolute “unbuyable” and “bullet proof” wording; most other findings are mismatched thresholds, money flows, panel rules, or interactive examples.</p></div></div>
+      <div class="verdict"><span class="verdict-mark">!</span><div><strong>13 public-facing contradictions remain: 1 high, 6 medium, and 6 low.</strong><p>The caller-bond design, 20 MUSD MVP fee, three-choice ballot, Orb-plus-device explanation, adaptive panel policy, and complete appeal ladder are now substantially aligned. The largest remaining issue is absolute “unbuyable” and “bullet proof” wording; most other findings are mismatched thresholds, money flows, or interactive examples.</p></div></div>
       <div class="meta-row">
         <span class="meta-pill">Eight public proposal pages</span>
         <span class="meta-pill">Visible live/demo MVP screens</span>
@@ -75,9 +75,9 @@
     <section aria-labelledby="summary-title">
       <div class="section-head"><div><p class="label">Executive count</p><h2 id="summary-title">Only reviewer-visible conflicts are counted</h2></div><p>Differences that are clearly labeled as MVP-versus-roadmap scope are not contradictions. A finding remains only when public pages disagree with each other or an interaction contradicts the explanation around it.</p></div>
       <div class="summary-grid">
-        <article class="summary-card total"><span class="num">14</span><strong>Active findings</strong><p>Recounted after the latest public-site and simulator updates.</p></article>
+        <article class="summary-card total"><span class="num">13</span><strong>Active findings</strong><p>Recounted after the latest public-site and simulator updates.</p></article>
         <article class="summary-card high"><span class="num">1</span><strong>High</strong><p>An absolute security promise conflicts with the site’s own risk model.</p></article>
-        <article class="summary-card medium"><span class="num">7</span><strong>Medium</strong><p>Mechanism, pricing, settlement, panel, and product-boundary conflicts.</p></article>
+        <article class="summary-card medium"><span class="num">6</span><strong>Medium</strong><p>Mechanism, pricing, settlement, and product-boundary conflicts.</p></article>
         <article class="summary-card low"><span class="num">6</span><strong>Low</strong><p>Overbroad wording and missing details in visible examples.</p></article>
       </div>
     </section>
@@ -103,9 +103,9 @@
     <section id="findings" aria-labelledby="findings-title">
       <div class="toolbar" role="group" aria-label="Filter findings">
         <strong>Show</strong>
-        <button class="filter is-active" type="button" data-filter="all">All 14</button>
+        <button class="filter is-active" type="button" data-filter="all">All 13</button>
         <button class="filter" type="button" data-filter="high">High 1</button>
-        <button class="filter" type="button" data-filter="medium">Medium 7</button>
+        <button class="filter" type="button" data-filter="medium">Medium 6</button>
         <button class="filter" type="button" data-filter="low">Low 6</button>
         <input id="finding-search" type="search" placeholder="Search findings or page names…" aria-label="Search findings">
       </div>
@@ -160,13 +160,6 @@
           <p class="evidence"><b>Visible evidence:</b> OmenMarketMaker “Private markets”; Run-through private-room creation and funding screens; public resolution economics.</p>
         </article>
 
-        <article class="finding" data-severity="medium" id="M07">
-          <div class="finding-head"><span class="finding-id">M-07</span><h3>A top-tier panel split is appealable even though the public ladder has no larger rung</h3><span class="severity">Medium</span></div>
-          <div class="conflict"><div class="claim"><b>Parallel-panel rule</b><p>Several 31-seat panels handle the largest cases; disagreement escalates or becomes provisional insufficient information that may be appealed.</p></div><div class="claim"><b>Appeal ceiling</b><p>The same chapter says the ordinary ladder ends at 31 seats and the 31-seat rung becomes final.</p></div></div>
-          <div class="finding-body"><div><h4>Why</h4><p>The single-panel appeal ladder was applied to a separate multi-panel ceiling without defining a next step.</p></div><div><h4>Handle</h4><p>Define a larger top-tier rule—such as more disjoint 31-seat panels—or make top-tier disagreement terminal and specify its market settlement.</p></div></div>
-          <p class="evidence"><b>Visible evidence:</b> DemoThemis ceiling simulator and appeal ladder; Run-through “Provisional INSUFFICIENT_INFORMATION” branch.</p>
-        </article>
-
         <article class="finding" data-severity="low" id="L01">
           <div class="finding-head"><span class="finding-id">L-01</span><h3>“Tradeable through resolution” omits the smaller-pool exception</h3><span class="severity">Low</span></div>
           <div class="conflict"><div class="claim"><b>Broad claim</b><p>Home and OmenMarketMaker advertise that positions remain tradeable throughout resolution.</p></div><div class="claim"><b>Actual public design</b><p>Only markets that graduate into wallet-held tokens have that property; smaller markets remain internal pool claims.</p></div></div>
@@ -216,7 +209,7 @@
       <div class="section-head"><div><p class="label">Recommended order</p><h2 id="actions-title">Fix what reviewers see first</h2></div></div>
       <div class="action-grid">
         <article class="action-card"><span class="step">1</span><h3>Remove absolute promises</h3><ol><li>Qualify “unbuyable,” “bullet proof,” and “ungameable.”</li><li>Clarify launch dependency versus permanent product independence.</li><li>Use “one human, one seat” where reputation can affect influence.</li></ol></article>
-        <article class="action-card"><span class="step">2</span><h3>Unify visible mechanics</h3><ol><li>Share one graduation schedule across both market widgets.</li><li>Give top-tier disagreement a terminal rule.</li><li>Align the resolved-case testing floor across the chapter and stress test.</li></ol></article>
+        <article class="action-card"><span class="step">2</span><h3>Unify visible mechanics</h3><ol><li>Share one graduation schedule across both market widgets.</li><li>Align the 2% market fee with Governance’s stated range.</li><li>Align the resolved-case testing floor across the chapter and stress test.</li></ol></article>
         <article class="action-card"><span class="step">3</span><h3>Balance every visible receipt</h3><ol><li>Show bond reimbursement and market fees in private-room terms.</li><li>Resolve or remove the early-entry bonus.</li><li>Correct the two appeal prompts and show the locked evidence policy.</li></ol></article>
       </div>
     </section>
@@ -224,8 +217,8 @@
     <section id="resolved" aria-labelledby="resolved-title">
       <div class="section-head"><div><p class="label">No longer active</p><h2 id="resolved-title">Public-site conflicts removed by the latest updates</h2></div><p>These remain outside the active count.</p></div>
       <div class="not-conflict">
-        <div class="ok-item"><strong>Panel sizing now follows one published schedule.</strong> DemoThemis and Break the Court share the same $250k, $1M, $5M, and $25M boundaries; parallel tiers use disjoint 31-seat panels, while the run-through’s $118,000 case remains correctly inside the seven-seat tier.</div>
-        <div class="ok-item"><strong>The appeal calculator now prices the next legal rung.</strong> A reviewer selects the current 7-, 15-, or 31-seat ruling; the quote advances only 7 to 15 or 15 to 31, while 31 is clearly terminal and opens no funding goal.</div>
+        <div class="ok-item"><strong>Panel sizing now follows one adaptive policy.</strong> DemoThemis and Break the Court share the same versioned 7, 15, 31, 3 × 31, and 5 × 31 candidate set. Locked exposure tightens the risk limit; exact finite-pool math, quality, formation, capacity, and fee gates choose the first passing configuration or halt intake without an unsafe fallback.</div>
+        <div class="ok-item"><strong>The appeal ladder now reaches a defined terminal rung.</strong> The calculator advances only 7 → 15 → 31 → 3 × 31 → 5 × 31, excludes every juror previously used in the dispute, funds every new seat, and opens no funding goal after terminal 5 × 31.</div>
         <div class="ok-item"><strong>The resolution lifecycle now uses one caller-bond design.</strong> Chapters, the run-through, and the completed Robustness Lock agree that no court reserve is collected before betting; the caller pays the exact fee at request time, YES/NO reimburses pro-rata, and insufficient information preserves market backing.</div>
         <div class="ok-item"><strong>The visible MVP fee is consistently 20 MUSD.</strong> The preview, submission flow, ruling receipt, and current MVP explanation no longer teach a 2 MUSD live fee.</div>
         <div class="ok-item"><strong>The third ballot option is now visible.</strong> Both the static MVP preview and live-demo ballot present YES, NO, and INSUFFICIENT INFORMATION with a matching ruling state.</div>

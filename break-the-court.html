@@ -65,6 +65,23 @@
   .score.good .v { color: var(--good); }
   .score.mid .v { color: #9b650f; }
   .score.bad .v { color: var(--bad); }
+  .auto-policy-card { margin: 0 0 1rem; padding: 1rem; border: 1px solid var(--line-strong); border-radius: var(--radius); background: color-mix(in srgb, var(--accent-soft) 38%, var(--surface)); box-shadow: var(--shadow); font-family: var(--sans); }
+  .auto-policy-head { display: flex; align-items: flex-start; justify-content: space-between; gap: 1rem; flex-wrap: wrap; }
+  .auto-policy-head p { margin: 0; color: var(--accent); font-size: .72rem; font-weight: 800; letter-spacing: .08em; text-transform: uppercase; }
+  .auto-policy-head h3 { margin: .2rem 0 0; font-size: clamp(1.15rem, 3vw, 1.55rem); line-height: 1.15; }
+  .auto-policy-grid { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: .55rem; margin-top: .8rem; }
+  .auto-policy-metric { min-width: 0; border: 1px solid var(--line); border-radius: 11px; background: var(--surface); padding: .55rem .65rem; }
+  .auto-policy-metric span { display: block; color: var(--muted); font-size: .66rem; font-weight: 700; letter-spacing: .04em; text-transform: uppercase; }
+  .auto-policy-metric b { display: block; margin-top: .15rem; color: var(--ink); font-family: var(--mono); font-size: .85rem; overflow-wrap: anywhere; }
+  .auto-policy-reason { margin: .7rem 0 0; color: var(--muted); font-size: .78rem; line-height: 1.45; }
+  .auto-policy-card.unavailable { background: var(--bad-soft); border-color: color-mix(in srgb, var(--bad) 45%, var(--line)); }
+  .auto-policy-card.unavailable .auto-policy-head h3 { color: var(--bad); }
+  .override-group { display: flex; flex-wrap: wrap; gap: .35rem; margin-top: .45rem; }
+  .override-button { min-height: 2.35rem; border: 1px solid var(--line-strong); border-radius: 999px; background: var(--surface); color: var(--muted); padding: .38rem .65rem; font: 800 .75rem/1 var(--sans); cursor: pointer; }
+  .override-button:hover { background: var(--accent-soft); color: var(--accent-ink); }
+  .override-button[aria-pressed="true"] { background: var(--accent); border-color: var(--accent); color: #fff; }
+  .override-note { display: block; margin-top: .45rem; color: var(--faint); font: 700 .72rem/1.4 var(--sans); }
+  @media (max-width: 760px) { .auto-policy-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); } }
   .board { background: var(--surface); border: 1px solid var(--line-strong); border-radius: var(--radius); box-shadow: var(--shadow-lg); padding: 1rem; }
   .board-head { display: flex; justify-content: space-between; gap: 1rem; flex-wrap: wrap; align-items: center; margin-bottom: .8rem; }
   .board-head h3 { font-family: var(--sans); font-size: .86rem; letter-spacing: .09em; text-transform: uppercase; color: var(--accent); margin: 0; }
@@ -329,6 +346,27 @@
         </div>
         <p class="sr-only" id="labAnnouncement" aria-live="polite"></p>
 
+        <section class="auto-policy-card" id="autoPolicyCard" aria-live="polite" aria-labelledby="autoPolicyTitle">
+          <div class="auto-policy-head">
+            <div>
+              <p>Automatic &middot; protocol recommendation</p>
+              <h3 id="autoPolicyTitle">Finding the smallest safe ruling set&hellip;</h3>
+            </div>
+            <span class="chip" id="autoPolicyChip">&hellip;</span>
+          </div>
+          <div class="auto-policy-grid">
+            <div class="auto-policy-metric"><span>Risk limit</span><b id="autoRiskLimit">&hellip;</b></div>
+            <div class="auto-policy-metric"><span>Worst capture</span><b id="autoWorstCapture">&hellip;</b></div>
+            <div class="auto-policy-metric"><span>Expected loss</span><b id="autoExpectedLoss">&hellip;</b></div>
+            <div class="auto-policy-metric"><span>Correct ruling</span><b id="autoQuality">&hellip;</b></div>
+            <div class="auto-policy-metric"><span>Panel formation</span><b id="autoFormation">&hellip;</b></div>
+            <div class="auto-policy-metric"><span>Required fee</span><b id="autoFee">&hellip;</b></div>
+            <div class="auto-policy-metric"><span>Spare eligible seats</span><b id="autoSpareSeats">&hellip;</b></div>
+            <div class="auto-policy-metric"><span>Worst scenario</span><b id="autoWorstScenario">&hellip;</b></div>
+          </div>
+          <p class="auto-policy-reason" id="autoPolicyReason">Testing security, quality, formation, capacity, and fee limits in the published order.</p>
+        </section>
+
         <div class="scoreboard">
           <div class="score" id="scoreSafety"><div class="k">Correct-majority chance<span class="info-icon" data-tooltip="Probability that one random jury reaches the correct answer after shared case-quality signals, later independent checks, baseline accuracy, and reward effects reinforce careful judgment."><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"></circle><path d="M12 16v-4"></path><path d="M12 8h.01"></path></svg></span></div><div class="v" id="safetyOut">&hellip;</div><small id="safetySub">&hellip;</small></div>
           <div class="score" id="scorePay"><div class="k">Average juror funding<span class="info-icon" data-tooltip="Immediate pay and long-term rewards available per retained juror as case demand funds the bench."><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"></circle><path d="M12 16v-4"></path><path d="M12 8h.01"></path></svg></span></div><div class="v" id="payOut">&hellip;</div><small id="paySub">&hellip;</small></div>
@@ -340,9 +378,9 @@
           <div class="panel-card control-card">
             <div class="dial-group">
               <h3>Change the conditions</h3>
-              <div class="dial"><label for="flow">Monthly disputed value <output id="flowOut" for="flow">&hellip;</output></label><input id="flow" type="range" min="10000" max="35000000" step="10000" value="100000"></div>
+              <div class="dial"><label for="flow">Monthly disputed value <output id="flowOut" for="flow">&hellip;</output></label><input id="flow" type="range" min="10000" max="100000000" step="10000" value="100000"></div>
               <div class="dial"><label for="jurors">Opted-in jurors <output id="jurorsOut" for="jurors">&hellip;</output></label><input id="jurors" type="range" min="0" max="100" step="1" value="0"></div>
-              <div class="dial"><label for="stake">Typical case value <output id="stakeOut" for="stake">&hellip;</output></label><input id="stake" type="range" min="0" max="100" step="1" value="21"><small class="panel-tier-note" id="panelScheduleOut" aria-live="polite">&hellip;</small></div>
+              <div class="dial"><label for="stake">Locked case exposure <output id="stakeOut" for="stake">&hellip;</output></label><input id="stake" type="range" min="0" max="100" step="1" value="21"><small class="panel-tier-note" id="panelScheduleOut" aria-live="polite">&hellip;</small></div>
               <div class="dial"><label for="bloc">Recruited attackers <output id="blocOut" for="bloc">&hellip;</output></label><input id="bloc" type="range" min="0" max="1000" step="5" value="10"></div>
             </div>
             <fieldset class="dial-group">
@@ -358,6 +396,18 @@
             </fieldset>
             <details class="fine-controls">
               <summary><span>All court settings</span><b>pricing, timing, accuracy, rentals</b></summary>
+              <div class="dial-group">
+                <h3>Panel-size experiment</h3>
+                <div class="override-group" id="panelOverride" role="group" aria-label="Experimental ruling-set override">
+                  <button class="override-button" type="button" data-panel-override="auto" aria-pressed="true">Automatic</button>
+                  <button class="override-button" type="button" data-panel-override="p7" aria-pressed="false">7</button>
+                  <button class="override-button" type="button" data-panel-override="p15" aria-pressed="false">15</button>
+                  <button class="override-button" type="button" data-panel-override="p31" aria-pressed="false">31</button>
+                  <button class="override-button" type="button" data-panel-override="p31x3" aria-pressed="false">3&times;31</button>
+                  <button class="override-button" type="button" data-panel-override="p31x5" aria-pressed="false">5&times;31</button>
+                </div>
+                <small class="override-note" id="panelOverrideNote">Lab override only &mdash; requesters cannot choose court security. Automatic remains the protocol recommendation.</small>
+              </div>
               <div class="dial-group">
                 <h3>Case timing and adaptive pricing</h3>
                 <div class="dial"><label for="lag">Pending-pay weeks <output id="lagOut" for="lag">&hellip;</output></label><input id="lag" type="range" min="1" max="8" step="1" value="2"></div>
@@ -478,7 +528,7 @@
 <script src="assets/vendor/popper-2.11.8.min.js"></script>
 <script src="assets/vendor/tippy-6.3.7.umd.min.js"></script>
 <script src="assumptions.js"></script>
-<script src="assets/panel-schedule.js"></script>
+<script src="assets/panel-policy.js"></script>
 <script src="assets/common.js"></script>
 <script>
 (function () {
@@ -507,8 +557,13 @@
   };
   var ATTACK_IDS = ["bloc", "bribe", "rental", "lazy", "grief", "drift"];
   var RISK_TO_ATTACK = { capture: "bloc", bribe: "bribe", rental: "rental", lazy: "lazy", grief: "grief", drift: "drift" };
+  var POLICY = window.DemoThemisPanelPolicy;
+  if (!POLICY || !Array.isArray(POLICY.CANDIDATES)) {
+    showModelError(new Error("Missing adaptive panel policy for Break the court"));
+    return;
+  }
   var PROTECTION_BENCHMARKS = {
-    capture: { kind: "max", limit: .01, label: "Coalition-majority chance at or below 1%" },
+    capture: { kind: "max", limit: POLICY.DEFAULTS.probabilityCeiling, label: "Coalition-majority chance inside the value-sensitive risk limit" },
     bribe: { kind: "cover", label: "Bribe cost covers receipt-adjusted case value" },
     rental: { kind: "max", limit: .01, label: "Rental-only majority chance at or below 1%" },
     lazy: { kind: "cover", label: "Expected penalty covers shortcut benefit" },
@@ -516,9 +571,9 @@
     drift: { kind: "min", floor: .75, label: "Independent-test signal at or above 75%" }
   };
   var STRONG_BENCHMARK_RATIO = 1.2;
-  var QUALITY_FLOOR = .75;
+  var QUALITY_FLOOR = POLICY.DEFAULTS.qualityFloor;
   var EPSILON = 1e-9;
-  var PANEL_SCHEDULE = window.DemoThemisPanelSchedule;
+  var panelOverride = "auto";
   function maxBenchmarkRatio(limit, actual) { return actual <= EPSILON ? Infinity : limit / actual; }
   function coverBenchmarkRatio(cost, benefit) { return benefit <= EPSILON ? Infinity : cost / benefit; }
   function minBenchmarkRatio(actual, floor) { return actual / Math.max(EPSILON, floor); }
@@ -600,7 +655,7 @@
     var quality = { key: "quality", applicable: m.correctPanel !== null, ratio: m.correctPanel === null ? 0 : m.correctPanel / QUALITY_FLOOR, actual: m.correctPanel, floor: QUALITY_FLOOR };
     var weakest = !weakestAttack || quality.ratio < weakestAttack.ratio ? quality : weakestAttack;
     var pricingGap = m.supportGapPerCase > EPSILON;
-    var state = pricingGap || m.panelShortage || m.appealPanelShortage || !weakest || weakest.ratio < 1 ? "bad" : weakest.ratio < STRONG_BENCHMARK_RATIO ? "mid" : "good";
+    var state = m.policyUnavailable || pricingGap || m.panelShortage || !weakest || weakest.ratio < 1 ? "bad" : weakest.ratio < STRONG_BENCHMARK_RATIO ? "mid" : "good";
     var disabledLocks = lockIds.filter(function (id) { return !v[id]; });
     return {
       state: state,
@@ -617,8 +672,8 @@
     };
   }
   function clampModelState(s) {
-    s.flow = clamp(s.flow, 10000, 35000000);
-    s.stake = clamp(s.stake, 100, 5000000);
+    s.flow = clamp(s.flow, 10000, 100000000);
+    s.stake = clamp(s.stake, 100, 100000000);
     s.lag = clamp(Math.round(s.lag), 1, 8);
     s.fee = clamp(s.fee, .005, .03);
     s.caseHours = clamp(s.caseHours, .25, 4);
@@ -668,22 +723,6 @@
     for (var i = k; i <= n; i++) s += Math.exp(logChoose(n, i) + i * Math.log(p) + (n - i) * Math.log(1 - p));
     return clamp(s, 0, 1);
   }
-  function hypergeomTail(pop, successes, draws, need) {
-    pop = Math.max(0, Math.round(pop));
-    successes = clamp(Math.round(successes), 0, pop);
-    draws = clamp(Math.round(draws), 0, pop);
-    if (need <= 0) return 1;
-    if (pop <= 0 || successes < need || draws < need) return 0;
-    var maxI = Math.min(successes, draws);
-    var denom = logChoose(pop, draws);
-    var s = 0;
-    for (var i = need; i <= maxI; i++) s += Math.exp(logChoose(successes, i) + logChoose(pop - successes, draws - i) - denom);
-    return clamp(s, 0, 1);
-  }
-  function panelFor(stake) { return PANEL_SCHEDULE.initialPanel(stake); }
-  function nextPanel(n) { return n < 15 ? 15 : 31; }
-  function autoParallelPanels(stake) { return PANEL_SCHEDULE.parallelPanels(stake); }
-
   function formatAssumption(a, value) {
     if (a.format === "pct") return pct(value);
     if (a.format === "money") return money(value);
@@ -703,7 +742,7 @@
     var s = {
       assumptions: defaultAssumptions(),
       flow: parseInt(p.flow, 10),
-      stake: span(p.stake, 100, 5000000),
+      stake: span(p.stake, 100, 100000000),
       lag: p.lag,
       fee: p.fee / 1000,
       caseHours: p.caseHours / 4,
@@ -883,7 +922,7 @@
     lockIds.forEach(function (id) { v[id] = byId(id).checked; });
     v.assumptions = readAssumptions();
     v.flow = parseInt(byId("flow").value, 10);
-    v.stake = span(v.stake, 100, 5000000);
+    v.stake = span(v.stake, 100, 100000000);
     v.fee = v.fee / 1000;
     v.caseHours = v.caseHours / 4;
     v.complexity = v.complexity / 100;
@@ -896,14 +935,14 @@
     return v;
   }
 
-  function compute(v) {
+  function computeCandidate(v, candidate) {
     var a = v.assumptions || defaultAssumptions();
+    candidate = typeof candidate === "string" ? POLICY.candidateById(candidate) : candidate;
+    if (!candidate) throw new Error("Unknown adaptive panel candidate");
     var totalCases = v.flow / Math.max(1, v.stake);
     var courtCases = totalCases;
-    var panel = panelFor(v.stake);
-    var autoPanels = autoParallelPanels(v.stake);
-    var configuredPanels = Math.max(1, Math.round(a.parallelPanels));
-    var parallelPanels = panel === 31 ? Math.max(autoPanels, configuredPanels) : 1;
+    var panel = candidate.panelSize;
+    var parallelPanels = candidate.panelCount;
     var totalPanelSeats = panel * parallelPanels;
     var majority = Math.floor(panel / 2) + 1;
     var seatVotes = courtCases * totalPanelSeats;
@@ -1002,24 +1041,16 @@
     var share = effectiveBloc / Math.max(1, drawJurors);
     var attempts = v.lockDraw ? 1 : Math.max(1, v.rerolls);
 
-    function majorityChance(seats, jurySize) {
-      if (drawJurors < jurySize) return null;
-      return hypergeomTail(drawJurors, Math.min(drawJurors, seats), jurySize, Math.floor(jurySize / 2) + 1);
-    }
     function afterAttempts(probability) {
       if (probability === null) return null;
       return 1 - Math.pow(1 - probability, attempts);
     }
-    function acrossPanels(probability) {
-      return probability === null ? null : Math.pow(probability, parallelPanels);
-    }
-
-    var baseCapture = majorityChance(effectiveBloc, panel);
+    var baseCapture = panelShortage ? null : POLICY.exactDisjointControlProbability(drawJurors, effectiveBloc, candidate);
     var attemptedCapture = afterAttempts(baseCapture);
-    var capture = acrossPanels(attemptedCapture);
-    var baseRentalCapture = majorityChance(rentalSeats, panel);
+    var capture = attemptedCapture;
+    var baseRentalCapture = panelShortage ? null : POLICY.exactDisjointControlProbability(drawJurors, rentalSeats, candidate);
     var attemptedRentalCapture = afterAttempts(baseRentalCapture);
-    var rentalCapture = acrossPanels(attemptedRentalCapture);
+    var rentalCapture = attemptedRentalCapture;
 
     var consentedTestCases = courtCases * a.consentedTestShare;
     var consentedTestSeats = consentedTestCases * totalPanelSeats;
@@ -1028,7 +1059,7 @@
     var keySignal = v.lockKeys ? 1 - Math.exp(-testSeats / Math.max(0.1, keyScale)) : 0;
     var effectiveSkill = clamp(v.skill + (keySignal * a.reputationSkillLift) + (supply.rewardSignal * a.rewardSkillLift), 0, 1);
     var correctSinglePanel = panelShortage ? null : binomTail(panel, majority, effectiveSkill);
-    var correctPanel = correctSinglePanel === null ? null : Math.pow(correctSinglePanel, parallelPanels);
+    var correctPanel = panelShortage ? null : POLICY.correctDecisionProbability(candidate, effectiveSkill, POLICY.DEFAULTS.commonErrorRate);
 
     var reservePerPricedVote = v.lockReserve ? supply.reserve / Math.max(EPSILON, supply.reserveVotes) : 0;
     var lazyIncome = payPerVote * a.lazyShortcutShare;
@@ -1041,16 +1072,21 @@
     var wrongVoteLoss = reservePerPricedVote * v.slash;
     var receiptEnforceability = v.lockBallot ? a.ballotResidualRisk : 1;
     var bribeBenefit = v.stake * receiptEnforceability;
-    var bribeCost = majority * parallelPanels * (payPerVote + wrongVoteLoss);
+    var bribeCost = majority * candidate.requiredPanels * (payPerVote + wrongVoteLoss);
     var bribeMargin = bribeCost - bribeBenefit;
     var bribeRatio = coverBenchmarkRatio(bribeCost, bribeBenefit);
     var bribeClears = bribeRatio < 1;
 
-    var nextSeats = panel >= 31 ? null : nextPanel(panel);
-    var appealApplicable = nextSeats !== null;
-    var appealPanelShortage = appealApplicable && drawJurors < nextSeats;
-    var nextBaseCapture = appealApplicable ? majorityChance(effectiveBloc, nextSeats) : null;
-    var nextCapture = nextBaseCapture === null ? null : acrossPanels(afterAttempts(nextBaseCapture));
+    var nextCandidate = POLICY.nextCandidate(candidate.id);
+    var nextSeats = nextCandidate ? nextCandidate.totalSeats : null;
+    var nextStandbySeats = nextCandidate ? POLICY.requiredStandbys(nextCandidate.totalSeats, POLICY.DEFAULTS) : 0;
+    var nextRequiredCapacity = nextCandidate ? nextCandidate.totalSeats + nextStandbySeats : 0;
+    var appealApplicable = nextCandidate !== null;
+    var appealEligibleJurors = Math.max(0, drawJurors - totalPanelSeats);
+    var appealPanelShortage = appealApplicable && appealEligibleJurors < nextRequiredCapacity;
+    var nextAttackerSeats = appealApplicable ? Math.min(appealEligibleJurors, Math.ceil(appealEligibleJurors * share)) : 0;
+    var nextBaseCapture = appealApplicable && !appealPanelShortage ? POLICY.exactDisjointControlProbability(appealEligibleJurors, nextAttackerSeats, nextCandidate) : null;
+    var nextCapture = nextBaseCapture === null ? null : afterAttempts(nextBaseCapture);
     var panelFloor = appealApplicable && !appealPanelShortage ? nextSeats * payPerVote : 0;
     var captureFloor = appealApplicable && nextCapture !== null ? nextCapture * v.stake * a.appealCaptureMultiplier : 0;
     var delayFloor = appealApplicable ? v.stake * a.appealDelayRate * v.lag : 0;
@@ -1070,7 +1106,7 @@
       bribe: Object.assign({}, PROTECTION_BENCHMARKS.bribe, { applicable: true, ratio: bribeRatio, cost: bribeCost, benefit: bribeBenefit, margin: bribeMargin, unit: "money" }),
       rental: Object.assign({}, PROTECTION_BENCHMARKS.rental, { applicable: !panelShortage, ratio: rentalCapture === null ? 0 : maxBenchmarkRatio(PROTECTION_BENCHMARKS.rental.limit, rentalCapture), actual: rentalCapture, margin: rentalCapture === null ? null : PROTECTION_BENCHMARKS.rental.limit - rentalCapture, unit: "probability" }),
       lazy: Object.assign({}, PROTECTION_BENCHMARKS.lazy, { applicable: true, ratio: lazyRatio, cost: lazyLoss, benefit: lazyIncome, margin: lazyMargin, unit: "money-per-vote" }),
-      grief: Object.assign({}, PROTECTION_BENCHMARKS.grief, { applicable: appealApplicable, ratio: griefRatio, cost: appealFloor, benefit: griefBenefit, margin: griefMargin, unit: "money" }),
+      grief: Object.assign({}, PROTECTION_BENCHMARKS.grief, { applicable: appealApplicable && !appealPanelShortage, ratio: appealPanelShortage ? Infinity : griefRatio, cost: appealFloor, benefit: griefBenefit, margin: griefMargin, unit: "money" }),
       drift: Object.assign({}, PROTECTION_BENCHMARKS.drift, { applicable: true, ratio: driftRatio, actual: keySignal, margin: driftMargin, unit: "probability" })
     };
     var risks = {};
@@ -1083,11 +1119,13 @@
     var applicableRatios = Object.keys(benchmarks).filter(function (key) { return benchmarks[key].applicable; }).map(function (key) { return benchmarks[key].ratio; });
     var minimumRatio = applicableRatios.length ? Math.min.apply(Math, applicableRatios) : 0;
     var benchmarkIndex = clamp(minimumRatio / STRONG_BENCHMARK_RATIO, 0, 1);
-    var safety = panelShortage || appealPanelShortage || correctPanel === null ? 0 : Math.min(benchmarkIndex, correctPanel);
+    var safety = panelShortage || correctPanel === null ? 0 : Math.min(benchmarkIndex, correctPanel);
 
     return {
       totalCases: totalCases,
       courtCases: courtCases,
+      candidate: candidate,
+      candidateId: candidate.id,
       panel: panel,
       totalPanelSeats: totalPanelSeats,
       majority: majority,
@@ -1151,7 +1189,6 @@
       baseRentalCapture: baseRentalCapture,
       attemptedRentalCapture: attemptedRentalCapture,
       rentalCapture: rentalCapture,
-      autoPanels: autoPanels,
       parallelPanels: parallelPanels,
       effectiveSkill: effectiveSkill,
       correctSinglePanel: correctSinglePanel,
@@ -1181,6 +1218,10 @@
       driftMargin: driftMargin,
       driftRatio: driftRatio,
       nextSeats: nextSeats,
+      nextCandidate: nextCandidate,
+      nextStandbySeats: nextStandbySeats,
+      nextRequiredCapacity: nextRequiredCapacity,
+      appealEligibleJurors: appealEligibleJurors,
       appealApplicable: appealApplicable,
       nextCapture: nextCapture,
       panelFloor: panelFloor,
@@ -1204,6 +1245,96 @@
     };
   }
 
+  function policyContextForModel(model) {
+    var publishedAttackers = Math.ceil(model.drawJurors * POLICY.DEFAULTS.publishedAttackerShare);
+    var scenarios = [{ id: "published-envelope", label: "Published 25% attacker-weight envelope", attackerCount: publishedAttackers }];
+    if (model.effectiveBloc > publishedAttackers) {
+      scenarios.push({ id: "lab-pressure", label: "Harsher lab attack", attackerCount: model.effectiveBloc });
+    }
+    return {
+      eligibleCount: model.drawJurors,
+      individualAccuracy: model.effectiveSkill,
+      feeFeasible: model.supportGapPerCase <= EPSILON,
+      requiredFee: model.requiredCaseFee,
+      feeCap: model.feeCeilingPerCase,
+      scenarios: scenarios
+    };
+  }
+
+  function applyPolicyEvaluation(v, model, evaluation, selection) {
+    model.policySelection = selection;
+    model.policyEvaluation = evaluation;
+    model.policyUnavailable = selection.status !== "SELECTED";
+    model.riskLimit = evaluation && evaluation.riskLimit;
+    model.formation = evaluation && evaluation.formation;
+    model.standbySeats = evaluation && evaluation.standbySeats || 0;
+    model.requiredCapacity = evaluation && evaluation.requiredCapacity || model.totalPanelSeats;
+    model.spareEligibleSeats = evaluation && evaluation.spareEligibleSeats;
+    model.worstScenario = evaluation && evaluation.worstScenario;
+    if (evaluation && !evaluation.invalid) {
+      model.panelShortage = !evaluation.checks.capacity;
+      model.correctPanel = model.panelShortage ? null : evaluation.quality;
+      model.honestPanel = model.correctPanel;
+      if (model.panelShortage) {
+        model.baseRentalCapture = null;
+        model.attemptedRentalCapture = null;
+        model.rentalCapture = null;
+        model.benchmarks.rental = Object.assign({}, PROTECTION_BENCHMARKS.rental, { applicable: false, ratio: 0, actual: null, margin: null, unit: "probability" });
+        model.risks.rental = 0;
+        model.clears.rental = true;
+      }
+      model.capture = model.panelShortage ? null : evaluation.worstCapture;
+      model.baseCapture = model.capture;
+      model.attemptedCapture = model.capture === null ? null : (v.lockDraw ? model.capture : 1 - Math.pow(1 - model.capture, Math.max(1, v.rerolls)));
+      model.capture = model.attemptedCapture;
+      var limit = evaluation.riskLimit;
+      model.benchmarks.capture = Object.assign({}, PROTECTION_BENCHMARKS.capture, {
+        limit: limit,
+        label: "Coalition-majority chance at or below " + pct(limit),
+        applicable: !model.panelShortage,
+        ratio: model.capture === null ? 0 : maxBenchmarkRatio(limit, model.capture),
+        actual: model.capture,
+        margin: model.capture === null ? null : limit - model.capture,
+        unit: "probability"
+      });
+      model.risks.capture = benchmarkPressure(model.benchmarks.capture);
+      model.clears.capture = model.panelShortage || model.benchmarks.capture.ratio < 1;
+      var applicableRatios = Object.keys(model.benchmarks).filter(function (key) { return model.benchmarks[key].applicable; }).map(function (key) { return model.benchmarks[key].ratio; });
+      model.minimumRatio = applicableRatios.length ? Math.min.apply(Math, applicableRatios) : 0;
+      model.benchmarkIndex = clamp(model.minimumRatio / STRONG_BENCHMARK_RATIO, 0, 1);
+      model.safety = model.panelShortage || model.correctPanel === null ? 0 : Math.min(model.benchmarkIndex, model.correctPanel);
+    }
+    return model;
+  }
+
+  function compute(v) {
+    var models = {};
+    var contexts = {};
+    POLICY.CANDIDATES.forEach(function (candidate) {
+      var model = computeCandidate(v, candidate);
+      models[candidate.id] = model;
+      contexts[candidate.id] = policyContextForModel(model);
+    });
+    var selection = POLICY.selectConfiguration({ exposure: v.stake, candidateContexts: contexts });
+    var automaticId = selection.selected ? selection.selected.candidate.id : POLICY.CANDIDATES[POLICY.CANDIDATES.length - 1].id;
+    var displayedId = panelOverride !== "auto" && models[panelOverride] ? panelOverride : automaticId;
+    var displayedEvaluation = selection.evaluations.filter(function (evaluation) { return evaluation.candidate && evaluation.candidate.id === displayedId; })[0];
+    var displayed = applyPolicyEvaluation(v, models[displayedId], displayedEvaluation, selection);
+    displayed.automaticCandidateId = automaticId;
+    displayed.overrideCandidateId = panelOverride;
+    displayed.isLabOverride = panelOverride !== "auto";
+    displayed.candidateModels = models;
+    displayed.candidateContexts = contexts;
+    return displayed;
+  }
+
+  function computeFixedCandidate(v, candidate) {
+    var model = computeCandidate(v, candidate);
+    var evaluation = POLICY.evaluateCandidate({ exposure: v.stake, context: policyContextForModel(model) }, candidate);
+    var selection = { policyVersion: POLICY.VERSION, status: evaluation.passes ? "SELECTED" : "SECURE_PANEL_UNAVAILABLE", selected: evaluation.passes ? evaluation : null, evaluations: [evaluation], failureReasons: evaluation.failureReasons || [] };
+    return applyPolicyEvaluation(v, model, evaluation, selection);
+  }
+
   function setRangeValue(id, text) {
     var output = byId(id + "Out");
     var range = byId(id);
@@ -1214,6 +1345,11 @@
     return m.parallelPanels > 1
       ? m.parallelPanels + " disjoint " + m.panel + "-seat panels"
       : "one " + m.panel + "-seat panel";
+  }
+  function panelDecisionText(candidate) {
+    return candidate.panelCount === 1
+      ? "one panel majority decides"
+      : candidate.requiredPanels + " of " + candidate.panelCount + " panel majorities decide";
   }
   function casesText(value) {
     if (value < .1) return "<0.1";
@@ -1230,10 +1366,45 @@
     if (!check || !check.applicable || check.ratio < 1) return "bad";
     return check.ratio < STRONG_BENCHMARK_RATIO ? "mid" : "good";
   }
+  function setAutomaticPolicy(m) {
+    var selection = m.policySelection;
+    var selected = selection && selection.selected;
+    var card = byId("autoPolicyCard");
+    var evaluation = selected || selection && selection.evaluations[selection.evaluations.length - 1];
+    card.classList.toggle("unavailable", !selected);
+    byId("autoPolicyTitle").textContent = selected ? selected.candidate.label : "Case cannot safely open";
+    chip(byId("autoPolicyChip"), selected ? "selected" : "secure panel unavailable", selected ? "good" : "bad");
+    byId("autoRiskLimit").textContent = evaluation && isFinite(evaluation.riskLimit) ? pct(evaluation.riskLimit) : "unavailable";
+    byId("autoWorstCapture").textContent = evaluation && evaluation.worstCapture !== null && isFinite(evaluation.worstCapture) ? pct(evaluation.worstCapture) : "unavailable";
+    byId("autoExpectedLoss").textContent = evaluation && evaluation.expectedCorruptedValue !== null && isFinite(evaluation.expectedCorruptedValue) ? money(evaluation.expectedCorruptedValue) : "unavailable";
+    byId("autoQuality").textContent = evaluation && isFinite(evaluation.quality) ? pct(evaluation.quality) : "unavailable";
+    byId("autoFormation").textContent = evaluation && isFinite(evaluation.formation) ? pct(evaluation.formation) : "unavailable";
+    byId("autoFee").textContent = evaluation && isFinite(evaluation.requiredFee) ? money(evaluation.requiredFee) : "unavailable";
+    byId("autoSpareSeats").textContent = evaluation && isFinite(evaluation.spareEligibleSeats) ? num(evaluation.spareEligibleSeats) : "unavailable";
+    byId("autoWorstScenario").textContent = evaluation && evaluation.worstScenario ? evaluation.worstScenario.label : "unavailable";
+    var reason;
+    if (selected) {
+      var selectedIndex = POLICY.CANDIDATES.findIndex(function (candidate) { return candidate.id === selected.candidate.id; });
+      var prior = selectedIndex > 0 ? selection.evaluations[selectedIndex - 1] : null;
+      reason = "First ruling set to pass capture, quality, formation, capacity, and fee checks. ";
+      if (prior && prior.failureReasons.length) reason += "The previous rung fails because " + prior.failureReasons[0].replace(/\.$/, "").toLowerCase() + ". ";
+    } else {
+      reason = (evaluation && evaluation.failureReasons.length ? evaluation.failureReasons.join(" ") : selection.failureReasons.join(" ")) + " ";
+    }
+    reason += "Provisional " + POLICY.VERSION + " calibration: 1% absolute ceiling, $100 expected-loss budget, 90% quality, 99.9% formation, 25% published attacker weight. Governance must ratify production values.";
+    byId("autoPolicyReason").textContent = reason;
+    if (m.isLabOverride) {
+      byId("panelOverrideNote").textContent = "Lab override only — showing " + m.candidate.label + ". The protocol recommendation above remains " + (selected ? selected.candidate.label : "secure panel unavailable") + "; requesters cannot choose court security.";
+    } else {
+      byId("panelOverrideNote").textContent = "Lab override only — requesters cannot choose court security. Automatic remains the protocol recommendation.";
+    }
+  }
   function setOutputs(v, m) {
     setRangeValue("flow", money(v.flow));
     setRangeValue("stake", money(v.stake));
-    byId("panelScheduleOut").textContent = "Published initial ruling set: " + PANEL_SCHEDULE.describe(v.stake);
+    byId("panelScheduleOut").textContent = m.policySelection.selected
+      ? "Automatic policy: " + m.policySelection.selected.candidate.label + " under the current reference inputs"
+      : "Automatic policy: case cannot safely open under the current reference inputs";
     setRangeValue("lag", v.lag + (v.lag === 1 ? " week" : " weeks"));
     setRangeValue("fee", pct(v.fee));
     setRangeValue("caseHours", v.caseHours < 1 ? Math.round(v.caseHours * 60) + " min" : v.caseHours.toFixed(v.caseHours % 1 ? 2 : 0).replace(/\.00$/, "") + (v.caseHours === 1 ? " hour" : " hours"));
@@ -1251,7 +1422,7 @@
     var correctState = m.correctPanel === null ? "bad" : m.correctPanel >= QUALITY_FLOOR * STRONG_BENCHMARK_RATIO ? "good" : m.correctPanel >= QUALITY_FLOOR ? "mid" : "bad";
     scoreClass(byId("scoreSafety"), correctState);
     byId("safetyOut").textContent = m.correctPanel === null ? "No panel" : pct(m.correctPanel);
-    byId("safetySub").textContent = m.correctPanel === null ? "expand the drawable pool to " + m.totalPanelSeats + " jurors" : panelSetText(m) + " · all required panels agree";
+    byId("safetySub").textContent = m.correctPanel === null ? "expand the drawable pool to " + m.requiredCapacity + " jurors including standbys" : panelSetText(m) + " · " + panelDecisionText(m.candidate);
 
     var payState = m.retention >= .85 ? "good" : m.retention >= .65 ? "mid" : "bad";
     scoreClass(byId("scorePay"), payState);
@@ -1264,11 +1435,11 @@
 
     scoreClass(byId("scoreCapture"), m.panelShortage ? "bad" : benchmarkClass(m.benchmarks.capture));
     byId("captureOut").textContent = m.capture === null ? "No panel" : pct(m.capture);
-    byId("captureSub").textContent = m.panelShortage ? "need " + m.totalPanelSeats + " drawable jurors for " + panelSetText(m) + "; only " + num(m.drawJurors) + " available" : num(m.coordinatedSeats) + " coalition + " + num(m.rentalSeats) + " rental seats in " + num(m.drawJurors) + " drawable jurors · " + panelSetText(m);
+    byId("captureSub").textContent = m.panelShortage ? "need " + m.requiredCapacity + " eligible jurors including standbys; only " + num(m.drawJurors) + " available" : (m.worstScenario ? m.worstScenario.label : "published attack envelope") + " · limit " + pct(m.riskLimit) + " · " + panelSetText(m);
 
     byId("nodeDemandV").innerHTML = `<div class="node-val">${money(m.quotedCaseFee)} <small>typical court fee</small></div><div class="node-sub"><b>${money(m.panelCompensation)}</b> panel pay &middot; <b>${money(m.reserveTopUpPerCase)}</b> reward-pool top-up${m.supportGapPerCase > 0 ? ` &middot; <b>${money(m.supportGapPerCase)}</b> above ceiling` : ""}</div>`;
     byId("nodePayV").innerHTML = `<div class="node-val">${money(m.payPressure + m.rewardPerJuror)} <small>funded / juror</small></div><div class="node-sub"><b>${num(m.effectiveJurors)}</b> retained · <b>${num(m.drawJurors)}</b> drawable</div>`;
-    byId("nodePanelV").innerHTML = m.correctPanel === null ? `<div class="node-val">No panel</div><div class="node-sub">need <b>${m.totalPanelSeats}</b> drawable jurors for ${panelSetText(m)}</div>` : `<div class="node-val">${pct(m.correctPanel)} <small>correct ruling set</small></div><div class="node-sub"><b>${pct(m.capture)}</b> coalition-control chance &middot; ${panelSetText(m)}</div>`;
+    byId("nodePanelV").innerHTML = m.correctPanel === null ? `<div class="node-val">No panel</div><div class="node-sub">need <b>${m.requiredCapacity}</b> eligible jurors including standbys</div>` : `<div class="node-val">${pct(m.correctPanel)} <small>correct ruling set</small></div><div class="node-sub"><b>${pct(m.capture)}</b> worst capture &middot; ${panelSetText(m)}</div>`;
     byId("nodeKeysV").innerHTML = `<div class="node-val">${pct(m.keySignal)} <small>independent signal</small></div><div class="node-sub"><b>${num(m.testSeats)}</b> graded seats · <b>${num(m.keyScale)}</b> target</div>`;
 
     nodeClass(byId("nodeDemand"), m.supportGapPerCase > 0 ? "bad" : "good");
@@ -1279,6 +1450,7 @@
     var weakest = modelState(v, m).top;
     if (m.panelShortage) chip(byId("bottleneckChip"), "panel unavailable", "bad");
     else chip(byId("bottleneckChip"), "closest: " + attackLabel(weakest.key), weakest.ratio < 1 ? "bad" : weakest.ratio < STRONG_BENCHMARK_RATIO ? "mid" : "good");
+    setAutomaticPolicy(m);
     syncAssumptionOutputs();
   }
   function probabilityMargin(delta, safeDirection, unsafeDirection) {
@@ -1294,9 +1466,9 @@
       return {
         check: m.benchmarks.capture,
         invalid: m.panelShortage,
-        why: m.panelShortage ? "The current drawable pool cannot form this jury." : num(m.coordinatedSeats) + " qualified coalition seats and " + num(m.rentalSeats) + " usable rentals enter a pool of " + num(m.drawJurors) + "; majority chance is " + pct(m.capture) + ".",
-        breaks: m.panelShortage ? "The court needs at least " + m.totalPanelSeats + " drawable jurors for " + panelSetText(m) + "." : "Coalition-majority chance rises above 1%.",
-        margin: m.panelShortage ? "short by " + num(m.totalPanelSeats - m.drawJurors) + " drawable jurors" : probabilityMargin(m.benchmarks.capture.margin)
+        why: m.panelShortage ? "The conservative cohort cannot form this ruling set plus its deterministic standbys." : (m.worstScenario ? m.worstScenario.label : "The published attack envelope") + " produces a " + pct(m.capture) + " control chance against a " + pct(m.riskLimit) + " value-sensitive limit.",
+        breaks: m.panelShortage ? "The court needs at least " + m.requiredCapacity + " eligible jurors for seats and standbys." : "Coalition-majority chance rises above the value-sensitive risk limit.",
+        margin: m.panelShortage ? "short by " + num(Math.max(0, m.requiredCapacity - m.drawJurors)) + " eligible jurors" : probabilityMargin(m.benchmarks.capture.margin)
       };
     }
     if (id === "bribe") {
@@ -1312,7 +1484,7 @@
         check: m.benchmarks.rental,
         invalid: m.panelShortage,
         why: m.panelShortage ? "The current drawable pool cannot form this jury." : (v.lockFace ? "Live checks leave " + num(m.rentalSeats) + " usable seats from " + num(v.rented) + " rented accounts" : num(m.rentalSeats) + " rented accounts enter the draw unchecked") + "; rental-only majority chance is " + pct(m.rentalCapture) + ".",
-        breaks: m.panelShortage ? "The court needs at least " + m.totalPanelSeats + " drawable jurors for " + panelSetText(m) + "." : "Rental-only majority chance rises above 1%.",
+        breaks: m.panelShortage ? "The court needs at least " + m.requiredCapacity + " eligible jurors including standbys." : "Rental-only majority chance rises above 1%.",
         margin: m.panelShortage ? "panel unavailable" : probabilityMargin(m.benchmarks.rental.margin)
       };
     }
@@ -1336,7 +1508,7 @@
       return {
         check: m.benchmarks.grief,
         invalid: m.appealPanelShortage,
-        why: m.appealPanelShortage ? "The drawable pool cannot form the next " + m.nextSeats + "-seat jury." : "The next appeal requires " + money(m.appealFloor) + ": " + money(m.appealServiceFee) + " service fee for jury + delay, plus " + money(m.appealSecurityBond) + " separately escrowed security, versus " + money(m.griefBenefit) + " of modeled delay value.",
+        why: m.appealPanelShortage ? "After excluding every juror already used in the dispute, the cohort cannot form the next " + m.nextCandidate.label + " ruling set plus standbys." : "The next appeal requires " + money(m.appealFloor) + ": " + money(m.appealServiceFee) + " service fee for jury + delay, plus " + money(m.appealSecurityBond) + " separately escrowed security, versus " + money(m.griefBenefit) + " of modeled delay value.",
         breaks: m.appealPanelShortage ? "The court needs enough drawable jurors for the next appeal rung." : "Modeled delay value exceeds the cost of the next jury.",
         margin: m.appealPanelShortage ? "next jury unavailable" : moneyMargin(m.griefMargin, "appeal cost exceeds delay value", "delay value exceeds appeal cost")
       };
@@ -1382,8 +1554,8 @@
     ATTACK_IDS.forEach(function (id) { setAttack(id, attackNarrative(v, m, id)); });
   }
 
-  function confidenceSummary(v, m) {
-    var drivers = sensitivityDrivers(v, m);
+  function confidenceSummary(v, m, drivers) {
+    drivers = drivers || sensitivityDrivers(v, m);
     var top = drivers[0];
     var shortLabels = {
       griefDelayRate: "Delay value",
@@ -1409,7 +1581,7 @@
     var detail;
     if (m.supportGapPerCase > EPSILON) detail = "The required court fee exceeds the fee ceiling by " + money(m.supportGapPerCase) + " per case; intake must raise the minimum or show an explicit subsidy.";
     else if (m.panelShortage) detail = "The current " + panelSetText(m) + " cannot form from " + num(m.drawJurors) + " drawable jurors.";
-    else if (m.appealPanelShortage) detail = "The next " + m.nextSeats + "-seat appeal jury cannot form from " + num(m.drawJurors) + " drawable jurors.";
+    else if (m.appealPanelShortage) detail = "After excluding the current ruling set, only " + num(m.appealEligibleJurors) + " jurors remain; the next appeal requires " + num(m.nextRequiredCapacity) + " including standbys.";
     else if (state.state === "bad" && top.key === "quality") detail = "Decision quality does not meet its 75% operating floor.";
     else if (state.state === "bad") detail = "Failed protection benchmark: " + below.join(", ") + ". Closest check is " + attackLabel(top.key) + ".";
     else detail = "All applicable checks hold. Closest is " + attackLabel(top.key) + " at " + ratioText(top.ratio) + ".";
@@ -1478,7 +1650,14 @@
     var weakest = state.top;
     confidence = confidence || lastConfidence;
     clearsEl.replaceChildren();
-    if (state.pricingGap) {
+    if (m.policyUnavailable && !state.teaching) {
+      status.className = "lab-status vulnerable";
+      grid.className = "lab-grid vulnerable";
+      icon.textContent = "!";
+      label.textContent = "Case cannot safely open";
+      var finalEvaluation = m.policySelection.evaluations[m.policySelection.evaluations.length - 1];
+      detail.textContent = finalEvaluation && finalEvaluation.failureReasons.length ? finalEvaluation.failureReasons.join(" ") : "No legal ruling set passes every published gate.";
+    } else if (state.pricingGap) {
       status.className = "lab-status vulnerable";
       grid.className = "lab-grid vulnerable";
       icon.textContent = "!";
@@ -1491,7 +1670,7 @@
       label.textContent = "Teaching mode: break point found";
       if (m.panelShortage) detail.textContent = "With a required defence removed, this jury can no longer form.";
       else if (m.appealPanelShortage) detail.textContent = "With a required defence removed, the next appeal jury can no longer form.";
-      else if (state.top.key === "quality") detail.textContent = "This counterfactual falls below the 75% decision-quality floor.";
+      else if (state.top.key === "quality") detail.textContent = "This counterfactual falls below the provisional 90% decision-quality floor.";
       else detail.textContent = "The counterfactual no longer meets the " + attackLabel(state.top.key).toLowerCase() + " protection benchmark.";
       state.disabledLocks.forEach(function (id) {
         var pill = document.createElement("span");
@@ -1516,9 +1695,9 @@
       grid.className = "lab-grid vulnerable";
       icon.textContent = "!";
       label.textContent = "Outside the modeled operating range";
-      if (m.panelShortage) detail.textContent = "Only " + num(m.drawJurors) + " jurors are drawable; " + panelSetText(m) + " needs " + m.totalPanelSeats + ".";
-      else if (m.appealPanelShortage) detail.textContent = "The next " + m.nextSeats + "-seat appeal jury cannot form from " + num(m.drawJurors) + " drawable jurors.";
-      else if (state.top.key === "quality") detail.textContent = "Correct-majority chance is below the 75% decision-quality floor.";
+      if (m.panelShortage) detail.textContent = "Only " + num(m.drawJurors) + " jurors are eligible; this ruling set needs " + m.requiredCapacity + " including standbys.";
+      else if (m.appealPanelShortage) detail.textContent = "After excluding prior jurors, the next appeal needs " + m.nextRequiredCapacity + " eligible jurors including standbys; only " + num(m.appealEligibleJurors) + " remain.";
+      else if (state.top.key === "quality") detail.textContent = "Correct-majority chance is below the provisional 90% decision-quality floor.";
       else detail.textContent = state.cleared.length + (state.cleared.length === 1 ? " published protection benchmark is" : " published protection benchmarks are") + " not met.";
       state.cleared.forEach(function (key) {
         var pill = document.createElement("span");
@@ -1537,17 +1716,20 @@
       grid.className = "lab-grid resistant";
       icon.textContent = "\u2713";
       label.textContent = "Robust under modeled conditions";
-      detail.textContent = "All " + state.total + " applicable attack checks hold, and decision quality clears its 75% floor.";
+      detail.textContent = "All " + state.total + " applicable attack checks hold, and decision quality clears its provisional 90% floor.";
     }
-    if (state.pricingGap) {
+    if (m.policyUnavailable && !state.teaching) {
+      byId("weakestOut").textContent = "Secure panel unavailable";
+      byId("weakestSub").textContent = "the case does not draw or consume its fee";
+    } else if (state.pricingGap) {
       byId("weakestOut").textContent = "Funding ceiling";
       byId("weakestSub").textContent = money(m.supportGapPerCase) + " support needed per case";
     } else if (m.panelShortage) {
       byId("weakestOut").textContent = "Panel unavailable";
-      byId("weakestSub").textContent = num(m.drawJurors) + " of " + m.totalPanelSeats + " jurors ready";
+      byId("weakestSub").textContent = num(m.drawJurors) + " of " + m.requiredCapacity + " jurors ready including standbys";
     } else if (m.appealPanelShortage) {
       byId("weakestOut").textContent = "Appeal panel unavailable";
-      byId("weakestSub").textContent = num(m.drawJurors) + " of " + m.nextSeats + " jurors ready";
+      byId("weakestSub").textContent = num(m.appealEligibleJurors) + " of " + m.nextRequiredCapacity + " fresh jurors ready";
     } else {
       byId("weakestOut").textContent = attackLabel(weakest.key);
       byId("weakestSub").textContent = ratioText(weakest.ratio);
@@ -1583,8 +1765,8 @@
       var highState = copyState(v);
       lowState.assumptions[a.id] = a.low;
       highState.assumptions[a.id] = a.high;
-      var low = compute(lowState);
-      var high = compute(highState);
+      var low = computeFixedCandidate(lowState, m.candidate);
+      var high = computeFixedCandidate(highState, m.candidate);
       var lowSwing = riskSwing(m, low);
       var highSwing = riskSwing(m, high);
       var swing = highSwing.value > lowSwing.value ? highSwing : lowSwing;
@@ -1592,9 +1774,9 @@
       return { assumption: a, low: low, high: high, swing: swing, indexDelta: indexDelta, score: Math.max(indexDelta, swing.value * .6) };
     }).sort(function (a, b) { return b.score - a.score; }).slice(0, 5);
   }
-  function setDrivers(v, m) {
+  function setDrivers(v, m, drivers) {
     var root = byId("driverList");
-    var drivers = sensitivityDrivers(v, m);
+    drivers = drivers || sensitivityDrivers(v, m);
     var sig = drivers.map(function (driver) { return driver.assumption.id + ":" + Math.round(driver.indexDelta * 100) + ":" + driver.swing.key + ":" + Math.round(driver.low.safety * 100) + ":" + Math.round(driver.high.safety * 100); }).join("|") + "|cur:" + Math.round(m.safety * 100);
     if (sig === lastRender.drivers) return;
     lastRender.drivers = sig;
@@ -1623,12 +1805,12 @@
     if (m.supportGapPerCase > EPSILON) addWarning(warnings, "Court fee exceeds ceiling", money(m.supportGapPerCase) + " per case must be covered by an explicit subsidy or higher minimum; juror pay is not reduced.");
     if (state.state === "bad" && !state.pricingGap) addWarning(warnings, "Outside modeled range", state.top.key === "quality" ? "Correct-majority chance is below the 75% operating floor." : "At least one published protection benchmark is not met.");
     if (m.blocCapped) addWarning(warnings, "Attack seats capped by pool", "Usable coalition and rental seats cannot exceed the drawable juror pool.");
-    if (m.panelShortage) addWarning(warnings, "Current panel set cannot form", "This case needs " + m.totalPanelSeats + " drawable jurors for " + panelSetText(m) + "; only " + num(m.drawJurors) + " are available.");
-    if (m.appealPanelShortage) addWarning(warnings, "Appeal panel cannot form", "The next appeal needs " + m.nextSeats + " drawable jurors; only " + num(m.drawJurors) + " are available.");
+    if (m.panelShortage) addWarning(warnings, "Current ruling set cannot form", "This case needs " + m.requiredCapacity + " eligible jurors including standbys; only " + num(m.drawJurors) + " are available.");
+    if (m.appealPanelShortage) addWarning(warnings, "Appeal ruling set cannot form", "After excluding prior jurors, the next appeal needs " + m.nextRequiredCapacity + " eligible jurors including standbys; only " + num(m.appealEligibleJurors) + " remain.");
     if (m.reserveFloorApplied && v.lockReserve) addWarning(warnings, "Minimum exposure rule active", "Pending pay at risk uses the model's minimum priced-vote exposure.");
     if (m.supplyLoss > v.jurors * .05) addWarning(warnings, "Exposure narrows juror supply", num(m.supplyLoss) + " opted-in jurors leave under the modeled pay-at-risk burden.");
     if (m.drawJurors < m.effectiveJurors * .65) addWarning(warnings, "Eligibility narrows the draw", "Only " + pct(m.drawPoolShare) + " of retained jurors are eligible and reachable for this jury size.");
-    if (m.parallelPanels > 1) addWarning(warnings, "Several juries must agree", "The scaled rule requires " + m.parallelPanels + " independent juries for this case value.");
+    if (m.parallelPanels > 1) addWarning(warnings, "Several disjoint panels decide", "The selected ruling set uses " + m.candidate.requiredPanels + " of " + m.parallelPanels + " panel majorities; value tightened the risk limit but did not directly choose this size.");
     if (m.benchmarks.drift.ratio < STRONG_BENCHMARK_RATIO) addWarning(warnings, "Aptitude-test margin is thin", "The independent signal is " + pct(m.keySignal) + " against a 75% floor.");
     if (!v.lockDraw && v.rerolls > 1) addWarning(warnings, "Retry grinding enabled", "The one-public-draw rail is off, so the attacker receives " + v.rerolls + " attempts.");
     if (!v.lockReserve) addWarning(warnings, "Pending pay is not at risk", "Careless voting has no modeled collectible loss in this teaching state.");
@@ -1660,8 +1842,9 @@
     setOutputs(v, m);
     setAttacks(v, m);
     if (deep) {
-      lastConfidence = confidenceSummary(v, m);
-      setDrivers(v, m);
+      var drivers = sensitivityDrivers(v, m);
+      lastConfidence = confidenceSummary(v, m, drivers);
+      setDrivers(v, m, drivers);
       setWarnings(v, m);
     }
     setLabStatus(v, m, lastConfidence);
@@ -1702,6 +1885,11 @@
       }
     });
     lockIds.forEach(function (id) { byId(id).checked = s.locks; });
+    panelOverride = "auto";
+    Array.prototype.forEach.call(document.querySelectorAll(".override-button"), function (button) {
+      var active = button.getAttribute("data-panel-override") === "auto";
+      button.setAttribute("aria-pressed", active ? "true" : "false");
+    });
     resetAssumptions(false);
     byId("presetState").textContent = (activeButton ? activeButton.textContent : "Benchmark") + " · documented assumptions restored.";
     syncDependentControls();
@@ -1772,6 +1960,16 @@
   });
   Array.prototype.forEach.call(document.querySelectorAll('input[type="range"]'), updateRangeTrack);
   Array.prototype.forEach.call(document.querySelectorAll(".preset"), function (btn) { btn.addEventListener("click", function () { setPreset(btn.getAttribute("data-preset")); }); });
+  Array.prototype.forEach.call(document.querySelectorAll(".override-button"), function (button) {
+    button.addEventListener("click", function () {
+      panelOverride = button.getAttribute("data-panel-override") || "auto";
+      Array.prototype.forEach.call(document.querySelectorAll(".override-button"), function (candidate) {
+        candidate.setAttribute("aria-pressed", candidate === button ? "true" : "false");
+      });
+      markCustom();
+      update(true);
+    });
+  });
   Array.prototype.forEach.call(document.querySelectorAll(".attack"), function (card) {
     card.addEventListener("toggle", function () {
       if (!card.open) return;

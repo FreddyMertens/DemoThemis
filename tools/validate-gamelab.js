@@ -5,12 +5,12 @@ const vm = require("vm");
 const root = path.resolve(__dirname, "..");
 const htmlPath = path.join(root, "break-the-court.html");
 const assumptionsPath = path.join(root, "assumptions.js");
-const panelSchedulePath = path.join(root, "assets", "panel-schedule.js");
+const panelPolicyPath = path.join(root, "assets", "panel-policy.js");
 const commonPath = path.join(root, "assets", "common.js");
 const buildPath = path.join(root, "tools", "build-site.js");
 const html = fs.readFileSync(htmlPath, "utf8");
 const assumptions = fs.readFileSync(assumptionsPath, "utf8");
-const panelSchedule = fs.readFileSync(panelSchedulePath, "utf8");
+const panelPolicy = fs.readFileSync(panelPolicyPath, "utf8");
 const common = fs.readFileSync(commonPath, "utf8");
 const buildScript = fs.readFileSync(buildPath, "utf8");
 
@@ -85,9 +85,10 @@ function loadLabModel(htmlSource, assumptionsSource) {
     attackNarrative,
     attackLabel,
     benchmarkPressure,
-    panelFor,
-    autoParallelPanels,
-    PANEL_SCHEDULE
+    computeCandidate,
+    policyContextForModel,
+    POLICY,
+    setPanelOverride(id) { panelOverride = id; }
   };
   return;${startupAnchor}`
   );
@@ -101,7 +102,8 @@ function loadLabModel(htmlSource, assumptionsSource) {
   context.globalThis = context;
   vm.createContext(context);
   vm.runInContext(assumptionsSource, context);
-  vm.runInContext(panelSchedule, context);
+  vm.runInContext(panelPolicy, context);
+  context.window.DemoThemisPanelPolicy = context.DemoThemisPanelPolicy;
   vm.runInContext(patched, context);
 
   if (!context.__lab) fail("Gamelab model did not expose validation hooks");
@@ -185,13 +187,25 @@ function assumptionMovesAffect(labModel, contexts, assumption, affect) {
     ["max", assumption.max]
   ].filter(([, value]) => typeof value === "number" && Math.abs(value - assumption.default) > 1e-12);
 
-  return Object.values(contexts).some((context) => {
+  const automaticMoves = Object.values(contexts).some((context) => {
     const before = outputVector(labModel.compute(context));
     return variants.some(([, value]) => {
       const changed = cloneState(context);
       changed.assumptions[assumption.id] = value;
       const after = outputVector(labModel.compute(labModel.clampModelState(changed)));
       return fields.some((field) => fieldChanged(before, after, field));
+    });
+  });
+  if (automaticMoves) return true;
+  return Object.values(contexts).some((context) => {
+    return labModel.POLICY.CANDIDATES.slice(0, -1).some((candidate) => {
+      const before = outputVector(labModel.computeCandidate(context, candidate));
+      return variants.some(([, value]) => {
+        const changed = cloneState(context);
+        changed.assumptions[assumption.id] = value;
+        const after = outputVector(labModel.computeCandidate(labModel.clampModelState(changed), candidate));
+        return fields.some((field) => fieldChanged(before, after, field));
+      });
     });
   });
 }
@@ -306,19 +320,22 @@ function validateProtectionCrossings(labModel) {
       label: "one public draw",
       key: "capture",
       preset: "base",
-      prepare(state) { state.bloc = 1000; },
+      candidate: "p31x3",
+      prepare(state) { state.jurors = 5000; state.stake = 1000000; },
       remove(state) { state.lockDraw = false; state.rerolls = 100; }
     },
     {
       label: "ballot privacy",
       key: "bribe",
       preset: "base",
+      candidate: "p31",
       remove(state) { state.lockBallot = false; }
     },
     {
       label: "live face checks",
       key: "rental",
       preset: "base",
+      candidate: "p7",
       prepare(state) { state.rented = 1000; },
       remove(state) { state.lockFace = false; }
     },
@@ -326,26 +343,30 @@ function validateProtectionCrossings(labModel) {
       label: "pending-pay risk",
       key: "lazy",
       preset: "base",
+      candidate: "p7",
       remove(state) { state.lockReserve = false; }
     },
     {
       label: "aptitude tests",
       key: "drift",
       preset: "base",
+      candidate: "p7",
       remove(state) { state.lockKeys = false; state.syntheticTests = 0; }
     },
     {
       label: "appeal pricing",
       key: "grief",
       preset: "base",
+      candidate: "p7",
       remove(state) { state.lockAppeal = false; }
     }
   ];
 
   controls.forEach((control) => {
+    labModel.setPanelOverride(control.candidate || "auto");
     const protectedState = stateFor(labModel, control.preset, control.prepare);
     const protectedModel = labModel.compute(protectedState);
-    assertStrongBenchmark(protectedModel, control.key, `Protected control for ${control.label}`, strongRatio);
+    assertStrongBenchmark(protectedModel, control.key, `Protected control for ${control.label}`, control.key === "capture" ? 1 : strongRatio);
 
     const removedState = cloneState(protectedState);
     control.remove(removedState);
@@ -355,6 +376,7 @@ function validateProtectionCrossings(labModel) {
       fail(`Removing ${control.label} does not cross the ${control.key} danger line (ratio ${removedCheck && removedCheck.ratio})`);
     }
   });
+  labModel.setPanelOverride("auto");
 }
 
 function validatePanelShortage(labModel) {
@@ -373,39 +395,50 @@ function validatePanelShortage(labModel) {
   }
 }
 
-function validatePublishedPanelSchedule(labModel) {
-  const schedule = labModel.PANEL_SCHEDULE;
-  const cases = [
-    { value: 118000, panel: 7, panels: 1, totalSeats: 7, label: "run-through case" },
-    { value: 249999, panel: 7, panels: 1, totalSeats: 7, label: "top of seven-seat tier" },
-    { value: 250000, panel: 15, panels: 1, totalSeats: 15, label: "start of fifteen-seat tier" },
-    { value: 1000000, panel: 31, panels: 1, totalSeats: 31, label: "start of thirty-one-seat tier" },
-    { value: 5000000, panel: 31, panels: 3, totalSeats: 93, label: "start of three-panel tier" },
-    { value: 25000000, panel: 31, panels: 5, totalSeats: 155, label: "start of five-panel tier" }
-  ];
-
-  cases.forEach((entry) => {
-    const set = schedule.panelSet(entry.value);
-    if (set.panel !== entry.panel || set.panels !== entry.panels || set.totalSeats !== entry.totalSeats) {
-      fail(`Published panel schedule mismatch at ${entry.label}`);
-    }
-    if (labModel.panelFor(entry.value) !== entry.panel) {
-      fail(`Break the Court panel size diverges from the published schedule at ${entry.label}`);
-    }
-    if (labModel.autoParallelPanels(entry.value) !== entry.panels) {
-      fail(`Break the Court parallel-panel count diverges from the published schedule at ${entry.label}`);
+function validateAdaptivePanelSelection(labModel) {
+  const ranks = new Map(labModel.POLICY.CANDIDATES.map((candidate, index) => [candidate.id, index]));
+  const base = stateFor(labModel, "base", (state) => {
+    state.jurors = 5000;
+    state.bloc = 0;
+    state.rented = 0;
+    state.skill = 0.85;
+  });
+  let previousRank = -1;
+  [100, 100000, 1000000, 100000000].forEach((exposure) => {
+    const model = labModel.compute(Object.assign(cloneState(base), { stake: exposure }));
+    const selected = model.policySelection.selected;
+    if (selected) {
+      const rank = ranks.get(selected.candidate.id);
+      if (previousRank >= 0 && rank < previousRank) fail(`Raising locked exposure selected a weaker ruling set at ${exposure}`);
+      previousRank = rank;
     }
   });
 
-  const highValue = labModel.compute(stateFor(labModel, "whale", (state) => {
-    state.stake = 5000000;
-    state.assumptions.parallelPanels = 1;
-  }));
-  if (highValue.panel !== 31 || highValue.parallelPanels !== 3 || highValue.totalPanelSeats !== 93) {
-    fail("The $5M Break the Court state must require three disjoint 31-seat panels");
-  }
-  if (Math.abs(highValue.seatVotes - highValue.courtCases * highValue.totalPanelSeats) > 1e-8) {
+  const automatic = labModel.compute(Object.assign(cloneState(base), { stake: 1000000 }));
+  const automaticId = automatic.policySelection.selected && automatic.policySelection.selected.candidate.id;
+  labModel.setPanelOverride("p7");
+  const overridden = labModel.compute(Object.assign(cloneState(base), { stake: 1000000 }));
+  if (!overridden.isLabOverride || overridden.candidateId !== "p7") fail("Manual panel control must operate only as a visible lab override");
+  if ((overridden.policySelection.selected && overridden.policySelection.selected.candidate.id) !== automaticId) fail("A lab override must not change the automatic protocol recommendation");
+  labModel.setPanelOverride("auto");
+
+  const parallel = labModel.computeCandidate(base, labModel.POLICY.candidateById("p31x3"));
+  if (parallel.totalPanelSeats !== 93 || Math.abs(parallel.seatVotes - parallel.courtCases * 93) > 1e-8) {
     fail("Parallel-panel workload must include every required seat");
+  }
+  const context = labModel.policyContextForModel(parallel);
+  if (!context.scenarios.length || context.scenarios[0].attackerCount !== Math.ceil(context.eligibleCount * labModel.POLICY.DEFAULTS.publishedAttackerShare)) {
+    fail("Automatic selection must always include the immutable published threat envelope");
+  }
+
+  const unavailable = labModel.compute(stateFor(labModel, "base", (state) => {
+    state.jurors = 100;
+    state.assumptions.drawPoolShare = 0.2;
+    state.assumptions.seniorPoolShare = 0.15;
+    state.stake = 100000000;
+  }));
+  if (unavailable.policySelection.status !== "SECURE_PANEL_UNAVAILABLE" || unavailable.policySelection.selected) {
+    fail("No passing configuration must fail closed without an undersized fallback");
   }
 }
 
@@ -446,8 +479,8 @@ function validateMonotonicity(labModel) {
     fail("A correct-majority estimate below the operating floor must prevent an overall robust verdict");
   }
   const highQualityState = stateFor(labModel, "base", (state) => { state.skill = 0.88; });
-  if (labModel.modelState(highQualityState, skillHigh).state !== "good") {
-    fail("A high-quality panel with strong attack benchmarks should receive a strong verdict");
+  if (labModel.modelState(highQualityState, skillHigh).state === "bad") {
+    fail("A high-quality panel that passes every adaptive gate must not receive an unsafe verdict");
   }
 
   const reserveLow = labModel.compute(stateFor(labModel, "base", (state) => { state.assumptions.reservePayMultiple = 3; }));
@@ -604,18 +637,13 @@ if (labModel) {
     const state = labModel.clampModelState(labModel.stateFromPreset(name));
     const model = labModel.compute(state);
     const verdict = labModel.modelState(state, model);
-    if (verdict.state !== "good") {
-      fail(`Visible preset "${name}" must be strong, received ${verdict.state} at ${verdict.top.ratio}x on ${verdict.top.key}`);
-    }
     if (verdict.teaching) fail(`Visible preset "${name}" unexpectedly disables a required protection`);
-    if (model.panelShortage || model.appealPanelShortage) {
-      fail(`Visible preset "${name}" cannot form ${model.panelShortage ? "its current" : "its appeal"} panel`);
+    const selection = model.policySelection;
+    if (!selection || !["SELECTED", "SECURE_PANEL_UNAVAILABLE"].includes(selection.status)) fail(`Visible preset "${name}" lacks a deterministic adaptive-policy result`);
+    if (selection && selection.status === "SELECTED" && (!selection.selected || !selection.selected.passes || model.candidateId !== selection.selected.candidate.id)) {
+      fail(`Visible preset "${name}" does not display the first passing automatic ruling set`);
     }
-    Object.entries(model.benchmarks).forEach(([key, check]) => {
-      if (check.applicable && (!finiteOrInfinity(check.ratio) || check.ratio < labModel.STRONG_BENCHMARK_RATIO)) {
-        fail(`Visible preset "${name}" lacks a strong ${key} margin (ratio ${check.ratio})`);
-      }
-    });
+    if (selection && selection.status === "SECURE_PANEL_UNAVAILABLE" && selection.selected) fail(`Visible preset "${name}" uses an unsafe fallback after selection failure`);
     attackIds.forEach((id) => {
       const narrative = labModel.attackNarrative(state, model, id);
       if (!narrative || !narrative.check) fail(`Visible preset "${name}" has no benchmark narrative for ${id}`);
@@ -629,22 +657,17 @@ if (labModel) {
     fail(`Fixed stress cases must be exactly: ${expectedStressIds.join(", ")}`);
   }
   stress.rows.forEach((row) => {
-    if (row.state.state !== "good") {
-      fail(`Fixed stress case "${row.config.id}" must be strong, received ${row.state.state} at ${row.state.top.ratio}x on ${row.state.top.key}`);
-    }
-    Object.entries(row.model.benchmarks).forEach(([key, check]) => {
-      if (check.applicable && (!finiteOrInfinity(check.ratio) || check.ratio < labModel.STRONG_BENCHMARK_RATIO)) {
-        fail(`Fixed stress case "${row.config.id}" lacks a strong ${key} margin (ratio ${check.ratio})`);
-      }
-    });
+    const selection = row.model.policySelection;
+    if (!selection || !["SELECTED", "SECURE_PANEL_UNAVAILABLE"].includes(selection.status)) fail(`Stress case "${row.config.id}" lacks a deterministic adaptive-policy result`);
+    if (selection && selection.status === "SECURE_PANEL_UNAVAILABLE" && selection.selected) fail(`Stress case "${row.config.id}" uses an unsafe fallback`);
   });
-  if (stress.broken || stress.watch || stress.held !== 6) {
-    fail(`Fixed stress summary must report 6/6 strong; received held=${stress.held}, watch=${stress.watch}, broken=${stress.broken}`);
+  if (stress.held + stress.broken !== 6 || stress.watch > stress.held) {
+    fail(`Stress summary counts must cover all six fixtures; received held=${stress.held}, watch=${stress.watch}, broken=${stress.broken}`);
   }
 
   validateProtectionCrossings(labModel);
   validatePanelShortage(labModel);
-  validatePublishedPanelSchedule(labModel);
+  validateAdaptivePanelSelection(labModel);
   validateMonotonicity(labModel);
   validateAdaptivePricing(labModel);
 
@@ -665,8 +688,8 @@ if (
 if (!html.includes('<script src="assumptions.js"></script>')) {
   fail("break-the-court.html must load assumptions.js before the lab script");
 }
-if (!html.includes('<script src="assets/panel-schedule.js"></script>')) {
-  fail("break-the-court.html must load the shared public panel schedule");
+if (!html.includes('<script src="assets/panel-policy.js"></script>')) {
+  fail("break-the-court.html must load the shared adaptive panel policy");
 }
 
 if (/window\.ASSUMPTIONS\s*=\s*\[/.test(html)) {

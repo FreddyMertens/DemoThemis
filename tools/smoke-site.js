@@ -2990,7 +2990,9 @@ function checkBuiltHtml(failures) {
   assert(/assets\/vendor\/tippy-6\.3\.7\.umd\.min\.js/i.test(gameLab), "gamelab missing vendored Tippy", failures);
   assert(/role=["']tablist["']/i.test(gameLab), "gamelab missing tablist role", failures);
   assert(/data-attack=["']bloc["']/i.test(gameLab), "gamelab missing coordinated attack card", failures);
-  assert(/assets\/panel-schedule\.js/i.test(gameLab) && /function\s+panelFor\s*\(\s*stake\s*\)\s*\{\s*return\s+PANEL_SCHEDULE\.initialPanel\(stake\)/i.test(gameLab), "Break the Court must consume the shared public panel schedule", failures);
+  assert(/assets\/panel-policy\.js/i.test(gameLab) && /POLICY\.selectConfiguration\s*\(\s*\{\s*exposure:\s*v\.stake,\s*candidateContexts:\s*contexts/i.test(gameLab), "Break the Court must consume the shared adaptive panel policy", failures);
+  assert(/id=["']autoPolicyCard["']/i.test(gameLab) && /Automatic\s*&middot;\s*protocol recommendation/i.test(gameLab) && /SECURE_PANEL_UNAVAILABLE/i.test(gameLab), "Break the Court must show the automatic result and fail-closed state", failures);
+  assert(/data-panel-override=["']auto["']/i.test(gameLab) && /data-panel-override=["']p31x5["']/i.test(gameLab) && /Lab override only[^<]*requesters cannot choose court security/i.test(gameLab), "Break the Court panel controls must be explicit lab-only overrides", failures);
   assert(/var\s+totalPanelSeats\s*=\s*panel\s*\*\s*parallelPanels/i.test(gameLab) && /seatVotes\s*=\s*courtCases\s*\*\s*totalPanelSeats/i.test(gameLab) && /panelCompensation\s*=\s*payPerVote\s*\*\s*totalPanelSeats/i.test(gameLab), "Break the Court must fund and capacity-check every seat in a parallel panel set", failures);
 
   const demoThemis = readDist("demothemis.html");
@@ -3000,22 +3002,24 @@ function checkBuiltHtml(failures) {
   assert(/id=["']qaCases["']/i.test(demoThemis) && /id=["']qaQuality["']/i.test(demoThemis), "DemoThemis chapter missing the two-input juror-accountability diagram", failures);
   assert(/id=["']g3grid["']/i.test(demoThemis), "DemoThemis chapter missing sealed-die widget", failures);
   assert(/id=["']R4seg["']/i.test(demoThemis), "DemoThemis chapter missing private-ballot widget", failures);
-  assert(/id=["']mppanels["']/i.test(demoThemis), "DemoThemis chapter missing parallel-panel widget", failures);
-  assert(/id=["']panelScheduleTable["']/i.test(demoThemis) && /Below[\s\S]*?\$250k[\s\S]*?\$250k[\s\S]*?\$1M[\s\S]*?3\s*&times;\s*31[\s\S]*?5\s*&times;\s*31/i.test(demoThemis), "DemoThemis must publish the complete initial and parallel-panel schedule", failures);
-  assert(/assets\/panel-schedule\.js/i.test(demoThemis) && /data-case-value=["']1000000["']/i.test(demoThemis) && /data-case-value=["']5000000["']/i.test(demoThemis) && /data-case-value=["']25000000["']/i.test(demoThemis), "DemoThemis parallel-panel widget must consume the shared case-value tiers", failures);
-  assert(/function\s+drawPanelSet\s*\(/i.test(demoThemis) && /offset\s*=\s*p\s*\*\s*SEATS/i.test(demoThemis), "DemoThemis parallel-panel simulation must draw disjoint seats across the panel set", failures);
+  assert(/id=["']adaptivePolicyWidget["']/i.test(demoThemis) && /id=["']adaptivePanelTable["']/i.test(demoThemis), "DemoThemis chapter must show the adaptive panel-selection explainer", failures);
+  assert(/assets\/panel-policy\.js/i.test(demoThemis) && /policy\.selectConfiguration\s*\(\s*\{\s*exposure:\s*exposure,\s*candidateContexts:\s*contexts/i.test(demoThemis), "DemoThemis adaptive widget must consume the shared policy", failures);
+  assert(/risk limit = min\(1%, \$100 \/ locked exposure\)/i.test(demoThemis) && /Case value does not directly select a seat count/i.test(demoThemis), "DemoThemis must explain value-sensitive risk without fixed dollar tiers", failures);
+  assert(/two panel majorities/i.test(demoThemis) && /five decide by\s*<b>three/i.test(demoThemis) && /exactDisjointControlProbability/i.test(demoThemis), "DemoThemis must teach 2-of-3 and 3-of-5 decisions with exact disjoint-draw math", failures);
   assert(["qaPay", "qaDraw", "qaWeight", "qaEligibility"].every((id) => new RegExp(`id=["']${id}["']`, "i").test(demoThemis)), "DemoThemis juror-accountability diagram must show pay, draw rate, vote weight, and eligibility", failures);
   assert(/id=["']RT1seg["']/i.test(demoThemis), "DemoThemis chapter missing case-router widget", failures);
   assert(/id=["']abStake["']/i.test(demoThemis), "DemoThemis chapter missing appeal-bond widget", failures);
-  assert(/id=["']abCurrentPanel["'][^>]*role=["']group["']/i.test(demoThemis) && /data-current-panel=["']7["']/i.test(demoThemis) && /data-current-panel=["']15["']/i.test(demoThemis) && /data-current-panel=["']31["']/i.test(demoThemis), "appeal quote must let the reviewer select the current 7-, 15-, or 31-seat ruling", failures);
-  assert(/function\s+nextPanelFor\s*\(\s*current\s*\)\s*\{[\s\S]*?current\s*===\s*7\)\s*return\s+15;[\s\S]*?current\s*===\s*15\)\s*return\s+31;[\s\S]*?return\s+null;/i.test(demoThemis), "appeal quote must advance only 7 to 15, 15 to 31, and stop after 31", failures);
+  assert(/id=["']abCurrentPanel["'][^>]*role=["']group["']/i.test(demoThemis) && ["p7", "p15", "p31", "p31x3", "p31x5"].every((id) => new RegExp(`data-current-config=["']${id}["']`, "i").test(demoThemis)), "appeal quote must expose all five current ruling-set rungs", failures);
+  assert(/policy\.nextCandidate\(currentConfigId\)/i.test(demoThemis) && /usedSeatsThrough\(current\.id\)/i.test(demoThemis), "appeal quote must advance exactly one rung and exclude all previously used jurors", failures);
   assert(!/function\s+panelFor\s*\(\s*stake\s*\)/i.test(demoThemis), "appeal quote must not choose the appeal panel from case value", failures);
-  assert(/id=["']abNextPanel["']/i.test(demoThemis) && /Final at 31/i.test(demoThemis) && /no appeal goal opens and no funds are requested/i.test(demoThemis), "appeal quote must expose the next rung and a no-funding terminal state", failures);
+  assert(/id=["']abNextPanel["']/i.test(demoThemis) && /Terminal at 5\s*×\s*31/i.test(demoThemis) && /no appeal goal or funding request opens/i.test(demoThemis), "appeal quote must expose the next rung and a no-funding 5×31 terminal state", failures);
   assert(/class=["'][^"']*vhub/i.test(demoThemis), "DemoThemis chapter missing shared-arbiter diagram", failures);
   assert(/grid-template-areas:\s*"apps arrow-in core"\s*"\. \. arrow-out"\s*"\. \. ruling"/i.test(demoThemis) && /\.vhub\s*>\s*\.ar:last-of-type\s*\{[^}]*grid-area:\s*arrow-out;[^}]*transform:\s*rotate\(90deg\)/i.test(demoThemis), "DemoThemis shared-arbiter diagram must route its final arrow down into the ruling card at wrapped widths", failures);
 
-  const panelSchedule = readDist("assets/panel-schedule.js");
-  assert(/FIFTEEN_SEATS:\s*250000/i.test(panelSchedule) && /THIRTY_ONE_SEATS:\s*1000000/i.test(panelSchedule) && /THREE_PANELS:\s*5000000/i.test(panelSchedule) && /FIVE_PANELS:\s*25000000/i.test(panelSchedule), "shared panel schedule must preserve the published $250k, $1M, $5M, and $25M boundaries", failures);
+  const panelPolicy = readDist("assets/panel-policy.js");
+  assert(/adaptive-reference-v2/i.test(panelPolicy) && /id:\s*"p31x3"[\s\S]*?requiredPanels:\s*2/i.test(panelPolicy) && /id:\s*"p31x5"[\s\S]*?requiredPanels:\s*3/i.test(panelPolicy), "shared panel policy must publish the versioned five-rung 2-of-3 and 3-of-5 ladder", failures);
+  assert(/status:\s*selected\s*\?\s*"SELECTED"\s*:\s*"SECURE_PANEL_UNAVAILABLE"/i.test(panelPolicy) && /exactDisjointControlProbability/i.test(panelPolicy), "shared panel policy must use exact finite-pool math and fail closed", failures);
+  assert(!/assets\/panel-schedule\.js/i.test(gameLab + demoThemis) && !/\$250k[\s\S]{0,400}(?:\$1M|15 seats)/i.test(demoThemis), "public panel consumers must not teach the retired fixed-dollar schedule", failures);
 
   const runThrough = readDist("run-through.html");
   checkStateMachineData(runThrough, failures);
