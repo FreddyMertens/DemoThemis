@@ -3,48 +3,36 @@
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <title>DemoThemis &amp; OmenMarketMaker — Current Contradiction Review</title>
-  <meta name="description" content="A current-state contradiction audit of the DemoThemis and OmenMarketMaker project, including source, prose, diagrams, screenshots, and delivery artifacts.">
+  <title>DemoThemis &amp; OmenMarketMaker — Public-Site Contradiction Review</title>
+  <meta name="description" content="A reviewer-facing contradiction audit limited to the public DemoThemis and OmenMarketMaker chapters, run-through, MVP preview, and live demo MVP.">
   <style>
     :root {
-      --ink:#171614; --muted:#676159; --paper:#f5f1e8; --card:#fffdf8; --line:#d8d0c3;
-      --high:#b74e12; --high-soft:#f7e6d8; --medium:#8a6804; --medium-soft:#f4eccb;
-      --low:#2f6c65; --low-soft:#dfefea; --good:#24634e; --good-soft:#deeee6;
-      --blue:#315e8c; --blue-soft:#e4edf5; --shadow:0 16px 45px rgba(52,41,24,.08);
+      --ink:#171614;--muted:#676159;--paper:#f5f1e8;--card:#fffdf8;--line:#d8d0c3;
+      --high:#b74e12;--high-soft:#f7e6d8;--medium:#8a6804;--medium-soft:#f4eccb;
+      --low:#2f6c65;--low-soft:#dfefea;--good:#24634e;--good-soft:#deeee6;
+      --blue:#315e8c;--blue-soft:#e4edf5;--shadow:0 16px 45px rgba(52,41,24,.08);
       --sans:Inter,ui-sans-serif,system-ui,-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;
       --serif:Iowan Old Style,Palatino Linotype,Book Antiqua,Georgia,serif;
       --mono:"SFMono-Regular",Consolas,"Liberation Mono",monospace;
     }
-    *{box-sizing:border-box} html{scroll-behavior:smooth}
+    *{box-sizing:border-box}html{scroll-behavior:smooth}
     body{margin:0;color:var(--ink);background:radial-gradient(circle at 8% 0%,rgba(161,86,33,.10),transparent 29rem),linear-gradient(180deg,#ede6da 0,var(--paper) 25rem);font-family:var(--sans);line-height:1.55}
-    a{color:#315c79;text-underline-offset:3px} a:hover{color:#193f5c}
-    code{font-family:var(--mono);font-size:.88em;overflow-wrap:anywhere}
-    .shell{width:min(1180px,calc(100% - 36px));margin:0 auto}
-    .hero{padding:68px 0 38px;border-bottom:1px solid rgba(81,70,53,.18)}
+    a{color:#315c79;text-underline-offset:3px}a:hover{color:#193f5c}code{font-family:var(--mono);font-size:.88em;overflow-wrap:anywhere}
+    .shell{width:min(1180px,calc(100% - 36px));margin:0 auto}.hero{padding:68px 0 38px;border-bottom:1px solid rgba(81,70,53,.18)}
     .eyebrow,.label{margin:0 0 10px;color:#78614b;font-size:.72rem;font-weight:850;letter-spacing:.14em;text-transform:uppercase}
-    h1,h2,h3{text-wrap:balance}
-    h1{max-width:980px;margin:0;font:700 clamp(2.7rem,6vw,5.3rem)/.95 var(--serif);letter-spacing:-.045em}
+    h1,h2,h3{text-wrap:balance}h1{max-width:980px;margin:0;font:700 clamp(2.7rem,6vw,5.3rem)/.95 var(--serif);letter-spacing:-.045em}
     .hero-dek{max-width:900px;margin:23px 0 0;color:#46413b;font-size:clamp(1.04rem,2vw,1.25rem)}
     .verdict{display:grid;grid-template-columns:auto 1fr;gap:15px;align-items:start;max-width:950px;margin-top:28px;padding:18px 20px;border:1px solid #ddb49f;border-radius:14px;background:rgba(255,249,243,.85);box-shadow:var(--shadow)}
-    .verdict-mark{display:grid;width:38px;height:38px;place-items:center;border-radius:50%;background:var(--high);color:#fff;font-weight:900}
-    .verdict strong{display:block}.verdict p{margin:4px 0 0;color:#5b4b42}
-    .meta-row{display:flex;flex-wrap:wrap;gap:9px;margin-top:24px}
-    .meta-pill{padding:7px 10px;border:1px solid var(--line);border-radius:999px;background:rgba(255,255,255,.58);color:#575149;font-size:.78rem;font-weight:750}
-    main{padding:38px 0 90px} section{scroll-margin-top:20px}
-    .section-head{display:flex;justify-content:space-between;gap:25px;align-items:end;margin:52px 0 18px}
-    .section-head h2{margin:0;font:700 clamp(1.8rem,4vw,3rem)/1 var(--serif);letter-spacing:-.028em}
-    .section-head p{max-width:660px;margin:0;color:var(--muted)}
-    .summary-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:12px}
-    .summary-card{min-height:142px;padding:18px;border:1px solid var(--line);border-radius:16px;background:var(--card);box-shadow:var(--shadow)}
-    .summary-card .num{display:block;font:750 2.8rem/1 var(--serif)}
-    .summary-card strong{display:block;margin-top:9px}.summary-card p{margin:4px 0 0;color:var(--muted);font-size:.86rem}
+    .verdict-mark{display:grid;width:38px;height:38px;place-items:center;border-radius:50%;background:var(--high);color:#fff;font-weight:900}.verdict strong{display:block}.verdict p{margin:4px 0 0;color:#5b4b42}
+    .meta-row{display:flex;flex-wrap:wrap;gap:9px;margin-top:24px}.meta-pill{padding:7px 10px;border:1px solid var(--line);border-radius:999px;background:rgba(255,255,255,.58);color:#575149;font-size:.78rem;font-weight:750}
+    main{padding:38px 0 90px}section{scroll-margin-top:20px}.section-head{display:flex;justify-content:space-between;gap:25px;align-items:end;margin:52px 0 18px}
+    .section-head h2{margin:0;font:700 clamp(1.8rem,4vw,3rem)/1 var(--serif);letter-spacing:-.028em}.section-head p{max-width:660px;margin:0;color:var(--muted)}
+    .summary-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:12px}.summary-card{min-height:142px;padding:18px;border:1px solid var(--line);border-radius:16px;background:var(--card);box-shadow:var(--shadow)}
+    .summary-card .num{display:block;font:750 2.8rem/1 var(--serif)}.summary-card strong{display:block;margin-top:9px}.summary-card p{margin:4px 0 0;color:var(--muted);font-size:.86rem}
     .summary-card.total{border-top:5px solid var(--ink)}.summary-card.high{border-top:5px solid var(--high)}.summary-card.medium{border-top:5px solid var(--medium)}.summary-card.low{border-top:5px solid var(--low)}
-    .truth-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:12px}
-    .truth-card,.panel,.action-card{padding:20px;border:1px solid var(--line);border-radius:16px;background:var(--card)}
-    .truth-card .top{display:flex;justify-content:space-between;gap:10px;align-items:center;margin-bottom:12px}
-    .truth-card h3{margin:0;font-size:1.02rem}.truth-card ul,.action-card ol,.compact-list{margin:0;padding-left:19px}
-    .truth-card li,.action-card li{font-size:.86rem}.truth-card li+li,.action-card li+li,.compact-list li+li{margin-top:6px}
-    .state{padding:4px 8px;border-radius:999px;font-size:.65rem;font-weight:850;letter-spacing:.06em;text-transform:uppercase;white-space:nowrap}
+    .truth-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:12px}.truth-card,.panel,.action-card{padding:20px;border:1px solid var(--line);border-radius:16px;background:var(--card)}
+    .truth-card .top{display:flex;justify-content:space-between;gap:10px;align-items:center;margin-bottom:12px}.truth-card h3{margin:0;font-size:1.02rem}.truth-card ul,.action-card ol{margin:0;padding-left:19px}
+    .truth-card li,.action-card li{font-size:.86rem}.truth-card li+li,.action-card li+li{margin-top:6px}.state{padding:4px 8px;border-radius:999px;font-size:.65rem;font-weight:850;letter-spacing:.06em;text-transform:uppercase;white-space:nowrap}
     .state.live{color:var(--good);background:var(--good-soft)}.state.source{color:var(--blue);background:var(--blue-soft)}.state.future{color:var(--high);background:var(--high-soft)}.state.mixed{color:var(--medium);background:var(--medium-soft)}
     .scope{display:grid;grid-template-columns:1.35fr 1fr;gap:14px}.panel h3{margin:0 0 9px;font-size:1rem}.panel p{margin:0;color:#565149}.panel p+p{margin-top:10px}
     .toolbar{position:sticky;top:0;z-index:20;display:flex;flex-wrap:wrap;gap:8px;align-items:center;margin:45px 0 18px;padding:12px;border:1px solid rgba(133,120,98,.3);border-radius:14px;background:rgba(246,242,234,.93);backdrop-filter:blur(12px);box-shadow:0 8px 24px rgba(58,47,29,.08)}
@@ -70,308 +58,184 @@
 <body>
   <header class="hero">
     <div class="shell">
-      <p class="eyebrow">Current-state cross-project audit · 23 July 2026</p>
-      <h1>Contradiction review, rebuilt around what the project says now</h1>
-      <p class="hero-dek">This revision rechecked the complete-product specification, MVP source and contracts, grant material, simulations, generated portal, diagrams, screenshots, deployment records, and delivery package. An honestly labeled demo limitation is no longer counted merely because it differs from the intended full product.</p>
-      <div class="verdict"><span class="verdict-mark">!</span><div><strong>30 active contradictions remain: 1 high, 18 medium, and 11 low.</strong><p>The public MVP now has one current release profile, fails closed when its verified addresses are absent, and no longer falls back to or advertises an older deployment. Retired capstone fixtures are no longer shipped publicly. World ID 4 Production migration, Orb/device policy, RP-signature fallback, strict chain validation, grant ZIP freshness, and the reserve-to-bond design migration are also fixed. The most urgent remaining issue is the project’s absolute security claim.</p></div></div>
+      <p class="eyebrow">Reviewer-facing site audit · 23 July 2026</p>
+      <h1>Contradiction review of the public chapters and demo MVP</h1>
+      <p class="hero-dek">This edition checks only claims a reviewer can encounter on the public proposal site: the chapters, diagrams, interactive widgets, run-through simulator, static MVP preview, and visible live-demo screens.</p>
+      <div class="verdict"><span class="verdict-mark">!</span><div><strong>14 public-facing contradictions remain: 1 high, 7 medium, and 6 low.</strong><p>The caller-bond design, 20 MUSD MVP fee, three-choice ballot, Orb-plus-device explanation, appeal quote, and public panel schedule are now substantially aligned. The largest remaining issue is absolute “unbuyable” and “bullet proof” wording; most other findings are mismatched thresholds, money flows, panel rules, or interactive examples.</p></div></div>
       <div class="meta-row">
-        <span class="meta-pill">Working tree, including uncommitted updates</span>
-        <span class="meta-pill">Writing + source + diagrams + screenshots + ZIP</span>
-        <span class="meta-pill">MVP omissions excluded when honestly labeled</span>
-        <span class="meta-pill">External World ID status rechecked today</span>
+        <span class="meta-pill">Eight public proposal pages</span>
+        <span class="meta-pill">Visible live/demo MVP screens</span>
+        <span class="meta-pill">Writing + diagrams + interactions</span>
+        <span class="meta-pill">Repository-only material excluded</span>
       </div>
     </div>
   </header>
 
   <main class="shell">
     <section aria-labelledby="summary-title">
-      <div class="section-head"><div><p class="label">Executive count</p><h2 id="summary-title">Only current contradictions are counted</h2></div><p>There are no active “critical” findings in this consistency review. High means a claim can misdirect architecture, break a launch path, misstate security, or make the economics insolvent.</p></div>
+      <div class="section-head"><div><p class="label">Executive count</p><h2 id="summary-title">Only reviewer-visible conflicts are counted</h2></div><p>Differences that are clearly labeled as MVP-versus-roadmap scope are not contradictions. A finding remains only when public pages disagree with each other or an interaction contradicts the explanation around it.</p></div>
       <div class="summary-grid">
-        <article class="summary-card total"><span class="num">30</span><strong>Active findings</strong><p>A full recount after the latest source, design-plan, artifact, and package changes.</p></article>
-        <article class="summary-card high"><span class="num">1</span><strong>High</strong><p>Absolute security claims.</p></article>
-        <article class="summary-card medium"><span class="num">18</span><strong>Medium</strong><p>Mechanism rules, settlement, cutover, diagrams, and public claims.</p></article>
-        <article class="summary-card low"><span class="num">11</span><strong>Low</strong><p>Qualified copy, event completeness, references, tooling, and configuration.</p></article>
+        <article class="summary-card total"><span class="num">14</span><strong>Active findings</strong><p>Recounted after the latest public-site and simulator updates.</p></article>
+        <article class="summary-card high"><span class="num">1</span><strong>High</strong><p>An absolute security promise conflicts with the site’s own risk model.</p></article>
+        <article class="summary-card medium"><span class="num">7</span><strong>Medium</strong><p>Mechanism, pricing, settlement, panel, and product-boundary conflicts.</p></article>
+        <article class="summary-card low"><span class="num">6</span><strong>Low</strong><p>Overbroad wording and missing details in visible examples.</p></article>
       </div>
     </section>
 
-    <section aria-labelledby="truth-title">
-      <div class="section-head"><div><p class="label">Current baseline</p><h2 id="truth-title">Current MVP and funded roadmap stay separate</h2></div><p>The public release now has one safe status model; operational history remains evidence, not a runtime fallback.</p></div>
+    <section aria-labelledby="baseline-title">
+      <div class="section-head"><div><p class="label">Visible baseline</p><h2 id="baseline-title">What a reviewer is actually being shown</h2></div><p>The review treats the public chapters as the complete-product explanation and the MVP surfaces as a deliberately smaller demonstration.</p></div>
       <div class="truth-grid">
-        <article class="truth-card"><div class="top"><h3>Current MVP</h3><span class="state source">Release profile</span></div><ul><li>Recovery, party preflight, immutable clocks, re-bonding, a 20 MUSD fee, and a three-choice ballot are implemented.</li><li>101 test/invariant functions are declared; the current documents still report 100.</li><li>It requires World ID 4 Production proof-of-human, v4-only proof generation, and a release-checked gate.</li><li>Public copy describes this capability set consistently as the current MVP.</li></ul></article>
-        <article class="truth-card"><div class="top"><h3>Live configuration</h3><span class="state live">Fail closed</span></div><ul><li>The public app accepts only explicit current-release contract addresses.</li><li>The release flag is enabled only after deployment, source verification, keeper checks, and Portal setup.</li><li>Without that verified configuration, the app shows a neutral walkthrough and makes no contract reads.</li></ul></article>
-        <article class="truth-card"><div class="top"><h3>Complete product</h3><span class="state future">Target</span></div><ul><li>The latest plan uses a caller-funded resolution bond, reimbursed from YES/NO backing only after a directional ruling.</li><li>Insufficient information consumes the caller bond while leaving market backing whole; appeals, reputation, parallel panels, private ballots, and the SDK remain future work.</li><li>The design is now consistent across the product chapters and run-through; its Omen settlement contracts remain future work.</li></ul></article>
-        <article class="truth-card"><div class="top"><h3>Operational history</h3><span class="state future">Evidence</span></div><ul><li>Deployment records and runbooks may preserve earlier evidence for auditability.</li><li>Those records no longer supply public runtime defaults, badges, explorer links, or onboarding state.</li><li>Referenced visuals still count as current claims and are reviewed separately below.</li></ul></article>
+        <article class="truth-card"><div class="top"><h3>Public chapters</h3><span class="state source">Reviewed</span></div><ul><li>Home and end-to-end run-through.</li><li>DemoThemis, Break the Court, OmenMarketMaker, Bootstrap Loop, and Governance.</li><li>All visible diagrams, calculators, and interactive states inside them.</li></ul></article>
+        <article class="truth-card"><div class="top"><h3>Demo MVP</h3><span class="state live">Visible</span></div><ul><li>Static preview and linked live app.</li><li>20 MUSD question fee and 70/20/10 receipt.</li><li>YES, NO, and INSUFFICIENT INFORMATION ballot choices.</li></ul></article>
+        <article class="truth-card"><div class="top"><h3>Complete product</h3><span class="state future">Chapters</span></div><ul><li>Caller posts the exact resolution bond at request time.</li><li>YES/NO reimburses it pro-rata; insufficient information leaves backing whole.</li><li>Advanced privacy, reputation, appeals, and panel scaling remain presented as future design.</li></ul></article>
+        <article class="truth-card"><div class="top"><h3>Review boundary</h3><span class="state mixed">Public only</span></div><ul><li>No repository-only notes or historical records.</li><li>No grant-submission or packaging findings.</li><li>No hidden implementation issue unless it changes what the live/demo page visibly shows.</li></ul></article>
       </div>
     </section>
 
     <section aria-labelledby="scope-title">
-      <div class="section-head"><div><p class="label">Review rule</p><h2 id="scope-title">What qualifies as a contradiction here</h2></div></div>
+      <div class="section-head"><div><p class="label">Review rule</p><h2 id="scope-title">What qualifies here</h2></div></div>
       <div class="scope">
-        <article class="panel"><h3>Counted</h3><p>Two current claims that cannot both be true; a public claim contradicted by its implementation or evidence; an actively referenced diagram/screenshot that describes a different mechanism; or an economic promise whose same funds are allocated twice.</p><p>A legacy difference is counted only when the project still presents it as current, live, supported, or equivalent to the replacement.</p></article>
-        <article class="panel"><h3>Not counted</h3><p>A feature missing only because this is a clearly labeled demo MVP; a funded-roadmap feature not yet shipped; a scripted interaction disclosed as local; an explicitly historical deployment; or a readiness task that does not conflict with a present claim.</p></article>
+        <article class="panel"><h3>Counted</h3><p>Two visible claims that cannot both be true; a diagram or interactive result that teaches a different mechanism from its surrounding chapter; a simulator payment that disagrees with the public economics; or a live/demo label that overstates the feature it shows.</p></article>
+        <article class="panel"><h3>Not counted</h3><p>Internal documentation drift, grant preparation, deployment administration, package freshness, source-only concerns, or a roadmap feature missing from an MVP that clearly labels itself as a smaller demonstration.</p></article>
       </div>
     </section>
 
     <section id="findings" aria-labelledby="findings-title">
       <div class="toolbar" role="group" aria-label="Filter findings">
         <strong>Show</strong>
-        <button class="filter is-active" type="button" data-filter="all">All 30</button>
+        <button class="filter is-active" type="button" data-filter="all">All 14</button>
         <button class="filter" type="button" data-filter="high">High 1</button>
-        <button class="filter" type="button" data-filter="medium">Medium 18</button>
-        <button class="filter" type="button" data-filter="low">Low 11</button>
-        <input id="finding-search" type="search" placeholder="Search findings, files, or terms…" aria-label="Search findings">
+        <button class="filter" type="button" data-filter="medium">Medium 7</button>
+        <button class="filter" type="button" data-filter="low">Low 6</button>
+        <input id="finding-search" type="search" placeholder="Search findings or page names…" aria-label="Search findings">
       </div>
-      <div class="section-head"><div><p class="label">Active register</p><h2 id="findings-title">Contradictions that remain</h2></div><p>Each item explains why the drift probably happened and the cleanest handling.</p></div>
+      <div class="section-head"><div><p class="label">Active register</p><h2 id="findings-title">Contradictions a reviewer can encounter</h2></div><p>Evidence names the public page or visible interaction rather than internal project files.</p></div>
       <div class="findings">
-
-        <article class="finding" data-severity="high" id="H07">
-          <div class="finding-head"><span class="finding-id">H-07</span><h3>“Unbuyable” and “bullet proof” security claims contradict the project’s own non-zero capture model</h3><span class="severity">High</span></div>
-          <div class="conflict"><div class="claim"><b>Marketing copy</b><p>Multiple pages say a verdict cannot be bought, is unbuyable, or is bullet proof.</p></div><div class="claim"><b>Model</b><p>The attack simulator explicitly calculates a non-zero probability of a corrupted pool drawing a majority. The design adds larger/parallel panels because capture remains possible.</p></div></div>
-          <div class="finding-body"><div><h4>Why</h4><p>A strong comparative advantage was compressed into an absolute guarantee.</p></div><div><h4>Handle</h4><p>Use “capture-resistant under published assumptions,” show the assumptions beside each probability, and reserve absolute language for properties actually enforced by code.</p></div></div>
-          <p class="evidence"><b>Evidence:</b> <code>index.html:73,104,162</code>; <code>demothemis.html:340,545-560</code>; <code>run-through.html:5,43-44</code>; <code>break-the-court.html:296,332-335,1277-1294</code>.</p>
+        <article class="finding" data-severity="high" id="H01">
+          <div class="finding-head"><span class="finding-id">H-01</span><h3>“Unbuyable” and “bullet proof” are absolute, but the public attack model shows non-zero capture risk</h3><span class="severity">High</span></div>
+          <div class="conflict"><div class="claim"><b>Public promise</b><p>Headings and product copy repeatedly call the court unbuyable, bullet proof, ungameable, or something whales cannot buy.</p></div><div class="claim"><b>Public model</b><p>Break the Court calculates probabilities and conditions under which capture remains possible, especially with a narrow pool or disabled defenses.</p></div></div>
+          <div class="finding-body"><div><h4>Why</h4><p>Memorable positioning hardened into a literal security guarantee while the model correctly remained probabilistic.</p></div><div><h4>Handle</h4><p>Use “designed to make capture impractical under stated assumptions,” then link directly to the modeled conditions and residual risk.</p></div></div>
+          <p class="evidence"><b>Visible evidence:</b> Home product cards; DemoThemis “What makes the court unbuyable”; OmenMarketMaker arbitration headings; Break the Court results.</p>
         </article>
 
         <article class="finding" data-severity="medium" id="M01">
-          <div class="finding-head"><span class="finding-id">M-01</span><h3>The home page still calls the products optional, independent, and mutually required</h3><span class="severity">Medium</span></div>
-          <div class="conflict"><div class="claim"><b>Home copy</b><p>The products have “optional integration,” are “entirely separate,” and “both require the other to exist.”</p></div><div class="claim"><b>Settled architecture</b><p>Omen is one bootstrap customer, not a permanent DemoThemis dependency; Omen currently requires DemoThemis only for sufficiently funded human resolution.</p></div></div>
-          <div class="finding-body"><div><h4>Why</h4><p>The temporal bootstrap relationship was shortened into an existential relationship.</p></div><div><h4>Handle</h4><p>Say: independent products; Omen is DemoThemis’s launch customer; Omen’s human-resolution mode depends on DemoThemis; DemoThemis is intended to outgrow that initial demand source.</p></div></div>
-          <p class="evidence"><b>Evidence:</b> <code>index.html:7,40</code>; <code>demothemis.html:479-483</code>; <code>bootstrap-loop.html:56,87</code>; <code>omenmarketmaker.html:266-269</code>.</p>
+          <div class="finding-head"><span class="finding-id">M-01</span><h3>The products are called independent, optional, and mutually required</h3><span class="severity">Medium</span></div>
+          <div class="conflict"><div class="claim"><b>Independence</b><p>DemoThemis says OmenMarketMaker is one launch path, not a permanent dependency, and both products keep separate contracts, governance, and treasuries.</p></div><div class="claim"><b>Mutual requirement</b><p>The Home page says both products require the other to exist, while other public copy presents the court as reusable by any app.</p></div></div>
+          <div class="finding-body"><div><h4>Why</h4><p>A temporary bootstrap relationship is compressed into an unconditional product dependency.</p></div><div><h4>Handle</h4><p>Say OmenMarketMaker is the initial demand source and reference integration, while DemoThemis is intended to become independently reusable.</p></div></div>
+          <p class="evidence"><b>Visible evidence:</b> Home product introduction; DemoThemis Bootstrap section; Bootstrap Loop; OmenMarketMaker resolution boundary.</p>
         </article>
 
         <article class="finding" data-severity="medium" id="M02">
-          <div class="finding-head"><span class="finding-id">M-02</span><h3>Market graduation has several incompatible rule sets, and one “canonical” gate is now superseded</h3><span class="severity">Medium</span></div>
-          <div class="conflict"><div class="claim"><b>Chapter rule</b><p>The market needs $5,000 per side, $1,000 of offers, and 24 hours. Its displayed strict “&gt;” boundaries also disagree with code using “&gt;=”.</p></div><div class="claim"><b>Other current rules</b><p>The lifecycle uses $50 per side, any offer, and an automatic time pass; the comparison table says volume alone earns the book.</p></div></div>
-          <div class="finding-body"><div><h4>Why</h4><p>The teaching animation, comparison table, robustness widget, and run-through evolved separately.</p></div><div><h4>Handle</h4><p>Freeze one graduation rule, then drive prose, thresholds, boundary operators, tables, and animations from shared constants. Label any compressed teaching values without changing the logical gates.</p></div></div>
-          <p class="evidence"><b>Evidence:</b> <code>omenmarketmaker.html:379-430,443-493,520,738-789</code>; <code>assets/run-through.js:920-934</code>.</p>
+          <div class="finding-head"><span class="finding-id">M-02</span><h3>Market graduation uses incompatible thresholds and boundary operators</h3><span class="severity">Medium</span></div>
+          <div class="conflict"><div class="claim"><b>Robustness Lock</b><p>It displays more than $5,000 per side, more than $1,000 of standing offers, and a 24-hour hold. Its interaction actually passes at exactly those dollar values.</p></div><div class="claim"><b>Growth demo</b><p>The earlier interactive market graduates around $50 per side, accepts any live offer, and does not require the same visible 24-hour step.</p></div></div>
+          <div class="finding-body"><div><h4>Why</h4><p>The teaching demo and the claimed canonical lock use different scales and logic without labeling one as compressed.</p></div><div><h4>Handle</h4><p>Publish one canonical rule and drive both widgets from it. If the first widget is illustrative, label its values and preserve the same logical checks.</p></div></div>
+          <p class="evidence"><b>Visible evidence:</b> OmenMarketMaker “Liquidity Flywheel” interaction and “The Robustness Lock” interaction.</p>
         </article>
 
         <article class="finding" data-severity="medium" id="M03">
-          <div class="finding-head"><span class="finding-id">M-03</span><h3>The identity-evidence widget mixes proof environment and chain, then builds one link for the wrong chain</h3><span class="severity">Medium</span></div>
-          <div class="conflict"><div class="claim"><b>What the widget says</b><p>A staging/simulator Step-3.5 trace is described as “A real World ID identity.” A Sepolia cohort transaction is linked through the currently selected chain’s explorer.</p></div><div class="claim"><b>What the evidence is</b><p>World Chain mainnet is the chain, but the proof used the v4 Staging environment. The cohort duplicate transaction belongs on World Chain Sepolia, while the public build defaults to mainnet.</p></div></div>
-          <div class="finding-body"><div><h4>Why</h4><p>Chain, verification environment, and credential provenance were treated as one “mainnet” label, and a generic explorer helper was reused for fixed historical evidence.</p></div><div><h4>Handle</h4><p>Label the proof “Simulator identity / v4 Staging verifier on World Chain mainnet.” Give every fixed trace its own fixed explorer base URL.</p></div></div>
-          <p class="evidence"><b>Evidence:</b> <code>web/src/components/SybilDemo/index.tsx:5-45</code>; <code>web/src/lib/chain.ts:8-11,44</code>; <code>worldchain-mainnet.json:57-68</code>; <code>worldchain-sepolia.json:2-22</code>.</p>
+          <div class="finding-head"><span class="finding-id">M-03</span><h3>“One human, one vote” conflicts with reputation-dependent vote weight</h3><span class="severity">Medium</span></div>
+          <div class="conflict"><div class="claim"><b>Equality claim</b><p>DemoThemis says it replaces token voting with one human, one vote and that money never buys more voice for one person.</p></div><div class="claim"><b>Reputation rule</b><p>The public reputation table says “full vote weight” is earned only when a juror’s private interval clears 0.70.</p></div></div>
+          <div class="finding-body"><div><h4>Why</h4><p>“One human, one vote” is being used for both identity uniqueness and equal tally weight, although the design changes influence by reputation.</p></div><div><h4>Handle</h4><p>Say “one human, one seat” if tally weights differ, or keep every seated ballot equal and let reputation affect only eligibility, draw rate, and pay.</p></div></div>
+          <p class="evidence"><b>Visible evidence:</b> DemoThemis “The wrong foundation” and “The reputation dial.”</p>
         </article>
 
         <article class="finding" data-severity="medium" id="M04">
-          <div class="finding-head"><span class="finding-id">M-04</span><h3>“One human, one vote” conflicts with reputation-weighted adjudication</h3><span class="severity">Medium</span></div>
-          <div class="conflict"><div class="claim"><b>Equal-vote promise</b><p>Each verified human gets one seat and one vote.</p></div><div class="claim"><b>Reputation rule</b><p>Only jurors above a threshold get “full vote weight,” and vote weight changes with reputation.</p></div></div>
-          <div class="finding-body"><div><h4>Why</h4><p>Identity equality and quality control were both described as vote-weight rules.</p></div><div><h4>Handle</h4><p>Keep tally weight equal and use reputation for eligibility, draw probability, or pay—or replace the slogan with “one human, one identity/seat” and specify the weighted tally openly.</p></div></div>
-          <p class="evidence"><b>Evidence:</b> <code>demothemis.html:560,856-858,892</code>.</p>
+          <div class="finding-head"><span class="finding-id">M-04</span><h3>The early-bettor bonus is promised but not carried through tokenization and payout</h3><span class="severity">Medium</span></div>
+          <div class="conflict"><div class="claim"><b>Bonus promise</b><p>OmenMarketMaker and the run-through say an early $50 position counts like $54 when winnings are divided.</p></div><div class="claim"><b>Visible mechanics</b><p>The pool widget divides the gross pool only by side totals, ordinary fungible YES/NO tokens do not retain purchase time, and the final receipt shows no early-entry allocation.</p></div></div>
+          <div class="finding-body"><div><h4>Why</h4><p>A pool-era time weight was retained after positions became freely fungible tokens.</p></div><div><h4>Handle</h4><p>Either remove the bonus or represent it as a separate non-transferable claim with an explicit, conserved settlement formula.</p></div></div>
+          <p class="evidence"><b>Visible evidence:</b> OmenMarketMaker “Start a market” and tokenization sections; Run-through first trade, token conversion, and final payout.</p>
         </article>
 
         <article class="finding" data-severity="medium" id="M05">
-          <div class="finding-head"><span class="finding-id">M-05</span><h3>The appeal calculator now conserves the waterfall, but prices the current tier rather than the next appeal rung</h3><span class="severity">Medium</span></div>
-          <div class="conflict"><div class="claim"><b>Appeal rule</b><p>An appeal must move from 7 to 15 to 31 seats, and 31 is terminal. The service fee is panel work plus delay; security remains separate.</p></div><div class="claim"><b>Widget/code</b><p>The widget now shows that split, but it derives 7/15/31 directly from case value without a current-rung input. It can quote 7 instead of 15, 15 instead of 31, and a new 31-seat round when no rung remains. Its pay/delay constants also do not drive the run-through example.</p></div></div>
-          <div class="finding-body"><div><h4>Why</h4><p>The accounting fix was added to a calculator that still models initial value tiers rather than appeal transitions.</p></div><div><h4>Handle</h4><p>Add the current rung, calculate only its valid next rung, define terminal behavior, and import panel pay and delay rules from shared versioned data. Reconcile the widget with the run-through fixture exactly.</p></div></div>
-          <p class="evidence"><b>Evidence:</b> <code>demothemis.html:899-901,943-951,1676,1713-1728</code>; <code>assets/run-through.js:2737</code>.</p>
+          <div class="finding-head"><span class="finding-id">M-05</span><h3>The current 2% market fee exceeds Governance’s stated 0–1% range</h3><span class="severity">Medium</span></div>
+          <div class="conflict"><div class="claim"><b>Omen economics</b><p>The economics table and run-through receipt charge a 2% OmenMarketMaker settlement fee.</p></div><div class="claim"><b>Governance rail</b><p>The Governance chapter says the market token may govern its own fee and margin only inside 0–1%.</p></div></div>
+          <div class="finding-body"><div><h4>Why</h4><p>The operating example and constitutional range were updated independently.</p></div><div><h4>Handle</h4><p>Choose one number. Either lower the example to at most 1% or amend the public governance range and explain the higher ceiling.</p></div></div>
+          <p class="evidence"><b>Visible evidence:</b> OmenMarketMaker economics table; Run-through final payout; Governance “What a captured vote still could not do.”</p>
         </article>
 
         <article class="finding" data-severity="medium" id="M06">
-          <div class="finding-head"><span class="finding-id">M-06</span><h3>Panel-size and parallel-panel thresholds describe different courts</h3><span class="severity">Medium</span></div>
-          <div class="conflict"><div class="claim"><b>Main chapter</b><p>One, three, or five 31-seat panels begin around $250k and $5m.</p></div><div class="claim"><b>Attack model and run-through</b><p>The attack page creates three 15-seat panels from $250k to below $1m; a $118k run-through case gets seven seats although the shared attack thresholds assign 15 above $10k.</p></div></div>
-          <div class="finding-body"><div><h4>Why</h4><p>Separate widgets evolved their own value ladders.</p></div><div><h4>Handle</h4><p>Publish one value → initial seats → parallel panels → appeal path table and import it everywhere, including diagrams and examples.</p></div></div>
-          <p class="evidence"><b>Evidence:</b> <code>demothemis.html:723-730,1473-1483</code>; <code>break-the-court.html:680-682,997-1009</code>; <code>assets/run-through.js:135,2086,2540-2570</code>.</p>
+          <div class="finding-head"><span class="finding-id">M-06</span><h3>The private-room winner is promised the gross pool before mandatory deductions</h3><span class="severity">Medium</span></div>
+          <div class="conflict"><div class="claim"><b>Room terms</b><p>Two $10,000 stakes visibly promise “Winner receives $20,000.”</p></div><div class="claim"><b>Shared settlement rule</b><p>The same public design says YES/NO must reimburse the resolution bond pro-rata and OmenMarketMaker charges a settlement fee.</p></div></div>
+          <div class="finding-body"><div><h4>Why</h4><p>The private-room ticket still displays gross escrow as the winner’s net receipt.</p></div><div><h4>Handle</h4><p>Show gross pool, bond reimbursement, market fee, and estimated net payout as separate lines before both parties sign.</p></div></div>
+          <p class="evidence"><b>Visible evidence:</b> OmenMarketMaker “Private markets”; Run-through private-room creation and funding screens; public resolution economics.</p>
         </article>
 
         <article class="finding" data-severity="medium" id="M07">
-          <div class="finding-head"><span class="finding-id">M-07</span><h3>The three-state court source and resolution plan now disagree with grant copy and complete-product settlement</h3><span class="severity">Medium</span></div>
-          <div class="conflict"><div class="claim"><b>Source and accepted plan</b><p>The replacement court has YES, NO, and <code>InsufficientInformation</code>; a tie with quorum becomes insufficient information. The complete-product plan keeps technical failure separate, lets early insufficiency reopen, and voids at the backstop with the caller bond paying the court and YES/NO backing untouched.</p></div><div class="claim"><b>Remaining public specification</b><p>The grant still says ambiguity, ties, and post-panel no-quorum default to NO and that Invalid/void is future. DemoThemis still says parallel disagreement merely raises an alarm.</p></div></div>
-          <div class="finding-body"><div><h4>Why</h4><p>The third MVP ballot and bonded-resolution design were added without migrating the grant narrative, court chapter, or market settlement story.</p></div><div><h4>Handle</h4><p>State current source truth precisely: a third answer and tie handling exist; the bounded second quorum miss remains a distinct MVP status-quo path. For the complete product, use one three-outcome callback and the plan’s full-backing insufficient-information rule—never a proportional market charge—and keep technical terminal reasons separate.</p></div></div>
-          <p class="evidence"><b>Evidence:</b> <code>DisputeCourt.sol:103-107,393-423,492-505,559-590</code>; <code>GRANT_APPLICATION.md:204-206</code>; <code>MECHANISM_DELTA.md:38</code>; <code>demothemis.html:725</code>; <code>RESOLUTION_FEE_AND_INSUFFICIENT_INFORMATION_PLAN.md:18-21,31,35,199-209,344-366</code>.</p>
-        </article>
-
-        <article class="finding" data-severity="medium" id="M08">
-          <div class="finding-head"><span class="finding-id">M-08</span><h3>The early-bettor bonus is absent from payouts and incompatible with ordinary fungible outcome tokens</h3><span class="severity">Medium</span></div>
-          <div class="conflict"><div class="claim"><b>Promise</b><p>Early pool claims receive time-weighted bonuses, illustrated as 1.08×, while YES/NO positions later become ordinary fungible tokens.</p></div><div class="claim"><b>Accounting</b><p>The payout calculator uses nominal side totals only. One fungible token balance cannot silently retain different acquisition-time weights.</p></div></div>
-          <div class="finding-body"><div><h4>Why</h4><p>Bootstrapping incentives and post-graduation tokenization were designed separately.</p></div><div><h4>Handle</h4><p>Remove the bonus, or crystallize it before tokenization into a separately funded and transferable entitlement. Include it in payout equations and examples.</p></div></div>
-          <p class="evidence"><b>Evidence:</b> <code>omenmarketmaker.html:276,374-377,529-535,640-648</code>; <code>assets/run-through.js:1973,2986-2987,5067</code>.</p>
-        </article>
-
-        <article class="finding" data-severity="medium" id="M09">
-          <div class="finding-head"><span class="finding-id">M-09</span><h3>The current 2% market fee exceeds governance’s stated 0–1% range</h3><span class="severity">Medium</span></div>
-          <div class="conflict"><div class="claim"><b>Market rule</b><p>Resolved markets charge 2%.</p></div><div class="claim"><b>Governance rule</b><p>The market’s own fee and margin are described as 0–1%, with a one-percentage-point cap.</p></div></div>
-          <div class="finding-body"><div><h4>Why</h4><p>“Fee,” “margin,” and the full waterfall are not using the same definition.</p></div><div><h4>Handle</h4><p>If 1% is only the operator margin within a 2% gross fee, publish the remaining 1% destination. Otherwise align the fee and constitutional range.</p></div></div>
-          <p class="evidence"><b>Evidence:</b> <code>omenmarketmaker.html:276,573,582</code>; <code>governance.html:146,255</code>.</p>
-        </article>
-
-        <article class="finding" data-severity="medium" id="M10">
-          <div class="finding-head"><span class="finding-id">M-10</span><h3>The private-room winner is promised the gross pool under both the old and replacement fee architectures</h3><span class="severity">Medium</span></div>
-          <div class="conflict"><div class="claim"><b>Room display</b><p>Two $10,000 stakes create $20,000 locked and “Winner receives $20,000.”</p></div><div class="claim"><b>Both economic rules</b><p>The published reserve model deducts reserve and a 2% fee. The replacement plan instead makes both stakes reimburse the caller’s court bond after a directional ruling. Either leaves less than the displayed gross amount.</p></div></div>
-          <div class="finding-body"><div><h4>Why</h4><p>The room example preserves intuitive gross odds while resolution funding changed around it.</p></div><div><h4>Handle</h4><p>Show gross stakes, court-fee reimbursement, Omen fee, and net winner payout as separate lines; show full side refunds only for the final insufficient-information path.</p></div></div>
-          <p class="evidence"><b>Evidence:</b> <code>assets/run-through.js:2019-2024,2280,2301,2310-2322</code>; <code>omenmarketmaker.html:567,573,582</code>; <code>RESOLUTION_FEE_AND_INSUFFICIENT_INFORMATION_PLAN.md:31,185-195,253</code>.</p>
-        </article>
-
-        <article class="finding" data-severity="medium" id="M11">
-          <div class="finding-head"><span class="finding-id">M-11</span><h3>The README says the Sepolia cohort is verified while its deployment record says it is not</h3><span class="severity">Medium</span></div>
-          <div class="conflict"><div class="claim"><b>README</b><p>The World Chain Sepolia cohort is “verified on Blockscout.”</p></div><div class="claim"><b>Canonical deployment JSON</b><p><code>sourcesVerified</code> is <code>false</code> and the recorded explorer is Alchemy’s World Chain Sepolia explorer.</p></div></div>
-          <div class="finding-body"><div><h4>Why</h4><p>The prose retained an earlier intended verification status.</p></div><div><h4>Handle</h4><p>Either verify and record links, or remove the verified claim and use the explorer named in the deployment record.</p></div></div>
-          <p class="evidence"><b>Evidence:</b> <code>README.md:120-123</code>; <code>contracts/deployments/worldchain-sepolia.json:11,22</code>.</p>
-        </article>
-
-        <article class="finding" data-severity="medium" id="M13">
-          <div class="finding-head"><span class="finding-id">M-13</span><h3>Actively referenced screenshots still show a retired workflow and unsupported identity, privacy, and availability claims</h3><span class="severity">Medium</span></div>
-          <div class="conflict"><div class="claim"><b>Current product</b><p>The result-proposal/challenge-period flow is retired; the current MVP uses a three-answer court; Simulator/Staging is not real-human evidence; commit/reveal is receipt-ful; and the old <code>/home</code>, <code>/juror-preview</code>, and <code>/dispute</code> pages now redirect to <code>/app</code>.</p></div><div class="claim"><b>Current visuals and tutorial</b><p>Referenced images still show “Result proposal / Confirm outcome and bond,” Simulator evidence as real on-chain identity, “private commit/reveal,” an unbuyable court, and routes that no longer exist as distinct pages. The tutorial still instructs users to exercise those retired routes.</p></div></div>
-          <div class="finding-body"><div><h4>Why</h4><p>Text, routing, and source changed faster than the captured images and tutorial, while the build continues to copy those artifacts.</p></div><div><h4>Handle</h4><p>Recapture every referenced image from the accepted build, rewrite the tutorial around current routes, add a generated-at commit/status caption, and fail the build when screenshots or route instructions predate their source.</p></div></div>
-          <p class="evidence"><b>Evidence:</b> <code>docs/storyboard.html:203,239,257</code>; <code>docs/storyboard-assets/02-live-case.png</code>; <code>03-join-jury-mobile.png</code>; <code>07-run-through-court.png</code>; <code>local-testing-tutorial.html:413-424,475-500,561-575</code>; <code>web/src/app/(protected)/home/page.tsx</code>; <code>juror-preview/page.tsx</code>; <code>dispute/page.tsx</code>.</p>
-        </article>
-
-        <article class="finding" data-severity="medium" id="M14">
-          <div class="finding-head"><span class="finding-id">M-14</span><h3>An unmarked court essay still specifies superseded mechanisms</h3><span class="severity">Medium</span></div>
-          <div class="conflict"><div class="claim"><b>Old essay</b><p><code>juror-court.md</code> describes 13 seats, a personal ~$20 bond, public commit/reveal, and dissenting-bond redistribution.</p></div><div class="claim"><b>Current project</b><p>The MVP and complete-product material use different panels, privacy, bonds, and slash destinations.</p></div></div>
-          <div class="finding-body"><div><h4>Why</h4><p>An early concept note remains at the project root without a historical or superseded banner.</p></div><div><h4>Handle</h4><p>Archive it with a date and successor link, or regenerate it from the canonical mechanism specification. Do not let an unmarked root essay compete with the current design.</p></div></div>
-          <p class="evidence"><b>Evidence:</b> <code>juror-court.md:13-17</code>; <code>demothemis.html</code>; <code>MECHANISM_DELTA.md:21-38</code>.</p>
-        </article>
-
-        <article class="finding" data-severity="medium" id="M15">
-          <div class="finding-head"><span class="finding-id">M-15</span><h3>Internal multi-agent work is marketed as an “independent review/audit” while the budget says no audit is claimed</h3><span class="severity">Medium</span></div>
-          <div class="conflict"><div class="claim"><b>Review artifact/portal</b><p><code>INDEPENDENT_REVIEW.md</code> calls itself an independent, adversarial multi-agent audit, and the portal markets independent diligence.</p></div><div class="claim"><b>Grant budget</b><p>The project says the MVP claims no audit and funds a future third-party independent security review as milestone M5.</p></div></div>
-          <div class="finding-body"><div><h4>Why</h4><p>“Independent” was used to mean separate reviewing agents, while grant readers will reasonably read it as external organizational independence.</p></div><div><h4>Handle</h4><p>Rename it “internal AI-assisted adversarial review,” disclose provenance and scope, and reserve “independent/security audit” for the future third party.</p></div></div>
-          <p class="evidence"><b>Evidence:</b> <code>INDEPENDENT_REVIEW.md:1-7</code>; <code>GRANT_BUDGET.md:223</code>; <code>docs/grant-portal/index.html:240</code>.</p>
-        </article>
-
-        <article class="finding" data-severity="medium" id="M16">
-          <div class="finding-head"><span class="finding-id">M-16</span><h3>The three-state ballot is not part of the deployment cutover gate</h3><span class="severity">Medium</span></div>
-          <div class="conflict"><div class="claim"><b>New source/UI</b><p>The replacement court exposes <code>THREE_STATE_RULING_VERSION = 1</code>, while the app separately enables the third answer with a manually maintained <code>supportsThreeStateRuling</code> flag.</p></div><div class="claim"><b>Release gate</b><p>The keeper, runbook, and instance banner gate only the seven liveness capabilities and three recovery/timing versions. They never probe the three-state marker or require the UI flag to match it.</p></div></div>
-          <div class="finding-body"><div><h4>Why</h4><p>The third answer was added after the recovery cutover checklist was established.</p></div><div><h4>Handle</h4><p>Add the three-state capability to the deployment manifest, keeper, runbook, banner, and capstone receipt. Require the on-chain marker to equal 1 and the app flag to match before a deployment can be called current.</p></div></div>
-          <p class="evidence"><b>Evidence:</b> <code>contracts/src/DisputeCourt.sol:41,103-107</code>; <code>web/src/lib/contracts.ts:29,45-52</code>; <code>web/src/lib/chain.ts:18-19</code>; <code>web/src/components/LiveBallot/index.tsx:293-301</code>; <code>web/src/components/InstanceBanner/index.tsx:1-28</code>; <code>docs/CAPSTONE_RUNBOOK.md:41-46,90-95</code>; <code>scripts/mainnet-question-keeper.mjs:56-68,322-335</code>.</p>
-        </article>
-
-        <article class="finding" data-severity="medium" id="M17">
-          <div class="finding-head"><span class="finding-id">M-17</span><h3>The bonded-resolution plan omits the constitutional 0.5–3% court-fee ceiling</h3><span class="severity">Medium</span></div>
-          <div class="conflict"><div class="claim"><b>Governance constitution</b><p>Governance may adjust a jury-fee ceiling only inside 0.5–3%, by pricing epoch, without changing an active case.</p></div><div class="claim"><b>Accepted fee plan</b><p>The new deterministic policy requires only <code>0 &lt; F &lt; pool</code>; if the fee reaches the pool, no court opens. It does not define the 0.5–3% denominator, enforce the range, or explain a minimum/subsidy path.</p></div></div>
-          <div class="finding-body"><div><h4>Why</h4><p>The caller-bond redesign replaced reserve pricing without carrying forward the constitutional bound.</p></div><div><h4>Handle</h4><p>Choose one rule explicitly: enforce the percentage ceiling against a named value base with a disclosed minimum/subsidy fallback, or amend the governance chapter and explain why the old bound no longer applies.</p></div></div>
-          <p class="evidence"><b>Evidence:</b> <code>governance.html:247,262</code>; <code>docs/RESOLUTION_FEE_AND_INSUFFICIENT_INFORMATION_PLAN.md:83-110,147-169,620-626</code>.</p>
-        </article>
-
-        <article class="finding" data-severity="medium" id="M18">
-          <div class="finding-head"><span class="finding-id">M-18</span><h3>A split between top-tier parallel panels is appealable, but the ladder has no larger rung</h3><span class="severity">Medium</span></div>
-          <div class="conflict"><div class="claim"><b>New plan</b><p>Disagreeing parallel panels produce provisional insufficient information, which may be appealed to a larger disjoint panel.</p></div><div class="claim"><b>Panel architecture</b><p>High-value cases already use several 31-seat panels, while the published ladder ends at 31 and makes that ruling final.</p></div></div>
-          <div class="finding-body"><div><h4>Why</h4><p>The new insufficient-information appeal rule was written for the single-panel ladder and then applied to the separate parallel-panel ceiling.</p></div><div><h4>Handle</h4><p>Define a real next rung for parallel disagreement—such as more disjoint 31-seat panels with a hard terminal rule—or declare top-tier disagreement terminal and specify its settlement directly.</p></div></div>
-          <p class="evidence"><b>Evidence:</b> <code>docs/RESOLUTION_FEE_AND_INSUFFICIENT_INFORMATION_PLAN.md:383-390,430-439</code>; <code>demothemis.html:450-452,724-726,899-901</code>.</p>
-        </article>
-
-        <article class="finding" data-severity="medium" id="M19">
-          <div class="finding-head"><span class="finding-id">M-19</span><h3>Fixed one-dollar outcome-token promises conflict with the new variable-redemption rule</h3><span class="severity">Medium</span></div>
-          <div class="conflict"><div class="claim"><b>Existing product promise</b><p>Outcome tokens and integrations are described as retaining an original fixed-dollar payoff, with a displayed one-dollar claim never losing backing.</p></div><div class="claim"><b>Accepted fee plan</b><p>After YES or NO, the future court fee is deducted from collateral, so each token is a variable pro-rata claim on net backing. The plan explicitly forbids assuming a guaranteed one-dollar terminal value.</p></div></div>
-          <div class="finding-body"><div><h4>Why</h4><p>The reserve model separated the jury payment before tokenization; the caller-bond model moves that haircut to resolution.</p></div><div><h4>Handle</h4><p>Replace fixed-dollar language and integration assumptions with gross backing, court-fee share, net backing, and live redemption-per-token fields—or fund the fee from a truly separate source.</p></div></div>
-          <p class="evidence"><b>Evidence:</b> <code>prediction-market.md:13</code>; <code>assets/run-through.js:2042</code>; <code>docs/RESOLUTION_FEE_AND_INSUFFICIENT_INFORMATION_PLAN.md:213-225,695-705</code>.</p>
+          <div class="finding-head"><span class="finding-id">M-07</span><h3>A top-tier panel split is appealable even though the public ladder has no larger rung</h3><span class="severity">Medium</span></div>
+          <div class="conflict"><div class="claim"><b>Parallel-panel rule</b><p>Several 31-seat panels handle the largest cases; disagreement escalates or becomes provisional insufficient information that may be appealed.</p></div><div class="claim"><b>Appeal ceiling</b><p>The same chapter says the ordinary ladder ends at 31 seats and the 31-seat rung becomes final.</p></div></div>
+          <div class="finding-body"><div><h4>Why</h4><p>The single-panel appeal ladder was applied to a separate multi-panel ceiling without defining a next step.</p></div><div><h4>Handle</h4><p>Define a larger top-tier rule—such as more disjoint 31-seat panels—or make top-tier disagreement terminal and specify its market settlement.</p></div></div>
+          <p class="evidence"><b>Visible evidence:</b> DemoThemis ceiling simulator and appeal ladder; Run-through “Provisional INSUFFICIENT_INFORMATION” branch.</p>
         </article>
 
         <article class="finding" data-severity="low" id="L01">
-          <div class="finding-head"><span class="finding-id">L-01</span><h3>Universal “tradeable through resolution” copy omits the pool-position exception</h3><span class="severity">Low</span></div>
-          <div class="conflict"><div class="claim"><b>Headline</b><p>Claims remain tradeable through resolution.</p></div><div class="claim"><b>Detailed rule</b><p>Pooled claims wait; only markets that graduate into tokenized positions can trade through resolution.</p></div></div>
-          <div class="finding-body"><div><h4>Why</h4><p>The headline describes the best-case graduated state.</p></div><div><h4>Handle</h4><p>Qualify it everywhere as “tokenized claims remain tradeable; pre-graduation pool positions do not.”</p></div></div>
-          <p class="evidence"><b>Evidence:</b> <code>index.html:76</code>; <code>omenmarketmaker.html:132,523,535</code>.</p>
+          <div class="finding-head"><span class="finding-id">L-01</span><h3>“Tradeable through resolution” omits the smaller-pool exception</h3><span class="severity">Low</span></div>
+          <div class="conflict"><div class="claim"><b>Broad claim</b><p>Home and OmenMarketMaker advertise that positions remain tradeable throughout resolution.</p></div><div class="claim"><b>Actual public design</b><p>Only markets that graduate into wallet-held tokens have that property; smaller markets remain internal pool claims.</p></div></div>
+          <div class="finding-body"><div><h4>Why</h4><p>A benefit of graduated markets is written as a universal market feature.</p></div><div><h4>Handle</h4><p>Add “for tokenized markets” everywhere the through-resolution trading benefit is promised.</p></div></div>
+          <p class="evidence"><b>Visible evidence:</b> Home feature list; OmenMarketMaker feature summary, tokenization, and “Markets keep trading while resolution runs.”</p>
         </article>
 
         <article class="finding" data-severity="low" id="L02">
-          <div class="finding-head"><span class="finding-id">L-02</span><h3>The constitutional resolved-case test floor is 5%, but the shared model permits 0% and defaults to 4%</h3><span class="severity">Low</span></div>
-          <div class="conflict"><div class="claim"><b>Governance</b><p>Testing must cover 5–20% of resolved cases.</p></div><div class="claim"><b>Shared assumptions</b><p>The control allows 0–25% and defaults to 4%.</p></div></div>
-          <div class="finding-body"><div><h4>Why</h4><p>The simulator range predates the constitutional floor.</p></div><div><h4>Handle</h4><p>Default to at least 5% and constrain production-policy views to 5–20%; label any wider exploratory range as non-policy simulation.</p></div></div>
-          <p class="evidence"><b>Evidence:</b> <code>governance.html:262</code>; <code>assumptions.js:20</code>.</p>
+          <div class="finding-head"><span class="finding-id">L-02</span><h3>The resolved-case testing floor is 5%, but Break the Court defaults to 4% and allows 0%</h3><span class="severity">Low</span></div>
+          <div class="conflict"><div class="claim"><b>Governance constitution</b><p>Resolved-case tests must remain between 5% and 20% of the score window.</p></div><div class="claim"><b>Public model control</b><p>Break the Court’s full model exposes “Real cases used in aptitude tests” from 0% to 25%, defaulting to 4%.</p></div></div>
+          <div class="finding-body"><div><h4>Why</h4><p>The model’s editable range predates the constitutional bound.</p></div><div><h4>Handle</h4><p>Set the visible model range to 5–20% and choose a default inside it, or label the control as an intentionally unconstitutional stress test.</p></div></div>
+          <p class="evidence"><b>Visible evidence:</b> Governance parameter table; Break the Court “Edit full model” → “Real cases used in aptitude tests.”</p>
         </article>
 
         <article class="finding" data-severity="low" id="L03">
-          <div class="finding-head"><span class="finding-id">L-03</span><h3>The “complete receipt” still omits several transitions and payouts</h3><span class="severity">Low</span></div>
-          <div class="conflict"><div class="claim"><b>Storyboard promise</b><p>The receipt exposes every transition and payout.</p></div><div class="claim"><b>Event ingestion</b><p>It now covers many recovery events, but still omits explicit <code>DrawRearmed</code>, <code>Redrawn</code>, <code>NoShowSlashed</code>/registry slashes, and escrow principal settlement/transfers.</p></div></div>
-          <div class="finding-body"><div><h4>Why</h4><p>Recovery events were added incrementally after the receipt promise was written.</p></div><div><h4>Handle</h4><p>Either ingest and render the full event/transfer set or change the claim to “key court transitions and fee distribution.”</p></div></div>
-          <p class="evidence"><b>Evidence:</b> <code>docs/storyboard.html:319</code>; <code>web/src/lib/court.ts:361-370</code>; <code>DisputeCourt.sol</code>; <code>DealEscrow.sol</code>; <code>JurorRegistry.sol</code>.</p>
+          <div class="finding-head"><span class="finding-id">L-03</span><h3>The public model requires “enough stake” while the chapter rejects stake-based entry</h3><span class="severity">Low</span></div>
+          <div class="conflict"><div class="claim"><b>Model wording</b><p>Break the Court describes drawable jurors as active, online, holding enough stake, and eligible.</p></div><div class="claim"><b>Product explanation</b><p>DemoThemis says personhood creates the seat and money must not buy court power; its economic discipline is private money at risk tied to work.</p></div></div>
+          <div class="finding-body"><div><h4>Why</h4><p>“Stake” survived as shorthand for the private work-risk requirement and now sounds like token-gated eligibility.</p></div><div><h4>Handle</h4><p>Replace it with “meeting the private money-at-risk requirement” and keep that requirement distinct from personhood and voting power.</p></div></div>
+          <p class="evidence"><b>Visible evidence:</b> Break the Court full-model help for “Active jurors available for drawing”; DemoThemis identity and reserve explanations.</p>
         </article>
 
         <article class="finding" data-severity="low" id="L04">
-          <div class="finding-head"><span class="finding-id">L-04</span><h3>The public test count is now three different numbers</h3><span class="severity">Low</span></div>
-          <div class="conflict"><div class="claim"><b>Published counts</b><p>The portal overview says 95 Foundry tests, while its embedded current grant material says 100 and labels the 95-test coverage snapshot as historical.</p></div><div class="claim"><b>Current tree</b><p>The Solidity test tree now declares 101 <code>test*</code>/<code>invariant*</code> functions.</p></div></div>
-          <div class="finding-body"><div><h4>Why</h4><p>The portal shell and grant copy were updated at different suite revisions.</p></div><div><h4>Handle</h4><p>Run the current suite, publish the result with its commit, and generate every test/coverage statistic from that single report. Do not infer “passing” from a source-function count.</p></div></div>
-          <p class="evidence"><b>Evidence:</b> <code>docs/grant-portal/_shell.html:245-246</code>; <code>docs/grant-portal/index.html:245-246,399,697</code>; <code>contracts/test/*.t.sol</code> (101 declared test/invariant functions).</p>
+          <div class="finding-head"><span class="finding-id">L-04</span><h3>The run-through says evidence rules are locked but never shows them</h3><span class="severity">Low</span></div>
+          <div class="conflict"><div class="claim"><b>Lifecycle claim</b><p>The run-through repeatedly says the question and evidence rules lock before betting and move into the court case.</p></div><div class="claim"><b>Playable market</b><p>The creation form shows a resolve condition but no admissible sources, cutoff, evidence standard, or visible evidence-policy field.</p></div></div>
+          <div class="finding-body"><div><h4>Why</h4><p>The simulator models the rule as background state instead of a reviewer-visible market term.</p></div><div><h4>Handle</h4><p>Add one concise “Evidence policy” field to creation, resolution request, and court intake so the same rule can be followed across the handoff.</p></div></div>
+          <p class="evidence"><b>Visible evidence:</b> Run-through lifecycle map; Create Market, Resolution Request, and Court Intake screens.</p>
         </article>
 
         <article class="finding" data-severity="low" id="L05">
-          <div class="finding-head"><span class="finding-id">L-05</span><h3>The shared model says jurors must hold “enough stake,” while product copy says no stake token or reserve is posted upfront</h3><span class="severity">Low</span></div>
-          <div class="conflict"><div class="claim"><b>Assumption label</b><p>Drawable jurors are people “holding enough stake.”</p></div><div class="claim"><b>Mechanism copy</b><p>There is no governance token or upfront reserve; the protocol fronts service payment and jurors use a fixed service bond.</p></div></div>
-          <div class="finding-body"><div><h4>Why</h4><p>“Stake” is being used loosely for the service bond.</p></div><div><h4>Handle</h4><p>Rename the model input to “active bonded jurors” and distinguish the fixed service bond from token-weighted stake.</p></div></div>
-          <p class="evidence"><b>Evidence:</b> <code>assumptions.js:16</code>; <code>demothemis.html:568</code>.</p>
+          <div class="finding-head"><span class="finding-id">L-05</span><h3>Two appeal prompts still describe the whole contribution as the returnable bond</h3><span class="severity">Low</span></div>
+          <div class="conflict"><div class="claim"><b>Correct breakdown</b><p>The appeal screen separates a non-refundable service-fee share from returnable or forfeitable security principal.</p></div><div class="claim"><b>Prompts</b><p>The walkthrough summary and contribution coach say the wallet owns a percentage of whatever “that bond” or “returned bond or loss” later produces.</p></div></div>
+          <div class="finding-body"><div><h4>Why</h4><p>Short instructional text retained the old single-bond vocabulary after the visible receipt was split correctly.</p></div><div><h4>Handle</h4><p>Say the wallet funds both components pro-rata but receives or forfeits only its security-principal share.</p></div></div>
+          <p class="evidence"><b>Visible evidence:</b> Run-through Appeal Ladder overview, contribution coach, and Crowdfunded Appeal Funding receipt.</p>
         </article>
 
         <article class="finding" data-severity="low" id="L06">
-          <div class="finding-head"><span class="finding-id">L-06</span><h3>The evidence policy is supposedly fixed before funding but is absent from the playable case</h3><span class="severity">Low</span></div>
-          <div class="conflict"><div class="claim"><b>State map and new plan</b><p>The evidence source/rules are fixed before funds arrive, and a resolution request must include a content-addressed evidence bundle.</p></div><div class="claim"><b>Interaction/case file</b><p>The run-through creation form has no evidence-source or policy field, and the later case says “Sources: None supplied.”</p></div></div>
-          <div class="finding-body"><div><h4>Why</h4><p>The explanatory state model was not wired into the playable form.</p></div><div><h4>Handle</h4><p>Add a required source/policy field to creation and persist it into the case fingerprint, or remove the “fixed source” claim.</p></div></div>
-          <p class="evidence"><b>Evidence:</b> <code>assets/run-through.js:891-894,1956,2107</code>; <code>docs/RESOLUTION_FEE_AND_INSUFFICIENT_INFORMATION_PLAN.md:66,103-105</code>.</p>
+          <div class="finding-head"><span class="finding-id">L-06</span><h3>“Orb verification is the only eligibility gate” is broader than the design shown below it</h3><span class="severity">Low</span></div>
+          <div class="conflict"><div class="claim"><b>Absolute sentence</b><p>DemoThemis says Orb verification is the only eligibility gate.</p></div><div class="claim"><b>Other visible gates</b><p>A draw-bound presence check must pass before voting, reputation affects draw eligibility, and 31-seat panels require proof of long service.</p></div></div>
+          <div class="finding-body"><div><h4>Why</h4><p>The sentence means “only identity-enrollment gate,” but it reads as “only condition for serving.”</p></div><div><h4>Handle</h4><p>Change it to “Orb verification is the only identity-enrollment gate,” then list presence, conflicts, availability, and panel-specific qualification separately.</p></div></div>
+          <p class="evidence"><b>Visible evidence:</b> DemoThemis “The same person, every time,” privacy proof list, 31-seat eligibility, and reputation dial.</p>
         </article>
-
-        <article class="finding" data-severity="low" id="L08">
-          <div class="finding-head"><span class="finding-id">L-08</span><h3>Documents still call missing paths authoritative</h3><span class="severity">Low</span></div>
-          <div class="conflict"><div class="claim"><b>References</b><p><code>IMPLEMENTATION_PLAN.md</code> is called governing, and <code>reference/demothemis-site/</code> is called the canonical mechanism source.</p></div><div class="claim"><b>Repository</b><p>Neither referenced path exists in the current workspace.</p></div></div>
-          <div class="finding-body"><div><h4>Why</h4><p>Files moved or were omitted when projects were combined.</p></div><div><h4>Handle</h4><p>Restore/version them or point every reference to existing canonical files; add a broken-local-reference check.</p></div></div>
-          <p class="evidence"><b>Evidence:</b> <code>DemoThemisMVP/docs/INFRA_CHECKLIST.md:3</code>; <code>STEP_3.5_KICKOFF.md:14-17</code>; <code>MECHANISM_DELTA.md:3</code>.</p>
-        </article>
-
-        <article class="finding" data-severity="low" id="L09">
-          <div class="finding-head"><span class="finding-id">L-09</span><h3>Toolchain instructions specify incompatible Node and package-manager setups</h3><span class="severity">Low</span></div>
-          <div class="conflict"><div class="claim"><b>Root instructions</b><p>Node 20+ and pnpm 9.</p></div><div class="claim"><b>Web package/instructions</b><p><code>package.json</code> requires Node 24 and pnpm 11.7, while the nested README tells users to run npm.</p></div></div>
-          <div class="finding-body"><div><h4>Why</h4><p>Runtime upgrades and framework-template instructions were not reconciled.</p></div><div><h4>Handle</h4><p>Choose one supported Node/package-manager pair and align README, engines, packageManager, lockfile, CI, and deployment.</p></div></div>
-          <p class="evidence"><b>Evidence:</b> <code>DemoThemisMVP/README.md:158</code>; <code>web/package.json:9-12</code>; <code>web/README.md:9-13</code>.</p>
-        </article>
-
-        <article class="finding" data-severity="low" id="L11">
-          <div class="finding-head"><span class="finding-id">L-11</span><h3>The README drops the project’s own qualifier from its “first” claims</h3><span class="severity">Low</span></div>
-          <div class="conflict"><div class="claim"><b>Differentiation rule</b><p>Category claims are explicitly limited to “none found in this dated scan” and “to our knowledge, in the World ecosystem.”</p></div><div class="claim"><b>README headline</b><p>The one-line project description calls DemoThemis the first dispute-resolution app in World App without the “to our knowledge” qualifier.</p></div></div>
-          <div class="finding-body"><div><h4>Why</h4><p>A carefully scoped research conclusion was shortened into a stronger elevator pitch.</p></div><div><h4>Handle</h4><p>Keep the short line, but retain “to our knowledge” and link it to the dated comparison scan.</p></div></div>
-          <p class="evidence"><b>Evidence:</b> <code>DemoThemisMVP/README.md:12-14</code>; <code>docs/DIFFERENTIATION.md:51-52,80-81</code>; <code>docs/INDEPENDENT_REVIEW.md:106</code>.</p>
-        </article>
-
-        <article class="finding" data-severity="low" id="L12">
-          <div class="finding-head"><span class="finding-id">L-12</span><h3>Two run-through prompts still treat the full appeal contribution as the returnable or forfeitable bond</h3><span class="severity">Low</span></div>
-          <div class="conflict"><div class="claim"><b>Correct waterfall</b><p>Each contribution is split: its service-fee share is consumed once, while only its security share can return or be forfeited.</p></div><div class="claim"><b>Two prompts</b><p>The state map promises a share of whatever “that bond” returns, and the action help says the wallet owns the same percentage of any returned bond or loss as its percentage of the entire goal.</p></div></div>
-          <div class="finding-body"><div><h4>Why</h4><p>Most simulator copy was corrected, but two compact instructional strings retained the old all-bond shorthand.</p></div><div><h4>Handle</h4><p>Say “pro-rata share of the security escrow” in both places and keep the non-refundable service share visible beside it.</p></div></div>
-          <p class="evidence"><b>Evidence:</b> <code>assets/run-through.js:394-396,2737,3010</code>.</p>
-        </article>
-
-        <article class="finding" data-severity="low" id="L13">
-          <div class="finding-head"><span class="finding-id">L-13</span><h3>“Orb verification is the only eligibility gate” is broader than the design it introduces</h3><span class="severity">Low</span></div>
-          <div class="conflict"><div class="claim"><b>Absolute sentence</b><p>The court chapter says Orb verification is the only eligibility gate.</p></div><div class="claim"><b>Same design</b><p>Orb creates the seat, but a separate draw-bound Device presence/continuity check is mandatory before that selected person can unlock and cast the ballot.</p></div></div>
-          <div class="finding-body"><div><h4>Why</h4><p>“Eligibility” is being used once for identity enrollment and again for permission to participate in a draw.</p></div><div><h4>Handle</h4><p>Say Orb is the only route to a juror seat; the post-Orb Device check is a separate participation gate and never admits Device-only jurors.</p></div></div>
-          <p class="evidence"><b>Evidence:</b> <code>index.html:59</code>; <code>demothemis.html:371,643</code>.</p>
-        </article>
-
       </div>
       <p class="empty" id="empty-results">No findings match this filter.</p>
     </section>
 
     <section id="actions" aria-labelledby="actions-title">
-      <div class="section-head"><div><p class="label">Recommended resolution order</p><h2 id="actions-title">Fix the shared sources of drift</h2></div></div>
+      <div class="section-head"><div><p class="label">Recommended order</p><h2 id="actions-title">Fix what reviewers see first</h2></div></div>
       <div class="action-grid">
-        <article class="action-card"><span class="step">1</span><h3>Complete one safe release gate</h3><ol><li>Keep World ID 4 Production and RP configuration fail-closed.</li><li>Add the three-state marker to the deployment manifest, keeper, banner, runbook, and capstone trace.</li><li>Test new-user v4 onboarding, replay/nullifier migration, and post-Orb presence constraints.</li><li>Set explicit current-release addresses only after deployment, source verification, keeper checks, and Portal setup pass.</li></ol></article>
-        <article class="action-card"><span class="step">2</span><h3>Publish one mechanism ledger</h3><ol><li>Define panel tiers, top-tier disagreement, appeal rungs, deterministic court fees, the constitutional fee bound, and insufficient-information settlement in one versioned specification.</li><li>Give every dollar and token one source, destination, and redemption value per outcome.</li><li>Enforce disjoint juror selection across every panel and appeal within a dispute.</li><li>Generate calculators and simulations from the same constants.</li></ol></article>
-        <article class="action-card"><span class="step">3</span><h3>Generate public truth</h3><ol><li>Keep one current-MVP profile and one separately labeled funded roadmap.</li><li>Generate fees, counts, capability badges, and explorer links from verified release manifests.</li><li>Recapture screenshots and rewrite tutorial routes after acceptance.</li><li>Archive old essays/fixtures, then rebuild and byte-check the delivery ZIP.</li></ol></article>
+        <article class="action-card"><span class="step">1</span><h3>Remove absolute promises</h3><ol><li>Qualify “unbuyable,” “bullet proof,” and “ungameable.”</li><li>Clarify launch dependency versus permanent product independence.</li><li>Use “one human, one seat” where reputation can affect influence.</li></ol></article>
+        <article class="action-card"><span class="step">2</span><h3>Unify visible mechanics</h3><ol><li>Share one graduation schedule across both market widgets.</li><li>Give top-tier disagreement a terminal rule.</li><li>Align the resolved-case testing floor across the chapter and stress test.</li></ol></article>
+        <article class="action-card"><span class="step">3</span><h3>Balance every visible receipt</h3><ol><li>Show bond reimbursement and market fees in private-room terms.</li><li>Resolve or remove the early-entry bonus.</li><li>Correct the two appeal prompts and show the locked evidence policy.</li></ol></article>
       </div>
     </section>
 
-    <section id="removed" aria-labelledby="removed-title">
-      <div class="section-head"><div><p class="label">Removed from the old review</p><h2 id="removed-title">Fixed, quarantined, or legitimate MVP scope</h2></div><p>These are intentionally absent from the active count.</p></div>
+    <section id="resolved" aria-labelledby="resolved-title">
+      <div class="section-head"><div><p class="label">No longer active</p><h2 id="resolved-title">Public-site conflicts removed by the latest updates</h2></div><p>These remain outside the active count.</p></div>
       <div class="not-conflict">
-        <div class="ok-item"><strong>Public launch status is now coherent.</strong> Deployed surfaces describe one current MVP capability profile and keep the funded roadmap separate. The app has no older-address fallback: absent a verified current-release configuration, it shows a neutral walkthrough and suppresses contract reads, explorer links, onboarding, and active-case claims.</div>
-        <div class="ok-item"><strong>The World ID release contradiction is fixed.</strong> Current mainnet source uses the official v4 Production proxy, requires protocol 4 and proof-of-human schema 1, uses v4-only proof generation, binds the signed RP id dynamically, and blocks keeper broadcasts unless deployment metadata and on-chain markers agree.</div>
-        <div class="ok-item"><strong>Mainnet deployment defaults are now chain-aware.</strong> World Chain mainnet defaults to a three-seat panel and four-person minimum, while the Sepolia cohort retains 7/14. The script rejects zero, Staging, and non-Production verifier addresses on mainnet.</div>
-        <div class="ok-item"><strong>Quorum-miss and party-exclusion escrow failures are fixed in the current MVP.</strong> Initial-draw unwind, bounded redraw/no-show recovery, eligible-party preflight, refunds, and re-bonding have regression coverage.</div>
-        <div class="ok-item"><strong>Runtime administration is no longer an active architecture contradiction.</strong> Current MVP voting windows are immutable, lifecycle transitions are permissionless, and privileged calls are limited to one-shot deployment wiring.</div>
-        <div class="ok-item"><strong>Invalid chain configuration now fails immediately.</strong> The app accepts exactly World Chain mainnet or the explicitly selected Sepolia cohort and rejects every other chain ID before choosing addresses or explorer links.</div>
-        <div class="ok-item"><strong>Retired capstone fixtures are no longer public artifacts.</strong> The two never-executed JSON cases and their old contract links were removed from the deployed <code>public/cases</code> directory, and the mechanism delta now identifies that path as retired.</div>
-        <div class="ok-item"><strong>The small-pool funding limit now has an explicit fallback rule.</strong> No jury reserve is collected before betting. A resolution caller first posts the exact court fee as a bond. A directional ruling reimburses it pro-rata from YES/NO backing; insufficient information leaves that backing whole. If the fee is at least the pool, no case opens and the full pool follows the cancellation rule. A guaranteed human ruling for a smaller pool would still need an explicit subsidy.</div>
-        <div class="ok-item"><strong>The reserve-versus-bond architecture conflict is fixed in the design surface.</strong> Product chapters, diagrams, economics copy, the run-through, root prediction-market essay, and grant roadmap now teach one request-time caller bond. Pre-betting reserve collection, tokenization funding gates, creator top-ups, and recorded-price reserve refunds are no longer presented as the current design.</div>
-        <div class="ok-item"><strong>The current question-fee conflict is resolved.</strong> The live-facing submission card, review card, current MVP source, static preview, and referenced submit-screen visual now all use 20 MUSD. Earlier values remain only in internal historical records.</div>
-        <div class="ok-item"><strong>Appeal funding now has one conserved waterfall.</strong> A tagged, non-refundable service fee pays panel work and delay compensation once. Separately escrowed security principal returns pro-rata on success or alone enters the reward pool on failure; underfunded rounds refund without starting work.</div>
-        <div class="ok-item"><strong>Missing complete-product features are not MVP contradictions.</strong> VRF/drand, MACI-style privacy, appeals, reputation, parallel panels, deterministic resolution-time fees, Omen settlement, and the SDK are acceptable omissions where they are labeled funded roadmap.</div>
-        <div class="ok-item"><strong>The local static walkthrough is allowed to be scripted.</strong> It now says it is an interactive preview and sends no transaction. A controlled official demo queue and a three-seat capstone are also valid MVP constraints.</div>
-        <div class="ok-item"><strong>The grant ZIP is current again.</strong> It was rebuilt from the regenerated portal, current storyboard, server helper, and current storyboard assets; the packaged HTML now byte-matches the source artifacts.</div>
-        <div class="ok-item"><strong>Generated-page asset fingerprints can be legitimate build transforms.</strong> The active embedded source blocks align where the generator owns them. Tutorial instructions for redirect-only routes are counted separately above.</div>
-        <div class="ok-item"><strong>Appeal participation no longer promises that any amount is accepted.</strong> “Anyone may contribute” describes who is eligible, not the size accepted by the current simulator’s $50 minimum.</div>
-        <div class="ok-item"><strong>Sponsored gas is not a contradiction.</strong> World App supports gas sponsorship subject to platform limits; the missing project-specific trace is a capstone/readiness proof still to capture, not evidence that the feature cannot work.</div>
-        <div class="ok-item"><strong>Internal grant eligibility wording is now aligned.</strong> Written external confirmation remains a submission blocker, but the current project files no longer disagree with one another about it.</div>
+        <div class="ok-item"><strong>Panel sizing now follows one published schedule.</strong> DemoThemis and Break the Court share the same $250k, $1M, $5M, and $25M boundaries; parallel tiers use disjoint 31-seat panels, while the run-through’s $118,000 case remains correctly inside the seven-seat tier.</div>
+        <div class="ok-item"><strong>The appeal calculator now prices the next legal rung.</strong> A reviewer selects the current 7-, 15-, or 31-seat ruling; the quote advances only 7 to 15 or 15 to 31, while 31 is clearly terminal and opens no funding goal.</div>
+        <div class="ok-item"><strong>The resolution lifecycle now uses one caller-bond design.</strong> Chapters, the run-through, and the completed Robustness Lock agree that no court reserve is collected before betting; the caller pays the exact fee at request time, YES/NO reimburses pro-rata, and insufficient information preserves market backing.</div>
+        <div class="ok-item"><strong>The visible MVP fee is consistently 20 MUSD.</strong> The preview, submission flow, ruling receipt, and current MVP explanation no longer teach a 2 MUSD live fee.</div>
+        <div class="ok-item"><strong>The third ballot option is now visible.</strong> Both the static MVP preview and live-demo ballot present YES, NO, and INSUFFICIENT INFORMATION with a matching ruling state.</div>
+        <div class="ok-item"><strong>Orb and device verification now have distinct public roles.</strong> Orb creates the eligible human seat; the later on-device check is described as an anti-resale presence backstop, not a Device-only enrollment route.</div>
+        <div class="ok-item"><strong>The demo MVP is not required to impersonate the complete product.</strong> Roadmap-only privacy, reputation, appeals, panel scaling, and Omen settlement are not counted merely because the MVP labels them as future work.</div>
+        <div class="ok-item"><strong>The public run-through now shows bounded funding roles.</strong> The caller bond, court fee, outcome collateral, Omen fee, appeal service fee, and appeal security principal are visibly separated, subject to the remaining receipt wording findings above.</div>
       </div>
     </section>
 
-    <p class="footnote">This is a consistency and implementation-claim review, not a formal smart-contract security audit, legal opinion, or guarantee that no additional issue exists. It reflects the complete working tree—including the user’s uncommitted edits—and publicly readable World documentation checked on 23 July 2026.</p>
+    <p class="footnote">This is a reviewer-facing consistency review of the public chapters and demo MVP, not a formal smart-contract security audit, legal opinion, or guarantee that no additional issue exists. Repository-only and grant-submission material is intentionally outside its scope.</p>
   </main>
 
   <script>
@@ -385,7 +249,7 @@
         var term=search.value.trim().toLowerCase(),visible=0;
         findings.forEach(function(item){
           var show=(severity==="all"||item.dataset.severity===severity)&&(!term||item.textContent.toLowerCase().indexOf(term)!==-1);
-          item.classList.toggle("is-hidden",!show); if(show){visible++;}
+          item.classList.toggle("is-hidden",!show);if(show){visible++;}
         });
         empty.classList.toggle("show",visible===0);
       }

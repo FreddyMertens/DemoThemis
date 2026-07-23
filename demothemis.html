@@ -92,6 +92,10 @@
   .appeal-bond-bar i { display: block; width: var(--bond-level); height: 100%; border-radius: inherit; background: linear-gradient(90deg, color-mix(in srgb, var(--accent) 48%, #fff), var(--accent)); box-shadow: 0 0 9px color-mix(in srgb, var(--accent) 54%, transparent); }
   .appeal-bond b { color: var(--accent-ink); font-family: var(--mono); font-size: .67rem; white-space: nowrap; }
   .deep-note { border-left: 3px solid var(--accent); padding-left: 1rem; color: var(--muted); font-family: var(--sans); }
+  .mechanism-jump { color: var(--dt-emission-ink); text-decoration-line: underline; text-decoration-color: rgba(var(--dt-emission-rgb), .7); text-decoration-thickness: .09em; text-underline-offset: .16em; }
+  .mechanism-jump:hover { color: var(--dt-emission-ink); text-decoration-color: var(--dt-emission); }
+  .mechanism-target { scroll-margin-top: 6.5rem; border-radius: 14px; }
+  .mechanism-target:target { background: linear-gradient(90deg, var(--dt-emission-wash), rgba(var(--dt-emission-rgb), .025)); box-shadow: 0 0 0 .8rem var(--dt-emission-wash), 0 0 1.5rem rgba(var(--dt-emission-rgb), .13); }
   .reader-end-action { display: flex; margin-top: 1rem; }
   .reader-mode-cta { display: inline-flex; align-items: center; gap: .65rem; border: 1px solid var(--accent); border-radius: 12px; background: var(--accent); padding: .72rem 1rem; color: #fff; box-shadow: 0 8px 20px color-mix(in srgb, var(--accent) 22%, transparent); font-family: var(--sans); font-size: .88rem; font-weight: 750; text-decoration: none; transition: transform .16s ease, box-shadow .16s ease; }
   .reader-mode-cta:hover { transform: translateY(-2px); box-shadow: 0 12px 25px color-mix(in srgb, var(--accent) 28%, transparent); }
@@ -223,15 +227,49 @@ body.theme-solve { --accent: #2f62cf; --accent-soft: #e6edfa; --accent-ink: #214
   .mchip { font-family: var(--mono); font-size: .78rem; font-weight: 700; padding: .25rem .5rem; border-radius: 7px; border: 1px solid var(--line-strong); background: var(--bg); color: var(--muted); }
   .mchip.hot { background: var(--accent-soft); border-color: var(--accent); color: var(--accent-ink); }
 
-  /* confidence gate */
+  /* quality accountability diagram */
   .gate-track { position: relative; height: 64px; border-radius: 10px; background: linear-gradient(90deg, #fbe2dd, #fbe7d6 42%, #ddf3e9 62%); margin: 1.6rem 0 .3rem; }
   .gate-band { position: absolute; top: 12px; bottom: 12px; background: color-mix(in srgb, var(--accent) 26%, transparent); border: 1px solid var(--accent); border-radius: 6px; transition: left .2s, width .2s; }
   .gate-mark { position: absolute; top: 4px; bottom: 4px; width: 3px; background: var(--accent-ink); border-radius: 2px; transition: left .2s; }
   .gate-bar { position: absolute; top: -6px; bottom: -6px; width: 0; border-left: 2px dashed var(--ink); }
-  .gate-bar::after { content: "the bar: 0.70"; position: absolute; top: -1.3rem; left: 4px; font-family: var(--sans); font-size: .68rem; font-weight: 700; color: var(--ink); white-space: nowrap; }
   .gate-axis { display: flex; justify-content: space-between; font-family: var(--mono); font-size: .72rem; color: var(--faint); }
   .pill-s { font-family: var(--sans); font-weight: 700; font-size: .82rem; padding: .15rem .5rem; border-radius: 6px; }
   .ps-act { color: #0b6b43; background: #ddf3e9; } .ps-build { color: #7a3c00; background: #fbe7d6; } .ps-susp { color: #9a2417; background: #fbe2dd; }
+  .accountability-lab { overflow: hidden; }
+  .accountability-controls { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 1.15rem; }
+  .accountability-controls > div { min-width: 0; }
+  .accountability-definition { margin: .72rem 0 0; color: var(--faint); font-family: var(--sans); font-size: .8rem; line-height: 1.5; }
+  .accountability-meter { margin-top: 1.25rem; border-top: 1px solid var(--line); padding-top: 1rem; }
+  .accountability-meter-head { display: flex; align-items: center; justify-content: space-between; gap: 1rem; color: var(--muted); font-family: var(--sans); font-size: .82rem; }
+  .accountability-meter-head b { color: var(--ink); font-family: var(--mono); font-size: .8rem; }
+  .accountability-flow { display: grid; grid-template-columns: minmax(0, 1fr) auto minmax(0, 1fr); align-items: stretch; gap: .7rem; margin: 1.25rem 0; }
+  .accountability-step { display: grid; align-content: center; gap: .22rem; min-width: 0; border: 1px solid color-mix(in srgb, var(--dt-emission) 34%, var(--line)); border-radius: 14px; background: color-mix(in srgb, var(--surface) 92%, var(--dt-emission-wash)); padding: .9rem 1rem; box-shadow: inset 0 0 0 1px rgba(var(--dt-emission-rgb), .04), 0 0 13px rgba(var(--dt-emission-rgb), .06); font-family: var(--sans); transition: border-color .18s ease, box-shadow .18s ease, transform .18s ease; }
+  .accountability-step:hover { border-color: color-mix(in srgb, var(--dt-emission) 72%, var(--line)); box-shadow: inset 0 0 0 1px rgba(var(--dt-emission-rgb), .18), 0 0 18px rgba(var(--dt-emission-rgb), .14); transform: translateY(-2px); }
+  .accountability-step span, .accountability-result span { color: var(--faint); font-family: var(--mono); font-size: .66rem; font-weight: 750; letter-spacing: .055em; text-transform: uppercase; }
+  .accountability-step b { color: var(--ink); font-size: .96rem; line-height: 1.3; }
+  .accountability-step small { color: var(--muted); font-size: .76rem; line-height: 1.4; }
+  .accountability-step.is-account { background: linear-gradient(135deg, color-mix(in srgb, var(--dt-emission-wash) 78%, var(--surface)), var(--surface)); }
+  .accountability-arrow { align-self: center; color: var(--dt-emission-ink); font-family: var(--mono); font-size: 1.25rem; text-shadow: 0 0 9px rgba(var(--dt-emission-rgb), .34); }
+  .accountability-results { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: .65rem; }
+  .accountability-result { --result-rgb: var(--dt-emission-rgb); display: grid; min-width: 0; align-content: start; gap: .38rem; border: 1px solid color-mix(in srgb, var(--line-strong) 82%, transparent); border-radius: 12px; background: color-mix(in srgb, var(--surface) 94%, transparent); padding: .85rem; box-shadow: inset 0 0 0 1px rgba(var(--result-rgb), .02); font-family: var(--sans); transition: border-color .18s ease, box-shadow .18s ease, transform .18s ease; }
+  .accountability-result:hover { border-color: rgba(var(--result-rgb), .56); box-shadow: inset 0 0 0 1px rgba(var(--result-rgb), .12), 0 0 15px rgba(var(--result-rgb), .1); transform: translateY(-2px); }
+  .accountability-result[data-state="good"] { --result-rgb: 16, 143, 97; background: color-mix(in srgb, #ddf3e9 42%, var(--surface)); }
+  .accountability-result[data-state="watch"] { --result-rgb: 196, 116, 24; background: color-mix(in srgb, #fbe7d6 42%, var(--surface)); }
+  .accountability-result[data-state="bad"] { --result-rgb: 183, 59, 43; background: color-mix(in srgb, #fbe2dd 46%, var(--surface)); }
+  .accountability-result b { color: var(--ink); font-size: .9rem; line-height: 1.28; }
+  .accountability-result small { color: var(--muted); font-size: .72rem; line-height: 1.4; }
+  .accountability-summary { min-height: 1.45em; margin: .85rem 0 0; color: var(--muted); font-family: var(--sans); font-size: .8rem; line-height: 1.45; }
+  @media (max-width: 760px) {
+    .accountability-results { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+  }
+  @media (max-width: 560px) {
+    .accountability-controls { grid-template-columns: 1fr; }
+    .accountability-flow { grid-template-columns: 1fr; }
+    .accountability-arrow { justify-self: center; transform: rotate(90deg); }
+    .accountability-results { grid-template-columns: 1fr; }
+    .accountability-meter-head { align-items: flex-start; flex-direction: column; gap: .25rem; }
+    .gate-axis { font-size: .62rem; }
+  }
 
   /* segment buttons + router panel */
   .seg { display: inline-flex; gap: .3rem; flex-wrap: wrap; }
@@ -556,7 +594,7 @@ body.theme-solve { --accent: #2f62cf; --accent-soft: #e6edfa; --accent-ink: #214
   <section class="reveal part-marker" id="capture-resistance">
     <p class="sec-label">Attack resistance</p>
     <h2>What makes the court unbuyable</h2>
-    <p>The bullet proof claim comes from every lock working together: verified humans, random panels, live reserves, private ballots, and panels that grow with the stakes.</p>
+    <p>The bullet proof claim comes from every lock working together: verified humans, one random draw, live face checks, private ballots, panels that grow with the stakes, and a quality record that makes careless service costly.</p>
     <p>The clearest way to understand how those defenses work together is to attack them yourself. Break the Court lets you raise attacker pressure, switch safeguards off, and see where capture becomes possible.</p>
     <div class="reader-end-action">
       <a class="reader-mode-cta" href="break-the-court.html">Open Break the Court <span aria-hidden="true">&rarr;</span></a>
@@ -566,45 +604,10 @@ body.theme-solve { --accent: #2f62cf; --accent-soft: #e6edfa; --accent-ink: #214
   <section class="reveal">
     <p class="sec-label">The wrong foundation</p>
     <h2>When votes are tokens, verdicts have a price</h2>
-    <p class="lead">Token courts like UMA and Kleros sell the gavel to the deepest pocket. This court seats verified humans instead: a live reserve priced by workload, a die nobody can re-roll, a face check that proves a real person is voting, and a ballot that cannot prove how it voted. Buying it means buying people, one at a time, in the dark.</p>
+    <p class="lead">Token courts like UMA and Kleros sell the gavel to the deepest pocket. This court seats verified humans instead: one verified person per seat, a die nobody can re-roll, a face check that proves a real person is voting, and a ballot that cannot prove how it voted. Buying it means buying people, one at a time, in the dark.</p>
     <p>In token courts like UMA and Kleros, voting weight follows the wallet, so a majority has a market price. Disputed Polymarket resolutions show the problem in practice; the evidence is in the <a href="omenmarketmaker.html#exploited-arbiter">OmenMarketMaker chapter</a>.</p>
     <p>That is not merely a bad implementation. If stake is voting power, the protocol works as written when the largest holder wins. An attacker reads the rule as a price list: acquire enough tokens and buy the verdict.</p>
     <p>DemoThemis swaps the foundation to <b>one human, one vote</b>. Every seat is backed by a World ID that no wallet can mint twice or exchange can sell in bulk. An attacker must recruit people separately, keep them present, land them in a sealed draw, and somehow enforce their private votes. Every funded case that reaches DemoThemis faces every lock below at once.</p>
-  </section>
-
-  <section class="reveal">
-    <p class="sec-label">The seat</p>
-    <h2>The self-pricing seat</h2>
-    <p>Picking a fixed reserve that merely looks painful is a guess, and guesses age badly as fees, workload, and the juror pool change.</p>
-    <p>The reserve has one job: make coin-flipping lose more to penalties than it earns in fees. Bribery belongs to the encrypted ballot; rented seats belong to the face check. The court therefore derives the minimum reserve from pay per vote, the extra error caused by carelessness, and the number of unresolved votes still at risk. More work raises it; more active jurors spread the work and lower it.</p>
-    <p>Verified humans opt in without buying a governance token or posting the reserve upfront: the protocol fronts the live reserve and sponsors the required gas. The juror's private account still receives any final debit, so free entry does not make careless service free.</p>
-    <p>In plain terms, the floor is the income exposed while outcomes are pending divided by the expected penalty from the extra mistakes carelessness creates. The inputs are observable court traffic, not a governance guess, so the seat reprices itself as conditions change.</p>
-    <p>A reserve above that live floor makes the court less safe. It evicts honest jurors and thins the pool while paid recruits stay, increasing their share. The widget shows why the best reserve sits just above the laziness floor, not at an impressive fixed number.</p>
-
-    <div class="widget reveal">
-      <div class="widget-head"><span class="live"></span> The live reserve, derived then stress-tested</div>
-      <div class="controls">
-        <div class="row"><label for="F1f">Pay pressure per pending vote</label> <b id="F1fOut">1.5 units</b></div>
-        <input id="F1f" type="range" min="5" max="100" step="5" value="15">
-        <div class="row"><label for="F1e">Extra errors from not reading the case</label> <b id="F1eOut">30%</b></div>
-        <input id="F1e" type="range" min="10" max="50" step="1" value="30">
-        <div class="row"><label for="F1s">Slash taken from a wrong-side vote</label> <b id="F1sOut">100%</b></div>
-        <input id="F1s" type="range" min="25" max="100" step="5" value="100">
-        <div class="row"><label for="F1b">Now set the live reserve</label> <b id="F1bOut">5 units</b></div>
-        <input id="F1b" type="range" min="0" max="200" step="1" value="5">
-        <div class="row"><label for="F1m">Coordinated humans an attacker can recruit</label> <b id="F1mOut">300</b></div>
-        <input id="F1m" type="range" min="50" max="2000" step="50" value="300">
-      </div>
-      <div class="barline"><div class="bk"><span>Jurors who opt in at this reserve</span><b id="F1pool">&hellip;</b></div><div class="track"><span class="fill-accent" id="F1poolbar"></span></div></div>
-      <div class="barline"><div class="bk"><span>Attacker's chance of a 15-seat majority</span><b id="F1cap">&hellip;</b></div><div class="track"><span class="fill-bad" id="F1capbar"></span></div></div>
-      <div class="readout" style="margin-top:1rem">
-        <div class="stat"><div class="k">Reserve floor that defeats laziness</div><div class="v accent" id="F1min">&hellip;</div></div>
-        <div class="stat"><div class="k">Verdict on your reserve</div><div class="v" id="F1verd" style="font-size:1.02rem">&hellip;</div></div>
-      </div>
-      <p style="font-family:var(--sans);font-size:.86rem;color:var(--faint);margin:1rem 0 0">The live floor keeps careless voting unprofitable while preserving the widest possible juror pool. Slide the reserve to see why the optimum sits just above that floor and moves automatically with workload.</p>
-    </div>
-
-    <p>Discipline sits in the penalty, not the headline reserve: a wrong-side vote loses a larger slice after a lopsided final verdict and a smaller one after a near tie. Settlement waits for appeals, and later vindication reverses the update. Individual debits stay private; only the aggregate reward-pool transfer and proof of correct updates are public. The pool pays active, high-quality jurors, never the winning panel, so a majority gains nothing by penalizing dissent.</p>
   </section>
 
   <section class="reveal" id="adaptive-fees">
@@ -648,7 +651,7 @@ body.theme-solve { --accent: #2f62cf; --accent-soft: #e6edfa; --accent-ink: #214
 
   </section>
 
-  <section class="reveal">
+  <section class="reveal mechanism-target" id="face-check">
     <p class="sec-label">The face check</p>
     <h2>The same person, every time</h2>
     <p>A one-time iris scan cannot stop someone renting out their phone or login later. A hundred rented credentials controlled by one operator would look like a hundred independent humans and vote like one.</p>
@@ -670,7 +673,7 @@ body.theme-solve { --accent: #2f62cf; --accent-soft: #e6edfa; --accent-ink: #214
     <p>Presence proves the enrolled juror is there; the private ballot then prevents anyone paying them from verifying how they voted.</p>
   </section>
 
-  <section class="reveal">
+  <section class="reveal mechanism-target" id="encrypted-ballot">
     <p class="sec-label">The ballot</p>
     <h2>The ballot nobody can sell</h2>
     <p>A vote buyer pays only when they can prove delivery. Commit-and-reveal fails because the juror publishes a vote hash and later opens it: the same receipt that proves honesty to the protocol proves obedience to a briber.</p>
@@ -710,7 +713,7 @@ body.theme-solve { --accent: #2f62cf; --accent-soft: #e6edfa; --accent-ink: #214
             <h4>What the protocol does not reveal</h4>
             <div class="row2">Any juror's name or face. The scans stay on the phone; a seat is a pseudonym.</div>
             <div class="row2">Which way any seat voted, on any case, ever. Only the tally decrypts.</div>
-            <div class="row2">Any juror's exact reserve, reputation, case history, individual payment, slash, or appeal refund.</div>
+            <div class="row2">Any juror's exact penalty balance, reputation, case history, individual payment, debit, or appeal refund.</div>
             <div class="row2">Proof of a bought vote, even from a juror trying to sell one.</div>
           </div>
         </div>
@@ -720,13 +723,27 @@ body.theme-solve { --accent: #2f62cf; --accent-soft: #e6edfa; --accent-ink: #214
 
     <p>Silent ballot replacement means that even a disclosed seat and a complete transcript cannot prove what ultimately counted.</p>
     <p><b>No administrator key is allowed.</b> The tally is acceptable only if no operator ever receives a usable ballot-opening key. Setup must be distributed or keyless, so independent participants create the capability together without one party holding it; initialization artifacts become unusable afterward; and the sole output is an aggregate tally with a public zero-knowledge proof. A party that creates, holds, or merely promises to delete a complete key breaks the guarantee.</p>
-    <p>Privacy continues after tallying. Exact scores, reserves, rewards, penalties, and refunds stay inside private commitments&mdash;sealed account records whose rules can still be proved. Zero-knowledge proofs reveal only what is needed now, such as enough reserve, an eligible reputation band, or a valid private update, while batched totals prove the money balances. A public payment or penalty tied to a seat would recreate the receipt.</p>
+    <p>Privacy continues after tallying. Exact scores, penalty balances, rewards, and refunds stay inside private commitments&mdash;sealed account records whose rules can still be proved. Zero-knowledge proofs reveal only what is needed now, such as an eligible reputation band or a valid private account update, while batched totals prove the money balances. A public payment or penalty tied to a seat would recreate the receipt.</p>
   </section>
 
   <section class="reveal">
     <p class="sec-label">The panel</p>
     <h2>Panels that grow with the pot</h2>
-    <p>A $40 listing dispute and a $200,000 escrow should not buy the same protection. Panels therefore scale with stakes: 7 seats for small cases, 15 for serious ones, and 31 for the largest, with appeals climbing the same rungs.</p>
+    <p>A $40 listing dispute and a $2 million escrow should not buy the same protection. The initial draw follows one published value schedule; appeals then climb to the next larger rung rather than repricing the case.</p>
+    <div class="dial-wrap reveal">
+      <table class="dial-table" id="panelScheduleTable">
+        <thead>
+          <tr><th>Value affected</th><th>Initial ruling set</th><th>Agreement rule</th></tr>
+        </thead>
+        <tbody>
+          <tr><td>Below <span class="param">$250k</span></td><td><span class="param">7</span> seats</td><td>One panel</td></tr>
+          <tr><td><span class="param">$250k</span> to under <span class="param">$1M</span></td><td><span class="param">15</span> seats</td><td>One panel</td></tr>
+          <tr><td><span class="param">$1M</span> to under <span class="param">$5M</span></td><td><span class="param">31</span> seats</td><td>One panel</td></tr>
+          <tr><td><span class="param">$5M</span> to under <span class="param">$25M</span></td><td><span class="param">3 &times; 31</span> seats</td><td>All three disjoint panels agree</td></tr>
+          <tr><td><span class="param">$25M+</span></td><td><span class="param">5 &times; 31</span> seats</td><td>All five disjoint panels agree</td></tr>
+        </tbody>
+      </table>
+    </div>
     <p>A private proof of long service gates 31-seat draws. Seniority costs an honest juror nothing but takes an attacker years to fake, the useful asymmetry a financial barrier cannot provide. Money buys more strangers, never more voice for one person.</p>
   </section>
 
@@ -734,13 +751,13 @@ body.theme-solve { --accent: #2f62cf; --accent-soft: #e6edfa; --accent-ink: #214
     <p class="sec-label">The ceiling</p>
     <h2>What happens above the biggest panel</h2>
     <p>A 31-seat ceiling would leave a $5 million and $50 million case protected by the same jury while the attack prize keeps growing. Simply making one jury bigger is unsafe: it amplifies whichever side already dominates the pool, reporting a tilted pool's answer with greater confidence. Pool width, not one enormous sample, is the real protection.</p>
-    <p>Above a value line, DemoThemis instead draws several non-overlapping 31-seat panels at once and requires all of them to agree. Any disagreement raises an alarm rather than printing a verdict.</p>
+    <p>At $5 million the published schedule switches to three non-overlapping 31-seat panels, then to five at $25 million. All panels are drawn at once and must agree. Any disagreement raises an alarm rather than printing a verdict.</p>
     <p>An attacker must now win every independent panel on the same sealed roll. If one panel falls one time in five, three together fall only one time in 125. Adding panels as the pot grows restores the rising takeover price.</p>
 
     <div class="widget reveal">
       <div class="widget-head"><span class="live"></span> Pricing a takeover above the ceiling</div>
       <div class="controls">
-        <div class="row"><label>What the case is worth</label> <span class="seg" id="mpseg"><button data-n="1" class="active">up to $250k</button><button data-n="3">$250k to $5M</button><button data-n="5">over $5M</button></span></div>
+        <div class="row"><label id="mpsegLabel">What the case is worth</label> <span class="seg" id="mpseg" role="group" aria-labelledby="mpsegLabel"><button type="button" data-case-value="1000000" class="active" aria-pressed="true">$1M to under $5M</button><button type="button" data-case-value="5000000" aria-pressed="false">$5M to under $25M</button><button type="button" data-case-value="25000000" aria-pressed="false">$25M+</button></span></div>
         <div class="row"><label for="mpshare">The bloc's share of the senior pool</label> <b id="mpshareOut">45%</b></div>
         <input id="mpshare" type="range" min="5" max="49" step="1" value="45">
       </div>
@@ -873,35 +890,68 @@ body.theme-solve { --accent: #2f62cf; --accent-soft: #e6edfa; --accent-ink: #214
       </table>
     </div>
 
-    <div class="widget reveal">
-      <div class="widget-head"><span class="live"></span> The confidence gate</div>
-      <div class="controls">
-        <div class="row"><label for="cgAcc">Observed accuracy</label> <b id="cgAccOut">78%</b></div>
-        <input id="cgAcc" type="range" min="50" max="90" step="1" value="78">
-        <div class="row"><label for="cgN">Cases on record</label> <b id="cgNOut">40 cases</b></div>
-        <input id="cgN" type="range" min="5" max="150" step="1" value="40">
-      </div>
-      <div class="gate-track">
-        <div class="gate-band" id="cgBand"></div>
-        <div class="gate-bar" id="cgBar"></div>
-        <div class="gate-mark" id="cgMark"></div>
-      </div>
-      <div class="gate-axis"><span>40%</span><span>70%</span><span>100%</span></div>
-      <div class="readout">
-        <div class="stat"><div class="k">95% interval</div><div class="v" id="cgCI">&hellip;</div></div>
-        <div class="stat"><div class="k">Status</div><div class="v" id="cgStatus"><span class="pill-s ps-build">&hellip;</span></div></div>
-      </div>
-    </div>
-
     <p>The three-times draw cap matters because court security comes from a wide active pool, not a small class of stars. Accuracy still compounds into more work and private income, but no juror dominates selection.</p>
     <p>The funded reward reserve plus forfeited bonds pays periodic private rewards to jurors who prove they meet quality and recency gates. Only the pool total and proof of correct distribution are public, so the reward cannot expose or bend one verdict.</p>
+  </section>
+
+  <section class="reveal" id="quality-accountability">
+    <p class="sec-label">Immediate accountability</p>
+    <h2>Careless voting carries a cost</h2>
+    <p>Each unresolved vote carries a private penalty automatically sized from current juror pay, unresolved workload, and the additional errors expected from careless voting. These penalties do not get placed on a juror until total finality (after all appeals have been made and settled). If the juror&rsquo;s account lacks sufficient funds, their World ID&ndash;linked account becomes negative and future jury earnings clear the debt first; changing wallets cannot reset it. The penalty&rsquo;s role is to stop random voting and/or lazy voting from remaining profitable while the longer-term quality record adjusts pay, draw rate, vote weight, and eventually eligibility.</p>
+
+    <div class="widget accountability-lab reveal" id="qualityPenaltyDiagram">
+      <div class="widget-head"><span class="live"></span> One immediate penalty, four longer-term consequences</div>
+      <div class="controls accountability-controls">
+        <div>
+          <div class="row"><label for="qaCases">Cases in the juror&rsquo;s record</label> <b id="qaCasesOut">40 cases</b></div>
+          <input id="qaCases" type="range" min="5" max="150" step="1" value="40">
+        </div>
+        <div>
+          <div class="row"><label for="qaQuality">Quality of this juror&rsquo;s arbitration</label> <b id="qaQualityOut">78%</b></div>
+          <input id="qaQuality" type="range" min="45" max="95" step="1" value="78">
+        </div>
+      </div>
+      <p class="accountability-definition">Quality combines written-criteria consistency, appeal survival, useful agreement, and reliable later evidence when available.</p>
+
+      <div class="accountability-meter" aria-label="Private quality estimate and confidence range">
+        <div class="accountability-meter-head"><span>Private quality estimate</span><b id="qaCI">&hellip;</b></div>
+        <div class="gate-track">
+          <div class="gate-band" id="qaBand"></div>
+          <div class="gate-bar" id="qaBar"></div>
+          <div class="gate-mark" id="qaMark"></div>
+        </div>
+        <div class="gate-axis"><span>40%</span><span>70% confidence line</span><span>100%</span></div>
+      </div>
+
+      <div class="accountability-flow" aria-label="How a private juror penalty is enforced">
+        <div class="accountability-step">
+          <span>Final scored vote</span>
+          <b>Private debit</b>
+          <small>Applied only after appeal finality</small>
+        </div>
+        <span class="accountability-arrow" aria-hidden="true">&rarr;</span>
+        <div class="accountability-step is-account">
+          <span>Juror account</span>
+          <b>Balance, then debt if needed</b>
+          <small>Future earnings clear a negative balance first</small>
+        </div>
+      </div>
+
+      <div class="accountability-results" aria-label="Consequences for the juror">
+        <div class="accountability-result" id="qaPayCard"><span>Per-case pay</span><b id="qaPay">&hellip;</b><small>Responds from the first case</small></div>
+        <div class="accountability-result" id="qaDrawCard"><span>Draw rate</span><b id="qaDraw">&hellip;</b><small>Never exceeds the 3&times; cap</small></div>
+        <div class="accountability-result" id="qaWeightCard"><span>Vote weight</span><b id="qaWeight">&hellip;</b><small>Full only on confident evidence</small></div>
+        <div class="accountability-result" id="qaEligibilityCard"><span>Eligibility</span><b id="qaEligibility">&hellip;</b><small>Suspension is deliberately last</small></div>
+      </div>
+      <p class="accountability-summary" id="qaSummary" role="status" aria-live="polite"></p>
+    </div>
   </section>
 
   <section class="reveal">
     <p class="sec-label">Lenient on purpose</p>
     <h2>Why the gate waits so long</h2>
     <p>A hair-trigger suspension rule would reward safe majority guesses. If one rough stretch could end a career, rational jurors would avoid hard positions and follow the apparent room. Suspension therefore fires only when the full interval is below 0.70, meaning the evidence is confidently and persistently poor.</p>
-    <p>Leniency at that last gate is not softness everywhere. Private pay, draw rate, vote weight, and margin-scaled reserve penalties respond earlier; only their aggregate transfer is public. Low effort becomes unprofitable before uncertain evidence ends a career.</p>
+    <p>Leniency at that last gate is not softness everywhere. Private pay, draw rate, vote weight, and margin-scaled penalties respond earlier; only their aggregate transfer is public. Low effort becomes unprofitable before uncertain evidence ends a career.</p>
     <p>Wrong-side updates use the <b>post-appeal</b> outcome, not the first panel's verdict. If a 31-seat appeal overturns a 15-seat panel, the original dissenter's private debit and score update are reversed, while the overturned majority takes the loss. No public refund identifies the dissenter. Near-tie penalties were already small; vindicated dissent costs nothing.</p>
   </section>
 
@@ -940,10 +990,15 @@ body.theme-solve { --accent: #2f62cf; --accent-soft: #e6edfa; --accent-ink: #214
     <p class="sec-label">The appeal funding quote</p>
     <h2>Why a wider pool makes appeals cheaper</h2>
     <p>The capture target is probability times stake, not the whole stake. A ten-million-dollar case does not automatically require a ten-million-dollar security bond. In a wide pool, a small bloc almost never wins a panel majority, so the non-refundable service fee can already exceed the anti-re-roll target and no extra security is needed.</p>
-    <p>As stakes grow, panels expand from 7 to 15 to 31 and capture odds can collapse faster than the prize rises. Every quote identifies its funding source and destination: contributors fund panel work and delay compensation once, while separately escrowed security principal supplies the success refund or failure forfeiture.</p>
+    <p>Case value selects the initial panel only. Once a ruling exists, an appeal always buys the next rung: 7 to 15, 15 to 31, and 31 is terminal. Every quote identifies its funding source and destination: contributors fund panel work and delay compensation once, while separately escrowed security principal supplies the success refund or failure forfeiture.</p>
     <div class="widget reveal">
       <div class="widget-head"><span class="live"></span> What does it cost to appeal?</div>
       <div class="controls">
+        <div class="row"><label id="abCurrentLabel">Current ruling panel</label> <span class="seg" id="abCurrentPanel" role="group" aria-labelledby="abCurrentLabel">
+          <button type="button" data-current-panel="7" class="active" aria-pressed="true">7 seats</button>
+          <button type="button" data-current-panel="15" aria-pressed="false">15 seats</button>
+          <button type="button" data-current-panel="31" aria-pressed="false">31 seats</button>
+        </span></div>
         <div class="row"><label for="abStake">Value affected by the ruling</label> <b id="abStakeOut">$10,000</b></div>
         <input id="abStake" type="range" min="0" max="100" step="1" value="40">
         <div class="row"><label for="abPool">Jurors active in the pool</label> <b id="abPoolOut">5,000</b></div>
@@ -958,11 +1013,12 @@ body.theme-solve { --accent: #2f62cf; --accent-soft: #e6edfa; --accent-ink: #214
       </div>
       <div class="bondnote" id="abNote">&hellip;</div>
       <div class="readout">
+        <div class="stat"><div class="k">Next legal panel</div><div class="v" id="abNextPanel">&hellip;</div></div>
         <div class="stat"><div class="k">Service fee · panel + delay</div><div class="v" id="abService">&hellip;</div></div>
         <div class="stat"><div class="k">Security bond · return/forfeit</div><div class="v" id="abSecurity">&hellip;</div></div>
         <div class="stat"><div class="k">Total appeal funding</div><div class="v accent" id="abTotal">&hellip;</div></div>
       </div>
-      <p style="font-family:var(--sans);font-size:.86rem;color:var(--faint);margin:1rem 0 0"><b>Funding source:</b> the wallets that complete this appeal goal. The service fee is consumed once; the security bond remains separately attributable to those wallets.</p>
+      <p id="abFundingNote" style="font-family:var(--sans);font-size:.86rem;color:var(--faint);margin:1rem 0 0"><b>Funding source:</b> the wallets that complete this appeal goal. The service fee is consumed once; the security bond remains separately attributable to those wallets.</p>
     </div>
 
   </section>
@@ -1163,6 +1219,7 @@ body.theme-solve { --accent: #2f62cf; --accent-soft: #e6edfa; --accent-ink: #214
   window.requestAnimationFrame(syncReaderSwitchState);
 })();
 </script>
+<script src="assets/panel-schedule.js"></script>
 <script src="assets/common.js?v=20260722-reader-handoff-1"></script>
 <script>
 // Shared combinatorics helpers for the court widgets.
@@ -1233,66 +1290,6 @@ function courtSeg(id, onPick) {
     });
   });
 }
-
-// ============ live reserve ============
-(function () {
-  "use strict";
-  var f = document.getElementById("F1f");
-  if (!f) return;
-  var e = document.getElementById("F1e");
-  var s = document.getElementById("F1s");
-  var b = document.getElementById("F1b");
-  var m = document.getElementById("F1m");
-  var fOut = document.getElementById("F1fOut");
-  var eOut = document.getElementById("F1eOut");
-  var sOut = document.getElementById("F1sOut");
-  var bOut = document.getElementById("F1bOut");
-  var mOut = document.getElementById("F1mOut");
-  var minEl = document.getElementById("F1min");
-  var verdEl = document.getElementById("F1verd");
-  var poolEl = document.getElementById("F1pool");
-  var poolBar = document.getElementById("F1poolbar");
-  var capEl = document.getElementById("F1cap");
-  var capBar = document.getElementById("F1capbar");
-  var JMAX = 50000, B0 = 20;
-
-  function update() {
-    var fee = parseInt(f.value, 10) / 10;
-    var de = parseInt(e.value, 10) / 100;
-    var sl = parseInt(s.value, 10) / 100;
-    var bond = parseInt(b.value, 10);
-    var bloc = parseInt(m.value, 10);
-
-    var bmin = fee / (de * sl);
-    var pool = Math.round(JMAX / Math.pow(1 + bond / B0, 2));
-    var share = Math.min(0.95, bloc / Math.max(bloc, pool));
-    var pcap = window.__court.binomTail(15, 8, share);
-
-    fOut.textContent = fee.toFixed(1) + " units";
-    eOut.textContent = parseInt(e.value, 10) + "%";
-    sOut.textContent = parseInt(s.value, 10) + "%";
-    bOut.textContent = bond + " units";
-    mOut.textContent = bloc.toLocaleString("en-US");
-
-    minEl.textContent = Math.ceil(bmin) + " units";
-    poolEl.textContent = pool.toLocaleString("en-US");
-    poolBar.style.width = Math.max(1, pool / JMAX * 100) + "%";
-    capEl.textContent = pctText(pcap);
-    capBar.style.width = Math.max(pcap * 100, pcap > 0 ? 1 : 0) + "%";
-
-    if (bond < bmin) {
-      verdEl.innerHTML = '<span class="verdict v-high">Too low: laziness pays</span>';
-    } else if (pcap > 0.0001) {
-      verdEl.innerHTML = '<span class="verdict v-high">Too heavy: pool too thin</span>';
-    } else if (bond > 4 * bmin) {
-      verdEl.innerHTML = '<span class="verdict v-mid">Safe but wasteful</span>';
-    } else {
-      verdEl.innerHTML = '<span class="verdict v-good">The sweet spot</span>';
-    }
-  }
-  [f, e, s, b, m].forEach(function (el) { el.addEventListener("input", update); });
-  update();
-})();
 
 // ============ one roll versus the grind ============
 (function () {
@@ -1486,8 +1483,10 @@ function courtSeg(id, onPick) {
   var allEl = document.getElementById("mpall");
   var simEl = document.getElementById("mpsim");
   var resEl = document.getElementById("mpres");
+  var tierButtons = document.getElementById("mpseg").querySelectorAll("button");
+  var panelSchedule = window.DemoThemisPanelSchedule;
   var POOL = 600, SEATS = 31, MAJ = 16;
-  var N = 1;
+  var N = panelSchedule.parallelPanels(1000000);
   var tiles = [];
 
   function K() { return Math.round(parseInt(shareS.value, 10) / 100 * POOL); }
@@ -1528,7 +1527,7 @@ function courtSeg(id, onPick) {
       for (var i = 0; i < SEATS; i++) t.dots[i].className = "pdot";
     }
   }
-  function drawSeats() {
+  function drawPanelSet() {
     var idx = [];
     for (var i = 0; i < POOL; i++) idx.push(i);
     for (var j = idx.length - 1; j > 0; j--) {
@@ -1536,14 +1535,20 @@ function courtSeg(id, onPick) {
       var t = idx[j]; idx[j] = idx[k]; idx[k] = t;
     }
     var kk = K();
-    var seats = [];
-    for (var s = 0; s < SEATS; s++) seats.push(idx[s] < kk);
-    return seats;
+    var panels = [];
+    for (var p = 0; p < N; p++) {
+      var seats = [];
+      var offset = p * SEATS;
+      for (var s = 0; s < SEATS; s++) seats.push(idx[offset + s] < kk);
+      panels.push(seats);
+    }
+    return panels;
   }
   function drawOnce() {
     var taken = 0;
+    var panelSet = drawPanelSet();
     for (var p = 0; p < N; p++) {
-      var seats = drawSeats();
+      var seats = panelSet[p];
       var col = 0, t = tiles[p];
       for (var i = 0; i < SEATS; i++) {
         if (seats[i]) col++;
@@ -1566,8 +1571,9 @@ function courtSeg(id, onPick) {
     var hits = 0;
     for (var c = 0; c < 1000; c++) {
       var all = true;
+      var panelSet = drawPanelSet();
       for (var p = 0; p < N; p++) {
-        var seats = drawSeats();
+        var seats = panelSet[p];
         var col = 0;
         for (var i = 0; i < SEATS; i++) if (seats[i]) col++;
         if (col < MAJ) { all = false; break; }
@@ -1582,10 +1588,23 @@ function courtSeg(id, onPick) {
     oneEl.textContent = pctText(p1);
     allEl.textContent = pctText(Math.pow(p1, N));
     simEl.innerHTML = "&hellip;";
-    resEl.textContent = "Pick a case size and roll. The attack only works if every panel falls on the same draw.";
+    resEl.textContent = N === 1
+      ? "This tier uses one 31-seat panel. Roll the case once."
+      : "This tier requires all " + N + " disjoint 31-seat panels to agree. Roll the entire set once.";
   }
 
-  courtSeg("mpseg", function (val) { N = val; buildPanels(); refresh(); });
+  Array.prototype.forEach.call(tierButtons, function (btn) {
+    btn.addEventListener("click", function () {
+      N = panelSchedule.parallelPanels(parseInt(btn.getAttribute("data-case-value"), 10));
+      Array.prototype.forEach.call(tierButtons, function (other) {
+        var selected = other === btn;
+        other.classList.toggle("active", selected);
+        other.setAttribute("aria-pressed", selected ? "true" : "false");
+      });
+      buildPanels();
+      refresh();
+    });
+  });
   shareS.addEventListener("input", function () { resetDots(); refresh(); });
   drawBtn.addEventListener("click", drawOnce);
   runBtn.addEventListener("click", run);
@@ -1593,52 +1612,90 @@ function courtSeg(id, onPick) {
   refresh();
 })();
 
-// ============ confidence gate ============
+// ============ juror accountability ============
 (function () {
   "use strict";
   var BAR = 0.70, Z = 1.96;
-  var acc = document.getElementById("cgAcc");
-  if (!acc) return;
-  var nIn = document.getElementById("cgN");
-  var accOut = document.getElementById("cgAccOut");
-  var nOut = document.getElementById("cgNOut");
-  var band = document.getElementById("cgBand");
-  var mark = document.getElementById("cgMark");
-  var bar = document.getElementById("cgBar");
-  var ciOut = document.getElementById("cgCI");
-  var statusOut = document.getElementById("cgStatus");
+  var casesInput = document.getElementById("qaCases");
+  if (!casesInput) return;
+  var qualityInput = document.getElementById("qaQuality");
+  var casesOut = document.getElementById("qaCasesOut");
+  var qualityOut = document.getElementById("qaQualityOut");
+  var band = document.getElementById("qaBand");
+  var mark = document.getElementById("qaMark");
+  var bar = document.getElementById("qaBar");
+  var ciOut = document.getElementById("qaCI");
+  var payOut = document.getElementById("qaPay");
+  var drawOut = document.getElementById("qaDraw");
+  var weightOut = document.getElementById("qaWeight");
+  var eligibilityOut = document.getElementById("qaEligibility");
+  var payCard = document.getElementById("qaPayCard");
+  var drawCard = document.getElementById("qaDrawCard");
+  var weightCard = document.getElementById("qaWeightCard");
+  var eligibilityCard = document.getElementById("qaEligibilityCard");
+  var summary = document.getElementById("qaSummary");
 
-  // Map a 0.4 to 1.0 score onto the track as a percentage.
   function pct(x) { return Math.max(0, Math.min(100, (x - 0.4) / 0.6 * 100)); }
+  function setResult(card, output, text, state) {
+    output.textContent = text;
+    card.setAttribute("data-state", state);
+  }
 
   function update() {
-    var p = parseInt(acc.value, 10) / 100;
-    var n = parseInt(nIn.value, 10);
-    accOut.textContent = parseInt(acc.value, 10) + "%";
-    nOut.textContent = n + (n === 1 ? " case" : " cases");
+    var p = parseInt(qualityInput.value, 10) / 100;
+    var n = parseInt(casesInput.value, 10);
+    casesOut.textContent = n + (n === 1 ? " case" : " cases");
+    qualityOut.textContent = parseInt(qualityInput.value, 10) + "%";
 
-    // Wilson 95% interval for proportion p over n cases.
     var z2 = Z * Z;
     var denom = 1 + z2 / n;
     var center = (p + z2 / (2 * n)) / denom;
     var half = (Z / denom) * Math.sqrt(p * (1 - p) / n + z2 / (4 * n * n));
     var lo = Math.max(0, center - half);
     var hi = Math.min(1, center + half);
+    var suspended = hi < BAR;
+    var fullWeight = lo >= BAR;
+    var direction = center > BAR + 0.005 ? "up" : center < BAR - 0.005 ? "down" : "flat";
 
     bar.style.left = pct(BAR) + "%";
     band.style.left = pct(lo) + "%";
     band.style.width = Math.max(0, pct(hi) - pct(lo)) + "%";
     mark.style.left = pct(center) + "%";
-    ciOut.textContent = Math.round(lo * 100) + "% to " + Math.round(hi * 100) + "%";
+    ciOut.textContent = Math.round(lo * 100) + "% to " + Math.round(hi * 100) + "% · 95% range";
 
-    var status, cls;
-    if (center + half < BAR) { status = "Suspended"; cls = "ps-susp"; }
-    else if (center - half >= BAR) { status = "Full weight"; cls = "ps-act"; }
-    else { status = "Building a record"; cls = "ps-build"; }
-    statusOut.innerHTML = '<span class="pill-s ' + cls + '">' + status + '</span>';
+    if (suspended) {
+      setResult(payCard, payOut, "No new case pay", "bad");
+      setResult(drawCard, drawOut, "Paused", "bad");
+      setResult(weightCard, weightOut, "Inactive", "bad");
+      setResult(eligibilityCard, eligibilityOut, "Suspended", "bad");
+      summary.textContent = "The evidence is now confidently below the 70% line, so eligibility is suspended. Any private account debt still follows this World ID-linked juror.";
+      return;
+    }
+
+    if (direction === "up") {
+      setResult(payCard, payOut, "Increasing", fullWeight ? "good" : "watch");
+      setResult(drawCard, drawOut, "Increasing", fullWeight ? "good" : "watch");
+    } else if (direction === "down") {
+      setResult(payCard, payOut, "Decreasing", "watch");
+      setResult(drawCard, drawOut, "Decreasing", "watch");
+    } else {
+      setResult(payCard, payOut, "Near baseline", "watch");
+      setResult(drawCard, drawOut, "Near baseline", "watch");
+    }
+
+    if (fullWeight) {
+      setResult(weightCard, weightOut, "Full weight", "good");
+      setResult(eligibilityCard, eligibilityOut, "Eligible", "good");
+      summary.textContent = "The full confidence range is above 70%. Pay and draw rate respond to quality, full vote weight is earned, and selection remains capped at 3× a newcomer's rate.";
+    } else {
+      setResult(weightCard, weightOut, "Not yet full", "watch");
+      setResult(eligibilityCard, eligibilityOut, "Eligible", "good");
+      summary.textContent = "The record is still uncertain. Pay and draw rate move gradually, but full vote weight waits and eligibility is preserved until the evidence is confidently poor.";
+    }
   }
-  acc.addEventListener("input", update);
-  nIn.addEventListener("input", update);
+
+  casesInput.addEventListener("input", update);
+  qualityInput.addEventListener("input", update);
   update();
 })();
 
@@ -1671,9 +1728,11 @@ function courtSeg(id, onPick) {
   if (!stakeS) return;
   var poolS = document.getElementById("abPool");
   var weeksS = document.getElementById("abWeeks");
+  var currentPanelGroup = document.getElementById("abCurrentPanel");
   var stakeOut = document.getElementById("abStakeOut");
   var poolOut = document.getElementById("abPoolOut");
   var weeksOut = document.getElementById("abWeeksOut");
+  var nextPanelEl = document.getElementById("abNextPanel");
   var panelV = document.getElementById("abPanelV");
   var delayV = document.getElementById("abDelayV");
   var capV = document.getElementById("abCapV");
@@ -1684,6 +1743,8 @@ function courtSeg(id, onPick) {
   var serviceEl = document.getElementById("abService");
   var securityEl = document.getElementById("abSecurity");
   var totalEl = document.getElementById("abTotal");
+  var fundingNote = document.getElementById("abFundingNote");
+  var currentPanel = 7;
 
   var MSTAR = 500, LAMBDA = 2, FEE = 1.5, DELAY_RATE_WEEKLY = 0.01;
 
@@ -1722,13 +1783,38 @@ function courtSeg(id, onPick) {
   function stakeVal() { return 100 * Math.pow(10, parseInt(stakeS.value, 10) / 100 * 5); }
   function poolVal() { return Math.round(1000 * Math.pow(50, parseInt(poolS.value, 10) / 100)); }
   function weeksVal() { return Math.max(2, Math.min(8, parseInt(weeksS.value, 10))); }
-  function panelFor(stake) { return stake < 10000 ? 7 : (stake < 1000000 ? 15 : 31); }
+  function nextPanelFor(current) {
+    if (current === 7) return 15;
+    if (current === 15) return 31;
+    return null;
+  }
 
   function update() {
     var stake = stakeVal();
     var pool = poolVal();
     var weeks = weeksVal();
-    var n = panelFor(stake);
+    var n = nextPanelFor(currentPanel);
+
+    stakeOut.textContent = money(stake);
+    poolOut.textContent = pool.toLocaleString("en-US");
+    weeksOut.textContent = weeks + (weeks === 1 ? " week" : " weeks");
+
+    if (n === null) {
+      nextPanelEl.textContent = "Final at 31";
+      panelV.textContent = "\u2014";
+      delayV.textContent = "\u2014";
+      capV.textContent = "\u2014";
+      panelBar.style.width = "0%";
+      delayBar.style.width = "0%";
+      capBar.style.width = "0%";
+      serviceEl.textContent = "\u2014";
+      securityEl.textContent = "\u2014";
+      totalEl.textContent = "\u2014";
+      note.innerHTML = "The current ruling already used the terminal <b>31-seat rung</b>. No ordinary larger-panel appeal can be quoted; if unchallenged, the ruling becomes final under the published ladder.";
+      fundingNote.innerHTML = "<b>Terminal rung:</b> no appeal goal opens and no funds are requested.";
+      return;
+    }
+
     var maj = Math.floor(n / 2) + 1;
     var share = Math.min(1, MSTAR / pool);
     var odds = binomTail(n, maj, share);
@@ -1739,9 +1825,7 @@ function courtSeg(id, onPick) {
     var securityBond = Math.max(0, capFloor - serviceFee);
     var total = serviceFee + securityBond;
 
-    stakeOut.textContent = money(stake);
-    poolOut.textContent = pool.toLocaleString("en-US");
-    weeksOut.textContent = weeks + (weeks === 1 ? " week" : " weeks");
+    nextPanelEl.textContent = n + " seats";
     panelV.textContent = money(panelCost);
     delayV.textContent = money(delayCost);
     capV.textContent = money(capFloor);
@@ -1752,13 +1836,25 @@ function courtSeg(id, onPick) {
     serviceEl.textContent = money(serviceFee);
     securityEl.textContent = money(securityBond);
     totalEl.textContent = money(total);
+    fundingNote.innerHTML = "<b>Funding source:</b> the wallets that complete this appeal goal. The service fee is consumed once; the security bond remains separately attributable to those wallets.";
 
     if (securityBond <= 0) {
-      note.innerHTML = "A " + n + "-seat panel has " + pctTxt(odds) + " modeled capture odds. The <b>" + money(serviceFee) + " service fee</b> already exceeds the anti-re-roll target, so this quote adds no security bond.";
+      note.innerHTML = "The next legal rung is <b>" + n + " seats</b>, with " + pctTxt(odds) + " modeled capture odds. The <b>" + money(serviceFee) + " service fee</b> already exceeds the anti-re-roll target, so this quote adds no security bond.";
     } else {
-      note.innerHTML = "A " + n + "-seat panel has " + pctTxt(odds) + " modeled capture odds. After the <b>" + money(serviceFee) + " service fee</b>, the remaining <b>" + money(securityBond) + "</b> is separately escrowed security.";
+      note.innerHTML = "The next legal rung is <b>" + n + " seats</b>, with " + pctTxt(odds) + " modeled capture odds. After the <b>" + money(serviceFee) + " service fee</b>, the remaining <b>" + money(securityBond) + "</b> is separately escrowed security.";
     }
   }
+  Array.prototype.forEach.call(currentPanelGroup.querySelectorAll("button"), function (btn) {
+    btn.addEventListener("click", function () {
+      currentPanel = parseInt(btn.getAttribute("data-current-panel"), 10);
+      Array.prototype.forEach.call(currentPanelGroup.querySelectorAll("button"), function (other) {
+        var selected = other === btn;
+        other.classList.toggle("active", selected);
+        other.setAttribute("aria-pressed", selected ? "true" : "false");
+      });
+      update();
+    });
+  });
   stakeS.addEventListener("input", update);
   poolS.addEventListener("input", update);
   weeksS.addEventListener("input", update);

@@ -1,0 +1,93 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Adaptive Panel Sizing Review · DemoThemis</title>
+  <meta name="description" content="A concise mechanism review of replacing fixed-value jury tiers with deterministic risk-based panel selection in DemoThemis.">
+  <style>
+    :root{--ink:#172126;--muted:#5d6a70;--paper:#f3f0e9;--card:#fffdf8;--line:#d8d3c9;--accent:#176d64;--accent-soft:#dcece7;--warn:#9a5a18;--warn-soft:#f5e7d3;--shadow:0 18px 50px rgba(39,51,53,.09);--sans:Inter,ui-sans-serif,system-ui,-apple-system,"Segoe UI",sans-serif;--serif:Iowan Old Style,Palatino Linotype,Georgia,serif;--mono:"SFMono-Regular",Consolas,monospace}
+    *{box-sizing:border-box}html{scroll-behavior:smooth}body{margin:0;color:var(--ink);background:radial-gradient(circle at 90% 0,rgba(23,109,100,.13),transparent 30rem),var(--paper);font:16px/1.55 var(--sans)}
+    .shell{width:min(1060px,calc(100% - 34px));margin:auto}.hero{padding:70px 0 34px;border-bottom:1px solid var(--line)}.eyebrow,.label{margin:0 0 10px;color:var(--accent);font-size:.72rem;font-weight:850;letter-spacing:.14em;text-transform:uppercase}h1,h2,h3{margin-top:0;text-wrap:balance}h1{max-width:900px;margin-bottom:18px;font:750 clamp(2.6rem,7vw,5.2rem)/.95 var(--serif);letter-spacing:-.045em}.dek{max-width:820px;margin:0;color:#435157;font-size:1.12rem}
+    .verdict{display:grid;grid-template-columns:auto 1fr;gap:14px;margin-top:26px;padding:18px;border:1px solid #9bc2b8;border-radius:15px;background:rgba(255,255,255,.68);box-shadow:var(--shadow)}.mark{display:grid;width:38px;height:38px;place-items:center;border-radius:50%;background:var(--accent);color:white;font-weight:900}.verdict p{margin:4px 0 0;color:#46575b}.verdict strong{font-size:1.05rem}
+    main{padding:36px 0 80px}.grid{display:grid;grid-template-columns:1fr 1fr;gap:14px;margin:18px 0 34px}.card,.formula,.recommendation{padding:21px;border:1px solid var(--line);border-radius:16px;background:var(--card);box-shadow:var(--shadow)}.card h3{margin-bottom:8px;font-size:1rem}.card p{margin:0;color:var(--muted)}.card.good{border-top:5px solid var(--accent)}.card.bad{border-top:5px solid var(--warn)}
+    section{margin-top:42px}h2{margin-bottom:11px;font:750 clamp(1.65rem,4vw,2.55rem)/1.05 var(--serif);letter-spacing:-.025em}section>p{max-width:900px;color:#4d5a5f}.flow{display:grid;grid-template-columns:repeat(4,1fr);gap:8px;margin:18px 0}.flow span{padding:12px;border:1px solid #bad0cb;border-radius:11px;background:var(--accent-soft);font-size:.82rem;font-weight:750;text-align:center}.formula{margin:18px 0;background:#172126;color:#f5f3ed}.formula code{display:block;white-space:pre-wrap;font:700 clamp(.78rem,2vw,.95rem)/1.7 var(--mono)}
+    ul,ol{padding-left:21px}li+li{margin-top:8px}.compact{display:grid;grid-template-columns:1fr 1fr;gap:10px}.compact li{padding-right:12px}.recommendation{margin-top:40px;border-color:#9bc2b8;background:linear-gradient(135deg,#eef7f3,#fffdf8)}.recommendation h2{font-size:1.7rem}.recommendation p:last-child{margin-bottom:0}.note{padding:13px 15px;border-left:4px solid var(--warn);border-radius:8px;background:var(--warn-soft);color:#6f451b}
+    footer{margin-top:42px;padding-top:18px;border-top:1px solid var(--line);color:var(--muted);font-size:.78rem}@media(max-width:720px){.grid,.compact,.flow{grid-template-columns:1fr}.hero{padding-top:45px}}@media print{body{background:white}.shell{width:100%}.card,.formula,.recommendation,.verdict{box-shadow:none}main{padding-bottom:0}}
+  </style>
+</head>
+<body>
+  <header class="hero">
+    <div class="shell">
+      <p class="eyebrow">Mechanism review · 23 July 2026</p>
+      <h1>Replace fixed jury tiers with adaptive security selection</h1>
+      <p class="dek">Review of: case value + eligible pool + attack assumptions → test configurations → choose the smallest safe ruling set.</p>
+      <div class="verdict"><span class="mark">✓</span><div><strong>Recommended—with strict guardrails.</strong><p>Adaptive selection is materially better than fixed dollar tiers, but only as a deterministic protocol rule over a small published configuration set. A requester-controlled slider or a single optimistic attacker estimate would be worse.</p></div></div>
+    </div>
+  </header>
+
+  <main class="shell">
+    <div class="grid" aria-label="Comparison">
+      <article class="card bad"><h3>Why fixed tiers are weak</h3><p>They create arbitrary cliffs, ignore changes in the drawable cohort, overpay for some cases, underprotect others, and reward understating or splitting the value affected.</p></article>
+      <article class="card good"><h3>Why a hybrid selector is better</h3><p>It preserves predictable legal options while choosing from actual security, quality and capacity conditions. The result is reproducible without pretending risk can be estimated perfectly.</p></article>
+    </div>
+
+    <section>
+      <p class="label">Recommended mechanism</p>
+      <h2>Select the lowest-cost configuration that passes every limit</h2>
+      <p>Keep five versioned candidates: <b>7, 15, 31, 3×31 and 5×31</b>. For parallel sets, the review recommends testing 2-of-3 and 3-of-5 panel majorities instead of requiring unanimity.</p>
+      <div class="flow"><span>Freeze economic exposure</span><span>Build candidate-specific pool</span><span>Stress every configuration</span><span>Choose first safe option</span></div>
+      <p>For candidate <i>C</i>, use:</p>
+      <ul class="compact">
+        <li><b>V:</b> maximum economically linked value the ruling can redirect, taken from locked backing—not user-entered text.</li>
+        <li><b>N<sub>C</sub>:</b> matured, available, qualified and conflict-free jurors after parties and all earlier jurors are excluded.</li>
+        <li><b>Θ:</b> a published conservative envelope for attacker selection weight, rentals, no-shows and correlated errors.</li>
+        <li><b>P<sub>control</sub>:</b> exact finite-pool probability under disjoint draws and the real cross-panel decision rule.</li>
+      </ul>
+      <div class="formula"><code>riskLimit(V) = min(1%, Lmax / V)
+
+Pass(C) only if:
+  max over Θ Pcontrol(C) ≤ riskLimit(V)
+  honest-resolution probability ≥ Qmin
+  quorum probability ≥ Fmin
+  NC ≥ required seats + standbys
+  deterministic fee is fundable
+
+Choose the least-cost passing C; otherwise SAFETY_HALT.</code></div>
+      <p><b>Lmax</b> is a published maximum expected corrupted-value budget. The existing 1% Break the Court benchmark can remain the probability ceiling, but Lmax, Qmin, Fmin and the standby buffer require explicit calibration.</p>
+    </section>
+
+    <section>
+      <p class="label">Necessary protections</p>
+      <h2>Prevent the selector itself becoming the attack</h2>
+      <ul class="compact">
+        <li>Freeze V, the eligible-set root, exclusions, policy version and chosen configuration before future randomness exists.</li>
+        <li>Use upper attacker-weight and lower pool estimates from a lagged epoch—not live sliders or requester claims.</li>
+        <li>Recompute eligibility, workload, retention and fees separately for every candidate; those values change with panel size.</li>
+        <li>Use exact without-replacement parallel math. The current single-panel probability raised to a power is not exact.</li>
+        <li>Aggregate linked markets and escrows so one exposure cannot be split into several apparently small cases.</li>
+        <li>If nothing passes, reject or queue the case and return unused funding. Never fall back to an unsafe maximum panel.</li>
+      </ul>
+    </section>
+
+    <section>
+      <p class="label">Further system improvements</p>
+      <h2>The review exposes three adjacent design upgrades</h2>
+      <ol>
+        <li><b>Fix parallel-panel finality.</b> Unanimity lets one disrupted panel stall the ruling and makes honest disagreement increasingly likely. Model majority-of-panels plus escalation-on-split, and publish both capture and no-verdict probabilities.</li>
+        <li><b>Extend appeals.</b> Use one strict order: 7 → 15 → 31 → 3×31 → 5×31, always with unused jurors. This gives top-tier disagreement a real next rung; 5×31 is terminal.</li>
+        <li><b>Improve Break the Court.</b> Default to Automatic, with 7/15/31/3×31/5×31 as clearly experimental overrides. Show the chosen set, worst-case control probability, expected loss, honest-finality probability and spare eligible seats.</li>
+      </ol>
+      <p class="note"><b>Important:</b> a larger panel cannot repair a cohort in which attacker selection weight approaches 50%, nor can several panels correct a shared evidence failure. Pool health and evidence quality remain separate admission checks.</p>
+    </section>
+
+    <aside class="recommendation">
+      <p class="label">Final recommendation</p>
+      <h2>Prototype this in Break the Court before replacing the published schedule</h2>
+      <p>First validate monotonicity, exact parallel math, candidate-specific pool equilibrium, invalid-value failure, case-splitting resistance, appeal progression and no-configuration halts. Once calibrated, DemoThemis should publish the selector and show fixed tiers only as illustrative outputs under reference assumptions—not as permanent law.</p>
+    </aside>
+
+    <footer>Scope: complete-product mechanism design. This review proposes no change to the live three-seat demo MVP.</footer>
+  </main>
+</body>
+</html>

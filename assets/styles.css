@@ -310,7 +310,6 @@ h2 {
 }
 h3 { font-size: 1.18rem; font-weight: 600; margin: 0 0 .35rem; font-family: var(--sans); letter-spacing: -.01em; }
 p { margin: 0 0 1.15rem; }
-.lead { font-size: 1.32rem; line-height: 1.6; color: var(--ink-soft); }
 a { color: var(--accent-ink); text-decoration-color: color-mix(in srgb, var(--accent) 35%, transparent); text-underline-offset: 3px; }
 strong { font-weight: 640; }
 .content section > p:first-of-type { margin-top: 0; }

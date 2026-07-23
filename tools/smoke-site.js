@@ -502,6 +502,10 @@ function checkChapterSequence(failures) {
   assert(["Airbnb", "Uber", "eBay", "Google Ads"].every((name) => demoThemis.includes(name)), "DemoThemis consumer examples must name familiar apps instead of describing every category generically", failures);
   assert(/id=["']capture-resistance["'][\s\S]*The clearest way to understand how those defenses work together is to attack them yourself[\s\S]*href=["']break-the-court\.html["'][^>]*>Open Break the Court/i.test(demoThemis), "DemoThemis Attack resistance must introduce and link to the Break the Court lab", failures);
   assert(/Token courts like UMA and Kleros[\s\S]*In token courts like UMA and Kleros/i.test(demoThemis), "DemoThemis must identify UMA and Kleros whenever it introduces token courts", failures);
+  assert(!/The self-pricing seat|The live reserve, derived then stress-tested|id=["']F1f["']/i.test(demoThemis), "DemoThemis must remove the obsolete self-pricing-seat section and reserve widget", failures);
+  assert(/data-reader-category=["']quality["'][\s\S]*id=["']quality-accountability["'][\s\S]*Careless voting carries a cost/i.test(demoThemis), "DemoThemis must place immediate juror accountability inside the Juror quality category", failures);
+  assert(/World ID&ndash;linked account becomes negative[\s\S]*future jury earnings clear the debt first[\s\S]*changing wallets cannot reset it/i.test(demoThemis), "DemoThemis juror penalty copy must explain negative balances and World ID persistence", failures);
+  assert(/class=["'][^"']*mechanism-target[^"']*["'][^>]*id=["']face-check["']/i.test(demoThemis) && /class=["'][^"']*mechanism-target[^"']*["'][^>]*id=["']encrypted-ballot["']/i.test(demoThemis) && /\.mechanism-target:target\s*\{[^}]*--dt-emission/i.test(demoThemis), "DemoThemis mechanism links must land on cyan-highlighted explanatory sections", failures);
   assert(/token-weighted courts like UMA and Kleros/i.test(marketChapter), "OmenMarketMaker must use the wording token-weighted courts like UMA and Kleros", failures);
   assert(runThrough.includes("Every case updates juror quality") && runThrough.includes("All well-defined cases contribute to sustainable consensus"), "Run-through must show one quality system for every final case", failures);
   assert(!/Objective or rubric court\?|grade jurors differently|Only clean, checkable outcomes grade jurors|without influencing future juror scores/i.test(runThrough), "Run-through must not exclude non-objective cases from juror-quality scoring", failures);
@@ -2849,6 +2853,7 @@ function checkBrandSystem(failures) {
   assert(/Every deposit remains outcome collateral/i.test(omen) && /eligible caller posts the exact court fee as a bond/i.test(omen), "OmenMarketMaker must explain caller-bonded resolution without skimming deposits before resolution", failures);
   assert(/YES or NO reimburses it from both sides pro-rata/i.test(omen) && /insufficient information leaves the pool whole/i.test(omen), "OmenMarketMaker must explain both directional reimbursement and the insufficient-information consequence", failures);
   assert(/No court-fee estimate or reserve is collected while betting/i.test(omen) && /Caller bond at request/i.test(omen), "OmenMarketMaker's interactive pool must keep resolution funding outside the betting pool", failures);
+  assert(/The market proved durable liquidity and time\. Court funding remains a separate caller bond when resolution is requested/i.test(omen) && !/prepaid its natural jury price/i.test(omen), "OmenMarketMaker's completed Robustness Lock must preserve the caller-bond resolution boundary", failures);
   assert(!/var RESOLUTION_RATE|var JURY_QUOTE|var reserve = pot \* RESOLUTION_RATE|recorded purchase prices/i.test(omen), "OmenMarketMaker must not retain the retired pre-betting reserve model", failures);
   assert(/return gross \/ own/i.test(omen), "the pool widget must show gross outcome shares without deducting a pre-betting resolution reserve", failures);
   assert(/data-omen-rive/i.test(omen) && /wordmark-poster\.png/i.test(omen) && /omen-brand-canvas/i.test(omen), "OmenMarketMaker hero must provide both a static poster and Rive canvas", failures);
@@ -2960,6 +2965,7 @@ function checkBuiltHtml(failures) {
   const neutralLevels = [neutralLevel("canvas"), neutralLevel("bg"), neutralLevel("surface")];
   assert(neutralLevels.every(Boolean) && new Set(neutralLevels).size === 3, "page canvas, inset panels, and raised cards must use distinct neutral colors", failures);
   assert(/body\s*\{[^}]*background:\s*var\(--canvas\)/s.test(sharedStyles), "the editorial page must use the dedicated canvas color", failures);
+  assert(!/\.lead\s*\{/i.test(sharedStyles), "chapter lead paragraphs must inherit exactly the same typography as the body paragraphs that follow", failures);
 
   for (const file of publicHtml) {
     const html = readDist(file);
@@ -2984,20 +2990,32 @@ function checkBuiltHtml(failures) {
   assert(/assets\/vendor\/tippy-6\.3\.7\.umd\.min\.js/i.test(gameLab), "gamelab missing vendored Tippy", failures);
   assert(/role=["']tablist["']/i.test(gameLab), "gamelab missing tablist role", failures);
   assert(/data-attack=["']bloc["']/i.test(gameLab), "gamelab missing coordinated attack card", failures);
+  assert(/assets\/panel-schedule\.js/i.test(gameLab) && /function\s+panelFor\s*\(\s*stake\s*\)\s*\{\s*return\s+PANEL_SCHEDULE\.initialPanel\(stake\)/i.test(gameLab), "Break the Court must consume the shared public panel schedule", failures);
+  assert(/var\s+totalPanelSeats\s*=\s*panel\s*\*\s*parallelPanels/i.test(gameLab) && /seatVotes\s*=\s*courtCases\s*\*\s*totalPanelSeats/i.test(gameLab) && /panelCompensation\s*=\s*payPerVote\s*\*\s*totalPanelSeats/i.test(gameLab), "Break the Court must fund and capacity-check every seat in a parallel panel set", failures);
 
   const demoThemis = readDist("demothemis.html");
   assert(/DemoThemis: the most ambitious human infrastructure ever made/i.test(demoThemis), "DemoThemis chapter missing public title", failures);
   assert(/id=["']simple-version["']/i.test(demoThemis), "DemoThemis chapter missing simple version", failures);
   assert(/id=["']deep-dive["']/i.test(demoThemis), "DemoThemis chapter missing deep dive section", failures);
-  assert(/id=["']F1f["']/i.test(demoThemis), "DemoThemis chapter missing live reserve widget", failures);
+  assert(/id=["']qaCases["']/i.test(demoThemis) && /id=["']qaQuality["']/i.test(demoThemis), "DemoThemis chapter missing the two-input juror-accountability diagram", failures);
   assert(/id=["']g3grid["']/i.test(demoThemis), "DemoThemis chapter missing sealed-die widget", failures);
   assert(/id=["']R4seg["']/i.test(demoThemis), "DemoThemis chapter missing private-ballot widget", failures);
   assert(/id=["']mppanels["']/i.test(demoThemis), "DemoThemis chapter missing parallel-panel widget", failures);
-  assert(/id=["']cgAcc["']/i.test(demoThemis), "DemoThemis chapter missing confidence-gate widget", failures);
+  assert(/id=["']panelScheduleTable["']/i.test(demoThemis) && /Below[\s\S]*?\$250k[\s\S]*?\$250k[\s\S]*?\$1M[\s\S]*?3\s*&times;\s*31[\s\S]*?5\s*&times;\s*31/i.test(demoThemis), "DemoThemis must publish the complete initial and parallel-panel schedule", failures);
+  assert(/assets\/panel-schedule\.js/i.test(demoThemis) && /data-case-value=["']1000000["']/i.test(demoThemis) && /data-case-value=["']5000000["']/i.test(demoThemis) && /data-case-value=["']25000000["']/i.test(demoThemis), "DemoThemis parallel-panel widget must consume the shared case-value tiers", failures);
+  assert(/function\s+drawPanelSet\s*\(/i.test(demoThemis) && /offset\s*=\s*p\s*\*\s*SEATS/i.test(demoThemis), "DemoThemis parallel-panel simulation must draw disjoint seats across the panel set", failures);
+  assert(["qaPay", "qaDraw", "qaWeight", "qaEligibility"].every((id) => new RegExp(`id=["']${id}["']`, "i").test(demoThemis)), "DemoThemis juror-accountability diagram must show pay, draw rate, vote weight, and eligibility", failures);
   assert(/id=["']RT1seg["']/i.test(demoThemis), "DemoThemis chapter missing case-router widget", failures);
   assert(/id=["']abStake["']/i.test(demoThemis), "DemoThemis chapter missing appeal-bond widget", failures);
+  assert(/id=["']abCurrentPanel["'][^>]*role=["']group["']/i.test(demoThemis) && /data-current-panel=["']7["']/i.test(demoThemis) && /data-current-panel=["']15["']/i.test(demoThemis) && /data-current-panel=["']31["']/i.test(demoThemis), "appeal quote must let the reviewer select the current 7-, 15-, or 31-seat ruling", failures);
+  assert(/function\s+nextPanelFor\s*\(\s*current\s*\)\s*\{[\s\S]*?current\s*===\s*7\)\s*return\s+15;[\s\S]*?current\s*===\s*15\)\s*return\s+31;[\s\S]*?return\s+null;/i.test(demoThemis), "appeal quote must advance only 7 to 15, 15 to 31, and stop after 31", failures);
+  assert(!/function\s+panelFor\s*\(\s*stake\s*\)/i.test(demoThemis), "appeal quote must not choose the appeal panel from case value", failures);
+  assert(/id=["']abNextPanel["']/i.test(demoThemis) && /Final at 31/i.test(demoThemis) && /no appeal goal opens and no funds are requested/i.test(demoThemis), "appeal quote must expose the next rung and a no-funding terminal state", failures);
   assert(/class=["'][^"']*vhub/i.test(demoThemis), "DemoThemis chapter missing shared-arbiter diagram", failures);
   assert(/grid-template-areas:\s*"apps arrow-in core"\s*"\. \. arrow-out"\s*"\. \. ruling"/i.test(demoThemis) && /\.vhub\s*>\s*\.ar:last-of-type\s*\{[^}]*grid-area:\s*arrow-out;[^}]*transform:\s*rotate\(90deg\)/i.test(demoThemis), "DemoThemis shared-arbiter diagram must route its final arrow down into the ruling card at wrapped widths", failures);
+
+  const panelSchedule = readDist("assets/panel-schedule.js");
+  assert(/FIFTEEN_SEATS:\s*250000/i.test(panelSchedule) && /THIRTY_ONE_SEATS:\s*1000000/i.test(panelSchedule) && /THREE_PANELS:\s*5000000/i.test(panelSchedule) && /FIVE_PANELS:\s*25000000/i.test(panelSchedule), "shared panel schedule must preserve the published $250k, $1M, $5M, and $25M boundaries", failures);
 
   const runThrough = readDist("run-through.html");
   checkStateMachineData(runThrough, failures);

@@ -5,10 +5,12 @@ const vm = require("vm");
 const root = path.resolve(__dirname, "..");
 const htmlPath = path.join(root, "break-the-court.html");
 const assumptionsPath = path.join(root, "assumptions.js");
+const panelSchedulePath = path.join(root, "assets", "panel-schedule.js");
 const commonPath = path.join(root, "assets", "common.js");
 const buildPath = path.join(root, "tools", "build-site.js");
 const html = fs.readFileSync(htmlPath, "utf8");
 const assumptions = fs.readFileSync(assumptionsPath, "utf8");
+const panelSchedule = fs.readFileSync(panelSchedulePath, "utf8");
 const common = fs.readFileSync(commonPath, "utf8");
 const buildScript = fs.readFileSync(buildPath, "utf8");
 
@@ -83,7 +85,9 @@ function loadLabModel(htmlSource, assumptionsSource) {
     attackNarrative,
     attackLabel,
     benchmarkPressure,
-    panelFor
+    panelFor,
+    autoParallelPanels,
+    PANEL_SCHEDULE
   };
   return;${startupAnchor}`
   );
@@ -97,6 +101,7 @@ function loadLabModel(htmlSource, assumptionsSource) {
   context.globalThis = context;
   vm.createContext(context);
   vm.runInContext(assumptionsSource, context);
+  vm.runInContext(panelSchedule, context);
   vm.runInContext(patched, context);
 
   if (!context.__lab) fail("Gamelab model did not expose validation hooks");
@@ -368,6 +373,42 @@ function validatePanelShortage(labModel) {
   }
 }
 
+function validatePublishedPanelSchedule(labModel) {
+  const schedule = labModel.PANEL_SCHEDULE;
+  const cases = [
+    { value: 118000, panel: 7, panels: 1, totalSeats: 7, label: "run-through case" },
+    { value: 249999, panel: 7, panels: 1, totalSeats: 7, label: "top of seven-seat tier" },
+    { value: 250000, panel: 15, panels: 1, totalSeats: 15, label: "start of fifteen-seat tier" },
+    { value: 1000000, panel: 31, panels: 1, totalSeats: 31, label: "start of thirty-one-seat tier" },
+    { value: 5000000, panel: 31, panels: 3, totalSeats: 93, label: "start of three-panel tier" },
+    { value: 25000000, panel: 31, panels: 5, totalSeats: 155, label: "start of five-panel tier" }
+  ];
+
+  cases.forEach((entry) => {
+    const set = schedule.panelSet(entry.value);
+    if (set.panel !== entry.panel || set.panels !== entry.panels || set.totalSeats !== entry.totalSeats) {
+      fail(`Published panel schedule mismatch at ${entry.label}`);
+    }
+    if (labModel.panelFor(entry.value) !== entry.panel) {
+      fail(`Break the Court panel size diverges from the published schedule at ${entry.label}`);
+    }
+    if (labModel.autoParallelPanels(entry.value) !== entry.panels) {
+      fail(`Break the Court parallel-panel count diverges from the published schedule at ${entry.label}`);
+    }
+  });
+
+  const highValue = labModel.compute(stateFor(labModel, "whale", (state) => {
+    state.stake = 5000000;
+    state.assumptions.parallelPanels = 1;
+  }));
+  if (highValue.panel !== 31 || highValue.parallelPanels !== 3 || highValue.totalPanelSeats !== 93) {
+    fail("The $5M Break the Court state must require three disjoint 31-seat panels");
+  }
+  if (Math.abs(highValue.seatVotes - highValue.courtCases * highValue.totalPanelSeats) > 1e-8) {
+    fail("Parallel-panel workload must include every required seat");
+  }
+}
+
 function validateMonotonicity(labModel) {
   const tolerance = 1e-12;
   function noDecrease(label, low, high) {
@@ -428,8 +469,8 @@ function validateAdaptivePricing(labModel) {
   const hard = labModel.compute(stateFor(labModel, "base", (state) => { state.complexity = 2; }));
   if (hard.requiredCaseFee <= easy.requiredCaseFee) fail("Higher case complexity must raise the required court fee");
 
-  const wideSupply = labModel.compute(stateFor(labModel, "base", (state) => { state.jurors = 5000; }));
-  const thinSupply = labModel.compute(stateFor(labModel, "base", (state) => { state.jurors = 100; }));
+  const wideSupply = labModel.compute(stateFor(labModel, "base", (state) => { state.flow = 35000000; state.jurors = 5000; }));
+  const thinSupply = labModel.compute(stateFor(labModel, "base", (state) => { state.flow = 35000000; state.jurors = 100; }));
   if (thinSupply.panelCompensation <= wideSupply.panelCompensation) fail("Thinner eligible juror supply must raise required panel compensation");
 
   const emptyReserve = labModel.compute(stateFor(labModel, "base", (state) => { state.reserveCoverage = 0; }));
@@ -603,6 +644,7 @@ if (labModel) {
 
   validateProtectionCrossings(labModel);
   validatePanelShortage(labModel);
+  validatePublishedPanelSchedule(labModel);
   validateMonotonicity(labModel);
   validateAdaptivePricing(labModel);
 
@@ -622,6 +664,9 @@ if (
 
 if (!html.includes('<script src="assumptions.js"></script>')) {
   fail("break-the-court.html must load assumptions.js before the lab script");
+}
+if (!html.includes('<script src="assets/panel-schedule.js"></script>')) {
+  fail("break-the-court.html must load the shared public panel schedule");
 }
 
 if (/window\.ASSUMPTIONS\s*=\s*\[/.test(html)) {

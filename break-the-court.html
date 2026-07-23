@@ -45,6 +45,7 @@
   .dial label { display: flex; justify-content: space-between; gap: .8rem; align-items: baseline; font-family: var(--sans); font-size: .82rem; color: var(--muted); }
   .dial .label-text { min-width: 0; display: inline-flex; align-items: center; gap: .2rem; overflow-wrap: anywhere; }
   .dial label b, .dial label output { color: var(--ink); font-weight: 800; font-variant-numeric: tabular-nums; white-space: nowrap; }
+  .panel-tier-note { display: block; margin-top: .3rem; color: var(--faint); font: 700 .72rem/1.35 var(--sans); }
   .dial.disabled { opacity: .48; }
   .dial.disabled input { cursor: not-allowed; }
   .locks { display: grid; grid-template-columns: 1fr; gap: .45rem; }
@@ -341,7 +342,7 @@
               <h3>Change the conditions</h3>
               <div class="dial"><label for="flow">Monthly disputed value <output id="flowOut" for="flow">&hellip;</output></label><input id="flow" type="range" min="10000" max="35000000" step="10000" value="100000"></div>
               <div class="dial"><label for="jurors">Opted-in jurors <output id="jurorsOut" for="jurors">&hellip;</output></label><input id="jurors" type="range" min="0" max="100" step="1" value="0"></div>
-              <div class="dial"><label for="stake">Typical case value <output id="stakeOut" for="stake">&hellip;</output></label><input id="stake" type="range" min="0" max="100" step="1" value="21"></div>
+              <div class="dial"><label for="stake">Typical case value <output id="stakeOut" for="stake">&hellip;</output></label><input id="stake" type="range" min="0" max="100" step="1" value="21"><small class="panel-tier-note" id="panelScheduleOut" aria-live="polite">&hellip;</small></div>
               <div class="dial"><label for="bloc">Recruited attackers <output id="blocOut" for="bloc">&hellip;</output></label><input id="bloc" type="range" min="0" max="1000" step="5" value="10"></div>
             </div>
             <fieldset class="dial-group">
@@ -477,6 +478,7 @@
 <script src="assets/vendor/popper-2.11.8.min.js"></script>
 <script src="assets/vendor/tippy-6.3.7.umd.min.js"></script>
 <script src="assumptions.js"></script>
+<script src="assets/panel-schedule.js"></script>
 <script src="assets/common.js"></script>
 <script>
 (function () {
@@ -516,16 +518,17 @@
   var STRONG_BENCHMARK_RATIO = 1.2;
   var QUALITY_FLOOR = .75;
   var EPSILON = 1e-9;
+  var PANEL_SCHEDULE = window.DemoThemisPanelSchedule;
   function maxBenchmarkRatio(limit, actual) { return actual <= EPSILON ? Infinity : limit / actual; }
   function coverBenchmarkRatio(cost, benefit) { return benefit <= EPSILON ? Infinity : cost / benefit; }
   function minBenchmarkRatio(actual, floor) { return actual / Math.max(EPSILON, floor); }
   function benchmarkPressure(check) { return !check || !check.applicable || check.ratio === Infinity ? 0 : clamp(1 / Math.max(EPSILON, check.ratio), 0, 1); }
   var PRESET_CASES = {
-    base: { flow: 5000000, stake: 45, lag: 4, fee: 20, caseHours: 2, complexity: 100, reserveCoverage: 70, jurors: 52, skill: 68, careless: 25, slash: 100, bloc: 300, rented: 0, rerolls: 1, locks: true, syntheticTests: 1000 },
+    base: { flow: 5000000, stake: 75, lag: 4, fee: 20, caseHours: 2, complexity: 100, reserveCoverage: 70, jurors: 52, skill: 68, careless: 25, slash: 100, bloc: 300, rented: 0, rerolls: 1, locks: true, syntheticTests: 1000 },
     cold: { flow: 500000, stake: 35, lag: 4, fee: 20, caseHours: 2, complexity: 100, reserveCoverage: 70, jurors: 25, skill: 72, careless: 25, slash: 100, bloc: 120, rented: 300, rerolls: 1, locks: true, syntheticTests: 500 },
-    surge: { flow: 35000000, stake: 58, lag: 5, fee: 20, caseHours: 2, complexity: 100, reserveCoverage: 70, jurors: 48, skill: 68, careless: 25, slash: 100, bloc: 500, rented: 0, rerolls: 1, locks: true, syntheticTests: 2000 },
+    surge: { flow: 35000000, stake: 75, lag: 5, fee: 20, caseHours: 2, complexity: 100, reserveCoverage: 70, jurors: 48, skill: 68, careless: 25, slash: 100, bloc: 500, rented: 0, rerolls: 1, locks: true, syntheticTests: 2000 },
     whale: { flow: 25000000, stake: 90, lag: 5, fee: 20, caseHours: 2, complexity: 100, reserveCoverage: 70, jurors: 100, skill: 72, careless: 20, slash: 100, bloc: 650, rented: 0, rerolls: 1, locks: true, syntheticTests: 5000 },
-    bloc: { flow: 8000000, stake: 65, lag: 4, fee: 20, caseHours: 2, complexity: 100, reserveCoverage: 70, jurors: 100, skill: 68, careless: 25, slash: 100, bloc: 1000, rented: 0, rerolls: 1, locks: true, syntheticTests: 6000 },
+    bloc: { flow: 8000000, stake: 75, lag: 4, fee: 20, caseHours: 2, complexity: 100, reserveCoverage: 70, jurors: 100, skill: 68, careless: 25, slash: 100, bloc: 1000, rented: 0, rerolls: 1, locks: true, syntheticTests: 6000 },
     drift: { flow: 1200000, stake: 38, lag: 6, fee: 20, caseHours: 2, complexity: 100, reserveCoverage: 70, jurors: 45, skill: 72, careless: 25, slash: 100, bloc: 100, rented: 0, rerolls: 1, locks: true, syntheticTests: 700 }
   };
   var STRESS_CASES = [
@@ -677,9 +680,9 @@
     for (var i = need; i <= maxI; i++) s += Math.exp(logChoose(successes, i) + logChoose(pop - successes, draws - i) - denom);
     return clamp(s, 0, 1);
   }
-  function panelFor(stake) { return stake < 10000 ? 7 : stake < 1000000 ? 15 : 31; }
+  function panelFor(stake) { return PANEL_SCHEDULE.initialPanel(stake); }
   function nextPanel(n) { return n < 15 ? 15 : 31; }
-  function autoParallelPanels(stake) { return stake >= 5000000 ? 5 : stake >= 250000 ? 3 : 1; }
+  function autoParallelPanels(stake) { return PANEL_SCHEDULE.parallelPanels(stake); }
 
   function formatAssumption(a, value) {
     if (a.format === "pct") return pct(value);
@@ -898,8 +901,12 @@
     var totalCases = v.flow / Math.max(1, v.stake);
     var courtCases = totalCases;
     var panel = panelFor(v.stake);
+    var autoPanels = autoParallelPanels(v.stake);
+    var configuredPanels = Math.max(1, Math.round(a.parallelPanels));
+    var parallelPanels = panel === 31 ? Math.max(autoPanels, configuredPanels) : 1;
+    var totalPanelSeats = panel * parallelPanels;
     var majority = Math.floor(panel / 2) + 1;
-    var seatVotes = courtCases * panel;
+    var seatVotes = courtCases * totalPanelSeats;
     var activeJurors = Math.max(1, v.jurors);
     var supply = null;
     var payPerVote = 0;
@@ -928,7 +935,7 @@
       payPressureMultiplier = clamp(Math.sqrt(workloadPerJuror / Math.max(.1, a.targetSeatsPerJuror)), .75, 2.5);
       payPerVote = a.baseJurorHourlyPay * v.caseHours * v.complexity * payPressureMultiplier;
       reserveUnit = payPerVote * a.reservePayMultiple;
-      panelCompensation = payPerVote * panel;
+      panelCompensation = payPerVote * totalPanelSeats;
       processingPerCase = a.processingCostPerCase;
       reserveTopUpPerCase = panelCompensation * reserveGap;
       operationsPerCase = Math.min(a.operationsCaseCap, a.operationsMonthlyBudget / Math.max(EPSILON, courtCases));
@@ -985,7 +992,7 @@
     var seniorGate = panel === 31 ? a.seniorPoolShare : 1;
     var drawPoolShare = clamp(a.drawPoolShare * seniorGate, .01, 1);
     var drawJurors = Math.max(0, Math.round(effectiveJurors * drawPoolShare));
-    var panelShortage = drawJurors < panel;
+    var panelShortage = drawJurors < totalPanelSeats;
     var rentedPass = v.lockFace ? Math.round(v.rented * a.faceSurvival) : Math.round(v.rented);
     var coordinatedReady = Math.round(v.bloc * a.coordinationReadyShare);
     var coordinatedSeats = Math.min(drawJurors, coordinatedReady);
@@ -994,8 +1001,6 @@
     var effectiveBloc = Math.min(drawJurors, intendedBloc);
     var share = effectiveBloc / Math.max(1, drawJurors);
     var attempts = v.lockDraw ? 1 : Math.max(1, v.rerolls);
-    var autoPanels = autoParallelPanels(v.stake);
-    var parallelPanels = Math.max(autoPanels, Math.max(1, Math.round(a.parallelPanels)));
 
     function majorityChance(seats, jurySize) {
       if (drawJurors < jurySize) return null;
@@ -1017,12 +1022,13 @@
     var rentalCapture = acrossPanels(attemptedRentalCapture);
 
     var consentedTestCases = courtCases * a.consentedTestShare;
-    var consentedTestSeats = consentedTestCases * panel;
+    var consentedTestSeats = consentedTestCases * totalPanelSeats;
     var testSeats = v.lockKeys ? consentedTestSeats + v.syntheticTests : 0;
     var keyScale = Math.max(a.keyScaleFloor, effectiveJurors * a.keyJurorShare);
     var keySignal = v.lockKeys ? 1 - Math.exp(-testSeats / Math.max(0.1, keyScale)) : 0;
     var effectiveSkill = clamp(v.skill + (keySignal * a.reputationSkillLift) + (supply.rewardSignal * a.rewardSkillLift), 0, 1);
-    var correctPanel = panelShortage ? null : binomTail(panel, majority, effectiveSkill);
+    var correctSinglePanel = panelShortage ? null : binomTail(panel, majority, effectiveSkill);
+    var correctPanel = correctSinglePanel === null ? null : Math.pow(correctSinglePanel, parallelPanels);
 
     var reservePerPricedVote = v.lockReserve ? supply.reserve / Math.max(EPSILON, supply.reserveVotes) : 0;
     var lazyIncome = payPerVote * a.lazyShortcutShare;
@@ -1035,7 +1041,7 @@
     var wrongVoteLoss = reservePerPricedVote * v.slash;
     var receiptEnforceability = v.lockBallot ? a.ballotResidualRisk : 1;
     var bribeBenefit = v.stake * receiptEnforceability;
-    var bribeCost = majority * (payPerVote + wrongVoteLoss);
+    var bribeCost = majority * parallelPanels * (payPerVote + wrongVoteLoss);
     var bribeMargin = bribeCost - bribeBenefit;
     var bribeRatio = coverBenchmarkRatio(bribeCost, bribeBenefit);
     var bribeClears = bribeRatio < 1;
@@ -1083,6 +1089,7 @@
       totalCases: totalCases,
       courtCases: courtCases,
       panel: panel,
+      totalPanelSeats: totalPanelSeats,
       majority: majority,
       seatVotes: seatVotes,
       votesPerJurorMonth: supply.votesPerJurorMonth,
@@ -1147,6 +1154,7 @@
       autoPanels: autoPanels,
       parallelPanels: parallelPanels,
       effectiveSkill: effectiveSkill,
+      correctSinglePanel: correctSinglePanel,
       correctPanel: correctPanel,
       honestPanel: correctPanel,
       lazyLoss: lazyLoss,
@@ -1202,6 +1210,11 @@
     if (output) output.textContent = text;
     if (range) range.setAttribute("aria-valuetext", text);
   }
+  function panelSetText(m) {
+    return m.parallelPanels > 1
+      ? m.parallelPanels + " disjoint " + m.panel + "-seat panels"
+      : "one " + m.panel + "-seat panel";
+  }
   function casesText(value) {
     if (value < .1) return "<0.1";
     if (value < 10) return value.toFixed(1).replace(/\.0$/, "");
@@ -1220,6 +1233,7 @@
   function setOutputs(v, m) {
     setRangeValue("flow", money(v.flow));
     setRangeValue("stake", money(v.stake));
+    byId("panelScheduleOut").textContent = "Published initial ruling set: " + PANEL_SCHEDULE.describe(v.stake);
     setRangeValue("lag", v.lag + (v.lag === 1 ? " week" : " weeks"));
     setRangeValue("fee", pct(v.fee));
     setRangeValue("caseHours", v.caseHours < 1 ? Math.round(v.caseHours * 60) + " min" : v.caseHours.toFixed(v.caseHours % 1 ? 2 : 0).replace(/\.00$/, "") + (v.caseHours === 1 ? " hour" : " hours"));
@@ -1237,7 +1251,7 @@
     var correctState = m.correctPanel === null ? "bad" : m.correctPanel >= QUALITY_FLOOR * STRONG_BENCHMARK_RATIO ? "good" : m.correctPanel >= QUALITY_FLOOR ? "mid" : "bad";
     scoreClass(byId("scoreSafety"), correctState);
     byId("safetyOut").textContent = m.correctPanel === null ? "No panel" : pct(m.correctPanel);
-    byId("safetySub").textContent = m.correctPanel === null ? "expand the drawable pool to " + m.panel + " jurors" : "one " + m.panel + "-seat jury · full-stack result";
+    byId("safetySub").textContent = m.correctPanel === null ? "expand the drawable pool to " + m.totalPanelSeats + " jurors" : panelSetText(m) + " · all required panels agree";
 
     var payState = m.retention >= .85 ? "good" : m.retention >= .65 ? "mid" : "bad";
     scoreClass(byId("scorePay"), payState);
@@ -1250,11 +1264,11 @@
 
     scoreClass(byId("scoreCapture"), m.panelShortage ? "bad" : benchmarkClass(m.benchmarks.capture));
     byId("captureOut").textContent = m.capture === null ? "No panel" : pct(m.capture);
-    byId("captureSub").textContent = m.panelShortage ? "need " + m.panel + " drawable jurors; only " + num(m.drawJurors) + " available" : num(m.coordinatedSeats) + " coalition + " + num(m.rentalSeats) + " rental seats in " + num(m.drawJurors) + " drawable jurors" + (m.parallelPanels > 1 ? " · " + m.parallelPanels + " juries must agree" : "");
+    byId("captureSub").textContent = m.panelShortage ? "need " + m.totalPanelSeats + " drawable jurors for " + panelSetText(m) + "; only " + num(m.drawJurors) + " available" : num(m.coordinatedSeats) + " coalition + " + num(m.rentalSeats) + " rental seats in " + num(m.drawJurors) + " drawable jurors · " + panelSetText(m);
 
     byId("nodeDemandV").innerHTML = `<div class="node-val">${money(m.quotedCaseFee)} <small>typical court fee</small></div><div class="node-sub"><b>${money(m.panelCompensation)}</b> panel pay &middot; <b>${money(m.reserveTopUpPerCase)}</b> reward-pool top-up${m.supportGapPerCase > 0 ? ` &middot; <b>${money(m.supportGapPerCase)}</b> above ceiling` : ""}</div>`;
     byId("nodePayV").innerHTML = `<div class="node-val">${money(m.payPressure + m.rewardPerJuror)} <small>funded / juror</small></div><div class="node-sub"><b>${num(m.effectiveJurors)}</b> retained · <b>${num(m.drawJurors)}</b> drawable</div>`;
-    byId("nodePanelV").innerHTML = m.correctPanel === null ? `<div class="node-val">No panel</div><div class="node-sub">need <b>${m.panel}</b> drawable jurors</div>` : `<div class="node-val">${pct(m.correctPanel)} <small>correct majority</small></div><div class="node-sub"><b>${pct(m.capture)}</b> coalition-control chance</div>`;
+    byId("nodePanelV").innerHTML = m.correctPanel === null ? `<div class="node-val">No panel</div><div class="node-sub">need <b>${m.totalPanelSeats}</b> drawable jurors for ${panelSetText(m)}</div>` : `<div class="node-val">${pct(m.correctPanel)} <small>correct ruling set</small></div><div class="node-sub"><b>${pct(m.capture)}</b> coalition-control chance &middot; ${panelSetText(m)}</div>`;
     byId("nodeKeysV").innerHTML = `<div class="node-val">${pct(m.keySignal)} <small>independent signal</small></div><div class="node-sub"><b>${num(m.testSeats)}</b> graded seats · <b>${num(m.keyScale)}</b> target</div>`;
 
     nodeClass(byId("nodeDemand"), m.supportGapPerCase > 0 ? "bad" : "good");
@@ -1281,8 +1295,8 @@
         check: m.benchmarks.capture,
         invalid: m.panelShortage,
         why: m.panelShortage ? "The current drawable pool cannot form this jury." : num(m.coordinatedSeats) + " qualified coalition seats and " + num(m.rentalSeats) + " usable rentals enter a pool of " + num(m.drawJurors) + "; majority chance is " + pct(m.capture) + ".",
-        breaks: m.panelShortage ? "The court needs at least " + m.panel + " drawable jurors before this case can run." : "Coalition-majority chance rises above 1%.",
-        margin: m.panelShortage ? "short by " + num(m.panel - m.drawJurors) + " drawable jurors" : probabilityMargin(m.benchmarks.capture.margin)
+        breaks: m.panelShortage ? "The court needs at least " + m.totalPanelSeats + " drawable jurors for " + panelSetText(m) + "." : "Coalition-majority chance rises above 1%.",
+        margin: m.panelShortage ? "short by " + num(m.totalPanelSeats - m.drawJurors) + " drawable jurors" : probabilityMargin(m.benchmarks.capture.margin)
       };
     }
     if (id === "bribe") {
@@ -1298,7 +1312,7 @@
         check: m.benchmarks.rental,
         invalid: m.panelShortage,
         why: m.panelShortage ? "The current drawable pool cannot form this jury." : (v.lockFace ? "Live checks leave " + num(m.rentalSeats) + " usable seats from " + num(v.rented) + " rented accounts" : num(m.rentalSeats) + " rented accounts enter the draw unchecked") + "; rental-only majority chance is " + pct(m.rentalCapture) + ".",
-        breaks: m.panelShortage ? "The court needs at least " + m.panel + " drawable jurors before this case can run." : "Rental-only majority chance rises above 1%.",
+        breaks: m.panelShortage ? "The court needs at least " + m.totalPanelSeats + " drawable jurors for " + panelSetText(m) + "." : "Rental-only majority chance rises above 1%.",
         margin: m.panelShortage ? "panel unavailable" : probabilityMargin(m.benchmarks.rental.margin)
       };
     }
@@ -1394,7 +1408,7 @@
     var top = state.top;
     var detail;
     if (m.supportGapPerCase > EPSILON) detail = "The required court fee exceeds the fee ceiling by " + money(m.supportGapPerCase) + " per case; intake must raise the minimum or show an explicit subsidy.";
-    else if (m.panelShortage) detail = "The current " + m.panel + "-seat jury cannot form from " + num(m.drawJurors) + " drawable jurors.";
+    else if (m.panelShortage) detail = "The current " + panelSetText(m) + " cannot form from " + num(m.drawJurors) + " drawable jurors.";
     else if (m.appealPanelShortage) detail = "The next " + m.nextSeats + "-seat appeal jury cannot form from " + num(m.drawJurors) + " drawable jurors.";
     else if (state.state === "bad" && top.key === "quality") detail = "Decision quality does not meet its 75% operating floor.";
     else if (state.state === "bad") detail = "Failed protection benchmark: " + below.join(", ") + ". Closest check is " + attackLabel(top.key) + ".";
@@ -1502,7 +1516,7 @@
       grid.className = "lab-grid vulnerable";
       icon.textContent = "!";
       label.textContent = "Outside the modeled operating range";
-      if (m.panelShortage) detail.textContent = "Only " + num(m.drawJurors) + " jurors are drawable; this case needs " + m.panel + ".";
+      if (m.panelShortage) detail.textContent = "Only " + num(m.drawJurors) + " jurors are drawable; " + panelSetText(m) + " needs " + m.totalPanelSeats + ".";
       else if (m.appealPanelShortage) detail.textContent = "The next " + m.nextSeats + "-seat appeal jury cannot form from " + num(m.drawJurors) + " drawable jurors.";
       else if (state.top.key === "quality") detail.textContent = "Correct-majority chance is below the 75% decision-quality floor.";
       else detail.textContent = state.cleared.length + (state.cleared.length === 1 ? " published protection benchmark is" : " published protection benchmarks are") + " not met.";
@@ -1530,7 +1544,7 @@
       byId("weakestSub").textContent = money(m.supportGapPerCase) + " support needed per case";
     } else if (m.panelShortage) {
       byId("weakestOut").textContent = "Panel unavailable";
-      byId("weakestSub").textContent = num(m.drawJurors) + " of " + m.panel + " jurors ready";
+      byId("weakestSub").textContent = num(m.drawJurors) + " of " + m.totalPanelSeats + " jurors ready";
     } else if (m.appealPanelShortage) {
       byId("weakestOut").textContent = "Appeal panel unavailable";
       byId("weakestSub").textContent = num(m.drawJurors) + " of " + m.nextSeats + " jurors ready";
@@ -1609,7 +1623,7 @@
     if (m.supportGapPerCase > EPSILON) addWarning(warnings, "Court fee exceeds ceiling", money(m.supportGapPerCase) + " per case must be covered by an explicit subsidy or higher minimum; juror pay is not reduced.");
     if (state.state === "bad" && !state.pricingGap) addWarning(warnings, "Outside modeled range", state.top.key === "quality" ? "Correct-majority chance is below the 75% operating floor." : "At least one published protection benchmark is not met.");
     if (m.blocCapped) addWarning(warnings, "Attack seats capped by pool", "Usable coalition and rental seats cannot exceed the drawable juror pool.");
-    if (m.panelShortage) addWarning(warnings, "Current panel cannot form", "This case needs " + m.panel + " drawable jurors; only " + num(m.drawJurors) + " are available.");
+    if (m.panelShortage) addWarning(warnings, "Current panel set cannot form", "This case needs " + m.totalPanelSeats + " drawable jurors for " + panelSetText(m) + "; only " + num(m.drawJurors) + " are available.");
     if (m.appealPanelShortage) addWarning(warnings, "Appeal panel cannot form", "The next appeal needs " + m.nextSeats + " drawable jurors; only " + num(m.drawJurors) + " are available.");
     if (m.reserveFloorApplied && v.lockReserve) addWarning(warnings, "Minimum exposure rule active", "Pending pay at risk uses the model's minimum priced-vote exposure.");
     if (m.supplyLoss > v.jurors * .05) addWarning(warnings, "Exposure narrows juror supply", num(m.supplyLoss) + " opted-in jurors leave under the modeled pay-at-risk burden.");
