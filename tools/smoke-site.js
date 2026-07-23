@@ -2997,6 +2997,7 @@ function checkBuiltHtml(failures) {
   assert(/id=["']RT1seg["']/i.test(demoThemis), "DemoThemis chapter missing case-router widget", failures);
   assert(/id=["']abStake["']/i.test(demoThemis), "DemoThemis chapter missing appeal-bond widget", failures);
   assert(/class=["'][^"']*vhub/i.test(demoThemis), "DemoThemis chapter missing shared-arbiter diagram", failures);
+  assert(/grid-template-areas:\s*"apps arrow-in core"\s*"\. \. arrow-out"\s*"\. \. ruling"/i.test(demoThemis) && /\.vhub\s*>\s*\.ar:last-of-type\s*\{[^}]*grid-area:\s*arrow-out;[^}]*transform:\s*rotate\(90deg\)/i.test(demoThemis), "DemoThemis shared-arbiter diagram must route its final arrow down into the ruling card at wrapped widths", failures);
 
   const runThrough = readDist("run-through.html");
   checkStateMachineData(runThrough, failures);

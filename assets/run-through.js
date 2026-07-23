@@ -2466,14 +2466,14 @@
         route: "/markets/england-euro-final/resolution",
         section: "Resolution",
         title: "Post the resolution bond",
-        subtitle: "$92 exact fee; outcome backing stays.",
+        subtitle: "$92 bond.",
         status: "Bond required",
         activeTab: "Resolution",
         account: "0x4b...91",
         actor: "Resolution caller",
         kpis: [["Outcome backing", "$118k locked"], ["Resolution bond", "$92"], ["Fee policy", "v1"]],
         blocks: [
-          { type: "record", title: "Resolution request", value: "EURO-FINAL · Eligible", caption: "Request-time calculation", details: [["Exact court fee", "$92"], ["Bond payer", "0x4b...91"], ["Outcome backing", "$118,000 · stays here"]] },
+          { type: "record", title: "Resolution request", value: "EURO-FINAL · Eligible", caption: "Fee set", details: [["Exact court fee", "$92"], ["Bond payer", "0x4b...91"], ["Outcome backing", "$118,000 · stays here"]] },
           { type: "table", title: "Bond consequences", rows: [["Caller bond", "$92", "pay court now"], ["YES or NO", "pool reimburses", "pro-rata"], ["Insufficient information", "no reimbursement", "pool untouched"]] },
           { type: "odds", title: "Secondary trading live", yes: 91, no: 9 }
         ]
