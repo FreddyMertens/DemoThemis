@@ -2,8 +2,8 @@
 // both client (the World App onboard, via lib/worldid.ts) and server (the B5 dev
 // page's /api/dev-register route). Three DISTINCT encodings — see
 // docs/MECHANISM_DELTA.md (Step 3.5):
-//   - WorldIDRouterGate (production): the v3-compatible Router tuple.
-//   - WorldIDGate (historical preview): the v4 9-tuple.
+//   - WorldIDGate (production): the World ID 4.0 9-tuple.
+//   - WorldIDRouterGate (legacy compatibility): the v3 Router tuple.
 //   - MockSybilGate (cohort/tests): the 2-tuple (nullifier, signal).
 import { decodeAbiParameters, encodeAbiParameters, keccak256, stringToBytes, type Address, type Hex } from 'viem';
 
@@ -11,8 +11,19 @@ export const ACTION = 'juror-registration';
 // hashToField("juror-registration") = keccak256(action) >> 8 (the un-shifted
 // keccak exceeds the BN254 field and reverts PublicInputNotInField).
 export const ACTION_FIELD = BigInt(keccak256(stringToBytes(ACTION))) >> BigInt(8);
-// rp_1ddcf8ba2efe3f36 with the "rp_" prefix stripped, as uint64.
-export const RP_ID = BigInt('0x1ddcf8ba2efe3f36');
+const UINT64_MAX = BigInt('0xffffffffffffffff');
+
+/** Convert an IDKit `rp_...` identifier into the uint64 used by WorldIDGate. */
+export function parseRpId(rpId: unknown): bigint {
+  if (typeof rpId !== 'string' || !/^rp_[0-9a-f]+$/i.test(rpId)) {
+    throw new Error('RP signature returned an invalid rp_id');
+  }
+  const value = BigInt(`0x${rpId.slice(3)}`);
+  if (value === BigInt(0) || value > UINT64_MAX) {
+    throw new Error('rp_id must be a non-zero uint64');
+  }
+  return value;
+}
 
 // The v4 9-tuple WorldIDGate.verify abi.decodes (contracts/src/sybil/WorldIDGate.sol).
 const WORLDID_TUPLE = [
@@ -55,21 +66,22 @@ export function signalHashOf(signal: Address): bigint {
 }
 
 /** abi.encode the WorldIDGate v4 9-tuple. */
-export function encodeWorldIdGateProof(p: V4ProofParts): Hex {
+export function encodeWorldIdGateProof(p: V4ProofParts, rpId: bigint): Hex {
+  if (rpId === BigInt(0) || rpId > UINT64_MAX) throw new Error('rpId must be a non-zero uint64');
   return encodeAbiParameters(WORLDID_TUPLE, [
     p.nullifier,
     ACTION_FIELD,
-    RP_ID,
+    rpId,
     p.nonce,
     p.signalHash,
     p.expiresAtMin,
     p.issuerSchemaId,
-    BigInt(0), // credentialGenesisIssuedAtMin — absent in the response
+    BigInt(0), // no minimum credential-issuance time requested
     p.proof5,
   ]);
 }
 
-/** abi.encode the production WorldIDRouterGate tuple. */
+/** abi.encode the legacy WorldIDRouterGate tuple. */
 export function encodeWorldIdRouterGateProof(p: RouterProofParts): Hex {
   return encodeAbiParameters(WORLDID_ROUTER_TUPLE, [p.root, p.nullifier, p.proof8]);
 }
@@ -85,9 +97,12 @@ export function encodeMockGateProof(nullifier: bigint, signal: Address): Hex {
  * `result` (`{ responses: [...], nonce }`). Throws a human-readable error on a
  * malformed payload.
  */
-export function parseSimulatorJson(raw: unknown): V4ProofParts {
+export function parseWorldIdV4ProofJson(raw: unknown): V4ProofParts {
   const obj = raw as Record<string, unknown>;
   const result = (obj.result ?? obj) as Record<string, unknown>;
+  if (result.protocol_version !== '4.0') {
+    throw new Error(`expected a World ID 4.0 proof, got ${String(result.protocol_version ?? 'no version')}`);
+  }
   const responses = result.responses as Array<Record<string, unknown>> | undefined;
   const res = responses?.[0];
   if (!res) throw new Error('no responses[0] in the pasted JSON (paste the IDKit completion / result)');
@@ -97,15 +112,22 @@ export function parseSimulatorJson(raw: unknown): V4ProofParts {
   }
   if (result.nonce === undefined) throw new Error('missing top-level nonce in the pasted JSON');
   if (res.signal_hash === undefined) throw new Error('missing responses[0].signal_hash (was a signal provided?)');
+  const issuerSchemaId = BigInt(res.issuer_schema_id as string);
+  if (issuerSchemaId !== BigInt(1)) {
+    throw new Error(`expected proof_of_human issuer schema 1, got ${issuerSchemaId}`);
+  }
   return {
     nullifier: BigInt(res.nullifier as string),
     nonce: BigInt(result.nonce as string),
     signalHash: BigInt(res.signal_hash as string),
     expiresAtMin: BigInt(res.expires_at_min as string),
-    issuerSchemaId: BigInt(res.issuer_schema_id as string),
+    issuerSchemaId,
     proof5: proof.map((p) => BigInt(p as string)) as [bigint, bigint, bigint, bigint, bigint],
   };
 }
+
+/** Historical name retained for the labeled Staging/Simulator cohort helper. */
+export const parseSimulatorJson = parseWorldIdV4ProofJson;
 
 /** Parse an IDKit v3 compatibility result for `WorldIDRouterGate`. */
 export function parseRouterProofJson(raw: unknown): RouterProofParts {

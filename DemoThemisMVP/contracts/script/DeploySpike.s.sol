@@ -12,8 +12,8 @@ import {Ping} from "../src/spike/Ping.sol";
 // Mainnet (Ping only, for the sponsored-tx test):
 //   DEPLOY_VERIFIER=false forge script script/DeploySpike.s.sol --rpc-url worldchain_mainnet --broadcast
 //
-// Required env (.env at repo root, see .env.example):
-//   PRIVATE_KEY, WORLD_ID_ROUTER, WORLD_APP_ID_STAGING
+// Archived v3-only spike. This script cannot deploy the production juror gate.
+// Required env: PRIVATE_KEY, SPIKE_WORLD_ID_V3_ROUTER, WORLD_APP_ID_STAGING
 contract DeploySpike is Script {
     function run() external {
         uint256 pk = vm.envUint("PRIVATE_KEY");
@@ -21,7 +21,7 @@ contract DeploySpike is Script {
 
         vm.startBroadcast(pk);
         if (deployVerifier) {
-            address router = vm.envAddress("WORLD_ID_ROUTER");
+            address router = vm.envAddress("SPIKE_WORLD_ID_V3_ROUTER");
             string memory appId = vm.envString("WORLD_APP_ID_STAGING");
             SpikeVerifier verifier = new SpikeVerifier(IWorldID(router), appId, "juror-registration");
             console.log("SpikeVerifier:", address(verifier));

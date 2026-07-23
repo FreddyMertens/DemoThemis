@@ -2,9 +2,9 @@
 // B5 — paste-a-proof dev page (/app/dev). Dev-only (NEXT_PUBLIC_SHOW_DEV). Paste a
 // World ID Simulator completion JSON; the server abi.encodes the gate proof and
 // runs faucet + approve + register from DEV_PRIVATE_KEY against the
-// NEXT_PUBLIC_CHAIN_ID instance (MockSybilGate on the cohort, WorldIDRouterGate
-// on a replacement mainnet deployment). /register-onchain exposes the same
-// Router-compatible proof encoding used by lib/worldid.ts.
+// NEXT_PUBLIC_CHAIN_ID instance (MockSybilGate on the cohort, WorldIDGate v4 on
+// a replacement mainnet deployment). /register-onchain exposes the same World ID
+// 4 Production proof encoding used by lib/worldid.ts.
 import { useEffect, useState } from 'react';
 
 type Info = {
@@ -95,8 +95,8 @@ export default function DevRegister() {
           paste it below.
         </li>
         <li>
-          {info?.gate === 'WorldIDRouterGate'
-            ? 'Register runs WorldIDRouter.verifyProof on-chain (mainnet).'
+          {info?.gate.startsWith('WorldIDGate')
+            ? 'Register runs the World ID 4 Production verifier on-chain (mainnet).'
             : 'Register goes through the labeled MockSybilGate (cohort).'}
         </li>
       </ol>
@@ -104,7 +104,7 @@ export default function DevRegister() {
       <textarea
         value={json}
         onChange={(e) => setJson(e.target.value)}
-        placeholder='{"success":true,"result":{"protocol_version":"3.0","responses":[{"nullifier":"0x…","signal_hash":"0x…","merkle_root":"0x…","proof":"0x…"}]}}'
+        placeholder='{"success":true,"result":{"protocol_version":"4.0","nonce":"0x…","responses":[{"nullifier":"0x…","signal_hash":"0x…","expires_at_min":"0x…","issuer_schema_id":"0x1","proof":["0x…"]}]}}'
         style={{ width: '100%', height: 200, fontFamily: 'monospace', fontSize: 12, padding: 8 }}
       />
       <p>

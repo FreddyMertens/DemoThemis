@@ -13,7 +13,7 @@ const docs = join(repo, 'docs');
 const MANIFEST = [
   { id:'application', title:'Grant application',      group:'The application', badge:'done',
     file:join(docs,'GRANT_APPLICATION.md'), source:'docs/GRANT_APPLICATION.md',
-    desc:'The 12-section submission copy — led by the supported on-chain World ID Router and hardened against reviewer rebuttals.' },
+    desc:'The 12-section submission copy — led by the on-chain World ID 4 Production verifier and hardened against reviewer rebuttals.' },
   { id:'budget', title:'Budget & milestones',         group:'The application', badge:'done',
     file:join(docs,'GRANT_BUDGET.md'), source:'docs/GRANT_BUDGET.md',
     desc:'One milestone-gated $50k / 3-month request that completes the production-ready DemoThemis v1.' },
@@ -21,9 +21,9 @@ const MANIFEST = [
   { id:'differentiation', title:'Differentiation',    group:'Positioning',
     file:join(docs,'DIFFERENTIATION.md'), source:'docs/DIFFERENTIATION.md',
     desc:'The dated competitive scan: personhood-gated juries vs stake-weighted courts, with rebuttals handled.' },
-  { id:'mechanism', title:'Real vs roadmap',          group:'Positioning',
+  { id:'mechanism', title:'MVP vs roadmap',           group:'Positioning',
     file:join(docs,'MECHANISM_DELTA.md'), source:'docs/MECHANISM_DELTA.md',
-    desc:"Exactly what's on-chain today vs. what each funded milestone adds — the honesty map." },
+    desc:"The current MVP capability boundary and what each funded milestone adds." },
 
   { id:'review', title:'Independent review',          group:'Diligence',
     file:join(docs,'INDEPENDENT_REVIEW.md'), source:'docs/INDEPENDENT_REVIEW.md',
@@ -31,19 +31,19 @@ const MANIFEST = [
   { id:'readiness', title:'Readiness audit',          group:'Diligence',
     file:join(docs,'GRANT_READINESS.md'), source:'docs/GRANT_READINESS.md',
     desc:"The team's own rubric-by-rubric readiness assessment and what's left." },
-  { id:'liveness', title:'Case liveness recovery',   group:'Diligence', badge:'pending',
+  { id:'liveness', title:'Case liveness recovery',   group:'Diligence', badge:'done',
     file:join(docs,'LIVENESS_RECOVERY.md'), source:'docs/LIVENESS_RECOVERY.md',
-    desc:'Eligible-party preflight, first-draw fee/principal unwind, no-show recovery, and the mandatory replacement-deployment cutover.' },
+    desc:'Eligible-party preflight, first-draw fee/principal unwind, no-show recovery, and immutable timing in the current MVP.' },
 
   { id:'readme', title:'Project README',              group:'The live build',
     file:join(repo,'README.md'), source:'README.md',
-    desc:"What's implemented, what remains on the legacy deployment, the World stack usage, and recorded addresses." },
+    desc:"How to run the current MVP, what it implements, and how the funded roadmap remains clearly separated." },
   { id:'demo', title:'Demo — on-chain evidence',      group:'The live build',
     file:join(docs,'DEMO.md'), source:'docs/DEMO.md',
-    desc:'Clickable explorer traces: the historical v4 preview experiment, the Sepolia cohort, the legacy deployment, and the Router-gated capstone.' },
+    desc:'Developer evidence for the v4 Staging test, cohort run, and current v4 Production-gated MVP.' },
   { id:'capstone', title:'Capstone runbook',          group:'The live build', badge:'pending',
     file:join(docs,'CAPSTONE_RUNBOOK.md'), source:'docs/CAPSTONE_RUNBOOK.md',
-    desc:'The paused operational checklist and liveness-enabled replacement gate for a three-seat / at-least-four-human mainnet go-live.' },
+    desc:'The operational checklist for a three-seat / at-least-four-human current MVP evidence run.' },
 ];
 
 const attr = (s) => String(s).replace(/&/g,'&amp;').replace(/"/g,'&quot;').replace(/</g,'&lt;').replace(/>/g,'&gt;');

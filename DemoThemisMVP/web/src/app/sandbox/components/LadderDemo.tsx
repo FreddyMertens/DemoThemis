@@ -1,7 +1,7 @@
 'use client';
 
 import { useMemo, useState } from 'react';
-import { appealBond, courtMoney, ladderRungs, nearTieDiscount, panelFor, pctText } from '@/lib/sim';
+import { appealBond, courtMoney, ladderRungs, panelFor, pctText } from '@/lib/sim';
 import { Slider, Verdict, Widget } from './primitives';
 
 // The reference appeal-bond widget's exact slider mappings, so the numbers match
@@ -13,27 +13,24 @@ export function LadderDemo() {
   const [stakeS, setStakeS] = useState(55);
   const [poolS, setPoolS] = useState(40);
   const [marginS, setMarginS] = useState(15); // 0 = dead tie, 100 = unanimous
+  const [weeks, setWeeks] = useState(4);
 
   const stake = stakeVal(stakeS);
   const pool = poolVal(poolS);
   const margin01 = marginS / 100;
 
-  const bond = useMemo(() => appealBond(stake, pool), [stake, pool]);
-  const tie = useMemo(
-    () => nearTieDiscount(bond.bond, bond.capFloor, margin01),
-    [bond, margin01],
-  );
+  const bond = useMemo(() => appealBond(stake, pool, weeks, margin01), [stake, pool, weeks, margin01]);
   const rungs = useMemo(() => ladderRungs(pool), [pool]);
   const activePanel = panelFor(stake);
 
-  const floorMax = Math.max(bond.panelCost, bond.capFloor, 1);
+  const floorMax = Math.max(bond.serviceFee, bond.capFloor, 1);
 
   return (
     <Widget title="The dispute ladder: escalating panels, priced bonds">
       <p className="sbx-prose">
-        A losing party can appeal into a larger panel: 7, then 15, then 31 seats. The rung bond is the
-        larger of two live floors, the cost to seat the next panel and the cost to price out a capture
-        attempt, so appealing is always open to an honest dissenter but never cheap for an attacker.
+        A losing party can appeal into a larger panel: 7, then 15, then 31 seats. Every quote separates
+        a non-refundable service fee, which pays the new panel and delay compensation once, from a
+        security bond that returns on success or is forfeited on failure.
       </p>
 
       <div className="sbx-controls">
@@ -64,6 +61,15 @@ export function LadderDemo() {
           onChange={setMarginS}
           display={marginS === 0 ? 'dead tie' : `${marginS}% margin`}
         />
+        <Slider
+          label="Appeal window"
+          value={weeks}
+          min={2}
+          max={8}
+          step={1}
+          onChange={setWeeks}
+          display={`${weeks} weeks`}
+        />
       </div>
 
       {/* the three rungs */}
@@ -72,7 +78,7 @@ export function LadderDemo() {
           <div key={r.panel} className={`sbx-ppanel ${r.panel === activePanel ? 'held' : ''}`}>
             <div className="ph">
               <span>{r.panel} seats</span>
-              <span className="pv">{courtMoney(r.example.bond)}</span>
+              <span className="pv">{courtMoney(r.example.total)}</span>
             </div>
             <div className="sbx-sans" style={{ fontSize: '.74rem', color: 'var(--muted)' }}>
               {r.band}
@@ -82,17 +88,23 @@ export function LadderDemo() {
         ))}
       </div>
 
-      {/* the two floors for the active rung */}
-      <h3>This rung&apos;s bond</h3>
+      <h3>This rung&apos;s conserved funding quote</h3>
       <div className="sbx-row" style={{ marginBottom: '.3rem' }}>
-        <label>Juror-cost floor (seat the next {bond.panel})</label>
+        <label>Panel work fee (seat the next {bond.panel})</label>
         <b>{courtMoney(bond.panelCost)}</b>
       </div>
       <div className="sbx-fillbar" style={{ height: 26, marginBottom: '.5rem' }}>
         <div className="fill" style={{ width: `${Math.max((bond.panelCost / floorMax) * 100, 4)}%`, background: 'var(--accent)' }} />
       </div>
       <div className="sbx-row" style={{ marginBottom: '.3rem' }}>
-        <label>Anti-re-roll floor (price out a capture, {pctText(bond.odds)} odds)</label>
+        <label>Delay compensation ({bond.weeks} weeks × 1% of locked value)</label>
+        <b>{courtMoney(bond.delayCost)}</b>
+      </div>
+      <div className="sbx-fillbar" style={{ height: 26, marginBottom: '.5rem' }}>
+        <div className="fill" style={{ width: `${Math.max((bond.delayCost / floorMax) * 100, 4)}%`, background: 'var(--mid)' }} />
+      </div>
+      <div className="sbx-row" style={{ marginBottom: '.3rem' }}>
+        <label>Adjusted anti-re-roll target ({pctText(bond.odds)} capture odds × {Math.round(bond.confidenceFactor * 100)}% confidence)</label>
         <b>{courtMoney(bond.capFloor)}</b>
       </div>
       <div className="sbx-fillbar" style={{ height: 26 }}>
@@ -101,39 +113,33 @@ export function LadderDemo() {
 
       <div className="sbx-readout" style={{ marginTop: '1rem' }}>
         <div className="sbx-stat">
-          <div className="k">Rung bond (max of the floors)</div>
-          <div className="v accent">{courtMoney(bond.bond)}</div>
+          <div className="k">Service fee · panel + delay</div>
+          <div className="v">{courtMoney(bond.serviceFee)}</div>
         </div>
         <div className="sbx-stat">
-          <div className="k">After near-tie discount</div>
-          <div className="v">{courtMoney(tie.discountedBond)}</div>
+          <div className="k">Security bond · return/forfeit</div>
+          <div className="v">{courtMoney(bond.securityBond)}</div>
         </div>
         <div className="sbx-stat">
-          <div className="k">Discount factor</div>
-          <div className="v">{Math.round(tie.factor * 100)}%</div>
+          <div className="k">Total appeal funding</div>
+          <div className="v accent">{courtMoney(bond.total)}</div>
         </div>
       </div>
 
       <p className="sbx-note">
-        {bond.capFloor <= bond.panelCost ? (
+        {bond.securityBond === 0 ? (
           <>
-            The pool is wide enough that capturing a panel is hopeless, so the capture floor rounds
-            away and the bond is just the {courtMoney(bond.panelCost)} it costs to seat the next
-            panel. An honest dissenter can always afford to appeal.
+            The service fee already exceeds the adjusted anti-re-roll target, so no additional
+            security bond is required.
           </>
         ) : (
           <>
-            This pool is thin enough that a bloc could swing a panel, so the capture floor climbs to
-            price the attack out at <b>{courtMoney(bond.bond)}</b>. Widen the pool and it falls back
-            toward the {courtMoney(bond.panelCost)} cost of the next panel.
+            The anti-re-roll target exceeds the service fee, so the remaining{' '}
+            <b>{courtMoney(bond.securityBond)}</b> is locked as security.
           </>
-        )}{' '}
-        The near-tie discount makes a close verdict cheaper to appeal{' '}
-        {tie.clampedToFloor ? (
-          <>but it is clamped up to the anti-re-roll floor, so a near-capture cannot be re-rolled cheaply.</>
-        ) : (
-          <>down to {courtMoney(tie.discountedBond)}, because a near-tie is uncertain by its nature.</>
-        )}
+        )}{' '}If the appeal succeeds, that security principal returns pro-rata from escrow. If it fails,
+        only that security principal enters the reward pool. The {courtMoney(bond.serviceFee)} service
+        fee is never allocated a second time.
       </p>
 
       {/* two unsynchronized clocks */}
@@ -169,9 +175,8 @@ export function LadderDemo() {
         appeal closes with the moment funds finalize, so there is no single instant to race.
       </p>
       <p className="sbx-note warn">
-        The appeal ladder is a sandbox model of the funded-milestone design, not on-chain in the MVP.
-        The recovery-enabled source runs one panel with one bounded retry; the recorded legacy mainnet
-        address predates its timeout finalizer. See docs/MECHANISM_DELTA.md.
+        The appeal ladder is a sandbox model of the funded-milestone design, not part of the MVP.
+        The current MVP uses one three-person panel with one bounded retry. See docs/MECHANISM_DELTA.md.
       </p>
     </Widget>
   );

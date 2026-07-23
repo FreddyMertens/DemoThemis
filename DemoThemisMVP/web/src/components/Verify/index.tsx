@@ -1,5 +1,5 @@
 'use client';
-import { IDKit, orbLegacy, type RpContext } from '@worldcoin/idkit';
+import { IDKit, proofOfHuman, type RpContext } from '@worldcoin/idkit';
 import { Button, LiveFeedback } from '@worldcoin/mini-apps-ui-kit-react';
 import { useState } from 'react';
 
@@ -42,8 +42,8 @@ export const Verify = ({ action }: { action: string }) => {
         app_id: process.env.NEXT_PUBLIC_APP_ID as `app_${string}`,
         action,
         rp_context: rpContext,
-        allow_legacy_proofs: true,
-      }).preset(orbLegacy({ signal: '' }));
+        allow_legacy_proofs: false,
+      }).preset(proofOfHuman({ signal: '' }));
 
       const completion = await request.pollUntilCompletion();
 

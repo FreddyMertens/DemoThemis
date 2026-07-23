@@ -45,7 +45,7 @@
   <h1>One public question.<br>Three verified humans.<br>One on-chain answer.</h1>
   <div class="mvp-hero-actions" aria-label="MVP quick actions">
     <a class="mvp-button primary" href="#product-preview">Preview the live MVP</a>
-    <a class="mvp-button secondary" href="https://demothemis.netlify.app/app#oracle-live-panel">Open the deployed MVP <span aria-hidden="true">&#8594;</span></a>
+    <a class="mvp-button secondary" href="https://demothemis.netlify.app/app#oracle-live-panel">Open the MVP app <span aria-hidden="true">&#8594;</span></a>
   </div>
 </header>
 
@@ -134,7 +134,7 @@
         <span class="mvp-proof-number">03</span>
         <span class="mvp-proof-kicker">The result</span>
         <h3>The chain closes the case</h3>
-        <p>The contract records the majority answer and distributes the case fee by rule.</p>
+        <p>The contract records the three-state ruling and distributes the case fee by rule.</p>
       </article>
     </div>
   </section>
@@ -144,17 +144,17 @@
       <div>
         <p class="sec-label">MVP versus funded roadmap</p>
         <h2 id="mvp-roadmap-title">What this demo proves&mdash;and what comes next</h2>
-        <p>The core court is deployed today. The roadmap hardens privacy, randomness, panel security, and adoption without blurring what is already live.</p>
+        <p>The current MVP implements the complete three-person court flow. The funded roadmap separately hardens privacy, randomness, panel security, and adoption.</p>
       </div>
     </div>
 
     <div class="mvp-comparison-shell">
-      <div class="mvp-comparison-grid" role="table" aria-label="Deployed DemoThemis MVP compared with the funded roadmap">
+      <div class="mvp-comparison-grid" role="table" aria-label="Current DemoThemis MVP compared with the funded roadmap">
         <div class="mvp-comparison-row mvp-comparison-header" role="row">
           <span class="mvp-comparison-axis" role="columnheader">Capability</span>
           <div class="mvp-comparison-heading is-live" role="columnheader">
-            <span><i aria-hidden="true"></i> Deployed MVP</span>
-            <small>World Chain &middot; source-verified</small>
+            <span><i aria-hidden="true"></i> Current MVP</span>
+            <small>World Chain release profile</small>
           </div>
           <div class="mvp-comparison-heading is-roadmap" role="columnheader">
             <span>Funded roadmap <b aria-hidden="true">&rarr;</b></span>
@@ -166,9 +166,9 @@
         <div class="mvp-comparison-row" role="row">
           <div class="mvp-comparison-label" role="rowheader"><span>01</span><strong>Identity &amp; draw</strong></div>
           <div class="mvp-comparison-cell is-live" role="cell">
-            <span class="mvp-comparison-cell-kicker">Live on-chain</span>
+            <span class="mvp-comparison-cell-kicker">Current MVP</span>
             <strong>Verified personhood, limited draw</strong>
-            <p>A World ID proof checked by the documented mainnet Router, a nullifier sybil gate, wallet binding, and a two-step post-question draw for the three-seat demo.</p>
+            <p>A World ID 4 proof checked by the Production verifier, a nullifier sybil gate, wallet binding, and a two-step post-question draw for the three-seat demo.</p>
           </div>
           <div class="mvp-comparison-cell is-roadmap" role="cell">
             <span class="mvp-comparison-cell-kicker">M1</span>
@@ -180,7 +180,7 @@
         <div class="mvp-comparison-row" role="row">
           <div class="mvp-comparison-label" role="rowheader"><span>02</span><strong>Ballot privacy</strong></div>
           <div class="mvp-comparison-cell is-live" role="cell">
-            <span class="mvp-comparison-cell-kicker">Live on-chain</span>
+            <span class="mvp-comparison-cell-kicker">Current MVP</span>
             <strong>Sealed commit/reveal ballots</strong>
             <p>Votes stay hidden until reveal, then become public and receipt-ful so the full ruling can execute on-chain.</p>
           </div>
@@ -194,7 +194,7 @@
         <div class="mvp-comparison-row" role="row">
           <div class="mvp-comparison-label" role="rowheader"><span>03</span><strong>Panel security</strong></div>
           <div class="mvp-comparison-cell is-live" role="cell">
-            <span class="mvp-comparison-cell-kicker">Live on-chain</span>
+            <span class="mvp-comparison-cell-kicker">Current MVP</span>
             <strong>One three-seat panel</strong>
             <p>Uniform selection proves the end-to-end mechanism, without reputation weighting, appeals, or parallel panels.</p>
           </div>
@@ -208,14 +208,14 @@
         <div class="mvp-comparison-row" role="row">
           <div class="mvp-comparison-label" role="rowheader"><span>04</span><strong>Settlement &amp; reach</strong></div>
           <div class="mvp-comparison-cell is-live" role="cell">
-            <span class="mvp-comparison-cell-kicker">Live on-chain</span>
+            <span class="mvp-comparison-cell-kicker">Current MVP</span>
             <strong>Atomic settlement by rule</strong>
             <p>The majority closes the case and its locked fee settles with no admin override.</p>
           </div>
           <div class="mvp-comparison-cell is-roadmap" role="cell">
             <span class="mvp-comparison-cell-kicker">M3a&ndash;M6</span>
             <strong>Demand-priced, reusable court</strong>
-            <p>Processing, panel work, reserve top-up, and capped operations form each quote; a resolution SDK, first integrations, and production hardening broaden its reach.</p>
+            <p>An eligible caller posts the deterministic court fee as a resolution bond; a resolution SDK, first integrations, and production hardening broaden its reach.</p>
           </div>
         </div>
       </div>
@@ -233,7 +233,7 @@
       <p class="sec-label">The complete flow</p>
       <h2 id="scope-title">Three humans reveal the whole process.</h2>
     </div>
-    <p>One question, three sealed ballots, three reveals, and one majority answer: every essential court action is visible without making the MVP feel like an operations dashboard.</p>
+    <p>One question, three sealed ballots, three reveals, and one automatic ruling: every essential court action is visible without making the MVP feel like an operations dashboard.</p>
     <a class="mvp-button primary" href="/app">Open the Demo MVP <span aria-hidden="true">&#8594;</span></a>
   </aside>
 
@@ -293,7 +293,7 @@
     { title: "Prepare one precise question", body: "Keep the example or edit it, then click Preview submission." },
     { title: "Confirm the fixed terms", body: "Check the question, YES rule, and time. Then file it and seat the panel." },
     { title: "The panel is ready", body: "Three verified humans are seated. Open the seal window inside the case." },
-    { title: "Choose and seal your answer", body: "Select YES or NO, then seal it. The vote stays hidden until reveal." },
+    { title: "Choose and seal your answer", body: "Select YES, NO, or INSUFFICIENT INFORMATION, then seal it. The answer stays hidden until reveal." },
     { title: "Reveal the saved answer", body: "Reveal the same answer so the contract can verify the commitment." },
     { title: "The ruling is automatic", body: "Read how this case's fixed fee was split, then open Join as juror." },
     { title: "See how jurors join", body: "Review World ID, the demo bond, and one-human-one-seat. Finish when ready." }
@@ -366,7 +366,7 @@
     return '<aside class="oracle-submit-side">' +
       '<div class="oracle-fee-card"><span>Fixed question fee</span><strong>20 <small>MUSD</small></strong><p>The court locks the same fixed fee before any juror is selected.</p><dl><div><dt>Question case</dt><dd>20 MUSD</dd></div><div><dt>Juror pot</dt><dd>70%</dd></div><div><dt>Reward pool</dt><dd>20%</dd></div><div><dt>Protocol</dt><dd>10%</dd></div></dl></div>' +
       '<div class="oracle-one-at-time"><span>' + icon('lock') + '</span><div><strong>One official question at a time</strong><p>' + (reviewing ? 'The fingerprint fixes the terms before the panel is drawn.' : 'The official opener can file the next prepared question.') + '</p></div></div>' +
-      '<div class="oracle-submit-steps"><div><span>01</span><p><strong>Question filed</strong><small>Its exact fingerprint and fee go on-chain.</small></p></div><div><span>02</span><p><strong>Jurors research</strong><small>No selected sources or evidence pack.</small></p></div><div><span>03</span><p><strong>Majority recorded</strong><small>The contract counts and pays by rule.</small></p></div></div>' +
+      '<div class="oracle-submit-steps"><div><span>01</span><p><strong>Question filed</strong><small>Its exact fingerprint and fee go on-chain.</small></p></div><div><span>02</span><p><strong>Jurors research</strong><small>No selected sources or evidence pack.</small></p></div><div><span>03</span><p><strong>Ruling recorded</strong><small>The contract counts and pays by rule.</small></p></div></div>' +
       '</aside>';
   }
 
@@ -374,7 +374,7 @@
     var form = reviewing
       ? '<div class="oracle-review-card"><div class="oracle-review-head"><span>Prepared question preview</span><i>20 MUSD</i></div><h3>' + escapeHTML(state.question) + '</h3>' + questionFacts() + researchNote() + '<div class="oracle-review-lock">' + icon('fingerprint') + '<span>The official opener files only the next validated queue entry. The terms shown here become the case fingerprint.</span></div><div class="mvp-preview-review-actions"><button type="button" class="oracle-secondary-action" data-sim-action="edit">Edit question</button><button type="button" class="oracle-primary-action mvp-tutorial-target" data-sim-action="advance">File question &amp; seat panel ' + icon('arrow') + '</button></div></div>'
       : '<div class="oracle-form-progress" aria-label="Submission steps"><span class="is-active">1 &middot; Write</span><i></i><span>2 &middot; Review</span></div>' +
-        '<div class="oracle-field"><span><b aria-hidden="true">1</b><label for="mvpSimQuestionInput">Yes/no question</label><small>Ask about a real, publicly researchable fact.</small></span><textarea id="mvpSimQuestionInput" rows="3">' + escapeHTML(state.question) + '</textarea></div>' +
+        '<div class="oracle-field"><span><b aria-hidden="true">1</b><label for="mvpSimQuestionInput">Binary question</label><small>Ask about a real, publicly researchable fact.</small></span><textarea id="mvpSimQuestionInput" rows="3">' + escapeHTML(state.question) + '</textarea></div>' +
         '<div class="oracle-field"><span><b aria-hidden="true">2</b><label for="mvpSimRuleInput">YES if</label><small>Define one exact condition. NO means it was not met.</small></span><textarea id="mvpSimRuleInput" rows="3">' + escapeHTML(state.rule) + '</textarea></div>' +
         '<div class="oracle-field"><span><b aria-hidden="true">3</b><label for="mvpSimTimeInput">Judged as of</label><small>Enter a date and time. It is read as UTC in this preview.</small></span><div class="oracle-date-input">' + icon('clock') + '<input id="mvpSimTimeInput" type="datetime-local" step="60" value="' + escapeHTML(state.time) + '"></div><small class="oracle-utc-preview">Saved as ' + displayTime(state.time) + '</small></div>' +
         '<button type="submit" class="oracle-primary-action mvp-tutorial-target" data-sim-action="advance">Preview submission ' + icon('arrow') + '</button>';
@@ -413,36 +413,48 @@
   }
 
   function juryCard(step) {
-    return '<aside class="oracle-jury-card"><div class="oracle-jury-head"><span>' + icon('group') + '</span><div><small>The panel</small><h3>Three verified humans</h3></div></div><div class="oracle-seats" aria-label="Three verified jury seats">' + [0, 1, 2].map(function (index) { return seat(index, step); }).join('') + '</div><div class="oracle-jury-rule">' + icon('lock') + '<p>Each person gets one seat and one sealed answer. The contract&mdash;not an operator&mdash;counts the majority.</p></div><a class="oracle-worldscan-link" href="/app#oracle-live-panel" data-local-preview-route="live">Inspect the deployed case <span aria-hidden="true">&#8594;</span></a></aside>';
+    return '<aside class="oracle-jury-card"><div class="oracle-jury-head"><span>' + icon('group') + '</span><div><small>The panel</small><h3>Three verified humans</h3></div></div><div class="oracle-seats" aria-label="Three verified jury seats">' + [0, 1, 2].map(function (index) { return seat(index, step); }).join('') + '</div><div class="oracle-jury-rule">' + icon('lock') + '<p>Each person gets one seat and one sealed answer. The contract&mdash;not an operator&mdash;counts the majority.</p></div><a class="oracle-worldscan-link" href="/app#oracle-live-panel" data-local-preview-route="live">Inspect the case <span aria-hidden="true">&#8594;</span></a></aside>';
   }
 
   function ballot(step) {
     if (step === 3) {
-      var yes = state.vote === true;
-      var no = state.vote === false;
-      return '<section class="oracle-ballot" aria-labelledby="mvpSimBallotTitle"><div class="oracle-ballot-head"><div><span>Your juror action</span><h3 id="mvpSimBallotTitle">Choose, then seal your answer</h3></div><span class="mvp-sim-gas-badge">Sponsored gas</span></div><div class="oracle-vote-options ' + (state.vote === null ? 'mvp-tutorial-target' : '') + '" role="group" aria-label="Choose your preview answer"><button id="mvpSimVoteYes" type="button" data-sim-vote="yes" aria-pressed="' + yes + '" class="is-yes-option' + (yes ? ' is-selected is-yes' : '') + '"><span>YES</span><small>The YES rule is satisfied</small></button><button id="mvpSimVoteNo" type="button" data-sim-vote="no" aria-pressed="' + no + '" class="is-no-option' + (no ? ' is-selected is-no' : '') + '"><span>NO</span><small>The YES rule is not satisfied</small></button></div><button type="button" class="oracle-primary-action ' + (state.vote !== null ? 'mvp-tutorial-target' : '') + '" data-sim-action="advance" ' + (state.vote === null ? 'disabled' : '') + '>Seal my answer on-chain</button></section>';
+      var yes = state.vote === "YES";
+      var no = state.vote === "NO";
+      var insufficient = state.vote === "INSUFFICIENT INFORMATION";
+      return '<section class="oracle-ballot" aria-labelledby="mvpSimBallotTitle"><div class="oracle-ballot-head"><div><span>Your juror action</span><h3 id="mvpSimBallotTitle">Choose, then seal your answer</h3></div><span class="mvp-sim-gas-badge">Sponsored gas</span></div><div class="oracle-vote-options ' + (state.vote === null ? 'mvp-tutorial-target' : '') + '" role="group" aria-label="Choose your preview answer"><button id="mvpSimVoteYes" type="button" data-sim-vote="yes" aria-pressed="' + yes + '" class="is-yes-option' + (yes ? ' is-selected is-yes' : '') + '"><span>YES</span><small>The YES rule is satisfied</small></button><button id="mvpSimVoteNo" type="button" data-sim-vote="no" aria-pressed="' + no + '" class="is-no-option' + (no ? ' is-selected is-no' : '') + '"><span>NO</span><small>The YES rule is not satisfied</small></button><button id="mvpSimVoteInsufficient" type="button" data-sim-vote="insufficient" aria-pressed="' + insufficient + '" class="is-insufficient-option' + (insufficient ? ' is-selected is-insufficient' : '') + '"><span>INSUFFICIENT INFORMATION</span><small>The permitted evidence cannot reliably establish YES or NO</small></button></div><button type="button" class="oracle-primary-action ' + (state.vote !== null ? 'mvp-tutorial-target' : '') + '" data-sim-action="advance" ' + (state.vote === null ? 'disabled' : '') + '>Seal my answer on-chain</button></section>';
     }
     if (step === 4) {
-      var answer = state.vote === false ? "NO" : "YES";
+      var answer = state.vote || "YES";
       return '<section class="oracle-ballot" aria-labelledby="mvpSimRevealTitle"><div class="oracle-ballot-head"><div><span>Your juror action</span><h3 id="mvpSimRevealTitle">Reveal your sealed answer</h3></div><span class="mvp-sim-gas-badge">Sponsored gas</span></div><div class="oracle-reveal-summary"><span>Your sealed answer</span><strong>' + answer + '</strong></div><button type="button" class="oracle-primary-action mvp-tutorial-target" data-sim-action="advance">Reveal my answer</button></section>';
     }
     return '';
   }
 
   function finalReceipt() {
-    return '<section class="oracle-final-receipt" aria-labelledby="mvpSimRulingTitle"><div class="oracle-ruling-mark">' + icon('check') + '</div><div class="oracle-ruling-copy"><span>Ruling recorded on World Chain</span><h2 id="mvpSimRulingTitle">The jury answered YES.</h2><p>2 YES &middot; 1 NO &middot; 3/3 answers revealed</p></div><a href="/app#oracle-live-panel" data-local-preview-route="live">Open deployed receipt ' + icon('arrow') + '</a></section>' +
+    var userAnswer = state.vote || "YES";
+    var jurorAnswers = ["YES", "NO", userAnswer];
+    var ruling = userAnswer;
+    var yes = jurorAnswers.filter(function (answer) { return answer === "YES"; }).length;
+    var no = jurorAnswers.filter(function (answer) { return answer === "NO"; }).length;
+    var insufficient = jurorAnswers.filter(function (answer) { return answer === "INSUFFICIENT INFORMATION"; }).length;
+    var coherent = jurorAnswers.filter(function (answer) { return answer === ruling; }).length;
+    var jurorShare = 14 / coherent;
+    var addresses = ["0x7A4E&hellip;91C2", "0x12B9&hellip;A840", "0xE61F&hellip;3D17"];
+    var payoutRows = jurorAnswers.map(function (answer, index) {
+      var matched = answer === ruling;
+      return '<li><span class="mvp-sim-juror-mark">0' + (index + 1) + '</span><div><strong>' + addresses[index] + '</strong><small>Revealed ' + answer + ' &middot; ' + (matched ? 'coherent' : 'not fee-eligible') + '</small></div><b>' + (matched ? jurorShare.toFixed(2) : '0.00') + ' MUSD</b></li>';
+    }).join('');
+    var rulingTitle = ruling === "INSUFFICIENT INFORMATION" ? "The jury found insufficient information." : "The jury answered " + ruling + ".";
+    var rulingClass = ruling === "INSUFFICIENT INFORMATION" ? " is-insufficient" : "";
+    return '<section class="oracle-final-receipt' + rulingClass + '" aria-labelledby="mvpSimRulingTitle"><div class="oracle-ruling-mark">' + icon('check') + '</div><div class="oracle-ruling-copy"><span>Ruling recorded on World Chain</span><h2 id="mvpSimRulingTitle">' + rulingTitle + '</h2><p>' + yes + ' YES &middot; ' + no + ' NO &middot; ' + insufficient + ' INSUFFICIENT &middot; 3/3 answers revealed</p></div><a href="/app#oracle-live-panel" data-local-preview-route="live">Open receipt ' + icon('arrow') + '</a></section>' +
       '<section class="mvp-sim-settlement" aria-labelledby="mvpSimSettlementTitle">' +
         '<header class="mvp-sim-settlement-head"><div><span>Current fixed-fee rule &middot; illustrative settlement</span><h3 id="mvpSimSettlementTitle">20 MUSD case fee locked before the draw</h3></div><strong>' + icon('check') + ' This case</strong></header>' +
         '<div class="mvp-sim-settlement-grid">' +
-          '<article class="mvp-sim-payouts"><div class="mvp-sim-card-head"><span>Coherent-juror payouts</span><strong>2 coherent</strong></div><p>Only outcome-matching revealers share the 14 MUSD juror pot. A dissenting revealer receives no fee payout.</p><ul>' +
-            '<li><span class="mvp-sim-juror-mark">01</span><div><strong>0x7A4E&hellip;91C2</strong><small>Revealed YES &middot; coherent</small></div><b>7.00 MUSD</b></li>' +
-            '<li><span class="mvp-sim-juror-mark">02</span><div><strong>0x12B9&hellip;A840</strong><small>Revealed YES &middot; coherent</small></div><b>7.00 MUSD</b></li>' +
-            '<li><span class="mvp-sim-juror-mark">03</span><div><strong>0xE61F&hellip;3D17</strong><small>Revealed NO &middot; not fee-eligible</small></div><b>0.00 MUSD</b></li>' +
-          '</ul></article>' +
+          '<article class="mvp-sim-payouts"><div class="mvp-sim-card-head"><span>Coherent-juror payouts</span><strong>' + coherent + ' coherent</strong></div><p>Only ruling-matching revealers share the 14 MUSD juror pot. Other revealers receive no fee payout.</p><ul>' + payoutRows + '</ul></article>' +
           '<article class="mvp-sim-fee-split"><div class="mvp-sim-card-head"><span>This case\'s fixed fee</span><strong>Permanent 70 / 20 / 10</strong></div>' +
             '<div class="mvp-sim-fee-bar" role="img" aria-label="This illustrative case allocates 14 MUSD to coherent jurors, 4 MUSD to the reward pool, and 2 MUSD to protocol"><i class="is-panel"></i><i class="is-reserve"></i><i class="is-operations"></i></div>' +
             '<dl><div><dt><i class="is-panel"></i>Coherent-juror pot</dt><dd>14.00 MUSD</dd></div><div><dt><i class="is-reserve"></i>Reward pool</dt><dd>4.00 MUSD</dd></div><div><dt><i class="is-operations"></i>Protocol</dt><dd>2.00 MUSD</dd></div></dl>' +
-            '<div class="mvp-sim-quote-drivers"><span>Fixed question fee</span><span>Coherent winners</span><span>3-seat panel</span></div>' +
+            '<div class="mvp-sim-quote-drivers"><span>Fixed question fee</span><span>' + coherent + ' coherent</span><span>3-seat panel</span></div>' +
           '</article>' +
         '</div>' +
         '<footer><span>' + icon('fingerprint') + ' Fee fixed in court source</span><span>Locked before selection</span><strong>70 / 20 / 10 split</strong></footer>' +
@@ -465,10 +477,10 @@
       '<header class="mvp-preview-onboard-topbar"><button type="button" data-preview-route="live"><span aria-hidden="true">&#8592;</span> Live case</button><div><span>Juror route</span><h2 id="mvpPreviewOnboardTitle">Join the juror pool</h2></div><span class="mvp-preview-world-badge">World App</span></header>' +
       '<div class="mvp-preview-local-banner"><span>' + icon('check') + '</span><div><strong>Local app preview</strong><p>This route is fully visible here without opening a wallet, requesting a World ID proof, or posting a transaction.</p></div></div>' +
       '<div class="mvp-preview-onboard-layout"><div class="mvp-preview-onboard-main">' +
-        '<article class="mvp-preview-onboard-status"><span class="mvp-preview-onboard-icon">' + icon('group') + '</span><div><small>Recovery-enabled release preview</small><h3>The panel has enough active jurors.</h3><p>Each question draws three verified humans from the pool. After the replacement deployment, additional humans can join and strengthen the recovery reserve.</p><button type="button" class="mvp-tutorial-target" data-sim-action="restart">Finish preview &amp; start again</button></div></article>' +
+        '<article class="mvp-preview-onboard-status"><span class="mvp-preview-onboard-icon">' + icon('group') + '</span><div><small>Current MVP walkthrough</small><h3>The panel has enough active jurors.</h3><p>Each question draws three verified humans from the pool. Additional humans can join and strengthen the recovery reserve.</p><button type="button" class="mvp-tutorial-target" data-sim-action="restart">Finish preview &amp; start again</button></div></article>' +
         '<details class="mvp-preview-disclosure" open><summary><span>How joining works</span><small>3 steps</small></summary><ol><li><b>1</b><div><strong>Verify with World ID</strong><p>Proves one unique person and binds that seat to a wallet.</p></div></li><li><b>2</b><div><strong>Post a 5 MUSD demo bond</strong><p>The token is valueless; World App submits the bond and registration together.</p></div></li><li><b>3</b><div><strong>Join the juror pool</strong><p>You can be drawn for cases and withdraw when you are not serving.</p></div></li></ol></details>' +
         '<details class="mvp-preview-disclosure"><summary><span>Why one human can only join once</span><small>on-chain evidence</small></summary><div class="mvp-preview-proof-copy"><span>' + icon('fingerprint') + '</span><p>A World ID nullifier prevents the same person from taking a second seat, while the proof binds the permitted seat to one wallet.</p></div></details>' +
-      '</div><aside class="mvp-preview-onboard-side"><span class="mvp-preview-side-label">What the live route uses</span><div><span>' + icon('fingerprint') + '</span><p><strong>World ID Router</strong><small>One wallet-bound human proof</small></p></div><div><span>' + icon('lock') + '</span><p><strong>5 MUSD bond</strong><small>Valueless demo collateral</small></p></div><div><span>' + icon('send') + '</span><p><strong>Sponsored gas</strong><small>Submitted through World App</small></p></div><p class="mvp-preview-side-note">This preview never requests any of them. It shows the complete route and its current filled-seat state safely.</p></aside></div>' +
+      '</div><aside class="mvp-preview-onboard-side"><span class="mvp-preview-side-label">What the live route uses</span><div><span>' + icon('fingerprint') + '</span><p><strong>World ID 4 Production</strong><small>One wallet-bound proof-of-human; v4-only proof generation</small></p></div><div><span>' + icon('lock') + '</span><p><strong>5 MUSD bond</strong><small>Valueless demo collateral</small></p></div><div><span>' + icon('send') + '</span><p><strong>Sponsored gas</strong><small>Submitted through World App</small></p></div><p class="mvp-preview-side-note">This preview never requests any of them. It shows the complete route and its current filled-seat state safely.</p></aside></div>' +
       '</section>';
   }
 
@@ -507,7 +519,7 @@
     if (state.step === 0) captureQuestion();
     state.step = Math.max(0, Math.min(STEPS.length - 1, step));
     state.route = state.step < 2 ? 'submit' : state.step === 6 ? 'onboard' : 'live';
-    if (state.step >= 4 && state.vote === null) state.vote = true;
+    if (state.step >= 4 && state.vote === null) state.vote = "YES";
     render();
     announcement.textContent = message || STEPS[state.step].title + '. ' + STEPS[state.step].body;
   }
@@ -552,11 +564,12 @@
       return;
     }
     if (target.hasAttribute('data-sim-vote')) {
-      state.vote = target.getAttribute('data-sim-vote') === 'yes';
+      var selectedValue = target.getAttribute('data-sim-vote');
+      state.vote = selectedValue === 'yes' ? 'YES' : selectedValue === 'no' ? 'NO' : 'INSUFFICIENT INFORMATION';
       render();
-      var selected = document.getElementById(state.vote ? 'mvpSimVoteYes' : 'mvpSimVoteNo');
+      var selected = document.getElementById(state.vote === 'YES' ? 'mvpSimVoteYes' : state.vote === 'NO' ? 'mvpSimVoteNo' : 'mvpSimVoteInsufficient');
       if (selected) selected.focus();
-      announcement.textContent = (state.vote ? 'YES' : 'NO') + ' selected. Seal the answer to continue.';
+      announcement.textContent = state.vote + ' selected. Seal the answer to continue.';
       return;
     }
     if (target.getAttribute('data-sim-action') === 'edit') {

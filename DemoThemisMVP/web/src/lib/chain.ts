@@ -3,18 +3,25 @@
 // for internal development.
 import { createPublicClient, http, type Address } from 'viem';
 import { worldchain, worldchainSepolia } from 'viem/chains';
-import { COHORT, LIVE } from './contracts';
+import { COHORT, CURRENT_MVP, CURRENT_MVP_CONFIGURED } from './contracts';
 
 const chainId = Number(process.env.NEXT_PUBLIC_CHAIN_ID ?? '480');
+if (chainId !== 480 && chainId !== 4801) {
+  throw new Error(`NEXT_PUBLIC_CHAIN_ID must be 480 or 4801, got ${chainId}`);
+}
 
 /** True only when an internal build explicitly selects the Sepolia cohort. */
-export const IS_COHORT = chainId !== 480;
+export const IS_COHORT = chainId === 4801;
 
-export const INSTANCE = IS_COHORT ? COHORT : LIVE;
+export const INSTANCE = IS_COHORT ? COHORT : CURRENT_MVP;
+/** True when the app has an explicitly selected current contract set. */
+export const MVP_CONFIGURED = IS_COHORT || CURRENT_MVP_CONFIGURED;
 /** Flipped only when selected addresses implement eligible-party admission, both liveness timeouts, and re-bonding. */
 export const SUPPORTS_LIVENESS_RECOVERY: boolean = INSTANCE.supportsLivenessRecovery;
 /** Flipped only when the selected court exposes immutable, human-safe voting windows and no duration setter. */
 export const SUPPORTS_AUTOMATED_TIMING: boolean = INSTANCE.supportsAutomatedTiming;
+/** Flipped only after the selected court exposes the v2 three-state ballot. */
+export const SUPPORTS_THREE_STATE_RULING: boolean = INSTANCE.supportsThreeStateRuling;
 const viemChain = IS_COHORT ? worldchainSepolia : worldchain;
 
 export const publicClient = createPublicClient({

@@ -1,26 +1,26 @@
 # MECHANISM_DELTA — MVP vs the full DemoThemis design
 
-The full mechanism lives in the pitch site (`reference/demothemis-site/`, chapters 2/3/8). The MVP deliberately builds a smaller thing: a complete, honest map of what's shipped vs. what's funded — we know exactly what's left and have priced it as the roadmap below. The honesty rule: simulated data is labeled simulated, everywhere. The source-verified Step-5 mainnet contracts prove an earlier v4-preview experiment, but they are not a supported production dependency and predate the eligible-party preflight, first-draw unwind, quorum-miss recovery, and immutable voting windows now implemented in source. The replacement uses the documented World ID mainnet Router. The old addresses are historical evidence, not the capstone target; real human usage begins only after a fresh replacement deployment. No human has registered yet.
+The full mechanism lives in the pitch site (`reference/demothemis-site/`, chapters 2/3/8). The MVP deliberately builds a smaller thing: a complete, honest map of what's shipped vs. what's funded — we know exactly what's left and have priced it as the roadmap below. The honesty rule: simulated data is labeled simulated, everywhere. The source-verified Step-5 mainnet contracts already call the official World ID 4 Production proxy, but their court bytecode predates the eligible-party preflight, first-draw unwind, quorum-miss recovery, and immutable voting windows now implemented in source. The replacement keeps v4, disables legacy proofs, and deploys the current court. The old addresses are historical evidence, not the capstone target; real human usage begins only after a fresh replacement deployment. No human has registered yet.
 
 ### What's real on-chain vs. what's simulated
 
 | ✅ Real & on-chain today (mainnet, source-verified) | ◷ Simulated / roadmap (labeled, funded-milestone) |
 |---|---|
-| Replacement source verifies a Router-compatible Orb proof **in the transaction** (`WorldIDRouter.verifyProof`); deployment pending | Receipt-free MACI ballots — milestone #2 |
+| Replacement source verifies a World ID 4 proof-of-human **in the transaction** (`WorldIDVerifier.verify`), with legacy proofs disabled; deployment pending | Receipt-free MACI ballots — milestone #2 |
 | Identity-derived **nullifier sybil gate** (one human, one seat, every wallet) | VRF / drand draw randomness — milestone #1 |
 | **Wallet-bound** proof (a stolen proof reverts) | Appeal ladder (7→15→31 seats) — milestone #3 |
 | Random panel drawn **after** the question | Parallel pᴺ panels above a value line — milestone #3 |
 | Commit / reveal voting | Juror reputation / Wilson gate — milestone #3 |
 | 70/20/10 fee split + 2% escrow fee; **slash-to-pool, never to winners** | Reward-pool cyclic payout — milestone #3 |
-| **Atomic** escrow settlement (`resolve → escrow.settle`) | Work-based quote engine + reusable resolution SDK — milestones #3–4 |
+| **Atomic** escrow settlement (`resolve → escrow.settle`) | Deterministic court-fee engine + reusable resolution SDK — milestones #3–4 |
 | **No runtime admin override**: one-shot wiring, immutable voting windows, and permissionless lifecycle transitions | (external security review — milestone #5) |
-| 100 passing Foundry tests with Router binding/rejection, invariants, fuzz, and exact-3/3 party-exclusion, first-draw, and retry-recovery regressions; replacement deployment pending | |
+| 100-test verified Foundry snapshot plus current v4 binding/schema, invariants, fuzz, and exact-3/3 party-exclusion, first-draw, and retry-recovery regressions; replacement deployment pending | |
 
 ## On-chain in the MVP (the five contracts)
 
 | Area | Full design | MVP | Why / where it returns |
 |---|---|---|---|
-| Sybil gate | World ID proof verified on-chain in the registry | Abstracted behind `ISybilGate`. The **Sepolia cohort uses `MockSybilGate`**, a labeled stand-in. The immutable legacy mainnet instance calls the v4 preview verifier; the replacement uses `WorldIDRouterGate` over the documented mainnet Router. | The v4 contract's “production” environment label was incorrectly treated as general availability. The interface abstraction now keeps preview evidence separate from the supported Router path; real personhood is demonstrated at the capstone after replacement deployment. |
+| Sybil gate | World ID proof verified on-chain in the registry | Abstracted behind `ISybilGate`. The **Sepolia cohort uses `MockSybilGate`**, a labeled stand-in. Both the immutable legacy mainnet instance and replacement source use the v4 verifier; only the replacement enforces the current v4-only release marker and proof-of-human schema. | Real personhood is demonstrated at the capstone after replacement deployment. The archived Staging/Simulator trace remains labeled test evidence. |
 | Juror anonymity | One-case pseudonyms and receiving keys; encrypted ballots hide identity and vote; exact reputation, reserve, case history, individual payments, penalties, and refunds stay private. The public gets eligibility/reserve proofs, the aggregate tally, and aggregate accounting. | **Juror addresses and revealed votes are fully public on-chain.** | Encrypted/receipt-free ballots plus private consequence accounting are funded milestones #2–3. Commit/reveal stands in. |
 | Ballot secrecy | Receipt-free (MACI-style threshold encryption + silent re-keying). The reference **explicitly rejects commit/reveal**: "a voting system that can prove obedience is a voting system with a payment rail bolted on" (breaking-the-court.html). | **Commit/reveal** — a juror can reveal their salt to prove their vote, so it is vote-buyable in principle. A known-insufficient *stand-in*, not the design. | Receipt-freeness is funded-milestone #2; the sandbox contrasts the two and the attack demo shows why it matters. |
 | Slash destination | Every slashed dollar → the **reward pool, never to the winning jurors**; individual debits stay private while only the aggregate transfer and its proof are public. | **Honored on-chain but not private.** Slashes (and the 20% reward cut) flow to `RewardPool`; jurors are paid only the 70% fee cut. | The destination rule is implemented; private consequence accounting returns with funded milestones #2–3. |
@@ -30,9 +30,9 @@ The full mechanism lives in the pitch site (`reference/demothemis-site/`, chapte
 | Draw randomness | drand / VRF | **`blockhash`-based** two-step draw (records `drawBlock = block.number + 1`, anyone cranks once it exists). Kills panel precompute, but is sequencer-influenceable in principle. | drand/VRF is funded-milestone #1. Documented limitation. |
 | Voting clocks / administration | Fully automatic, immutable case rules. | Commit and reveal durations are immutable constructor parameters with an on-chain five-minute minimum. There is no duration setter; draw, timeout, and resolution transitions are permissionless. `setCourt` and `setEscrow` are one-shot deployment wiring and cannot be changed afterward. | Removes the open-before-draw timing-control gap without adding governance or an operator key. |
 | Party eligibility + first draw | Parties are never eligible to judge their own case. | Before funds or escrow state lock, the court requires at least `MIN_POOL` active jurors after excluding the question opener or both escrow parties. Every accepted case gets a fixed one-hour first-draw deadline. If no panel forms, anyone can cancel/unwind without a merits ruling; the entire unused fee returns to the opener/payer and escrow principal returns to the payer. `InitialDrawTimedOut` distinguishes this from a NO ruling despite the compatibility `Resolved(false,0,0)` event. | An exact-three active party is rejected atomically instead of creating an undrawable case. The immutable deadline covers later withdrawals without letting funds wait forever. |
-| Dispute ladder + parallel panels | Panels 7 → 15 → 31 (three-floor rung bond, *not* a flat ×2), near-tie discount, two clocks; **above a value line, N independent panels (1/3/5) that must all agree**, so capture odds multiply `pᴺ` and attack cost rises with the pot past the 31-seat ceiling | **Single panel**, one retry after a quorum miss, then status quo. The retry has a separate fixed one-hour recovery deadline; if no panel can form, anyone can finalize status quo. No ladder or parallel panels are on-chain. | All panel-scaling structure is sandbox-only; the bounded recovery prevents the MVP lifecycle and escrow principal from waiting forever after a quorum miss. |
+| Dispute ladder + parallel panels | Panels 7 → 15 → 31 with a conserved appeal quote: a non-refundable service fee pays panel work + delay once, and separate security principal returns on success or is forfeited on failure; **above a value line, N independent panels (1/3/5) that must all agree**, so capture odds multiply `pᴺ` and attack cost rises with the pot past the 31-seat ceiling | **Single panel**, one retry after a quorum miss, then status quo. The retry has a separate fixed one-hour recovery deadline; if no panel can form, anyone can finalize status quo. No ladder or parallel panels are on-chain. | All panel-scaling structure is sandbox-only; the bounded recovery prevents the MVP lifecycle and escrow principal from waiting forever after a quorum miss. |
 | Juror reputation | Private baseline-credited reputation commitments, Wilson 0.70 suspension gate, and privately proved draw bands **capped at 3× a newcomer**; exact scores and case histories are never public | **None on-chain** — the MVP draws uniformly at random, so there is no reputation weighting to cap. | Sandbox-only; private commitments and proofs return in milestone #3. |
-| Economic parameters | Work-based quotes price processing, expected panel work, reserve top-up, and capped operations from locked case inputs. | **Fixed**: $5 bond, 20 MUSD question fee, 2% escrow fee, 7/14 (cohort). The recommended replacement is 3 seats / minimum 4 eligible; the contract remains fund-safe at minimum 3 through timeout/unwind, but then has no one-withdrawal adjudication reserve. The active pool has no maximum. | MVP uses the replacement source's fixed 20 MUSD question fee; the work-based quote engine is a design-track item, not an MVP one; capture-resistance scales with the funded pool width, not the minimum demo size. |
+| Economic parameters | A deterministic court fee prices processing, expected panel work, reward-pool top-up, and capped operations from locked case inputs at request time. For prediction markets, an eligible caller posts that exact fee as a bond; YES/NO reimburses the caller pro rata from both sides, while Insufficient information does not. | **Fixed**: $5 bond, 20 MUSD question fee, 2% escrow fee, 7/14 (cohort). The recommended replacement is 3 seats / minimum 4 eligible; the contract remains fund-safe at minimum 3 through timeout/unwind, but then has no one-withdrawal adjudication reserve. The active pool has no maximum. | MVP uses the replacement source's fixed 20 MUSD question fee; the deterministic court-fee and caller-bond path is a design-track item, not an MVP one; capture-resistance scales with the funded pool width, not the minimum demo size. |
 | Withdrawal / rejoin | — | A withdrawn or fully slashed juror's **nullifier stays spent** (one seat per human); they post a fresh full bond rather than re-verifying. World App uses `postBondWithPermit2()` and other clients may use `postBond()`. | Keeps the sybil gate strict, restores liveness after a no-show, and preserves the active-juror/full-bond invariant. |
 | Token | USDC / WLD | **MockUSD**, a valueless 6-decimal token with a public faucet, on every instance. Timeout refunds and escrow principal return through direct transfers, so this demo assumes its immutable trusted token cannot pause or blacklist recipients. | Production token choice is a funded-milestone decision; no real money is at stake anywhere. A generalized token integration should use pull/claim credits so recipient transfer policy cannot block terminal state. |
 | Tie / no-quorum | — | An expired first-draw deadline is a cancellation/unwind with no merits ruling and returns the unused fee plus any escrow principal. Once a panel has voted, tie → status quo (question NO / escrow refunds payer). Fewer than ⌈panel/2⌉+1 reveals → one retry; re-bonded humans may be drawn again, while a second miss or expired redraw deadline finalizes status quo permissionlessly. | One juror must never decide a deal alone and a depleted pool must not brick an accepted case. An explicit **Invalid/void outcome** for genuinely ambiguous questions remains funded-milestone #3; today ambiguity after a vote defaults to status-quo-NO. |
@@ -43,13 +43,13 @@ The full dispute ladder, juror reputation (Wilson-interval gate), private invite
 
 ## Out of the MVP entirely
 
-Governance (both tokens, voting, the constitutional firewall); the prediction market as a product (parimutuel pools, ERC-20 graduation, order books); per-draw face check; the justice-clock collusion audit; the reward-pool payout (the `RewardPool` **is** on-chain and accrues slashes + the 20% cut, but it is a passive sink — the Wilson-gated, recency-weighted cyclic distribution to active jurors is sandbox-only, funded-milestone #3); juror seniority gates; external audits.
+Governance (both tokens, voting, the constitutional firewall); the prediction market as a product (parimutuel pools, ERC-20 graduation, order books); the post-Orb, per-draw on-device presence/continuity check (an anti-rental backstop, not an alternative eligibility credential); the justice-clock collusion audit; the reward-pool payout (the `RewardPool` **is** on-chain and accrues slashes + the 20% cut, but it is a passive sink — the Wilson-gated, recency-weighted cyclic distribution to active jurors is sandbox-only, funded-milestone #3); juror seniority gates; external audits.
 
 ## Funded-milestone roadmap (what the grant pays for, post-MVP)
 
 1. drand/VRF draw randomness + mainnet deployment of the core court.
 2. Receipt-free ballots (MACI-style, bonded coordinator v1) — hides juror addresses and votes.
-3. Work-based quote engine + juror reputation + dispute ladder on-chain + the reward-pool gated cyclic payout (Wilson-gated, recency-weighted distribution to active jurors).
+3. Deterministic court-fee engine + juror reputation + dispute ladder on-chain + the reward-pool gated cyclic payout (Wilson-gated, recency-weighted distribution to active jurors).
 4. Resolution / oracle SDK + first prediction-market integration (escrow/marketplace a later consumer of the same SDK).
 5. Security review. (No external audit is claimed anywhere in the MVP.)
 6. Juror UX hardening + moderated user-testing — the final step and the roadmap's largest line; AI makes the build cheap, so the weight goes to getting real verified humans through the juror loop.
@@ -60,14 +60,14 @@ The `/sandbox` engine ports the reference math verbatim so its numbers match the
 site exactly. A few details where the simulation is narrower than the prose, or differs
 from the on-chain core, are recorded here.
 
-- **The appeal-bond "three floors" are two floors in the ported code.** The reference
-  widget (`hybrid-juror-system.html` ~452-538) computes `bond = max(panelCost, capFloor)`
-  where `panelCost = panel * FEE` (the juror-cost floor) and `capFloor = LAMBDA * odds *
-  stake` (the anti-re-roll / capture floor). The surrounding prose names three floors
-  (juror-cost, anti-re-roll, delay-rent), but the published JS has no delay-rent term. The
-  sandbox ports the reference JS verbatim (two floors) so its bond figures match the pitch
-  site; the delay-rent floor is described in copy as a roadmap refinement, not computed.
-  Noted in `web/src/lib/sim/court-math.ts`.
+- **Appeal funding uses one conserved waterfall in the chapter and sandbox.**
+  `panelCost = panel * FEE`; `delayCost = value * weeklyDelayRate * weeks`;
+  `serviceFee = panelCost + delayCost`; and `securityBond = max(0,
+  adjustedCaptureTarget - serviceFee)`. The public goal is exactly `serviceFee +
+  securityBond`. A funded appeal consumes the service fee once. Success returns only the
+  separately escrowed security principal pro-rata; failure sends only that security principal
+  to the reward pool. A short round refunds every contribution and starts no work. The quote
+  labels the source and destination of each component.
 
 - **Case-fee number differs by widget, by design.** The replacement core court charges a
   **20 MUSD** case fee, and the sandbox core-court walkthrough mirrors that (with the
@@ -83,7 +83,7 @@ from the on-chain core, are recorded here.
   no on-chain reward-pool payout, so that term is zero. Noted in
   `web/src/lib/sim/attack.ts`.
 
-- **The token-court model is authored fresh** (no reference code exists for it):
+- **The token-court model, based on systems like UMA and Kleros, is authored fresh** (no reference code exists for it):
   `P(flip) = 1` once `budget >= 0.5 * totalStake` at a chosen token price, plus a
   "second case free" reuse flag. The human-court side uses the ported combinatorics.
 
@@ -94,26 +94,26 @@ from the on-chain core, are recorded here.
   fixed default seed) is for reproducibility of
   the curves and the "run 100 cases" sweep, not a randomness-security claim.
 
-## Current production mapping — IDKit → `WorldIDRouter.verifyProof`
+## Current production mapping — IDKit → `WorldIDVerifier.verify`
 
-New mainnet deployments use `WorldIDRouterGate` with the documented World Chain
-Router `0x17B354dD2595411ff79041f930e491A4Df39A278`, group id `1`, app id
-`app_7bdfda4db4e2f59dd4a2427cd2bd860d`, and action `juror-registration`. The
-World App requests `orbLegacy({ signal: wallet })` with `allow_legacy_proofs: true`.
-The gate decodes `abi.encode(root, nullifierHash, uint256[8] proof)`, recomputes
-`hashToField(wallet)` as the signal public input, and computes the external
-nullifier from the app id and action. The Router verifies the proof on-chain and
-the registry rejects a reused nullifier. The Router and all binding parameters are
-immutable; there is no administrator-controlled verifier swap.
+New mainnet deployments use `WorldIDGate` with the official World ID 4.0 Production
+proxy `0x00000000009E00F9FE82CfeeBB4556686da094d7`, RP id
+`rp_1ddcf8ba2efe3f36`, and action `juror-registration`. The World App requests
+`proofOfHuman({ signal: wallet })`, requires `protocol_version === '4.0'`, and sets
+`allow_legacy_proofs: false`. The gate decodes the v4 nine-field tuple below,
+recomputes `hashToField(wallet)`, enforces RP/action binding and issuer schema 1,
+then calls the verifier. The registry rejects a reused nullifier. The verifier,
+RP id, and action are immutable; there is no administrator-controlled swap.
 
-This compatibility path is the production baseline while the World ID 4.0
-on-chain verifier is officially preview. When v4 becomes generally available,
-adoption requires a separately deployed and audited gate/registry instance.
+The release gate checks the deployment metadata and on-chain
+`WORLD_ID_PROTOCOL_VERSION() == 4` marker before the mainnet keeper may broadcast.
+The legacy `WorldIDRouterGate` remains only for reproducing v3 tests and deployments;
+the deployment script cannot select it on World Chain mainnet.
 
-## Archived Step 3.5 experiment — World ID 4.0 preview verifier
+## Archived Step 3.5 experiment — World ID 4.0 Staging verifier
 
 This section preserves the historical experiment contract and encoding once shared by
-the preview gate (`contracts/src/sybil/WorldIDGate.sol`) and the archived probe
+the v4 gate (`contracts/src/sybil/WorldIDGate.sol`) and the archived probe
 (`web/src/app/verify-onchain/page.tsx`). It is **empirically
 verified** (a live `cast call` to the World ID 4.0 Staging verifier
 `0x703a6316c975DEabF30b637c155edD53e24657DB` on WC mainnet returned `0x` for a valid World
@@ -141,24 +141,26 @@ The deployed verifier signature (arg order is fixed by the contract):
 `allow_legacy_proofs: false` and **`environment: 'staging'`** (REQUIRED — it defaults to
 `'production'`, which the World ID Simulator rejects outright), and passed the registering
 **wallet address** as the `signal`. The historical Step-5 instance changed to the
-preview contract's `production` environment. That environment name did not make the
-v4 verifier generally available, and the current replacement does not use it.
+Production environment and verifier. The current replacement uses that same official
+Production proxy with stricter schema, configuration, and release checks.
 
 **What is NOT simulated here:** the historical mainnet WorldIDGate ran a real proof check.
 The only Step-3.5 concession is the **Staging** verifier + World ID **Simulator** identities
 (so the path is proven human-free for cents); they are real v4 proofs verified by the real
 verifier contract, labeled as Simulator-sourced in `docs/DEMO.md`. This proves the
-preview adapter's behavior only; production registration uses the Router mapping above.
+v4 adapter behavior in Staging; production registration uses the v4 mapping above.
 
-## Step 5 legacy preview deployment and Router replacement
+## Step 5 legacy court and v4 replacement
 
 The legacy mainnet instance (chain 480) deploys the same five contracts against the
-v4 **preview** World ID verifier
-(`0x00000000009E00F9FE82CfeeBB4556686da094d7`, Orb/Device), with a 3-seat / minimum-3
+official World ID 4 **Production** verifier
+(`0x00000000009E00F9FE82CfeeBB4556686da094d7`, capable of checking multiple credential schemas), with a 3-seat / minimum-3
 court. It remains source-verified evidence for the Step-5 additions below, but its immutable
 court lacks case-specific eligibility checks, a bounded first-draw unwind, and bounded quorum
-recovery, so it must be replaced before the capstone. The replacement uses `WorldIDRouterGate`
-over the documented mainnet Router, keeps the three-seat panel, uses a recommended
+recovery, so it must be replaced before the capstone. The replacement uses `WorldIDGate`
+with v4-only proof-of-human verification and admits Orb-verified jurors only. Device-level verification is not an eligibility fallback;
+the complete design uses a separate post-Orb presence/continuity check at each draw.
+It keeps the three-seat panel, uses a recommended
 `MIN_POOL >= 4`, adds Permit2 re-bond, checks the eligible pool before accepting funds,
 returns unused fees and escrow principal when the first draw times out, and allows an active
 pool wider than three. See `docs/LIVENESS_RECOVERY.md`.
@@ -194,5 +196,5 @@ pool wider than three. See `docs/LIVENESS_RECOVERY.md`.
   to localStorage so reveal can replay them).
 
 - **What stays simulated / labeled.** Everything in §"Simulated in the sandbox only" is
-  unchanged. The Step-5 capstone cases (`web/public/cases/{q,escrow}-capstone.json`) are real
-  mainnet cases (`simulated: false`); the cohort remains the labeled `MockSybilGate` scale demo.
+  unchanged. The retired capstone fixtures are no longer shipped in `web/public`; only the
+  current question queue and the labeled `MockSybilGate` cohort scale demo remain public.

@@ -1,6 +1,6 @@
 # Case liveness recovery
 
-Status: implemented in the source tree and covered by 100 passing Foundry tests, including five new Router-gate tests. The prior 95-test liveness snapshot measured 89.51% line, 86.67% statement, 76.11% branch, and 92.22% function overall; do not attribute that historical coverage run to the Router-gate release. A fresh World Chain deployment and app/keeper cutover are still required.
+Status: implemented in the source tree. The last verified release snapshot had 100 passing Foundry tests; the current tree also declares v4 gate configuration/schema regressions that still need the next Foundry run. The prior 95-test liveness snapshot measured 89.51% line, 86.67% statement, 76.11% branch, and 92.22% function overall; do not attribute that historical coverage run to the current v4-gate release. A fresh World Chain deployment and app/keeper cutover are still required.
 
 The historical 3-seat / minimum-3 deployment has two independent ways to accept a case that can never progress:
 

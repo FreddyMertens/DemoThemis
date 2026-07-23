@@ -1,7 +1,7 @@
 import type { Address, Hex } from 'viem';
 import type { CaseView, RegistryStats } from './court';
 import { eligibleJurorCount, listCases, registryStats } from './court';
-import { SUPPORTS_LIVENESS_RECOVERY } from './chain';
+import { BOND, MVP_CONFIGURED, SUPPORTS_LIVENESS_RECOVERY } from './chain';
 
 const ZERO_ADDRESS = '0x0000000000000000000000000000000000000000' as Address;
 
@@ -98,6 +98,27 @@ export function officialQueueEntryForCase(
 }
 
 export async function loadOracleDashboard(): Promise<OracleDashboard> {
+  if (!MVP_CONFIGURED) {
+    const manifest = await loadQuestionManifest();
+    return {
+      stats: {
+        jurorCount: 0,
+        panelSize: 3,
+        minPool: 4,
+        bond: BOND,
+        bondsHeld: BigInt(0),
+        rewardPool: BigInt(0),
+      },
+      activeCase: null,
+      resolvedCases: [],
+      nextQuestion: manifest.questions[0] ?? null,
+      queue: manifest.questions,
+      officialOpener: manifest.officialOpener,
+      officialEligibleJurors: 0,
+      overlappingActiveCases: 0,
+      unofficialActiveCaseIds: [],
+    };
+  }
   const [stats, cases, manifest] = await Promise.all([registryStats(), listCases(), loadQuestionManifest()]);
   const officialEligibleJurors = SUPPORTS_LIVENESS_RECOVERY
     ? await eligibleJurorCount(manifest.officialOpener, ZERO_ADDRESS)

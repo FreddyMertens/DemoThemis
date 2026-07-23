@@ -352,7 +352,7 @@
                 <label class="lock"><input id="lockFace" type="checkbox" checked><span><b>Live face check</b><span>Rentals need a present person.</span></span></label>
                 <label class="lock"><input id="lockReserve" type="checkbox" checked><span><b>Pending pay at risk</b><span>Careless voting can lose income.</span></span></label>
                 <label class="lock"><input id="lockKeys" type="checkbox" checked><span><b>Independent accuracy checks</b><span>Every case contributes; later answers add confirmation.</span></span></label>
-                <label class="lock"><input id="lockAppeal" type="checkbox" checked><span><b>Costed appeals</b><span>Delay must fund the next jury.</span></span></label>
+                <label class="lock"><input id="lockAppeal" type="checkbox" checked><span><b>Conserved appeal quote</b><span>Service fee funds jury + delay; security settles separately.</span></span></label>
               </div>
             </fieldset>
             <details class="fine-controls">
@@ -384,7 +384,7 @@
             <div class="board">
               <div class="board-head"><h3>How the defences respond</h3><span class="chip" id="bottleneckChip">&hellip;</span></div>
               <div class="map">
-                <div class="node" id="nodeDemand" data-n="01"><h4>Each quote funds its work</h4><p>Processing, panel compensation, reserve top-up, and capped operations are priced before the draw.</p><div class="node-stats" id="nodeDemandV">&hellip;</div></div>
+                <div class="node" id="nodeDemand" data-n="01"><h4>Each court fee funds its work</h4><p>Processing, panel compensation, reward-pool top-up, and capped operations are calculated when the request opens the case.</p><div class="node-stats" id="nodeDemandV">&hellip;</div></div>
                 <div class="node" id="nodePay" data-n="02"><h4>Funding keeps jurors available</h4><p>Viable compensation supports a wider retained and drawable juror pool.</p><div class="node-stats" id="nodePayV">&hellip;</div></div>
                 <div class="node" id="nodePanel" data-n="03"><h4>Random panels resist control</h4><p>Case-bound draws and scaled jury rules push attacker-majority odds down.</p><div class="node-stats" id="nodePanelV">&hellip;</div></div>
                 <div class="node" id="nodeKeys" data-n="04"><h4>Independent checks strengthen quality</h4><p>Every completed case contributes, while later known answers expose crowd-copying.</p><div class="node-stats" id="nodeKeysV">&hellip;</div></div>
@@ -442,7 +442,7 @@
         <details class="assumption-drawer">
           <summary><span>Model relationships</span><b>four short equations</b></summary>
           <div class="story">
-            <div class="story-card"><h3>Funding</h3><p class="formula">processing + panel pay + reserve top-up + capped operations<br>= locked jury quote within the published ceiling</p></div>
+            <div class="story-card"><h3>Funding</h3><p class="formula">processing + panel pay + reward-pool top-up + capped operations<br>= deterministic court fee within the published ceiling</p></div>
             <div class="story-card"><h3>Juror exposure</h3><p class="formula">pay per vote &times; exposure rule = pending pay at risk<br>collectible loss must exceed the shortcut benefit</p></div>
             <div class="story-card"><h3>Jury control</h3><p class="formula">qualified coalition seats + usable rentals<br>finite random draw &rarr; attacker-majority chance</p></div>
             <div class="story-card"><h3>Decision quality</h3><p class="formula">individual answer accuracy + shared quality evidence<br>&rarr; correct-majority estimate</p></div>
@@ -455,7 +455,7 @@
   <section class="reveal">
     <p class="sec-label">What the game shows</p>
     <h2>DemoThemis layers independent defences.</h2>
-    <p>Demand funds participation, random panels resist control, private ballots block proof, live checks weaken rentals, pending pay prices careless work, and shared case evidence protects decision quality. Later independent answers add confirmation when available. Robustness comes from the stack—not from any single switch.</p>
+    <p>Demand funds participation, random panels resist control, private ballots block proof, live checks weaken rentals, pending pay prices careless work, and shared case evidence protects decision quality. Within one dispute, every parallel panel and appeal is disjoint: once a juror serves, they can never be drawn again for that dispute or any of its appeals. Later independent answers add confirmation when available. Robustness comes from the stack—not from any single switch.</p>
   </section>
 
   <footer class="endnote reveal">
@@ -575,7 +575,7 @@
   function attackLabel(key) { return ATTACK_LABELS[key] || ATTACK_LABELS[key === "bloc" ? "capture" : key] || key; }
   function attackForRisk(key) { return RISK_TO_ATTACK[key] || key; }
   var AFFECT_LABELS = {
-    pricing: "case quote",
+    pricing: "court fee",
     reserve: "money at risk",
     lazy: "lazy voting",
     supply: "juror supply",
@@ -1048,7 +1048,10 @@
     var panelFloor = appealApplicable && !appealPanelShortage ? nextSeats * payPerVote : 0;
     var captureFloor = appealApplicable && nextCapture !== null ? nextCapture * v.stake * a.appealCaptureMultiplier : 0;
     var delayFloor = appealApplicable ? v.stake * a.appealDelayRate * v.lag : 0;
-    var appealFloor = appealApplicable && v.lockAppeal && !appealPanelShortage ? Math.max(panelFloor, captureFloor, delayFloor) * a.petitionMultiplier : 0;
+    var appealServiceFee = panelFloor + delayFloor;
+    var appealSecurityTarget = captureFloor * a.petitionMultiplier;
+    var appealSecurityBond = appealApplicable && v.lockAppeal && !appealPanelShortage ? Math.max(0, appealSecurityTarget - appealServiceFee) : 0;
+    var appealFloor = appealApplicable && v.lockAppeal && !appealPanelShortage ? appealServiceFee + appealSecurityBond : 0;
     var griefBenefit = appealApplicable ? v.stake * a.griefDelayRate * v.lag * (1 - a.finalityAuditDrag) : 0;
     var griefMargin = appealFloor - griefBenefit;
     var griefRatio = appealApplicable ? (appealPanelShortage ? 0 : coverBenchmarkRatio(appealFloor, griefBenefit)) : Infinity;
@@ -1175,6 +1178,9 @@
       panelFloor: panelFloor,
       captureFloor: captureFloor,
       delayFloor: delayFloor,
+      appealServiceFee: appealServiceFee,
+      appealSecurityTarget: appealSecurityTarget,
+      appealSecurityBond: appealSecurityBond,
       appealFloor: appealFloor,
       griefBenefit: griefBenefit,
       griefMargin: griefMargin,
@@ -1246,7 +1252,7 @@
     byId("captureOut").textContent = m.capture === null ? "No panel" : pct(m.capture);
     byId("captureSub").textContent = m.panelShortage ? "need " + m.panel + " drawable jurors; only " + num(m.drawJurors) + " available" : num(m.coordinatedSeats) + " coalition + " + num(m.rentalSeats) + " rental seats in " + num(m.drawJurors) + " drawable jurors" + (m.parallelPanels > 1 ? " · " + m.parallelPanels + " juries must agree" : "");
 
-    byId("nodeDemandV").innerHTML = `<div class="node-val">${money(m.quotedCaseFee)} <small>typical jury quote</small></div><div class="node-sub"><b>${money(m.panelCompensation)}</b> panel pay &middot; <b>${money(m.reserveTopUpPerCase)}</b> reserve top-up${m.supportGapPerCase > 0 ? ` &middot; <b>${money(m.supportGapPerCase)}</b> above ceiling` : ""}</div>`;
+    byId("nodeDemandV").innerHTML = `<div class="node-val">${money(m.quotedCaseFee)} <small>typical court fee</small></div><div class="node-sub"><b>${money(m.panelCompensation)}</b> panel pay &middot; <b>${money(m.reserveTopUpPerCase)}</b> reward-pool top-up${m.supportGapPerCase > 0 ? ` &middot; <b>${money(m.supportGapPerCase)}</b> above ceiling` : ""}</div>`;
     byId("nodePayV").innerHTML = `<div class="node-val">${money(m.payPressure + m.rewardPerJuror)} <small>funded / juror</small></div><div class="node-sub"><b>${num(m.effectiveJurors)}</b> retained · <b>${num(m.drawJurors)}</b> drawable</div>`;
     byId("nodePanelV").innerHTML = m.correctPanel === null ? `<div class="node-val">No panel</div><div class="node-sub">need <b>${m.panel}</b> drawable jurors</div>` : `<div class="node-val">${pct(m.correctPanel)} <small>correct majority</small></div><div class="node-sub"><b>${pct(m.capture)}</b> coalition-control chance</div>`;
     byId("nodeKeysV").innerHTML = `<div class="node-val">${pct(m.keySignal)} <small>independent signal</small></div><div class="node-sub"><b>${num(m.testSeats)}</b> graded seats · <b>${num(m.keyScale)}</b> target</div>`;
@@ -1316,7 +1322,7 @@
       return {
         check: m.benchmarks.grief,
         invalid: m.appealPanelShortage,
-        why: m.appealPanelShortage ? "The drawable pool cannot form the next " + m.nextSeats + "-seat jury." : "The next appeal costs at least " + money(m.appealFloor) + " versus " + money(m.griefBenefit) + " of modeled delay value.",
+        why: m.appealPanelShortage ? "The drawable pool cannot form the next " + m.nextSeats + "-seat jury." : "The next appeal requires " + money(m.appealFloor) + ": " + money(m.appealServiceFee) + " service fee for jury + delay, plus " + money(m.appealSecurityBond) + " separately escrowed security, versus " + money(m.griefBenefit) + " of modeled delay value.",
         breaks: m.appealPanelShortage ? "The court needs enough drawable jurors for the next appeal rung." : "Modeled delay value exceeds the cost of the next jury.",
         margin: m.appealPanelShortage ? "next jury unavailable" : moneyMargin(m.griefMargin, "appeal cost exceeds delay value", "delay value exceeds appeal cost")
       };
@@ -1387,7 +1393,7 @@
     var below = state.cleared.map(function (key) { return attackLabel(key); });
     var top = state.top;
     var detail;
-    if (m.supportGapPerCase > EPSILON) detail = "The required quote exceeds the fee ceiling by " + money(m.supportGapPerCase) + " per case; intake must raise the minimum or show an explicit subsidy.";
+    if (m.supportGapPerCase > EPSILON) detail = "The required court fee exceeds the fee ceiling by " + money(m.supportGapPerCase) + " per case; intake must raise the minimum or show an explicit subsidy.";
     else if (m.panelShortage) detail = "The current " + m.panel + "-seat jury cannot form from " + num(m.drawJurors) + " drawable jurors.";
     else if (m.appealPanelShortage) detail = "The next " + m.nextSeats + "-seat appeal jury cannot form from " + num(m.drawJurors) + " drawable jurors.";
     else if (state.state === "bad" && top.key === "quality") detail = "Decision quality does not meet its 75% operating floor.";
@@ -1447,7 +1453,7 @@
     return summary;
   }
   function setLabStatus(v, m, confidence) {
-    var railLabels = { lockDraw: "one public draw", lockBallot: "private ballot", lockFace: "live face check", lockReserve: "pending pay at risk", lockKeys: "independent accuracy checks", lockAppeal: "costed appeals" };
+    var railLabels = { lockDraw: "one public draw", lockBallot: "private ballot", lockFace: "live face check", lockReserve: "pending pay at risk", lockKeys: "independent accuracy checks", lockAppeal: "conserved appeal quote" };
     var state = modelState(v, m);
     var status = byId("labStatus");
     var grid = byId("labGrid");
@@ -1462,8 +1468,8 @@
       status.className = "lab-status vulnerable";
       grid.className = "lab-grid vulnerable";
       icon.textContent = "!";
-      label.textContent = "Quote exceeds the fee ceiling";
-      detail.textContent = "Required processing, panel pay, reserve top-up, and capped operations are " + money(m.supportGapPerCase) + " above the allowed quote per case.";
+      label.textContent = "Court fee exceeds the ceiling";
+      detail.textContent = "Required processing, panel pay, reward-pool top-up, and capped operations are " + money(m.supportGapPerCase) + " above the allowed fee per case.";
     } else if (state.teaching && state.state === "bad") {
       status.className = "lab-status vulnerable";
       grid.className = "lab-grid vulnerable";
@@ -1600,7 +1606,7 @@
   function setWarnings(v, m) {
     var warnings = [];
     var state = modelState(v, m);
-    if (m.supportGapPerCase > EPSILON) addWarning(warnings, "Quote exceeds ceiling", money(m.supportGapPerCase) + " per case must be covered by an explicit subsidy or higher minimum; juror pay is not reduced.");
+    if (m.supportGapPerCase > EPSILON) addWarning(warnings, "Court fee exceeds ceiling", money(m.supportGapPerCase) + " per case must be covered by an explicit subsidy or higher minimum; juror pay is not reduced.");
     if (state.state === "bad" && !state.pricingGap) addWarning(warnings, "Outside modeled range", state.top.key === "quality" ? "Correct-majority chance is below the 75% operating floor." : "At least one published protection benchmark is not met.");
     if (m.blocCapped) addWarning(warnings, "Attack seats capped by pool", "Usable coalition and rental seats cannot exceed the drawable juror pool.");
     if (m.panelShortage) addWarning(warnings, "Current panel cannot form", "This case needs " + m.panel + " drawable jurors; only " + num(m.drawJurors) + " are available.");

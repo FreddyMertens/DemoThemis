@@ -230,7 +230,7 @@ export function AttackDemo({ seed, onInteract }: { seed: number; onInteract?: ()
             wider human pool before the panel is drawn, then winning a fresh random draw for every case.
           </p>
           <p className="sbx-prose">
-            Real token courts can add slashing and escalating appeals; their influence still ultimately tracks
+            Real token courts like UMA and Kleros can add slashing and escalating appeals; their influence still ultimately tracks
             capital. DemoThemis changes the unit of jury power to one verified human per seat.
           </p>
         </div>
@@ -243,7 +243,7 @@ export function AttackDemo({ seed, onInteract }: { seed: number; onInteract?: ()
         </summary>
         <div className="sbx-inline-details-body sbx-controls">
           <Slider
-            label="Token price (drives the token court's stake)"
+            label="Token price (drives stake in token courts like UMA and Kleros)"
             value={tokenPrice}
             min={0.05}
             max={2}
@@ -290,7 +290,7 @@ export function AttackDemo({ seed, onInteract }: { seed: number; onInteract?: ()
               <i style={{ background: 'var(--bad)' }} /> Stake vote (a step: bought, then permanent)
             </span>
             <span>
-              <i style={{ background: 'var(--good)' }} /> Human court (pool-corruption odds, re-paid per case)
+              <i style={{ background: 'var(--good)' }} /> Human court (fresh probabilistic draw per case)
             </span>
             <span>
               <i style={{ background: 'var(--accent)', width: 3, height: 12 }} /> your budget

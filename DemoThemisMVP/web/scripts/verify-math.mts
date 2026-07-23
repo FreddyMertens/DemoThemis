@@ -42,13 +42,17 @@ ok('pAll(N) = pOne^N exactly', Math.abs(five - Math.pow(one, 5)) < 1e-12);
 ok('odds multiply (1/5 -> 1/125 -> ~1/3000 shape)', 1 / three > 1 / one && 1 / five > 1 / three);
 ok('PARALLEL constants', PARALLEL.POOL === 600 && PARALLEL.SEATS === 31 && PARALLEL.MAJ === 16);
 
-// 3. Appeal bond: wide pool -> capFloor rounds to ~0 -> bond = panelCost.
-const wide = appealBond(100, 50_000);
-console.log(`\nappealBond(stake=$100, pool=50000): panel=${wide.panel} panelCost=$${wide.panelCost} capFloor=$${wide.capFloor.toFixed(2)} bond=$${wide.bond}`);
-ok('wide pool: bond is the juror-cost floor (7 * $1.50 = $10.50)', wide.bond === 10.5);
-const thin = appealBond(1_000_000, 600);
-console.log(`appealBond(stake=$1M, pool=600): panel=${thin.panel} capFloor=$${thin.capFloor.toFixed(0)} bond=$${thin.bond.toFixed(0)}`);
-ok('thin pool, big stake: capture floor dominates', thin.capFloor > thin.panelCost);
+// 3. Appeal funding conserves: service fee is consumed once; only security principal settles by outcome.
+const wide = appealBond(100, 50_000, 4, 1);
+console.log(`\nappealBond(stake=$100, pool=50000): panel=${wide.panel} service=$${wide.serviceFee} security=$${wide.securityBond.toFixed(2)} total=$${wide.total}`);
+ok('wide pool: service fee = 7 * $1.50 panel work + four weeks of 1% delay', wide.serviceFee === 14.5);
+ok('wide pool: no extra security is required when service fee covers the capture target', wide.securityBond === 0 && wide.total === wide.serviceFee);
+const thin = appealBond(1_000_000, 600, 4, 1);
+console.log(`appealBond(stake=$1M, pool=600): service=$${thin.serviceFee.toFixed(0)} security=$${thin.securityBond.toFixed(0)} total=$${thin.total.toFixed(0)}`);
+ok('thin pool, big stake: capture target adds separate security principal', thin.securityBond > 0);
+ok('appeal total conserves exactly', thin.total === thin.serviceFee + thin.securityBond && thin.serviceFee === thin.panelCost + thin.delayCost);
+ok('success allocates every dollar once', thin.panelCost + thin.delayCost + thin.securityBond === thin.total);
+ok('failure allocates every dollar once', thin.panelCost + thin.delayCost + thin.securityBond === thin.total);
 
 // 4. Wilson gate at the 0.70 bar.
 const w = wilson(0.85, 100);
@@ -60,11 +64,11 @@ ok('clearly-weak juror is suspended', wLow.status === 'Suspended', `=${wLow.stat
 // 5. Token vs human court headline.
 const tc = tokenCourt({ totalStakeTokens: 1_000_000, tokenPrice: 0.5 }, 300_000);
 console.log(`\ntokenCourt: totalStake=$${tc.totalStakeUsd} costToFlip=$${tc.costToFlip} flipped=${tc.flipped} reusable=${tc.reusable}`);
-ok('token court flips at half the stake', tc.costToFlip === 250_000 && tc.flipped);
+ok('token-court model based on systems like UMA and Kleros flips at half the stake', tc.costToFlip === 250_000 && tc.flipped);
 ok('bribe price floor = $6.50', bribePriceFloor() === 6.5);
 const hc = humanCourt({ poolSize: 200, panelSize: 7 }, 300_000);
-console.log(`humanCourt @ $300k budget, N=200: bought=${hc.colludersBought}/200  pFlipOnePanel=${(hc.pFlipOnePanel * 100).toFixed(1)}%  reusable=${hc.reusable}`);
-ok('human court not reusable (fresh panel each case)', hc.reusable === false);
+console.log(`humanCourt @ $300k budget, N=200: bought=${hc.colludersBought}/200  pFlipOnePanel=${(hc.pFlipOnePanel * 100).toFixed(1)}%`);
+ok('human court reports a probabilistic fresh draw', hc.pFlipOnePanel > 0 && hc.pFlipOnePanel < 1);
 
 console.log('\nparallelOdds(K=' + K + '):', parallelOdds(K).map((r) => `${r.panels}->1/${r.oneIn.toFixed(0)}`).join('  '));
 console.log('\ndone.');

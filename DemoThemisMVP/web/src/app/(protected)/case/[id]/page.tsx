@@ -8,7 +8,7 @@ import { CourtTopBar } from '@/components/CourtTopBar';
 import { ErrorState, Skeleton } from '@/components/court-ui';
 import { InstanceBanner } from '@/components/InstanceBanner';
 import { LiveBallot } from '@/components/LiveBallot';
-import { explorerAddress, explorerTx, SUPPORTS_LIVENESS_RECOVERY } from '@/lib/chain';
+import { explorerAddress, explorerTx, MVP_CONFIGURED, SUPPORTS_LIVENESS_RECOVERY } from '@/lib/chain';
 import {
   fetchCaseContent,
   getCase,
@@ -162,17 +162,30 @@ function SeatStrip({ receipt }: { receipt: CaseReceipt }) {
 }
 
 function FinalRuling({ receipt }: { receipt: CaseReceipt }) {
-  const rulingTx = receipt.transactionHashes.Resolved;
+  const rulingTx = receipt.transactionHashes.RulingResolved ?? receipt.transactionHashes.Resolved;
   if (receipt.case.phase !== 'Resolved') return null;
   const initialDrawTimedOut = receipt.events.initialDrawTimedOut;
   const recoveryTimedOut = receipt.events.recoveryTimedOut !== null;
-  const firstRoundYes = recoveryTimedOut ? receipt.events.revealed.filter((event) => event.vote).length : 0;
-  const firstRoundNo = recoveryTimedOut ? receipt.events.revealed.filter((event) => !event.vote).length : 0;
+  const firstRoundAnswers = receipt.events.answerRevealed;
+  const firstRoundYes = recoveryTimedOut
+    ? firstRoundAnswers.length > 0
+      ? firstRoundAnswers.filter((event) => event.ruling === 1).length
+      : receipt.events.revealed.filter((event) => event.vote).length
+    : 0;
+  const firstRoundNo = recoveryTimedOut
+    ? firstRoundAnswers.length > 0
+      ? firstRoundAnswers.filter((event) => event.ruling === 0).length
+      : receipt.events.revealed.filter((event) => !event.vote).length
+    : 0;
+  const firstRoundInsufficient = recoveryTimedOut
+    ? firstRoundAnswers.filter((event) => event.ruling === 2).length
+    : 0;
   const yes = receipt.tally ? Number(receipt.tally.yes) : 0;
   const no = receipt.tally ? Number(receipt.tally.no) : 0;
-  const revealed = yes + no;
+  const insufficient = receipt.tally ? Number(receipt.tally.insufficient) : 0;
+  const revealed = yes + no + insufficient;
   const retryMissedQuorum = receipt.case.redraws > 0 && revealed < 2;
-  const tied = revealed >= 2 && yes === no;
+  const insufficientRuling = receipt.case.ruling === 2;
 
   return (
     <section className="oracle-final-receipt" aria-labelledby="ruling-title">
@@ -188,8 +201,8 @@ function FinalRuling({ receipt }: { receipt: CaseReceipt }) {
             ? 'Recovery expired. Status quo was applied.'
             : retryMissedQuorum
               ? 'The retry missed quorum. Status quo was applied.'
-              : tied
-                ? 'The panel tied. Status quo was applied.'
+              : insufficientRuling
+                ? 'The jury found insufficient information.'
                 : `The jury answered ${receipt.case.outcome ? 'YES' : 'NO'}.`}
         </h2>
         {initialDrawTimedOut ? (
@@ -198,14 +211,14 @@ function FinalRuling({ receipt }: { receipt: CaseReceipt }) {
             {receipt.case.caseType === 1 ? ' · escrow principal returned to the payer' : ''} · no merits ruling
           </p>
         ) : recoveryTimedOut ? (
-          <p>First round: {firstRoundYes} YES · {firstRoundNo} NO · quorum not met · no retry panel formed</p>
+          <p>First round: {firstRoundYes} YES · {firstRoundNo} NO · {firstRoundInsufficient} INSUFFICIENT · quorum not met · no retry panel formed</p>
         ) : retryMissedQuorum ? (
-          <p>Retry: {yes} YES · {no} NO · quorum not met</p>
-        ) : tied ? (
-          <p>{yes} YES · {no} NO · quorum met, votes tied</p>
+          <p>Retry: {yes} YES · {no} NO · {insufficient} INSUFFICIENT · quorum not met</p>
+        ) : insufficientRuling ? (
+          <p>{yes} YES · {no} NO · {insufficient} INSUFFICIENT · neither YES nor NO reached a strict majority</p>
         ) : (
           <p>
-            {yes} YES · {no} NO ·{' '}
+            {yes} YES · {no} NO · {insufficient} INSUFFICIENT ·{' '}
             {receipt.activity.revealCount}/3 answers revealed
           </p>
         )}
@@ -241,11 +254,13 @@ function TransactionLinks({ hashes }: { hashes: readonly Hex[] }) {
 function ChainReceipt({ receipt }: { receipt: CaseReceipt }) {
   const tx = receipt.transactionHashes;
   const initialDrawTimedOut = receipt.events.initialDrawTimedOut;
+  const revealHashes = tx.AnswerRevealed.length > 0 ? tx.AnswerRevealed : tx.Revealed;
+  const rulingHash = tx.RulingResolved ?? tx.Resolved;
   const rows: { label: string; count: string; hashes: readonly Hex[] }[] = [
     { label: 'Case filed', count: tx.CaseOpened ? 'Recorded' : 'Waiting', hashes: tx.CaseOpened ? [tx.CaseOpened] : [] },
     { label: 'Panel seated', count: `${tx.PanelDrawn.length} draw`, hashes: tx.PanelDrawn },
     { label: 'Answers sealed', count: `${receipt.activity.commitmentCount}/3 current · ${tx.Committed.length} event${tx.Committed.length === 1 ? '' : 's'} overall`, hashes: tx.Committed },
-    { label: 'Answers revealed', count: `${receipt.activity.revealCount}/3 current · ${tx.Revealed.length} event${tx.Revealed.length === 1 ? '' : 's'} overall`, hashes: tx.Revealed },
+    { label: 'Answers revealed', count: `${receipt.activity.revealCount}/3 current · ${revealHashes.length} event${revealHashes.length === 1 ? '' : 's'} overall`, hashes: revealHashes },
     ...(tx.RedrawRecoveryStarted
       ? [{
           label: 'Quorum recovery',
@@ -262,8 +277,8 @@ function ChainReceipt({ receipt }: { receipt: CaseReceipt }) {
       : []),
     {
       label: initialDrawTimedOut ? 'Terminal record' : 'Ruling',
-      count: tx.Resolved ? (initialDrawTimedOut ? 'Unwind recorded' : 'Recorded') : 'Waiting',
-      hashes: tx.Resolved ? [tx.Resolved] : [],
+      count: rulingHash ? (initialDrawTimedOut ? 'Unwind recorded' : 'Recorded') : 'Waiting',
+      hashes: rulingHash ? [rulingHash] : [],
     },
     { label: 'Juror payouts', count: `${tx.FeePaid.length} paid`, hashes: tx.FeePaid },
     {
@@ -383,12 +398,14 @@ function NonOfficialCase() {
 
 type CaseDetailData =
   | { kind: 'official'; receipt: CaseReceipt }
-  | { kind: 'nonofficial' };
+  | { kind: 'nonofficial' }
+  | { kind: 'walkthrough' };
 
 export default function CaseDetail() {
   const params = useParams<{ id: string }>();
   const id = Number(params.id);
   const fetcher = useCallback(async () => {
+    if (!MVP_CONFIGURED) return { kind: 'walkthrough' } as const;
     if (!Number.isSafeInteger(id) || id < 0) throw new Error(CASE_NOT_FOUND);
     try {
       const [courtCase, manifest] = await Promise.all([getCase(id), loadQuestionManifest()]);
@@ -406,6 +423,7 @@ export default function CaseDetail() {
   const { data, error, loading, refresh } = usePolledData<CaseDetailData>(fetcher, 8000, stopOnMissing);
   const receipt = data?.kind === 'official' ? data.receipt : null;
   const nonofficial = data?.kind === 'nonofficial';
+  const walkthrough = data?.kind === 'walkthrough';
   const missing = isCaseNotFoundError(error);
   const [question, setQuestion] = useState<{
     content?: OracleQuestion;
@@ -416,23 +434,17 @@ export default function CaseDetail() {
   const criteriaHash = receipt?.case.criteriaHash;
   const awaitingInitialDraw = receipt?.case.status === 0 && receipt.case.redraws === 0 && receipt.case.panel.length === 0;
   const boundedInitialDraw = SUPPORTS_LIVENESS_RECOVERY && awaitingInitialDraw;
-  const legacyInitialDraw = !SUPPORTS_LIVENESS_RECOVERY && awaitingInitialDraw;
   const initialDrawExpired = boundedInitialDraw && receipt?.case.phase === 'Resolvable';
   const awaitingRetry = receipt?.case.status === 0 && receipt.case.redraws > 0;
   const boundedRecovery = SUPPORTS_LIVENESS_RECOVERY && awaitingRetry;
-  const legacyStalledPanel = !SUPPORTS_LIVENESS_RECOVERY && awaitingRetry;
   const liveStateLabel = receipt
     ? boundedInitialDraw
       ? initialDrawExpired ? 'Initial draw expired · refund ready' : 'Waiting for the first panel'
-      : legacyInitialDraw
-        ? 'Legacy initial draw · no timeout protection'
-        : awaitingRetry
-          ? boundedRecovery
-            ? receipt.case.phase === 'Resolvable'
-              ? 'Recovery expired · status quo ready'
-              : 'Restoring the retry panel'
-            : 'Legacy redraw · no timeout protection'
-          : phaseLabels[receipt.case.phase]
+      : boundedRecovery
+        ? receipt.case.phase === 'Resolvable'
+          ? 'Recovery expired · status quo ready'
+          : 'Restoring the retry panel'
+        : phaseLabels[receipt.case.phase]
     : '';
 
   useEffect(() => {
@@ -473,7 +485,15 @@ export default function CaseDetail() {
       </Page.Header>
       <Page.Main className="flex flex-col items-stretch gap-4 mb-20">
         <InstanceBanner />
-        {loading && !receipt ? (
+        {walkthrough ? (
+          <section className="rounded-2xl border border-slate-200 bg-white p-6 text-center" role="status">
+            <h2 className="text-lg font-semibold text-slate-950">Current MVP walkthrough</h2>
+            <p className="mt-1 text-sm text-slate-600">A verified current-release case is not configured for this build.</p>
+            <Link href="/app" className="mt-4 inline-flex rounded-xl bg-slate-950 px-4 py-2 text-sm font-semibold text-white">
+              Explore the MVP flow
+            </Link>
+          </section>
+        ) : loading && !receipt ? (
           <Skeleton rows={4} />
         ) : missing && !receipt ? (
           <CaseNotFound />
@@ -552,15 +572,6 @@ export default function CaseDetail() {
                     )}
                   </div>
                 )}
-                {legacyInitialDraw && (
-                  <div className="mt-4 rounded-2xl border border-red-200 bg-red-50 p-4 text-sm text-red-950" role="alert">
-                    <strong>This immutable case has no initial-draw deadline.</strong>
-                    <p className="mt-1 text-xs leading-relaxed">
-                      Party exclusions or a withdrawal can leave fewer than three eligible jurors and strand the case.
-                      The replacement court preflights eligibility and adds a refund-and-unwind deadline, but cannot protect this legacy case retroactively.
-                    </p>
-                  </div>
-                )}
                 {boundedRecovery && (
                   <div className="mt-4 rounded-2xl border border-amber-200 bg-amber-50 p-4 text-sm text-amber-950" role="status">
                     <strong>
@@ -578,15 +589,6 @@ export default function CaseDetail() {
                         Restore or join <ArrowRight />
                       </Link>
                     )}
-                  </div>
-                )}
-                {legacyStalledPanel && (
-                  <div className="mt-4 rounded-2xl border border-red-200 bg-red-50 p-4 text-sm text-red-950" role="alert">
-                    <strong>This immutable case has no recovery deadline.</strong>
-                    <p className="mt-1 text-xs leading-relaxed">
-                      It needs additional eligible humans to fill the redraw. The bounded timeout protects future cases
-                      only after the replacement court is deployed; it cannot be applied retroactively to this case.
-                    </p>
                   </div>
                 )}
                 <div className="oracle-counts" aria-label="Live ballot counts">

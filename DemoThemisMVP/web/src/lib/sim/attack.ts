@@ -1,7 +1,7 @@
 // The comparative attack demo — "buy this verdict".
 //
 // Two oracles resolve the SAME question under the SAME attacker budget:
-//   - a token-weighted court (UMA/Kleros-style): voting power is proportional to
+//   - token-weighted courts like UMA and Kleros: voting power is proportional to
 //     stake, so a verdict is for sale to whoever buys a majority of stake. Once
 //     bought, it stays bought — the next verdict is free.
 //   - the DemoThemis human court: one verified human, one vote; a random panel is
@@ -10,7 +10,7 @@
 //     the pool widens — and any captured panel is appealed into a bigger one.
 //
 // The human-court math is PORTED from court-math.ts (the reference combinatorics).
-// The token-court model is authored fresh — there is no reference code for it. See
+// The token-court model, based on systems like UMA and Kleros, is authored fresh — there is no reference code for it. See
 // the spec in IMPLEMENTATION_PLAN.md §7 and docs/MECHANISM_DELTA.md.
 
 import { hyperTail, pCaptureAll } from './court-math';
@@ -45,7 +45,7 @@ export function bribePriceFloor(): number {
 }
 
 // ===========================================================================
-// Token-weighted court (authored fresh)
+// Token-weighted court model based on systems like UMA and Kleros (authored fresh)
 // ===========================================================================
 
 export interface TokenCourtParams {
@@ -68,7 +68,7 @@ export interface TokenCourtResult {
 }
 
 /**
- * Token court outcome under `budgetUsd`. The verdict flips with certainty once the
+ * Token-court outcome modelled on systems like UMA and Kleros under `budgetUsd`. The verdict flips with certainty once the
  * budget buys a majority of the staked value, and not at all below it:
  *
  *   costToFlip = 0.5 * totalStakeTokens * tokenPrice
@@ -110,8 +110,6 @@ export interface HumanCourtResult {
   pFlipOnePanel: number;
   /** Budget needed to bribe enough of the pool to make capture a coin flip (>=50%). */
   costForCoinFlip: number;
-  /** A fresh random panel is drawn for every case — nothing is reusable. */
-  reusable: boolean;
 }
 
 function majorityOf(panelSize: number): number {
@@ -138,7 +136,6 @@ export function humanCourt(params: HumanCourtParams, budgetUsd: number): HumanCo
     maj,
     pFlipOnePanel,
     costForCoinFlip: costForTargetPFlip(params, 0.5),
-    reusable: false,
   };
 }
 

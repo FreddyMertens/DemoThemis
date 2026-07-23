@@ -184,11 +184,11 @@ export function CoreCourt({ seed }: { seed: number }) {
       <details className="sbx-inline-details">
         <summary>
           <strong>What this court run models</strong>
-          <span>Replacement mechanics and funded gaps</span>
+          <span>Current MVP and funded roadmap</span>
         </summary>
         <div className="sbx-inline-details-body">
           <p className="sbx-prose">
-            The recovery-enabled replacement flow draws a panel, seals votes until reveal, decides the verdict, and splits the 20 MUSD
+            The current MVP draws a panel, seals votes until reveal, decides the verdict, and splits the 20 MUSD
             demo fee 70/20/10. No-show bonds and rounding dust enter the reward pool. Each simulated identity fills one
             seat. A missed quorum gets one bounded recovery window: a full retry panel is drawn when available, otherwise
             the window expires into status quo. Production randomness and receipt-free ballot privacy remain funded work.

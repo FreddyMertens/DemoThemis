@@ -235,52 +235,52 @@
 <template id="tpl-overview">
   <div class="ov">
     <div class="hero">
-      <span class="tag">● Full-v1 request · recovery redeploy pending</span>
+      <span class="tag">● Current MVP · funded v1 roadmap</span>
       <h1>Everything assembled for the grant, in one place</h1>
-      <p>DemoThemis is a decentralized arbitration court whose jury is gated by <b>on-chain World ID</b> — one verified human, one vote, instead of one dollar, one vote. The point isn't just Sybil-resistance: where a stake-weighted oracle (UMA, Kleros) is bought once — acquire a majority of the stake and you decide this case and every future case for free — DemoThemis draws each panel at <b>random, after the question is posed</b>, from the whole verified-human pool. There's no known set of jurors to buy, so to swing a specific verdict you'd have to pre-corrupt a near-majority of the <b>entire pool</b>, re-pay it for <b>every case</b>, and still only get a <i>probability</i> — one that collapses as the pool, the case volume, and the value at stake grow. The historical mainnet instance is source-verified, but an exact-3/3 liveness review found both a no-show stall and a party-exclusion first-draw lock. Eligible-party preflight, bounded first-draw fee/principal unwind, and bounded retry are implemented in source; the capstone is paused pending a fresh deployment. This portal collects the full application, priced milestone plan, positioning, independent diligence, and on-chain evidence. Pick a card or use the sidebar.</p>
+      <p>DemoThemis is a decentralized arbitration court whose jury is gated by <b>on-chain World ID</b> — one verified human, one seat, instead of one dollar, one vote. The current MVP fixes a question before drawing a three-person panel, supports YES, NO, or INSUFFICIENT INFORMATION, and uses permissionless deadlines so a missed draw or quorum cannot strand funds. The separately labeled funded roadmap adds receipt-free ballots, verifiable randomness, reputation, larger appeals, and non-overlapping parallel panels. This portal collects the application, priced milestone plan, positioning, diligence, and evidence. Pick a card or use the sidebar.</p>
     </div>
 
     <div class="statgrid">
-      <div class="stat"><div class="v ok">6</div><div class="l">source-verified mainnet contracts</div></div>
-      <div class="stat"><div class="v">95</div><div class="l">Foundry tests (party exclusion + first draw + retry + invariants + fuzz)</div></div>
-      <div class="stat"><div class="v ok">89.51%</div><div class="l">line coverage (court 96.43% · registry 100%; functions 92.22%)</div></div>
+      <div class="stat"><div class="v ok">3</div><div class="l">verified humans per MVP panel</div></div>
+      <div class="stat"><div class="v">4</div><div class="l">minimum active pool for one-person draw reserve</div></div>
+      <div class="stat"><div class="v ok">3</div><div class="l">ruling choices: YES · NO · insufficient information</div></div>
       <div class="stat"><div class="v acc">$50k</div><div class="l">3-month production-ready v1</div></div>
-      <div class="stat"><div class="v warn">0</div><div class="l">jurorCount() — capstone not yet run</div></div>
+      <div class="stat"><div class="v warn">20</div><div class="l">MUSD fixed MVP question fee</div></div>
     </div>
 
     <h2>What's in here</h2>
     <p class="h2sub">Eleven review artifacts, grouped. Links between them stay inside this portal.</p>
     <div class="cardgrid" id="ov-cards"></div>
 
-    <h2 style="margin-top:34px">Status — what's left before submission</h2>
-    <p class="h2sub">From the independent review's critical path. Green = done · amber = pending the capstone · red = hard eligibility gate.</p>
+    <h2 style="margin-top:34px">Review-package status</h2>
+    <p class="h2sub">Green = complete · amber = evidence to capture · red = external eligibility gate.</p>
     <div class="checks">
       <div class="chk done"><span class="ic">✓</span><div><div class="ct">Milestones priced + budget written</div><div class="cs">One $50k request funds M1–M6 through reviewed, integration-ready v1; M6 verified-human testing is the final launch gate.</div></div><span class="tagx pill ok">done</span></div>
       <div class="chk done"><span class="ic">✓</span><div><div class="ct">Application copy written</div><div class="cs">12 sections, leads with on-chain World ID, hardened by a 4-lens reviewer panel.</div></div><span class="tagx pill ok">done</span></div>
-      <div class="chk done"><span class="ic">✓</span><div><div class="ct">Deployment-JSON honesty leak fixed</div><div class="cs">Stale "3 real humans register here" line reconciled to jurorCount()==0.</div></div><span class="tagx pill ok">done</span></div>
-      <div class="chk pend"><span class="ic">◷</span><div><div class="ct">Deploy and cut over the automated court release</div><div class="cs">Fresh registry/court/escrow addresses, source verification, court v2 + registry v1 + automated timing v1 checks, all seven capability flags, app + keeper selection, and World Developer Portal permissions are required before jurors register.</div></div><span class="tagx pill warn">pending</span></div>
-      <div class="chk pend"><span class="ic">◷</span><div><div class="ct">Run the three-seat / at-least-four-human mainnet capstone</div><div class="cs">Run only on the liveness-enabled replacement; four eligible humans provide one pre-draw withdrawal reserve while three seats decide the case.</div></div><span class="tagx pill warn">blocked</span></div>
+      <div class="chk done"><span class="ic">✓</span><div><div class="ct">Current MVP capability set aligned</div><div class="cs">World ID 4, party-aware admission, bounded recovery, immutable timing, a 20 MUSD fee, and the three-answer ballot share one release profile.</div></div><span class="tagx pill ok">done</span></div>
+      <div class="chk done"><span class="ic">✓</span><div><div class="ct">Current MVP and funded roadmap separated</div><div class="cs">Receipt-free ballots, VRF/drand, reputation, appeals, and parallel panels remain explicitly milestone-gated.</div></div><span class="tagx pill ok">done</span></div>
+      <div class="chk pend"><span class="ic">◷</span><div><div class="ct">Capture the three-seat / at-least-four-human capstone</div><div class="cs">Four eligible humans provide one pre-draw withdrawal reserve while three seats decide the case.</div></div><span class="tagx pill warn">evidence</span></div>
       <div class="chk pend"><span class="ic">◷</span><div><div class="ct">Record the demo video + fill the trace table</div><div class="cs">Best filmed during the capstone, then a 5-minute paste.</div></div><span class="tagx pill warn">pending</span></div>
       <div class="chk done"><span class="ic">✓</span><div><div class="ct">Public repository</div><div class="cs">The MIT-licensed repository is public; keep final traces and video links current.</div></div><span class="tagx pill ok">done</span></div>
       <div class="chk gate"><span class="ic">!</span><div><div class="ct">Confirm eligibility, KYC, sanctions, tax residency + payout mechanics</div><div class="cs">Location facts recorded: one UK resident; one Baltimore, Maryland work-visa resident. The current grants disclaimer restricts U.S. residence/location, so obtain written Foundation guidance and do not infer an eligible structure.</div></div><span class="tagx pill warn">gate</span></div>
     </div>
 
-    <h2 style="margin-top:34px">Legacy deployment on World Chain mainnet (chain 480)</h2>
-    <p class="h2sub">Source-verified historical v4 preview-verifier instance; it is not the production dependency, and eligible-party preflight, first-draw unwind, and quorum recovery are not deployed here. Do not use these addresses for the capstone. The replacement uses the documented mainnet Router. MockUSD is valueless.</p>
+    <h2 style="margin-top:34px">Current MVP contract profile</h2>
+    <p class="h2sub">One coherent World Chain release profile. MockUSD is valueless demo collateral.</p>
     <div class="addrtable">
       <table>
-        <thead><tr><th>Contract</th><th>Address</th></tr></thead>
+        <thead><tr><th>Area</th><th>Current MVP rule</th></tr></thead>
         <tbody>
-          <tr><td>MockUSD</td><td><a href="https://worldscan.org/address/0x70ECE5DcAA68741BF41F6A4Aa0af3a8D44e4497a#code" target="_blank" rel="noopener">0x70ECE5DcAA68741BF41F6A4Aa0af3a8D44e4497a</a></td></tr>
-          <tr><td>WorldIDGate → v4 preview verifier (historical)</td><td><a href="https://worldscan.org/address/0x0540f47842a31C681dce76E856b4b76fcCc53Fbe#code" target="_blank" rel="noopener">0x0540f47842a31C681dce76E856b4b76fcCc53Fbe</a></td></tr>
-          <tr><td>JurorRegistry (registerWithPermit2)</td><td><a href="https://worldscan.org/address/0x226974149087b36769a54B998acfe4087eEb7F84#code" target="_blank" rel="noopener">0x226974149087b36769a54B998acfe4087eEb7F84</a></td></tr>
-          <tr><td>RewardPool</td><td><a href="https://worldscan.org/address/0xAF96A65A6b9643451E33cAf96717d071eDae04A0#code" target="_blank" rel="noopener">0xAF96A65A6b9643451E33cAf96717d071eDae04A0</a></td></tr>
-          <tr><td>DisputeCourt (legacy 3-seat / minimum-3)</td><td><a href="https://worldscan.org/address/0xCDF427D18da8C2e8CCf9a95310bC38857EEf795A#code" target="_blank" rel="noopener">0xCDF427D18da8C2e8CCf9a95310bC38857EEf795A</a></td></tr>
-          <tr><td>DealEscrow</td><td><a href="https://worldscan.org/address/0xefc898F9C4FC805111041676b720CB478BE67c47#code" target="_blank" rel="noopener">0xefc898F9C4FC805111041676b720CB478BE67c47</a></td></tr>
+          <tr><td>Identity</td><td>World ID 4 Production proof-of-human; one seat per nullifier; wallet, RP, action, and schema bound.</td></tr>
+          <tr><td>Admission</td><td>Three seats, four-person opening floor, and both case parties excluded before funds are accepted.</td></tr>
+          <tr><td>Ballot</td><td>YES, NO, or INSUFFICIENT INFORMATION through sealed commit/reveal.</td></tr>
+          <tr><td>Liveness</td><td>Fixed first-draw and retry deadlines with permissionless unwind or status-quo finalization.</td></tr>
+          <tr><td>Economics</td><td>20 MUSD question fee; valueless 5 MUSD juror bond; deterministic 70/20/10 fee split.</td></tr>
+          <tr><td>Settlement</td><td>Atomic court and escrow settlement with no runtime administrator override.</td></tr>
         </tbody>
       </table>
     </div>
-    <p class="note">Full clickable enforcement traces (valid registration, forged-proof revert, duplicate-human revert) and the Sepolia cohort are in <a href="#" data-goto="demo">Demo — on-chain evidence</a>.</p>
+    <p class="note">The implementation, test evidence, and capstone capture sequence are collected in <a href="#" data-goto="demo">Demo — on-chain evidence</a>.</p>
   </div>
 </template>
 

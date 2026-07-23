@@ -5,9 +5,9 @@ submittable** — the remaining gaps are the liveness-enabled replacement deploy
 capstone, demo video, final vendor quote, and eligibility confirmation, **not application
 structure**. The build
 is genuinely real: 6 historical source-verified contracts live on World Chain mainnet,
-including a clearly labeled v4 preview-verifier adapter with enforcement traces; the
-replacement source uses the documented mainnet World ID Router, alongside the
-comparative attack demo, 100 passing Foundry tests with Router-gate and exact-3/3 party-exclusion,
+including a v4 verifier adapter with clearly labeled Staging/Simulator enforcement traces; the
+replacement source uses the official World ID 4 Production proxy with legacy proofs disabled, alongside the
+comparative attack demo, a 100-test verified Foundry snapshot plus current v4-gate and exact-3/3 party-exclusion regressions,
 first-draw-unwind, and retry-recovery coverage, and a ~20-juror Sepolia
 cohort. **One action — the three-seat capstone with at least four eligible humans — is the master key:** it moves
 `jurorCount` off 0, flips the two most-scored axes from *partial* to *proven*, and
@@ -25,7 +25,7 @@ credential configured but execution paused until replacement · cohort ≈ 20 ju
 |---|---|---|
 | Clear problem statement | ✅ strong | The problem is demonstrable in the attack demo and stated concisely in the application. |
 | Working demo / prototype | ✅ real, **three holes** | Legacy deployment + source verification + sandbox + 3 real enforcement traces are real. Holes: the immutable legacy court lacks the two liveness fixes now in source; the three-seat / at-least-four-human replacement run has not executed; there is no demo video. |
-| **Deep World ID usage** *(highest-scored)* | ⚠️ **partial** | Architecturally deep + historical preview evidence on the *negative* paths. But the affirmative proof — a **real human** verifying through the supported mainnet Router — doesn't exist yet; every trace to date is Simulator/**Staging preview**. The replacement capstone makes it proven. |
+| **Deep World ID usage** *(highest-scored)* | ⚠️ **partial** | Architecturally deep + historical v4 evidence on the *negative* paths. But the affirmative proof — a **real human** verifying through the Production proxy — doesn't exist yet; every trace to date is Simulator/**Staging**. The replacement capstone makes it proven. |
 | Realistic milestones + timeline | ✅ complete | One milestone-gated **$50,000 / three-month** request funds M1–M6 through reviewed, integration-ready v1, with a bottom-up budget and acceptance artifact for every tranche. |
 | Open source | ✅ **passed** | MIT LICENSE present, contracts source-verified, and [`FreddyMertens/DemoThemis`](https://github.com/FreddyMertens/DemoThemis) is public. |
 | Sustainability | ✅ addressed | 70/20/10 fee economics are on-chain in valueless tokens (zero real revenue until launch). M4 publishes a versioned SDK and neutral reference integration so independent World Apps can submit questions or disputed deals without another court build phase. See GRANT_APPLICATION §10. |
@@ -40,8 +40,8 @@ credential configured but execution paused until replacement · cohort ≈ 20 ju
 **Owner key:** 🧑 you / demo-day · 🛠 buildable now · 🔀 either
 
 1. **🧑 Run the three-seat mainnet capstone with at least four eligible humans** *(the gating deliverable — everything keys off it)*
-   First deploy the recovery-enabled court and `WorldIDRouterGate` with `PANEL_SIZE = 3` and `MIN_POOL >= 4`, source-verify, allowlist, and cut it over. Then scan the Portal preview QR → register at least four Orb-verified humans through the documented mainnet Router → let the fixed-opener keeper complete official question one and confirm question two opens only afterward. Four supplies one pre-draw withdrawal reserve; three remains fund-safe only because the timeout can unwind instead of adjudicating. Follow only [`CAPSTONE_RUNBOOK.md`](CAPSTONE_RUNBOOK.md); the old Step-5 addresses and former manually opened question/escrow sequence are retired. Blockers: replacement deployment + Portal cutover + four verified humans and phones — not headless-runnable.
-2. **🧑 Record + upload the demo video** (live question → real mainnet phone flow → permanent receipt → archived Step-3.5 reverts). Best filmed *during* the first official question so the Router-gated flow is real on camera. Highest persuasion-per-minute for a reviewer who won't install World App.
+   First deploy the recovery-enabled court and v4-only `WorldIDGate` with `PANEL_SIZE = 3` and `MIN_POOL >= 4`, source-verify, allowlist, and cut it over. Then scan the Portal preview QR → register at least four Orb-verified humans through the World ID 4 Production verifier → let the fixed-opener keeper complete official question one and confirm question two opens only afterward. Four supplies one pre-draw withdrawal reserve; three remains fund-safe only because the timeout can unwind instead of adjudicating. Follow only [`CAPSTONE_RUNBOOK.md`](CAPSTONE_RUNBOOK.md); the old Step-5 addresses and former manually opened question/escrow sequence are retired. Blockers: replacement deployment + Portal cutover + four verified humans and phones — not headless-runnable.
+2. **🧑 Record + upload the demo video** (live question → real mainnet phone flow → permanent receipt → archived Step-3.5 reverts). Best filmed *during* the first official question so the v4 Production-gated flow is real on camera. Highest persuasion-per-minute for a reviewer who won't install World App.
 3. **🛠 Fill the DEMO.md Step-5 trace table** — paste the 3 registrations, official question transactions, juror actions, resolution, receipt, and question-two opening. (5-min edit; blocked only on #1.)
 4. **✅ Public repository — DONE.** [`FreddyMertens/DemoThemis`](https://github.com/FreddyMertens/DemoThemis) is public; keep the final trace and video links current before submission.
 5. **✅ Full production budget — DONE.** One $50,000 / three-month request funds M1–M6; each tranche has a verifiable acceptance artifact. Confirm the final M5 vendor quote before submission.

@@ -2,24 +2,24 @@
 
 The self-evidencing artifacts behind the grant's claims: clickable explorer
 traces, not markdown assertions. It holds the **archived Step 3.5** evidence (a real
-on-chain proof check against the World ID 4.0 Staging preview verifier), the **Step 4**
-Sepolia cohort history, and the **Step 5** Router-gated replacement queue.
+on-chain proof check against the World ID 4.0 Staging verifier), the **Step 4**
+Sepolia cohort history, and the **Step 5** v4 Production-gated replacement queue.
 The Step-5 table is filled as the first official three-seat question runs from a
 pool of at least four eligible humans.
 
-## Archived Step 3.5 — World ID 4.0 preview verifier (World Chain mainnet, chain 480)
+## Archived Step 3.5 — World ID 4.0 Staging verifier (World Chain mainnet, chain 480)
 
 The historical adapter's proof and nullifier behavior is shown by a real
 `WorldIDVerifier.verify` call running inside the juror-registration transaction,
 plus forged/duplicate proof reverts. Proven here against the World ID 4.0
-**Staging** preview verifier with World ID **Simulator** identities — real v4 proofs,
+**Staging** verifier with World ID **Simulator** identities — real v4 proofs,
 a real contract call, no Orb, cents of gas. This is historical adapter evidence,
-not production-readiness evidence. Step 5 uses `WorldIDRouterGate` and the documented
-mainnet Router while also deploying the current liveness-enabled court and escrow.
+not production-readiness evidence. Step 5 uses `WorldIDGate` and the official
+Production proxy while also deploying the current liveness-enabled court and escrow.
 
 > Honesty note: the registering identities below are World ID **Simulator** staging
 > identities (labeled simulated). What is NOT simulated is the verification: the
-> preview `WorldIDVerifier` contract ran the proof check on-chain. Official release
+> Staging `WorldIDVerifier` contract ran the proof check on-chain. Environment,
 > status, credential provenance, and proof validity are separate facts.
 
 ### Deployed instance (source of the addresses: `contracts/deployments/worldchain-mainnet.json`)
@@ -56,8 +56,8 @@ the deployer, one to a second wallet), via `scripts/prove-sybil-mainnet.sh`.
 
 ### Inspect the archived experiment
 
-The production `/register-onchain` route now emits Router-compatible proofs and cannot
-recreate this preview tuple. Inspect the linked immutable transactions with
+The production `/register-onchain` route now emits v4 Production proofs using the
+same tuple with a Production RP context. Inspect the linked immutable transactions with
 `cast run <txhash> --rpc-url https://worldchain-mainnet.g.alchemy.com/public`.
 The archived `scripts/prove-sybil-mainnet.sh` documents how the recorded v4 proof
 blobs were submitted; do not use it as a current deployment or onboarding procedure.
@@ -66,7 +66,7 @@ blobs were submitted; do not use it as a current deployment or onboarding proced
 
 The free scale-and-history demo: ~20 scripted jurors and a mix of resolved cases
 across both types, gated by the labeled `MockSybilGate` stand-in (the historical
-preview-verifier evidence lives on mainnet, above). All cohort data is **simulated and
+Staging-verifier evidence lives on mainnet, above). All cohort data is **simulated and
 disclosed** — the honesty rule. Source: `contracts/deployments/worldchain-sepolia.json`.
 
 | Contract | Address |
@@ -97,7 +97,7 @@ The Mini App surfaces this on the Become-a-juror screen alongside the two mainne
 World ID reverts (forged proof → verifier revert; same human second wallet →
 NullifierAlreadyUsed).
 
-## Step 5 legacy preview instance and Router-gated replacement (chain 480)
+## Step 5 legacy court and v4 Production-gated replacement (chain 480)
 
 The intended live demo slice is one public-research question at a time, decided by
 a 3-seat panel drawn from at least the configured eligible minimum of Orb-verified humans on World Chain mainnet. The replacement deployment should use `MIN_POOL >= 4` so one pre-draw withdrawal still leaves three seats; `MIN_POOL = 3` remains fund-safe through its bounded unwind but does not provide that adjudication-availability reserve. Jurors receive
@@ -105,10 +105,10 @@ the question and objective YES rule but no supplied evidence links; each juror
 finds and evaluates public sources independently. MockUSD is valueless, and the
 three-seat panel is an explicit demo parameter.
 
-The replacement `WorldIDRouterGate` points to the officially documented World ID
-Router [`0x17B354dD2595411ff79041f930e491A4Df39A278`](https://worldscan.org/address/0x17B354dD2595411ff79041f930e491A4Df39A278).
-It binds the proof to the wallet and the `juror-registration` app action. The old
-v4 address remains recorded only as an immutable preview-era deployment fact.
+The replacement `WorldIDGate` points to the officially documented World ID 4
+Production proxy [`0x00000000009E00F9FE82CfeeBB4556686da094d7`](https://worldscan.org/address/0x00000000009E00F9FE82CfeeBB4556686da094d7).
+It binds the proof to the wallet, RP, proof-of-human schema, and `juror-registration`
+action. The client requires v4 and disables legacy proof generation.
 
 ### Legacy deployed and source-verified instance — do not use for the capstone
 
@@ -118,7 +118,7 @@ Source: `contracts/deployments/worldchain-mainnet.json`; deployment block
 | Contract | Address |
 |---|---|
 | MockUSD | [`0x70ECE5…497a`](https://worldscan.org/address/0x70ECE5DcAA68741BF41F6A4Aa0af3a8D44e4497a#code) |
-| WorldIDGate (historical v4 preview adapter) | [`0x0540f4…3Fbe`](https://worldscan.org/address/0x0540f47842a31C681dce76E856b4b76fcCc53Fbe#code) |
+| WorldIDGate (v4 Production verifier; legacy court) | [`0x0540f4…3Fbe`](https://worldscan.org/address/0x0540f47842a31C681dce76E856b4b76fcCc53Fbe#code) |
 | JurorRegistry (`registerWithPermit2`) | [`0x226974…7F84`](https://worldscan.org/address/0x226974149087b36769a54B998acfe4087eEb7F84#code) |
 | RewardPool | [`0xAF96A6…04A0`](https://worldscan.org/address/0xAF96A65A6b9643451E33cAf96717d071eDae04A0#code) |
 | DisputeCourt (3 seats / minimum pool 3) | [`0xCDF427…795A`](https://worldscan.org/address/0xCDF427D18da8C2e8CCf9a95310bC38857EEf795A#code) |
@@ -176,12 +176,12 @@ the pool to refill.
 
 ### First official run — evidence table
 
-> Pending: no Router-gated production juror has registered and question one has not opened.
+> Pending: no v4 Production-gated juror has registered and question one has not opened.
 > Replace each `_pending_` cell with a direct Worldscan or permanent app link.
 
 | # | Evidence | Tx / link |
 |---|---|---|
-| 1 | Human #1 registers; `WorldIDRouter.verifyProof` succeeds in-tx | _pending_ |
+| 1 | Human #1 registers; `WorldIDVerifier.verify` succeeds in-tx | _pending_ |
 | 2 | Human #2 registers | _pending_ |
 | 3 | Human #3 registers | _pending_ |
 | 4 | Sponsored World App transaction; sponsor pays gas | _pending_ |

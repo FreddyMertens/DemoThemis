@@ -161,7 +161,7 @@ export function ReputationDemo() {
       <p className="sbx-note warn">
         <b>Simulation and privacy:</b> this screen exposes a score only to explain the model. The
         production design keeps each juror&apos;s reputation and punishment history private; implementing
-        that privacy is funded work, not an MVP feature. The deployed court currently draws uniformly.
+        that privacy is funded work, not an MVP feature. The current MVP draws uniformly.
       </p>
     </Widget>
   );

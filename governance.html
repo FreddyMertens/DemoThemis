@@ -143,18 +143,18 @@
   <section class="reveal" data-brand="omen">
     <p class="sec-label">The company token</p>
     <h2>Capital governs growth, never truth</h2>
-    <p>One-token-one-vote gives the business a direct mandate to compete. The market token steers growth spending, thresholds, its treasury, and a product margin capped at one percentage point. That margin belongs entirely to OmenMarketMaker. DemoThemis sets the work-based jury price; each market locks its resolution-reserve target and maximum depositor percentage before betting, then pays automatically only when the reserve is fully funded. Early traders receive a World-ID-gated genesis airdrop based on daily-net volume; afterward the token floats freely.</p>
+    <p>One-token-one-vote gives the business a direct mandate to compete. The market token steers growth spending, thresholds, its treasury, and a product margin capped at one percentage point. That margin belongs entirely to OmenMarketMaker. DemoThemis publishes a versioned deterministic court-fee policy; when resolution is eligible, any caller may post the exact fee as a bond. Early traders receive a World-ID-gated genesis airdrop based on daily-net volume; afterward the token floats freely.</p>
     <p>Larger investors receive more influence over the profit engine, aligning control with committed capital. The firewall confines that influence to the market business: investors can choose how aggressively it competes, while truth remains outside their reach.</p>
 
     <figure class="diagram reveal">
       <div class="diagram-inner">
         <div class="invoice">
           <div class="iv" data-brand="omen">OmenMarketMaker economics<small>its own market fee, margin, and treasury</small></div>
-          <div class="iv first" data-brand="neutral">Locked resolution reserve<small>pro-rata deposits; automatic payment or refund</small></div>
+          <div class="iv first" data-brand="neutral">Resolution bond<small>caller-funded fee; conditional reimbursement</small></div>
           <div class="iv" data-brand="demothemis">DemoThemis economics<small>work-based jury price and internal distribution</small></div>
         </div>
       </div>
-      <figcaption>Two ledgers, not one fee waterfall. <b>The reserve automates a client-provider payment without turning it into OmenMarketMaker profit or merging governance.</b></figcaption>
+      <figcaption>Two ledgers, not one fee waterfall. <b>The caller's bond pays DemoThemis once without turning that payment into OmenMarketMaker profit or merging governance.</b></figcaption>
     </figure>
 
     <p>Even total control of the market token reaches only OmenMarketMaker's margin, treasury, and product settings. DemoThemis pricing, treasury, jurors, quality scoring, and court windows remain beyond it. Business control stops at the product boundary.</p>
@@ -190,7 +190,7 @@
     </div>
 
     <p>A service multiplier then rewards fees paid and <a href="demothemis.html#quality-engine">reputation-credited cases</a>, not claimed case value or empty clicks. Both inputs decay on a 90-day half-life, their half-saturation points track live medians, and the multiplier tops out at &times;4. No person may exceed 0.5% of court weight. Tokens must be linked for 30 days, with the snapshot fixed when a proposal opens.</p>
-    <p>Counting DemoThemis fees instead of case value makes self-dealing costly: filing sham cases still pays DemoThemis's current published quote each time. Credited cases use the court's baseline-adjusted score, so obvious or careless votes add little. Median-linked saturation prevents yesterday's activity scale from fixing tomorrow's electorate.</p>
+    <p>Counting DemoThemis fees instead of case value makes self-dealing costly: filing sham cases still pays DemoThemis's deterministic court fee each time. Credited cases use the court's baseline-adjusted score, so obvious or careless votes add little. Median-linked saturation prevents yesterday's activity scale from fixing tomorrow's electorate.</p>
     <p>The exact reputation and case history remain private. A voter proves the allowed weight from committed inputs, so public governance does not recreate a link between identity, past cases, verdicts, and payments.</p>
 
     <div class="widget reveal">
@@ -244,7 +244,7 @@
     <p class="sec-label">The rails</p>
     <h2>What a captured vote still could not do</h2>
     <p>Every adjustable parameter stays inside a hard-coded range, and passed proposals wait through a public 7-day timelock. No vote can transfer value between the products, change the other's pricing or treasury, make court ballots provable, make court weight linear, remove personhood, reopen final rulings or completed escrow, or redirect slashes away from the reward pool. The constitution is the part with no dial.</p>
-    <p>Court governance approves only the bounded inputs to a public formula: base juror pay, complexity bands, reserve target, operations budget and cap, and a jury-fee ceiling between 0.5% and 3%. Changes take effect at the next pricing epoch and cannot alter a quote or case already locked.</p>
+    <p>Court governance approves only the bounded inputs to a public formula: base juror pay, complexity bands, reward-pool target, operations budget and cap, and a jury-fee ceiling between 0.5% and 3%. Changes take effect through a new pricing-policy version and cannot alter a market's locked policy or an opened case.</p>
     <p>A narrow, public migration path can replace a faulty rule only through transparent notice and user choice. Neither house receives an emergency key capable of crossing the firewall or changing an active case.</p>
 
     <div class="vals-wrap reveal">
@@ -259,7 +259,7 @@
           <tr><td>Per-person cap</td><td><span class="param">0.5%</span> of the court house</td><td>Change needs a crowd.</td></tr>
           <tr><td>Token lock</td><td>30 days before counting; snapshot at proposal (both tokens)</td><td>No rented votes, no buying after the question is asked.</td></tr>
           <tr><td>Quorum / timelock</td><td>4% of active weight / 7 days (both houses)</td><td>Allows participation, exit, and challenge.</td></tr>
-          <tr><td>Court parameter ranges</td><td>juror base pay and complexity bands; reward-reserve target; public operations budget and cap; jury-fee ceiling <span class="param">0.5&ndash;3%</span>; resolved-case tests 5&ndash;20% of the score window; ladder rail &times;1.5&ndash;&times;3; appeal window 2&ndash;8 weeks</td><td>Pricing changes by epoch inside hard bounds; no vote can restore a permanent fee split or alter an active quote.</td></tr>
+          <tr><td>Court parameter ranges</td><td>juror base pay and complexity bands; reward-pool target; public operations budget and cap; jury-fee ceiling <span class="param">0.5&ndash;3%</span>; resolved-case tests 5&ndash;20% of the score window; ladder rail &times;1.5&ndash;&times;3; appeal window 2&ndash;8 weeks</td><td>Pricing changes through versioned policies inside hard bounds; no vote can alter a market's locked policy or an active case.</td></tr>
           <tr><td>Ballots</td><td>Court: the locked box. Market: ordinary on-chain token vote</td><td>Court votes must be unsellable; market votes are capital, and capital may speak as itself.</td></tr>
           <tr><td>Constitution</td><td>No dial exists</td><td>Independent pricing and treasuries, personal sublinear weight, finality, and neutral slash routing are permanent.</td></tr>
         </tbody>
@@ -276,11 +276,11 @@
         <thead><tr><th>Token</th><th>Genesis allocation</th><th>After genesis</th><th>Economic role</th></tr></thead>
         <tbody>
           <tr data-brand="omen"><td>OmenMarketMaker</td><td>1B: 30% community airdrop and usage; 25% vested investors; 25% treasury; 20% team over four years with a one-year cliff</td><td>10% year-one growth emissions, tapering to 0% over ten years</td><td>Funds market incentives, integrations, referrals, and liquidity; seeks profit.</td></tr>
-          <tr data-brand="demothemis"><td>DemoThemis court</td><td>Fixed 1B: 50% streamed over eight years by decayed service score; 20% to first-year case sponsors and jurors; 20% treasury; 10% builders</td><td>No inflation; trades freely because voting weight, not transfer restrictions, supplies the defense</td><td>Fees pay jurors and reward pools; failed appeal bonds fund the reward pool.</td></tr>
+          <tr data-brand="demothemis"><td>DemoThemis court</td><td>Fixed 1B: 50% streamed over eight years by decayed service score; 20% to first-year case sponsors and jurors; 20% treasury; 10% builders</td><td>No inflation; trades freely because voting weight, not transfer restrictions, supplies the defense</td><td>Appeal service fees pay panel work and delay once; only forfeited security bonds enter the reward pool.</td></tr>
         </tbody>
       </table>
     </div>
-    <p>OmenMarketMaker's emissions fuel its own demand. DemoThemis's fixed supply is earned for court service but never pays salaries: DemoThemis fees pay jurors and reward pools, while a failed appeal bond funds the reward pool for the wider panel. Each token serves only its own product: one governs a commercial market, the other governs neutral arbitration.</p>
+    <p>OmenMarketMaker's emissions fuel its own demand. DemoThemis's fixed supply is earned for court service but never pays salaries: each funded appeal consumes its tagged panel-work and delay service fee once, while only the separately escrowed security bond enters the reward pool after a failed appeal. A successful appeal returns that security principal from escrow. Each token serves only its own product: one governs a commercial market, the other governs neutral arbitration.</p>
     <p>Public vesting, treasury, service-distribution, and voter-concentration reports keep the electorate legible. Broad participation completes the same anti-capture design enforced by the root, service multiplier, and per-person cap.</p>
   </section>
 

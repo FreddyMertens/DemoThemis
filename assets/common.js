@@ -449,7 +449,7 @@
       flow: "The total value disputed through the court each month. Together with typical case value, it sets case volume and juror workload.",
       stake: "The typical value at risk in a contested case. The model uses it as a proxy for case stakes, jury size, and attack value.",
       lag: "How many weeks juror pay at risk remains pending before finality. Longer windows increase its burden and the value of delay.",
-      fee: "The maximum share of case value the work-based jury quote may charge. Governance can set this ceiling only between 0.5% and 3%.",
+      fee: "The maximum share of case value the deterministic work-based court fee may charge. Governance can set this ceiling only between 0.5% and 3%.",
       caseHours: "The expected evidence and decision time for each juror. It is locked with the case before selection.",
       complexity: "The published complexity multiplier applied to expected juror work. It is fixed before the draw.",
       reserveCoverage: "Current reward-reserve funding versus its target. Cases top it up only below 100% coverage.",

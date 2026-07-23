@@ -1,21 +1,21 @@
 'use client';
 // Shared MiniKit write path for the selected mainnet addresses. World App batches
 // transactions and should sponsor gas for verified humans; deployment capability
-// flags gate calls added after the currently deployed legacy instance. We poll for
+// flags gate calls to the explicitly configured current MVP release. We poll for
 // the receipt to get the real transaction hash for an explorer link.
 //
 // NOTE: this path only runs inside World App on World Chain mainnet (480). It
-// cannot be exercised in a desktop browser or this CI, so each replacement
-// deployment must be smoke-tested on a real phone before capstone evidence is
+// cannot be exercised in a desktop browser or this CI, so each current release
+// must be smoke-tested on a real phone before capstone evidence is
 // claimed. The desktop/dev equivalent is the B5 page (viem).
 import { MiniKit } from '@worldcoin/minikit-js';
 import { useUserOperationReceipt } from '@worldcoin/minikit-react';
 import { useCallback, useState } from 'react';
 import { createPublicClient, http } from 'viem';
 import { worldchain } from 'viem/chains';
-import { LIVE } from './contracts';
+import { CURRENT_MVP } from './contracts';
 
-const client = createPublicClient({ chain: worldchain, transport: http(LIVE.chain.rpcUrl) });
+const client = createPublicClient({ chain: worldchain, transport: http(CURRENT_MVP.chain.rpcUrl) });
 
 export type TxStep = 'idle' | 'submitting' | 'confirming' | 'success' | 'error';
 
@@ -45,7 +45,7 @@ export function useCourtTx(): CourtTx {
       setTxHash('');
       setStep('submitting');
       try {
-        const res = await MiniKit.sendTransaction({ chainId: LIVE.chain.chainId, transactions });
+        const res = await MiniKit.sendTransaction({ chainId: CURRENT_MVP.chain.chainId, transactions });
         // Result shape is defensive: World App returns the userOpHash on success,
         // or an error payload on user-rejection / failure.
         const r = res as { data?: { userOpHash?: string }; finalPayload?: { status?: string; error_code?: string } };

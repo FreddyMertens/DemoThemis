@@ -144,8 +144,12 @@ export function wilson(p: number, n: number): WilsonResult {
 export const MSTAR = 500;
 /** Multiplier on the capture-floor (anti-re-roll): bond >= LAMBDA * odds * stake. */
 export const LAMBDA = 2;
+/** Delay compensation charged per week as a share of the value kept locked. */
+export const APPEAL_DELAY_RATE_WEEKLY = 0.01;
+/** A dead tie keeps 40% of the anti-re-roll target; a unanimous result keeps 100%. */
+export const MIN_APPEAL_CONFIDENCE_FACTOR = 0.4;
 /** The per-seat case fee used by the reference ladder math ($1.50). NOTE: the
- *  deployed core court charges $2 per question case; the sandbox keeps each widget
+ *  replacement core court charges 20 MUSD per question case; the sandbox keeps each widget
  *  on its own source-of-truth number (see docs/MECHANISM_DELTA.md). */
 export const FEE_LADDER = 1.5;
 
@@ -159,12 +163,22 @@ export interface AppealBond {
   maj: number;
   share: number;
   odds: number;
-  /** Juror-cost floor: it costs this much to seat the next panel. */
+  weeks: number;
+  confidenceFactor: number;
+  /** Non-refundable juror-work component of the appeal service fee. */
   panelCost: number;
-  /** Anti-re-roll / capture floor: LAMBDA * P(capture) * stake. */
+  /** Non-refundable compensation for the additional lock period. */
+  delayCost: number;
+  /** Non-refundable service fee: panel work + delay compensation. */
+  serviceFee: number;
+  /** Raw anti-re-roll target before the verdict-confidence adjustment. */
+  rawCapFloor: number;
+  /** Adjusted anti-re-roll target: raw target * confidence factor. */
   capFloor: number;
-  /** The rung bond actually charged = max of the live floors. */
-  bond: number;
+  /** Refundable on success and forfeitable on failure; never pays service costs. */
+  securityBond: number;
+  /** Total appeal funding required = service fee + security bond. */
+  total: number;
 }
 
 /**
@@ -175,24 +189,38 @@ export interface AppealBond {
  *   maj       = floor(panel/2) + 1
  *   share     = min(1, MSTAR / pool)         (a bloc's reach into the anchor pool)
  *   odds      = binomTail(panel, maj, share) (chance that reach captures a panel)
- *   panelCost = panel * FEE_LADDER           (juror-cost floor)
- *   capFloor  = LAMBDA * odds * stake        (anti-re-roll / capture floor)
- *   bond      = max(panelCost, capFloor)
+ *   panelCost   = panel * FEE_LADDER
+ *   delayCost   = stake * APPEAL_DELAY_RATE_WEEKLY * weeks
+ *   serviceFee  = panelCost + delayCost
+ *   rawCapFloor = LAMBDA * odds * stake
+ *   capFloor    = rawCapFloor * confidenceFactor
+ *   securityBond = max(0, capFloor - serviceFee)
+ *   total       = serviceFee + securityBond = max(serviceFee, capFloor)
  *
- * NOTE: the reference *prose* names three floors (juror-cost, anti-re-roll,
- * delay-rent) but the published JS computes only the two above. We port the JS
- * verbatim so the bond figures match the pitch site; the delay-rent floor is a
- * roadmap refinement, not computed. See docs/MECHANISM_DELTA.md.
+ * The service fee is consumed exactly once when the appeal starts. The security
+ * bond is separate principal: success returns it pro-rata; failure forfeits it
+ * to the reward pool. An underfunded round starts no work and refunds everything.
  */
-export function appealBond(stake: number, pool: number): AppealBond {
+export function appealBond(stake: number, pool: number, weeks = 4, margin01 = 1): AppealBond {
   const panel = panelFor(stake);
   const maj = Math.floor(panel / 2) + 1;
   const share = Math.min(1, MSTAR / pool);
   const odds = binomTail(panel, maj, share);
+  const boundedWeeks = Math.max(2, Math.min(8, weeks));
+  const boundedMargin = Math.max(0, Math.min(1, margin01));
+  const confidenceFactor = MIN_APPEAL_CONFIDENCE_FACTOR
+    + (1 - MIN_APPEAL_CONFIDENCE_FACTOR) * boundedMargin;
   const panelCost = panel * FEE_LADDER;
-  const capFloor = LAMBDA * odds * stake;
-  const bond = Math.max(panelCost, capFloor);
-  return { panel, maj, share, odds, panelCost, capFloor, bond };
+  const delayCost = stake * APPEAL_DELAY_RATE_WEEKLY * boundedWeeks;
+  const serviceFee = panelCost + delayCost;
+  const rawCapFloor = LAMBDA * odds * stake;
+  const capFloor = rawCapFloor * confidenceFactor;
+  const securityBond = Math.max(0, capFloor - serviceFee);
+  const total = serviceFee + securityBond;
+  return {
+    panel, maj, share, odds, weeks: boundedWeeks, confidenceFactor,
+    panelCost, delayCost, serviceFee, rawCapFloor, capFloor, securityBond, total,
+  };
 }
 
 // ===========================================================================

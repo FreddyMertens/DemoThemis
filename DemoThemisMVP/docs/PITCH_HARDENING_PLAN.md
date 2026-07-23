@@ -6,8 +6,9 @@
 > step" wording are historical, not current instructions. The replacement should use a
 > three-seat panel with `MIN_POOL >= 4` and at least four eligible humans.
 > Use `LIVENESS_RECOVERY.md` and `CAPSTONE_RUNBOOK.md` for the executable state.
-> Its v4 “Production verifier” content is also superseded: new deployments use
-> `WorldIDRouterGate`; `WorldIDGate` is historical preview evidence only.
+> Its earlier v4-release warning is also superseded: official documentation now
+> lists the v4 Production proxy. New deployments use the hardened `WorldIDGate`
+> with legacy proofs disabled; the old court addresses remain historical only.
 
 **What this fixes** (from `docs/GRANT_READINESS.md`):
 1. The 3-seat live panel undercuts "truth isn't for sale" (~$13 to flip) — reframe as a deliberate demo size whose security is **pool width**, a parameter sweep, not a research risk.
@@ -48,7 +49,7 @@ Create these three blocks first; every workstream just *places* them. Keep wordi
 | Random panel drawn **after** the question | Parallel pᴺ panels above a value line — milestone #3 |
 | Commit / reveal voting | Juror reputation / Wilson gate — milestone #3 |
 | 70/20/10 fee split + 2% escrow fee; **slash-to-pool, never to winners** | Reward-pool cyclic payout — milestone #3 |
-| **Atomic** escrow settlement (`resolve → escrow.settle`) | Work-based quote engine + reusable resolution SDK — milestones #3–4 |
+| **Atomic** escrow settlement (`resolve → escrow.settle`) | Deterministic court-fee engine + reusable resolution SDK — milestones #3–4 |
 | **No runtime admin override**: one-shot wiring, immutable voting windows, and permissionless lifecycle transitions | (external security review — milestone #5) |
 | 77 Foundry tests (invariants + fuzz), >90% coverage, all sources verified | |
 ```

@@ -355,7 +355,7 @@ body.theme-solve { --accent: #2f62cf; --accent-soft: #e6edfa; --accent-ink: #214
     <p class="sec-label">Why it exists</p>
     <h2>Online trust already depends on arbiters</h2>
     <div class="simple-grid four">
-      <div class="simple-card"><span class="num">1</span><h3>You trust the backstop</h3><p>When you book, buy, ride, rent, sell, or bet online, you are trusting whoever can reverse the payment if the deal goes wrong.</p></div>
+      <div class="simple-card"><span class="num">1</span><h3>You trust the backstop</h3><p>When you book an Airbnb, take an Uber, buy on eBay, order through DoorDash, or bet online, you are trusting whoever can reverse the payment if the deal goes wrong.</p></div>
       <div class="simple-card"><span class="num">2</span><h3>The backstop is usually conflicted</h3><p>A platform, bank, venue, or token vote can be slow, expensive, house-owned, or buyable by the largest holders.</p></div>
       <div class="simple-card"><span class="num">3</span><h3>Escrow changes the power</h3><p>When assets are at stake, protocol escrow lets the app provide the interface without controlling the funds or outcome.</p></div>
       <div class="simple-card"><span class="num">4</span><h3>A shared court can compound</h3><p>Many apps can use one arbiter, and the court gets better as more cases create fees, records, and evidence of juror quality.</p></div>
@@ -368,12 +368,12 @@ body.theme-solve { --accent: #2f62cf; --accent-soft: #e6edfa; --accent-ink: #214
     <ol class="simple-loop" aria-label="Case lifecycle from filing to final ruling">
       <li class="simple-step"><span class="simple-step-marker" aria-hidden="true"><span class="simple-step-icon"><svg viewBox="0 0 24 24"><rect x="5" y="10" width="14" height="10" rx="2"/><path d="M8 10V7a4 4 0 0 1 8 0v3"/><path d="M12 14v2"/></svg></span></span><h3>Case and fee lock</h3><p>The requester submits the question, evidence rules, and juror fee before anyone is drawn. If assets are involved, they may also enter protocol escrow.</p></li>
       <li class="simple-step"><span class="simple-step-marker" aria-hidden="true"><span class="simple-step-icon"><svg viewBox="0 0 24 24"><circle cx="9" cy="8" r="3"/><path d="M3 20c0-4 2.5-6 6-6s6 2 6 6"/><path d="M16 5h5l-2-2"/><path d="M21 5l-2 2"/></svg></span></span><h3>Jurors are drawn</h3><p>World-ID humans enter the pool. A public randomness beacon draws one panel, bound to the case. Anyone who does not assess themselves as capable of judging it can decline, and the next standby takes the seat.</p></li>
-      <li class="simple-step"><span class="simple-step-marker" aria-hidden="true"><span class="simple-step-icon"><svg viewBox="0 0 24 24"><path d="M4 8V5a1 1 0 0 1 1-1h3M16 4h3a1 1 0 0 1 1 1v3M20 16v3a1 1 0 0 1-1 1h-3M8 20H5a1 1 0 0 1-1-1v-3"/><circle cx="12" cy="10" r="2"/><path d="M8.5 16c.8-1.7 2-2.5 3.5-2.5s2.7.8 3.5 2.5"/></svg></span></span><h3>Presence is checked</h3><p>A draw-bound face check confirms the enrolled human is present now, without giving DemoThemis a face database.</p></li>
+      <li class="simple-step"><span class="simple-step-marker" aria-hidden="true"><span class="simple-step-icon"><svg viewBox="0 0 24 24"><path d="M4 8V5a1 1 0 0 1 1-1h3M16 4h3a1 1 0 0 1 1 1v3M20 16v3a1 1 0 0 1-1 1h-3M8 20H5a1 1 0 0 1-1-1v-3"/><circle cx="12" cy="10" r="2"/><path d="M8.5 16c.8-1.7 2-2.5 3.5-2.5s2.7.8 3.5 2.5"/></svg></span></span><h3>Presence is checked</h3><p>After Orb verification creates the seat, a draw-bound on-device presence/continuity check confirms the enrolled human is participating now. It is an anti-rental backstop, not a Device-only route into the jury.</p></li>
       <li class="simple-step"><span class="simple-step-marker" aria-hidden="true"><span class="simple-step-icon"><svg viewBox="0 0 24 24"><path d="M12 3 5 6v5c0 4.8 2.8 8 7 10 4.2-2 7-5.2 7-10V6l-7-3Z"/><rect x="9" y="10" width="6" height="5" rx="1"/><path d="M10.5 10V8.8a1.5 1.5 0 0 1 3 0V10"/></svg></span></span><h3>Votes stay private</h3><p>Receipt-free encrypted ballots let the court count the result without revealing or proving any single vote.</p></li>
       <li class="simple-step"><span class="simple-step-marker" aria-hidden="true"><span class="simple-step-icon"><svg viewBox="0 0 24 24"><path d="m4 7 8-4 8 4-8 4-8-4Z"/><path d="m4 12 8 4 8-4"/><path d="m4 17 8 4 8-4"/></svg></span></span><h3>Appeals widen</h3><p>A loser can climb to a larger panel by paying a bond or gathering a real loser-side petition.</p></li>
       <li class="simple-step"><span class="simple-step-marker" aria-hidden="true"><span class="simple-step-icon"><svg viewBox="0 0 24 24"><path d="m14 4 6 6"/><path d="m12 6 6 6"/><path d="m7 11 6 6"/><path d="m5 13 6 6"/><path d="m11 7-6 6M18 12l-6 6"/><path d="M4 21h12"/></svg></span></span><h3>The ruling returns</h3><p>DemoThemis returns a final signed ruling. Connected escrow, if any, releases or refunds by rule; collusion audits can continue afterward.</p></li>
     </ol>
-    <p>DemoThemis locks the full work-based quote before anyone is drawn, so the selected panel is fully funded before the case begins.</p>
+    <p>DemoThemis calculates and receives the full deterministic court fee when the case is submitted, before anyone is drawn, so the selected panel is funded before work begins.</p>
   </section>
   </div>
 
@@ -398,9 +398,9 @@ body.theme-solve { --accent: #2f62cf; --accent-soft: #e6edfa; --accent-ink: #214
 
   <section class="reveal" id="disputes-courts">
     <h2>How Appeals work</h2>
-    <p class="lead">An appeal brings in a larger jury that was not on the jury for the last verdict with a bond that is lost if verdict is against appealer, this bond increases in value with each appeal and so does the jury.</p>
+    <p class="lead">An appeal brings in a larger, disjoint jury. Its published funding quote has two parts: a non-refundable service fee that pays the new panel and delay compensation, plus a security bond that returns if the appeal succeeds and is forfeited if it fails.</p>
     <figure class="appeal-flow" aria-labelledby="appeal-flow-title">
-      <figcaption class="appeal-flow-caption"><span>Appeal ladder</span><strong id="appeal-flow-title">Every appeal raises both the bond and the jury count.</strong></figcaption>
+      <figcaption class="appeal-flow-caption"><span>Appeal ladder</span><strong id="appeal-flow-title">Every appeal funds its new jury once and separately locks security.</strong></figcaption>
       <ol class="appeal-flow-track" aria-label="Initial case, first verdict, first appeal, second verdict, second appeal, and final verdict">
         <li class="appeal-flow-step" style="--step-width: 82%;">
           <span class="appeal-flow-marker" aria-hidden="true">01</span>
@@ -422,9 +422,9 @@ body.theme-solve { --accent: #2f62cf; --accent-soft: #e6edfa; --accent-ink: #214
           <span class="appeal-flow-marker" aria-hidden="true">03</span>
           <div class="appeal-flow-card" tabindex="0">
             <div class="appeal-flow-topline"><span class="appeal-flow-kicker">Appeal 01</span><span class="appeal-jury">Next jury: 15</span></div>
-            <strong>A higher bond funds a fresh, larger jury</strong>
-            <p>The bond is lost if the new verdict is against the appealer.</p>
-            <div class="appeal-bond" aria-label="Appeal bond level one"><span class="appeal-bond-bar" aria-hidden="true"><i></i></span><b>Bond &uarr;</b></div>
+            <strong>A service fee funds the fresh, larger jury</strong>
+            <p>A separate security bond is returned on success or forfeited on failure.</p>
+            <div class="appeal-bond" aria-label="Appeal fee and security level one"><span class="appeal-bond-bar" aria-hidden="true"><i></i></span><b>Fee + security &uarr;</b></div>
           </div>
         </li>
         <li class="appeal-flow-step" style="--step-width: 92%;">
@@ -439,9 +439,9 @@ body.theme-solve { --accent: #2f62cf; --accent-soft: #e6edfa; --accent-ink: #214
           <span class="appeal-flow-marker" aria-hidden="true">05</span>
           <div class="appeal-flow-card" tabindex="0">
             <div class="appeal-flow-topline"><span class="appeal-flow-kicker">Appeal 02</span><span class="appeal-jury">Next jury: 31</span></div>
-            <strong>The bond and the fresh jury grow again</strong>
-            <p>The second appeal risks a larger bond to fund the largest panel.</p>
-            <div class="appeal-bond" aria-label="Appeal bond level two, higher than level one"><span class="appeal-bond-bar" aria-hidden="true"><i></i></span><b>Bond &uarr;&uarr;</b></div>
+            <strong>The quote and the fresh jury grow again</strong>
+            <p>The service fee pays the largest panel and delay; only the security bond remains at risk.</p>
+            <div class="appeal-bond" aria-label="Appeal fee and security level two, higher than level one"><span class="appeal-bond-bar" aria-hidden="true"><i></i></span><b>Fee + security &uarr;&uarr;</b></div>
           </div>
         </li>
         <li class="appeal-flow-step is-final" style="--step-width: 100%;">
@@ -468,7 +468,7 @@ body.theme-solve { --accent: #2f62cf; --accent-soft: #e6edfa; --accent-ink: #214
     <h2>The court has to learn who is careful</h2>
     <p>Every completed case adds evidence about juror accuracy. DemoThemis looks for useful judgment beyond the obvious majority, consistency with the case's written criteria, decisions that survive appeal, and later independent confirmation when it exists.</p>
     <div class="simple-list">
-      <div><b>Every case contributes</b><span>Market outcomes, delivery disputes, and judgment calls all update the same juror-quality record.</span></div>
+      <div><b>Every case contributes</b><span>Market outcomes, DoorDash delivery disputes, and judgment calls all update the same juror-quality record.</span></div>
       <div><b>Credit above the obvious</b><span>Matching a landslide vote earns little; being right on hard near-ties earns much more.</span></div>
       <div><b>Use every available check</b><span>Written criteria, appeals, and later real-world evidence can strengthen or correct the signal from the panel.</span></div>
       <div><b>Error bars matter</b><span>Reputation is a score with uncertainty attached, so a bad week does not equal a proven bad juror.</span></div>
@@ -479,7 +479,7 @@ body.theme-solve { --accent: #2f62cf; --accent-soft: #e6edfa; --accent-ink: #214
   <section class="reveal" id="bootstrap">
     <p class="sec-label">Bootstrap</p>
     <h2>OmenMarketMaker to seed DemoThemis with demand</h2>
-    <p>Before betting, each OmenMarketMaker market fixes a work-based jury target and a resolution-reserve percentage bounded by the disclosed maximum. Every deposit contributes at that same rate. A fully funded reserve pays DemoThemis automatically and returns any surplus to every YES and NO position pro-rata; an underfunded market sends no case and refunds YES/NO backing after its creator top-up window. OmenMarketMaker's margin and treasury remain separate. Every completed case contributes to the shared juror-quality record.</p>
+    <p>OmenMarketMaker locks its question, request timing, backstop, and fee-policy version before betting, but collects no jury reserve. When resolution is eligible, any caller may post the exact court fee as a bond; DemoThemis is paid atomically before the draw. A final YES or NO ruling reimburses that bond from YES and NO backing pro-rata, while insufficient information leaves market backing untouched. OmenMarketMaker's margin and treasury remain separate. Every completed case contributes to the shared juror-quality record.</p>
     <p class="deep-note">That is one launch path, not a product dependency. Switch to Deep dive for the mechanics and interactive stress tests behind each claim.</p>
     <div class="reader-end-action"><a class="reader-mode-cta" href="#deep-dive">Switch to Deep dive <span aria-hidden="true">&rarr;</span></a></div>
   </section>
@@ -502,9 +502,9 @@ body.theme-solve { --accent: #2f62cf; --accent-soft: #e6edfa; --accent-ink: #214
   <section class="reveal part-marker" id="trust-layer">
     <p class="sec-label">Problem and role</p>
     <h2>Why a neutral court matters</h2>
-    <p class="lead">You never really trusted the stranger whose spare room you booked. You trusted the arbiter standing behind the deal. Make that arbiter unbuyable and affordable, and more apps can rely on it.</p>
-    <p>Booking a room from a stranger and paying before arrival looks reckless on paper. It feels ordinary because a platform promises to refund you, a card issuer can reverse the charge, and reviews punish repeat cheating. The safety comes from the arbiter behind the stranger.</p>
-    <p>Every marketplace, gig app, ad auction, and app store rents this backstop from a platform, bank, or token vote. The result can be house-owned, slow, expensive, or buyable by the largest holders. DemoThemis turns that hidden utility into shared, unbuyable arbitration, with optional protocol escrow when assets need automatic settlement.</p>
+    <p class="lead">You never really trusted the stranger whose spare room you booked through Airbnb. You trusted the arbiter standing behind the deal. Make that arbiter unbuyable and affordable, and more apps can rely on it.</p>
+    <p>Booking an Airbnb from a stranger and paying before arrival looks reckless on paper. It feels ordinary because Airbnb can refund you, a card issuer can reverse the charge, and reviews punish repeat cheating. The safety comes from the arbiter behind the stranger.</p>
+    <p>Marketplaces such as eBay, gig apps such as Uber, ad auctions such as Google Ads, and app stores such as Apple's App Store all rent this backstop from a platform, bank, or token vote. The result can be house-owned, slow, expensive, or buyable by the largest holders. DemoThemis turns that hidden utility into shared, unbuyable arbitration, with optional protocol escrow when assets need automatic settlement.</p>
   </section>
 
   <section class="reveal">
@@ -516,10 +516,10 @@ body.theme-solve { --accent: #2f62cf; --accent-soft: #e6edfa; --accent-ink: #214
       <div class="diagram-inner">
         <div class="vhub">
           <div class="apps">
-            <div class="chip">A rooms marketplace</div>
-            <div class="chip">A rides app</div>
-            <div class="chip">A goods marketplace</div>
-            <div class="chip">An ad network</div>
+            <div class="chip">Airbnb &middot; rooms</div>
+            <div class="chip">Uber &middot; rides</div>
+            <div class="chip">eBay &middot; goods</div>
+            <div class="chip">Google Ads &middot; ads</div>
           </div>
           <span class="ar">&rarr;</span>
           <div class="core">DemoThemis court<small>funded jurors, random panels, private votes</small></div>
@@ -545,13 +545,17 @@ body.theme-solve { --accent: #2f62cf; --accent-soft: #e6edfa; --accent-ink: #214
     <p class="sec-label">Attack resistance</p>
     <h2>What makes the court unbuyable</h2>
     <p>The bullet proof claim comes from every lock working together: verified humans, random panels, live reserves, private ballots, and panels that grow with the stakes.</p>
+    <p>The clearest way to understand how those defenses work together is to attack them yourself. Break the Court lets you raise attacker pressure, switch safeguards off, and see where capture becomes possible.</p>
+    <div class="reader-end-action">
+      <a class="reader-mode-cta" href="break-the-court.html">Open Break the Court <span aria-hidden="true">&rarr;</span></a>
+    </div>
   </section>
 
   <section class="reveal">
     <p class="sec-label">The wrong foundation</p>
     <h2>When votes are tokens, verdicts have a price</h2>
-    <p class="lead">Token courts sell the gavel to the deepest pocket. This court seats verified humans instead: a live reserve priced by workload, a die nobody can re-roll, a face check that proves a real person is voting, and a ballot that cannot prove how it voted. Buying it means buying people, one at a time, in the dark.</p>
-    <p>In a token court, voting weight follows the wallet, so a majority has a market price. Disputed Polymarket resolutions show the problem in practice; the evidence is in the <a href="omenmarketmaker.html#exploited-arbiter">OmenMarketMaker chapter</a>.</p>
+    <p class="lead">Token courts like UMA and Kleros sell the gavel to the deepest pocket. This court seats verified humans instead: a live reserve priced by workload, a die nobody can re-roll, a face check that proves a real person is voting, and a ballot that cannot prove how it voted. Buying it means buying people, one at a time, in the dark.</p>
+    <p>In token courts like UMA and Kleros, voting weight follows the wallet, so a majority has a market price. Disputed Polymarket resolutions show the problem in practice; the evidence is in the <a href="omenmarketmaker.html#exploited-arbiter">OmenMarketMaker chapter</a>.</p>
     <p>That is not merely a bad implementation. If stake is voting power, the protocol works as written when the largest holder wins. An attacker reads the rule as a price list: acquire enough tokens and buy the verdict.</p>
     <p>DemoThemis swaps the foundation to <b>one human, one vote</b>. Every seat is backed by a World ID that no wallet can mint twice or exchange can sell in bulk. An attacker must recruit people separately, keep them present, land them in a sealed draw, and somehow enforce their private votes. Every funded case that reaches DemoThemis faces every lock below at once.</p>
   </section>
@@ -592,16 +596,16 @@ body.theme-solve { --accent: #2f62cf; --accent-soft: #e6edfa; --accent-ink: #214
   </section>
 
   <section class="reveal" id="adaptive-fees">
-    <p class="sec-label">The quote</p>
+    <p class="sec-label">The court fee</p>
     <h2>Price the work, not a permanent split</h2>
-    <p class="lead">Before the draw, DemoThemis locks one transparent quote: processing cost + required panel compensation + reward-reserve top-up + capped operations charge.</p>
+    <p class="lead">When a resolution request is accepted, the versioned fee policy calculates one deterministic court fee: processing cost + required panel compensation + reward-pool top-up + capped operations charge. The caller's bond pays it before the draw.</p>
     <div class="simple-grid two">
       <div class="simple-card"><span class="num">1</span><h3>Pay follows the work</h3><p>Juror pay responds to eligible supply, case volume, panel size, expected time, and complexity.</p></div>
       <div class="simple-card"><span class="num">2</span><h3>The reserve fills to target</h3><p>Cases add more below the published coverage target and nothing once the reserve is full.</p></div>
       <div class="simple-card"><span class="num">3</span><h3>Operations has a ceiling</h3><p>An approved, public budget is recovered only up to a hard per-case cap, never as a permanent revenue share.</p></div>
-      <div class="simple-card"><span class="num">4</span><h3>Each rung pays for itself</h3><p>Each initial quote funds its required panel; every appeal bond funds its own larger panel and delay.</p></div>
+      <div class="simple-card"><span class="num">4</span><h3>Each rung pays for itself</h3><p>Every funded appeal consumes one service fee for its panel and delay. Its separate security bond is never counted as service revenue.</p></div>
     </div>
-    <p>Pricing inputs move only between published epochs. Governance may set the jury-fee ceiling only within the lab's 0.5&ndash;3% range; the cost quote can be lower. The complexity class and quote freeze before selection, and any case that exceeds the ceiling must show an explicit minimum or subsidy instead of cutting juror pay.</p>
+    <p>Pricing inputs move only between published epochs. Governance may set the jury-fee ceiling only within the lab's 0.5&ndash;3% range; the calculated fee can be lower. The complexity class and fee freeze when the request opens the case, and any market whose pool cannot reimburse that fee after a directional ruling follows its precommitted cancellation rule instead of cutting juror pay.</p>
   </section>
 
   <section class="reveal">
@@ -636,7 +640,8 @@ body.theme-solve { --accent: #2f62cf; --accent-soft: #e6edfa; --accent-ink: #214
     <p class="sec-label">The face check</p>
     <h2>The same person, every time</h2>
     <p>A one-time iris scan cannot stop someone renting out their phone or login later. A hundred rented credentials controlled by one operator would look like a hundred independent humans and vote like one.</p>
-    <p>When a seat is drawn, World App therefore performs an on-device face match on an attested phone; only a pass unlocks the ballot. An annual re-scan provides a slower backstop by retiring dead and abandoned credentials, but only the per-draw check closes the rental window for the case itself.</p>
+    <p>Orb verification is the only eligibility gate. Immediately afterward, the juror enrolls the separate on-device continuity check. When that seat is drawn, a fresh check is bound to the case, round, wallet, and deadline; only a pass unlocks the ballot. This second step does not accept Device-only jurors. It forces a seller or renter to involve the originally enrolled human again when the vote matters, while an annual Orb re-verification provides a slower backstop for abandoned credentials.</p>
+    <p class="deep-note"><b>Available now, with one boundary.</b> Orb eligibility is verified on-chain on World Chain through the World ID 4 Production verifier. World ID also offers <a href="https://docs.world.org/world-id/credentials/11">Selfie Check (Beta) and returning-user Face Auth</a> through IDKit. The complete product uses that second, post-Orb check as a narrowly scoped draw-bound anti-rental backstop; it remains funded roadmap work, not an MVP eligibility claim.</p>
     <p>The privacy boundary is strict: DemoThemis never receives the scan or face template. It accepts only a short-lived, draw-bound proof that the World-ID-backed seat is present for this case now&mdash;not a name, face, reusable login, or global identity handle.</p>
 
     <figure class="diagram reveal">
@@ -891,8 +896,8 @@ body.theme-solve { --accent: #2f62cf; --accent-soft: #e6edfa; --accent-ink: #214
   <section class="reveal">
     <p class="sec-label">Disputes</p>
     <h2>The ladder, and the two clocks</h2>
-    <p>An appeal redraws at the next size, 7 to 15 to 31. Its bond is the highest of three live floors: pay the next panel, make re-rolling unprofitable (capture odds times the stake), and compensate for delay. Near ties receive a discount, but never below those floors.</p>
-    <p>A loser can post the bond alone or gather at least 5% of losing-side verified humans, each staking a refundable share. This lets one convinced dissenter climb without letting thousands of sore losers appeal with costless clicks. Failed appeals fund the reward pool; vindicated appellants receive a private refund and bonus.</p>
+    <p>An appeal redraws at the next size, 7 to 15 to 31. Once a juror serves on a dispute, every later panel and appeal for that dispute excludes them; the same juror can never judge two rungs of one dispute. The appeal service fee is the sum of panel work and delay compensation. The security target is capture odds times the stake; only any amount above the service fee is locked as a separate security bond.</p>
+    <p>A loser can fund the quote alone or gather at least 5% of losing-side verified humans, with every payment attributed pro-rata. If the goal expires short, every payment refunds and no jury starts. Once fully funded, the service fee pays the new panel and credits delay compensation under the case's precommitted rule. If the appeal succeeds, the escrowed security bond returns to contributors pro-rata; if it fails, only that security bond enters the reward pool.</p>
     <p>Each rung uses one published <b>2&ndash;8 week</b> window. If nobody funds the next rung&mdash;or the 31-seat rung ends&mdash;the ruling becomes final and returns to the requester; attached escrow, if any, settles. Later collusion can change private bonds and eligibility, not the final ruling or completed settlement.</p>
 
     <figure class="diagram reveal">
@@ -920,10 +925,10 @@ body.theme-solve { --accent: #2f62cf; --accent-soft: #e6edfa; --accent-ink: #214
   </section>
 
   <section class="reveal">
-    <p class="sec-label">The appeal bond</p>
+    <p class="sec-label">The appeal funding quote</p>
     <h2>Why a wider pool makes appeals cheaper</h2>
-    <p>The capture floor is probability times stake, not the whole stake. A ten-million-dollar case does not automatically require a ten-million-dollar bond. In a wide pool, a small bloc almost never wins a panel majority, so multiplying the prize by that tiny probability can drive the capture floor below the simple cost of seating the next panel.</p>
-    <p>As stakes grow, panels expand from 7 to 15 to 31 and capture odds can collapse faster than the prize rises. On a healthy pool, an appeal therefore falls back toward juror pay plus delay compensation. Security and affordability improve together.</p>
+    <p>The capture target is probability times stake, not the whole stake. A ten-million-dollar case does not automatically require a ten-million-dollar security bond. In a wide pool, a small bloc almost never wins a panel majority, so the non-refundable service fee can already exceed the anti-re-roll target and no extra security is needed.</p>
+    <p>As stakes grow, panels expand from 7 to 15 to 31 and capture odds can collapse faster than the prize rises. Every quote identifies its funding source and destination: contributors fund panel work and delay compensation once, while separately escrowed security principal supplies the success refund or failure forfeiture.</p>
     <div class="widget reveal">
       <div class="widget-head"><span class="live"></span> What does it cost to appeal?</div>
       <div class="controls">
@@ -931,18 +936,21 @@ body.theme-solve { --accent: #2f62cf; --accent-soft: #e6edfa; --accent-ink: #214
         <input id="abStake" type="range" min="0" max="100" step="1" value="40">
         <div class="row"><label for="abPool">Jurors active in the pool</label> <b id="abPoolOut">5,000</b></div>
         <input id="abPool" type="range" min="0" max="100" step="1" value="41">
+        <div class="row"><label for="abWeeks">Appeal window</label> <b id="abWeeksOut">4 weeks</b></div>
+        <input id="abWeeks" type="range" min="2" max="8" step="1" value="4">
       </div>
       <div class="floors">
-        <div class="fl"><div class="flk"><span>Pay the next panel</span><span id="abPanelV">&hellip;</span></div><div class="flt"><span class="panel" id="abPanelBar"></span></div></div>
-        <div class="fl"><div class="flk"><span>Capture floor: odds &times; stake &times; 2</span><span id="abCapV">&hellip;</span></div><div class="flt"><span class="cap" id="abCapBar"></span></div></div>
+        <div class="fl"><div class="flk"><span>Panel work fee</span><span id="abPanelV">&hellip;</span></div><div class="flt"><span class="panel" id="abPanelBar"></span></div></div>
+        <div class="fl"><div class="flk"><span>Delay compensation: value &times; weeks &times; 1%</span><span id="abDelayV">&hellip;</span></div><div class="flt"><span class="panel" id="abDelayBar"></span></div></div>
+        <div class="fl"><div class="flk"><span>Anti-re-roll target: odds &times; value &times; 2</span><span id="abCapV">&hellip;</span></div><div class="flt"><span class="cap" id="abCapBar"></span></div></div>
       </div>
       <div class="bondnote" id="abNote">&hellip;</div>
       <div class="readout">
-        <div class="stat"><div class="k">Panel size</div><div class="v" id="abPanel">&hellip;</div></div>
-        <div class="stat"><div class="k">Capture odds</div><div class="v" id="abOdds">&hellip;</div></div>
-        <div class="stat"><div class="k">You pay to appeal</div><div class="v accent" id="abBond">&hellip;</div></div>
+        <div class="stat"><div class="k">Service fee · panel + delay</div><div class="v" id="abService">&hellip;</div></div>
+        <div class="stat"><div class="k">Security bond · return/forfeit</div><div class="v" id="abSecurity">&hellip;</div></div>
+        <div class="stat"><div class="k">Total appeal funding</div><div class="v accent" id="abTotal">&hellip;</div></div>
       </div>
-      <p style="font-family:var(--sans);font-size:.86rem;color:var(--faint);margin:1rem 0 0">The bond you pay is whichever floor is taller. On a wide pool the green floor wins and stays flat and cheap no matter how large the stake; only a thin pool lets the blue capture floor rise.</p>
+      <p style="font-family:var(--sans);font-size:.86rem;color:var(--faint);margin:1rem 0 0"><b>Funding source:</b> the wallets that complete this appeal goal. The service fee is consumed once; the security bond remains separately attributable to those wallets.</p>
     </div>
 
   </section>
@@ -960,7 +968,7 @@ body.theme-solve { --accent: #2f62cf; --accent-soft: #e6edfa; --accent-ink: #214
         <div class="row"><label>Pick a case</label> <span class="seg" id="RT1seg">
           <button data-k="btc" class="active">Did bitcoin close above $100k?</button>
           <button data-k="logo">Were the logo files delivered to spec?</button>
-          <button data-k="apt">Was the apartment as described?</button>
+          <button data-k="apt">Was the Airbnb as described?</button>
         </span></div>
       </div>
       <div class="routepanel" id="RT1panel">&hellip;</div>
@@ -1631,7 +1639,7 @@ function courtSeg(id, onPick) {
   var CONTENT = {
     btc: '<div class="rt">Same court, with later external confirmation.</div><div class="rg">Jurors assess the case under its written rule. The final panel and any appeals update the shared quality record, and the published closing price can later add an independent accuracy check.</div>',
     logo: '<div class="rt">Same court, with written-criteria evidence.</div><div class="rg">Jurors compare the files with the promised formats, dimensions, and deadline. Criteria consistency, useful agreement, and appeal survival all update the same quality record.</div>',
-    apt: '<div class="rt">Same court, with judgment and appeal evidence.</div><div class="rg">Jurors apply the description and evidence rules fixed before the draw. Difficulty-adjusted agreement, appeal survival, and any later evidence update the same juror-quality record.</div>'
+    apt: '<div class="rt">Same court, with judgment and appeal evidence.</div><div class="rg">Jurors compare the Airbnb listing with the evidence under the rules fixed before the draw. Difficulty-adjusted agreement, appeal survival, and any later evidence update the same juror-quality record.</div>'
   };
   function pick(k) { panel.innerHTML = CONTENT[k]; }
   Array.prototype.forEach.call(seg.querySelectorAll("button"), function (btn) {
@@ -1650,18 +1658,22 @@ function courtSeg(id, onPick) {
   var stakeS = document.getElementById("abStake");
   if (!stakeS) return;
   var poolS = document.getElementById("abPool");
+  var weeksS = document.getElementById("abWeeks");
   var stakeOut = document.getElementById("abStakeOut");
   var poolOut = document.getElementById("abPoolOut");
+  var weeksOut = document.getElementById("abWeeksOut");
   var panelV = document.getElementById("abPanelV");
+  var delayV = document.getElementById("abDelayV");
   var capV = document.getElementById("abCapV");
   var panelBar = document.getElementById("abPanelBar");
+  var delayBar = document.getElementById("abDelayBar");
   var capBar = document.getElementById("abCapBar");
   var note = document.getElementById("abNote");
-  var panelEl = document.getElementById("abPanel");
-  var oddsEl = document.getElementById("abOdds");
-  var bondEl = document.getElementById("abBond");
+  var serviceEl = document.getElementById("abService");
+  var securityEl = document.getElementById("abSecurity");
+  var totalEl = document.getElementById("abTotal");
 
-  var MSTAR = 500, LAMBDA = 2, FEE = 1.5;
+  var MSTAR = 500, LAMBDA = 2, FEE = 1.5, DELAY_RATE_WEEKLY = 0.01;
 
   function lgamma(z) {
     var g = 7, c = [0.99999999999980993, 676.5203681218851, -1259.1392167224028,
@@ -1697,38 +1709,47 @@ function courtSeg(id, onPick) {
   }
   function stakeVal() { return 100 * Math.pow(10, parseInt(stakeS.value, 10) / 100 * 5); }
   function poolVal() { return Math.round(1000 * Math.pow(50, parseInt(poolS.value, 10) / 100)); }
+  function weeksVal() { return Math.max(2, Math.min(8, parseInt(weeksS.value, 10))); }
   function panelFor(stake) { return stake < 10000 ? 7 : (stake < 1000000 ? 15 : 31); }
 
   function update() {
     var stake = stakeVal();
     var pool = poolVal();
+    var weeks = weeksVal();
     var n = panelFor(stake);
     var maj = Math.floor(n / 2) + 1;
     var share = Math.min(1, MSTAR / pool);
     var odds = binomTail(n, maj, share);
     var panelCost = n * FEE;
+    var delayCost = stake * DELAY_RATE_WEEKLY * weeks;
+    var serviceFee = panelCost + delayCost;
     var capFloor = LAMBDA * odds * stake;
-    var bond = Math.max(panelCost, capFloor);
+    var securityBond = Math.max(0, capFloor - serviceFee);
+    var total = serviceFee + securityBond;
 
     stakeOut.textContent = money(stake);
     poolOut.textContent = pool.toLocaleString("en-US");
+    weeksOut.textContent = weeks + (weeks === 1 ? " week" : " weeks");
     panelV.textContent = money(panelCost);
+    delayV.textContent = money(delayCost);
     capV.textContent = money(capFloor);
-    var mx = Math.max(panelCost, capFloor, 1);
+    var mx = Math.max(serviceFee, capFloor, 1);
     panelBar.style.width = Math.max(panelCost / mx * 100, 2) + "%";
+    delayBar.style.width = Math.max(delayCost / mx * 100, 2) + "%";
     capBar.style.width = (capFloor > 0 ? Math.max(capFloor / mx * 100, 2) : 0) + "%";
-    panelEl.textContent = n + " seats";
-    oddsEl.textContent = pctTxt(odds);
-    bondEl.textContent = money(bond);
+    serviceEl.textContent = money(serviceFee);
+    securityEl.textContent = money(securityBond);
+    totalEl.textContent = money(total);
 
-    if (capFloor <= panelCost) {
-      note.innerHTML = "The pool is wide enough that capturing a panel is hopeless, so the capture floor rounds to nothing. The rung drops to the small floor, paying the next panel: <b>" + money(bond) + " to appeal a " + money(stake) + " case</b>.";
+    if (securityBond <= 0) {
+      note.innerHTML = "A " + n + "-seat panel has " + pctTxt(odds) + " modeled capture odds. The <b>" + money(serviceFee) + " service fee</b> already exceeds the anti-re-roll target, so this quote adds no security bond.";
     } else {
-      note.innerHTML = "This pool is thin enough that a bloc could swing a panel, so the capture floor climbs to price the attack out: <b>" + money(bond) + "</b>. Widen the pool and it falls back toward the " + money(panelCost) + " it costs to seat the next panel.";
+      note.innerHTML = "A " + n + "-seat panel has " + pctTxt(odds) + " modeled capture odds. After the <b>" + money(serviceFee) + " service fee</b>, the remaining <b>" + money(securityBond) + "</b> is separately escrowed security.";
     }
   }
   stakeS.addEventListener("input", update);
   poolS.addEventListener("input", update);
+  weeksS.addEventListener("input", update);
   update();
 })();
 </script>

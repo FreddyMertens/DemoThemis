@@ -5,7 +5,7 @@ Canonical product: [https://demothemis.netlify.app/app](https://demothemis.netli
 
 This is the only activation procedure for the Demo MVP. It runs one official
 public-research question at a time through a 3-seat panel drawn from at least four
-eligible jurors verified through the supported World ID Router after the opener is excluded. Four is the recommended
+eligible jurors verified through the World ID 4 Production verifier after the opener is excluded. Four is the recommended
 `PANEL_SIZE + 1` availability floor; the question bank, opener, and hashes are fixed in
 `web/public/cases/question-queue.json`; jurors commit and reveal in World App;
 the scheduled keeper advances the non-juror steps.
@@ -14,7 +14,7 @@ the scheduled keeper advances the non-juror steps.
 > the immutable Step-5 deployment and do not contain the eligible-party preflight,
 > first-draw unwind, or quorum-miss recovery now implemented in source. Do not
 > register capstone jurors or broadcast keeper
-> transactions until a fresh recovery-enabled `WorldIDRouterGate` deployment has been source-verified,
+> transactions until a fresh recovery-enabled `WorldIDGate` v4 Production deployment has been source-verified,
 > recorded here, allowlisted in the World Developer Portal, and selected by the app
 > and keeper. Follow [LIVENESS_RECOVERY.md](LIVENESS_RECOVERY.md).
 
@@ -56,7 +56,7 @@ World App handoff.
 | Contract | Address |
 |---|---|
 | MockUSD | `0x70ECE5DcAA68741BF41F6A4Aa0af3a8D44e4497a` |
-| WorldIDGate (historical v4 preview adapter) | `0x0540f47842a31C681dce76E856b4b76fcCc53Fbe` |
+| WorldIDGate (v4 Production verifier; legacy court) | `0x0540f47842a31C681dce76E856b4b76fcCc53Fbe` |
 | JurorRegistry | `0x226974149087b36769a54B998acfe4087eEb7F84` |
 | RewardPool | `0xAF96A65A6b9643451E33cAf96717d071eDae04A0` |
 | DisputeCourt (3 seats / minimum pool 3) | `0xCDF427D18da8C2e8CCf9a95310bC38857EEf795A` |
@@ -84,7 +84,7 @@ In the World Developer Portal, open app
 - The preview QR is generated from this draft and must open the Netlify
   `/onboard` screen in World App during the phone smoke test.
 - Contract permissions still include MockUSD, JurorRegistry, DisputeCourt,
-  DealEscrow, WorldIDRouterGate, the World ID Router, RewardPool, and Permit2.
+  DealEscrow, WorldIDGate, the World ID 4 Production verifier, RewardPool, and Permit2.
 - Permit2 token permissions include MockUSD.
 
 Before changing Portal permissions or inviting jurors, independently verify the new
@@ -103,7 +103,9 @@ Netlify must retain the server and public variables listed in the
 non-sensitive check is that
 an authorized `POST` to
 `https://demothemis.netlify.app/api/rp-signature` returns an RP signature for the
-`juror-registration` action; this endpoint was healthy in the 2026-07-14 audit.
+`juror-registration` action with `rp_id` exactly `rp_1ddcf8ba2efe3f36`; this endpoint
+was healthy in the 2026-07-14 audit. A missing or malformed `RP_ID` must return an error,
+never a signature for another relying party.
 
 Do not invite jurors until the preview QR opens the Netlify build. The former
 Vercel deployment is an archived rollback artifact, not the current Mini App.
@@ -134,8 +136,8 @@ is historical configuration evidence only; the replacement removes `setDurations
 Deploy the replacement with five-minute windows (the deployment script defaults to these values):
 
 ```bash
-WORLD_ID_ROUTER=0x17B354dD2595411ff79041f930e491A4Df39A278 \
-  WORLD_ID_APP_ID=app_7bdfda4db4e2f59dd4a2427cd2bd860d \
+WORLD_ID_VERIFIER=0x00000000009E00F9FE82CfeeBB4556686da094d7 \
+  WORLD_ID_RP_ID=0x1ddcf8ba2efe3f36 \
   PANEL_SIZE=3 MIN_POOL=4 COMMIT_DURATION=300 REVEAL_DURATION=300 \
   forge script script/Deploy.s.sol --rpc-url worldchain_mainnet --broadcast
 ```
@@ -160,7 +162,7 @@ Each human must:
 2. Visit `/onboard` and sign in with the wallet they will use for both voting
    stages.
 3. Tap **Verify with World ID & join**.
-4. Complete the Router-compatible Orb proof and the valueless 5 MUSD bond batch.
+4. Complete the v4 proof-of-human (legacy proofs disabled) and the valueless 5 MUSD bond batch.
 5. Save the registration Worldscan link for the final evidence table.
 
 Keep every selected panelist reachable for both voting windows. They must reveal on the

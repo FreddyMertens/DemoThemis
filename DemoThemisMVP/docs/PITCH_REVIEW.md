@@ -20,7 +20,7 @@ World ID verification (frame 6), but never states the counterfactual a World
 reviewer scores hardest:
 
 > **A one-human-one-vote court becomes enforceable when a World ID proof is verified
-> on-chain. The documented mainnet Router is that production unlock — and the reason this is a World project,
+> on-chain. The World ID 4 Production verifier is that production unlock — and the reason this is a World project,
 > now.** UMA and Kleros decide by capital because no on-chain personhood oracle
 > existed when they were built; capital-weighting is a *substitute* for personhood,
 > not a rejection of it.

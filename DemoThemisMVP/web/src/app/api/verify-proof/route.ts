@@ -6,10 +6,17 @@ import { NextRequest, NextResponse } from 'next/server';
  * @see https://docs.world.org/world-id/idkit/integrate#step-5-verify-the-proof-in-your-backend
  */
 export async function POST(req: NextRequest) {
-  const expectedRpId = process.env.RP_ID;
+  const expectedRpId = process.env.RP_ID?.trim();
   if (!expectedRpId) {
     return NextResponse.json(
       { error: 'RP_ID not configured' },
+      { status: 500 },
+    );
+  }
+
+  if (!/^rp_[0-9a-f]+$/i.test(expectedRpId)) {
+    return NextResponse.json(
+      { error: 'RP_ID has an invalid format' },
       { status: 500 },
     );
   }

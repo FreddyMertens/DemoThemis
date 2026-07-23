@@ -11,14 +11,14 @@ Status: spike (a) **answered** — and it reshapes the instance architecture. (b
 > [LIVENESS_RECOVERY.md](LIVENESS_RECOVERY.md) and
 > [CAPSTONE_RUNBOOK.md](CAPSTONE_RUNBOOK.md).
 >
-> The original conclusion that the v4 verifier was a supported production dependency
-> is also superseded. Official documentation marks it preview. New deployments use
-> `WorldIDRouterGate` over the documented World Chain mainnet Router; every v4 address,
-> “Production” label, and instruction below is retained only as dated research history.
+> **2026-07-23 identity update:** official documentation now lists the v4 Production
+> proxy. New deployments use the hardened `WorldIDGate`, require protocol 4 and
+> proof-of-human schema 1, and disable legacy proofs. The v3 spike below remains
+> dated research history only.
 
 ## Headline finding: World ID moved to 4.0, relocating on-chain verification to World Chain mainnet
 
-The Developer Portal now onboards new apps onto **World ID 4.0** (preview). Our app `app_7bdfda4db4e2f59dd4a2427cd2bd860d` (**DemoThemis**, originally created as "DemoThemis Staging") is 4.0, Managed mode, RP id `rp_1ddcf8ba2efe3f36`. World ID 4.0 changes both the on-chain interface and *where it lives*:
+The Developer Portal onboards new apps onto **World ID 4.0**. Our app `app_7bdfda4db4e2f59dd4a2427cd2bd860d` (**DemoThemis**, originally created as "DemoThemis Staging") is 4.0, Managed mode, RP id `rp_1ddcf8ba2efe3f36`. World ID 4.0 changes both the on-chain interface and *where it lives*:
 
 | | Legacy v3 (what the plan + contracts assumed) | World ID 4.0 (current) |
 |---|---|---|
@@ -34,7 +34,7 @@ Consequences:
 - `JurorRegistry` must call `WorldIDVerifier.verify(...)` (v4) if it consumes 4.0 proofs. The throwaway `contracts/src/spike/SpikeVerifier.sol` targets the v3 router and is therefore **superseded** — keep it only as a v3 reference.
 
 ## (a) Does a World ID proof verify on-chain? — answered structurally
-The plan's literal test ("a simulator staging proof passes `verifyProof` on the WC Sepolia router") is now partly moot: the current, credible path is v4 `WorldIDVerifier.verify` on World Chain **mainnet** (Staging env `0x703a…` for simulator/staging proofs; Production `0x0000…94d7` for Orb/Device). The live end-to-end proof check becomes the first task of whichever mainnet instance we build, and depends on the decision below. The fallback the plan named (cloud verification + relayer) is no longer the only escape hatch — the on-chain v4 verifier is the supported route; it just lives on mainnet.
+The plan's literal test ("a simulator staging proof passes `verifyProof` on the WC Sepolia router") is now partly moot: World Chain mainnet exposes the v4 `WorldIDVerifier.verify` path (Staging env `0x703a…`; Production `0x0000…94d7`). Regardless of verifier version, the juror policy is **Orb-only**. A device credential never substitutes for Orb eligibility; the separate post-Orb on-device presence/continuity check is an anti-rental backstop. The live end-to-end proof check becomes the first task of whichever mainnet instance we build and depends on the decision below.
 
 ## (b) Sponsored mainnet `sendTransaction` from a draft Mini App — deferred
 Needs a phone with World App + a whitelisted mainnet contract. Re-run once the architecture is locked and a mainnet instance exists (the `Ping` contract can be redeployed to mainnet and whitelisted as the throwaway target).

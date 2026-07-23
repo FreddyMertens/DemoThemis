@@ -3,7 +3,7 @@
 // JurorRegistry.register signed by DEV_PRIVATE_KEY. Server-side so the key never
 // reaches the browser. Gated by NEXT_PUBLIC_SHOW_DEV (checked here too, not just
 // in the page). On the cohort this drives MockSybilGate; on a replacement
-// mainnet instance it emits the supported WorldIDRouterGate proof.
+// mainnet instance it emits the World ID 4.0 Production-gate proof.
 import { createPublicClient, createWalletClient, http, type Hex } from 'viem';
 import { privateKeyToAccount } from 'viem/accounts';
 import { worldchain, worldchainSepolia } from 'viem/chains';
@@ -12,9 +12,11 @@ import { mockUSDAbi } from '@/abi/MockUSD';
 import { IS_COHORT, INSTANCE, addr, BOND } from '@/lib/chain';
 import {
   encodeMockGateProof,
-  encodeWorldIdRouterGateProof,
+  encodeWorldIdGateProof,
+  parseRpId,
   parseRouterProofJson,
   parseSimulatorJson,
+  parseWorldIdV4ProofJson,
   signalHashOf,
 } from '@/lib/proof-encode';
 
@@ -43,7 +45,7 @@ export async function GET() {
     devAddress,
     chainId: INSTANCE.chain.chainId,
     instance: INSTANCE.chain.name,
-    gate: IS_COHORT ? 'MockSybilGate' : 'WorldIDRouterGate',
+    gate: IS_COHORT ? 'MockSybilGate' : 'WorldIDGate (World ID 4.0 Production)',
     registry: addr.registry,
     explorer: INSTANCE.chain.explorer,
   });
@@ -74,8 +76,8 @@ export async function POST(req: Request) {
       // MockSybilGate only checks (nullifier, signal); signalHash is unused.
       proof = encodeMockGateProof(parts.nullifier, signal);
     } else {
-      const parts = parseRouterProofJson(raw);
-      // The Router checks this wallet binding as a public input. Confirm it
+      const parts = parseWorldIdV4ProofJson(raw);
+      // The v4 verifier checks this wallet binding as a public input. Confirm it
       // locally as well so a mismatched proof does not spend a transaction.
       if (signalHashOf(signal) !== parts.signalHash) {
         return Response.json(
@@ -83,7 +85,7 @@ export async function POST(req: Request) {
           { status: 400 },
         );
       }
-      proof = encodeWorldIdRouterGateProof(parts);
+      proof = encodeWorldIdGateProof(parts, parseRpId(process.env.RP_ID));
     }
   } catch (e) {
     return Response.json({ error: e instanceof Error ? e.message : String(e) }, { status: 400 });

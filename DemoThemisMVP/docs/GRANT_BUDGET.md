@@ -12,7 +12,7 @@ real humans complete the juror loop is what decides if the court works at all.
 >
 > **Grant requested: US$50,000** for milestones **M1–M6**, delivering the complete
 > production-ready DemoThemis v1 in approximately **three months**: verifiable randomness,
-> receipt-free ballots, work-based quotes, private rewards and reputation, expanding
+> receipt-free ballots, deterministic work-based court fees, private rewards and reputation, expanding
 > appeals, parallel panels, an Invalid/void outcome, a stable resolution SDK, an independent
 > review of the completed protocol, per-draw presence and juror replacement, and moderated
 > verified-human testing.
@@ -40,7 +40,7 @@ real humans complete the juror loop is what decides if the court works at all.
   time, not agency overhead. The MVP — 6 legacy source-verified mainnet contracts and a
   100-test Foundry suite (including Router binding/rejection, exact-3/3 party-exclusion, first-draw unwind,
   and no-show recovery regressions; the prior 95-test liveness snapshot measured 89.51% line coverage), a full browser sandbox, and the on-chain World ID
-  Router path (with the earlier v4 preview experiment preserved separately) — was
+  World ID 4 Production path (with the Staging/Simulator experiment preserved separately) — was
   **shipped solo by the founder in ~1 month of focused effort**, which is the capital-efficiency
   evidence behind this rate; the funded roadmap is split across **both co-founders** to deliver
   in parallel.
@@ -65,7 +65,7 @@ real humans complete the juror loop is what decides if the court works at all.
 |---|---|---|---|---|
 | **M1** — VRF/drand randomness + core hardening | 1.5 pw | $3,300 | $700 | **$4,000** |
 | **M2** — Receipt-free ballots (MACI-library integration + bonded-coordinator wrapper) | 3.5 pw | $7,700 | $300 | **$8,000** |
-| **M3a** — Work-based quote engine + reward-pool cyclic payout | 1.5 pw | $3,300 | $700 | **$4,000** |
+| **M3a** — Deterministic court-fee engine + reward-pool cyclic payout | 1.5 pw | $3,300 | $700 | **$4,000** |
 | **M3b** — Reputation + appeals + panels + Invalid/void + juror liveness | 2.5 pw | $5,500 | $500 | **$6,000** |
 | **M4** — Stable resolution SDK + neutral reference integration | 2.0 pw | $4,400 | $600 | **$5,000** |
 | **M5** — Independent review of the completed funded protocol | — | — | $10,000 | **$10,000** |
@@ -137,9 +137,8 @@ those invariants while adding:
 - a registry **partial-slash guard** (deactivate a juror whose bond drops below the full bond)
   so the "active juror is always fully bonded" invariant holds independent of the caller;
 - zero-address guards on the one-shot wiring functions;
-- a pre-onboard **forged-proof check against the documented World ID Router**, captured as a
-  trace — proving the replacement `WorldIDRouterGate` fails closed before the human run.
-  The older verifier-return assumption remains only in the archived v4 preview adapter.
+- a pre-onboard **forged-proof check against the World ID 4 Production verifier**, captured as a
+  trace — proving the replacement `WorldIDGate` fails closed before the human run.
 
 **Acceptance criteria.** New randomness contract deployed and **source-verified** on World
 Chain; a panel-draw trace whose seed is the published beacon/VRF output; expanded Foundry suite
@@ -165,15 +164,15 @@ completed ballot and private-accounting surface is included in M5's independent 
 
 **Cost.** 3.5 person-weeks ($7,700) + $300 (MACI tooling and integration infrastructure).
 
-### M3a — Work-based quote engine + reward-pool cyclic payout — **$4,000** (Months 2–3)
+### M3a — Deterministic court-fee engine + reward-pool cyclic payout — **$4,000** (Months 2–3)
 
-**Deliverable.** A **work-based quote engine** that locks processing, expected panel work,
-reserve top-up, and capped operations into each accepted case price, plus the **reward-pool
+**Deliverable.** A **deterministic court-fee engine** that calculates processing, expected panel work,
+reward-pool top-up, and capped operations from the locked case inputs at request time, plus the **reward-pool
 gated cyclic payout** (recency-weighted private distribution to active jurors, with only the
 aggregate and its correctness proof public), turning today's passive sink into a working juror incentive.
 
 **Acceptance criteria.** Each feature deployed and source-verified, each with an explorer trace
-(a quote whose locked inputs and cap reproduce its charged total; a proved aggregate reward-pool distribution that does not expose an individual juror's amount).
+(a court fee whose locked inputs and cap reproduce its charged total; a proved aggregate reward-pool distribution that does not expose an individual juror's amount).
 
 **Cost.** 1.5 person-weeks ($3,300) + $700 gas/infra.
 
@@ -194,7 +193,10 @@ privately reverses a vindicated juror's update, parallel panels that must agree,
 unanswerable case that finalizes INVALID rather than defaulting to NO, and a timely decline that
 replaces a juror without slashing them or deadlocking the case. Public data exposes only
 one-case pseudonyms, required proofs, and aggregate accounting. Sandbox numbers and on-chain
-behavior are reconciled.
+behavior are reconciled. The appeal quote and tests must conserve every funded unit across
+underfunded refund, successful appeal, and failed appeal: panel work + delay compensation are one
+non-refundable service fee, while separate security principal alone returns or forfeits. Every
+settlement destination must be funded and tagged in the quote before the appeal starts.
 
 **Cost.** 2.5 person-weeks ($5,500) + $500 gas/infra.
 
@@ -218,7 +220,7 @@ INVALID, appeal, timeout, replacement, and idempotent status reads.
 
 **Deliverable.** A third-party security review of the complete funded on-chain court after
 M1–M3b freeze its security surface: the five core contracts, World ID gate, verifiable
-randomness, receipt-free ballot adapter, private consequence accounting, work-based quote engine,
+randomness, receipt-free ballot adapter, private consequence accounting, deterministic court-fee engine,
 reward distribution, reputation, appeals, parallel panels, INVALID finality, per-draw presence,
 decline/replacement, and the SDK-facing contract interface. The MVP **claims no audit anywhere**; this funds the independent review of
 the version that will actually serve verified humans and external applications.

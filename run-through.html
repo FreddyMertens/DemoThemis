@@ -128,12 +128,12 @@
                 <h3>Resolution and court components</h3>
                 <div class="unlock-grid" id="componentGrid">
                   <div class="unlock" data-component="escrow"><b>Protocol escrow <span class="tag">locked</span></b><small>Funds are locked before anyone knows who will judge.</small></div>
-                  <div class="unlock" data-component="handoff"><b>Funded court handoff <span class="tag">locked</span></b><small>Deposits fill a locked resolution reserve; outcome collateral stays at OmenMarketMaker when that reserve pays DemoThemis.</small></div>
+                  <div class="unlock" data-component="handoff"><b>Bonded court handoff <span class="tag">locked</span></b><small>An eligible caller posts the exact court fee; outcome collateral stays at OmenMarketMaker while the bond pays DemoThemis.</small></div>
                   <div class="unlock" data-component="draw"><b>Random draw <span class="tag">locked</span></b><small>A public beacon draws one panel; no re-roll grinding.</small></div>
                   <div class="unlock" data-component="personhood"><b>Face check <span class="tag">locked</span></b><small>The drawn World-ID-backed human must be present for this case.</small></div>
                   <div class="unlock" data-component="ballot"><b>Private ballot <span class="tag">locked</span></b><small>Encrypted ballots and re-keying make vote receipts worthless.</small></div>
                   <div class="unlock" data-component="reserve"><b>Live reserve <span class="tag">locked</span></b><small>The protocol fronts it; final private debits fund a proved aggregate reward transfer.</small></div>
-                  <div class="unlock" data-component="appeal"><b>Appeal floors <span class="tag">locked</span></b><small>Rungs price the next panel, attack risk, and delay rent.</small></div>
+                  <div class="unlock" data-component="appeal"><b>Appeal funding <span class="tag">locked</span></b><small>A tagged service fee funds panel work + delay once; separate security returns or forfeits.</small></div>
                   <div class="unlock" data-component="finality"><b>Finality plus reports <span class="tag">locked</span></b><small>Escrow ends; collusion reports never expire.</small></div>
                   <div class="unlock" data-component="keys"><b>Quality evidence <span class="tag">locked</span></b><small>Every completed case strengthens the shared juror-quality record.</small></div>
                 </div>
@@ -182,7 +182,7 @@
         <div class="machine-foundation-grid">
           <div class="machine-foundation-item" data-machine-owner="demothemis"><b>Custody and proof</b>Funds lock before an unknown panel exists. One bound random draw, live presence checks, private ballots, and an aggregate tally protect every court case.</div>
           <div class="machine-foundation-item" data-machine-owner="shared"><b>Independent governance</b>OmenMarketMaker may tune its own market fee and product settings. DemoThemis may tune its own service pricing and court settings. Neither token reaches across the product boundary or judges an active case.</div>
-          <div class="machine-foundation-item" data-machine-owner="shared"><b>Automatic funding boundary</b>Every deposit contributes pro-rata to a locked resolution reserve under a target and maximum rate fixed before betting. A funded reserve pays DemoThemis automatically; a short reserve triggers top-up or refund, never an unpaid jury.</div>
+          <div class="machine-foundation-item" data-machine-owner="shared"><b>Automatic funding boundary</b>An eligible caller posts the deterministic court fee as a resolution bond when review is requested. A directional ruling reimburses it once from both sides pro-rata; insufficient information leaves market backing whole.</div>
         </div>
       </section>
 
@@ -192,7 +192,7 @@
       </details>
 
       <noscript>
-        <p class="machine-primer"><b>The complete route:</b> define the question, jury target, and maximum reserve rate; collect pro-rata reserve contributions; keep pooled claims or graduate only after funding; at close, pay DemoThemis automatically or return every YES/NO position at its recorded price; then draw, rule, and settle only a funded case.</p>
+        <p class="machine-primer"><b>The complete route:</b> lock the question, evidence rules, request timing, backstop, and fee-policy version; keep every deposit as market collateral; let an eligible caller bond the exact fee at resolution; then draw, rule, reimburse that bond after YES or NO, or preserve the pool after insufficient information.</p>
       </noscript>
       <div class="sr-only" id="machineAnnouncement" aria-live="polite"></div>
     </div>

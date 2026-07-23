@@ -17,13 +17,14 @@ interface IWorldIDRouter {
     ) external;
 }
 
-/// @title WorldIDRouterGate — production World ID gate for current deployments
-/// @notice Verifies an Orb proof through the World ID Router documented as
-///         deployed on World Chain mainnet. The Router binds it to the wallet
-///         signal and this app/action; the registry rejects reused nullifiers.
-/// @dev Uses the supported v3 compatibility proof while the World ID 4.0
-///      `WorldIDVerifier` remains preview. `ISybilGate` preserves a clean future
-///      migration by deploying a new immutable gate/registry instance after audit.
+/// @title WorldIDRouterGate — legacy World ID 3.0 compatibility gate
+/// @notice Verifies a legacy Orb proof through the World ID Router. It remains
+///         available for reproducing v3 deployments and tests, but new DemoThemis
+///         mainnet instances use `WorldIDGate` and the World ID 4.0 Production
+///         verifier. The Router binds a v3 proof to the wallet signal and this
+///         app/action; the registry rejects reused nullifiers.
+/// @dev World ID stops generating v3 proofs after the published migration
+///      cut-off, so this contract must not be selected by the deployment script.
 contract WorldIDRouterGate is ISybilGate {
     using ByteHasher for bytes;
 

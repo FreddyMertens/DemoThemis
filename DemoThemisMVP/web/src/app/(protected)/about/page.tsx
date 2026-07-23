@@ -3,7 +3,7 @@
 import { Page } from '@/components/PageLayout';
 import { CourtTopBar } from '@/components/CourtTopBar';
 import { InstanceBanner } from '@/components/InstanceBanner';
-import { explorerAddress, addr, IS_COHORT } from '@/lib/chain';
+import { explorerAddress, addr, IS_COHORT, MVP_CONFIGURED } from '@/lib/chain';
 
 export default function About() {
   return (
@@ -47,12 +47,16 @@ export default function About() {
           <a href="/app?tab=submit">
             <span>Ask</span> Submit a question
           </a>
-          <a href={explorerAddress(addr.registry)} target="_blank" rel="noreferrer">
-            <span>Verify ↗</span> {IS_COHORT ? 'Cohort JurorRegistry' : 'Mainnet JurorRegistry'}
-          </a>
-          <a href={explorerAddress(addr.court)} target="_blank" rel="noreferrer">
-            <span>Verify ↗</span> DisputeCourt
-          </a>
+          {MVP_CONFIGURED && (
+            <>
+              <a href={explorerAddress(addr.registry)} target="_blank" rel="noreferrer">
+                <span>Verify ↗</span> {IS_COHORT ? 'Cohort JurorRegistry' : 'Mainnet JurorRegistry'}
+              </a>
+              <a href={explorerAddress(addr.court)} target="_blank" rel="noreferrer">
+                <span>Verify ↗</span> DisputeCourt
+              </a>
+            </>
+          )}
         </div>
 
         <details className="court-disclosure">

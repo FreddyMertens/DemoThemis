@@ -13,8 +13,8 @@ the weak spots the self-assessment missed.
 > payer. Permit2 re-bond, a separate fixed retry deadline, and permissionless status-quo
 > finalization cover the no-show/quorum-miss path. Exact-3/3 question and escrow
 > regressions cover both fixes. The recorded mainnet deployment is immutable and remains
-> affected until replaced. The same replacement now uses the documented World ID
-> mainnet Router; the immutable v4 adapter is classified as historical preview evidence.
+> affected until replaced. The same replacement now uses the World ID 4 Production
+> proxy with legacy proofs disabled; the immutable legacy court remains historical evidence.
 
 ## Bottom line
 
@@ -39,8 +39,8 @@ replacement source from the still-affected legacy deployment.
 - **Slash-to-pool, atomic settlement, fee conservation, commit/reveal binding,
   wallet-bound proofs, and "no admin override"** all check out against the code.
 - **Historical v4 proof check in-transaction**; those traces genuinely exercise the
-  preview adapter but are not production-readiness evidence. The supported replacement
-  path is `WorldIDRouterGate` over the documented mainnet Router.
+  Staging adapter but are not real-human or production-environment evidence. The supported
+  replacement path is the v4-only `WorldIDGate` over the official Production proxy.
 - The **honesty rule is implemented consistently in the UI**; nothing claims humans have
   used the mainnet court while `jurorCount()==0`.
 

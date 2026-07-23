@@ -2,8 +2,15 @@
 // publicClient for the active instance (src/lib/chain.ts). The cohort is rendered
 // read-only; writes (register/commit/reveal/open) are the mainnet Step-5 path.
 import { keccak256, toBytes, type Address, type Hex } from 'viem';
-import { publicClient, addr, CHAIN_META, SUPPORTS_LIVENESS_RECOVERY } from './chain';
+import {
+  publicClient,
+  addr,
+  CHAIN_META,
+  SUPPORTS_LIVENESS_RECOVERY,
+  SUPPORTS_THREE_STATE_RULING,
+} from './chain';
 import { disputeCourtAbi } from '@/abi/DisputeCourt';
+import { disputeCourtThreeStateAbi } from '@/abi/DisputeCourtThreeState';
 import { jurorRegistryAbi } from '@/abi/JurorRegistry';
 import { dealEscrowAbi } from '@/abi/DealEscrow';
 import { mockUSDAbi } from '@/abi/MockUSD';
@@ -11,6 +18,8 @@ import { mockUSDAbi } from '@/abi/MockUSD';
 export const PHASES = ['Open', 'Commit', 'Reveal', 'Resolvable', 'Resolved'] as const;
 export type Phase = (typeof PHASES)[number];
 export const STATUS = ['Open', 'Drawn', 'Resolved'] as const;
+export const RULINGS = ['NO', 'YES', 'INSUFFICIENT_INFORMATION'] as const;
+export type Ruling = 0 | 1 | 2;
 
 export type CaseView = {
   id: number;
@@ -31,6 +40,9 @@ export type CaseView = {
   /** Fixed first-miss recovery cutoff; zero unless a redraw is waiting. */
   recoveryDeadline: bigint;
   outcome: boolean;
+  /** Null until resolution. Legacy resolved cases are mapped from their Boolean outcome. */
+  ruling: Ruling | null;
+  insufficientVotes: bigint;
   panel: readonly Address[];
   phase: Phase;
 };
@@ -59,10 +71,17 @@ export type PanelDrawnEvent = ChainEventRef & {
 
 export type CommittedEvent = ChainEventRef & { juror: Address };
 export type RevealedEvent = ChainEventRef & { juror: Address; vote: boolean };
+export type AnswerRevealedEvent = ChainEventRef & { juror: Address; ruling: Ruling };
 export type ResolvedEvent = ChainEventRef & {
   outcome: boolean;
   yes: bigint;
   no: bigint;
+};
+export type RulingResolvedEvent = ChainEventRef & {
+  ruling: Ruling;
+  yes: bigint;
+  no: bigint;
+  insufficient: bigint;
 };
 export type RedrawRecoveryStartedEvent = ChainEventRef & { deadline: bigint };
 export type InitialDrawTimedOutEvent = ChainEventRef & {
@@ -81,10 +100,12 @@ export type CaseReceiptEvents = {
   panelDrawn: readonly PanelDrawnEvent[];
   committed: readonly CommittedEvent[];
   revealed: readonly RevealedEvent[];
+  answerRevealed: readonly AnswerRevealedEvent[];
   initialDrawTimedOut: InitialDrawTimedOutEvent | null;
   recoveryStarted: RedrawRecoveryStartedEvent | null;
   recoveryTimedOut: ChainEventRef | null;
   resolved: ResolvedEvent | null;
+  rulingResolved: RulingResolvedEvent | null;
   feePaid: readonly FeePaidEvent[];
   feeDistributed: FeeDistributedEvent | null;
 };
@@ -96,6 +117,7 @@ export type PanelJurorActivity = {
   commitmentTransactionHash: Hex | null;
   revealed: boolean;
   vote: boolean | null;
+  answer: Ruling | null;
   revealTransactionHash: Hex | null;
   payment: bigint;
   paymentTransactionHash: Hex | null;
@@ -106,6 +128,7 @@ export type CasePanelActivity = {
   commitmentCount: number;
   revealCount: number;
   revealedVotes: readonly { juror: Address; vote: boolean; transactionHash: Hex | null }[];
+  revealedAnswers: readonly { juror: Address; answer: Ruling; transactionHash: Hex | null }[];
 };
 
 /** Compact live read model consumed by the active-case screen. */
@@ -114,6 +137,7 @@ export type CaseActivity = {
   revealedCount: number;
   yes: number;
   no: number;
+  insufficient: number;
   jurors: readonly PanelJurorActivity[];
   events: CaseReceiptEvents;
   feeDistribution: FeeDistributedEvent | null;
@@ -122,8 +146,10 @@ export type CaseActivity = {
 export type CaseTally = {
   yes: bigint;
   no: bigint;
+  insufficient: bigint;
   revealed: bigint;
   outcome: boolean;
+  ruling: Ruling;
 };
 
 export type JurorPayment = {
@@ -149,10 +175,12 @@ export type CaseReceipt = {
     PanelDrawn: readonly Hex[];
     Committed: readonly Hex[];
     Revealed: readonly Hex[];
+    AnswerRevealed: readonly Hex[];
     InitialDrawTimedOut: Hex | null;
     RedrawRecoveryStarted: Hex | null;
     RedrawRecoveryTimedOut: Hex | null;
     Resolved: Hex | null;
+    RulingResolved: Hex | null;
     FeePaid: readonly Hex[];
     FeeDistributed: Hex | null;
   };
@@ -261,12 +289,27 @@ export async function getCase(id: number): Promise<CaseView> {
   const recoveryDeadlineRead = SUPPORTS_LIVENESS_RECOVERY
     ? publicClient.readContract({ address: addr.court, abi: disputeCourtAbi, functionName: 'redrawDeadline', args: [BigInt(id)] })
     : Promise.resolve(BigInt(0));
-  const [c, phase, initialDrawDeadline, recoveryDeadline] = await Promise.all([
+  const rulingRead = SUPPORTS_THREE_STATE_RULING
+    ? publicClient.readContract({
+        address: addr.court,
+        abi: disputeCourtThreeStateAbi,
+        functionName: 'rulingOf',
+        args: [BigInt(id)],
+      })
+    : Promise.resolve(null);
+  const [c, phase, initialDrawDeadline, recoveryDeadline, threeStateRuling] = await Promise.all([
     publicClient.readContract({ address: addr.court, abi: disputeCourtAbi, functionName: 'getCase', args: [BigInt(id)] }),
     publicClient.readContract({ address: addr.court, abi: disputeCourtAbi, functionName: 'phaseOf', args: [BigInt(id)] }),
     initialDrawDeadlineRead,
     recoveryDeadlineRead,
+    rulingRead,
   ]);
+  const resolved = Number(c.status) === 2;
+  const ruling = resolved
+    ? threeStateRuling === null
+      ? (c.outcome ? 1 : 0)
+      : (Number(threeStateRuling[0]) as Ruling)
+    : null;
   return {
     id,
     caseType: c.caseType,
@@ -284,6 +327,8 @@ export async function getCase(id: number): Promise<CaseView> {
     initialDrawDeadline,
     recoveryDeadline,
     outcome: c.outcome,
+    ruling,
+    insufficientVotes: threeStateRuling === null ? BigInt(0) : threeStateRuling[1],
     panel: c.panel,
     phase: PHASES[Number(phase)],
   };
@@ -357,15 +402,27 @@ export async function getCaseReceiptEvents(
     toBlock: 'latest' as const,
     strict: true,
   });
+  const threeStateLogs = SUPPORTS_THREE_STATE_RULING
+    ? await publicClient.getContractEvents({
+        address: addr.court,
+        abi: disputeCourtThreeStateAbi,
+        fromBlock: openedBlock ?? fromBlock,
+        toBlock: 'latest' as const,
+        strict: true,
+      })
+    : [];
   const caseLogs = logs.filter((log) => log.args.caseId === caseId);
+  const threeStateCaseLogs = threeStateLogs.filter((log) => log.args.caseId === caseId);
   const openedLogs = caseLogs.filter((log) => log.eventName === 'CaseOpened');
   const drawnLogs = caseLogs.filter((log) => log.eventName === 'PanelDrawn');
   const committedLogs = caseLogs.filter((log) => log.eventName === 'Committed');
   const revealedLogs = caseLogs.filter((log) => log.eventName === 'Revealed');
+  const answerRevealedLogs = threeStateCaseLogs.filter((log) => log.eventName === 'AnswerRevealed');
   const initialDrawTimedOutLogs = caseLogs.filter((log) => log.eventName === 'InitialDrawTimedOut');
   const recoveryStartedLogs = caseLogs.filter((log) => log.eventName === 'RedrawRecoveryStarted');
   const recoveryTimedOutLogs = caseLogs.filter((log) => log.eventName === 'RedrawRecoveryTimedOut');
   const resolvedLogs = caseLogs.filter((log) => log.eventName === 'Resolved');
+  const rulingResolvedLogs = threeStateCaseLogs.filter((log) => log.eventName === 'RulingResolved');
   const paidLogs = caseLogs.filter((log) => log.eventName === 'FeePaid');
   const distributedLogs = caseLogs.filter((log) => log.eventName === 'FeeDistributed');
 
@@ -391,6 +448,11 @@ export async function getCaseReceiptEvents(
     juror: requiredEventArg(log.args.juror, 'juror'),
     vote: requiredEventArg(log.args.vote, 'vote'),
   }));
+  const answerRevealed = answerRevealedLogs.map((log) => ({
+    ...eventRef(log),
+    juror: requiredEventArg(log.args.juror, 'juror'),
+    ruling: Number(requiredEventArg(log.args.ruling, 'ruling')) as Ruling,
+  }));
   const initialDrawTimedOut = initialDrawTimedOutLogs.map((log) => ({
     ...eventRef(log),
     refundTo: requiredEventArg(log.args.refundTo, 'refundTo'),
@@ -406,6 +468,13 @@ export async function getCaseReceiptEvents(
     outcome: requiredEventArg(log.args.outcome, 'outcome'),
     yes: requiredEventArg(log.args.yes, 'yes'),
     no: requiredEventArg(log.args.no, 'no'),
+  }));
+  const rulingResolved = rulingResolvedLogs.map((log) => ({
+    ...eventRef(log),
+    ruling: Number(requiredEventArg(log.args.ruling, 'ruling')) as Ruling,
+    yes: requiredEventArg(log.args.yes, 'yes'),
+    no: requiredEventArg(log.args.no, 'no'),
+    insufficient: requiredEventArg(log.args.insufficient, 'insufficient'),
   }));
   const feePaid = paidLogs.map((log) => ({
     ...eventRef(log),
@@ -424,10 +493,12 @@ export async function getCaseReceiptEvents(
     panelDrawn,
     committed,
     revealed,
+    answerRevealed,
     initialDrawTimedOut: lastOf(initialDrawTimedOut),
     recoveryStarted: lastOf(recoveryStarted),
     recoveryTimedOut: lastOf(recoveryTimedOut),
     resolved: lastOf(resolved),
+    rulingResolved: lastOf(rulingResolved),
     feePaid,
     feeDistributed: lastOf(feeDistributed),
   };
@@ -440,7 +511,24 @@ async function readPanelActivity(
 ): Promise<CasePanelActivity> {
   const states = await Promise.all(
     panel.map(async (juror) => {
-      const [commitment, revealed, vote] = await Promise.all([
+      const answerRead: Promise<Ruling> = SUPPORTS_THREE_STATE_RULING
+        ? publicClient
+            .readContract({
+              address: addr.court,
+              abi: disputeCourtThreeStateAbi,
+              functionName: 'rulingVoteOf',
+              args: [BigInt(caseId), juror],
+            })
+            .then((answer) => Number(answer) as Ruling)
+        : publicClient
+            .readContract({
+              address: addr.court,
+              abi: disputeCourtAbi,
+              functionName: 'voteOf',
+              args: [BigInt(caseId), juror],
+            })
+            .then((vote) => (vote ? 1 : 0));
+      const [commitment, revealed, answer] = await Promise.all([
         publicClient.readContract({
           address: addr.court,
           abi: disputeCourtAbi,
@@ -453,21 +541,18 @@ async function readPanelActivity(
           functionName: 'hasRevealed',
           args: [BigInt(caseId), juror],
         }),
-        publicClient.readContract({
-          address: addr.court,
-          abi: disputeCourtAbi,
-          functionName: 'voteOf',
-          args: [BigInt(caseId), juror],
-        }),
+        answerRead,
       ]);
-      return { juror, commitment, revealed, vote };
+      return { juror, commitment, revealed, answer };
     }),
   );
 
-  const activity = states.map(({ juror, commitment, revealed, vote }): PanelJurorActivity => {
+  const activity = states.map(({ juror, commitment, revealed, answer }): PanelJurorActivity => {
     const key = juror.toLowerCase();
     const commitEvent = lastOf(events.committed.filter((event) => event.juror.toLowerCase() === key));
-    const revealEvent = lastOf(events.revealed.filter((event) => event.juror.toLowerCase() === key));
+    const answerRevealEvent = lastOf(events.answerRevealed.filter((event) => event.juror.toLowerCase() === key));
+    const legacyRevealEvent = lastOf(events.revealed.filter((event) => event.juror.toLowerCase() === key));
+    const revealEvent = answerRevealEvent ?? legacyRevealEvent;
     const paymentEvents = events.feePaid.filter((event) => event.juror.toLowerCase() === key);
     const paymentEvent = lastOf(paymentEvents);
     const payment = paymentEvents.reduce((sum, event) => sum + event.amount, BigInt(0));
@@ -479,7 +564,8 @@ async function readPanelActivity(
       commitment: committed ? commitment : null,
       commitmentTransactionHash: committed ? (commitEvent?.transactionHash ?? null) : null,
       revealed,
-      vote: revealed ? vote : null,
+      vote: revealed ? (answer === 1 ? true : answer === 0 ? false : null) : null,
+      answer: revealed ? answer : null,
       revealTransactionHash: revealed ? (revealEvent?.transactionHash ?? null) : null,
       payment,
       paymentTransactionHash: paymentEvent?.transactionHash ?? null,
@@ -495,6 +581,13 @@ async function readPanelActivity(
       .map((juror) => ({
         juror: juror.juror,
         vote: juror.vote,
+        transactionHash: juror.revealTransactionHash,
+      })),
+    revealedAnswers: activity
+      .filter((juror): juror is PanelJurorActivity & { answer: Ruling } => juror.answer !== null)
+      .map((juror) => ({
+        juror: juror.juror,
+        answer: juror.answer,
         transactionHash: juror.revealTransactionHash,
       })),
   };
@@ -514,15 +607,21 @@ export async function getCaseActivity(
     getCaseReceiptEvents(caseId, options),
   ]);
   const activity = await readPanelActivity(caseId, resolvedPanel, events);
-  const finalTally = events.resolved;
-  const yes = finalTally === null ? activity.revealedVotes.filter((vote) => vote.vote).length : Number(finalTally.yes);
-  const no = finalTally === null ? activity.revealedVotes.filter((vote) => !vote.vote).length : Number(finalTally.no);
+  const finalTally = events.rulingResolved ?? events.resolved;
+  const yes = finalTally === null ? activity.revealedAnswers.filter((vote) => vote.answer === 1).length : Number(finalTally.yes);
+  const no = finalTally === null ? activity.revealedAnswers.filter((vote) => vote.answer === 0).length : Number(finalTally.no);
+  const insufficient = finalTally === null
+    ? activity.revealedAnswers.filter((vote) => vote.answer === 2).length
+    : 'insufficient' in finalTally
+      ? Number(finalTally.insufficient)
+      : 0;
 
   return {
     committedCount: activity.commitmentCount,
     revealedCount: activity.revealCount,
     yes,
     no,
+    insufficient,
     jurors: activity.panel,
     events,
     feeDistribution: events.feeDistributed,
@@ -533,7 +632,7 @@ export async function getCaseActivity(
 export async function getCaseReceipt(id: number, options: CaseReceiptOptions = {}): Promise<CaseReceipt> {
   const [courtCase, events] = await Promise.all([getCase(id), getCaseReceiptEvents(id, options)]);
   const activity = await readPanelActivity(id, courtCase.panel, events);
-  const resolved = events.resolved;
+  const resolved = events.rulingResolved ?? events.resolved;
 
   return {
     case: courtCase,
@@ -544,8 +643,10 @@ export async function getCaseReceipt(id: number, options: CaseReceiptOptions = {
         : {
             yes: resolved.yes,
             no: resolved.no,
-            revealed: resolved.yes + resolved.no,
-            outcome: resolved.outcome,
+            insufficient: 'insufficient' in resolved ? resolved.insufficient : BigInt(0),
+            revealed: resolved.yes + resolved.no + ('insufficient' in resolved ? resolved.insufficient : BigInt(0)),
+            outcome: 'outcome' in resolved ? resolved.outcome : resolved.ruling === 1,
+            ruling: 'ruling' in resolved ? resolved.ruling : resolved.outcome ? 1 : 0,
           },
     payments: events.feePaid.map(({ juror, amount, transactionHash }) => ({ juror, amount, transactionHash })),
     feeDistribution: events.feeDistributed,
@@ -555,10 +656,12 @@ export async function getCaseReceipt(id: number, options: CaseReceiptOptions = {
       PanelDrawn: events.panelDrawn.map((event) => event.transactionHash),
       Committed: events.committed.map((event) => event.transactionHash),
       Revealed: events.revealed.map((event) => event.transactionHash),
+      AnswerRevealed: events.answerRevealed.map((event) => event.transactionHash),
       InitialDrawTimedOut: events.initialDrawTimedOut?.transactionHash ?? null,
       RedrawRecoveryStarted: events.recoveryStarted?.transactionHash ?? null,
       RedrawRecoveryTimedOut: events.recoveryTimedOut?.transactionHash ?? null,
       Resolved: events.resolved?.transactionHash ?? null,
+      RulingResolved: events.rulingResolved?.transactionHash ?? null,
       FeePaid: events.feePaid.map((event) => event.transactionHash),
       FeeDistributed: events.feeDistributed?.transactionHash ?? null,
     },

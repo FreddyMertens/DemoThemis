@@ -3,12 +3,12 @@
 import { useCallback, useEffect, useMemo, useState } from 'react';
 import { useSession } from 'next-auth/react';
 import { useMiniKit } from '@worldcoin/minikit-js/minikit-provider';
-import { encodeAbiParameters, keccak256, type Address, type Hex } from 'viem';
+import { encodeAbiParameters, keccak256, toBytes, type Address, type Hex } from 'viem';
 import { AuthButton } from '@/components/AuthButton';
 import { GasBadge } from '@/components/Badges';
 import { disputeCourtAbi } from '@/abi/DisputeCourt';
 import { usePolledData } from '@/lib/hooks';
-import { addr, explorerTx, publicClient } from '@/lib/chain';
+import { addr, CHAIN_META, explorerTx, publicClient, SUPPORTS_THREE_STATE_RULING } from '@/lib/chain';
 import { courtTx } from '@/lib/calldata';
 import { useCourtTx } from '@/lib/tx';
 import type { Phase } from '@/lib/court';
@@ -16,10 +16,31 @@ import type { Phase } from '@/lib/court';
 const ZERO_COMMITMENT = `0x${'0'.repeat(64)}` as Hex;
 const ZERO_ADDRESS = '0x0000000000000000000000000000000000000000' as Address;
 
-type SavedBallot = { vote: boolean; salt: Hex; wallet: Address; round: number };
-type LegacySavedBallot = Omit<SavedBallot, 'round'>;
+type BallotAnswer = 0 | 1 | 2;
+type LegacySavedBallot = { vote: boolean; salt: Hex; wallet: Address; round?: number };
+type SavedBallotV2 = {
+  version: 2;
+  answer: BallotAnswer;
+  salt: Hex;
+  wallet: Address;
+  round: number;
+  courtAddress: Address;
+  chainId: number;
+};
+type SavedBallot = LegacySavedBallot | SavedBallotV2;
 
-function isLegacySavedBallot(value: unknown, wallet: Address): value is LegacySavedBallot {
+const NO: BallotAnswer = 0;
+const YES: BallotAnswer = 1;
+const INSUFFICIENT_INFORMATION: BallotAnswer = 2;
+const BALLOT_V2_DOMAIN = keccak256(toBytes('DEMOTHEMIS_BALLOT_V2'));
+
+function answerLabel(answer: BallotAnswer): string {
+  if (answer === YES) return 'YES';
+  if (answer === NO) return 'NO';
+  return 'INSUFFICIENT INFORMATION';
+}
+
+function isLegacySavedBallot(value: unknown, wallet: Address, round?: number): value is LegacySavedBallot {
   if (!value || typeof value !== 'object') return false;
   const ballot = value as Partial<LegacySavedBallot>;
   return (
@@ -27,20 +48,24 @@ function isLegacySavedBallot(value: unknown, wallet: Address): value is LegacySa
     typeof ballot.salt === 'string' &&
     /^0x[0-9a-fA-F]{64}$/.test(ballot.salt) &&
     typeof ballot.wallet === 'string' &&
-    ballot.wallet.toLowerCase() === wallet.toLowerCase()
+    ballot.wallet.toLowerCase() === wallet.toLowerCase() &&
+    (round === undefined || ballot.round === undefined || ballot.round === round)
   );
 }
 
-function isSavedBallot(value: unknown, wallet: Address, round: number): value is SavedBallot {
+function isSavedBallotV2(value: unknown, wallet: Address, round: number): value is SavedBallotV2 {
   if (!value || typeof value !== 'object') return false;
-  const ballot = value as Partial<SavedBallot>;
+  const ballot = value as Partial<SavedBallotV2>;
   return (
-    typeof ballot.vote === 'boolean' &&
+    ballot.version === 2 &&
+    (ballot.answer === NO || ballot.answer === YES || ballot.answer === INSUFFICIENT_INFORMATION) &&
     typeof ballot.salt === 'string' &&
     /^0x[0-9a-fA-F]{64}$/.test(ballot.salt) &&
     typeof ballot.wallet === 'string' &&
     ballot.wallet.toLowerCase() === wallet.toLowerCase() &&
-    ballot.round === round
+    ballot.round === round &&
+    ballot.courtAddress?.toLowerCase() === addr.court.toLowerCase() &&
+    ballot.chainId === CHAIN_META.chainId
   );
 }
 
@@ -64,7 +89,7 @@ export function LiveBallot({
   const { isInstalled } = useMiniKit();
   const wallet = session.data?.user?.walletAddress as Address | undefined;
   const tx = useCourtTx();
-  const [vote, setVote] = useState<boolean | null>(null);
+  const [answer, setAnswer] = useState<BallotAnswer | null>(null);
   const [salt, setSalt] = useState<Hex>('0x');
   const [saved, setSaved] = useState<SavedBallot | null>(null);
   const storeKey = wallet
@@ -94,14 +119,20 @@ export function LiveBallot({
 
   useEffect(() => {
     setSaved(null);
-    setVote(null);
+    setAnswer(null);
     let raw = storeKey ? localStorage.getItem(storeKey) : null;
     if (raw && wallet) {
       try {
         const parsed: unknown = JSON.parse(raw);
-        if (isSavedBallot(parsed, wallet, round)) {
+        if (SUPPORTS_THREE_STATE_RULING && isSavedBallotV2(parsed, wallet, round)) {
           setSaved(parsed);
-          setVote(parsed.vote);
+          setAnswer(parsed.answer);
+          setSalt(parsed.salt);
+          return;
+        }
+        if (!SUPPORTS_THREE_STATE_RULING && isLegacySavedBallot(parsed, wallet, round)) {
+          setSaved(parsed);
+          setAnswer(parsed.vote ? YES : NO);
           setSalt(parsed.salt);
           return;
         }
@@ -115,17 +146,17 @@ export function LiveBallot({
     // Before redraws were round-keyed, first-panel secrets used the legacy key.
     // Migrate only round zero: carrying that disclosed salt into a retry would
     // defeat the reason for separating ballot storage by round.
-    if (!raw && round === 0 && storeKey && legacyStoreKey && wallet) {
+    if (!SUPPORTS_THREE_STATE_RULING && !raw && round === 0 && storeKey && legacyStoreKey && wallet) {
       const legacyRaw = localStorage.getItem(legacyStoreKey);
       if (legacyRaw) {
         try {
           const parsed: unknown = JSON.parse(legacyRaw);
           if (isLegacySavedBallot(parsed, wallet)) {
-            const migrated: SavedBallot = { ...parsed, round: 0 };
+            const migrated: LegacySavedBallot = { ...parsed, round: 0 };
             localStorage.setItem(storeKey, JSON.stringify(migrated));
             localStorage.removeItem(legacyStoreKey);
             setSaved(migrated);
-            setVote(migrated.vote);
+            setAnswer(migrated.vote ? YES : NO);
             setSalt(migrated.salt);
             return;
           }
@@ -142,14 +173,31 @@ export function LiveBallot({
   }, [legacyStoreKey, round, storeKey, wallet]);
 
   const commitment = useMemo<Hex>(() => {
-    if (vote === null || salt === '0x') return ZERO_COMMITMENT;
+    if (answer === null || salt === '0x') return ZERO_COMMITMENT;
+    if (SUPPORTS_THREE_STATE_RULING) {
+      return keccak256(
+        encodeAbiParameters(
+          [
+            { type: 'bytes32' },
+            { type: 'uint256' },
+            { type: 'address' },
+            { type: 'uint256' },
+            { type: 'uint8' },
+            { type: 'address' },
+            { type: 'uint8' },
+            { type: 'bytes32' },
+          ],
+          [BALLOT_V2_DOMAIN, BigInt(CHAIN_META.chainId), addr.court, BigInt(caseId), round, wallet ?? ZERO_ADDRESS, answer, salt],
+        ),
+      );
+    }
     return keccak256(
       encodeAbiParameters(
         [{ type: 'bool' }, { type: 'bytes32' }, { type: 'uint256' }, { type: 'address' }],
-        [vote, salt, BigInt(caseId), wallet ?? ZERO_ADDRESS],
+        [answer === YES, salt, BigInt(caseId), wallet ?? ZERO_ADDRESS],
       ),
     );
-  }, [caseId, salt, vote, wallet]);
+  }, [answer, caseId, round, salt, wallet]);
 
   const isPanelMember = !!wallet && panel.some((juror) => juror.toLowerCase() === wallet.toLowerCase());
   const hasCommitted = !!walletBallot.data && walletBallot.data.commitment !== ZERO_COMMITMENT;
@@ -157,8 +205,11 @@ export function LiveBallot({
   const busy = tx.step === 'submitting' || tx.step === 'confirming';
 
   async function sealVote() {
-    if (!contentVerified || !wallet || !storeKey || vote === null || salt === '0x' || hasCommitted) return;
-    const ballot: SavedBallot = { vote, salt, wallet, round };
+    if (!contentVerified || !wallet || !storeKey || answer === null || salt === '0x' || hasCommitted) return;
+    if (!SUPPORTS_THREE_STATE_RULING && answer === INSUFFICIENT_INFORMATION) return;
+    const ballot: SavedBallot = SUPPORTS_THREE_STATE_RULING
+      ? { version: 2, answer, salt, wallet, round, courtAddress: addr.court, chainId: CHAIN_META.chainId }
+      : { vote: answer === YES, salt, wallet, round };
     // Persist before asking World App to submit. If the transaction succeeds but
     // receipt polling or the page connection drops, the juror still has the
     // exact secret needed for reveal.
@@ -172,7 +223,11 @@ export function LiveBallot({
 
   async function revealVote() {
     if (!saved || hasRevealed) return;
-    const hash = await tx.submit([courtTx.reveal(BigInt(caseId), saved.vote, saved.salt)]);
+    const hash = await tx.submit([
+      'version' in saved
+        ? courtTx.revealAnswer(BigInt(caseId), saved.answer, saved.salt)
+        : courtTx.reveal(BigInt(caseId), saved.vote, saved.salt),
+    ]);
     if (!hash) return;
     await walletBallot.refresh();
     await refresh();
@@ -222,16 +277,30 @@ export function LiveBallot({
         ) : (
           <>
             <div className="oracle-vote-options" role="group" aria-label="Choose your answer">
-              <button type="button" className={`is-yes-option${vote === true ? ' is-selected is-yes' : ''}`} aria-pressed={vote === true} onClick={() => setVote(true)} disabled={busy}>
+              <button type="button" className={`is-yes-option${answer === YES ? ' is-selected is-yes' : ''}`} aria-pressed={answer === YES} onClick={() => setAnswer(YES)} disabled={busy}>
                 <span>YES</span>
                 <small>The YES rule is satisfied</small>
               </button>
-              <button type="button" className={`is-no-option${vote === false ? ' is-selected is-no' : ''}`} aria-pressed={vote === false} onClick={() => setVote(false)} disabled={busy}>
+              <button type="button" className={`is-no-option${answer === NO ? ' is-selected is-no' : ''}`} aria-pressed={answer === NO} onClick={() => setAnswer(NO)} disabled={busy}>
                 <span>NO</span>
                 <small>The YES rule is not satisfied</small>
               </button>
+              <button
+                type="button"
+                className={`is-insufficient-option${answer === INSUFFICIENT_INFORMATION ? ' is-selected is-insufficient' : ''}`}
+                aria-pressed={answer === INSUFFICIENT_INFORMATION}
+                onClick={() => setAnswer(INSUFFICIENT_INFORMATION)}
+                disabled={busy || !SUPPORTS_THREE_STATE_RULING}
+                title={SUPPORTS_THREE_STATE_RULING ? undefined : 'Not available for this contract version'}
+              >
+                <span>INSUFFICIENT INFORMATION</span>
+                <small>The permitted evidence cannot reliably establish YES or NO</small>
+              </button>
             </div>
-            <button type="button" className="oracle-primary-action" onClick={sealVote} disabled={busy || vote === null || salt === '0x'}>
+            {!SUPPORTS_THREE_STATE_RULING && (
+              <p className="oracle-ballot-capability-note">This selected case exposes a two-answer ballot.</p>
+            )}
+            <button type="button" className="oracle-primary-action" onClick={sealVote} disabled={busy || answer === null || salt === '0x'}>
               {busy ? (tx.step === 'confirming' ? 'Recording on World Chain…' : 'Confirm in World App…') : 'Seal my answer on-chain'}
             </button>
           </>
@@ -248,7 +317,7 @@ export function LiveBallot({
         <>
           <div className="oracle-reveal-summary">
             <span>Your sealed answer</span>
-            <strong>{saved.vote ? 'YES' : 'NO'}</strong>
+            <strong>{'version' in saved ? answerLabel(saved.answer) : saved.vote ? 'YES' : 'NO'}</strong>
           </div>
           <button type="button" className="oracle-primary-action" onClick={revealVote} disabled={busy}>
             {busy ? (tx.step === 'confirming' ? 'Recording on World Chain…' : 'Confirm in World App…') : 'Reveal my answer'}

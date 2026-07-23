@@ -426,7 +426,7 @@ function validateMonotonicity(labModel) {
 function validateAdaptivePricing(labModel) {
   const easy = labModel.compute(stateFor(labModel, "base", (state) => { state.complexity = 0.75; }));
   const hard = labModel.compute(stateFor(labModel, "base", (state) => { state.complexity = 2; }));
-  if (hard.requiredCaseFee <= easy.requiredCaseFee) fail("Higher case complexity must raise the required case quote");
+  if (hard.requiredCaseFee <= easy.requiredCaseFee) fail("Higher case complexity must raise the required court fee");
 
   const wideSupply = labModel.compute(stateFor(labModel, "base", (state) => { state.jurors = 5000; }));
   const thinSupply = labModel.compute(stateFor(labModel, "base", (state) => { state.jurors = 100; }));
@@ -435,11 +435,11 @@ function validateAdaptivePricing(labModel) {
   const emptyReserve = labModel.compute(stateFor(labModel, "base", (state) => { state.reserveCoverage = 0; }));
   const fullReserve = labModel.compute(stateFor(labModel, "base", (state) => { state.reserveCoverage = 1.5; }));
   if (emptyReserve.reserveTopUpPerCase <= 0 || Math.abs(fullReserve.reserveTopUpPerCase) > 1e-9) {
-    fail("Reward-reserve top-up must be positive below target and zero at or above target");
+    fail("Reward-pool top-up must be positive below target and zero at or above target");
   }
 
   const base = labModel.compute(stateFor(labModel, "base"));
-  if (base.fixedOverheadPerCase >= base.requiredCaseFee) fail("Fixed processing and operations overhead must remain below the full jury quote");
+  if (base.fixedOverheadPerCase >= base.requiredCaseFee) fail("Fixed processing and operations overhead must remain below the full court fee");
   if (base.operationsPerCase > defaultAssumptions.operationsCaseCap + 1e-9) fail("Operations charge exceeds its per-case cap");
 
   const underpricedState = stateFor(labModel, "base", (state) => {

@@ -10,10 +10,9 @@ import { CourtTopBar } from '@/components/CourtTopBar';
 import { GasBadge } from '@/components/Badges';
 import { AuthButton } from '@/components/AuthButton';
 import { InstanceBanner } from '@/components/InstanceBanner';
-import { SybilDemo } from '@/components/SybilDemo';
 import { usePolledData } from '@/lib/hooks';
 import { getJurorMembership, registryStats, musdBalanceOf } from '@/lib/court';
-import { IS_COHORT, SUPPORTS_LIVENESS_RECOVERY, explorerTx, BOND } from '@/lib/chain';
+import { IS_COHORT, MVP_CONFIGURED, SUPPORTS_LIVENESS_RECOVERY, explorerTx, BOND } from '@/lib/chain';
 import { generateRegistrationProof } from '@/lib/worldid';
 import { courtTx } from '@/lib/calldata';
 import { useCourtTx } from '@/lib/tx';
@@ -39,13 +38,19 @@ const STEPS = [
 type Phase = 'idle' | 'verifying' | 'submitting' | 'rejoining' | 'leaving' | 'done' | 'rejoined' | 'left' | 'error';
 
 export default function Onboard() {
-  const stats = usePolledData(registryStats);
+  const statsFetcher = useCallback(
+    async () => MVP_CONFIGURED
+      ? registryStats()
+      : { jurorCount: 0, panelSize: 3, minPool: 4, bond: BOND, bondsHeld: BigInt(0), rewardPool: BigInt(0) },
+    [],
+  );
+  const stats = usePolledData(statsFetcher);
   const session = useSession();
   const { isInstalled } = useMiniKit();
   const tx = useCourtTx();
   const wallet = session.data?.user?.walletAddress as Address | undefined;
   const membershipFetcher = useCallback(
-    async () => (wallet ? getJurorMembership(wallet) : null),
+    async () => (MVP_CONFIGURED && wallet ? getJurorMembership(wallet) : null),
     [wallet],
   );
   const membership = usePolledData(membershipFetcher, 6000);
@@ -60,7 +65,7 @@ export default function Onboard() {
   async function onboard() {
     if (!IS_COHORT && !SUPPORTS_LIVENESS_RECOVERY) {
       setPhase('error');
-      setNote('Capstone onboarding is paused until replacement contracts with party-aware admission and both bounded recovery paths are deployed.');
+      setNote('Use the interactive walkthrough for this MVP configuration.');
       return;
     }
     if (!wallet) {
@@ -128,7 +133,7 @@ export default function Onboard() {
   async function rejoinJury() {
     if (!SUPPORTS_LIVENESS_RECOVERY) {
       setPhase('error');
-      setNote('This deployed registry predates safe Permit2 rejoining. A replacement deployment is required.');
+      setNote('This MVP configuration does not allow bond restoration.');
       return;
     }
     if (!wallet) {
@@ -167,7 +172,17 @@ export default function Onboard() {
   const isInactiveJuror = membership.data?.registered === true && !isActiveJuror;
   const isServing = (membership.data?.activePanels ?? 0) > 0;
 
-  const actionPanel = IS_COHORT ? (
+  const actionPanel = !MVP_CONFIGURED ? (
+    <div className="rounded-xl border border-slate-200 bg-white p-4 text-center">
+      <p className="text-base font-bold text-slate-900">Explore the current juror journey</p>
+      <p className="mt-1 text-sm text-slate-600">
+        See how World ID verification, the valueless bond, random seating, and the three-answer ballot fit together.
+      </p>
+      <Link href="/demothemis-mvp.html" className="mt-3 block rounded-xl bg-slate-900 px-4 py-3 text-sm font-semibold text-white">
+        Open the interactive walkthrough
+      </Link>
+    </div>
+  ) : IS_COHORT ? (
     <div className="rounded-xl border border-amber-300 bg-amber-50 p-4 text-center text-amber-900">
       <p className="text-sm font-semibold">This simulated cohort is read-only.</p>
       <p className="mt-1 text-xs">Try the complete juror journey locally without a proof, wallet signature, or funds.</p>
@@ -210,9 +225,7 @@ export default function Onboard() {
       <p className="mt-1 text-sm text-emerald-800">
         {phase === 'left' || phase === 'rejoined'
           ? note
-          : SUPPORTS_LIVENESS_RECOVERY
-            ? 'Your World ID registration remains valid. Restore the demo bond to become available for panel draws again—no new identity proof is needed.'
-            : 'Your World ID registration remains valid, but these deployed addresses predate safe Permit2 rejoining. A replacement deployment is required before this wallet can restore its bond.'}
+          : 'Your World ID registration remains valid. Restore the demo bond to become available for panel draws again—no new identity proof is needed.'}
       </p>
       {SUPPORTS_LIVENESS_RECOVERY && isInstalled && phase !== 'rejoined' ? (
         <button
@@ -236,16 +249,6 @@ export default function Onboard() {
       )}
       <Link href="/app" className="mt-3 block rounded-xl bg-emerald-800 px-4 py-3 text-sm font-semibold text-white">
         View the live case
-      </Link>
-    </div>
-  ) : !SUPPORTS_LIVENESS_RECOVERY ? (
-    <div className="rounded-xl border border-amber-300 bg-amber-50 p-4 text-center">
-      <p className="text-base font-bold text-amber-950">Capstone onboarding is paused.</p>
-      <p className="mt-1 text-sm text-amber-800">
-        The selected mainnet addresses predate party-aware admission and both bounded recovery paths. No new jurors should register until the replacement deployment is configured here.
-      </p>
-      <Link href="/app" className="mt-3 block rounded-xl bg-amber-900 px-4 py-3 text-sm font-semibold text-white">
-        Review deployment status
       </Link>
     </div>
   ) : phase === 'done' ? (
@@ -365,14 +368,6 @@ export default function Onboard() {
           </div>
         </details>
 
-        <details className="court-disclosure">
-          <summary>
-            Why one human can only join once <span>on-chain evidence</span>
-          </summary>
-          <div className="court-disclosure-content">
-            <SybilDemo />
-          </div>
-        </details>
       </Page.Main>
     </>
   );

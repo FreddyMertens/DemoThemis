@@ -1,13 +1,14 @@
 'use client';
-// Dev proof probe for the production WorldIDRouterGate. It requests the supported
-// v3 compatibility proof and emits the exact bytes accepted by the gate.
-import { IDKit, orbLegacy, type IDKitResult } from '@worldcoin/idkit';
+// Dev proof probe for the production WorldIDGate. It requests a World ID 4.0
+// proof and emits the exact bytes accepted by the gate.
+import { IDKit, proofOfHuman, type IDKitResult } from '@worldcoin/idkit';
 import { isAddress, type Hex } from 'viem';
 import { useState } from 'react';
 import {
   ACTION,
-  encodeWorldIdRouterGateProof,
-  parseRouterProofJson,
+  encodeWorldIdGateProof,
+  parseRpId,
+  parseWorldIdV4ProofJson,
   signalHashOf,
 } from '@/lib/proof-encode';
 
@@ -51,14 +52,14 @@ export default function RegisterOnchain() {
         signature: rpSig.sig,
       };
 
-      setStatus('creating Router-compatible World ID request...');
+      setStatus('creating World ID 4.0 Production request...');
       const request = await IDKit.request({
         app_id: process.env.NEXT_PUBLIC_APP_ID as `app_${string}`,
         action: ACTION,
         rp_context,
-        allow_legacy_proofs: true,
+        allow_legacy_proofs: false,
         environment: 'production',
-      }).preset(orbLegacy({ signal }));
+      }).preset(proofOfHuman({ signal }));
 
       setConnectorURI(request.connectorURI || '(empty — running inside World App)');
       setStatus('waiting for an Orb proof...');
@@ -72,25 +73,27 @@ export default function RegisterOnchain() {
       }
 
       const result: IDKitResult = completion.result;
-      if (result.protocol_version !== '3.0') {
+      if (result.protocol_version !== '4.0') {
         setStatus(`unexpected protocol_version ${result.protocol_version}`);
         return;
       }
-      const parts = parseRouterProofJson(result);
+      const parts = parseWorldIdV4ProofJson(result);
       const recomputed = signalHashOf(signal);
       const matches = recomputed === parts.signalHash;
-      const encoded = encodeWorldIdRouterGateProof(parts);
+      const encoded = encodeWorldIdGateProof(parts, parseRpId(rpSig.rp_id));
       setBytesProof(encoded);
       setFields(
         JSON.stringify(
           {
             signal,
-            merkleRoot: hex(parts.root),
             nullifier: hex(parts.nullifier),
+            nonce: hex(parts.nonce),
             signalHash: hex(parts.signalHash),
             signalHash_recomputed_onchain: hex(recomputed),
             signalHash_binding_ok: matches,
-            proof8: parts.proof8.map(hex),
+            expiresAtMin: parts.expiresAtMin.toString(),
+            issuerSchemaId: parts.issuerSchemaId.toString(),
+            proof5: parts.proof5.map(hex),
           },
           null,
           2,
@@ -110,9 +113,9 @@ export default function RegisterOnchain() {
 
   return (
     <main id="main-content" tabIndex={-1} style={{ padding: 24, fontFamily: 'monospace', maxWidth: 960 }}>
-      <h1>World ID Router registration proof</h1>
+      <h1>World ID 4 Production registration proof</h1>
       <p>
-        Generates a Router-compatible Orb proof bound to the wallet below and emits the
+        Generates a World ID 4 proof-of-human bound to the wallet below and emits the
         <code> bytes proof </code> for
         <code> JurorRegistry.register(signal, proof)</code>. Set the signal to the
         wallet that will send the register transaction.

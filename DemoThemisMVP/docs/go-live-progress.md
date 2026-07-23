@@ -11,7 +11,7 @@ activation procedure, use the [mainnet question-queue runbook](CAPSTONE_RUNBOOK.
 |---|---|
 | Public website | [Netlify `/app`](https://demothemis.netlify.app/app) is deployed and reads World Chain mainnet (chain 480). |
 | Repository | [`FreddyMertens/DemoThemis`](https://github.com/FreddyMertens/DemoThemis) is public. |
-| Contracts | The Step-5 v4 preview-verifier instance is source-verified historical evidence, not a production dependency, and its immutable bytecode lacks eligible-party preflight, first-draw unwind, quorum-miss recovery, and immutable voting windows. The Router-gated replacement source is implemented; fresh deployment is pending. |
+| Contracts | The Step-5 v4 Production-verifier instance is source-verified historical evidence, but its immutable court bytecode lacks eligible-party preflight, first-draw unwind, quorum-miss recovery, and immutable voting windows. The hardened v4-only replacement source is implemented; fresh deployment is pending. |
 | Official queue | All 21 local and deployed question files match the manifest's exact hashes and fixed opener. No official question has been filed yet. |
 | Court state | Legacy instance: **0 active jurors**; minimum 3 required to open. No unresolved nonofficial case exists. |
 | Voting windows | Legacy court: mutable, currently **300-second seal / 300-second reveal** from [transaction `0x429d…66ca`](https://worldscan.org/tx/0x429dfd1ad1aa5e0f628ea02c47950e440ad658b38540401d8ae045f3316866ca). Replacement: immutable constructor values, each at least 300 seconds. |
@@ -24,7 +24,7 @@ scan it in World App before inviting jurors to prove the final phone handoff.
 
 ## Remaining work, in order
 
-1. Deploy and source-verify a fresh `WorldIDRouterGate`, recovery-enabled registry, court, reward pool,
+1. Deploy and source-verify a fresh v4-only `WorldIDGate`, recovery-enabled registry, court, reward pool,
    and escrow with `PANEL_SIZE = 3` and `MIN_POOL >= 4`; record the addresses without
    overwriting the legacy history. Confirm court liveness version 2, registry version 1,
    automated-timing version 1, and all seven deployment capability flags.
@@ -32,7 +32,7 @@ scan it in World App before inviting jurors to prove the final phone handoff.
    contract/Permit2 permissions, then confirm a read-only keeper run.
 3. Scan the Developer Portal preview QR in World App and confirm it opens the
    Netlify `/onboard` screen.
-4. Register at least four eligible Orb-verified humans through the documented mainnet Router and that verified
+4. Register at least four eligible Orb-verified humans through the World ID 4 Production verifier and that verified
    World App journey. Three are drawn; the fourth is the minimum pre-draw availability
    reserve. Additional active humans remain allowed.
 5. Let the enabled keeper open question one and draw its three-person panel. All three
@@ -58,9 +58,9 @@ scan it in World App before inviting jurors to prove the final phone handoff.
 The following facts explain how the present deployment was reached; they are not
 instructions for operating it:
 
-- On 2026-06-19, the v4 preview-verifier contracts were deployed to World Chain
-  mainnet and their source was verified. “Production” named the proof environment,
-  not a generally available verifier release. The app used an earlier Vercel host at
+- On 2026-06-19, the v4 verifier contracts were deployed to World Chain
+  mainnet and their source was verified. The address is now the official Production proxy.
+  The app used an earlier Vercel host at
   that time; Netlify is now canonical.
 - On 2026-06-19, the World Developer Portal retained the contract entrypoints and
   MockUSD Permit2 permission after a reload. The app was identified as

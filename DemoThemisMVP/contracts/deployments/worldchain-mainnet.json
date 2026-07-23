@@ -1,9 +1,9 @@
 {
   "network": "World Chain",
   "chainId": 480,
-  "instance": "legacy Step-5 instance (v4 preview verifier, 3-seat panel; initial-draw and quorum-miss recovery are not deployed)",
+  "instance": "legacy Step-5 instance (World ID 4.0 Production verifier, 3-seat panel; initial-draw and quorum-miss recovery are not deployed)",
   "status": "legacy-liveness-affected",
-  "note": "Historical Step-5 deployment. Its WorldIDGate calls a World ID 4.0 verifier that official documentation currently classifies as preview; it is evidence of an on-chain experiment, not a supported production dependency. This immutable bytecode also predates party-aware admission, bounded initial-draw unwind, bounded quorum recovery, Permit2 re-bonding, immutable voting durations, and the replacement source's 20 MUSD question fee. Its fixed question fee remains 2 MUSD and its deployer-controlled duration setter remains present. Do not run the capstone against these addresses. Deploy and source-verify a fresh instance with WorldIDRouterGate, update the app/keeper/World Developer Portal permissions, and record it separately.",
+  "note": "Historical Step-5 deployment. Its WorldIDGate already calls the official World ID 4.0 Production proxy, but the surrounding immutable court bytecode predates party-aware admission, bounded initial-draw unwind, bounded quorum recovery, Permit2 re-bonding, immutable voting durations, and the replacement source's 20 MUSD question fee. Its fixed question fee remains 2 MUSD and its deployer-controlled duration setter remains present. Do not run the capstone against these addresses. Deploy and source-verify a fresh instance with the current WorldIDGate and court source, update the app/keeper/World Developer Portal permissions, and record it separately.",
   "currentSourceMatchesDeployment": false,
   "livenessRecovery": {
     "boundedRedrawWindow": false,
@@ -18,20 +18,26 @@
   "params": { "panelSize": 3, "minPool": 3, "commitDuration": 60, "revealDuration": 60, "questionFeeMusd": 2 },
   "recommendedReplacementParams": { "panelSize": 3, "minPool": 4, "commitDuration": 300, "revealDuration": 300, "questionFeeMusd": 20, "automatedTimingVersion": 1, "reason": "one spare eligible juror tolerates one pre-draw withdrawal; immutable five-minute windows and fee match the replacement source" },
   "recommendedReplacementSybilGate": {
-    "contract": "WorldIDRouterGate",
-    "proofProtocol": "World ID 3.0 compatibility proof",
-    "router": "0x17B354dD2595411ff79041f930e491A4Df39A278",
-    "groupId": 1,
-    "appId": "app_7bdfda4db4e2f59dd4a2427cd2bd860d",
+    "contract": "WorldIDGate",
+    "proofProtocol": "World ID 4.0 proof-of-human",
+    "verifier": "0x00000000009E00F9FE82CfeeBB4556686da094d7",
+    "rpId": "0x1ddcf8ba2efe3f36",
     "action": "juror-registration",
-    "reason": "uses the officially documented World Chain mainnet Router and removes the preview v4 verifier from the production dependency set"
+    "allowLegacyProofs": false,
+    "reason": "uses the officially documented World ID 4.0 Production proxy and disables legacy v3 proof generation"
   },
   "currentVotingWindows": { "commitDuration": 300, "revealDuration": 300, "updatedByTx": "0x429dfd1ad1aa5e0f628ea02c47950e440ad658b38540401d8ae045f3316866ca" },
   "deployer": "0xe8E539aa5c3E74453892DAd479Bf9feB51CF516c",
-  "sybilGate": "WorldIDGate (historical World ID 4.0 preview adapter)",
+  "sybilGate": "WorldIDGate (World ID 4.0 Production verifier; legacy court deployment)",
   "worldIdVerifier": "0x00000000009E00F9FE82CfeeBB4556686da094d7",
   "worldIdVerifierEnv": "production",
-  "worldIdVerifierReleaseStatus": "preview",
+  "worldIdVerifierReleaseStatus": "production",
+  "identityVerification": {
+    "protocolVersion": 4,
+    "allowLegacyProofs": false,
+    "verifier": "0x00000000009E00F9FE82CfeeBB4556686da094d7",
+    "rpId": "0x1ddcf8ba2efe3f36"
+  },
   "worldIdAction": "juror-registration",
   "worldIdActionField": "0x00d6f0d2ac0113e07a903cc011df10d5da49fbd368c0ecc3c8257c9bce73e3ed",
   "rpId": "0x1ddcf8ba2efe3f36",
@@ -55,7 +61,7 @@
     "DealEscrow": "0xc2e1746a00758b051e2444d6b678e8bd620a3f3e79a157637e5f6cb57b118a11"
   },
   "step35DeriskInstance": {
-    "note": "Historical Step-3.5 human-free de-risk against the v4 STAGING preview verifier (Simulator proofs, no Orb). These traces prove the adapter behavior but are not production-readiness evidence. Three enforcement traces are in docs/DEMO.md.",
+    "note": "Historical Step-3.5 human-free de-risk against the v4 Staging verifier (Simulator proofs, no Orb). These traces prove the adapter behavior but are not real-human or production-environment evidence. Three enforcement traces are in docs/DEMO.md.",
     "worldIdVerifier": "0x703a6316c975DEabF30b637c155edD53e24657DB",
     "worldIdVerifierEnv": "staging",
     "deployBlock": 31241952,

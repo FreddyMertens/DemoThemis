@@ -69,12 +69,12 @@
   <section class="reveal" id="first-customer">
     <p class="sec-label">1. The starting point</p>
     <h2>OmenMarketMaker starts the flywheel</h2>
-    <p class="lead">When a market's locked resolution reserve reaches its pre-declared jury target, OmenMarketMaker automatically sends DemoThemis a paid case. Underfunded markets send no case and refund instead. DemoThemis earns its service fee while OmenMarketMaker's market fee, margin, and treasury remain separate.</p>
+    <p class="lead">When a market becomes eligible for resolution, any caller may post the deterministic court fee as a bond. OmenMarketMaker atomically sends DemoThemis a paid case while the outcome pool remains locked in the market. DemoThemis earns its service fee while OmenMarketMaker's market fee, margin, and treasury remain separate.</p>
 
     <figure class="diagram reveal">
       <div class="diagram-inner">
         <div class="amp">
-          <div class="node" data-brand="omen">A market fully funds its reserve<small>depositors contribute pro-rata</small></div>
+          <div class="node" data-brand="omen">A caller bonds resolution<small>exact fee posted at request time</small></div>
           <span class="ar">&rarr;</span>
           <div class="node" data-brand="demothemis">DemoThemis earns service fees<small>its own pricing funds the bench</small></div>
           <span class="ar">&rarr;</span>
@@ -91,13 +91,13 @@
   <section class="reveal" id="market-supplies">
     <p class="sec-label">2. What markets provide</p>
     <h2>Integrated markets supply work and quality evidence</h2>
-    <p class="lead">A funded market supplies a real question and pays DemoThemis automatically from the locked resolution reserve. The jury target and contribution percentage, bounded by the disclosed maximum, were fixed before betting. Every deposit contributes at that rate; after the actual jury payment, unused reserve returns to every YES and NO position proportionally. If the reserve and creator top-up cannot cover the jury price, no jury is drawn and YES/NO backing refunds at recorded prices. OmenMarketMaker's own market fee remains outside that transaction.</p>
+    <p class="lead">An eligible market supplies a real question while a caller's resolution bond pays DemoThemis automatically. A final YES or NO ruling reimburses that bond from YES and NO backing pro-rata; a final insufficient-information ruling leaves both sides' backing untouched. If the deterministic fee is at least the pool, no case opens and the market follows its precommitted cancellation rule. OmenMarketMaker's own market fee remains outside the court payment.</p>
 
     <h3>DemoThemis receipts fund its bench</h3>
-    <p>Each jury quote locks before selection: processing cost + required panel compensation + reward-reserve top-up + capped operations charge. Panel pay follows workload and eligible supply, the reserve top-up falls to zero at target, and operations cannot exceed its approved public budget or per-case cap. Each submitted case includes the required panel compensation.</p>
+    <p>At request time, the versioned fee policy calculates processing cost + required panel compensation + reward-pool top-up + capped operations charge. Panel pay follows workload and eligible supply, the reward-pool top-up falls to zero at target, and operations cannot exceed its approved public budget or per-case cap. The caller's bond pays the complete fee before jurors are selected.</p>
 
     <div class="widget brand-panel reveal" data-brand="demothemis">
-      <div class="widget-head"><span class="live"></span> Build a typical 15-seat jury quote</div>
+      <div class="widget-head"><span class="live"></span> Calculate a typical 15-seat court fee</div>
       <div class="controls">
         <div class="row"><label for="zCases">Contested cases per month</label> <b id="zCasesOut">500</b></div>
         <input id="zCases" type="range" min="10" max="5000" step="10" value="500">
@@ -107,14 +107,14 @@
         <input id="zActive" type="range" min="100" max="20000" step="100" value="2000">
       </div>
       <div class="readout">
-        <div class="stat"><div class="k">Typical jury quote</div><div class="v accent" id="zQuote">&hellip;</div></div>
+        <div class="stat"><div class="k">Typical court fee</div><div class="v accent" id="zQuote">&hellip;</div></div>
         <div class="stat"><div class="k">Required panel pay</div><div class="v" id="zPanel">&hellip;</div></div>
-        <div class="stat"><div class="k">Reserve top-up</div><div class="v" id="zReserve">&hellip;</div></div>
+        <div class="stat"><div class="k">Reward-pool top-up</div><div class="v" id="zReserve">&hellip;</div></div>
         <div class="stat"><div class="k">Direct pay per active juror</div><div class="v" id="zJur">&hellip;</div></div>
       </div>
-      <p style="font-family:var(--sans);font-size:.86rem;color:var(--faint);margin:1rem 0 0">Illustrative normal-complexity case at 70% reserve coverage. The quote also includes $3 processing and the smaller of the approved monthly operations budget per case or its $100 cap, then intake checks the published fee ceiling.</p>
+      <p style="font-family:var(--sans);font-size:.86rem;color:var(--faint);margin:1rem 0 0">Illustrative normal-complexity case at 70% reward-pool coverage. The fee also includes $3 processing and the smaller of the approved monthly operations budget per case or its $100 cap, then intake checks the published fee ceiling.</p>
     </div>
-    <p>As case volume rises, the quote pays more when each eligible juror carries more work and less when supply catches up. Pricing moves only between published epochs; the case's complexity class and quote are fixed before the draw.</p>
+    <p>As case volume rises, the fee pays more when each eligible juror carries more work and less when supply catches up. Pricing moves only between published epochs; the case's complexity class and exact fee freeze when the resolution request is accepted.</p>
 
     <h3>Every completed case strengthens scoring</h3>
     <p>The <a href="demothemis.html#quality-engine">scoring system</a> rewards useful judgment beyond the obvious majority, consistency with the case's written criteria, and decisions that survive appeal. A later result&mdash;a final score, timestamped price, delivery record, or election&mdash;can add an independent check.</p>
@@ -200,7 +200,7 @@
 
 <script src="assets/common.js"></script>
 <script>
-// ============ adaptive jury quote ============
+// ============ deterministic adaptive court fee ============
 (function () {
   "use strict";
   var cases = document.getElementById("zCases");

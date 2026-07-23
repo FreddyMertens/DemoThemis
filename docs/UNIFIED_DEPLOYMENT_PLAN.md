@@ -71,14 +71,31 @@ The deployment needs the same application variables as the working Vercel MVP:
 - `HMAC_SECRET_KEY`
 - `NEXT_PUBLIC_APP_ID`
 - `NEXT_PUBLIC_CHAIN_ID`
+- `NEXT_PUBLIC_MVP_RELEASE=current`
+- `NEXT_PUBLIC_MUSD_ADDRESS`
+- `NEXT_PUBLIC_WORLD_ID_GATE_ADDRESS`
+- `NEXT_PUBLIC_JUROR_REGISTRY_ADDRESS`
+- `NEXT_PUBLIC_REWARD_POOL_ADDRESS`
+- `NEXT_PUBLIC_DISPUTE_COURT_ADDRESS`
+- `NEXT_PUBLIC_DEAL_ESCROW_ADDRESS`
 - `NEXT_PUBLIC_APP_ENV=production`
 - `NEXT_PUBLIC_SHOW_DEV=false`
 - `RP_SIGNING_KEY`
 - `RP_ID`
 
+`RP_ID` is mandatory and must come from the same Developer Portal application as
+`NEXT_PUBLIC_APP_ID` and `RP_SIGNING_KEY`. The signature and verification endpoints both
+fail closed when it is missing or malformed; there is no default RP ID.
+
 `DEV_PRIVATE_KEY` must not be configured in production while the development
 route is disabled. Contract deployment keys and RPC secrets are not needed by the
 web deployment.
+
+The six public contract addresses must come from the updated, source-verified MVP
+deployment. The app has no older-mainnet fallback. Set `NEXT_PUBLIC_MVP_RELEASE`
+to `current` only after the keeper release gate and World Developer Portal
+permissions pass; otherwise the public app renders the neutral MVP walkthrough
+without reading or exposing another contract set.
 
 ## Verification and rollback
 

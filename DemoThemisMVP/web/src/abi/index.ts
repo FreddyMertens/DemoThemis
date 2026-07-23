@@ -2,6 +2,7 @@
 export { mockUSDAbi } from './MockUSD';
 export { jurorRegistryAbi } from './JurorRegistry';
 export { disputeCourtAbi } from './DisputeCourt';
+export { disputeCourtThreeStateAbi } from './DisputeCourtThreeState';
 export { dealEscrowAbi } from './DealEscrow';
 export { rewardPoolAbi } from './RewardPool';
 export { mockSybilGateAbi } from './MockSybilGate';

@@ -6,8 +6,8 @@ pragma solidity ^0.8.24;
 ///         registry calls this interface and each deployment selects an
 ///         immutable concrete gate:
 ///           - Sepolia cohort + tests: MockSybilGate (labeled stand-in)
-///           - new mainnet instances: WorldIDRouterGate (documented mainnet path)
-///           - historical experiments: WorldIDGate (v4 preview; not production)
+///           - new mainnet instances: WorldIDGate (World ID 4.0 Production proxy)
+///           - legacy compatibility only: WorldIDRouterGate (World ID 3.0)
 interface ISybilGate {
     /// @notice Verify a personhood proof bound to `signal`; return the unique
     ///         per-human nullifier. MUST revert if the proof is invalid or not

@@ -58,17 +58,14 @@ that no **personhood-gated** one does, and none in World.
 ## Differentiation paragraph (application-ready)
 
 > Decentralized arbitration is a real, respected category — Kleros and UMA are live in
-> production — but both decide by **capital**, and that is a one-time, knowable price:
-> buy a majority of stake once and you don't just win this case, you own every future
-> case for free — influence there is targetable, reusable, and amortizing. DemoThemis
-> removes that surface at its root. Because the jury is gated by **personhood, not
+> production — but both decide by **capital**, so the same concentration of capital can
+> influence many cases. DemoThemis removes stake-weighted jury power. Because the jury is gated by **personhood, not
 > capital**, and the panel is drawn at random *after* the question from the whole
 > verified-human pool, there is no known set of jurors to buy: to land a bribed majority
-> on a specific case you would have to pre-corrupt a near-majority of the *entire* human
-> pool and merely hope the draw seats enough of them — paying the full pool-corruption
-> cost again, per case, for only a probability that shrinks as the pool, the case volume,
-> and the value at stake grow. Cost-to-capture stops being a flat bribe and becomes
-> pool-width × case-volume × value-at-stake. None of it is built on personhood — tellingly,
+> on a specific case you would have to compromise a large share of the *entire* human
+> pool and merely hope the draw seats enough of them. Larger pools reduce that probability;
+> high-value cases add non-overlapping parallel panels and larger appeals. Receipt-free
+> ballots prevent proof of a purchased vote. None of it is built on personhood — tellingly,
 > even Kleros's "Humanity Court," which rules on *who is a unique human*, still selects its
 > jurors **by stake**. Inside the World ecosystem the gap is starker: a June 2026 scan of
 > the World App Mini App catalog and every World Community Grant recipient (Wave 0 and Wave
@@ -77,10 +74,10 @@ that no **personhood-gated** one does, and none in World.
 > Agora, World Poll), which makes collective decisions, not two-party adjudications with
 > bonds, evidence, and settlement. **DemoThemis inverts the decentralized-justice model —
 > it uses proof-of-personhood, the primitive the World ecosystem is built on, as the juror
-> gate itself** — so influence can no longer be bought once and reused: every case re-draws
-> a fresh random panel, nothing carries to the next, and high-value cases fan out to several
-> independent panels that must all agree (capture odds multiply pᴺ) with any captured panel
-> appealed into a larger one. That makes it, to our knowledge, the first one-human-one-vote
+> gate itself**. Every case draws a fresh random panel, and high-value cases fan out to several
+> non-overlapping panels that must all agree (capture odds multiply pᴺ), with any captured panel
+> appealed into a larger, disjoint one. Once a juror serves on a dispute, no later panel or appeal
+> in that dispute can draw them again. That makes it, to our knowledge, the first one-human-one-vote
 > arbitration court and the first dispute-resolution app in World App, pairing on-chain World
 > ID verification with bonded commit/reveal voting and atomic on-chain escrow settlement.
 
@@ -89,6 +86,6 @@ that no **personhood-gated** one does, and none in World.
 > The decentralized courts that exist (Kleros, UMA) pick jurors by **stake**, so a verdict
 > has a price: buy a stake majority once and you decide every case after it for free. No
 > World App or World-grant project does dispute resolution at all. DemoThemis gates the jury
-> by **personhood instead of capital** and draws a fresh random panel after each question —
-> so there's no set of jurors to buy and no influence to reuse: you'd have to re-corrupt much
-> of the entire human pool, per case, for only a chance.
+> by **personhood instead of capital**, draws a fresh random panel after each question, keeps
+> every panel and appeal within a dispute disjoint, and uses receipt-free ballots so purchased
+> votes cannot be proven.

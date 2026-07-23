@@ -35,6 +35,8 @@ const DEPLOYMENT_PATH = path.join(ROOT, 'contracts', 'deployments', 'worldchain-
 const RPC = process.env.RPC ?? 'https://worldchain-mainnet.gateway.tenderly.co';
 const EXPECTED_PANEL_SIZE = BigInt(3);
 const MIN_HUMAN_DURATION = BigInt(300);
+const EXPECTED_WORLD_ID_PROTOCOL_VERSION = BigInt(4);
+const WORLD_ID_V4_PRODUCTION_VERIFIER = getAddress('0x00000000009E00F9FE82CfeeBB4556686da094d7');
 const ZERO_ADDRESS = '0x0000000000000000000000000000000000000000';
 const EXECUTE = process.argv.includes('--execute');
 const HELP = process.argv.includes('--help') || process.argv.includes('-h');
@@ -62,15 +64,21 @@ const replacementMetadataReady =
   deployment.livenessRecovery?.boundedInitialDrawTimeout === true &&
   deployment.livenessRecovery?.unusedFeeRefund === true &&
   deployment.livenessRecovery?.immutableVotingDurations === true;
+const identityMetadataReady =
+  deployment.identityVerification?.protocolVersion === 4 &&
+  deployment.identityVerification?.allowLegacyProofs === false &&
+  getAddress(deployment.identityVerification?.verifier ?? ZERO_ADDRESS) === WORLD_ID_V4_PRODUCTION_VERIFIER &&
+  typeof deployment.identityVerification?.rpId === 'string';
 
-if (EXECUTE && !replacementMetadataReady) {
+if (EXECUTE && (!replacementMetadataReady || !identityMetadataReady)) {
   throw new Error(
-    'Broadcast disabled: the selected deployment record is legacy or does not attest eligible-party preflight, bounded initial/redraw recovery, Permit2 re-bonding, unused-fee refunds, and immutable voting durations.',
+    'Broadcast disabled: the deployment record must attest the full recovery release and a v4-only World ID Production gate.',
   );
 }
 
 const COURT = getAddress(deployment.contracts.DisputeCourt);
 const REGISTRY = getAddress(deployment.contracts.JurorRegistry);
+const GATE = getAddress(deployment.contracts.WorldIDGate);
 const MUSD = getAddress(deployment.contracts.MockUSD);
 
 const caseComponents = [
@@ -251,6 +259,13 @@ const courtAbi = [
 const registryAbi = [
   {
     type: 'function',
+    name: 'gate',
+    stateMutability: 'view',
+    inputs: [],
+    outputs: [{ type: 'address' }],
+  },
+  {
+    type: 'function',
     name: 'LIVENESS_RECOVERY_VERSION',
     stateMutability: 'view',
     inputs: [],
@@ -269,6 +284,30 @@ const registryAbi = [
     stateMutability: 'view',
     inputs: [{ name: 'who', type: 'address' }],
     outputs: [{ type: 'bool' }],
+  },
+];
+
+const worldIdGateAbi = [
+  {
+    type: 'function',
+    name: 'WORLD_ID_PROTOCOL_VERSION',
+    stateMutability: 'view',
+    inputs: [],
+    outputs: [{ type: 'uint256' }],
+  },
+  {
+    type: 'function',
+    name: 'verifier',
+    stateMutability: 'view',
+    inputs: [],
+    outputs: [{ type: 'address' }],
+  },
+  {
+    type: 'function',
+    name: 'rpId',
+    stateMutability: 'view',
+    inputs: [],
+    outputs: [{ type: 'uint64' }],
   },
 ];
 
@@ -319,20 +358,39 @@ async function readVersion(address, abi, functionName) {
   }
 }
 
-const [courtRecoveryVersion, registryRecoveryVersion, automatedTimingVersion] = await Promise.all([
+async function readAddress(address, abi, functionName) {
+  try {
+    return getAddress(await publicClient.readContract({ address, abi, functionName }));
+  } catch {
+    return ZERO_ADDRESS;
+  }
+}
+
+const [courtRecoveryVersion, registryRecoveryVersion, automatedTimingVersion, configuredGate, gateProtocolVersion, gateVerifier, gateRpId] = await Promise.all([
   readVersion(COURT, courtAbi, 'LIVENESS_RECOVERY_VERSION'),
   readVersion(REGISTRY, registryAbi, 'LIVENESS_RECOVERY_VERSION'),
   readVersion(COURT, courtAbi, 'AUTOMATED_TIMING_VERSION'),
+  readAddress(REGISTRY, registryAbi, 'gate'),
+  readVersion(GATE, worldIdGateAbi, 'WORLD_ID_PROTOCOL_VERSION'),
+  readAddress(GATE, worldIdGateAbi, 'verifier'),
+  readVersion(GATE, worldIdGateAbi, 'rpId'),
 ]);
+const identityDeploymentReady =
+  identityMetadataReady &&
+  configuredGate === GATE &&
+  gateProtocolVersion === EXPECTED_WORLD_ID_PROTOCOL_VERSION &&
+  gateVerifier === WORLD_ID_V4_PRODUCTION_VERIFIER &&
+  gateRpId === BigInt(deployment.identityVerification.rpId);
 const recoveryDeploymentReady =
   replacementMetadataReady &&
+  identityDeploymentReady &&
   courtRecoveryVersion === BigInt(2) &&
   registryRecoveryVersion === BigInt(1) &&
   automatedTimingVersion === BigInt(1);
 
 if (EXECUTE && !recoveryDeploymentReady) {
   throw new Error(
-    `Broadcast disabled: on-chain markers must be court recovery=2, registry recovery=1, and automated timing=1; found ${courtRecoveryVersion}, ${registryRecoveryVersion}, and ${automatedTimingVersion}.`,
+    `Broadcast disabled: expected court recovery=2, registry recovery=1, automated timing=1, and World ID protocol=4 at the configured gate; found ${courtRecoveryVersion}, ${registryRecoveryVersion}, ${automatedTimingVersion}, and ${gateProtocolVersion}.`,
   );
 }
 
@@ -596,6 +654,9 @@ console.log(
 );
 console.log(
   `On-chain versions: court recovery ${courtRecoveryVersion}; registry recovery ${registryRecoveryVersion}; automated timing ${automatedTimingVersion} (required: 2 / 1 / 1)`,
+);
+console.log(
+  `Identity gate: protocol ${gateProtocolVersion}; verifier ${gateVerifier}; RP ${gateRpId} (required: v4 Production, legacy proofs disabled in metadata)`,
 );
 if (initialDrawWindow !== null) {
   console.log(`Initial draw recovery window: ${initialDrawWindow}s; unused fees refund on timeout`);

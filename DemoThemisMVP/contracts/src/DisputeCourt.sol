@@ -10,7 +10,8 @@ import {IEscrowSettlement} from "./interfaces/IEscrowSettlement.sol";
 /// @notice One case lifecycle: Open -> Commit -> Reveal -> Resolved. A panel is
 ///         drawn pseudo-randomly from the registry (two-step, blockhash-based, so
 ///         the opener cannot precompute it), jurors commit a hashed vote then
-///         reveal it, the majority wins, the fee pool is split among coherent
+///         reveal it, a strict YES/NO majority wins and otherwise the merits
+///         ruling is insufficient information, the fee pool is split among coherent
 ///         revealers, and no-show jurors lose their bond. Every time-gated
 ///         transition is permissionless. Panel, pool, and voting-window values
 ///         are immutable constructor parameters: no operator can alter a case's
@@ -35,6 +36,11 @@ contract DisputeCourt {
     /// @notice Release marker proving that voting windows are immutable and
     ///         there is no post-deployment duration setter.
     uint256 public constant AUTOMATED_TIMING_VERSION = 1;
+
+    /// @notice Release marker for the explicit third ballot choice.
+    uint256 public constant THREE_STATE_RULING_VERSION = 1;
+
+    bytes32 public constant BALLOT_V2_DOMAIN = keccak256("DEMOTHEMIS_BALLOT_V2");
 
     /// @notice Human-safe lower bound enforced once, during deployment.
     uint64 public constant MIN_VOTING_DURATION = 5 minutes;
@@ -94,6 +100,12 @@ contract DisputeCourt {
         Resolved
     }
 
+    enum Ruling {
+        No,
+        Yes,
+        InsufficientInformation
+    }
+
     struct Case {
         uint8 caseType;
         Status status;
@@ -109,6 +121,8 @@ contract DisputeCourt {
         uint64 revealDeadline;
         bool outcome; // true = YES / payee wins
         address[] panel;
+        Ruling ruling;
+        uint256 insufficientVotes;
     }
 
     Case[] private _cases;
@@ -117,6 +131,7 @@ contract DisputeCourt {
     mapping(uint256 => mapping(address => bool)) public isPanelist;
     mapping(uint256 => mapping(address => bool)) public hasRevealed;
     mapping(uint256 => mapping(address => bool)) public voteOf; // valid iff hasRevealed
+    mapping(uint256 => mapping(address => Ruling)) public rulingVoteOf; // valid iff hasRevealed
 
     /// @notice Deadline for restoring the one permitted redraw after a quorum
     ///         miss. Zero unless a case is currently waiting for that redraw.
@@ -131,6 +146,7 @@ contract DisputeCourt {
     event DrawRearmed(uint256 indexed caseId, uint64 newDrawBlock, string reason);
     event Committed(uint256 indexed caseId, address indexed juror);
     event Revealed(uint256 indexed caseId, address indexed juror, bool vote);
+    event AnswerRevealed(uint256 indexed caseId, address indexed juror, Ruling ruling);
     event Redrawn(uint256 indexed caseId);
     event InitialDrawTimedOut(uint256 indexed caseId, address indexed refundTo, uint256 feeRefunded);
     event RedrawRecoveryStarted(uint256 indexed caseId, uint64 deadline);
@@ -139,6 +155,13 @@ contract DisputeCourt {
     event FeePaid(uint256 indexed caseId, address indexed juror, uint256 amount);
     event FeeDistributed(uint256 indexed caseId, uint256 toJurors, uint256 toReward, uint256 toProtocol);
     event Resolved(uint256 indexed caseId, bool outcome, uint256 yes, uint256 no);
+    event RulingResolved(
+        uint256 indexed caseId,
+        Ruling ruling,
+        uint256 yes,
+        uint256 no,
+        uint256 insufficient
+    );
 
     error OnlyDeployer();
     error ZeroAddress();
@@ -156,6 +179,7 @@ contract DisputeCourt {
     error AlreadyRevealed();
     error NoCommitment();
     error BadReveal();
+    error InvalidRuling();
     error RevealNotOver();
     error InitialDrawWindowExpired();
     error InitialDrawWindowNotExpired();
@@ -211,6 +235,11 @@ contract DisputeCourt {
         return _cases[caseId];
     }
 
+    function rulingOf(uint256 caseId) external view returns (Ruling ruling, uint256 insufficientVotes) {
+        Case storage c = _cases[caseId];
+        return (c.ruling, c.insufficientVotes);
+    }
+
     /// @notice Number of active jurors eligible for a case after excluding its
     ///         parties. The active list is unique, so this remains constant-cost.
     function eligibleJurorCount(address party1, address party2) public view returns (uint256 count) {
@@ -221,7 +250,7 @@ contract DisputeCourt {
 
     // --- opening ----------------------------------------------------------------
 
-    /// @notice Open a yes/no resolution question (demo case type B). `uri` points
+    /// @notice Open a resolution question (demo case type B). `uri` points
     ///         to the question text + evidence. Pulls the 20 MUSD case fee.
     function openQuestion(bytes32 criteriaHash, string calldata uri) external returns (uint256 caseId) {
         if (eligibleJurorCount(msg.sender, address(0)) < MIN_POOL) revert PoolTooSmall();
@@ -356,7 +385,41 @@ contract DisputeCourt {
         if (keccak256(abi.encode(vote, salt, caseId, msg.sender)) != commitment) revert BadReveal();
         hasRevealed[caseId][msg.sender] = true;
         voteOf[caseId][msg.sender] = vote;
+        rulingVoteOf[caseId][msg.sender] = vote ? Ruling.Yes : Ruling.No;
         emit Revealed(caseId, msg.sender, vote);
+        emit AnswerRevealed(caseId, msg.sender, vote ? Ruling.Yes : Ruling.No);
+    }
+
+    /// @notice Three-state reveal used by the upgraded MVP ballot. The sealed
+    /// commitment is domain-separated and bound to this chain, court, case,
+    /// retry round, juror, answer, and secret.
+    function revealAnswer(uint256 caseId, Ruling ruling, bytes32 salt) external {
+        Case storage c = _cases[caseId];
+        if (c.status != Status.Drawn) revert NotDrawn();
+        if (block.timestamp <= c.commitDeadline || block.timestamp > c.revealDeadline) revert NotRevealPhase();
+        if (!isPanelist[caseId][msg.sender]) revert NotPanelist();
+        bytes32 commitment = commitmentOf[caseId][msg.sender];
+        if (commitment == bytes32(0)) revert NoCommitment();
+        if (hasRevealed[caseId][msg.sender]) revert AlreadyRevealed();
+        if (uint8(ruling) > uint8(Ruling.InsufficientInformation)) revert InvalidRuling();
+        if (
+            keccak256(
+                abi.encode(
+                    BALLOT_V2_DOMAIN,
+                    block.chainid,
+                    address(this),
+                    caseId,
+                    c.redraws,
+                    msg.sender,
+                    uint8(ruling),
+                    salt
+                )
+            ) != commitment
+        ) revert BadReveal();
+        hasRevealed[caseId][msg.sender] = true;
+        rulingVoteOf[caseId][msg.sender] = ruling;
+        voteOf[caseId][msg.sender] = ruling == Ruling.Yes;
+        emit AnswerRevealed(caseId, msg.sender, ruling);
     }
 
     // --- resolve (permissionless) ----------------------------------------------
@@ -378,10 +441,10 @@ contract DisputeCourt {
                 uint256 feeRefunded = c.feePool;
                 c.feePool = 0;
                 delete initialDrawDeadline[caseId];
-                _markResolved(c, false);
+                _markResolved(c, Ruling.No);
                 if (feeRefunded != 0) token.safeTransfer(c.party1, feeRefunded);
                 emit InitialDrawTimedOut(caseId, c.party1, feeRefunded);
-                _settleAndEmit(caseId, c, false, 0, 0);
+                _settleAndEmit(caseId, c, false, 0, 0, 0);
                 return;
             }
             uint64 recoveryDeadline = redrawDeadline[caseId];
@@ -389,8 +452,8 @@ contract DisputeCourt {
             if (block.timestamp <= recoveryDeadline) revert RedrawWindowNotExpired();
             delete redrawDeadline[caseId];
             emit RedrawRecoveryTimedOut(caseId);
-            _distributeFee(caseId, c, false);
-            _finalize(caseId, c, false, 0, 0);
+            _distributeFee(caseId, c, Ruling.No);
+            _finalize(caseId, c, Ruling.No, 0, 0, 0);
             return;
         }
 
@@ -400,13 +463,16 @@ contract DisputeCourt {
         // Tally revealed votes, penalize no-shows (bond -> reward pool), release panel.
         uint256 yes;
         uint256 no;
+        uint256 insufficient;
         uint256 len = c.panel.length;
         for (uint256 i; i < len; i++) {
             address juror = c.panel[i];
             registry.exitPanel(juror);
             if (hasRevealed[caseId][juror]) {
-                if (voteOf[caseId][juror]) yes++;
-                else no++;
+                Ruling answer = rulingVoteOf[caseId][juror];
+                if (answer == Ruling.Yes) yes++;
+                else if (answer == Ruling.No) no++;
+                else insufficient++;
             } else {
                 // No-show = liveness penalty. The bond goes to the REWARD pool,
                 // never to the other jurors. (Wrong-side/coherence slashing is the
@@ -420,7 +486,7 @@ contract DisputeCourt {
             }
         }
 
-        uint256 revealed = yes + no;
+        uint256 revealed = yes + no + insufficient;
         uint256 quorum = PANEL_SIZE / 2 + 1;
 
         if (revealed < quorum) {
@@ -435,14 +501,17 @@ contract DisputeCourt {
                 emit RedrawRecoveryStarted(caseId, deadline);
                 return;
             }
-            _distributeFee(caseId, c, false); // second miss → status quo
-            _finalize(caseId, c, false, yes, no);
+            _distributeFee(caseId, c, Ruling.No); // second miss → status quo
+            _finalize(caseId, c, Ruling.No, yes, no, insufficient);
             return;
         }
 
-        bool outcome = yes > no; // tie -> false (status quo)
-        _distributeFee(caseId, c, outcome);
-        _finalize(caseId, c, outcome, yes, no);
+        Ruling ruling;
+        if (yes * 2 > revealed) ruling = Ruling.Yes;
+        else if (no * 2 > revealed) ruling = Ruling.No;
+        else ruling = Ruling.InsufficientInformation;
+        _distributeFee(caseId, c, ruling);
+        _finalize(caseId, c, ruling, yes, no, insufficient);
     }
 
     // --- internals --------------------------------------------------------------
@@ -451,7 +520,7 @@ contract DisputeCourt {
     ///      share goes equally to revealers who matched the outcome; if there are
     ///      none, that share backs the reward pool. Slashed bonds are NOT in this
     ///      pool — they already went straight to the reward pool. Conserves exactly.
-    function _distributeFee(uint256 caseId, Case storage c, bool outcome) internal {
+    function _distributeFee(uint256 caseId, Case storage c, Ruling ruling) internal {
         uint256 pool = c.feePool;
         if (pool == 0) return;
         c.feePool = 0;
@@ -463,7 +532,7 @@ contract DisputeCourt {
         uint256 winners;
         for (uint256 i; i < len; i++) {
             address juror = c.panel[i];
-            if (hasRevealed[caseId][juror] && voteOf[caseId][juror] == outcome) winners++;
+            if (hasRevealed[caseId][juror] && rulingVoteOf[caseId][juror] == ruling) winners++;
         }
 
         uint256 paidToJurors;
@@ -471,7 +540,7 @@ contract DisputeCourt {
             uint256 share = jurorPot / winners;
             for (uint256 i; i < len; i++) {
                 address juror = c.panel[i];
-                if (hasRevealed[caseId][juror] && voteOf[caseId][juror] == outcome) {
+                if (hasRevealed[caseId][juror] && rulingVoteOf[caseId][juror] == ruling) {
                     token.safeTransfer(juror, share);
                     emit FeePaid(caseId, juror, share);
                 }
@@ -487,21 +556,38 @@ contract DisputeCourt {
         emit FeeDistributed(caseId, paidToJurors, toReward, toProtocol);
     }
 
-    function _finalize(uint256 caseId, Case storage c, bool outcome, uint256 yes, uint256 no) internal {
-        _markResolved(c, outcome);
-        _settleAndEmit(caseId, c, outcome, yes, no);
+    function _finalize(
+        uint256 caseId,
+        Case storage c,
+        Ruling ruling,
+        uint256 yes,
+        uint256 no,
+        uint256 insufficient
+    ) internal {
+        _markResolved(c, ruling);
+        c.insufficientVotes = insufficient;
+        _settleAndEmit(caseId, c, ruling == Ruling.Yes, yes, no, insufficient);
     }
 
-    function _markResolved(Case storage c, bool outcome) internal {
+    function _markResolved(Case storage c, Ruling ruling) internal {
         c.status = Status.Resolved;
-        c.outcome = outcome;
+        c.ruling = ruling;
+        c.outcome = ruling == Ruling.Yes;
     }
 
-    function _settleAndEmit(uint256 caseId, Case storage c, bool outcome, uint256 yes, uint256 no) internal {
+    function _settleAndEmit(
+        uint256 caseId,
+        Case storage c,
+        bool outcome,
+        uint256 yes,
+        uint256 no,
+        uint256 insufficient
+    ) internal {
         if (c.caseType == ESCROW) {
             IEscrowSettlement(escrow).settle(c.dealId, outcome);
         }
         emit Resolved(caseId, outcome, yes, no);
+        emit RulingResolved(caseId, c.ruling, yes, no, insufficient);
     }
 
     /// @dev Reset per-juror flags + panel for a clean redraw; keeps the fee pool.
@@ -513,6 +599,7 @@ contract DisputeCourt {
             delete isPanelist[caseId][juror];
             delete hasRevealed[caseId][juror];
             delete voteOf[caseId][juror];
+            delete rulingVoteOf[caseId][juror];
         }
         delete c.panel;
     }

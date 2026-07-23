@@ -1,9 +1,9 @@
 # Step 3.5 kickoff — real on-chain World ID 4.0 + the sybil-rejection demo
 
-> **Archived preview experiment — do not use for production deployment.** This plan
-> predates the official preview classification. Its v4 adapter and traces remain useful
-> historical evidence, but `Deploy.s.sol` and the live onboard now use
-> `WorldIDRouterGate` with the documented mainnet Router. `WORLD_ID_VERIFIER` is retired.
+> **Archived Staging/Simulator experiment — do not use as the deployment runbook.**
+> Its v4 adapter and traces remain useful historical evidence. `Deploy.s.sol` and the
+> live onboard now use `WorldIDGate` with the official Production proxy, require v4,
+> and disable legacy proofs. Follow `CAPSTONE_RUNBOOK.md` for current deployment.
 
 You are continuing the DemoThemis MVP. Step 3 (the sandbox + comparative attack
 demo) is complete, tested, and on `main`. You are on branch **`step-3.5-worldid`**
@@ -40,9 +40,9 @@ commit `8d3e78f`; it is authoritative and outranks generic public docs.
 3. **Developer Portal app live + `RP_ID` set everywhere.** App
    `app_7bdfda4db4e2f59dd4a2427cd2bd860d`, RP `rp_1ddcf8ba2efe3f36` (World ID 4.0
    Managed, actions `juror-registration` / `juror-registration-backup`). The
-   `/api/rp-signature` route has a hardcoded fallback `rp_e87d44dbb7b76d91` that
-   silently breaks verification if `RP_ID` is unset — set `RP_ID=rp_1ddcf8ba2efe3f36`
-   in every environment you run.
+   `/api/rp-signature` and `/api/verify-proof` routes now fail closed when `RP_ID` is
+   missing or malformed. Set `RP_ID=rp_1ddcf8ba2efe3f36` in every environment and confirm
+   the signature response returns that exact value before inviting jurors.
 4. **Verifier addresses — both CONFIRMED deployed on WC mainnet this session**
    (Staging `0x703a…DB` and Production `0x00000000009E00F9FE82CfeeBB4556686da094d7`
    both return real bytecode). They appear in no repo config yet; still re-confirm
@@ -116,14 +116,13 @@ commit `8d3e78f`; it is authoritative and outranks generic public docs.
   `/api/verify-proof`, returns `{success:true}`, `signal: ''`); it does no on-chain
   extraction. Step 3.5/4 must build the on-chain path and set `signal` to the wallet.
 
-## World ID frontend: legacy → v4 (the onboard rebuild)
+## World ID frontend: the historical legacy → v4 rebuild
 
-The template verify flow (`web/src/components/Verify/index.tsx`) is a good
-reference for the RP-signature + IDKit handshake, but it requests a LEGACY proof
-for CLOUD verification — not what Step 3.5 needs:
+At the time of this experiment, the template verify flow was useful only as an
+RP-signature + IDKit reference because it requested a legacy proof for cloud
+verification. The current component is v4-only; the old behavior was:
 - `/api/rp-signature` (server, signs with `RP_SIGNING_KEY`) returns the RP context — REUSE.
-- `IDKit.request({ app_id, action, rp_context, allow_legacy_proofs: true }).preset(orbLegacy({ signal: '' }))`
-  → a legacy (v3-style) proof bound to an empty signal.
+- a legacy IDKit request produced a v3-style proof bound to an empty signal.
 - `completion.result` → `/api/verify-proof` → cloud verify at
   `developer.world.org/api/v4/verify/{rp_id}`. No on-chain proof, no contract call.
 
@@ -136,8 +135,9 @@ recipe (probed this session with the Simulator, see `web/src/app/verify-onchain/
 - **`environment: 'staging'` is REQUIRED and easy to miss** — it defaults to
   `'production'`, and the World ID Simulator rejects production requests with
   "This simulator only accepts staging requests." (Confirmed: without it the
-  Simulator connects but refuses; with it, it proceeds.) Step 5 (real Orb/Device
-  humans) drops back to the production environment + Production verifier.
+  Simulator connects but refuses; with it, it proceeds.) Step 5 uses real **Orb-verified**
+  humans in the production environment. Device-level verification is not an eligibility
+  alternative; a later per-draw device/face continuity check is post-Orb anti-rental defense.
 - Generate the proof by pasting the request `connectorURI` into the Simulator
   (`simulator.worldcoin.org` → pick a "Verified (All)" identity → Paste Code).
 - Set `signal` to the registering **wallet address** (not `''`) — the gate binds to it.

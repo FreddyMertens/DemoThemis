@@ -6,8 +6,7 @@ import {MockUSD} from "../src/MockUSD.sol";
 import {JurorRegistry} from "../src/JurorRegistry.sol";
 import {WorldIDGate, IWorldIDVerifier} from "../src/sybil/WorldIDGate.sol";
 
-/// @dev Stand-in for the preview World ID 4.0 verifier used by the historical
-///      Step-3.5/5 deployment. The real verifier runs a
+/// @dev Stand-in for the World ID 4.0 Production verifier. The real verifier runs a
 ///      Groth16 check; here we accept exactly one "good" proof[0] limb and revert
 ///      on any other, mirroring the on-chain failure a corrupted limb produces.
 ///      NOT a real verifier — the actual Groth16 verification is proven on mainnet
@@ -43,7 +42,7 @@ contract MockWorldIDVerifier is IWorldIDVerifier {
     }
 }
 
-contract WorldIDPreviewGateTest is Test {
+contract WorldIDV4GateTest is Test {
     MockUSD internal musd;
     MockWorldIDVerifier internal verifier;
     WorldIDGate internal gate;
@@ -86,6 +85,22 @@ contract WorldIDPreviewGateTest is Test {
         deal(address(musd), who, 100 * 10 ** 6);
         vm.prank(who);
         musd.approve(address(registry), type(uint256).max);
+    }
+
+    function test_gate_declaresV4ProofOfHuman() public view {
+        assertEq(gate.WORLD_ID_PROTOCOL_VERSION(), 4);
+        assertEq(gate.PROOF_OF_HUMAN_SCHEMA_ID(), 1);
+    }
+
+    function test_constructor_rejectsInvalidProductionConfig() public {
+        vm.expectRevert(WorldIDGate.ZeroVerifier.selector);
+        new WorldIDGate(address(0), action, RP_ID);
+
+        vm.expectRevert(WorldIDGate.ZeroAction.selector);
+        new WorldIDGate(address(verifier), 0, RP_ID);
+
+        vm.expectRevert(WorldIDGate.ZeroRpId.selector);
+        new WorldIDGate(address(verifier), action, 0);
     }
 
     /// Valid proof → real verify path runs, juror joins, nullifier recorded.
@@ -168,6 +183,21 @@ contract WorldIDPreviewGateTest is Test {
         );
         vm.prank(j);
         vm.expectRevert(WorldIDGate.RpIdMismatch.selector);
+        registry.register(j, p);
+    }
+
+    /// A Device-only credential is not proof of unique humanity and cannot
+    /// create a juror seat. Device presence is checked separately after Orb.
+    function test_register_wrongIssuerSchema_revertsInGate() public {
+        address j = makeAddr("juror0");
+        _fundAndApprove(j);
+        uint256 signalHash = uint256(keccak256(abi.encodePacked(j))) >> 8;
+        uint256[5] memory g = [uint256(GOOD_LIMB0), uint256(2), uint256(3), uint256(4), uint256(5)];
+        bytes memory p = abi.encode(
+            uint256(0xABCD), action, RP_ID, uint256(123), signalHash, uint64(0), uint64(2), uint256(0), g
+        );
+        vm.prank(j);
+        vm.expectRevert(WorldIDGate.IssuerSchemaMismatch.selector);
         registry.register(j, p);
     }
 

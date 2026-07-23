@@ -119,7 +119,7 @@ contract DisputeCourtTest is Base {
         assertEq(musd.balanceOf(address(court)), 0); // whole fee left the court
     }
 
-    function test_tie_resolvesStatusQuo() public {
+    function test_tie_resolvesInsufficientInformation() public {
         uint256 caseId = _openQuestion();
         _doDraw(caseId);
         address[] memory panel = court.panelOf(caseId);
@@ -133,7 +133,50 @@ contract DisputeCourtTest is Base {
         }
         _warpToResolve(caseId);
         court.resolve(caseId);
-        assertFalse(court.getCase(caseId).outcome); // tie -> status quo NO
+        DisputeCourt.Case memory resolved = court.getCase(caseId);
+        assertFalse(resolved.outcome);
+        assertEq(uint8(resolved.ruling), uint8(DisputeCourt.Ruling.InsufficientInformation));
+    }
+
+    function test_insufficientInformation_isExplicitRuling() public {
+        uint256 caseId = _openQuestion();
+        _doDraw(caseId);
+        address[] memory panel = court.panelOf(caseId);
+
+        for (uint256 i; i < panel.length; i++) {
+            DisputeCourt.Ruling answer = i < 4
+                ? DisputeCourt.Ruling.InsufficientInformation
+                : DisputeCourt.Ruling.Yes;
+            bytes32 commitment = keccak256(
+                abi.encode(
+                    court.BALLOT_V2_DOMAIN(),
+                    block.chainid,
+                    address(court),
+                    caseId,
+                    uint8(0),
+                    panel[i],
+                    uint8(answer),
+                    SALT
+                )
+            );
+            vm.prank(panel[i]);
+            court.commit(caseId, commitment);
+        }
+        _warpToReveal(caseId);
+        for (uint256 i; i < panel.length; i++) {
+            DisputeCourt.Ruling answer = i < 4
+                ? DisputeCourt.Ruling.InsufficientInformation
+                : DisputeCourt.Ruling.Yes;
+            vm.prank(panel[i]);
+            court.revealAnswer(caseId, answer, SALT);
+        }
+        _warpToResolve(caseId);
+        court.resolve(caseId);
+
+        DisputeCourt.Case memory resolved = court.getCase(caseId);
+        assertEq(uint8(resolved.ruling), uint8(DisputeCourt.Ruling.InsufficientInformation));
+        assertEq(resolved.insufficientVotes, 4);
+        assertFalse(resolved.outcome);
     }
 
     function test_quorumMiss_triggersRedraw_thenResolves() public {

@@ -4,24 +4,21 @@ pragma solidity ^0.8.24;
 import {ISybilGate} from "./ISybilGate.sol";
 import {ByteHasher} from "../lib/ByteHasher.sol";
 
-/// @title IWorldIDVerifier — the preview World ID 4.0 on-chain verifier
-/// @notice Minimal interface retained to reproduce the historical Step-3.5/5
-///         experiments. Official documentation currently marks this verifier
-///         preview, so new production deployments use `WorldIDRouterGate`. `verify`
+/// @title IWorldIDVerifier — the World ID 4.0 on-chain verifier
+/// @notice Minimal interface for the upgradeable World ID 4.0 verifier proxies
+///         officially deployed on World Chain. `verify`
 ///         reverts on an invalid proof and returns nothing on success — a live
 ///         `cast call` returned `0x` for a valid simulator proof and reverted
 ///         (`0x7fcdd1f4`) for a forged one (docs/STEP_3.5_KICKOFF.md). Declared
 ///         non-`view` so the gate reaches it with a plain CALL regardless of the
-///         verifier's own state mutability. “Staging” and “production” below are
-///         historical proof-environment names, not release-status claims.
+///         verifier's own state mutability.
 /// @dev    Arg order is fixed by the deployed verifier and verified empirically:
 ///         verify(nullifier, action, rpId, nonce, signalHash, expiresAtMin,
 ///         issuerSchemaId, credentialGenesisIssuedAtMin, proof[5]).
-/// @dev    SAFETY: the gate ignores returndata and relies on `verify` REVERTING
-///         on a bad proof (confirmed for the Staging verifier). Before the Step-5
-///         production-environment verifier experiment, re-confirm it also reverts (rather
-///         than returning a bool) on a forged proof — that is the single
-///         load-bearing assumption behind the env-only swap.
+/// @dev    SAFETY: the official interface returns nothing and reverts on a bad
+///         proof. The gate therefore ignores returndata. The capstone runbook
+///         still requires a forged-proof trace against the selected Production
+///         proxy before registration opens.
 interface IWorldIDVerifier {
     function verify(
         uint256 nullifier,
@@ -36,19 +33,16 @@ interface IWorldIDVerifier {
     ) external;
 }
 
-/// @title WorldIDGate — historical World ID 4.0 preview adapter
-/// @notice Retained for reproducibility of the immutable Step-3.5/5 deployments.
-///         It runs a real on-chain
+/// @title WorldIDGate — production World ID 4.0 uniqueness-proof gate
+/// @notice Runs a real on-chain
 ///         Groth16 verification through the deployed World ID 4.0
 ///         `WorldIDVerifier.verify` in the registration transaction, so the
-///         proof check and a forged proof reverts on-chain, but this does not
-///         make the preview verifier a production dependency. New deployments
-///         MUST use `WorldIDRouterGate` until the v4 verifier is generally
-///         available. The adapter serves both preview environments by address:
-///         the Staging verifier (`0x703a…`) accepts World ID Simulator proofs
-///         (Step 3.5, the human-free de-risk), the production-environment preview verifier
-///         (`0x0000…94d7`) accepts Orb/Device proofs from real humans (Step 5).
-///         Swapping environments is a constructor-argument change only.
+///         proof check and a forged proof revert on-chain. New mainnet deployments
+///         use the officially documented Production proxy (`0x0000…94d7`) and
+///         require World ID 4.0 proofs. The Staging proxy (`0x703a…`) remains useful
+///         only for explicitly labeled Simulator testing. This gate accepts only
+///         proof-of-human schema 1; a Device-only credential cannot create a juror
+///         seat. Any device-presence check is a separate post-Orb anti-rental step.
 /// @dev    `proof` is `abi.encode(uint256 nullifier, uint256 action, uint64 rpId,
 ///         uint256 nonce, uint256 signalHash, uint64 expiresAtMin, uint64
 ///         issuerSchemaId, uint256 credentialGenesisIssuedAtMin, uint256[5]
@@ -60,7 +54,14 @@ interface IWorldIDVerifier {
 contract WorldIDGate is ISybilGate {
     using ByteHasher for bytes;
 
-    /// @notice The preview World ID 4.0 verifier this historical gate calls.
+    /// @notice Release marker used by deployment tooling to reject v3-only gates.
+    uint256 public constant WORLD_ID_PROTOCOL_VERSION = 4;
+
+    /// @notice World ID issuer schema 1 is the proof-of-human credential required
+    ///         for juror eligibility.
+    uint64 public constant PROOF_OF_HUMAN_SCHEMA_ID = 1;
+
+    /// @notice The World ID 4.0 verifier proxy this gate calls.
     IWorldIDVerifier public immutable verifier;
 
     /// @notice The field-fitted action this gate accepts: `keccak256("juror-registration") >> 8`.
@@ -79,8 +80,16 @@ contract WorldIDGate is ISybilGate {
     error ActionMismatch();
     /// @dev The proof's RP id is not this gate's RP id.
     error RpIdMismatch();
+    /// @dev Device-only or another credential schema cannot create a juror seat.
+    error IssuerSchemaMismatch();
+    error ZeroVerifier();
+    error ZeroAction();
+    error ZeroRpId();
 
     constructor(address worldIdVerifier, uint256 action_, uint64 rpId_) {
+        if (worldIdVerifier == address(0)) revert ZeroVerifier();
+        if (action_ == 0) revert ZeroAction();
+        if (rpId_ == 0) revert ZeroRpId();
         verifier = IWorldIDVerifier(worldIdVerifier);
         action = action_;
         rpId = rpId_;
@@ -114,6 +123,7 @@ contract WorldIDGate is ISybilGate {
         // valid proof_of_human for some other action/app cannot satisfy this gate.
         if (_action != action) revert ActionMismatch();
         if (_rpId != rpId) revert RpIdMismatch();
+        if (_issuerSchemaId != PROOF_OF_HUMAN_SCHEMA_ID) revert IssuerSchemaMismatch();
 
         // Real on-chain Groth16 verification. We pass our own immutable action/rpId
         // (asserted equal above) as the public inputs the verifier checks against.

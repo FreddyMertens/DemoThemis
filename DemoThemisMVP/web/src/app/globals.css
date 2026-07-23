@@ -3608,7 +3608,7 @@ a.text-slate-950 {
 .oracle-vote-options {
   display: grid;
   margin-top: 1rem;
-  grid-template-columns: repeat(2, minmax(0, 1fr));
+  grid-template-columns: repeat(3, minmax(0, 1fr));
   gap: 0.65rem;
 }
 
@@ -3649,12 +3649,22 @@ a.text-slate-950 {
     color: var(--accent-ink);
   }
 
+  .oracle-vote-options button.is-insufficient-option:not(.is-selected):hover {
+    border-color: rgba(85, 102, 146, 0.5);
+    background: #eef1f8;
+    color: #42527d;
+  }
+
   .oracle-vote-options button.is-selected.is-yes:hover {
     box-shadow: 0 0 0 3px rgba(15, 155, 112, 0.12), 0 12px 24px -18px rgba(8, 117, 83, 0.65);
   }
 
   .oracle-vote-options button.is-selected.is-no:hover {
     box-shadow: 0 0 0 3px rgba(120, 106, 94, 0.12), 0 12px 24px -18px rgba(106, 91, 80, 0.62);
+  }
+
+  .oracle-vote-options button.is-selected.is-insufficient:hover {
+    box-shadow: 0 0 0 3px rgba(85, 102, 146, 0.12), 0 12px 24px -18px rgba(66, 82, 125, 0.62);
   }
 }
 
@@ -3676,6 +3686,12 @@ a.text-slate-950 {
   color: var(--accent-ink);
 }
 
+.oracle-vote-options button.is-insufficient-option:not(:disabled):active {
+  border-color: #556692;
+  background: #e4e9f5;
+  color: #35456e;
+}
+
 .oracle-vote-options button:disabled {
   cursor: not-allowed;
   opacity: 0.58;
@@ -3693,6 +3709,20 @@ a.text-slate-950 {
   background: var(--accent-soft);
   color: var(--accent-ink);
   box-shadow: 0 0 0 3px rgba(120, 106, 94, 0.09);
+}
+
+.oracle-vote-options button.is-selected.is-insufficient {
+  border-color: #556692;
+  background: #eef1f8;
+  color: #42527d;
+  box-shadow: 0 0 0 3px rgba(85, 102, 146, 0.09);
+}
+
+.oracle-ballot-capability-note {
+  margin: 0.65rem 0 0;
+  color: var(--muted);
+  font-size: 0.75rem;
+  line-height: 1.45;
 }
 
 .oracle-vote-options span,
@@ -5083,7 +5113,7 @@ a.text-slate-950 {
   .app-technical-disclosure summary,
   .app-home-drawer > summary,
   .mission-progress a,
-  .court-page button:not(.is-yes-option):not(.is-no-option),
+  .court-page button:not(.is-yes-option):not(.is-no-option):not(.is-insufficient-option),
   .court-topbar-start a,
   .court-instance summary,
   .court-disclosure > summary,
@@ -5117,8 +5147,8 @@ a.text-slate-950 {
 
 .mission-progress li.is-active a,
 .oracle-tabs button.is-active,
-.court-page [aria-selected="true"]:not(.is-yes-option):not(.is-no-option),
-.court-page [aria-pressed="true"]:not(.is-yes-option):not(.is-no-option),
+.court-page [aria-selected="true"]:not(.is-yes-option):not(.is-no-option):not(.is-insufficient-option),
+.court-page [aria-pressed="true"]:not(.is-yes-option):not(.is-no-option):not(.is-insufficient-option),
 :is(.app-enforcement, .app-technical-disclosure, .app-home-drawer, .court-instance, .court-disclosure, .oracle-chain-proof)[open] > summary {
   border-color: rgba(var(--dt-emission-rgb), .78) !important;
   background-color: color-mix(in srgb, var(--dt-emission) 8%, var(--surface));
@@ -5251,7 +5281,7 @@ a.text-slate-950 {
     .app-technical-disclosure summary,
     .app-home-drawer > summary,
     .mission-progress a,
-    .court-page button:not(.is-yes-option):not(.is-no-option),
+    .court-page button:not(.is-yes-option):not(.is-no-option):not(.is-insufficient-option),
     .court-topbar-start a,
     .court-instance summary,
     .court-disclosure > summary,
@@ -5328,7 +5358,7 @@ a.text-slate-950 {
   .app-technical-disclosure summary,
   .app-home-drawer > summary,
   .mission-progress a,
-  .court-page button:not(.is-yes-option):not(.is-no-option),
+  .court-page button:not(.is-yes-option):not(.is-no-option):not(.is-insufficient-option),
   .court-topbar-start a,
   .court-instance summary,
   .court-disclosure > summary,
@@ -5389,6 +5419,13 @@ a.text-slate-950 {
   background: var(--accent-soft);
   color: var(--accent-ink);
   box-shadow: 0 0 0 3px rgba(120, 106, 94, .09);
+}
+
+.oracle-vote-options button.is-selected.is-insufficient {
+  border-color: #556692;
+  background: #eef1f8;
+  color: #42527d;
+  box-shadow: 0 0 0 3px rgba(85, 102, 146, .09);
 }
 
 :focus-visible {

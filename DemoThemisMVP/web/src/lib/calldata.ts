@@ -3,6 +3,7 @@
 import { encodeFunctionData, type Address, type Hex } from 'viem';
 import { jurorRegistryAbi } from '@/abi/JurorRegistry';
 import { disputeCourtAbi } from '@/abi/DisputeCourt';
+import { disputeCourtThreeStateAbi } from '@/abi/DisputeCourtThreeState';
 import { mockUSDAbi } from '@/abi/MockUSD';
 import { addr, PERMIT2_ADDRESS, BOND } from './chain';
 
@@ -67,5 +68,15 @@ export const courtTx = {
   reveal: (caseId: bigint, vote: boolean, salt: Hex) => ({
     to: addr.court,
     data: encodeFunctionData({ abi: disputeCourtAbi, functionName: 'reveal', args: [caseId, vote, salt] }),
+  }),
+
+  /** Replacement court: reveal one of NO (0), YES (1), or INSUFFICIENT INFORMATION (2). */
+  revealAnswer: (caseId: bigint, answer: 0 | 1 | 2, salt: Hex) => ({
+    to: addr.court,
+    data: encodeFunctionData({
+      abi: disputeCourtThreeStateAbi,
+      functionName: 'revealAnswer',
+      args: [caseId, answer, salt],
+    }),
   }),
 };

@@ -90,7 +90,7 @@
       title: "Optional private room",
       sub: "A separate market path.",
       mission: "Create a private wager",
-      text: "The run briefly previews a separate invite-only market. Two friends set fixed odds and contribute pro-rata to its resolution reserve; a funded room uses the same court, while a short room refunds at those locked prices.",
+      text: "The run briefly previews a separate invite-only market. Two friends set fixed odds and lock matched collateral; when review is eligible, either participant or another eligible caller can post the exact court fee as a resolution bond.",
       nodes: ["open", "pool", "fixed", "private", "tokens"],
       features: ["instant", "fixed", "tokens", "private"],
       components: ["escrow"],
@@ -131,33 +131,33 @@
     {
       title: "The market needs a ruling",
       sub: "Court-backed resolution begins.",
-      mission: "Verify the locked resolution reserve",
-      text: "The game ends on the field. OmenMarketMaker closes betting and checks the reserve built proportionally from deposits against the jury target fixed before betting. This $118,000 market is funded, so the contract can pay DemoThemis automatically while outcome collateral and token trading remain at OmenMarketMaker.",
+      mission: "Post the resolution bond",
+      text: "The game ends on the field. OmenMarketMaker closes betting under its written rule. An eligible caller posts the exact deterministic court fee as a bond, paying DemoThemis while the $118,000 outcome pool and token accounting remain at OmenMarketMaker.",
       nodes: ["tokens", "parlay", "trade", "request"],
       features: ["instant", "fixed", "tokens", "private", "trade", "parlay"],
       components: ["escrow", "handoff"],
-      tokens: ["Funded resolution reserve", "Tradeable YES", "Tradeable NO"],
+      tokens: ["Caller-funded resolution bond", "Tradeable YES", "Tradeable NO"],
       pot: 118000,
       yes: .91,
       claims: "Wallet tokens still trade",
       trade: "secondary token trading stays live",
       court: "Resolution requested",
-      panel: "quote awaiting lock",
+      panel: "court fee awaiting lock",
       keys: 0,
       fees: 2360,
       loop: ["cases", "fees", "jurors"],
-      log: "Resolution starts only after the locked depositor reserve covers the natural jury price.",
-      actions: ["Pay quote from reserve"]
+      log: "Resolution starts only after an eligible caller posts the exact court fee as a bond.",
+      actions: ["Post resolution bond"]
     },
     {
       title: "The case crosses the boundary",
-      sub: "Only the reserve payment crosses.",
-      mission: "Lock the case and quote",
-      text: "OmenMarketMaker sends the locked case and its automatic resolution-reserve payment to DemoThemis. The remaining outcome collateral stays at OmenMarketMaker, YES and NO continue trading, and DemoThemis accepts the fully funded case before any panel is known.",
+      sub: "Only the bond payment crosses.",
+      mission: "Lock the case and court fee",
+      text: "OmenMarketMaker sends the locked case and the caller-funded resolution bond to DemoThemis. Outcome collateral stays at OmenMarketMaker, and DemoThemis accepts the paid case before any panel is known.",
       nodes: ["trade", "request", "handoff"],
       features: ["instant", "fixed", "tokens", "private", "trade", "parlay"],
       components: ["escrow", "handoff"],
-      tokens: ["Locked case", "Reserve-funded quote"],
+      tokens: ["Locked case", "Bond-paid court fee"],
       pot: 118000,
       yes: .91,
       claims: "Tokens price the court process",
@@ -167,8 +167,8 @@
       keys: 0,
       fees: 2360,
       loop: ["cases", "fees", "jurors"],
-      log: "The product boundary is explicit: the funded case and reserve payment cross it; outcome collateral does not.",
-      actions: ["Lock case and quote"]
+      log: "The product boundary is explicit: the locked case and caller's bond payment cross it; outcome collateral does not.",
+      actions: ["Lock case and court fee"]
     },
     {
       title: "Jury is drawn",
@@ -237,7 +237,7 @@
       title: "Appeal climbs",
       sub: "The market reconnects to the court.",
       mission: "Crowdfund the 15-seat appeal",
-      text: "OmenMarketMaker opens a public funding goal for the next DemoThemis jury. Every wallet owns the same proportion of the bond outcome as it funded; reaching the goal before the deadline automatically starts a fresh 15-seat panel.",
+      text: "OmenMarketMaker opens a public funding goal for the next DemoThemis jury. Every contribution is tagged between the service fee and separately escrowed security; reaching the goal before the deadline automatically starts a fresh 15-seat panel.",
       nodes: ["verdict", "appeal", "trade"],
       features: ["instant", "fixed", "tokens", "private", "trade", "parlay"],
       components: ["escrow", "handoff", "draw", "personhood", "ballot", "reserve", "appeal"],
@@ -281,12 +281,12 @@
     {
       lane: "Market",
       title: "Question opens",
-      body: "A written resolve condition, jury target, maximum reserve rate, and at least one initial liquidity deposit create the market. The protocol does not need a listing committee or minimum launch size.",
+      body: "A written resolve condition, earliest request time, final backstop, fee-policy version, and at least one initial liquidity deposit create the market. The protocol does not need a listing committee or minimum launch size.",
       change: "Market exists",
-      why: "Even ten cents can make the question live, but it does not promise a jury until the locked reserve is fully funded.",
+      why: "Even ten cents can make the question live. Human review starts only when an eligible caller later posts the exact resolution bond.",
       next: "Crowd prices it",
       tone: "market",
-      results: ["The dime lands in escrow and begins a proportional resolution reserve.", "If that reserve never reaches the jury target, the market will refund instead of drawing jurors."]
+      results: ["The dime lands entirely in outcome escrow.", "Resolution funding remains separate until an eligible caller posts the exact bond."]
     },
     {
       lane: "Market",
@@ -306,7 +306,7 @@
       why: "The product changes trading models at one explicit boundary instead of mixing pool fills with token orders.",
       next: "ERC-20 order book",
       tone: "claim",
-      results: ["The fully funded resolution reserve is one required graduation check.", "The market graduates into wallet-held YES/NO tokens.", "250 YES is deposited into protected lending; posting a sell order remains a separate, non-yielding action."]
+      results: ["Court funding is not a graduation check.", "The market graduates into wallet-held YES/NO tokens.", "250 YES is deposited into protected lending; posting a sell order remains a separate, non-yielding action."]
     },
     {
       lane: "Market",
@@ -340,23 +340,23 @@
     },
     {
       lane: "Arbitration",
-      title: "Resolution reserve gate",
-      body: "The real-world event has happened. OmenMarketMaker compares the locked depositor reserve with the jury target. This market is fully funded, so the contract pays DemoThemis automatically; a short market would enter its creator top-up window and then refund if still short.",
-      change: "Funded case advances",
-      why: "Only a market that covers the natural jury price receives the human court path.",
+      title: "Bonded resolution request",
+      body: "The real-world event has happened. The fee policy calculates the exact court fee and an eligible caller posts it as a resolution bond. OmenMarketMaker atomically pays DemoThemis, freezes the pool snapshot, and opens one case.",
+      change: "Bonded case advances",
+      why: "Only a caller who posts the deterministic court fee can open the human court path.",
       next: "Product handoff",
       tone: "court",
-      results: ["The question, jury target, and maximum contribution rate were fixed before betting.", "Every deposit contributes at the same rate; after payment, reserve surplus returns to all YES/NO positions proportionally."]
+      results: ["The question, request timing, backstop, and fee-policy version were fixed before betting.", "Every deposit remained collateral; the caller alone supplies the initial court payment."]
     },
     {
       lane: "Arbitration",
       title: "Product handoff",
-      body: "OmenMarketMaker sends the locked case and reserve-funded quote to DemoThemis while retaining outcome collateral. DemoThemis accepts the case before the draw.",
+      body: "OmenMarketMaker sends the locked case and bond-paid court fee to DemoThemis while retaining outcome collateral. DemoThemis accepts the case before the draw.",
       change: "Case accepted",
       why: "The visible handoff keeps custody, pricing, and responsibility clear between the two products.",
       next: "Jury draw",
       tone: "court",
-      results: ["Only the case and locked reserve payment cross the boundary.", "Outcome collateral stays at OmenMarketMaker until the signed ruling returns."]
+      results: ["Only the case and caller's bond payment cross the boundary.", "Outcome collateral stays at OmenMarketMaker until the signed ruling returns."]
     },
     {
       lane: "Arbitration",
@@ -393,10 +393,10 @@
       title: "Appeal ladder",
       body: "OmenMarketMaker returns the provisional result and opens a public goal for the next bond. Wallets contribute directly to the DemoThemis appeal contract and receive a pro-rata share of whatever that bond later returns.",
       change: "Crowd goal → 15-seat court",
-      why: "No single losing wallet must carry the entire bond, while the appeal still starts only after DemoThemis's full price is locked.",
+      why: "No single losing wallet must carry the entire appeal quote, while the appeal still starts only after the service fee and security bond are both fully funded.",
       next: "Final proof",
       tone: "final",
-      results: ["The user contributes one share from the market result page.", "The crowd completes the goal before the deadline, so the wider jury starts automatically.", "A successful bond return or failed-bond loss is allocated to wallets in proportion to their contributions."]
+      results: ["The user contributes one share from the market result page.", "The crowd completes the goal before the deadline, so the wider jury starts automatically.", "The service fee pays panel work and delay once; security returns on success or is forfeited on failure pro-rata."]
     },
     {
       lane: "Finality loop",
@@ -455,17 +455,17 @@
     },
     {
       label: "Court request",
-      headline: "Check the locked resolution reserve.",
-      look: "The production screen shows the pre-declared jury target, maximum reserve rate, outcome backing, and live secondary trading together.",
-      use: "Pay the quote automatically from the fully funded reserve and follow the request.",
-      notice: "Only a fully funded case advances. A short reserve enters creator top-up, then refunds every YES/NO position if the deadline expires."
+      headline: "Post the exact resolution bond.",
+      look: "The production screen shows the locked fee-policy version, exact request-time fee, bond payer, outcome backing, and live secondary trading together.",
+      use: "Post the exact bond, pay DemoThemis atomically, and follow the request.",
+      notice: "If the fee is at least the pool, no case opens and the precommitted backstop cancellation rule applies."
     },
     {
       label: "Court handoff",
       headline: "Lock the case before the draw.",
       look: "The handoff screen shows what crosses into DemoThemis and what remains inside OmenMarketMaker.",
-      use: "Lock the funded case once.",
-      notice: "DemoThemis accepts fixed rules and the reserve payment without taking custody of outcome collateral."
+      use: "Lock the paid case once.",
+      notice: "DemoThemis accepts fixed rules and the caller's bond payment without taking custody of outcome collateral."
     },
     {
       label: "Human draw",
@@ -478,7 +478,7 @@
       label: "Private vote",
       headline: "Cast an encrypted ballot privately.",
       look: "The juror workspace shows the case rule, research instruction, and private ballot.",
-      use: "Choose YES or NO, then seal the ballot.",
+      use: "Pick one answer and seal it.",
       notice: "The encrypted ballot may be silently replaced until the deadline, so its submission record never proves the final vote."
     },
     {
@@ -491,7 +491,7 @@
     {
       label: "Market appeal",
       headline: "Join a crowdfunded appeal in OmenMarketMaker.",
-      look: "The result page shows the next jury's fixed goal, live progress, deadline, contributors, and every wallet's pro-rata bond share.",
+      look: "The result page shows the next jury's fixed goal, live progress, deadline, contributors, and every wallet's tagged service and security shares.",
       use: "Add one contribution. Other wallets close the remaining gap, the fully funded bond locks directly in DemoThemis, and the wider jury starts automatically.",
       notice: "If the goal misses its deadline, every contribution returns and the current verdict becomes final. OmenMarketMaker never holds the bond or controls the jury."
     },
@@ -554,15 +554,15 @@
       action: "Review product handoff",
       from: "OmenMarketMaker resolution",
       to: "Court intake",
-      targetTitle: "Funded resolution",
-      note: "The funded request shows exactly what moves to DemoThemis and what stays in OmenMarketMaker."
+      targetTitle: "Bonded resolution",
+      note: "The bonded request shows what crosses the product boundary."
     },
     {
       action: "View protocol draw",
       from: "Court intake",
       to: "DemoThemis network",
       targetTitle: "Court intake",
-      note: "The funded case and quote are locked before the bound draw begins."
+      note: "The paid case and exact court fee are locked before the bound draw begins."
     },
     {
       action: "Open juror workspace",
@@ -689,7 +689,11 @@
   var runStartStage = 0;
   var completedStages = {};
   var liveTradeSide = "YES";
-  var APPEAL_BOND_GOAL = 31000;
+  var APPEAL_FUNDING_GOAL = 31000;
+  var APPEAL_PANEL_FEE = 6000;
+  var APPEAL_DELAY_FEE = 8200;
+  var APPEAL_SERVICE_FEE = APPEAL_PANEL_FEE + APPEAL_DELAY_FEE;
+  var APPEAL_SECURITY_BOND = APPEAL_FUNDING_GOAL - APPEAL_SERVICE_FEE;
   var APPEAL_EXISTING_FUNDING = 18400;
   var appealContributionDraft = 4000;
   var maxReachedByMode = { omen: 0, themis: 6 };
@@ -745,7 +749,7 @@
   function safeAppealContribution(value) {
     var amount = Number(value);
     if (!Number.isFinite(amount)) return 0;
-    return Math.max(0, Math.min(APPEAL_BOND_GOAL - APPEAL_EXISTING_FUNDING, Math.round(amount)));
+    return Math.max(0, Math.min(APPEAL_FUNDING_GOAL - APPEAL_EXISTING_FUNDING, Math.round(amount)));
   }
 
   function setText(id, value) {
@@ -880,8 +884,8 @@
   }
 
   var SYSTEM_PHASES = [
-    { id: "build", number: "01", title: "Build the market", note: "Choose the market format. A robust public pool can graduate into wallet-held claims.", transition: "Market closes → fund resolution" },
-    { id: "check", number: "02", title: "Check resolution funding", note: "The locked depositor reserve either pays DemoThemis automatically or enters top-up and refund.", transition: "Funded case or YES/NO refund" },
+    { id: "build", number: "01", title: "Build the market", note: "Choose the market format. A robust public pool can graduate into wallet-held claims.", transition: "Market closes → bonded resolution" },
+    { id: "check", number: "02", title: "Bond resolution", note: "An eligible caller posts the deterministic court fee; the pool is charged only after a directional ruling.", transition: "Bonded case → verified court" },
     { id: "judge", number: "03", title: "Decide the case", note: "Draw verified humans, keep ballots private, and widen the jury only when an appeal is funded.", transition: "Signed ruling → OmenMarketMaker" },
     { id: "finish", number: "04", title: "Pay and learn", note: "Apply the signed ruling once, close permanently, then improve juror quality without reopening settlement.", transition: "Payout ends · learning continues" }
   ];
@@ -896,13 +900,13 @@
     {
       id: "public-pool", phase: "build", order: 2, group: "market-entry", branch: "Public · continue", afterNote: "Public continues ↓ · Private rejoins at close →", title: "Initial liquidity opens a public pool",
       short: "Any amount can create the market and enter protocol escrow.", routes: ["dispute"], sim: [0],
-      detail: "There is no listing committee or minimum launch size. The initial deposit creates the market, locks its backing, and begins contributing pro-rata to the jury target and maximum reserve rate fixed before betting. Opening does not itself guarantee a jury.",
-      actor: "Market creator", money: "Outcome backing plus resolution contribution lock", condition: "A valid question and fixed funding terms exist", next: "More pooled purchases"
+      detail: "There is no listing committee or minimum launch size. The initial deposit creates the market and remains entirely as outcome backing. Request timing, the final backstop, and the fee-policy version were fixed before betting.",
+      actor: "Market creator", money: "Outcome backing locks", condition: "A valid question and fixed resolution rules exist", next: "More pooled purchases"
     },
     {
       id: "private-room", phase: "build", order: 2, group: "market-entry", branch: "Private · alternate", title: "Private room is funded",
-      short: "Invited people accept named odds with neutral escrow and the same funding gate.", routes: [], sim: [4],
-      detail: "A private room is an alternate market format. Matched stakes contribute proportionally to its locked reserve. A funded room uses DemoThemis; a short room returns both sides at the named prices after the creator top-up window.",
+      short: "Invited people accept named odds with neutral escrow and the same bonded-resolution path.", routes: [], sim: [4],
+      detail: "A private room is an alternate market format. Matched stakes remain outcome backing; when review is eligible, either participant or another eligible caller can post the exact court fee as a resolution bond.",
       actor: "Invited counterparties", money: "Matched stakes lock; unmatched offers wait", condition: "An invited party accepts the terms", next: "Trade until the written close"
     },
     {
@@ -913,15 +917,15 @@
     },
     {
       id: "robustness-gate", phase: "build", order: 4, kind: "decision", title: "Is the public pool robust?",
-      short: "Two-sided participation, depth, time, and a fully funded jury reserve must clear the graduation gate.", routes: ["dispute"], sim: [2],
-      detail: "Graduation checks that both sides are meaningfully funded, the pool has enough depth, the market has remained active long enough, and the locked reserve already covers the natural jury price.",
+      short: "Two-sided participation, depth, and time must clear the graduation gate; future court funding is separate.", routes: ["dispute"], sim: [2],
+      detail: "Graduation checks that both sides are meaningfully funded, the pool has enough depth, and the market has remained active long enough. It never depends on a future court fee.",
       actor: "Protocol checks objective thresholds", money: "Still fully backed in escrow", condition: "While the market is live", next: "Stay pooled or mint transferable YES and NO claims"
     },
     {
       id: "pooled-claims", phase: "build", order: 5, group: "claim-form", branch: "Pool · alternate", afterNote: "Both claim forms rejoin at market close →", title: "Claims stay inside the pool",
       short: "A smaller market can keep running without wallet tokens.", routes: [], sim: [],
       detail: "Smaller markets keep positions as simple internal claims while remaining fully backed by the same escrow.",
-      actor: "OmenMarketMaker pool", money: "Outcome backing plus segregated resolution reserve", condition: "A graduation check has not passed", next: "Event or close time"
+      actor: "OmenMarketMaker pool", money: "Outcome backing remains in escrow", condition: "A graduation check has not passed", next: "Event or close time"
     },
     {
       id: "tokenized-claims", phase: "build", order: 5, group: "claim-form", branch: "Token · main", title: "Wallet claims and order book go live",
@@ -951,50 +955,50 @@
     {
       id: "event-close", phase: "check", order: 1, title: "Event or close time arrives",
       short: "New betting ends under the market's written clock.", routes: ["dispute"], sim: [6], simSteps: [0],
-      detail: "The event finishes or the close rule triggers. New deposits stop and the contract checks whether the locked reserve covers the jury target.",
-      actor: "OmenMarketMaker clock", money: "Outcome backing and reserve remain locked", condition: "The written close rule is reached", next: "Check the resolution reserve"
+      detail: "The event finishes or the close rule triggers. New deposits stop and the market becomes eligible for a bonded resolution request under its locked timing rules.",
+      actor: "OmenMarketMaker clock", money: "Outcome backing remains locked", condition: "The written close rule is reached", next: "Prepare a resolution request"
     },
     {
       id: "resolution-requested", phase: "check", order: 2, title: "Resolution request prepared",
       short: "OmenMarketMaker submits the fixed question, evidence rules, and value at stake.", routes: ["dispute"], sim: [6],
-      detail: "The request is a service handoff, not a proposed answer. Its jury target and maximum reserve percentage were fixed before betting.",
-      actor: "OmenMarketMaker", money: "Outcome backing stays at OmenMarketMaker", condition: "The market has closed", next: "Compare locked reserve with jury target"
+      detail: "The request is a service handoff, not a proposed answer. The market's evidence rules, request timing, final backstop, and fee-policy version were fixed before betting.",
+      actor: "OmenMarketMaker", money: "Outcome backing stays at OmenMarketMaker", condition: "The request is eligible", next: "Calculate the exact court fee"
     },
     {
-      id: "resolution-reserve-gate", phase: "check", order: 3, kind: "decision", title: "Does the reserve cover the jury price?",
-      short: "The contract compares the locked pro-rata reserve with the work-based target.", routes: ["dispute"], sim: [6],
-      detail: "If fully funded, payment is automatic. If short, no jury can be drawn; the creator receives one fixed top-up window.",
-      actor: "OmenMarketMaker settlement contract", money: "Locked reserve only", condition: "Before any DemoThemis case opens", next: "Automatic court payment or creator top-up"
+      id: "fee-pool-check", phase: "check", order: 3, kind: "decision", title: "Can the pool reimburse the exact fee?",
+      short: "The versioned policy calculates the court fee from locked inputs at request time.", routes: ["dispute"], sim: [6],
+      detail: "If the fee is below the pool, the request may proceed. If it is at least the pool, no case opens and the backstop cancellation rule applies.",
+      actor: "OmenMarketMaker settlement contract", money: "Outcome pool remains untouched", condition: "Before any DemoThemis case opens", next: "Post the bond or follow cancellation"
     },
     {
-      id: "resolution-top-up", phase: "check", order: 4, group: "funding-outcome", branch: "Short reserve", kind: "decision", title: "Creator top-up window",
-      short: "The creator may fill exactly the published shortfall before the fixed deadline.", routes: ["dispute"], sim: [],
-      detail: "No administrator can waive or change the amount. A complete top-up advances; an incomplete one returns with the rest of the reserve when the market expires.",
-      actor: "Market creator", money: "Only the exact shortfall may be added", condition: "Reserve is below the locked jury target", next: "Fund the case or expire and refund"
+      id: "resolution-bond-posted", phase: "check", order: 4, group: "funding-outcome", branch: "Fee below pool", kind: "decision", title: "Eligible caller posts the bond",
+      short: "Any eligible caller may post exactly the deterministic court fee.", routes: ["dispute"], sim: [],
+      detail: "The caller supplies a maximum only for transaction safety; the policy sets the price. Posting the bond, paying DemoThemis, freezing the pool, and opening the case are atomic.",
+      actor: "Resolution caller", money: "Exact court fee posted as a bond", condition: "Fee is below the pool and the request is eligible", next: "Pay the court and lock the case"
     },
     {
-      id: "underfunded-refund", phase: "check", order: 5, group: "funding-outcome", branch: "Deadline expired", kind: "terminal", title: "No jury; YES and NO refund",
-      short: "The underfunded market expires without asking anyone to decide the outcome.", routes: ["dispute"], sim: [],
-      detail: "Every pooled YES and NO position receives its deposited backing at its recorded purchase price. The unused reserve and any incomplete top-up return proportionally; no market fee is charged.",
-      actor: "OmenMarketMaker refund rule", money: "All outcome backing and reserve return", condition: "Top-up deadline passed while funding remained short", next: "Market closes as underfunded"
+      id: "fee-exceeds-pool", phase: "check", order: 5, group: "funding-outcome", branch: "Fee at least pool", kind: "terminal", title: "No case; cancellation rule applies",
+      short: "A pool too small to reimburse the fee cannot open a court case.", routes: ["dispute"], sim: [],
+      detail: "No bond or court fee moves. At the final backstop, the full pool follows the market's precommitted cancellation settlement and no Omen fee is charged.",
+      actor: "OmenMarketMaker cancellation rule", money: "Full outcome pool remains for settlement", condition: "Deterministic court fee is at least the pool", next: "Market closes without a court case"
     },
     {
-      id: "court-quote-funded", phase: "check", order: 5, group: "funding-outcome", branch: "Funded", title: "Resolution reserve pays DemoThemis",
-      short: "The locked reserve automatically pays the work-based jury quote.", routes: ["dispute"], sim: [6, 7],
-      detail: "Only the funded case and its resolution payment cross the product boundary. Outcome collateral remains in OmenMarketMaker; any unused reserve returns pro-rata.",
-      actor: "OmenMarketMaker contract pays; DemoThemis receives", money: "Pre-funded resolution reserve", condition: "Reserve plus any creator top-up covers the full target", next: "Accept and lock the case"
+      id: "court-fee-paid", phase: "check", order: 5, group: "funding-outcome", branch: "Bond posted", title: "Resolution bond pays DemoThemis",
+      short: "The caller's exact bond pays the deterministic court fee once.", routes: ["dispute"], sim: [6, 7],
+      detail: "Only the locked case and its bond payment cross the product boundary. Outcome collateral remains in OmenMarketMaker until a directional ruling reimburses the caller.",
+      actor: "Resolution caller pays; DemoThemis receives", money: "Caller-funded resolution bond", condition: "Bond posting and case opening succeed atomically", next: "Accept and lock the case"
     },
 
     {
-      id: "case-locked", phase: "judge", order: 1, title: "Case and quote lock",
+      id: "case-locked", phase: "judge", order: 1, title: "Case and court fee lock",
       short: "Question, evidence rules, value, complexity, and funding freeze before selection.", routes: ["dispute"], sim: [7, 8],
       detail: "Locking first prevents either product or party from changing the case after seeing who will judge it.",
-      actor: "DemoThemis intake", money: "Court quote paid from reserve; outcome collateral remains separate", condition: "Before the randomness beacon is used", next: "Build the value-appropriate panel plan"
+      actor: "DemoThemis intake", money: "Court fee paid from the caller's bond; outcome collateral remains separate", condition: "Before the randomness beacon is used", next: "Build the value-appropriate panel plan"
     },
     {
       id: "panel-plan", phase: "judge", order: 2, kind: "decision", title: "Panel plan fixed by value",
       short: "Use one 7, 15, or 31-person panel—or several non-overlapping 31-person panels for the largest cases.", routes: ["dispute"], sim: [7, 8],
-      detail: "The value at stake selects a plan before the draw. Parallel top-tier panels must independently agree; a split can produce an INVALID result instead of false certainty.",
+      detail: "The value at stake selects a plan before the draw. Parallel top-tier panels must independently agree; a split produces INSUFFICIENT_INFORMATION with reason PANEL_DISAGREEMENT instead of false certainty.",
       actor: "Published DemoThemis rules", money: "Required panel budget is reserved", condition: "Case value and appeal rung are fixed", next: "One public, replayable draw"
     },
     {
@@ -1019,7 +1023,7 @@
       id: "panel-consensus", phase: "judge", order: 6, kind: "decision", title: "Required panels agree?",
       short: "One panel yields its tally; parallel top-tier panels must reach the same answer.", routes: ["dispute"], sim: [10],
       detail: "The court publishes panel-level aggregate proofs without revealing individual votes. Parallel-panel disagreement is handled explicitly.",
-      actor: "Threshold tally process", money: "All funds remain pending", condition: "Every required panel has a valid tally", next: "Provisional ruling or INVALID"
+      actor: "Threshold tally process", money: "All funds remain pending", condition: "Every required panel has a valid tally", next: "Provisional ruling or insufficient information"
     },
     {
       id: "provisional-verdict", phase: "judge", order: 7, group: "panel-outcome", branch: "Agreement", title: "Provisional ruling",
@@ -1028,9 +1032,9 @@
       actor: "DemoThemis tally process", money: "Market escrow and juror reserves remain pending", condition: "Required panel consensus is reached", next: "Return the provisional proof to the market"
     },
     {
-      id: "invalid-verdict", phase: "judge", order: 7, group: "panel-outcome", branch: "Parallel split", title: "Provisional INVALID ruling",
+      id: "insufficient-verdict", phase: "judge", order: 7, group: "panel-outcome", branch: "Parallel split", title: "Provisional INSUFFICIENT_INFORMATION ruling",
       short: "If required parallel panels disagree, the system reports disagreement instead of inventing certainty.", routes: ["dispute"], sim: [],
-      detail: "INVALID is a permitted answer under the written market rules and can still be appealed through the same ladder.",
+      detail: "PANEL_DISAGREEMENT explains why the provisional ruling is INSUFFICIENT_INFORMATION; the ruling can still be appealed through the same ladder.",
       actor: "DemoThemis tally process", money: "Market escrow remains pending", condition: "Required parallel panels split", next: "Return the provisional proof to the market"
     },
     {
@@ -1041,9 +1045,9 @@
     },
     {
       id: "omen-appeal-choice", phase: "judge", order: 9, title: "OmenMarketMaker opens appeal crowdfunding",
-      short: "The market app shows the next jury's goal, deadline, live funding, contributors, and pro-rata bond outcome.", routes: ["dispute"], sim: [11], simSteps: [0, 1, 2, 5],
+      short: "The market app shows the next jury's goal, deadline, live funding, contributors, tagged service fee, and separately escrowed security.", routes: ["dispute"], sim: [11], simSteps: [0, 1, 2, 5],
       detail: "Anyone may contribute through OmenMarketMaker, but each payment locks directly in the DemoThemis appeal contract. Omen does not set the goal, custody funds, select jurors, or influence the verdict.",
-      actor: "Appeal supporters using OmenMarketMaker", money: "Each wallet owns its funded percentage of the bond outcome", condition: "The appeal window is open", next: "Reach the full goal or refund at the deadline"
+      actor: "Appeal supporters using OmenMarketMaker", money: "Each payment funds a tagged service-fee share plus separately escrowed security", condition: "The appeal window is open", next: "Reach the full goal or refund at the deadline"
     },
     {
       id: "appeal-gate", phase: "judge", order: 10, kind: "decision", title: "Was a valid appeal funded?",
@@ -1060,14 +1064,14 @@
     {
       id: "larger-panel", phase: "judge", order: 11, group: "appeal-outcome", branch: "Goal funded · loop ↺", title: "Fresh wider panel",
       short: "The case advances through 7 → 15 → 31 seats without reusing the earlier panel.", routes: ["dispute"], sim: [11], simSteps: [3],
-      detail: "A failed appeal routes the bond to the reward pool; a successful appeal returns the bond plus bonus to contributor wallets pro-rata. The locked case itself does not change.",
-      actor: "New randomly drawn jurors", money: "The fully crowdfunded bond pays this rung", condition: "The full goal is locked and another rung remains", next: "Rebuild the panel plan and draw"
+      detail: "The non-refundable service fee pays the new panel and delay compensation once. Success returns the separately escrowed security bond pro-rata; failure sends only that security bond to the reward pool. The locked case itself does not change.",
+      actor: "New randomly drawn jurors", money: "Appeal supporters fund the service fee and security bond as separate tagged amounts", condition: "The full goal is funded and another rung remains", next: "Pay the service fee, lock security, then draw"
     },
 
     {
       id: "signed-ruling", phase: "finish", order: 1, title: "DemoThemis signs the final ruling",
       short: "The court emits one final answer and proof for the locked case.", routes: ["dispute"], sim: [12], simSteps: [0],
-      detail: "The signed ruling is the service result paid from the market's locked resolution reserve. It contains no custody of outcome collateral.",
+      detail: "The signed ruling is the service result paid from the caller's resolution bond. It contains no custody of outcome collateral.",
       actor: "DemoThemis", money: "Market escrow still at OmenMarketMaker", condition: "The appeal ladder is final", next: "Return the signed ruling"
     },
     {
@@ -1085,8 +1089,8 @@
     {
       id: "settle-funds", phase: "finish", order: 4, title: "Claims redeem and fees route",
       short: "Pool winners split net outcome collateral or tokens redeem; the court payment and market fee remain distinct.", routes: ["dispute"], sim: [12], simSteps: [1],
-      detail: "The locked reserve already paid DemoThemis and returned any unused amount pro-rata. Settlement routes winning claims and the separately disclosed Omen fee; individual juror updates remain shielded behind aggregate proofs.",
-      actor: "OmenMarketMaker settlement contracts", money: "Winning claims paid; unused reserve returned; Omen fee routed", condition: "The release rule is selected", next: "Write the permanent market record"
+      detail: "The caller's bond already paid DemoThemis. After YES or NO, both sides reimburse it pro-rata before settlement routes winning claims and the separately disclosed Omen fee; individual juror updates remain shielded behind aggregate proofs.",
+      actor: "OmenMarketMaker settlement contracts", money: "Resolution bond reimbursed; winning claims paid; Omen fee routed", condition: "The release rule is selected", next: "Write the permanent market record"
     },
     {
       id: "market-record", phase: "finish", order: 5, title: "Market closes permanently",
@@ -1115,8 +1119,8 @@
     {
       id: "bootstrap-loop", phase: "finish", order: 9, kind: "parallel", title: "Demand strengthens the next cycle",
       short: "Market demand funds cases; completed cases improve juror records and court credibility.", routes: ["dispute"], sim: [12],
-      detail: "Fully funded markets can seed DemoThemis with demand while underfunded markets refund without consuming juror work. Both products retain separate fees, treasuries, governance, and contracts.",
-      actor: "Independent OmenMarketMaker and DemoThemis systems", money: "Depositor-funded resolution reserve; separate market fee", condition: "A funded court-backed market settles", next: "More useful markets and a stronger juror pool"
+      detail: "Bonded resolution requests seed DemoThemis with demand while pool-too-small cancellations consume no juror work. Both products retain separate fees, treasuries, governance, and contracts.",
+      actor: "Independent OmenMarketMaker and DemoThemis systems", money: "Caller-funded resolution bond; separate market fee", condition: "A bonded court-backed market settles", next: "More useful markets and a stronger juror pool"
     }
   ];
 
@@ -1135,12 +1139,11 @@
     { from: "parlay-position", to: "parlay-cashout", when: "optional funded cashout", kind: "branch" },
 
     { from: "event-close", to: "resolution-requested", when: "market needs its final answer", kind: "forward" },
-    { from: "resolution-requested", to: "resolution-reserve-gate", when: "funding is checked", kind: "forward" },
-    { from: "resolution-reserve-gate", to: "court-quote-funded", when: "reserve covers jury price", kind: "branch" },
-    { from: "resolution-reserve-gate", to: "resolution-top-up", when: "reserve is short", kind: "branch" },
-    { from: "resolution-top-up", to: "court-quote-funded", when: "creator fills shortfall", kind: "branch" },
-    { from: "resolution-top-up", to: "underfunded-refund", when: "deadline expires short", kind: "branch" },
-    { from: "court-quote-funded", to: "case-locked", when: "DemoThemis accepts the fixed case", kind: "forward" },
+    { from: "resolution-requested", to: "fee-pool-check", when: "exact fee is calculated", kind: "forward" },
+    { from: "fee-pool-check", to: "resolution-bond-posted", when: "fee is below the pool", kind: "branch" },
+    { from: "fee-pool-check", to: "fee-exceeds-pool", when: "fee is at least the pool", kind: "branch" },
+    { from: "resolution-bond-posted", to: "court-fee-paid", when: "caller posts the exact bond", kind: "forward" },
+    { from: "court-fee-paid", to: "case-locked", when: "DemoThemis accepts the fixed case", kind: "forward" },
 
     { from: "case-locked", to: "panel-plan", when: "value selects the plan", kind: "forward" },
     { from: "panel-plan", to: "panel-drawn", when: "plan is fixed", kind: "forward" },
@@ -1148,9 +1151,9 @@
     { from: "seat-checked", to: "private-ballot", when: "all required seats are ready", kind: "forward" },
     { from: "private-ballot", to: "panel-consensus", when: "aggregate proofs arrive", kind: "forward" },
     { from: "panel-consensus", to: "provisional-verdict", when: "required panels agree", kind: "branch" },
-    { from: "panel-consensus", to: "invalid-verdict", when: "required parallel panels split", kind: "branch" },
+    { from: "panel-consensus", to: "insufficient-verdict", when: "required parallel panels split", kind: "branch" },
     { from: "provisional-verdict", to: "provisional-handoff", when: "provisional proof is ready", kind: "forward" },
-    { from: "invalid-verdict", to: "provisional-handoff", when: "provisional proof is ready", kind: "forward" },
+    { from: "insufficient-verdict", to: "provisional-handoff", when: "provisional proof is ready", kind: "forward" },
     { from: "provisional-handoff", to: "omen-appeal-choice", when: "OmenMarketMaker verifies the proof", kind: "forward" },
     { from: "omen-appeal-choice", to: "appeal-gate", when: "appeal window remains open", kind: "forward" },
     { from: "appeal-gate", to: "court-final", when: "no valid appeal or top rung", kind: "branch" },
@@ -1173,10 +1176,10 @@
     "rules-fixed": "omen", "public-pool": "omen", "private-room": "omen", "price-formation": "omen",
     "robustness-gate": "omen", "pooled-claims": "omen", "tokenized-claims": "omen", "parlay-route": "omen",
     "parlay-position": "omen", "parlay-cashout": "omen", "event-close": "omen", "resolution-requested": "omen",
-    "resolution-reserve-gate": "omen", "resolution-top-up": "omen", "underfunded-refund": "omen",
-    "court-quote-funded": "shared", "case-locked": "demothemis", "panel-plan": "demothemis", "panel-drawn": "demothemis",
+    "fee-pool-check": "omen", "resolution-bond-posted": "omen", "fee-exceeds-pool": "omen",
+    "court-fee-paid": "shared", "case-locked": "demothemis", "panel-plan": "demothemis", "panel-drawn": "demothemis",
     "seat-checked": "demothemis", "private-ballot": "demothemis", "panel-consensus": "demothemis", "provisional-verdict": "demothemis",
-    "invalid-verdict": "demothemis", "provisional-handoff": "shared", "omen-appeal-choice": "omen", "appeal-gate": "shared", "court-final": "demothemis", "larger-panel": "demothemis",
+    "insufficient-verdict": "demothemis", "provisional-handoff": "shared", "omen-appeal-choice": "omen", "appeal-gate": "shared", "court-final": "demothemis", "larger-panel": "demothemis",
     "signed-ruling": "demothemis", "ruling-handoff": "shared", "omen-release-rule": "omen", "settle-funds": "omen",
     "market-record": "omen", "quality-update": "demothemis", "external-evidence": "demothemis", "collusion-clock": "demothemis",
     "bootstrap-loop": "shared"
@@ -1193,11 +1196,11 @@
   };
   var MACHINE_PHASE_FOCUS_COPY = {
     omen: {
-      check: { title: "Check the reserve", note: "Pay DemoThemis automatically when fully funded; otherwise accept a creator top-up or refund every YES/NO position.", transition: "Funded case or refund" },
+      check: { title: "Bond resolution", note: "Calculate the exact fee, let an eligible caller post it, and atomically pay DemoThemis while the outcome pool stays locked.", transition: "Bonded case or cancellation" },
       finish: { title: "Settle the market", note: "Verify the returned ruling, apply the written release rule, redeem claims, and close the record.", transition: "Signed ruling → final payout" }
     },
     demothemis: {
-      check: { title: "Accept the funded case", note: "Only a fully funded case and its reserve payment enter DemoThemis; outcome collateral remains with OmenMarketMaker.", transition: "Locked case → verified court" },
+      check: { title: "Accept the bonded case", note: "Only the locked case and caller's bond payment enter DemoThemis; outcome collateral remains with OmenMarketMaker.", transition: "Locked case → verified court" },
       finish: { title: "Finalize and learn", note: "Sign the final ruling, return its proof, and improve juror quality without reopening settlement.", transition: "Ruling returns → learning continues" }
     }
   };
@@ -1600,6 +1603,7 @@
     var text = cleanTip(label);
     if (/^YES$/i.test(text)) return "YES is the claim that pays if the market resolves true.";
     if (/^NO$/i.test(text)) return "NO is the claim that pays if the market resolves false.";
+    if (/^INSUFFICIENT INFORMATION$/i.test(text)) return "INSUFFICIENT INFORMATION means the permitted evidence cannot reliably establish YES or NO.";
     return text + " is an option in the " + cleanTip(context || "current") + " screen.";
   }
 
@@ -1624,7 +1628,7 @@
     if (/resolve condition/i.test(name)) return "The exact rule and source used to decide YES or NO. It is fixed before funds are committed so settlement cannot change later.";
     if (/^question$/i.test(name)) return "The claim traders evaluate. It should be answerable as YES or NO under the written resolve condition.";
     if (/close time/i.test(name)) return "The last time normal market trading is allowed before the result and review process begins.";
-    if (/outcome|answer/i.test(name)) return "The YES, NO, or permitted INVALID result that this " + screen + " records under the market's fixed rules.";
+    if (/outcome|answer/i.test(name)) return "The YES, NO, or INSUFFICIENT_INFORMATION result that this " + screen + " records under the market's fixed rules.";
     if (/odds|price|limit/i.test(name)) return "The locked price for this order. A matching trade fills this price before using the next available liquidity.";
     if (/stake|bond|amount|cost/i.test(name)) return "The funds committed by this " + screen + ". The preview shows what is locked, spent, or placed at risk.";
     if (/source|evidence/i.test(name)) return "The material the verified jury reviews against the market's fixed resolution rules.";
@@ -1897,15 +1901,15 @@
     },
     {
       actor: { title: "Result happens", sub: "the real event is over", icon: "clock", tone: "accent", mark: "NOW" },
-      core: { title: "Reserve gate", sub: "jury target already met", icon: "court", tone: "accent", mark: "FUND" },
-      result: { title: "Automatic payment", sub: "claims keep trading", icon: "vault", tone: "good", mark: "READY" },
-      chips: [["Target fixed", "accent"], ["Paid from reserve", "accent"], ["Trading continues", "good"]]
+      core: { title: "Resolution bond", sub: "exact fee posted now", icon: "court", tone: "accent", mark: "BOND" },
+      result: { title: "Atomic payment", sub: "case opens once", icon: "vault", tone: "good", mark: "READY" },
+      chips: [["Policy locked", "accent"], ["Paid from caller bond", "accent"], ["Pool stays locked", "good"]]
     },
     {
       actor: { title: "Outcome backing", sub: "$118k remains locked", icon: "vault", tone: "good", mark: "OMEN" },
-      core: { title: "Product handoff", sub: "case + reserve payment", icon: "handoff", tone: "accent", mark: "SEND" },
+      core: { title: "Product handoff", sub: "case + bond payment", icon: "handoff", tone: "accent", mark: "SEND" },
       result: { title: "DemoThemis intake", sub: "draw-ready case", icon: "court", tone: "accent", mark: "CASE" },
-      chips: [["Outcome backing stays", "good"], ["Reserve paid", "accent"], ["Case locked", "accent"]]
+      chips: [["Outcome backing stays", "good"], ["Bond paid", "accent"], ["Case locked", "accent"]]
     },
     {
       actor: { title: "Beacon", sub: "public randomness", icon: "beacon", tone: "accent", mark: "RAND" },
@@ -1949,12 +1953,12 @@
       account: "0xA1...ce",
       section: "Create market",
       title: "Will England win the UEFA Euro 2024 final?",
-      subtitle: "Define the outcome rule, lock resolution funding terms, and deposit initial liquidity.",
+      subtitle: "Define the outcome rule, request timing, backstop, and fee policy, then deposit initial liquidity.",
       status: "Ready to publish",
       kpis: [],
       blocks: [
-        { type: "fields", title: "Market form", hot: 0, editable: true, rows: [["Question", "Will England win the UEFA Euro 2024 final?", "input"], ["Close time", "14 July 2024 19:00 UTC", "input"], ["Resolve condition", "YES only if UEFA records England as the winner of the 14 July 2024 final; otherwise NO.", "textarea"], ["Jury target", "Work-based quote locked before betting", "input"], ["Maximum reserve rate", "3% of every deposit", "input"]] },
-        { type: "liquidity", title: "Initial liquidity", hot: 0, offers: [["YES", "yes", "good"], ["NO", "no", "bad"]], note: "Deposit any amount into YES, NO, or both. Each deposit contributes proportionally to the locked resolution reserve. If it remains short after top-up, all positions refund at recorded prices." }
+        { type: "fields", title: "Market form", hot: 0, editable: true, rows: [["Question", "Will England win the UEFA Euro 2024 final?", "input"], ["Close time", "14 July 2024 19:00 UTC", "input"], ["Resolve condition", "YES only if UEFA records England as the winner of the 14 July 2024 final; otherwise NO.", "textarea"], ["Earliest request", "At the written close condition", "input"], ["Final backstop", "15 July 2024 19:00 UTC", "input"], ["Fee policy", "CourtFeePolicy v1", "input"]] },
+        { type: "liquidity", title: "Initial liquidity", hot: 0, offers: [["YES", "yes", "good"], ["NO", "no", "bad"]], note: "Deposit any amount into YES, NO, or both. Every deposit remains outcome collateral; an eligible caller posts the exact resolution bond only when review is requested." }
       ]
     },
     {
@@ -1970,7 +1974,7 @@
       status: "Open for trading",
       kpis: [],
       blocks: [
-        { type: "marketTrade", title: "Buy an outcome", hot: 0, wide: true, yes: 62, no: 38, selected: "YES", amount: "$50", balance: "$740", reward: "+8%", rewardValue: "$54", rewardCopy: "If your outcome wins, your $50 is treated like $54 when winnings are divided.", pricingCopy: "YES and NO backing sets the odds. The pre-declared percentage of every deposit fills a separate resolution reserve; it pays the jury automatically when full or returns with all backing if the market expires underfunded.", activity: [["YES purchase", "+$120", "62%"], ["NO purchase", "+$80", "38%"], ["YES purchase", "+$42", "61%"]] }
+        { type: "marketTrade", title: "Buy an outcome", hot: 0, wide: true, yes: 62, no: 38, selected: "YES", amount: "$50", balance: "$740", reward: "+8%", rewardValue: "$54", rewardCopy: "If your outcome wins, your $50 is treated like $54 when winnings are divided.", pricingCopy: "YES and NO backing sets the odds. Every deposit remains collateral. At resolution, a caller posts the exact court fee; YES or NO later reimburses it pro-rata, while insufficient information leaves the pool whole.", activity: [["YES purchase", "+$120", "62%"], ["NO purchase", "+$80", "38%"], ["YES purchase", "+$42", "61%"]] }
       ]
     },
     {
@@ -1981,7 +1985,7 @@
       route: "/earn/england-euro-final",
       section: "Graduated ERC-20 market",
       title: "Wallet-held YES is ready to earn",
-      subtitle: "The pool passed its liquidity, time, and fully funded jury-reserve checks before converting claims into transferable ERC-20 YES and NO tokens.",
+      subtitle: "The pool passed its liquidity, two-sided participation, and time checks before converting claims into transferable ERC-20 YES and NO tokens. Court funding is separate.",
       status: "Claims tokenized",
       kpis: [["Wallet YES", "820.6"], ["Estimated APY", "12.4%"], ["Total deposits", "$284k"]],
       blocks: [
@@ -2043,16 +2047,16 @@
       tabs: ["Resolution", "Market", "Funds"],
       activeTab: "Resolution",
       route: "/markets/england-euro-final/resolution",
-      account: "Protocol",
-      actor: "OmenMarketMaker",
+      account: "0x4b...91",
+      actor: "Resolution caller",
       section: "Court-backed resolution",
-      title: "Pay the jury quote from the reserve",
-      subtitle: "The event has closed. Deposits filled the locked reserve, so DemoThemis can be paid automatically.",
-      status: "Reserve fully funded",
-      kpis: [["Outcome backing", "$118k locked"], ["Jury reserve", "Target met"]],
+      title: "Post the exact resolution bond",
+      subtitle: "The locked policy sets a $92 court fee.",
+      status: "Bond required",
+      kpis: [["Outcome backing", "$118k locked"], ["Resolution bond", "$92"], ["Fee policy", "v1"]],
       blocks: [
-        { type: "record", title: "Resolution request", hot: 0, value: "EURO-FINAL · Funded", caption: "Terms fixed before betting", details: [["Question", "Did England win the UEFA Euro 2024 final?"], ["Jury target", "Locked before first bet"], ["Maximum reserve rate", "3% of every deposit"], ["Outcome backing", "$118,000 · remains at OmenMarketMaker"]] },
-        { type: "table", title: "Automatic funding", rows: [["Resolution reserve", "Target met", "pay DemoThemis"], ["Reserve surplus", "All YES/NO positions", "return pro-rata"], ["OmenMarketMaker fee", "2% on resolved settlement", "separate"]] },
+        { type: "record", title: "Resolution request", hot: 0, value: "EURO-FINAL · Eligible", caption: "Request-time calculation", details: [["Question", "Did England win the UEFA Euro 2024 final?"], ["Exact court fee", "$92"], ["Bond payer", "0x4b...91"], ["Outcome backing", "$118,000 · remains at OmenMarketMaker"]] },
+        { type: "table", title: "Bond consequences", rows: [["Resolution bond", "$92 caller-funded", "pay DemoThemis"], ["Final YES or NO", "YES + NO pro-rata", "reimburse caller"], ["Insufficient information", "Market pool untouched", "bond not reimbursed"]] },
         { type: "odds", title: "Secondary trading live", yes: 91, no: 9 }
       ]
     },
@@ -2066,13 +2070,13 @@
       route: "/markets/england-euro-final/court-handoff",
       section: "Product handoff",
       title: "Lock the case before the draw",
-      subtitle: "Only the fixed case and reserve payment move to DemoThemis. Outcome collateral remains at OmenMarketMaker.",
+      subtitle: "Only the fixed case and caller's bond payment move to DemoThemis. Outcome collateral remains at OmenMarketMaker.",
       status: "Handoff ready",
       statusTone: "neutral",
-      kpis: [["Case", "Prepared"], ["Reserve payment", "Funded"], ["Outcome backing", "Stays at Omen"]],
+      kpis: [["Case", "Prepared"], ["Bond payment", "$92 paid"], ["Outcome backing", "Stays at Omen"]],
       blocks: [
-        { type: "record", title: "Funded handoff", hot: 0, value: "Case #1182 · Ready", caption: "Two products, separate custody", details: [["Case and evidence rules", "Move to DemoThemis"], ["Resolution payment", "Comes from locked reserve"], ["Outcome collateral", "$118,000 · stays at OmenMarketMaker"], ["Return path", "Signed final ruling"]] },
-        { type: "table", title: "Product boundary", rows: [["OmenMarketMaker", "Holds outcome collateral", "unchanged"], ["DemoThemis", "Receives funded case", "draw next"], ["Governance", "Independent", "both products"]] },
+        { type: "record", title: "Bonded handoff", hot: 0, value: "Case #1182 · Ready", caption: "Two products, separate custody", details: [["Case and evidence rules", "Move to DemoThemis"], ["Resolution payment", "$92 caller bond"], ["Outcome collateral", "$118,000 · stays at OmenMarketMaker"], ["Return path", "Signed final ruling"]] },
+        { type: "table", title: "Product boundary", rows: [["OmenMarketMaker", "Holds outcome collateral", "unchanged"], ["DemoThemis", "Receives paid case", "draw next"], ["Governance", "Independent", "both products"]] },
         { type: "odds", title: "Current market odds", hot: 0, yes: 91, no: 9 }
       ]
     },
@@ -2105,7 +2109,7 @@
       kpis: [["Juror fee", "$92"], ["Panel", "7"]],
       blocks: [
         { type: "evidence", title: "Case file", hot: 0, rows: [["Question", "Did England win the UEFA Euro 2024 final on 14 July 2024?"], ["Answer rule", "YES if UEFA records England as winner; otherwise NO."], ["Sources", "None supplied"], ["Research", "Check independent public sources."]] },
-        { type: "ballot", title: "Encrypted ballot", hot: 0, options: [["YES", "good"], ["NO", "bad"]] }
+        { type: "ballot", title: "Encrypted ballot", hot: 0, options: [["YES", "good"], ["NO", "bad"], ["INSUFFICIENT INFORMATION", "insufficient"]] }
       ]
     },
     {
@@ -2138,7 +2142,7 @@
       kpis: [["Provisional result", "NO 4–3"], ["Your position", "YES"], ["Time left", "14 days"]],
       blocks: [
         { type: "record", title: "Provisional court result", open: true, icon: "shield-check", value: "NO 4–3 · Provisional", caption: "Verified DemoThemis proof", details: [["Question", "Did England win the UEFA Euro 2024 final?"], ["Your position", "YES · currently losing"], ["Settlement", "Paused until the appeal window closes"], ["Deadline", "29 Jul 2024, 22:30 UTC"]], note: "This result is checkable but not final. OmenMarketMaker still holds the $118,000 market escrow." },
-        { type: "table", title: "How the appeal works", rows: [["Open public goal", "$31,000 before deadline", "next"], ["Contribute any amount", "Direct to DemoThemis", "pro-rata share"], ["Goal reaches 100%", "Fresh 15-person jury", "automatic"], ["Goal stays short", "Every wallet refunded", "finality"]] }
+        { type: "table", title: "How the appeal works", rows: [["Open public goal", "$31,000 before deadline", "next"], ["Tagged service fee", "$14,200 panel + delay", "consumed once"], ["Security bond", "$16,800 in escrow", "return or forfeit"], ["Goal stays short", "Every wallet refunded", "no jury"]] }
       ]
     },
     {
@@ -2461,40 +2465,40 @@
       start: {
         route: "/markets/england-euro-final/resolution",
         section: "Resolution",
-        title: "Pay jury from reserve",
-        subtitle: "Target met; outcome backing stays.",
-        status: "Reserve fully funded",
+        title: "Post the resolution bond",
+        subtitle: "$92 exact fee; outcome backing stays.",
+        status: "Bond required",
         activeTab: "Resolution",
-        account: "Protocol",
-        actor: "OmenMarketMaker",
-        kpis: [["Outcome backing", "$118k locked"], ["Jury reserve", "Target met"], ["Trading", "Live"]],
+        account: "0x4b...91",
+        actor: "Resolution caller",
+        kpis: [["Outcome backing", "$118k locked"], ["Resolution bond", "$92"], ["Fee policy", "v1"]],
         blocks: [
-          { type: "record", title: "Resolution request", value: "EURO-FINAL · Funded", caption: "Locked terms", details: [["Jury target", "Fixed before betting"], ["Maximum reserve rate", "3%"], ["Outcome backing", "$118,000 · stays here"]] },
-          { type: "table", title: "Automatic funding", rows: [["Resolution reserve", "Target met", "pay now"], ["Outcome collateral", "$118,000", "locked"]] },
+          { type: "record", title: "Resolution request", value: "EURO-FINAL · Eligible", caption: "Request-time calculation", details: [["Exact court fee", "$92"], ["Bond payer", "0x4b...91"], ["Outcome backing", "$118,000 · stays here"]] },
+          { type: "table", title: "Bond consequences", rows: [["Caller bond", "$92", "pay court now"], ["YES or NO", "pool reimburses", "pro-rata"], ["Insufficient information", "no reimbursement", "pool untouched"]] },
           { type: "odds", title: "Secondary trading live", yes: 91, no: 9 }
         ]
       },
       steps: [
         {
-          cue: "Tap Pay from resolution reserve",
+          cue: "Tap Post resolution bond",
           target: "block",
           targetTitle: "Resolution request",
-          result: "Resolution reserve paid",
-          toast: { title: "Jury quote paid", body: "Case #1182 prepared", detail: "Unused reserve returns pro-rata" },
+          result: "Resolution bond paid",
+          toast: { title: "Court fee paid", body: "Case #1182 prepared", detail: "$92 caller bond · outcome pool untouched" },
           after: {
             route: "/markets/england-euro-final/resolution/funded",
             section: "Resolution",
-            title: "Resolution reserve paid",
+            title: "Resolution bond paid",
             subtitle: "Case paid; outcome backing stays.",
             status: "Handoff ready",
             statusTone: "neutral",
             activeTab: "Resolution",
             account: "Protocol",
-            actor: "OmenMarketMaker",
-            kpis: [["Outcome backing", "$118k locked"], ["Jury quote", "Paid"], ["Trading", "Live"]],
+            actor: "Resolution caller",
+            kpis: [["Outcome backing", "$118k locked"], ["Court fee", "$92 paid"], ["Bond payer", "0x4b...91"]],
             blocks: [
-              { type: "record", title: "Funded resolution", value: "Case #1182 · Prepared", caption: "Reserve-funded", details: [["Question and rules", "Locked"], ["DemoThemis quote", "Paid automatically"], ["Outcome collateral", "$118,000 · stays here"], ["Transaction", "0x31ab…90f2"]] },
-              { type: "table", title: "Product boundary", rows: [["Crosses next", "Case + reserve payment", "ready"], ["Does not cross", "Outcome collateral", "stays at Omen"]] },
+              { type: "record", title: "Bonded resolution", value: "Case #1182 · Prepared", caption: "Caller-funded", details: [["Question and rules", "Locked"], ["DemoThemis fee", "$92 paid from bond"], ["Outcome collateral", "$118,000 · stays here"], ["Transaction", "0x31ab…90f2"]] },
+              { type: "table", title: "Product boundary", rows: [["Crosses next", "Case + bond payment", "ready"], ["Does not cross", "Outcome collateral", "stays at Omen"]] },
               { type: "odds", title: "Secondary trading live", yes: 91, no: 9 }
             ]
           }
@@ -2506,26 +2510,26 @@
         route: "/markets/england-euro-final/court-handoff",
         section: "Handoff",
         title: "Lock the case before the draw",
-        subtitle: "Funded case moves; backing stays.",
+        subtitle: "Bonded case moves; backing stays.",
         status: "Handoff ready",
         statusTone: "neutral",
         activeTab: "Handoff",
         account: "Protocol",
         actor: "Court intake",
-        kpis: [["Case", "Prepared"], ["Reserve payment", "Funded"], ["Outcome backing", "Stays at Omen"]],
+        kpis: [["Case", "Prepared"], ["Bond payment", "$92 paid"], ["Outcome backing", "Stays at Omen"]],
         blocks: [
-          { type: "record", title: "Funded handoff", value: "Case #1182 · Ready", caption: "Separate custody", details: [["Case and evidence rules", "Move to DemoThemis"], ["Resolution payment", "Comes from locked reserve"], ["Outcome collateral", "$118,000 · stays at OmenMarketMaker"], ["Return path", "Signed final ruling"]] },
-          { type: "table", title: "Product boundary", rows: [["OmenMarketMaker", "Holds outcome collateral", "unchanged"], ["DemoThemis", "Receives funded case", "draw next"]] },
+          { type: "record", title: "Bonded handoff", value: "Case #1182 · Ready", caption: "Separate custody", details: [["Case and evidence rules", "Move to DemoThemis"], ["Resolution payment", "$92 caller bond"], ["Outcome collateral", "$118,000 · stays at OmenMarketMaker"], ["Return path", "Signed final ruling"]] },
+          { type: "table", title: "Product boundary", rows: [["OmenMarketMaker", "Holds outcome collateral", "unchanged"], ["DemoThemis", "Receives paid case", "draw next"]] },
           { type: "odds", title: "Current market odds", yes: 91, no: 9 }
         ]
       },
       steps: [
         {
-          cue: "Tap Lock case and quote",
+          cue: "Tap Lock case and court fee",
           target: "block",
-          targetTitle: "Funded handoff",
+          targetTitle: "Bonded handoff",
           result: "DemoThemis case accepted",
-          toast: { title: "Case accepted", body: "Case #1182 · quote paid", detail: "Outcome collateral stays at OmenMarketMaker" },
+          toast: { title: "Case accepted", body: "Case #1182 · court fee paid", detail: "Outcome collateral stays at OmenMarketMaker" },
           after: {
             route: "/markets/england-euro-final/court-case",
             context: "Case #1182",
@@ -2539,8 +2543,8 @@
             actor: "Court intake",
             kpis: [["Case", "#1182"], ["Panel plan", "7 seats"], ["Outcome backing", "At Omen"]],
             blocks: [
-              { type: "record", title: "Court intake", value: "Case #1182 · Draw ready", caption: "Case record", details: [["Rules", "Locked"], ["Value", "$118,000"], ["Panel", "7 seats"], ["Court quote", "Funded"]] },
-              { type: "table", title: "Separate custody", rows: [["Outcome collateral", "$118,000", "locked at Omen"], ["DemoThemis quote", "Paid from reserve", "court work"], ["Final ruling", "Returns to Omen", "after appeals"]] },
+              { type: "record", title: "Court intake", value: "Case #1182 · Draw ready", caption: "Case record", details: [["Rules", "Locked"], ["Value", "$118,000"], ["Panel", "7 seats"], ["Court fee", "$92 paid"]] },
+              { type: "table", title: "Separate custody", rows: [["Outcome collateral", "$118,000", "locked at Omen"], ["DemoThemis fee", "Paid from caller bond", "court work"], ["Final ruling", "Returns to Omen", "after appeals"]] },
               { type: "odds", title: "Secondary trading live", yes: 91, no: 9 }
             ]
           }
@@ -2614,7 +2618,7 @@
       start: { activeTab: "Ballot", account: "Juror 04" },
       steps: [
         {
-          cue: "Choose an outcome, then tap Seal ballot",
+          cue: "Pick one answer, then tap Seal ballot",
           actionLabel: "Seal ballot",
           target: "block",
           targetTitle: "Encrypted ballot",
@@ -2729,19 +2733,19 @@
             statusTone: "neutral",
             kpis: [["Raised", "$18,400 / $31,000"], ["Still needed", "$12,600"], ["Time left", "14 days"]],
             blocks: [
-              { type: "appealCrowdfund", title: "Crowdfunded appeal bond", wide: true, round: 1, goal: 31000, funded: 18400, remaining: 12600, deadline: "29 Jul 2024 · 22:30 UTC", status: "$12,600 still needed", editable: true, walletBalance: 44200, userContribution: 0, contributors: [["0xa8...12", 7500, 24.2, "community"], ["0x72...ee", 6200, 20, "community"], ["0x19...0f", 4700, 15.2, "community"]], quoteRows: [["15-juror work", "$6,000"], ["Security floor", "$31,000"], ["Delay floor", "$8,200"], ["Applied goal", "$31,000"]], destination: "DemoThemis appeal contract", note: "Success returns bond plus bonus pro-rata; failure routes each wallet's share. A short round refunds everyone." }
+              { type: "appealCrowdfund", title: "Crowdfunded appeal funding", wide: true, round: 1, goal: 31000, funded: 18400, remaining: 12600, deadline: "29 Jul 2024 · 22:30 UTC", status: "$12,600 still needed", editable: true, walletBalance: 44200, userContribution: 0, contributors: [["0xa8...12", 7500, 24.2, "community"], ["0x72...ee", 6200, 20, "community"], ["0x19...0f", 4700, 15.2, "community"]], serviceFee: 14200, securityBond: 16800, quoteRows: [["Panel work fee", "$6,000", "supporters → 15 jurors"], ["Delay compensation", "$8,200", "supporters → case delay account"], ["Service fee subtotal", "$14,200", "non-refundable once jury starts"], ["Security bond", "$16,800", "supporters → separate escrow"], ["Total appeal funding", "$31,000", "source: appeal supporters"]], destination: "DemoThemis appeal contract", note: "A short round refunds everyone. Once funded, each wallet's service and security shares stay pro-rata; the service fee pays panel work and delay once, while only security returns on success or is forfeited on failure." }
             ]
           }
         },
         {
           cue: "Tap Contribute to appeal",
           actionLabel: "Contribute to appeal",
-          coach: "Choose a contribution. This wallet owns the same percentage of any returned bond, bonus, or loss as the percentage of the public goal it funds.",
+          coach: "Choose a contribution. The same percentage funds the service fee and owns the separately escrowed security return or forfeiture.",
           actionOwner: "user",
           target: "block",
-          targetTitle: "Crowdfunded appeal bond",
+          targetTitle: "Crowdfunded appeal funding",
           result: "Your contribution locked; public funding continues",
-          toast: { title: "Contribution confirmed", body: "$4,000 added to the appeal bond", detail: "Your wallet owns 12.9% of the bond outcome" },
+          toast: { title: "Contribution confirmed", body: "$4,000 added to appeal funding", detail: "$1,832 service fee + $2,168 security bond" },
           after: {
             surface: "omen",
             actor: "Appeal supporters",
@@ -2754,9 +2758,9 @@
             status: "Contribution confirmed",
             activeTab: "Appeal",
             account: "0x51...9b",
-            kpis: [["Raised", "$22,400 / $31,000"], ["Your bond share", "12.9%"], ["Time left", "13d 22h"]],
+            kpis: [["Raised", "$22,400 / $31,000"], ["Your funding share", "12.9%"], ["Time left", "13d 22h"]],
             blocks: [
-              { type: "appealCrowdfund", title: "Crowdfunded appeal bond", wide: true, round: 1, goal: 31000, funded: 22400, remaining: 8600, deadline: "29 Jul 2024 · 22:30 UTC", status: "$8,600 still needed", editable: false, walletBalance: 40200, userContribution: 4000, contributors: [["0xa8...12", 7500, 24.2, "community"], ["0x72...ee", 6200, 20, "community"], ["0x19...0f", 4700, 15.2, "community"], ["You · 0x51...9b", 4000, 12.9, "you"]], destination: "DemoThemis appeal contract", note: "The jury starts only at 100%. A short round refunds every wallet automatically." }
+              { type: "appealCrowdfund", title: "Crowdfunded appeal funding", wide: true, round: 1, goal: 31000, funded: 22400, remaining: 8600, deadline: "29 Jul 2024 · 22:30 UTC", status: "$8,600 still needed", editable: false, walletBalance: 40200, userContribution: 4000, contributors: [["0xa8...12", 7500, 24.2, "community"], ["0x72...ee", 6200, 20, "community"], ["0x19...0f", 4700, 15.2, "community"], ["You · 0x51...9b", 4000, 12.9, "you"]], serviceFee: 14200, securityBond: 16800, destination: "DemoThemis appeal contract", note: "The jury starts only at 100%. A short round refunds every wallet automatically; a funded round tags each contribution between service and security." }
             ]
           }
         },
@@ -2768,7 +2772,7 @@
           autoAdvance: true,
           autoDelay: 2100,
           target: "block",
-          targetTitle: "Crowdfunded appeal bond",
+          targetTitle: "Crowdfunded appeal funding",
           result: "Appeal goal funded; fresh jury starts automatically",
           after: {
             surface: "protocol",
@@ -2784,7 +2788,7 @@
             user: "",
             kpis: [["Crowdfunded bond", "$31,000"], ["Your share", "12.9%"], ["Panel", "15 fresh jurors"]],
             blocks: [
-              { type: "route", title: "Appeal funding complete", steps: [["01", "First 3 wallets", "$18,400"], ["02", "Your wallet", "$4,000"], ["03", "14 later wallets", "$8,600"], ["04", "DemoThemis contract", "$31,000 locked"]] },
+              { type: "route", title: "Appeal funding complete", steps: [["01", "First 3 wallets", "$18,400"], ["02", "Your wallet", "$4,000"], ["03", "14 later wallets", "$8,600"], ["04", "Service fee", "$14,200 paid once"], ["05", "Security escrow", "$16,800 locked"]] },
               { type: "seats", title: "Appeal panel", count: 15, on: 15 }
             ]
           }
@@ -2811,7 +2815,7 @@
             blocks: [
               { type: "seats", title: "Appeal panel", count: 15, on: 15 },
               { type: "proof", title: "Appeal proof", stamp: "Proof ready", result: "NO wins 9–6", note: "The result is still provisional until the 31-person appeal window closes." },
-              { type: "table", title: "Failed crowdfunded bond", rows: [["Your 12.9% share", "$4,000", "routed"], ["Other supporters · 87.1%", "$27,000", "routed"], ["Juror reward pool", "$31,000", "received"]] }
+              { type: "table", title: "Appeal funding settlement", rows: [["Panel work fee", "$6,000", "paid to 15 jurors"], ["Delay compensation", "$8,200", "credited by case rule"], ["Security bond", "$16,800", "forfeited to reward pool"], ["Total", "$31,000", "allocated once"]] }
             ]
           }
         },
@@ -2842,8 +2846,8 @@
             statusTone: "neutral",
             kpis: [["Provisional result", "NO 9–6"], ["Appeal window", "31-person rung open"], ["Settlement", "Paused"]],
             blocks: [
-              { type: "proof", title: "Verified appeal result", stamp: "DemoThemis proof verified", result: "NO wins 9–6", note: "The first appeal failed. Each contributor's pro-rata share of the $31,000 bond routed to the juror reward pool." },
-              { type: "appealCrowdfund", title: "31-person appeal funding", wide: true, round: 2, goal: 76000, funded: 0, remaining: 76000, deadline: "12 Aug 2024 · 22:30 UTC", status: "$76,000 still needed", editable: false, walletBalance: 40200, userContribution: 0, contributors: [], destination: "DemoThemis appeal contract", note: "At $76,000 a fresh jury starts. A short round refunds contributors and makes NO final." }
+              { type: "proof", title: "Verified appeal result", stamp: "DemoThemis proof verified", result: "NO wins 9–6", note: "The first appeal failed. Its $14,200 service fee had already paid panel work and delay; only the $16,800 security bond routed to the reward pool." },
+              { type: "appealCrowdfund", title: "31-person appeal funding", wide: true, round: 2, goal: 76000, funded: 0, remaining: 76000, deadline: "12 Aug 2024 · 22:30 UTC", status: "$76,000 still needed", editable: false, walletBalance: 40200, userContribution: 0, contributors: [], serviceFee: 33000, securityBond: 43000, quoteRows: [["31-juror work + delay", "$33,000", "non-refundable service fee"], ["Security bond", "$43,000", "separate return/forfeit escrow"], ["Total appeal funding", "$76,000", "source: appeal supporters"]], destination: "DemoThemis appeal contract", note: "At $76,000, the $33,000 service fee funds the fresh jury and delay and $43,000 locks as security. A short round refunds contributors and makes NO final." }
             ]
           }
         },
@@ -2871,7 +2875,7 @@
             blocks: [
               { type: "seats", title: "Final panel", count: 15, on: 15 },
               { type: "proof", title: "Appeal proof", stamp: "Appeals closed", result: "NO wins 9–6", note: "The 31-person funding goal expired below 100%, so no new jury was drawn." },
-              { type: "table", title: "Failed crowdfunded bond", rows: [["Your 12.9% share", "$4,000", "routed"], ["Other supporters · 87.1%", "$27,000", "routed"], ["Juror reward pool", "$31,000", "received"]] }
+              { type: "table", title: "Appeal funding settlement", rows: [["Panel work fee", "$6,000", "paid to 15 jurors"], ["Delay compensation", "$8,200", "credited by case rule"], ["Security bond", "$16,800", "forfeited to reward pool"], ["Total", "$31,000", "allocated once"]] }
             ]
           }
         }
@@ -2922,7 +2926,7 @@
                 type: "jurorSettlement",
                 title: "Private juror settlement",
                 wide: true,
-                source: "Locked panel quote",
+                source: "Locked court fee",
                 destination: "Juror 04 wallet",
                 vote: "NO",
                 voteLabel: "Your sealed ballot",
@@ -2961,14 +2965,14 @@
             route: "/markets/england-euro-final/payout",
             section: "Settlement",
             title: "Settlement complete",
-            subtitle: "Claims, fees, bond, and reserve are settled.",
+            subtitle: "Final NO applied; fees and bond settled.",
             status: "Paid",
             activeTab: "Payout",
             account: "0x7c...42",
             kpis: [["Result", "NO"], ["Net payout", "$206.29"], ["Market", "Closed"]],
             blocks: [
-              { type: "settlement", title: "Market payout", label: "Net payout received", value: "$206.29", delta: "$210.50 backed redemption − $4.21 Omen fee", status: "Paid", open: true, details: [["Destination", "0x7c...42"], ["Backed redemption", "$210.50 after reserve accounting"], ["OmenMarketMaker fee (2%)", "$4.21"], ["Transaction", "0xf190…c42a"], ["Final result", "NO"], ["Market", "Closed"]] },
-              { type: "table", title: "Court and market finality", rows: [["DemoThemis signed ruling", "NO · verified", "applied"], ["Failed crowdfunded YES appeal", "$31,000 pro-rata bond routed", "settled"], ["DemoThemis work quote", "Paid from locked reserve", "settled"]] }
+              { type: "settlement", title: "Market payout", label: "Net payout received", value: "$206.29", delta: "$210.50 backed redemption − $4.21 Omen fee", status: "Paid", open: true, details: [["Destination", "0x7c...42"], ["Backed redemption", "$210.50 after court-fee allocation"], ["OmenMarketMaker fee (2%)", "$4.21"], ["Transaction", "0xf190…c42a"], ["Final result", "NO"], ["Market", "Closed"]] },
+              { type: "table", title: "Finality and fees", rows: [["Court ruling", "NO · verified", "applied"], ["Resolution bond", "$92 reimbursed pro-rata", "settled"], ["Failed YES appeal", "$31,000 pro-rata bond routed", "settled"], ["Court fee", "$92 paid from caller bond", "settled"]] }
             ]
           }
         }
@@ -2993,9 +2997,8 @@
     "Complete solver-backed placement": "Show the winning solver locking $336 before one tradeable receipt is minted.",
     "Accept $128 cashout": "Accept the best live solver bid for the single parlay receipt.",
     "Complete receipt cashout": "Transfer the receipt to the winning solver before $128 returns to the wallet.",
-    "Pay quote from reserve": "Transfer the locked depositor reserve to DemoThemis automatically while outcome collateral remains at OmenMarketMaker.",
-    "Pay from resolution reserve": "Use the fully funded depositor reserve to pay DemoThemis automatically before any jury is drawn.",
-    "Lock case and quote": "Lock the fixed, reserve-funded case before DemoThemis draws any juror.",
+    "Post resolution bond": "Post the exact deterministic court fee, pay DemoThemis atomically, and leave outcome collateral at OmenMarketMaker.",
+    "Lock case and court fee": "Lock the fixed case and paid court fee before DemoThemis draws any juror.",
     "Bound draw": "Show the public seed selecting the first bound 7-seat panel for this case.",
     "Presence checks": "Show conflicts, capability, standbys, and live presence resolving for every seat.",
     "Seal ballot": "Submit an encrypted ballot that remains silently replaceable until the deadline.",
@@ -3234,16 +3237,16 @@
       svg += chip(316, 246, "fill-or-kill", "accent", hot0);
     } else if (index === 6) {
       svg += node(48, 102, 130, 88, "Event closes", "result needed", "soft", hot0);
-      svg += node(242, 88, 154, 112, "Reserve gate", "jury target met", "good", hot0);
-      svg += node(470, 88, 158, 112, "Court request", "rules + payment", "accent", hot0);
+      svg += node(242, 88, 154, 112, "Resolution bond", "exact fee posted", "good", hot0);
+      svg += node(470, 88, 158, 112, "Court request", "rules + bond", "accent", hot0);
       svg += node(278, 230, 188, 50, "Trading stays open", "price keeps moving", "soft", hot1);
       svg += flow(178, 146, 242, 144, "accent", hot0);
       svg += flow(396, 144, 470, 144, "accent", hot0);
       svg += flow(350, 200, 366, 230, "good", hot1);
-      svg += chip(493, 220, "paid from reserve", "accent", hot0);
+      svg += chip(493, 220, "paid from caller bond", "accent", hot0);
     } else if (index === 7) {
       svg += node(46, 92, 150, 96, "OmenMarketMaker", "outcome custody", "good", hot0);
-      svg += node(270, 88, 168, 104, "Funded handoff", "case + reserve pay", "accent", hot0);
+      svg += node(270, 88, 168, 104, "Bonded handoff", "case + bond pay", "accent", hot0);
       svg += node(516, 92, 150, 96, "DemoThemis", "case accepted", "accent", hot1);
       svg += flow(196, 140, 270, 140, "good", hot0);
       svg += flow(438, 140, 516, 140, "accent", hot1);
@@ -3465,7 +3468,7 @@
       if (!/^(?:YES|NO)$/i.test(cleanTip(roomSide))) return { valid: false, message: "Choose YES or NO for your side." };
     }
     if (stage === 9 && activeEventStep === 0 && !selectedBallotChoice) {
-      return { valid: false, message: "Choose YES or NO before sealing the ballot." };
+      return { valid: false, message: "Choose YES, NO, or insufficient information before sealing the ballot." };
     }
     if (stage === 11 && activeEventStep === 1) {
       var appealContribution = safeAppealContribution(appealContributionDraft);
@@ -3551,6 +3554,19 @@
     return page;
   }
 
+  function applyInsufficientBallotTally(page) {
+    if (selectedBallotChoice !== "INSUFFICIENT INFORMATION" || stage < 10 || stage > 11) return page;
+    function update(value) {
+      if (typeof value === "string") return value.replace(/NO 4(?:-|–)3/g, "NO 4–2–1");
+      if (Array.isArray(value)) return value.map(update);
+      if (value && typeof value === "object") {
+        Object.keys(value).forEach(function (key) { value[key] = update(value[key]); });
+      }
+      return value;
+    }
+    return update(page);
+  }
+
   function appealContributorRows(userAmount, includeClosingCrowd) {
     var contributors = [
       ["0xa8...12", 7500],
@@ -3558,10 +3574,10 @@
       ["0x19...0f", 4700]
     ];
     if (userAmount > 0) contributors.push(["You · 0x51...9b", userAmount, "you"]);
-    var closingAmount = Math.max(0, APPEAL_BOND_GOAL - APPEAL_EXISTING_FUNDING - userAmount);
+    var closingAmount = Math.max(0, APPEAL_FUNDING_GOAL - APPEAL_EXISTING_FUNDING - userAmount);
     if (includeClosingCrowd && closingAmount > 0) contributors.push(["14 later wallets", closingAmount, "crowd"]);
     return contributors.map(function (row) {
-      return [row[0], row[1], row[1] / APPEAL_BOND_GOAL * 100, row[2] || "community"];
+      return [row[0], row[1], row[1] / APPEAL_FUNDING_GOAL * 100, row[2] || "community"];
     });
   }
 
@@ -3570,13 +3586,12 @@
     var userAmount = safeAppealContribution(appealContributionDraft);
     var userHasContributed = activeEventStep >= 2;
     var currentFunded = APPEAL_EXISTING_FUNDING + (userHasContributed ? userAmount : 0);
-    var remaining = Math.max(0, APPEAL_BOND_GOAL - currentFunded);
-    var userShare = userAmount / APPEAL_BOND_GOAL * 100;
-    var crowdShare = 100 - userShare;
+    var remaining = Math.max(0, APPEAL_FUNDING_GOAL - currentFunded);
+    var userShare = userAmount / APPEAL_FUNDING_GOAL * 100;
 
     (page.blocks || []).forEach(function (block) {
       if (block.type === "appealCrowdfund" && Number(block.round || 1) === 1) {
-        block.goal = APPEAL_BOND_GOAL;
+        block.goal = APPEAL_FUNDING_GOAL;
         block.funded = currentFunded;
         block.remaining = remaining;
         block.userContribution = userHasContributed ? userAmount : 0;
@@ -3591,16 +3606,18 @@
           ["01", "First 3 wallets", appealMoney(APPEAL_EXISTING_FUNDING)],
           ["02", "Your wallet", appealMoney(userAmount)]
         ];
-        var closingCrowdAmount = Math.max(0, APPEAL_BOND_GOAL - APPEAL_EXISTING_FUNDING - userAmount);
+        var closingCrowdAmount = Math.max(0, APPEAL_FUNDING_GOAL - APPEAL_EXISTING_FUNDING - userAmount);
         if (closingCrowdAmount > 0) fundingSteps.push(["03", "14 later wallets", appealMoney(closingCrowdAmount)]);
-        fundingSteps.push([closingCrowdAmount > 0 ? "04" : "03", "DemoThemis contract", appealMoney(APPEAL_BOND_GOAL) + " locked"]);
+        fundingSteps.push([closingCrowdAmount > 0 ? "04" : "03", "Service fee", appealMoney(APPEAL_SERVICE_FEE) + " paid once"]);
+        fundingSteps.push([closingCrowdAmount > 0 ? "05" : "04", "Security escrow", appealMoney(APPEAL_SECURITY_BOND) + " locked"]);
         block.steps = fundingSteps;
       }
-      if (block.type === "table" && block.title === "Failed crowdfunded bond") {
+      if (block.type === "table" && block.title === "Appeal funding settlement") {
         block.rows = [
-          ["Your " + userShare.toFixed(1) + "% share", appealMoney(userAmount), "routed"],
-          ["Other supporters · " + crowdShare.toFixed(1) + "%", appealMoney(APPEAL_BOND_GOAL - userAmount), "routed"],
-          ["Juror reward pool", appealMoney(APPEAL_BOND_GOAL), "received"]
+          ["Panel work fee", appealMoney(APPEAL_PANEL_FEE), "paid to 15 jurors"],
+          ["Delay compensation", appealMoney(APPEAL_DELAY_FEE), "credited by case rule"],
+          ["Security bond", appealMoney(APPEAL_SECURITY_BOND), "forfeited to reward pool"],
+          ["Total", appealMoney(APPEAL_FUNDING_GOAL), "allocated once"]
         ];
       }
     });
@@ -3608,11 +3625,11 @@
     if (activeEventStep === 2 && page.surface === "omen") {
       page.status = "Contribution confirmed";
       page.subtitle = "Your " + appealMoney(userAmount) + " contribution is locked directly in DemoThemis. The public round needs " + appealMoney(remaining) + " more before the deadline.";
-      page.kpis = [["Raised", appealMoney(currentFunded) + " / " + appealMoney(APPEAL_BOND_GOAL)], ["Your bond share", userShare.toFixed(1) + "%"], ["Time left", "13d 22h"]];
+      page.kpis = [["Raised", appealMoney(currentFunded) + " / " + appealMoney(APPEAL_FUNDING_GOAL)], ["Your funding share", userShare.toFixed(1) + "%"], ["Time left", "13d 22h"]];
     }
     if (activeEventStep >= 3 && page.surface === "protocol" && /funding/i.test(page.title || "")) {
-      page.subtitle = "The public goal reached " + appealMoney(APPEAL_BOND_GOAL) + ". Every wallet keeps its pro-rata bond share while a fresh 15-person jury becomes active.";
-      page.kpis = [["Crowdfunded bond", appealMoney(APPEAL_BOND_GOAL)], ["Your share", userShare.toFixed(1) + "%"], ["Panel", "15 fresh jurors"]];
+      page.subtitle = "The public goal reached " + appealMoney(APPEAL_FUNDING_GOAL) + ". The service fee pays panel work and delay once; each wallet keeps only its pro-rata security principal in escrow.";
+      page.kpis = [["Service fee", appealMoney(APPEAL_SERVICE_FEE)], ["Security bond", appealMoney(APPEAL_SECURITY_BOND)], ["Panel", "15 fresh jurors"]];
     }
     return page;
   }
@@ -3768,7 +3785,7 @@
     if (stage === 11 && activeEventStep === 1 && step.actionLabel === "Contribute to appeal") {
       var confirmedAmount = safeAppealContribution(appealContributionDraft);
       toastBody = appealMoney(confirmedAmount) + " added to the appeal bond";
-      toastDetail = "Your wallet owns " + (confirmedAmount / APPEAL_BOND_GOAL * 100).toFixed(1) + "% of the bond outcome";
+      toastDetail = appealMoney(confirmedAmount * APPEAL_SERVICE_FEE / APPEAL_FUNDING_GOAL) + " service fee + " + appealMoney(confirmedAmount * APPEAL_SECURITY_BOND / APPEAL_FUNDING_GOAL) + " security bond";
     }
     pendingConfirmation = {
       stage: stage,
@@ -3901,7 +3918,7 @@
 
   function resolvedEventPage(basePage) {
     var page = eventPageAtStep(basePage, activeEventStep);
-    return applyJurorSettlement(applyAppealCrowdfunding(applyBallotChoice(applyLiveFieldDrafts(applyLiveTradeSelection(applyOpeningLiquidityDraft(page))))));
+    return applyJurorSettlement(applyAppealCrowdfunding(applyInsufficientBallotTally(applyBallotChoice(applyLiveFieldDrafts(applyLiveTradeSelection(applyOpeningLiquidityDraft(page)))))));
   }
 
   function currentSurfaceMeta() {
@@ -5345,8 +5362,8 @@
           var amount = safeAppealContribution(appealContributionDraft);
           var share = amount / appealGoal * 100;
           if (Number(contributionInput.value) !== amount) contributionInput.value = String(amount);
-          contributionShare.textContent = share.toFixed(1) + "% bond share";
-          contributionCopy.textContent = "If confirmed, " + appealMoney(amount) + " is the most this wallet can lose. A successful bond return and bonus come back in the same proportion.";
+          contributionShare.textContent = share.toFixed(1) + "% funding share";
+          contributionCopy.textContent = "Tagged split: " + appealMoney(amount * APPEAL_SERVICE_FEE / APPEAL_FUNDING_GOAL) + " service fee + " + appealMoney(amount * APPEAL_SECURITY_BOND / APPEAL_FUNDING_GOAL) + " security. Only the security can return.";
           var actionLabel = card.querySelector(".sim-app-action-label");
           var actionButton = card.querySelector(".sim-app-action");
           if (actionLabel) actionLabel.textContent = "Contribute " + appealMoney(amount) + " to appeal";
@@ -5358,7 +5375,7 @@
       } else {
         var fundingRule = makeEl("div", "appeal-funding-rule");
         fundingRule.appendChild(makeEl("b", "", appealRemaining ? "Below goal: no jury starts" : "Goal funded: jury starts"));
-        fundingRule.appendChild(makeEl("span", "", appealRemaining ? "Partial contributions remain individually attributable and refund automatically if the deadline arrives first." : "The complete bond is locked and every wallet retains its proportional share."));
+        fundingRule.appendChild(makeEl("span", "", appealRemaining ? "Partial contributions remain individually attributable and refund automatically if the deadline arrives first." : "The service fee is paid once and every wallet retains only its proportional security principal."));
         contributionPanel.appendChild(fundingRule);
       }
       appealBody.appendChild(contributionPanel);
@@ -5367,10 +5384,10 @@
       var appealOutcomes = makeEl("div", "appeal-outcome-rules");
       var successRule = makeEl("div", "is-success");
       successRule.appendChild(makeEl("span", "", "If the appeal succeeds"));
-      successRule.appendChild(makeEl("b", "", "Bond + bonus return pro-rata"));
+      successRule.appendChild(makeEl("b", "", "Security principal returns pro-rata"));
       var failureRule = makeEl("div", "is-failure");
       failureRule.appendChild(makeEl("span", "", "If the appeal fails"));
-      failureRule.appendChild(makeEl("b", "", "Each wallet loses only its share"));
+      failureRule.appendChild(makeEl("b", "", "Security alone forfeits pro-rata"));
       appealOutcomes.appendChild(successRule);
       appealOutcomes.appendChild(failureRule);
       appealShell.appendChild(appealOutcomes);
@@ -5380,7 +5397,7 @@
         quoteDetails.className = "appeal-quote-details";
         quoteDetails.appendChild(makeEl("summary", "", "Why the goal is " + appealMoney(appealGoal)));
         appendMiniTable(quoteDetails, block.quoteRows, "appeal goal calculation");
-        quoteDetails.appendChild(makeEl("p", "", "The highest live minimum sets the fixed goal. OmenMarketMaker cannot change it."));
+        quoteDetails.appendChild(makeEl("p", "", "The goal is the tagged service fee plus separate security bond. OmenMarketMaker cannot change either amount."));
         appealShell.appendChild(quoteDetails);
       }
       var appealCustody = makeEl("div", "appeal-custody-note");
@@ -5398,10 +5415,16 @@
           button.setAttribute("aria-pressed", button.getAttribute("data-choice") === selectedBallotChoice ? "true" : "false");
         });
         confirmBallot.disabled = !selectedBallotChoice;
-        confirmBallot.replaceChildren(makeEl("span", "sim-app-action-label", selectedBallotChoice ? "Seal " + selectedBallotChoice + " ballot" : "Choose an outcome to seal"));
+        var sealLabel = selectedBallotChoice === "INSUFFICIENT INFORMATION"
+          ? "Seal insufficient-information ballot"
+          : selectedBallotChoice
+            ? "Seal " + selectedBallotChoice + " ballot"
+            : "Choose an answer to seal";
+        confirmBallot.replaceChildren(makeEl("span", "sim-app-action-label", sealLabel));
       }
       (block.options || []).forEach(function (option) {
-        var btn = makeEl("button", option[1] === "good" ? "yes" : "no", option[0]);
+        var buttonClass = option[1] === "good" ? "yes" : option[1] === "insufficient" ? "insufficient" : "no";
+        var btn = makeEl("button", buttonClass, option[0]);
         btn.type = "button";
         btn.setAttribute("data-choice", option[0]);
         tagInfo(btn, optionTip(option[0], "encrypted ballot") + " The counted vote stays private until aggregate proof.");
@@ -5429,7 +5452,7 @@
       routeSource.appendChild(makeEl("span", "", "Payment source"));
       routeSource.appendChild(makeEl("b", "", block.source || "Locked panel quote"));
       var routeTrack = makeEl("div", "juror-route-track");
-      routeTrack.setAttribute("aria-label", "Compensation moves directly from the locked court quote to the juror wallet");
+      routeTrack.setAttribute("aria-label", "Compensation moves directly from the locked court fee to the juror wallet");
       var routeDestination = makeEl("div", "juror-route-node");
       routeDestination.appendChild(makeEl("span", "", "Private destination"));
       routeDestination.appendChild(makeEl("b", "", block.destination || "Juror wallet"));

@@ -1,8 +1,8 @@
 'use client';
-// ARCHIVED PREVIEW PROBE (Step 3.5 de-risk): request a World ID 4.0 proof
+// ARCHIVED STAGING PROBE (Step 3.5 de-risk): request a World ID 4.0 proof
 // (proofOfHuman, allow_legacy_proofs:false) and dump the result so we can cast
-// call the Staging verifier with it. Distinct from components/Verify (orbLegacy
-// cloud path). Safe to delete after the assumption is proven.
+// call the Staging verifier with it. Distinct from the Production registration
+// path. Safe to delete after the historical evidence is no longer needed.
 import { IDKit, proofOfHuman } from '@worldcoin/idkit';
 import { useState } from 'react';
 
@@ -60,8 +60,8 @@ export default function VerifyOnchainProbe() {
 
   return (
     <main id="main-content" tabIndex={-1} style={{ padding: 24, fontFamily: 'monospace', maxWidth: 920 }}>
-      <h1>Archived v4 preview-verifier probe (proofOfHuman)</h1>
-      <p>This preserves historical evidence only. Production registration uses the documented mainnet Router.</p>
+      <h1>World ID 4 Staging verifier test</h1>
+      <p>This developer test accepts Simulator credentials. MVP registration uses the World ID 4 Production proxy.</p>
       <button onClick={run} style={{ padding: '8px 16px', fontSize: 16 }}>
         Start v4 request
       </button>

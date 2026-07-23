@@ -2,7 +2,7 @@
 
 A working demo of the **DemoThemis arbitration court** for the World Foundation
 Spark Track grant: a juror court gated by a **World ID proof verified on-chain
-through the documented World ID Router**, running on
+through the World ID 4.0 Production verifier**, running on
 World Chain, with a browser sandbox that simulates the full mechanism.
 
 ## Why it's different
@@ -11,22 +11,20 @@ The decentralized courts that exist — **Kleros** and **UMA** — pick jurors b
 **stake**, so influence tracks capital; and inside the World ecosystem, no Mini App
 or grant project does dispute resolution at all. **DemoThemis is, to our knowledge,
 the first to gate the jury by _personhood_ instead of capital** — one verified human,
-one vote — and the first dispute-resolution app in World App. Token-weighted courts (UMA, Kleros) are bought once — acquire a majority of stake, a fixed and
-knowable price, and you own that verdict and every future one for free. DemoThemis removes that
-target: the panel is drawn at random **after** the question, from the whole verified-human pool,
+one vote — and the first dispute-resolution app in World App. Token-weighted courts like UMA and Kleros let the same capital influence many cases. DemoThemis removes the
+fixed target: the panel is drawn at random **after** the question, from the whole verified-human pool,
 so an attacker can't know or pick who will judge their case. To land a bribed majority they'd have
-to pre-corrupt a near-majority of the **entire pool** — and still only get a chance, not a verdict
-(bribing ~19% of a 200k pool yields a ~2.9% shot at flipping one panel). It doesn't amortize: a
-fresh panel is drawn for every case, so the whole pool-corruption cost is paid again, per case,
-while the price climbs with pool width, case volume, and value at stake (above a value line,
-independent panels must all agree, multiplying the odds ~1/5 → 1/125 → 1/3000, and any captured
-panel is appealed into a larger one). Cost-to-capture scales with pool width × case volume ×
-value-at-stake — never a flat panel bribe. Full scan +
+to compromise a large share of the **entire pool** — and still only get a chance, not a verdict
+(bribing ~19% of a 200k pool yields a ~2.9% shot at flipping one panel). The chance falls as the
+pool widens, while high-value cases add several non-overlapping panels that must all agree and
+appeals that redraw larger panels. Once a juror serves on a dispute, every later panel and appeal
+for that dispute excludes them. Receipt-free ballots prevent a briber from proving delivery.
+Full scan +
 comparison: [docs/DIFFERENTIATION.md](docs/DIFFERENTIATION.md).
 
-**Status: the case-liveness, automated-timing, and Router-gate release is implemented and tested (100 Foundry tests pass); mainnet
+**Status: the case-liveness, automated-timing, and World ID 4 Production-gate release is implemented; mainnet
 redeployment is required before the live capstone.** The previously deployed
-v4 preview-verifier instance is source-verified historical evidence, but its immutable
+v4 Production-verifier instance is source-verified historical evidence, but its immutable
 3/3 court predates this fix and remains vulnerable both to a no-show stall and to
 accepting a case whose parties leave fewer than three eligible jurors. Do not register
 capstone jurors against the recorded Step-5 addresses. The replacement source keeps the
@@ -47,17 +45,17 @@ The mainnet demo uses a single 3-seat panel on purpose: it proves the mechanism
 end-to-end. Both the historical minimum-3 pool and the recommended minimum-4 replacement
 remain cheaply flippable — this is a liveness/cost demo, not the security claim. Capture-
 resistance is the at-scale property: because the panel is drawn at random after the question, an
-attacker can't target it and must instead corrupt a near-majority of the whole pool, per case,
-for only a probability — so cost rises with pool width (plus parallel pᴺ panels and the appeal
+attacker can't target it and must instead compromise a large share of the whole pool and win a
+random draw — so capture probability falls with pool width (plus parallel pᴺ panels and the appeal
 ladder above a value line). Widening the pool and panel and turning on parallel panels + appeals
 is funded-milestone work, not a research risk; the full regime is shown in the labeled sandbox. The historical v4 adapter is exercised by three
 Step-3.5 enforcement
 traces (a valid registration, a forged-proof revert, a duplicate-human revert) —
-using World ID **Simulator / Staging** identities, labeled as such. The
-v4 preview path was exercised on the legacy deployment; it is not the production
-dependency. The replacement uses the documented mainnet Router, and the live capstone is paused
+using World ID **Simulator / Staging** identities, labeled as such. The legacy
+deployment also exercised the v4 Production proxy, but its court bytecode is obsolete.
+The replacement uses the same official Production proxy with legacy proofs disabled, and the live capstone is paused
 until the recovery contracts are freshly deployed and wired (`docs/CAPSTONE_RUNBOOK.md`).
-No real human has registered on the legacy preview-verifier instance yet
+No real human has registered on the legacy court instance yet
 (`jurorCount() == 0`). See [docs/DEMO.md](docs/DEMO.md)
 for the clickable explorer traces.
 
@@ -65,21 +63,21 @@ for the clickable explorer traces.
 
 | ✅ Real & on-chain today (mainnet, source-verified) | ◷ Simulated / roadmap (labeled, funded-milestone) |
 |---|---|
-| Replacement source verifies a Router-compatible Orb proof **in the transaction** (`WorldIDRouter.verifyProof`); deployment pending | Receipt-free MACI ballots — milestone #2 |
+| Replacement source verifies a World ID 4 proof-of-human **in the transaction** (`WorldIDVerifier.verify`), with legacy proofs disabled; deployment pending | Receipt-free MACI ballots — milestone #2 |
 | Identity-derived **nullifier sybil gate** (one human, one seat, every wallet) | VRF / drand draw randomness — milestone #1 |
 | **Wallet-bound** proof (a stolen proof reverts) | Appeal ladder (7→15→31 seats) — milestone #3 |
 | Random panel drawn **after** the question | Parallel pᴺ panels above a value line — milestone #3 |
 | Commit / reveal voting | Juror reputation / Wilson gate — milestone #3 |
 | 70/20/10 fee split + 2% escrow fee; **slash-to-pool, never to winners** | Reward-pool cyclic payout — milestone #3 |
-| **Atomic** escrow settlement (`resolve → escrow.settle`) | Work-based quote engine + reusable resolution SDK — milestones #3–4 |
+| **Atomic** escrow settlement (`resolve → escrow.settle`) | Deterministic court-fee engine + reusable resolution SDK — milestones #3–4 |
 | **No runtime admin override**: one-shot wiring, immutable voting windows, and permissionless lifecycle transitions | (external security review — milestone #5) |
-| 100 passing Foundry tests, including Router binding/rejection, exact-3/3 party exclusion, first-draw unwind, retry recovery, invariants, and fuzz; replacement deployment pending | |
+| Contract tests cover v4 binding/schema rejection, exact-3/3 party exclusion, first-draw unwind, retry recovery, invariants, and fuzz; replacement deployment pending | |
 
 ### How DemoThemis uses the World stack  (deeper than "we call IDKit")
 
-- **On-chain World ID Router** — `WorldIDRouter.verifyProof` runs the Groth16 check
-  **inside the registration transaction**, not a cloud callback. IDKit requests the
-  supported v3 compatibility proof until the v4 verifier leaves preview.
+- **On-chain World ID 4 verifier** — `WorldIDVerifier.verify` runs the Groth16 check
+  **inside the registration transaction**, not a cloud callback. IDKit requires protocol
+  4.0 and sets `allow_legacy_proofs: false` for all new juror registrations.
 - **Sybil gate** — the identity-derived nullifier gives one human one seat on every
   wallet; a reused human reverts on-chain.
 - **Wallet-bound proofs** — a stolen or replayed proof reverts before the check.
@@ -93,17 +91,17 @@ for the clickable explorer traces.
 Three surfaces, one Next.js app:
 
 - **`/sandbox`** — a pure-browser simulation of the full mechanism (ladder,
-  reputation, reward-pool payout) and the flagship token-court-vs-human-court
-  attack demo. No wallet needed. Everything here is labeled **simulated**.
+  reputation, reward-pool payout) and the flagship attack demo comparing token courts
+  like UMA and Kleros with the verified-human court. No wallet needed. Everything here is labeled **simulated**.
 - **`/` + the Mini App** (`/onboard`, `/home`, `/case/[id]`, `/dispute`, `/about`) —
   the World App Mini App. Read-only in a desktop browser; the capstone juror flow
   runs on mainnet through World App.
 - The **Sepolia cohort** — seeded scale-and-history demo, rendered read-only
-  (labeled `MockSybilGate` stand-in; the supported Router path targets mainnet).
+  (labeled `MockSybilGate` stand-in; the supported v4 Production path targets mainnet).
 
 ## Deployed contracts
 
-**World Chain mainnet (chain 480) — legacy v4 preview-verifier instance with the former 2 MUSD question fee; do not use for the capstone**
+**World Chain mainnet (chain 480) — legacy court using the v4 Production verifier and former 2 MUSD question fee; do not use for the capstone**
 (the historical bytecode is source-verified on [worldscan](https://worldscan.org), but it
 does not contain the bounded case-liveness recovery implementation now in this repository).
 Source and explicit capability status:
@@ -168,10 +166,10 @@ pnpm dev            # http://localhost:3000
 
 - **Foundry** (repo-root `.env`, see `.env.example`): `PRIVATE_KEY` (deployer; never
   a personal key), optional `vm.envOr` overrides `PANEL_SIZE` / `MIN_POOL` /
-  `COMMIT_DURATION` / `REVEAL_DURATION` (defaults 7/14/300/300; both durations are immutable and reject values below 300 seconds), `WORLD_ID_ROUTER`, and
-  `WORLD_ID_APP_ID` — set the Router to the documented World Chain mainnet address
-  to deploy `WorldIDRouterGate`; leave it unset only for the disclosed cohort
-  `MockSybilGate`. The deploy script cannot select the v4 preview verifier. RPCs are `foundry.toml`
+  `COMMIT_DURATION` / `REVEAL_DURATION` (defaults 7/14/300/300 off-mainnet and 3/4/300/300 on mainnet),
+  `WORLD_ID_VERIFIER`, and `WORLD_ID_RP_ID`. Mainnet requires the official v4 Production
+  proxy and deploys `WorldIDGate`; leave the verifier unset only for the disclosed cohort
+  `MockSybilGate`. The deploy script rejects Staging, zero, and legacy Router addresses on mainnet. RPCs are `foundry.toml`
   `[rpc_endpoints]` aliases (`worldchain_sepolia` / `worldchain_mainnet`).
   For the replacement three-seat capstone, explicitly set `PANEL_SIZE=3` and
   `MIN_POOL>=4`; three remains fund-safe but has no one-withdrawal adjudication reserve.
@@ -179,7 +177,9 @@ pnpm dev            # http://localhost:3000
   replacement mainnet after cutover / 4801 cohort read-only), `NEXT_PUBLIC_APP_ID`, `RP_ID`,
   `RP_SIGNING_KEY`, `AUTH_SECRET` / `AUTH_TRUST_HOST` / `HMAC_SECRET_KEY` / `AUTH_URL`,
   and for the B5 dev page `NEXT_PUBLIC_SHOW_DEV` + `DEV_PRIVATE_KEY` (keep off in
-  production).
+  production). `RP_ID` is required and must belong to the same Developer Portal app as
+  `NEXT_PUBLIC_APP_ID` and `RP_SIGNING_KEY`; the API fails closed instead of substituting a
+  historical RP.
 
 ## Honesty rule
 

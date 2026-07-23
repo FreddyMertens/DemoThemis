@@ -1,6 +1,25 @@
-// Deployed contract addresses. Generated in step 2 (see
-// contracts/deployments/). ABIs are wired in step 3 when the Mini App calls
-// these contracts.
+// Contract configuration for the current MVP. Mainnet addresses are supplied by
+// the deployment environment after the updated contract set is verified. There
+// is deliberately no fallback to an older mainnet instance.
+
+const ZERO_ADDRESS = '0x0000000000000000000000000000000000000000';
+const addressOrZero = (value: string | undefined) =>
+  value && /^0x[0-9a-fA-F]{40}$/.test(value) && value.toLowerCase() !== ZERO_ADDRESS
+    ? value
+    : ZERO_ADDRESS;
+
+const currentMainnetAddresses = {
+  MockUSD: addressOrZero(process.env.NEXT_PUBLIC_MUSD_ADDRESS),
+  WorldIDGate: addressOrZero(process.env.NEXT_PUBLIC_WORLD_ID_GATE_ADDRESS),
+  JurorRegistry: addressOrZero(process.env.NEXT_PUBLIC_JUROR_REGISTRY_ADDRESS),
+  RewardPool: addressOrZero(process.env.NEXT_PUBLIC_REWARD_POOL_ADDRESS),
+  DisputeCourt: addressOrZero(process.env.NEXT_PUBLIC_DISPUTE_COURT_ADDRESS),
+  DealEscrow: addressOrZero(process.env.NEXT_PUBLIC_DEAL_ESCROW_ADDRESS),
+} as const;
+
+export const CURRENT_MVP_CONFIGURED =
+  process.env.NEXT_PUBLIC_MVP_RELEASE === 'current' &&
+  Object.values(currentMainnetAddresses).every((address) => address !== ZERO_ADDRESS);
 
 export const WORLDCHAIN_SEPOLIA = {
   chainId: 4801,
@@ -14,7 +33,7 @@ export const WORLDCHAIN_MAINNET = {
   name: 'World Chain',
   rpcUrl: process.env.NEXT_PUBLIC_WORLDCHAIN_RPC_URL ?? 'https://worldchain-mainnet.gateway.tenderly.co',
   explorer: 'https://worldscan.org',
-  worldIdRouter: '0x17B354dD2595411ff79041f930e491A4Df39A278',
+  worldIdV4ProductionVerifier: '0x00000000009E00F9FE82CfeeBB4556686da094d7',
 } as const;
 
 /// The Sepolia cohort instance (7/14, scripted jurors via the MockSybilGate
@@ -26,6 +45,7 @@ export const COHORT = {
   // Existing address predates party-aware admission, both liveness timeouts, Permit2 re-bonding, and immutable clocks.
   supportsLivenessRecovery: false,
   supportsAutomatedTiming: false,
+  supportsThreeStateRuling: false,
   MockUSD: '0xeA5241F1becCE7B3F72bf501bEa16eA976f1600F',
   MockSybilGate: '0x4E223cB71eD4E350Cf1A7f687206eA336d32807E',
   JurorRegistry: '0x7677ad08d0844e1Df2693242F2195F2b2fD9c622',
@@ -33,29 +53,19 @@ export const COHORT = {
   DisputeCourt: '0x1bAa18851E3E425278aFfe041b75004727F500AF',
   DealEscrow: '0x61110aDAca47eb0E82D5dE75F3de6F1f1b4fe596',
   params: { panelSize: 7, minPool: 14, commitDuration: 60, revealDuration: 60, questionFeeMusd: 2 },
-  replacementParams: { panelSize: 7, minPool: 14, commitDuration: 300, revealDuration: 300, questionFeeMusd: 20 },
 } as const;
 
-/// The currently deployed mainnet instance (3/3, historical v4 preview adapter).
-/// It is retained as evidence, not as the production dependency. It carries the
-/// original Permit2 registration path but predates
-/// party-aware admission, bounded initial/redraw recovery, Permit2 re-bonding, and immutable voting windows. Keep both capability flags false
-/// until replacement addresses with the upgraded bytecode are deployed and
-/// recorded here. The Step-3.5 Staging-verifier instance (0xbf7E…) remains the
-/// human-free de-risk trace. See contracts/deployments/worldchain-mainnet.json.
-export const LIVE = {
+/// The updated World Chain MVP profile. Capability flags become active only when
+/// all six verified addresses are explicitly selected as the current release.
+export const CURRENT_MVP = {
   chain: WORLDCHAIN_MAINNET,
-  supportsLivenessRecovery: false,
-  supportsAutomatedTiming: false,
-  MockUSD: '0x70ECE5DcAA68741BF41F6A4Aa0af3a8D44e4497a',
-  WorldIDGate: '0x0540f47842a31C681dce76E856b4b76fcCc53Fbe',
-  JurorRegistry: '0x226974149087b36769a54B998acfe4087eEb7F84',
-  RewardPool: '0xAF96A65A6b9643451E33cAf96717d071eDae04A0',
-  DisputeCourt: '0xCDF427D18da8C2e8CCf9a95310bC38857EEf795A',
-  DealEscrow: '0xefc898F9C4FC805111041676b720CB478BE67c47',
-  legacyPreviewWorldIdVerifier: '0x00000000009E00F9FE82CfeeBB4556686da094d7',
-  replacementWorldIdRouter: WORLDCHAIN_MAINNET.worldIdRouter,
-  worldIdAppId: 'app_7bdfda4db4e2f59dd4a2427cd2bd860d',
-  params: { panelSize: 3, minPool: 3, questionFeeMusd: 2 },
-  replacementParams: { panelSize: 3, minPool: 4, commitDuration: 300, revealDuration: 300, questionFeeMusd: 20 },
+  supportsLivenessRecovery: CURRENT_MVP_CONFIGURED,
+  supportsAutomatedTiming: CURRENT_MVP_CONFIGURED,
+  supportsThreeStateRuling: CURRENT_MVP_CONFIGURED,
+  ...currentMainnetAddresses,
+  worldIdV4ProductionVerifier: WORLDCHAIN_MAINNET.worldIdV4ProductionVerifier,
+  worldIdRpId: '0x1ddcf8ba2efe3f36',
+  worldIdProtocolVersion: 4,
+  allowLegacyWorldIdProofs: false,
+  params: { panelSize: 3, minPool: 4, commitDuration: 300, revealDuration: 300, questionFeeMusd: 20 },
 } as const;

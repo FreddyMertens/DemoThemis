@@ -34,12 +34,12 @@ Mirror of IMPLEMENTATION_PLAN.md §3. Step 1 is done when every row is checked a
 
 ## People
 
-- [ ] At least 4 verified humans lined up for step 3 (three panel seats plus one pre-draw availability reserve; any mix Orb / Device level; reachable on demo day, available twice per case for commit + reveal)
+- [ ] At least 4 Orb-verified humans lined up for step 3 (three panel seats plus one pre-draw availability reserve; reachable on demo day, available twice per case for commit + reveal). Device-level verification alone is not eligible; the planned on-device presence/continuity check happens after Orb enrollment as an anti-rental backstop.
 
 ## Spike (SPIKE.md) — see that file for the full write-up
 
-- [x] (a) on-chain World ID verification — CORRECTED 2026-07-22: the v4 `WorldIDVerifier` is preview and is retained only as historical evidence. Production replacement uses the documented v3-compatible Router on World Chain mainnet (`0x17B3…A278`).
+- [x] (a) on-chain World ID verification — CORRECTED 2026-07-23: the v4 `WorldIDVerifier` Production proxy is `0x0000…94d7`. Replacement source requires protocol 4, issuer schema 1, and `allow_legacy_proofs: false`; the v3 Router is historical compatibility only.
 - [ ] (b) sponsored mainnet `sendTransaction` — deferred (needs phone + mainnet instance)
 - [x] (c) World App `chainId: 4801` — production personhood remains mainnet-bound because the supported Router target is on World Chain mainnet; the Sepolia cohort remains a disclosed mock.
 - [x] Toolchain proven: forge → WC Sepolia deploy (`Ping` `0x117C7ba5bC479Ef62D9Edd64f1737c3dDF55022b`)
-- [x] **Architecture LOCKED: Option A (hybrid)** — cohort on WC Sepolia (free), Router-verified Orb humans + a three-seat panel drawn from at least four eligible humans on WC mainnet. The v4 preview adapter is not a production dependency.
+- [x] **Architecture LOCKED: Option A (hybrid)** — cohort on WC Sepolia (free), v4 Production-verified Orb humans + a three-seat panel drawn from at least four eligible humans on WC mainnet.

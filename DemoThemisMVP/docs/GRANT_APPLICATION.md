@@ -3,9 +3,9 @@
 ## 1. Summary
 
 **DemoThemis is a decentralized arbitration court where every juror seat is gated by a
-World ID proof verified _on-chain_ through the documented mainnet Router — the Groth16 proof is checked inside the registration
+World ID 4 proof verified _on-chain_ through the official Production verifier — the Groth16 proof is checked inside the registration
 transaction, and a reused human reverts. One verified human, one juror seat; not one dollar,
-one vote. A historical v4 preview-verifier court is deployed and source-verified on World Chain mainnet; it is evidence, not the production dependency. An exact-3/3 liveness review found both a no-show stall and a party-exclusion/first-draw lock; both recoveries and the Router gate are now implemented in source, and a replacement deployment is required before the live capstone.** It is, to our
+one vote. A historical court using that v4 Production verifier is deployed and source-verified on World Chain mainnet; its identity trace is evidence, but its court is not the capstone dependency. An exact-3/3 liveness review found both a no-show stall and a party-exclusion/first-draw lock; both recoveries and the hardened v4-only gate are now implemented in source, and a replacement deployment is required before the live capstone.** It is, to our
 knowledge, the first dispute-resolution Mini App in World App, and the first arbitration court
 to seat its jurors by personhood rather than capital (dated 2026-06-20 scan — see §6).
 
@@ -24,19 +24,17 @@ so every marketplace flow runs its own siloed, operator-run dispute desk.
 ## 3. The solution
 
 DemoThemis replaces *stake-weighting* with *personhood*. A juror joins by verifying with
-the **World ID mainnet Router** (the Groth16 proof is checked inside the registration transaction)
+the **World ID 4 Production verifier** (the Groth16 proof is checked inside the registration transaction)
 and posting a small bond; the sybil gate gives **one human one seat on every wallet**. For each
 case a panel is drawn **at random, after** the question is fixed — so an attacker cannot know
 or choose who will sit on it. Jurors vote and the majority decides, with the fee split and the
 settlement enforced atomically on-chain. Because seats are random verified people, not coins,
-there is no panel to buy: to land a bribed majority on a specific case you must pre-corrupt a
-near-majority of the **entire human pool** and merely hope the draw seats enough of them — for
-only a *probability*, not certainty. Cost-to-capture therefore scales with **pool width**
-(fraction needed × pool size × bribe-per-human), and because every case re-draws a fresh
-random panel, **nothing carries over — you pay the whole pool-corruption cost again, per
-case**, while high-value cases add parallel panels and appeals that raise the bar further (§7).
-Unlike out-staking a stake-weighted oracle once and deciding every case for free, influence
-here is not targetable, not reusable, and does not amortize.
+there is no known panel to target: to land a bribed majority on a specific case you must compromise
+a large share of the **entire human pool** and merely hope the draw seats enough of them — for
+only a *probability*, not certainty. That probability falls as the pool widens, while high-value
+cases add non-overlapping parallel panels and larger appeals (§7). Once a juror serves on a
+dispute, every later panel and appeal for that dispute excludes them; receipt-free ballots prevent
+a briber from proving how any recruited juror voted.
 
 Two case types ship today: an **escrow dispute** (fund a deal, raise a dispute, the court
 decides who gets paid, settlement is atomic) and a **yes/no question** (the neutral resolver
@@ -66,9 +64,9 @@ another court milestone or grant.
 This is not "we call IDKit." World ID is the **load-bearing primitive of the mechanism**, used
 on-chain and across the stack:
 
-- **On-chain World ID Router.** `WorldIDRouter.verifyProof` runs the **Groth16 check inside the
-  registration transaction**, not as a cloud callback. The app requests the supported v3
-  compatibility proof while the World ID 4.0 verifier remains preview.
+- **On-chain World ID 4 verifier.** `WorldIDVerifier.verify` runs the **Groth16 check inside the
+  registration transaction**, not as a cloud callback. The app requires protocol 4,
+  requests proof-of-human, and disables legacy proofs.
 - **Sybil gate.** The identity-derived nullifier gives one human one seat; a reused human
   **reverts on-chain**. This is what makes "one human, one vote" real.
 - **Wallet-bound proofs.** The proof is bound to the registering wallet (`signalHash`
@@ -76,9 +74,18 @@ on-chain and across the stack:
 - **MiniKit walletAuth (SIWE)** for the juror session; **Permit2 single-tap onboard** (verify +
   faucet + bond in one sponsored batch, because World App auto-revokes plain ERC-20 approvals);
   **sponsored gas** so verified humans pay nothing; **deep-link** straight to a case.
-- **Open, permissionless onboarding.** Any Orb- or Device-verified human can juror — no wealth
-  gate, no exam — so the bench scales to capable people anywhere, not just the well-capitalized
-  (World's inclusion mission, applied to *who gets to judge*; juror quality-scoring is funded M3b).
+- **Open, permissionless onboarding.** Any **Orb-verified** human can juror — no wealth gate,
+  no exam — so the bench scales to capable people anywhere, not just the well-capitalized.
+  Device-level verification alone never creates a seat. The funded design adds a separate,
+  draw-bound on-device presence/continuity check *after* Orb enrollment so a buyer cannot simply
+  operate a sold or rented juror account without the enrolled human participating again.
+
+  **Current integration boundary:** Orb eligibility can be enforced on World Chain today. World
+  also exposes [Selfie Check (Beta)](https://docs.world.org/world-id/credentials/11), including
+  returning-user Face Auth, through IDKit and its production verification API. That result is not
+  verified by the Orb-only legacy Router. M3b therefore treats it as a post-Orb presence signal,
+  binds each fresh challenge to the draw, and relays an authenticated pass to the court; it does
+  not call the lower-assurance Device credential a second identity check or claim the MVP ships it.
 
 World ID isn't a login here — it gates juror eligibility by personhood, not
 capital. That is why we lead with it: the grant's most-valued axis is the project's
@@ -93,21 +100,21 @@ everywhere, and historical bytecode is not presented as the current source.**
 
 | ✅ Real & on-chain today (mainnet, source-verified) | ◷ Roadmap (funded milestone) |
 |---|---|
-| Replacement source verifies a Router-compatible Orb proof **in the transaction**; deployment pending | VRF/drand draw randomness — M1 |
+| Replacement source verifies a v4 proof-of-human **in the transaction**, with legacy proofs disabled; deployment pending | VRF/drand draw randomness — M1 |
 | **Nullifier sybil gate** (one human, one seat) | Receipt-free MACI-style ballots — M2 |
-| **Wallet-bound** proof (a stolen proof reverts) | Appeals, parallel panels, Invalid/void, and presence/decline/replacement — M3b |
+| **Wallet-bound** Orb proof (a stolen proof reverts) | Appeals, parallel panels, Invalid/void, and post-Orb presence/decline/replacement — M3b |
 | Random two-step 3-seat panel draw, **after** the question; active pool may exceed three | Juror reputation / Wilson gate — M3b |
 | Commit/reveal voting *(receipt-ful — see §7)* | Reward-pool cyclic payout — M3a |
-| 70/20/10 fee split + 2% escrow fee; **slash-to-pool, never to winners** | Work-based quote engine + private reward-pool distribution — M3a |
+| 70/20/10 fee split + 2% escrow fee; **slash-to-pool, never to winners** | Deterministic court-fee engine + private reward-pool distribution — M3a |
 | **Atomic** escrow settlement | Stable resolution SDK + neutral reference integration — M4 |
 | **No admin override**: no upgrade, no pause, no fund-extraction path, no override of any in-flight case | Independent security review — M5 |
 | **Replacement source only (not the legacy addresses):** eligible-party preflight, fixed first-draw unwind with unused-fee/principal return, Permit2 re-bond, and bounded retry | Deployment, source verification, app/keeper cutover, and capstone traces remain pending |
-| 6 legacy source-verified contracts · 100 passing Foundry tests cover Router binding/rejection, exact-3/3 party exclusion, first-draw unwind, no-show, re-bond, retry, and escrow recovery · replacement deployment pending | |
+| 6 legacy source-verified contracts · a 100-test verified Foundry snapshot plus current v4 binding/schema, exact-3/3 party exclusion, first-draw unwind, no-show, re-bond, retry, and escrow recovery regressions · replacement deployment pending | |
 
 **Status — remediation and redeployment remain before the human run.** On-chain World ID enforcement is **proven** by three Step-3.5
 explorer traces (a valid registration, a forged-proof revert, a duplicate-human revert), using
 World ID **Simulator/Staging** identities so the path is shown human-free for cents. The
-legacy v4 **preview**-verifier instance is deployed and source-verified as historical evidence. Its immutable court
+legacy court's v4 **Production**-verifier identity path is deployed and source-verified as historical evidence. Its immutable court
 cannot safely run the capstone after the no-show and party-exclusion liveness findings. The corrected registry/court
 source, Permit2 re-bond UI, threshold keeper, and regression tests must be deployed, verified,
 allowlisted, and cut over first. The **three-seat mainnet capstone with at least four eligible humans** is then **juror user-test #0**, the first run of the real
@@ -123,7 +130,7 @@ equivalent **Production**-verifier forged-proof revert trace is a named **M1** a
 artifact, captured at the capstone.
 
 **For the reviewer in 60 seconds** (no wallet needed): watch the *buy-this-verdict* attack demo
-(a token court flips to the lie; the human court holds) → click through to the source-verified
+(a token-court model based on systems like UMA and Kleros flips to the lie; the human court holds) → click through to the source-verified
 contracts and resolved cohort cases on the explorer → open the read-only Mini App over that
 history. Links in §12.
 
@@ -163,15 +170,20 @@ What's bought today, and what isn't:
   secret salt that hid it — to *prove* how they voted, so the **MVP is vote-buyable in principle** — at the minimum 3/3 pool size a briber
   needs only the two known jurors and can verify compliance. At scale the personhood gate changes
   the attack entirely: because the panel is drawn at random after the question, there is no known
-  set to buy, so a briber must pre-corrupt a near-majority of the **whole pool**, per case, for
+  set to buy, so a briber must compromise a large share of the **whole pool** and win the draw for
   only a chance — and **receipt-free MACI-style
   ballots (M2)** remove even their ability to *verify* that corruption paid off. The court is un-buyable only with
   **both** — which is why M2 is the single highest-priority mechanism upgrade after the
   liveness-enabled replacement is deployed and proven.
-- **Capture-resistance scales with pool width, case volume, and the stakes — and that is roadmap, not the three-seat demo.** Because the panel is drawn at random after the question, an attacker can't target it; to even attempt a flip they must pre-corrupt a near-majority of the whole pool and hope the draw cooperates. So the price tracks **pool width × case volume × value-at-stake**, never a flat panel bribe: widen the pool and a fixed budget's flip-probability collapses (in the sandbox, bribing ~19.2% of a 200k pool buys only a ~2.91% chance to flip a single panel); raise the stakes and several **independent parallel panels must all agree**, so odds multiply pᴺ — the chance of flipping collapses from ~1/5 to 1/125 to 1/3000 as panels go 1→3→5 (M3b) — while any captured panel is **appealed into a larger one (7→15→31)**, forcing re-capture at higher cost; and because every case re-draws, **none of it amortizes — the attacker pays again, per case**. The planned replacement three-seat / minimum-four capstone is a
+- **Capture-resistance scales with pool width and the stakes — and that is roadmap, not the three-seat demo.** Because the panel is drawn at random after the question, an attacker can't target it; to even attempt a flip they must compromise a large share of the whole pool and hope the draw cooperates. Widen the pool and a fixed budget's flip-probability collapses (in the sandbox, bribing ~19.2% of a 200k pool buys only a ~2.91% chance to flip a single panel); raise the stakes and several **independent parallel panels must all agree**, so odds multiply pᴺ — the chance of flipping collapses from ~1/5 to 1/125 to 1/3000 as panels go 1→3→5 (M3b) — while any captured panel is **appealed into a larger one (7→15→31)**. Every panel within the dispute is disjoint: a juror who served on an earlier panel or appeal cannot serve on a later one. The planned replacement three-seat / minimum-four capstone is a
   liveness/cost demo (where a small bribe can still flip the toy panel); it is **not** this
   security regime. The hard part — provable, sybil-resistant on-chain personhood at the juror
   draw — is **shipped**; widening it is funded engineering, not new research.
+- **Every appeal conserves its funding.** The crowdfunding goal tags a non-refundable service
+  fee (new-panel work + delay compensation) separately from the anti-re-roll security bond.
+  Once funded, the service fee pays those costs exactly once. A successful appeal returns the
+  security principal from its own escrow pro-rata; a failed appeal forfeits only that security
+  principal to the reward pool. An underfunded round refunds every wallet and starts no jury.
 - **No admin override — an affirmative trust asset, verifiable from the source-verified
   bytecode.** No upgradeability, no pause, no fund-extraction path, no override of any in-flight
   case. The only privileged calls are `setEscrow`/`setCourt`: one-shot deployment wiring that
@@ -192,9 +204,10 @@ What's bought today, and what isn't:
   questions* — today a tie or post-panel no-quorum resolves to status quo (question NO / escrow refunds the
   payer), so a genuinely unanswerable question defaults to NO; an explicit **Invalid/void
   outcome**, flagged when independent parallel panels split on a genuinely ambiguous question,
-  is funded in M3b. And *credential rental or an unavailable juror* — M3b adds a World ID-based
-  per-draw presence check plus a decline-and-replace protocol path, so jurors serve only when
-  they are present and assess themselves as capable; M6 hardens and tests that user flow. Both
+  is funded in M3b. And *credential rental or an unavailable juror* — M3b adds a draw-bound,
+  on-device presence/continuity check after Orb eligibility plus a decline-and-replace protocol
+  path, so a device credential alone never grants a seat and jurors serve only when they are
+  present and assess themselves as capable; M6 hardens and tests that user flow. Both
   gaps are part of this grant's completion scope, not deferred to an unspecified later build.
 
 ## 8. Traction & technical credibility
@@ -203,9 +216,9 @@ The MVP was **shipped solo by the founder in ~1 month** — the funded roadmap i
 both co-founders in parallel (§9, §11) — to a standard meant to survive scrutiny:
 
 - **6 source-verified contracts on World Chain mainnet** (5 core + the World ID gate; chain
-  480, historical v4 preview-verifier evidence; Router-gated replacement pending) + a **~20-juror Sepolia cohort** with resolved
+  480, historical v4 Production-verifier evidence; v4-only replacement pending) + a **~20-juror Sepolia cohort** with resolved
   cases (scale/history demo).
-- **100 passing Foundry tests with real system invariants** (token conservation, registry solvency,
+- **100-test verified Foundry snapshot plus current declared regressions with real system invariants** (token conservation, registry solvency,
   bonded-juror), fuzz, and exact-3/3 liveness regressions for eligible-party rejection before
   funds lock, immutable first-draw timeout, unused-fee and escrow-principal return, re-bond, and
   bounded retry. The count is taken from the current recovery release rather than the historical
@@ -223,8 +236,8 @@ both co-founders in parallel (§9, §11) — to a standard meant to survive scru
 ## 9. Milestones, timeline & budget
 
 This request funds every remaining milestone required to turn the honest single-panel MVP into a
-**production-ready DemoThemis v1**: verifiable randomness, receipt-free ballots, work-based
-quotes and reward distribution, private reputation, expanding appeals, parallel panels, an
+**production-ready DemoThemis v1**: verifiable randomness, receipt-free ballots, deterministic
+court fees and reward distribution, private reputation, expanding appeals, parallel panels, an
 Invalid/void outcome, a stable integration SDK, an independent review of the completed protocol,
 and real verified-human testing with per-draw presence and decline/replacement flows. No core
 security, finality, juror-safety, or integration milestone depends on a hypothetical follow-on
@@ -242,7 +255,7 @@ real juror loop on their own phones.
 |---|---|---|---|
 | M1 | VRF/drand randomness + correctness hardening + Router forged-proof pre-check | verified randomness contract + draw trace; expanded tests; the forged-proof revert trace | $4,000 |
 | M2 | Receipt-free ballots | unlinkable end-to-end ballot and consequence-accounting trace; threat model; tests | $8,000 |
-| M3a | Work-based quote engine + private reward-pool distribution | locked quote-input and private aggregate-payout traces | $4,000 |
+| M3a | Deterministic court-fee engine + private reward-pool distribution | locked fee-input and private aggregate-payout traces | $4,000 |
 | M3b | Private reputation + appeals + parallel panels + Invalid/void + juror liveness | source-verified contracts and traces for each path | $6,000 |
 | M4 | Stable resolution SDK + neutral reference integration | published SDK/docs and traced mainnet question + escrow integrations | $5,000 |
 | M5 | Independent review of the completed funded protocol | published report; every critical/high finding resolved | $10,000 |
